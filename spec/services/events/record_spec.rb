@@ -1035,6 +1035,35 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_training_lead_provider_updated_event!" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
+    it "enqueues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_training_lead_provider_updated_event!(
+        old_lead_provider_name: "Old Lead Provider",
+        new_lead_provider_name: "New Lead Provider",
+        author:,
+        ect_at_school_period:,
+        school: ect_at_school_period.school,
+        teacher:,
+        happened_at: 5.minutes.ago
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        teacher:,
+        school: ect_at_school_period.school,
+        ect_at_school_period:,
+        heading: "Lead provider changed from 'Old Lead Provider' to 'New Lead Provider'",
+        event_type: :teacher_training_lead_provider_updated,
+        happened_at: 5.minutes.ago,
+        **author_params
+      )
+    end
+  end
+
   describe '.record_teacher_left_school_as_mentor!' do
     let(:finished_on) { 1.month.ago.to_date }
     let(:school) { FactoryBot.create(:school) }
@@ -1059,6 +1088,133 @@ RSpec.describe Events::Record do
           happened_at: finished_on,
           **author_params
         )
+      end
+    end
+  end
+
+  describe '.record_teacher_withdraws_training_period_event' do
+    let(:teacher) { training_period.trainee.teacher }
+    let(:lead_provider) { training_period.lead_provider }
+    let(:reason) { "left_teaching_profession" }
+    let(:teacher_name) { Teachers::Name.new(teacher).full_name }
+    let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:modifications) do
+      {
+        "withdrawal_reason" => [nil, reason],
+        "withdraw_at" => [nil, Time.zone.now],
+        "finished_on" => [nil, Time.zone.today],
+        "updated_at" => [training_period.updated_at, Time.zone.now]
+      }
+    end
+
+    context 'when ECT training' do
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
+      let(:course_identifier) { "ecf-induction" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period:,
+            teacher:,
+            lead_provider:,
+            metadata: modifications,
+            modifications: anything,
+            heading: "#{teacher_name}’s ECT training period was withdrawn by #{lead_provider.name}",
+            event_type: :teacher_withdraws_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when Mentor training' do
+      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing) }
+      let(:course_identifier) { "ecf-mentor" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period:,
+            teacher:,
+            lead_provider:,
+            metadata: modifications,
+            modifications: anything,
+            heading: "#{teacher_name}’s mentor training period was withdrawn by #{lead_provider.name}",
+            event_type: :teacher_withdraws_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
+  describe '.record_teacher_defers_training_period_event' do
+    let(:lead_provider) { training_period.lead_provider }
+    let(:reason) { "career_break" }
+    let(:teacher_name) { Teachers::Name.new(teacher).full_name }
+    let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:modifications) do
+      {
+        "deferral_reason" => [nil, reason],
+        "deferred_at" => [nil, Time.zone.now],
+        "finished_on" => [nil, Time.zone.today],
+        "updated_at" => [training_period.updated_at, Time.zone.now]
+      }
+    end
+
+    context 'when ECT training' do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:course_identifier) { "ecf-induction" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_defers_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period:,
+            teacher:,
+            lead_provider:,
+            metadata: modifications,
+            modifications: anything,
+            heading: "#{teacher_name}’s ECT training period was deferred by #{lead_provider.name}",
+            event_type: :teacher_defers_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when Mentor training' do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:course_identifier) { "ecf-mentor" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_defers_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period:,
+            teacher:,
+            lead_provider:,
+            metadata: modifications,
+            modifications: anything,
+            heading: "#{teacher_name}’s mentor training period was deferred by #{lead_provider.name}",
+            event_type: :teacher_defers_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
       end
     end
   end

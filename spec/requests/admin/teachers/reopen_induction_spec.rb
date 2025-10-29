@@ -73,7 +73,7 @@ describe "Admin::Teachers::ReopenInductionController" do
     let(:params) do
       { admin_reopen_induction_period: { zendesk_ticket_id:, note: } }
     end
-    let(:zendesk_ticket_id) { "1234" }
+    let(:zendesk_ticket_id) { "123456" }
     let(:note) { "A test note" }
 
     context "when not signed in" do

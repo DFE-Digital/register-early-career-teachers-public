@@ -1,4 +1,4 @@
-RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
+RSpec.describe Metadata::Handlers::Teacher do
   let(:instance) { described_class.new(teacher1) }
 
   let!(:teacher1) { FactoryBot.create(:teacher) }
@@ -11,7 +11,7 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
     let(:object) { teacher1 }
   end
 
-  describe ".destroy_all_metadata!" do
+  describe ".destroy_all_metadata!", :with_metadata do
     subject(:destroy_all_metadata) { described_class.destroy_all_metadata! }
 
     before { instance.refresh_metadata! }
@@ -111,7 +111,9 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period1,
+            latest_ect_contract_period: ect_training_period1.contract_period,
             latest_mentor_training_period: mentor_training_period1,
+            latest_mentor_contract_period: mentor_training_period1.contract_period,
             api_mentor_id: nil
           )
 
@@ -120,7 +122,9 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider2,
             latest_ect_training_period: ect_training_period2,
+            latest_ect_contract_period: ect_training_period2.contract_period,
             latest_mentor_training_period: mentor_training_period2,
+            latest_mentor_contract_period: mentor_training_period2.contract_period,
             api_mentor_id: nil
           )
         end
@@ -195,7 +199,9 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period2,
+            latest_ect_contract_period: ect_training_period2.contract_period,
             latest_mentor_training_period: mentor_training_period2,
+            latest_mentor_contract_period: mentor_training_period2.contract_period,
             api_mentor_id: nil
           )
         end
@@ -228,7 +234,9 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: ect_training_period1,
+            latest_ect_contract_period: ect_training_period1.contract_period,
             latest_mentor_training_period: nil,
+            latest_mentor_contract_period: nil,
             api_mentor_id: nil
           )
         end
@@ -243,7 +251,9 @@ RSpec.describe Metadata::Handlers::Teacher, :with_metadata do
             teacher: teacher1,
             lead_provider: lead_provider1,
             latest_ect_training_period: nil,
+            latest_ect_contract_period: nil,
             latest_mentor_training_period: nil,
+            latest_mentor_contract_period: nil,
             api_mentor_id: nil
           )
         end

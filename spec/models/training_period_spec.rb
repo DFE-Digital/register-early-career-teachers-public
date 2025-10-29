@@ -4,13 +4,25 @@ describe TrainingPeriod do
   describe "declarative updates" do
     let(:period_boundaries) { { started_on: 3.years.ago.to_date, finished_on: nil } }
 
+    def will_change_attribute(attribute_to_change:, new_value:)
+      case attribute_to_change
+      when :school_partnership_id
+        active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
+        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+        school = target.is_a?(School) ? target : FactoryBot.create(:school)
+        FactoryBot.create(:school_partnership, id: new_value, school:, lead_provider_delivery_partnership:)
+      when :expression_of_interest_id
+        FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period, id: new_value)
+      end
+    end
+
     context "when target is school" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **period_boundaries) }
-      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, school: target || FactoryBot.create(:school)) }
       let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:, **period_boundaries) }
-      let!(:target) { school_partnership.school }
+      let!(:target) { FactoryBot.create(:school) }
 
-      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[school_partnership_id expression_of_interest_id]
     end
 
     context "when target is teacher" do
@@ -21,14 +33,14 @@ describe TrainingPeriod do
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, **period_boundaries) }
         let(:instance) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on) }
 
-        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on]
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on school_partnership_id]
       end
 
       context "Mentor training period" do
         let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, **period_boundaries) }
         let(:instance) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_at_school_period.started_on, finished_on: mentor_at_school_period.finished_on) }
 
-        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on]
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on school_partnership_id]
       end
     end
   end
@@ -521,124 +533,6 @@ describe TrainingPeriod do
 
       it 'does not return training periods for ECTs and Mentors at other schools' do
         expect(TrainingPeriod.at_school(school.id)).not_to include(other_training_period)
-      end
-    end
-
-    describe ".ect_training_periods_latest_first" do
-      let!(:teacher) { FactoryBot.create(:teacher) }
-
-      let!(:school1) { FactoryBot.create(:school) }
-      let!(:school_partnership1) { FactoryBot.create(:school_partnership, school: school1) }
-      let(:lead_provider1) { school_partnership1.lead_provider }
-
-      let!(:school_partnership2) { FactoryBot.create(:school_partnership, school: school1) }
-      let(:lead_provider2) { school_partnership2.lead_provider }
-
-      let!(:ect_at_school_period1) do
-        FactoryBot.create(
-          :ect_at_school_period,
-          school: school1,
-          teacher:,
-          started_on: 1.year.ago,
-          finished_on: 1.year.from_now
-        )
-      end
-      let!(:ect_training_period1) do
-        FactoryBot.create(
-          :training_period,
-          :for_ect,
-          started_on: ect_at_school_period1.started_on,
-          finished_on: (ect_at_school_period1.started_on + 30.days),
-          ect_at_school_period: ect_at_school_period1,
-          school_partnership: school_partnership1
-        )
-      end
-      let!(:ect_training_period2) do
-        FactoryBot.create(
-          :training_period,
-          :for_ect,
-          started_on: ect_training_period1.finished_on.next_day,
-          finished_on: (ect_training_period1.finished_on + 20.days),
-          ect_at_school_period: ect_at_school_period1,
-          school_partnership: school_partnership1
-        )
-      end
-      let!(:ect_training_period3) do
-        FactoryBot.create(
-          :training_period,
-          :for_ect,
-          started_on: ect_training_period2.finished_on.next_day,
-          finished_on: ect_at_school_period1.finished_on,
-          ect_at_school_period: ect_at_school_period1,
-          school_partnership: school_partnership2
-        )
-      end
-
-      it "returns latest ect training period for lead_provider1" do
-        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider1)).to eq([ect_training_period2, ect_training_period1])
-      end
-
-      it "returns latest ect training period for lead_provider2" do
-        expect(TrainingPeriod.ect_training_periods_latest_first(teacher:, lead_provider: lead_provider2)).to eq([ect_training_period3])
-      end
-    end
-
-    describe ".mentor_training_periods_latest_first" do
-      let!(:teacher) { FactoryBot.create(:teacher) }
-
-      let!(:school1) { FactoryBot.create(:school) }
-      let!(:school_partnership1) { FactoryBot.create(:school_partnership, school: school1) }
-      let(:lead_provider1) { school_partnership1.lead_provider }
-
-      let!(:school_partnership2) { FactoryBot.create(:school_partnership, school: school1) }
-      let(:lead_provider2) { school_partnership2.lead_provider }
-
-      let!(:mentor_at_school_period1) do
-        FactoryBot.create(
-          :mentor_at_school_period,
-          school: school1,
-          teacher:,
-          started_on: 1.year.ago,
-          finished_on: 1.year.from_now
-        )
-      end
-      let!(:mentor_training_period1) do
-        FactoryBot.create(
-          :training_period,
-          :for_mentor,
-          started_on: mentor_at_school_period1.started_on,
-          finished_on: (mentor_at_school_period1.started_on + 30.days),
-          mentor_at_school_period: mentor_at_school_period1,
-          school_partnership: school_partnership1
-        )
-      end
-      let!(:mentor_training_period2) do
-        FactoryBot.create(
-          :training_period,
-          :for_mentor,
-          started_on: mentor_training_period1.finished_on.next_day,
-          finished_on: (mentor_training_period1.finished_on + 20.days),
-          mentor_at_school_period: mentor_at_school_period1,
-          school_partnership: school_partnership1
-        )
-      end
-      let!(:mentor_training_period3) do
-        FactoryBot.create(
-          :training_period,
-          :for_mentor,
-          started_on: mentor_training_period2.finished_on.next_day,
-          finished_on: mentor_at_school_period1.finished_on,
-          mentor_at_school_period: mentor_at_school_period1,
-          school_partnership: school_partnership2
-        )
-      end
-
-      it "returns latest mentor training period for lead_provider1" do
-        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider1)).to eq([mentor_training_period2, mentor_training_period1])
-      end
-
-      it "returns latest mentor training period for lead_provider2" do
-        expect(TrainingPeriod.mentor_training_periods_latest_first(teacher:, lead_provider: lead_provider2)).to eq([mentor_training_period3])
       end
     end
   end

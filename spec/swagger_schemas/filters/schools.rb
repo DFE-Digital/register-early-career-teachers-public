@@ -9,6 +9,7 @@ SCHOOLS_FILTER = {
       description: "Return schools within the specified cohort.",
       type: "string",
       example: "2021",
+      required: true,
     },
     urn: {
       description: "Return a school with the specified Unique Reference Number (URN).",

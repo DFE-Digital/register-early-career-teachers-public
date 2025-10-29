@@ -11,11 +11,17 @@ class SessionsController < ApplicationController
     session_manager.begin_session!(session_user, id_token:)
 
     if authenticated?
-      redirect_to(post_login_redirect_path)
+      redirect_to post_login_redirect_path
     else
       session_manager.end_session!
-      redirect_to(sign_in_path)
+      redirect_to sign_in_path
     end
+  rescue Sessions::Users::Builder::UnknownOrganisation,
+         Sessions::Users::Builder::UnknownPersonaType,
+         Sessions::Users::Builder::UnknownProvider
+
+    session[:invalid_user_organisation_name] = user_builder.organisation_name
+    redirect_to access_denied_path
   end
 
   def destroy
@@ -28,7 +34,7 @@ class SessionsController < ApplicationController
     return unless authenticated?
 
     session_manager.switch_role!
-    redirect_to(post_login_redirect_path)
+    redirect_to post_login_redirect_path
   end
 
 private

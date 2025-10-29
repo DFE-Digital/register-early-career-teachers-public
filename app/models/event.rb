@@ -22,6 +22,7 @@ class Event < ApplicationRecord
     teacher_email_address_updated
     teacher_working_pattern_updated
     teacher_training_programme_updated
+    teacher_training_lead_provider_updated
     teacher_fails_induction
     teacher_funding_eligibility_set
     teacher_imported_from_trs
@@ -43,6 +44,8 @@ class Event < ApplicationRecord
     teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
+    teacher_defers_training_period
+    teacher_withdraws_training_period
     training_period_assigned_to_school_partnership
     dfe_user_created
     dfe_user_updated

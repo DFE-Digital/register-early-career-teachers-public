@@ -65,7 +65,7 @@ describe TrainingPeriods::Search do
     let(:matching_expression_of_interest) do
       FactoryBot.create(:active_lead_provider,
                         lead_provider:,
-                        contract_period_year: contract_period.year)
+                        contract_period:)
     end
 
     let!(:linkable_tp) do

@@ -401,6 +401,17 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
     end
 
+    def self.record_teacher_training_lead_provider_updated_event!(old_lead_provider_name:, new_lead_provider_name:, author:, ect_at_school_period:, school:, teacher:, happened_at:)
+      event_type = :teacher_training_lead_provider_updated
+      heading = TransitionDescription.for(
+        "lead provider",
+        from: old_lead_provider_name,
+        to: new_lead_provider_name
+      )
+
+      new(event_type:, author:, heading:, ect_at_school_period:, school:, teacher:, happened_at:).record_event!
+    end
+
     def self.record_teacher_left_school_as_mentor!(author:, mentor_at_school_period:, teacher:, school:, happened_at:)
       event_type = :teacher_left_school_as_mentor
       teacher_name = Teachers::Name.new(teacher).full_name
@@ -408,6 +419,24 @@ module Events
       heading = "#{teacher_name} left #{school_name}"
 
       new(event_type:, author:, heading:, mentor_at_school_period:, teacher:, school:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_defers_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:, happened_at: Time.zone.now)
+      event_type = :teacher_defers_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}’s #{training_type} training period was deferred by #{lead_provider.name}"
+
+      new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, modifications:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_withdraws_training_period_event!(author:, training_period:, teacher:, lead_provider:, modifications:, happened_at: Time.zone.now)
+      event_type = :teacher_withdraws_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}’s #{training_type} training period was withdrawn by #{lead_provider.name}"
+
+      new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, modifications:, happened_at:).record_event!
     end
 
     def self.record_training_period_assigned_to_school_partnership_event!(

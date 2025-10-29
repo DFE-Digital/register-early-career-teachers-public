@@ -78,6 +78,8 @@ RUN addgroup -S appgroup -g 20001 && adduser -S appuser -G appgroup -u 10001
 # libpq: required to run postgres
 RUN apk add --no-cache libpq
 
+RUN apk add --no-cache plantuml # FIXME can be removed once the migration is done
+
 # Copy files generated in the builder image
 COPY --from=builder /app /app
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/

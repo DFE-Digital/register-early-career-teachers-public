@@ -40,13 +40,22 @@ module Migrators
       school_partnership.lead_provider_delivery_partnership = lpdp
       school_partnership.school = find_school_by_urn!(partnership.school.urn)
       school_partnership.created_at = partnership.created_at
-      school_partnership.api_updated_at = partnership.updated_at
+      school_partnership.api_updated_at = calc_api_updated_at(partnership)
       school_partnership.save!
 
       school_partnership
     end
 
   private
+
+    def calc_api_updated_at(partnership)
+      [
+        partnership.updated_at,
+        partnership.school.updated_at,
+        partnership.delivery_partner&.updated_at,
+        partnership.school.induction_coordinators&.first&.updated_at,
+      ].compact.max.rfc3339
+    end
 
     def preload_caches
       cache_manager.cache_lead_providers_by_ecf_id

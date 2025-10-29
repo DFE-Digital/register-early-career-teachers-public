@@ -1,0 +1,70 @@
+require "swagger_helper"
+
+describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml" do
+  include_context "with authorization for api doc request"
+
+  let(:lead_provider_delivery_partnership) do
+    FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider:
+    )
+  end
+  let(:school_partnership) do
+    FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+  end
+  let(:ect_at_school_period) do
+    FactoryBot.create(
+      :ect_at_school_period,
+      :ongoing,
+      school: school_partnership.school
+    )
+  end
+  let!(:training_period) do
+    FactoryBot.create(
+      :training_period,
+      :for_ect,
+      :ongoing,
+      :with_school_partnership,
+      school_partnership:,
+      ect_at_school_period:,
+      started_on: ect_at_school_period.started_on + 1.week
+    )
+  end
+  let(:teacher) { ect_at_school_period.teacher }
+
+  let(:resource) { teacher }
+
+  it_behaves_like "an API index endpoint documentation",
+                  {
+                    url: "/api/v3/participants",
+                    tag: "Participants",
+                    resource_description: "participants",
+                    response_schema_ref: "#/components/schemas/ParticipantsResponse",
+                    filter_schema_ref: "#/components/schemas/ParticipantsFilter",
+                    sorting_schema_ref: "#/components/schemas/SortingTimestamps",
+                  } do
+                    let(:response_example) do
+                      extract_swagger_example(schema: "#/components/schemas/ParticipantsResponse", version: :v3).tap do |example|
+                        example[:data][0][:attributes][:ecf_enrolments][0][:training_status] = "active"
+                        example[:data][0][:attributes][:ecf_enrolments][0][:deferral] = nil
+                        example[:data][0][:attributes][:ecf_enrolments][0][:withdrawal] = nil
+                      end
+                    end
+                  end
+
+  it_behaves_like "an API show endpoint documentation",
+                  {
+                    url: "/api/v3/participants/{id}",
+                    tag: "Participants",
+                    resource_description: "participant",
+                    response_schema_ref: "#/components/schemas/ParticipantResponse",
+                  } do
+                    let(:response_example) do
+                      extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v3).tap do |example|
+                        example[:data][:attributes][:ecf_enrolments][0][:training_status] = "active"
+                        example[:data][:attributes][:ecf_enrolments][0][:deferral] = nil
+                        example[:data][:attributes][:ecf_enrolments][0][:withdrawal] = nil
+                      end
+                    end
+                  end
+end

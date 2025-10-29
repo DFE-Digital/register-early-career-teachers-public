@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_23_134806) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -394,7 +394,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
     t.bigint "school_id", null: false
     t.bigint "lead_provider_id", null: false
     t.integer "contract_period_year"
-    t.boolean "expression_of_interest", null: false
+    t.boolean "expression_of_interest_or_school_partnership", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_f5913b27f2"
@@ -411,9 +411,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "api_mentor_id"
+    t.integer "latest_ect_contract_period_year"
+    t.integer "latest_mentor_contract_period_year"
     t.index ["latest_ect_training_period_id"], name: "idx_on_latest_ect_training_period_id_2d0632b258"
     t.index ["latest_mentor_training_period_id"], name: "idx_on_latest_mentor_training_period_id_862127afaf"
+    t.index ["lead_provider_id", "teacher_id"], name: "idx_on_lead_provider_id_teacher_id_74c7a13188", where: "((latest_ect_training_period_id IS NOT NULL) OR (latest_mentor_training_period_id IS NOT NULL))"
     t.index ["lead_provider_id"], name: "index_metadata_teachers_lead_providers_on_lead_provider_id"
+    t.index ["teacher_id", "lead_provider_id"], name: "idx_on_teacher_id_lead_provider_id_23bbab847a", unique: true
     t.index ["teacher_id"], name: "index_metadata_teachers_lead_providers_on_teacher_id"
   end
 
@@ -790,6 +794,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
+    t.index ["created_at"], name: "index_teachers_on_created_at"
     t.index ["search"], name: "index_teachers_on_search", using: :gin
     t.index ["trn"], name: "index_teachers_on_trn", unique: true
     t.index ["trs_first_name", "trs_last_name", "corrected_name"], name: "idx_on_trs_first_name_trs_last_name_corrected_name_6d0edad502", opclass: :gin_trgm_ops, using: :gin
@@ -873,6 +878,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_110055) do
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "lead_providers"
   add_foreign_key "metadata_schools_lead_providers_contract_periods", "schools"
+  add_foreign_key "metadata_teachers_lead_providers", "contract_periods", column: "latest_ect_contract_period_year", primary_key: "year"
+  add_foreign_key "metadata_teachers_lead_providers", "contract_periods", column: "latest_mentor_contract_period_year", primary_key: "year"
   add_foreign_key "metadata_teachers_lead_providers", "lead_providers"
   add_foreign_key "metadata_teachers_lead_providers", "teachers"
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_ect_training_period_id", on_delete: :nullify

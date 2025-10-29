@@ -77,6 +77,148 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v3/participants":
+    get:
+      summary: Retrieve multiple participants
+      tags:
+      - Participants
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/ParticipantsFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      - name: sort
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SortingTimestamps"
+      responses:
+        '200':
+          description: A list of participants
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    data:
+                    - id: d0b4a32e-a272-489e-b30a-cb17131457fc
+                      type: participant
+                      attributes:
+                        full_name: John Doe
+                        teacher_reference_number: '1234567'
+                        ecf_enrolments:
+                        - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          email: jane.smith@example.com
+                          mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          school_urn: '123456'
+                          participant_type: ect
+                          cohort: '2021'
+                          training_status: active
+                          participant_status: active
+                          eligible_for_funding: true
+                          pupil_premium_uplift: true
+                          sparsity_uplift: true
+                          schedule_identifier: ecf-standard-january
+                          delivery_partner_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          withdrawal:
+                          deferral:
+                          created_at: '2023-01-01T00:00:00Z'
+                          induction_end_date: '2023-01-01'
+                          overall_induction_start_date: '2023-01-01'
+                          mentor_funding_end_date: '2023-01-01'
+                          cohort_changed_after_payments_frozen: true
+                          mentor_ineligible_for_funding_reason: completed_declaration_received
+                        participant_id_changes:
+                        - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
+                          to_participant_id: ac3d1243-7308-4879-942a-c4a70ced400a
+                          changed_at: '2023-01-01T12:00:00Z'
+                        updated_at: '2021-05-31T02:22:32.000Z'
+              schema:
+                "$ref": "#/components/schemas/ParticipantsResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v3/participants/{id}":
+    get:
+      summary: Retrieve a single participant
+      tags:
+      - Participants
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: A single participant
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    data:
+                      id: d0b4a32e-a272-489e-b30a-cb17131457fc
+                      type: participant
+                      attributes:
+                        full_name: John Doe
+                        teacher_reference_number: '1234567'
+                        ecf_enrolments:
+                        - training_record_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          email: jane.smith@example.com
+                          mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          school_urn: '123456'
+                          participant_type: ect
+                          cohort: '2021'
+                          training_status: active
+                          participant_status: active
+                          eligible_for_funding: true
+                          pupil_premium_uplift: true
+                          sparsity_uplift: true
+                          schedule_identifier: ecf-standard-january
+                          delivery_partner_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+                          withdrawal:
+                          deferral:
+                          created_at: '2023-01-01T00:00:00Z'
+                          induction_end_date: '2023-01-01'
+                          overall_induction_start_date: '2023-01-01'
+                          mentor_funding_end_date: '2023-01-01'
+                          cohort_changed_after_payments_frozen: true
+                          mentor_ineligible_for_funding_reason: completed_declaration_received
+                        participant_id_changes:
+                        - from_participant_id: 23dd8d66-e11f-4139-9001-86b4f9abcb02
+                          to_participant_id: ac3d1243-7308-4879-942a-c4a70ced400a
+                          changed_at: '2023-01-01T12:00:00Z'
+                        updated_at: '2021-05-31T02:22:32.000Z'
+              schema:
+                "$ref": "#/components/schemas/ParticipantResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v3/partnerships":
     get:
       summary: Retrieve multiple partnerships
@@ -398,11 +540,17 @@ components:
       description: The requested resource was not found.
       type: object
       properties:
-        error:
-          type: string
-          description: Resource not found
-      example:
-        error: Resource not found
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                example: Resource not found
+              detail:
+                type: string
+                example: Nothing could be found for the provided details
     BadRequestResponse:
       description: The request body did not match the expected payload.
       type: object
@@ -533,6 +681,7 @@ components:
           description: Return schools within the specified cohort.
           type: string
           example: '2021'
+          required: true
         urn:
           description: Return a school with the specified Unique Reference Number
             (URN).
@@ -917,3 +1066,308 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Partnership"
+    Participant:
+      description: A participant.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: participant
+          enum:
+          - participant
+        attributes:
+          properties:
+            full_name:
+              description: The full name of the participant
+              type: string
+              nullable: false
+              example: John Doe
+            teacher_reference_number:
+              description: The Teacher Reference Number (TRN) for this participant
+              type: string
+              nullable: true
+              example: '1234567'
+            ecf_enrolments:
+              type: array
+              nullable: false
+              items:
+                "$ref": "#/components/schemas/ParticipantECFEnrolment"
+            participant_id_changes:
+              type: array
+              nullable: false
+              items:
+                "$ref": "#/components/schemas/ParticipantIDChange"
+            updated_at:
+              description: The date and time the participant was last updated.
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    ParticipantsFilter:
+      description: Filter participants to return more specific results
+      type: object
+      properties:
+        cohort:
+          description: Return participants from the specified cohort or cohorts. This
+            is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+        training_status:
+          description: Return participants with the specified training status
+          type: string
+          enum:
+          - withdrawn
+          - deferred
+          - active
+        from_participant_id:
+          description: Return participants that have this from participant ID
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+    ParticipantResponse:
+      description: A participant.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Participant"
+    ParticipantsResponse:
+      description: A list of participants.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Participant"
+    ParticipantECFEnrolment:
+      description: The details of a participant enrolment
+      type: object
+      required:
+      - training_record_id
+      - email
+      - school_urn
+      - participant_type
+      - cohort
+      - training_status
+      - participant_status
+      - eligible_for_funding
+      - pupil_premium_uplift
+      - sparsity_uplift
+      - schedule_identifier
+      - delivery_partner_id
+      - created_at
+      properties:
+        training_record_id:
+          description: The unique identifier of this participant's training record.
+            Should the DfE dedupe a participant, this value will not change.
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+        email:
+          description: The email address registered for this participant
+          type: string
+          example: jane.smith@example.com
+        mentor_id:
+          description: The unique identifier of this participant's mentor
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+          nullable: true
+        school_urn:
+          description: The Unique Reference Number (URN) of the school that submitted
+            this participant
+          type: string
+          example: '123456'
+        participant_type:
+          description: The type of participant this record refers to
+          type: string
+          enum:
+          - ect
+          - mentor
+          example: ect
+        cohort:
+          description: Indicates which call-off contract funds this participant's
+            training. 2021 indicates a participant that has started, or will start,
+            their training in the 2021/22 academic year.
+          type: string
+          example: '2021'
+        training_status:
+          description: The training status of this participant, indicated by a lead
+            provider deferring, withdrawing or resuming a participant's training.
+          type: string
+          example: active
+          enum:
+          - active
+          - deferred
+          - withdrawn
+        participant_status:
+          description: Indicates if a participant has started at a school yet or a
+            school or lead provider has reported they have stopped training.
+          type: string
+          enum:
+          - active
+          - joining
+          - leaving
+          - left
+          example: active
+        eligible_for_funding:
+          description: Indicates whether this participant has become eligible to receive
+            DfE funded induction
+          type: boolean
+          example: true
+          nullable: true
+        pupil_premium_uplift:
+          description: Indicates whether this ECT qualifies for an uplift payment
+            due to pupil premium. It does not apply to mentors.
+          type: boolean
+          example: true
+        sparsity_uplift:
+          description: Indicates whether this ECT qualifies for an uplift payment
+            due to sparsity. It does not apply to mentors.
+          type: boolean
+          example: true
+        schedule_identifier:
+          description: The schedule of the participant
+          type: string
+          enum:
+          - ecf-extended-april
+          - ecf-extended-january
+          - ecf-extended-september
+          - ecf-reduced-april
+          - ecf-reduced-january
+          - ecf-reduced-september
+          - ecf-replacement-april
+          - ecf-replacement-january
+          - ecf-replacement-september
+          - ecf-standard-april
+          - ecf-standard-january
+          - ecf-standard-september
+          example: ecf-standard-january
+        delivery_partner_id:
+          description: Unique ID of the delivery partner associated with the participant
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+        withdrawal:
+          description: The details of a participant withdrawal
+          type: object
+          required:
+          - reason
+          - date
+          properties:
+            reason:
+              description: The reason a participant was withdrawn
+              type: string
+              enum:
+              - left-teaching-profession
+              - moved-school
+              - mentor-no-longer-being-mentor
+              - switched-to-school-led
+              - other
+              example: moved-school
+            date:
+              description: The date and time the participant was withdrawn
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+          nullable: true
+        deferral:
+          description: The details of a participant deferral
+          type: object
+          required:
+          - reason
+          - date
+          properties:
+            reason:
+              description: The reason a participant was deferred
+              type: string
+              enum:
+              - bereavement
+              - long-term-sickness
+              - parental-leave
+              - career-break
+              - other
+              example: career-break
+            date:
+              description: The date and time the participant was deferred
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+          nullable: true
+        created_at:
+          description: The date and time the participant was created
+          type: string
+          format: date-time
+          example: '2023-01-01T00:00:00Z'
+        induction_end_date:
+          description: The date when an ECT has passed or failed their induction.
+          type: string
+          format: date
+          example: '2023-01-01'
+          nullable: true
+        overall_induction_start_date:
+          description: The date the participant started their induction, reported
+            by their appropriate body.
+          type: string
+          format: date
+          example: '2023-01-01'
+          nullable: true
+        mentor_funding_end_date:
+          description: The participant mentor training completion date
+          type: string
+          format: date
+          example: '2023-01-01'
+          nullable: true
+        cohort_changed_after_payments_frozen:
+          description: Identify participants that migrated to a new cohort as payments
+            were frozen on their original cohort
+          type: boolean
+          example: true
+        mentor_ineligible_for_funding_reason:
+          description: The reason why funding for a mentor's training has ended
+          type: string
+          nullable: true
+          enum:
+          - completed_declaration_received
+          - completed_during_early_roll_out
+          - started_not_completed
+          example: completed_declaration_received
+    ParticipantIDChange:
+      description: The details of a participant ID change
+      type: object
+      required:
+      - from_participant_id
+      - to_participant_id
+      - changed_at
+      properties:
+        from_participant_id:
+          description: The unique identifier of the changed from participant training
+            record
+          type: string
+          format: uuid
+          example: 23dd8d66-e11f-4139-9001-86b4f9abcb02
+        to_participant_id:
+          description: The unique identifier of the changed to participant training
+            record
+          type: string
+          format: uuid
+          example: ac3d1243-7308-4879-942a-c4a70ced400a
+        changed_at:
+          description: The date and time the participant ID change was made
+          type: string
+          format: date_time
+          example: '2023-01-01T12:00:00Z'

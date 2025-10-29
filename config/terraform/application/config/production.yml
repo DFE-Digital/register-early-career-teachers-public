@@ -8,6 +8,7 @@ ENABLE_API: false
 ENABLE_MIGRATION_TESTING: false
 ENABLE_INCIDENT_BANNER: false
 DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
+DFE_SIGN_IN_PROFILE: "https://profile.signin.education.gov.uk"
 DFE_SIGN_IN_API_BASE_URL: "https://api.signin.education.gov.uk"
 DFE_SIGN_IN_CLIENT_ID: RegisterECTs
 DFE_SIGN_IN_ISSUER: "https://oidc.signin.education.gov.uk"
@@ -18,3 +19,4 @@ DFE_ANALYTICS_ENABLED: true
 TRS_API_BASE_URL: "https://teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20250203"
 RAILS_ENV: production
+MAX_SESSION_IDLE_TIME: 7200

@@ -118,5 +118,24 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
                        .from(nil).to('yes')
       end
     end
+
+    context 'when change_name is "no"' do
+      before { subject.ect.update!(corrected_name: 'Old Name', change_name: 'yes') }
+
+      let(:step_params) do
+        ActionController::Parameters.new(
+          "review_ect_details" => {
+            "change_name" => "no",
+            "corrected_name" => "Should be cleared",
+          }
+        )
+      end
+
+      it 'clears corrected_name and sets change_name to no' do
+        expect { subject.save! }
+          .to change(subject.ect, :corrected_name).to(nil)
+          .and change(subject.ect, :change_name).to('no')
+      end
+    end
   end
 end

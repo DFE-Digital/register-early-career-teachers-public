@@ -26,6 +26,14 @@ constraints -> { Rails.application.config.enable_schools_interface } do
       namespace :change_training_programme_wizard, path: "change-training-programme" do
         concerns :wizardable, wizard: Schools::ECTs::ChangeTrainingProgrammeWizard
       end
+
+      namespace :change_mentor_wizard, path: "change-mentor" do
+        concerns :wizardable, wizard: Schools::ECTs::ChangeMentorWizard
+      end
+
+      namespace :change_lead_provider_wizard, path: "change-lead-provider" do
+        concerns :wizardable, wizard: Schools::ECTs::ChangeLeadProviderWizard
+      end
     end
 
     scope module: :mentors, path: "/mentors/:mentor_id", as: :mentors do

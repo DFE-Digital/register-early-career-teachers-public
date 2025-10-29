@@ -5,6 +5,12 @@ class PagesController < ApplicationController
     redirect_to(ab_landing_path) unless Rails.application.config.enable_schools_interface
   end
 
+  # Unrecognised DfE Sign In user (org/role)
+  def access_denied
+    @dfe_sign_in_profile_url = Rails.application.config.dfe_sign_in_profile
+    @organisation_name = session[:invalid_user_organisation_name]
+  end
+
   def support
   end
 

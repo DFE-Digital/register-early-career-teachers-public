@@ -12,6 +12,10 @@ updates:
         patterns:
           - govuk-components
           - govuk_design_system_formbuilder
+      sentry-gems:
+        patterns:
+          - sentry-ruby
+          - sentry-rails
   - package-ecosystem: npm
     directory: "/"
     schedule:

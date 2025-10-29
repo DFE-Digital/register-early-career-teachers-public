@@ -17,6 +17,10 @@
   background-color: #ffebea;
 }
 
+.migration-gantt {
+  max-width: 100%;
+}
+
 .migration-period {
   border: $govuk-border-colour solid 1px;
   padding: 0;
@@ -35,5 +39,13 @@
   .migration-period-body {
     line-height: 1.4em;
     padding: 0.5rem;
+  }
+}
+
+.da-pink-button {
+  background-color: govuk-colour("light-pink");
+
+  &:hover {
+    background-color: govuk-colour("pink");
   }
 }
