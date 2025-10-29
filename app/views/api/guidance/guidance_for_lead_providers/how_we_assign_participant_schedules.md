@@ -35,7 +35,7 @@ We’ll reassign partially trained ECTs from closed cohorts to an active cohort 
 
 In these cases, we’ll assign an extended September schedule (`extended_september`). 
 
-This follows the same approach used in the ‘Manage training for ECTs’ service API. 
+This follows the same approach used in the ‘Manage training for ECTs’ service. 
 
 ## Replacement mentor schedules 
 
