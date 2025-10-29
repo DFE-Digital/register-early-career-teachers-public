@@ -2,6 +2,17 @@ module Schools
   module RegisterECTWizard
     # This class is a decorator for the SessionRepository
     class Context < SimpleDelegator
+      def initialize(store)
+        super(store)
+        @queries   = Context::Queries.new(context: self)
+        @presenter = Context::Presenter.new(context: self)
+        @status    = Context::Status.new(context: self, queries: @queries)
+      end
+
+      def fetch(key)
+        __getobj__.public_send(key)
+      end
+
       def active_at_school?(urn)
         active_record_at_school(urn).present?
       end
