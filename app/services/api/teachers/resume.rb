@@ -2,7 +2,7 @@ module API::Teachers
   class Resume
     include API::Concerns::Teachers::SharedAction
 
-    validate :not_already_active_and_periods_open
+    validate :not_already_active_or_periods_ongoing_today
 
     def resume
       return false unless valid?
@@ -17,14 +17,14 @@ module API::Teachers
 
   private
 
-    def not_already_active_and_periods_open
+    def not_already_active_or_periods_ongoing_today
       return if errors[:teacher_api_id].any?
 
-      is_active = training_status&.active?
-      training_period_open = training_period.ongoing? || training_period.finished_on.future?
-      at_school_period_open = training_period.trainee.ongoing?
+      training_status_active = training_status&.active?
+      training_period_ongoing = training_period.ongoing? || training_period.finished_on.future?
+      at_school_period_ongoing = training_period.trainee.ongoing?
 
-      if is_active && training_period_open && at_school_period_open
+      if training_status_active && training_period_ongoing && at_school_period_ongoing
         errors.add(:teacher_api_id, "The '#/teacher_api_id' is already active.")
       end
     end

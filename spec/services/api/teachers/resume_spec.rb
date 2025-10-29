@@ -11,11 +11,29 @@ RSpec.describe API::Teachers::Resume, type: :model do
     describe "validations" do
       %i[ect mentor].each do |trainee_type|
         context "for #{trainee_type}" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 2.months.ago) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
           let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
 
-          context "when teacher is already active" do
+          context "when teacher training period is active/ongoing" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
+          end
+
+          context "when at school period is ongoing" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
+          end
+
+          context "when training period ends in the future" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
           end
