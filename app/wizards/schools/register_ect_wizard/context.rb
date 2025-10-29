@@ -1,7 +1,7 @@
 module Schools
   module RegisterECTWizard
     # This class is a decorator for the SessionRepository
-    class ECT < SimpleDelegator
+    class Context < SimpleDelegator
       def active_at_school?(urn)
         active_record_at_school(urn).present?
       end
@@ -19,10 +19,6 @@ module Schools
 
       def cant_use_email?
         Schools::TeacherEmail.new(email:, trn:).is_currently_used?
-      end
-
-      def ect_at_school_period
-        @ect_at_school_period ||= ECTAtSchoolPeriod.find_by_id(ect_at_school_period_id)
       end
 
       def formatted_working_pattern
