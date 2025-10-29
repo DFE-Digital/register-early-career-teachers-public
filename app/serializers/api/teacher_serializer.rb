@@ -42,7 +42,9 @@ class API::TeacherSerializer < Blueprinter::Base
       field(:sparsity_uplift) do |(training_period, teacher, _)|
         training_period.for_ect? && teacher.ect_sparsity_uplift
       end
-      field(:schedule_identifier) { "ecf-extended-september" } # TODO: implement when training periods have a connection to a schedule
+      field(:schedule_identifier) do |(training_period, _, _)|
+        training_period.schedule.identifier
+      end
       field(:delivery_partner_id) do |(training_period, _, _)|
         training_period
           .school_partnership
