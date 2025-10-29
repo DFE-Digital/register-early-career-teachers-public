@@ -7,6 +7,8 @@ module Schools
         validates :lead_provider_id,
                   presence: { message: "Select a lead provider to contact your school" }
 
+        # validate :lead_provider_has_changed
+
         def self.permitted_params = %i[lead_provider_id]
 
         def next_step = :check_answers
@@ -24,6 +26,10 @@ module Schools
 
         def pre_populate_attributes
           self.lead_provider_id = store.lead_provider_id.presence
+        end
+
+        def lead_provider_has_changed
+          lead_provider_id != lead_provider_for_mentor_at_school_period.id.to_s
         end
 
         def active_lead_providers_in_contract_period

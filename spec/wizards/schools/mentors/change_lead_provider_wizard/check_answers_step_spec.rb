@@ -61,7 +61,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
       expect(service).to have_received(:call)
     end
 
-    xit "records an event" do
+    it "records an event", pending: 'TODO' do
       freeze_time
 
       expect(Events::Record)
