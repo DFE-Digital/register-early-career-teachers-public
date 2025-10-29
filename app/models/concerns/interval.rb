@@ -66,6 +66,8 @@ module Interval
 
   def ongoing? = finished_on.nil?
 
+  def ongoing_today? = finished_on.nil? || finished_on.future?
+
   def complete? = finished_on.present?
 
   def incomplete? = [started_on, finished_on].any?(&:blank?)
