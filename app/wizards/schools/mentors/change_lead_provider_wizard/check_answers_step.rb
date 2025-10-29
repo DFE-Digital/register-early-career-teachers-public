@@ -2,8 +2,6 @@ module Schools
   module Mentors
     module ChangeLeadProviderWizard
       class CheckAnswersStep < Step
-        # delegate :lead_provider_id, to: :wizard
-
         def previous_step
           :edit
         end
@@ -21,7 +19,6 @@ module Schools
                                                         lead_provider: new_lead_provider,
                                                         author: wizard.author).call
 
-          true
         end
 
       private

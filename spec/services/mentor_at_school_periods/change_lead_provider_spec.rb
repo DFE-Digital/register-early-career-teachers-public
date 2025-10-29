@@ -34,6 +34,10 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         expect(new_training_period.school_partnership).to be_nil
         expect(new_training_period.training_programme).to eq('provider_led')
       end
+
+      it 'is truthy' do
+        expect(subject.call).to be_truthy
+      end
     end
 
     context 'when there is an exiting relationship with this lead provider' do
@@ -45,6 +49,10 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         new_training_period = mentor_at_school_period.training_periods.ongoing.first
         expect(new_training_period.school_partnership).to eq(school_partnership)
         expect(new_training_period.training_programme).to eq('provider_led')
+      end
+
+      it 'is truthy' do
+        expect(subject.call).to be_truthy
       end
 
       context 'when there are existing training periods' do
@@ -71,9 +79,33 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
           expect { subject.call }.to change(TrainingPeriod, :count).by(1)
         end
       end
+
+      context 'when the new lead provider is the same as the old lead provider' do
+        let(:lead_provider) { old_lead_provider }
+
+        it 'is falsy' do
+          expect(subject.call).to be_falsey
+        end
+
+        it 'does not create a new training period' do
+          expect { subject.call }.not_to change(TrainingPeriod, :count)
+        end
+
+        it 'does not alter the existing partnership' do
+          training_period = mentor_at_school_period.training_periods.ongoing.first
+
+          expect {
+            subject.call
+          }.not_to(change { training_period.reload.attributes })
+        end
+
+        it 'does not create a new active lead provider' do
+          expect { subject.call }.not_to change(ActiveLeadProvider, :count)
+        end
+      end
     end
 
-    xit 'writes an appropriate event' do
+    it 'writes an appropriate event', pending: 'TODO' do
     end
   end
 end
