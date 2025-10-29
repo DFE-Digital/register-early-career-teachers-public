@@ -12,6 +12,8 @@ module Schools
 
       def self.permitted_params = %i[use_previous_ect_choices]
 
+      def allowed? = reusable_available?
+
       def next_step
         use_previous_ect_choices ? :check_answers : fallback_step
       end
@@ -22,6 +24,10 @@ module Schools
         school.independent? ? :independent_school_appropriate_body : :state_school_appropriate_body
       end
 
+      def reusable_partnership_preview
+        SchoolPartnership.find_by(id: reusable_partnership_id)
+      end
+
       def reusable_available?
         provider_led_programme_chosen? &&
           last_chosen_lead_provider_present? &&
@@ -29,17 +35,12 @@ module Schools
           reusable_partnership_id.present?
       end
 
-      def reusable_partnership_preview
-        SchoolPartnership.find_by(id: reusable_partnership_id)
-      end
-
       def reusable_partnership_id
         @reusable_partnership_id ||= find_previous_year_reusable_id
       end
 
       def current_contract_year
-        @current_contract_year ||= ect.contract_start_date&.year ||
-          (store[:start_date].is_a?(Date) ? store[:start_date].year : nil)
+        @current_contract_year ||= ect.normalized_start_date&.year
       end
 
     private
@@ -47,24 +48,14 @@ module Schools
       def persist
         return false unless ect.update(use_previous_ect_choices:, **choices)
 
-        store.school_partnership_to_reuse_id = use_previous_ect_choices ? reusable_partnership_id : nil
+        store[:school_partnership_to_reuse_id] =
+          (reusable_available? && use_previous_ect_choices) ? reusable_partnership_id : nil
+
         true
       end
 
       def choices
         use_previous_ect_choices ? school.last_programme_choices : {}
-      end
-
-      def current_year_partnership_id
-        last_lead_provider = school.last_chosen_lead_provider or return nil
-        year = current_contract_year or return nil
-
-        SchoolPartnerships::Search
-          .new(school:, contract_period: year, lead_provider: last_lead_provider)
-          .school_partnerships
-          .order("school_partnerships.created_at DESC, school_partnerships.id DESC")
-          .limit(1)
-          .pick(:id)
       end
 
       def find_previous_year_reusable_id
