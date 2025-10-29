@@ -100,54 +100,47 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def create_contract_period_for_start_date
-    @contract_period = FactoryBot.create(
-      :contract_period,
-      started_on: 7.months.ago.beginning_of_month,
-      finished_on: 7.months.from_now.end_of_month
-    )
+    @current_contract_year  = 2024
+    @previous_contract_year = 2023
+
+    @contract_period          = FactoryBot.create(:contract_period, year: @current_contract_year)
+    @previous_contract_period = FactoryBot.create(:contract_period, year: @previous_contract_year)
   end
 
   def create_lead_provider_and_active_lead_provider
-    @lead_provider    = FactoryBot.create(:lead_provider, name: "Orange Institute")
-    @delivery_partner = FactoryBot.create(:delivery_partner, name: "Jaskolski College Delivery Partner 1")
-
-    current_cp   = @contract_period
-    current_year = current_cp.year
-
-    @prev_cp = FactoryBot.create(
-      :contract_period,
-      started_on: (current_cp.started_on - 1.year).beginning_of_month,
-      finished_on: (current_cp.started_on - 1.day).end_of_day
-    )
-    prev_year = @prev_cp.year
+    @orange_institute_lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
+    @jaskolski_delivery_partner = FactoryBot.create(:delivery_partner, name: "Jaskolski College Delivery Partner 1")
 
     Metadata::DeliveryPartnerLeadProvider.where(
-      lead_provider: @lead_provider, delivery_partner: @delivery_partner
+      lead_provider: @orange_institute_lead_provider,
+      delivery_partner: @jaskolski_delivery_partner
     ).delete_all
-
     Metadata::DeliveryPartnerLeadProvider.create!(
-      lead_provider: @lead_provider,
-      delivery_partner: @delivery_partner,
-      contract_period_years: [prev_year, current_year]
+      lead_provider: @orange_institute_lead_provider,
+      delivery_partner: @jaskolski_delivery_partner,
+      contract_period_years: [@previous_contract_year, @current_contract_year]
     )
 
-    @active_lead_provider_prev = FactoryBot.create(
-      :active_lead_provider, lead_provider: @lead_provider, contract_period: @prev_cp
+    @active_lead_provider_previous_year = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @orange_institute_lead_provider,
+      contract_period_year: @previous_contract_year
     )
-    @active_lead_provider = FactoryBot.create(
-      :active_lead_provider, lead_provider: @lead_provider, contract_period: current_cp
+    @active_lead_provider_current_year = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @orange_institute_lead_provider,
+      contract_period_year: @current_contract_year
     )
 
-    @previous_lpd = FactoryBot.create(
+    @lead_provider_delivery_partnership_previous_year = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @active_lead_provider_prev,
-      delivery_partner: @delivery_partner
+      active_lead_provider: @active_lead_provider_previous_year,
+      delivery_partner: @jaskolski_delivery_partner
     )
-
-    @current_lpd = FactoryBot.create(
+    @lead_provider_delivery_partnership_current_year = FactoryBot.create(
       :lead_provider_delivery_partnership,
-      active_lead_provider: @active_lead_provider,
-      delivery_partner: @delivery_partner
+      active_lead_provider: @active_lead_provider_current_year,
+      delivery_partner: @jaskolski_delivery_partner
     )
   end
 
@@ -157,14 +150,16 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
       :state_funded,
       :provider_led_last_chosen,
       :teaching_school_hub_ab_last_chosen,
-      last_chosen_lead_provider: @lead_provider
+      last_chosen_lead_provider: @orange_institute_lead_provider
     )
   end
 
   def create_previous_period_and_partnership
-    FactoryBot.create(:school_partnership,
-                      school: @school,
-                      lead_provider_delivery_partnership: @previous_lpd)
+    FactoryBot.create(
+      :school_partnership,
+      school: @school,
+      lead_provider_delivery_partnership: @lead_provider_delivery_partnership_previous_year
+    )
   end
 
   def create_appropriate_bodies
@@ -251,9 +246,10 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
   end
 
   def when_i_enter_a_valid_start_date
-    page.get_by_label("day").fill(1.month.ago.day.to_s)
-    page.get_by_label("month").fill(1.month.ago.month.to_s)
-    page.get_by_label("year").fill(1.month.ago.year.to_s)
+    @entered_start_date = @contract_period.started_on + 1.month
+    page.get_by_label("day").fill(@entered_start_date.day.to_s)
+    page.get_by_label("month").fill(@entered_start_date.month.to_s)
+    page.get_by_label("year").fill(@entered_start_date.year.to_s)
   end
 
   def then_i_should_i_should_be_taken_to_the_working_pattern_page
@@ -311,7 +307,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Damme")).to be_visible
     expect(page.get_by_text("example@example.com")).to be_visible
-    expect(page.get_by_text("#{Date::MONTHNAMES[1.month.ago.month]} #{1.month.ago.year}")).to be_visible
+    expect(page.get_by_text(@entered_start_date.strftime("%B %Y"))).to be_visible
   end
 
   def when_i_click_confirm_details

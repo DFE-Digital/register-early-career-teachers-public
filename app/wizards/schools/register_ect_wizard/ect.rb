@@ -172,6 +172,16 @@ module Schools
         previous_training_period&.expression_of_interest&.lead_provider&.name
       end
 
+      def normalized_start_date
+        return nil if start_date.blank?
+
+        case start_date
+        when Date   then start_date
+        when String then Date.parse(start_date)
+        when Hash   then Schools::Validation::ECTStartDate.new(date_as_hash: start_date).value_as_date
+        end
+      end
+
     private
 
       def first_induction_period
