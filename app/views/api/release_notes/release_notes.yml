@@ -147,7 +147,7 @@
     
     ### Updated sparsity uplift and pupil premium attributes
     
-    Sparsity uplift and pupil premium for mentors will now just show as `false`, rather than a mix of `true`or `false`.  
+    Sparsity uplift and pupil premium for mentors will now just show as `false`, rather than a mix of `true` or `false`.  
     
     #### Why we’ve made this change
     
