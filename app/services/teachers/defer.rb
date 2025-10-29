@@ -28,7 +28,7 @@ module Teachers
     def record_deferred_event!
       return unless training_period.saved_changes?
 
-      Events::Record.record_teacher_defers_training_period_event!(
+      Events::Record.record_teacher_training_period_deferred_event!(
         author:,
         training_period:,
         teacher:,
