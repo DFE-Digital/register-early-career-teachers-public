@@ -13,26 +13,22 @@ module MentorAtSchoolPeriods
     def call
       return false unless lead_provider_changed?
 
-      finish_existing_at_school_periods!
-      create_expression_of_interest if school_partnership.blank?
+      ActiveRecord::Base.transaction do
+        finish_existing_at_school_periods!
+        create_expression_of_interest if school_partnership.blank?
 
-      create_new_training_period
+        create_new_training_period
+      end
 
       true
     end
 
   private
 
-    def lead_provider_changed?
-      old_lead_provider != lead_provider
-    end
-
     def finish_existing_at_school_periods!
-      ActiveRecord::Base.transaction do
-        teacher.mentor_at_school_periods.ongoing_on(finished_on).each do |period|
-          finish_mentorship_periods!(period)
-          finish_or_delete_training_periods!(period)
-        end
+      mentor.mentor_at_school_periods.ongoing_on(finished_on).each do |period|
+        finish_mentorship_periods!(period)
+        finish_or_delete_training_periods!(period)
       end
     end
 
@@ -52,20 +48,14 @@ module MentorAtSchoolPeriods
       end
     end
 
-    def training_periods
-      mentor_at_school_period.training_periods.ongoing
-    end
-
     def create_new_training_period
-      ActiveRecord::Base.transaction do
-        TrainingPeriods::Create.new(
-          period: mentor_at_school_period,
-          started_on:,
-          school_partnership:,
-          expression_of_interest:,
-          training_programme: 'provider_led'
-        ).call
-      end
+      TrainingPeriods::Create.new(
+        period: mentor_at_school_period,
+        started_on:,
+        school_partnership:,
+        expression_of_interest:,
+        training_programme: 'provider_led'
+      ).call
     end
 
     def expression_of_interest
@@ -74,6 +64,18 @@ module MentorAtSchoolPeriods
 
     def create_expression_of_interest
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period_year: current_year)
+    end
+
+    def training_periods
+      mentor_at_school_period.training_periods.ongoing
+    end
+
+    def mentor
+      mentor_at_school_period.teacher
+    end
+
+    def school
+      mentor_at_school_period.school
     end
 
     def school_partnership
@@ -85,15 +87,10 @@ module MentorAtSchoolPeriods
       .first
     end
 
-    def school
-      mentor_at_school_period.school
-    end
-
     def current_year
       ContractPeriod.containing_date(Time.zone.today).year
     end
 
-    # TODO_TG: dates
     def finished_on
       Time.zone.today
     end
@@ -102,16 +99,12 @@ module MentorAtSchoolPeriods
       finished_on + 1
     end
 
-    def teacher
-      mentor_at_school_period.teacher
-    end
-
-    def mentor_trn
-      mentor_at_school_period.teacher.trn
+    def lead_provider_changed?
+      old_lead_provider != lead_provider
     end
 
     def latest_registration_choice
-      MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: mentor_trn)
+      MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: mentor.trn)
     end
 
     def old_lead_provider
