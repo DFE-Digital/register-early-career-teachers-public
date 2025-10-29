@@ -1,7 +1,7 @@
 module Schools
   module Mentors
     class Wizard < ApplicationWizard
-      attr_accessor :store, :mentor_at_school_period, :author, :lead_provider
+      attr_accessor :store, :mentor_at_school_period, :author
 
       def self.step?(step_name)
         Array(steps).first[step_name].present?
