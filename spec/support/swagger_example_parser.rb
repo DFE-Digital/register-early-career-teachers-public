@@ -54,4 +54,19 @@ module SwaggerExampleParser
       end
     end
   end
+
+  def override_response_content!(example)
+    if defined?(response_example)
+      example_spec = {
+        "application/json" => {
+          examples: {
+            success: {
+              value: response_example,
+            },
+          },
+        },
+      }
+      example.metadata[:response][:content] = example_spec
+    end
+  end
 end
