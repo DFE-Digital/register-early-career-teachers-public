@@ -67,6 +67,21 @@ module Schools
         @ect ||= RegistrationStore.new(store)
       end
 
+      def step_for(step_name)
+        self.class.new(
+          current_step: step_name,
+          author:,
+          step_params: ActionController::Parameters.new,
+          store:,
+          school:
+        ).current_step
+      end
+
+      def use_previous_choices_allowed?
+        step = step_for(:use_previous_ect_choices)
+        step.respond_to?(:allowed?) ? step.allowed? : true
+      end
+
     private
 
       def calculate_allowed_steps
@@ -111,7 +126,7 @@ module Schools
         steps << :working_pattern
         return steps unless ect.working_pattern
 
-        if school.last_programme_choices?
+        if school.last_programme_choices? && use_previous_choices_allowed?
           steps << :use_previous_ect_choices
           return steps if ect.use_previous_ect_choices.nil?
         end
