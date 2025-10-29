@@ -1,8 +1,8 @@
 describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_interface do
   let(:started_on) { 3.months.ago.to_date }
   let(:school) { FactoryBot.create(:school) }
-  let!(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
   let(:teacher) { FactoryBot.create(:teacher) }
+
   let(:mentor_at_school_period) do
     FactoryBot.create(
       :mentor_at_school_period,
@@ -15,9 +15,6 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
 
   let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
-
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
   let(:old_lead_provider) { training_period.lead_provider }
 
@@ -84,7 +81,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
     end
 
     context "when signed in as a School user" do
-      before { sign_in_as(:school_user, school:) }
+      let!(:user) { sign_in_as(:school_user, school:) }
 
       context "when the current_step is invalid" do
         it "returns not found" do
@@ -96,6 +93,35 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
 
       context "when the lead provider has changed" do
         let(:params) { { edit: { lead_provider_id: lead_provider.id } } }
+
+        it "uses the service to change the lead provider" do
+          service = instance_double(MentorAtSchoolPeriods::ChangeLeadProvider)
+
+          allow(MentorAtSchoolPeriods::ChangeLeadProvider)
+            .to receive(:new)
+            .and_return(service)
+
+          allow(service).to receive(:call).and_return(true)
+
+          post(path_for_step("edit"), params:)
+
+          expect(MentorAtSchoolPeriods::ChangeLeadProvider)
+            .not_to have_received(:new)
+
+          follow_redirect!
+
+          post path_for_step("check-answers")
+
+          expect(MentorAtSchoolPeriods::ChangeLeadProvider)
+            .to have_received(:new)
+            .with(
+              mentor_at_school_period:,
+              lead_provider:,
+              author: an_instance_of(Sessions::Users::SchoolPersona)
+            )
+
+          expect(service).to have_received(:call)
+        end
 
         it "updates the lead provider only after confirmation" do
           post(path_for_step("edit"), params:)
