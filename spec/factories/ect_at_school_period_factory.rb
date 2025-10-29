@@ -2,9 +2,9 @@ FactoryBot.define do
   factory(:ect_at_school_period) do
     transient do
       # default start date to be a realistic past date
-      start_date { 2.years.ago.beginning_of_year.to_date + 1.day }
+      start_date { rand(2.years.ago..6.months.ago) }
       # default end date to be a realistic end date
-      end_date { (started_on || start_date) + 1.year - 1.day }
+      end_date { (started_on || start_date) + 1.year }
     end
 
     teacher { association :teacher, api_ect_training_record_id: SecureRandom.uuid }
