@@ -64,8 +64,13 @@ module Schools
       end
 
       def ect
-        @ect ||= ECT.new(store)
+        @ect ||= Context.new(store)
       end
+
+      # def wrapper
+      #   store = SessionRepository.new(session: {}, form_key: :register_ect_wizard)
+      #   ect = ECT.new(store)
+      # end
 
     private
 

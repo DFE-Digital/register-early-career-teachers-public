@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::ECT do
+RSpec.describe Schools::RegisterECTWizard::Context do
   subject(:ect) { described_class.new(store) }
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
@@ -47,13 +47,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     it 'returns true if the ECT is active at the given school' do
       FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
 
-      expect(ect.active_at_school?(school.urn)).to be_truthy
+      expect(ect).to be_active_at_school(school.urn)
     end
 
     it 'returns false if the ECT is not at the given school' do
       FactoryBot.create(:ect_at_school_period, teacher:)
 
-      expect(ect.active_at_school?(school.urn)).to be_falsey
+      expect(ect).not_to be_active_at_school(school.urn)
     end
   end
 
@@ -145,7 +145,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when trs_induction_status is 'Exempt'" do
       it 'returns true' do
-        expect(ect.induction_exempt?).to be_truthy
+        expect(ect).to be_induction_exempt
       end
     end
 
@@ -155,7 +155,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.induction_exempt?).to be_falsey
+        expect(ect).not_to be_induction_exempt
       end
     end
   end
@@ -185,7 +185,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
   describe '#in_trs?' do
     context "when trs_first_name has been set" do
       it 'returns true' do
-        expect(ect.in_trs?).to be_truthy
+        expect(ect).to be_in_trs
       end
     end
 
@@ -195,7 +195,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.in_trs?).to be_falsey
+        expect(ect).not_to be_in_trs
       end
     end
   end
@@ -207,7 +207,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.matches_trs_dob?).to be_falsey
+        expect(ect).not_to be_matches_trs_dob
       end
     end
 
@@ -217,7 +217,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.matches_trs_dob?).to be_falsey
+        expect(ect).not_to be_matches_trs_dob
       end
     end
 
@@ -227,13 +227,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.matches_trs_dob?).to be_falsey
+        expect(ect).not_to be_matches_trs_dob
       end
     end
 
     context "when date_of_birth and trs_date_of_birth are the same date" do
       it 'returns true' do
-        expect(ect.matches_trs_dob?).to be_truthy
+        expect(ect).to be_matches_trs_dob
       end
     end
   end
@@ -245,7 +245,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when training_programme is 'provider_led'" do
       it 'returns true' do
-        expect(ect.provider_led?).to be_truthy
+        expect(ect).to be_provider_led
       end
     end
 
@@ -255,7 +255,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.provider_led?).to be_falsey
+        expect(ect).not_to be_provider_led
       end
     end
   end
@@ -284,7 +284,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when training_programme is 'school_led'" do
       it 'returns true' do
-        expect(ect.school_led?).to be_truthy
+        expect(ect).to be_school_led
       end
     end
 
@@ -294,7 +294,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.school_led?).to be_falsey
+        expect(ect).not_to be_school_led
       end
     end
   end
