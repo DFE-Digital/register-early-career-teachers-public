@@ -8,8 +8,11 @@ module Schools
       end
 
       # @return [String]
+      def name_for(...) = ::Teachers::Name.new(...).full_name
+
+      # @return [String]
       def teacher_full_name
-        ::Teachers::Name.new(ect_at_school_period.teacher.reload).full_name
+        name_for(ect_at_school_period.teacher.reload)
       end
 
       # @return [Hash]

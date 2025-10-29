@@ -58,6 +58,10 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     when_i_click_the_back_link
     then_i_should_be_taken_to_the_check_answers_page
 
+    when_i_try_to_change_the_name
+    and_i_choose_these_details_are_correct
+    then_i_see_the_name_from_trs
+
     when_i_try_to_change_the_email_address
     then_i_should_be_taken_to_the_change_email_address_page
 
@@ -96,6 +100,15 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     when_i_click_on_back_to_your_ects
     then_i_should_be_taken_to_the_ects_page
     and_i_should_see_the_ect_i_registered
+  end
+
+  def and_i_choose_these_details_are_correct
+    page.get_by_label('Yes').check
+    and_i_click_confirm_and_continue
+  end
+
+  def then_i_see_the_name_from_trs
+    expect(page.get_by_text('Kirk Van Houten')).to be_visible
   end
 
   def create_contract_period_for_start_date
@@ -286,7 +299,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_enter_a_new_ect_email_address
-    page.get_by_label('What is Kirk Van Damme’s email address?').fill('new@example.com')
+    page.get_by_label('What is Kirk Van Houten’s email address?').fill('new@example.com')
   end
 
   def and_i_should_see_the_new_email
@@ -356,7 +369,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def and_i_should_see_the_ect_i_registered
-    expect(page.get_by_role('link', name: 'Kirk Van Damme')).to be_visible
+    expect(page.get_by_role('link', name: 'Kirk Van Houten')).to be_visible
   end
 
   def then_i_should_be_taken_to_the_confirmation_page

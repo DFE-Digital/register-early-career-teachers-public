@@ -19,9 +19,30 @@ module API
       end
 
       def change_schedule = head(:method_not_allowed)
-      def defer = head(:method_not_allowed)
+
+      def defer
+        service = API::Teachers::Defer.new(
+          lead_provider_id: current_lead_provider.id,
+          teacher_api_id: teacher.api_id,
+          reason: defer_participant_params[:reason],
+          course_identifier: defer_participant_params[:course_identifier]
+        )
+
+        respond_with_service(service:, action: :defer)
+      end
+
       def resume = head(:method_not_allowed)
-      def withdraw = head(:method_not_allowed)
+
+      def withdraw
+        service = API::Teachers::Withdraw.new(
+          lead_provider_id: current_lead_provider.id,
+          teacher_api_id: teacher.api_id,
+          reason: withdraw_participant_params[:reason],
+          course_identifier: withdraw_participant_params[:course_identifier]
+        )
+
+        respond_with_service(service:, action: :withdraw)
+      end
 
     private
 
@@ -45,12 +66,24 @@ module API
         params.permit(:api_id, :sort, filter: %i[training_status from_participant_id])
       end
 
+      def defer_participant_params
+        params.require(:data).expect({ attributes: %i[course_identifier reason] })
+      end
+
+      def withdraw_participant_params
+        params.require(:data).expect({ attributes: %i[course_identifier reason] })
+      end
+
       def api_from_teacher_id
         participants_params.dig(:filter, :from_participant_id)
       end
 
       def training_status
         participants_params.dig(:filter, :training_status)
+      end
+
+      def teacher
+        teachers_query.teacher_by_api_id(api_id)
       end
 
       def api_id

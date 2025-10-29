@@ -1,18 +1,20 @@
 <%= form.govuk_fieldset legend: {text: "Explain why you're making this change"} do %>
   <p class="govuk-hint">
-    You need to add a Zendesk ID and/or a write a note to explain
-    why you're making this change. This is so that we have a record of changes.
+    You need to add a note or the Zendesk ticket number to explain why you're making this change.
+    This is so that we have a record of changes.
   </p>
 
-  <%= form.govuk_number_field(
-        :zendesk_ticket_id,
-        width: 4,
-        label: {text: "Enter the Zendesk ID"}
-      ) %>
   <%= form.govuk_text_area(
         :note,
         label: {text: "Add a note to explain why you're making this change"},
         max_chars: 500,
         threshold: 90
+      ) %>
+
+  <%= form.govuk_text_field(
+        :zendesk_ticket_id,
+        width: 5,
+        label: {text: "Enter Zendesk ticket number"},
+        hint: {text: "Must be 6 digits long. For example, #123456"}
       ) %>
 <% end %>

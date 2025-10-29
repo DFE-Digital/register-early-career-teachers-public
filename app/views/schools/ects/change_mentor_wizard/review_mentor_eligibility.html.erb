@@ -1,0 +1,33 @@
+<% page_data(
+    title: "#{@wizard.current_step.new_mentor_name} can receive mentor training",
+    backlink_href: @wizard.previous_step_path
+) %>
+
+<p class="govuk-body">
+  Our records show that <%= @wizard.current_step.new_mentor_name %> can get up
+  to 20 hours of ECTE mentor training as your school is working with a
+  DfE-funded training provider.
+</p>
+
+<p class="govuk-body">
+  We’ll pass on their details to
+  <%= @wizard.current_step.current_lead_provider_name %> who will contact them
+  to arrange the training.
+</p>
+
+<%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
+  <%= form.hidden_field :accepting_current_lead_provider, value: true %>
+  <%= form.govuk_submit "Continue" %>
+
+  <p class="govuk-body">
+    <% change_provider_link_text = <<~TXT.squish
+        #{@wizard.current_step.current_lead_provider_name} will not be providing
+        mentor training to #{@wizard.current_step.new_mentor_name}
+      TXT
+    %>
+    <%= govuk_link_to(
+          change_provider_link_text,
+          schools_ects_change_mentor_wizard_lead_provider_path(@wizard.current_step.ect_at_school_period)
+        ) %>
+  </p>
+<% end %>

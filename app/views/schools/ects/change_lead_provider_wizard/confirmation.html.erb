@@ -1,0 +1,34 @@
+<% page_data(
+    title: "Lead provider updated for #{@wizard.teacher_full_name}",
+    header: false
+) %>
+
+<%= govuk_panel(
+      title_text: <<~TXT.squish
+        You have chosen #{@wizard.current_step.new_lead_provider_name} as
+        the new lead provider for #{@wizard.teacher_full_name}
+      TXT
+    ) %>
+
+<h2 class="govuk-heading-m">
+ What happens next?
+</h2>
+
+<p class="govuk-body">
+  We’ll let <%= @wizard.current_step.new_lead_provider_name %> know your
+  school wants to work with them. They’ll contact us to confirm the change and
+  tell us the delivery partner they’ll be working with.
+</p>
+
+<p class="govuk-body">
+  We’ll also let the old lead provider know that they’ll no longer be training
+  <%= @wizard.teacher_full_name %>.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>

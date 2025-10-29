@@ -12,3 +12,8 @@
 <%= render partial: "ect_records", locals: { profile: @ect_profile } %>
 <%= render partial: "mentor_records", locals: { profile: @mentor_profile } %>
 <%= render partial: "failures", locals: { failures: @failures } %>
+
+<% if make_gantt_chart? %>
+  <h2 class="govuk-heading-m">ECT induction record data</h2>
+  <%= tag.img(src: migration_teacher_legacy_ect_gantt_path(@teacher), class: 'migration-gantt') %>
+<% end %>

@@ -66,6 +66,8 @@ class TimelineComponent < ApplicationComponent
       end
     end
 
+    # @param ticket_id [Integer] 6 digit Zendesk ticket ID
+    # @return [String]
     def zendesk_url(ticket_id)
       "https://becomingateacher.zendesk.com/agent/tickets/#{ticket_id}"
     end

@@ -2,15 +2,15 @@
   "name": "app",
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/turbo-rails": "^8.0.18",
+    "@hotwired/turbo-rails": "^8.0.20",
     "accessible-autocomplete": "^3.0.1",
     "esbuild": "^0.25.11",
     "govuk-frontend": "5.13.0",
     "sass": "^1.93.2",
-    "swagger-ui-dist": "^5.29.5"
+    "swagger-ui-dist": "^5.30.0"
   },
   "devDependencies": {
-    "playwright": "^1.55.1",
+    "playwright": "^1.56.0",
     "standard": "^17.1.2",
     "stylelint": "^16.25.0",
     "stylelint-config-gds": "^2.0.0"
