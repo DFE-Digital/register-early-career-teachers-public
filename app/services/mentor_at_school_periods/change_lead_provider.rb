@@ -11,13 +11,21 @@ module MentorAtSchoolPeriods
     end
 
     def call
+      return false unless lead_provider_changed?
+
       finish_existing_at_school_periods!
       create_expression_of_interest if school_partnership.blank?
 
       create_new_training_period
+
+      true
     end
 
   private
+
+    def lead_provider_changed?
+      old_lead_provider != lead_provider
+    end
 
     def finish_existing_at_school_periods!
       ActiveRecord::Base.transaction do
@@ -94,8 +102,20 @@ module MentorAtSchoolPeriods
       mentor_at_school_period.teacher
     end
 
-    def ect_at_school_period
-      ect_at_school_period
+    def mentor_trn
+      mentor_at_school_period.teacher.trn
+    end
+
+    # def ect_at_school_period
+    #   ect_at_school_period
+    # end
+
+    def latest_registration_choice
+      MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: mentor_trn)
+    end
+
+    def old_lead_provider
+      latest_registration_choice.lead_provider
     end
   end
 end
