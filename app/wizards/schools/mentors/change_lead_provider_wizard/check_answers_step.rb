@@ -18,7 +18,6 @@ module Schools
           MentorAtSchoolPeriods::ChangeLeadProvider.new(mentor_at_school_period:,
                                                         lead_provider: new_lead_provider,
                                                         author: wizard.author).call
-
         end
 
       private

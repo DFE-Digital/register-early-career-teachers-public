@@ -44,7 +44,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
         .to receive(:new)
         .and_return(service)
 
-      allow(service).to receive(:call)
+      allow(service).to receive(:call).and_return(true)
     end
 
     it "calls the ChangeLeadProvider service" do
@@ -54,7 +54,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
         .to have_received(:new)
         .with(
           mentor_at_school_period:,
-          school_partnership:,
+          lead_provider:,
           author: wizard.author
         )
 

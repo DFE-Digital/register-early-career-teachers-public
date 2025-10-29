@@ -20,7 +20,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
 
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
   let(:old_lead_provider) { training_period.lead_provider }
-  
+
   describe "GET #new" do
     context "when not signed in" do
       it "redirects to the root page" do
@@ -99,15 +99,15 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
 
         it "updates the lead provider only after confirmation" do
           post(path_for_step("edit"), params:)
-          
+
           follow_redirect!
 
           expect { post(path_for_step("check-answers")) }
             .to change(TrainingPeriod, :count).by(1)
 
           new_training_period = mentor_at_school_period.training_periods.ongoing.first
-          expect(new_training_period.expression_of_interest.lead_provider).to eq(new_lead_provider)
-          
+          expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
+
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
 
@@ -138,7 +138,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
 
           post(path_for_step("check-answers"))
 
-          # expect(response).to have_http_status(:unprocessable_content)
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
     end
