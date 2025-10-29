@@ -13,6 +13,8 @@ module Schools
         __getobj__.public_send(key)
       end
 
+      delegate :full_name, to: :@presenter
+
       def active_at_school?(urn)
         active_record_at_school(urn).present?
       end
@@ -34,10 +36,6 @@ module Schools
 
       def formatted_working_pattern
         working_pattern.humanize
-      end
-
-      def full_name
-        (corrected_name.presence || trs_full_name)&.strip
       end
 
       def govuk_date_of_birth
