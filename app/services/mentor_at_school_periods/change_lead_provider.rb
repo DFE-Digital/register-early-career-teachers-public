@@ -31,7 +31,7 @@ module MentorAtSchoolPeriods
       ActiveRecord::Base.transaction do
         teacher.mentor_at_school_periods.ongoing_on(finished_on).each do |period|
           finish_mentorship_periods!(period)
-          finish_training_periods!(period)
+          finish_or_delete_training_periods!(period)
         end
       end
     end
@@ -42,9 +42,13 @@ module MentorAtSchoolPeriods
       end
     end
 
-    def finish_training_periods!(period)
+    def finish_or_delete_training_periods!(period)
       period.training_periods.ongoing_on(finished_on).each do |training_period|
-        TrainingPeriods::Finish.mentor_training(training_period:, mentor_at_school_period: period, finished_on:, author:).finish!
+        if training_period.school_partnership.present?
+          TrainingPeriods::Finish.mentor_training(training_period:, mentor_at_school_period: period, finished_on:, author:).finish!
+        else
+          training_period.destroy!
+        end
       end
     end
 
@@ -89,7 +93,7 @@ module MentorAtSchoolPeriods
       ContractPeriod.containing_date(Time.zone.today).year
     end
 
-    # TODO: dates
+    # TODO_TG: dates
     def finished_on
       Time.zone.today
     end
@@ -105,10 +109,6 @@ module MentorAtSchoolPeriods
     def mentor_trn
       mentor_at_school_period.teacher.trn
     end
-
-    # def ect_at_school_period
-    #   ect_at_school_period
-    # end
 
     def latest_registration_choice
       MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: mentor_trn)

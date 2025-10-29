@@ -24,7 +24,7 @@ module Schools
       private
 
         def record_event(old_name, new_name)
-          # TODO: - do we need to create an event for this, or does one exist?
+          # EVENTS_TODO: - do we need to create an event for this, or does one exist?
 
           # ::Events::Record.teacher_name_changed_in_trs_event!(
           #   old_lead_provider_name:,

@@ -10,7 +10,6 @@
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%# TODO %>
   <%= govuk_summary_list do |list| %>
     <% list.with_row do |row| %>
       <% row.with_key { 'Mentor' } %>
