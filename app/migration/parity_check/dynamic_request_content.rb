@@ -85,6 +85,14 @@ module ParityCheck
                                                            .pick(:api_id)
     end
 
+    def deferred_teacher_api_id_for_participant_action
+      @deferred_teacher_api_id_for_participant_action ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "deferred")
+                                                           .teachers
+                                                           .distinct(false)
+                                                           .reorder("RANDOM()")
+                                                           .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body
@@ -154,6 +162,30 @@ module ParityCheck
       participant = Teacher.find_by(api_id: withdrawn_teacher_api_id_for_participant_action)
 
       participant_withdraw_payload(participant)
+    end
+
+    def participant_defer_payload(participant)
+      {
+        data: {
+          type: "participant-defer",
+          attributes: {
+            reason: TrainingPeriod.deferral_reasons.values.map(&:dasherize).sample,
+            course_identifier: participant.api_ect_training_record_id.present? ? "ecf-induction" : "ecf-mentor",
+          },
+        },
+      }
+    end
+
+    def active_participant_defer_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      participant_defer_payload(participant)
+    end
+
+    def deferred_participant_defer_body
+      participant = Teacher.find_by(api_id: deferred_teacher_api_id_for_participant_action)
+
+      participant_defer_payload(participant)
     end
 
     # Helpers
