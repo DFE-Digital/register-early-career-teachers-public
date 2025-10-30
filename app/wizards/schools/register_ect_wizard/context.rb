@@ -22,9 +22,19 @@ module Schools
       # appropriate_body_name
       delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
 
-      def cant_use_email?
-        Schools::TeacherEmail.new(email:, trn:).is_currently_used?
-      end
+      delegate :cant_use_email?,
+               :in_trs?,
+               :induction_completed?,
+               :induction_exempt?,
+               :induction_failed?,
+               :prohibited_from_teaching?,
+               :registered?,
+               :was_school_led?,
+               :matches_trs_dob?,
+               :previous_provider_led?,
+               :provider_led?,
+               :school_led?,
+               to: :@status
 
       def formatted_working_pattern
         working_pattern.humanize
@@ -32,34 +42,6 @@ module Schools
 
       def govuk_date_of_birth
         trs_date_of_birth&.to_date&.to_formatted_s(:govuk)
-      end
-
-      def in_trs?
-        trs_first_name.present?
-      end
-
-      def induction_completed?
-        trs_induction_status == 'Passed'
-      end
-
-      def induction_exempt?
-        trs_induction_status == 'Exempt'
-      end
-
-      def induction_failed?
-        trs_induction_status == 'Failed'
-      end
-
-      def prohibited_from_teaching?
-        trs_prohibited_from_teaching == true
-      end
-
-      def registered?
-        ect_at_school_period_id.present?
-      end
-
-      def was_school_led?
-        previous_training_programme == 'school_led'
       end
 
       def induction_start_date
@@ -70,12 +52,6 @@ module Schools
 
       # lead_provider_name
       delegate :name, to: :lead_provider, prefix: true, allow_nil: true
-
-      def matches_trs_dob?
-        return false if [date_of_birth, trs_date_of_birth].any?(&:blank?)
-
-        trs_date_of_birth.to_date == date_of_birth.to_date
-      end
 
       delegate :lead_providers_within_contract_period, :contract_start_date, to: :queries
 
@@ -95,10 +71,6 @@ module Schools
         queries.previous_lead_provider&.name
       end
 
-      def previous_provider_led?
-        queries.previous_training_period&.provider_led_training_programme?
-      end
-
       delegate :previous_school, to: :queries
 
       # previous_school_name
@@ -106,10 +78,6 @@ module Schools
 
       def previous_training_programme
         queries.previous_training_period&.training_programme
-      end
-
-      def provider_led?
-        training_programme == 'provider_led'
       end
 
       def register!(school, author:)
@@ -126,10 +94,6 @@ module Schools
                                  working_pattern:,
                                  author:)
                             .register!
-      end
-
-      def school_led?
-        training_programme == 'school_led'
       end
 
       def trs_full_name
