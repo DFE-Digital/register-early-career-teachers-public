@@ -45,20 +45,20 @@ module ParityCheck
     end
 
     def partnership_id
-      API::SchoolPartnerships::Query.new(lead_provider_id: lead_provider.id)
-        .school_partnerships
-        .distinct(false)
+      ::Migration::Partnership
+        .where(lead_provider_id: lead_provider.ecf_id)
+        .where(challenged_at: nil, relationship: false)
         .reorder("RANDOM()")
-        .pick(:api_id)
+        .pick(:id)
     end
 
     # Request body methods
 
     def partnership_create_body
-      contract_period = random_contract_period(lead_provider:)
+      contract_period = random_contract_period
       return unless contract_period
 
-      lead_provider_delivery_partnerships = lead_provider_delivery_partnerships(lead_provider:, contract_period:)
+      lead_provider_delivery_partnerships = lead_provider_delivery_partnerships(contract_period:)
       return unless lead_provider_delivery_partnerships.any?
 
       school = random_other_eligible_school(lead_provider_delivery_partnerships:)
@@ -79,12 +79,12 @@ module ParityCheck
     end
 
     def partnership_update_body
-      school_partnership = random_school_partnership(lead_provider:)
+      school_partnership = random_school_partnership
       return unless school_partnership
 
       contract_period = school_partnership.contract_period
       lead_provider_delivery_partnership = school_partnership.lead_provider_delivery_partnership
-      lead_provider_delivery_partnerships = lead_provider_delivery_partnerships(lead_provider:, contract_period:).where.not(id: lead_provider_delivery_partnership.id)
+      lead_provider_delivery_partnerships = lead_provider_delivery_partnerships(contract_period:).where.not(id: lead_provider_delivery_partnership.id)
       return unless lead_provider_delivery_partnerships.any?
 
       delivery_partner = lead_provider_delivery_partnerships.sample.delivery_partner
@@ -101,15 +101,11 @@ module ParityCheck
 
     # Helpers
 
-    def random_school_partnership(lead_provider:)
-      SchoolPartnership
-        .joins(lead_provider_delivery_partnership: :active_lead_provider)
-        .where(active_lead_provider: { lead_provider: })
-        .order("RANDOM()")
-        .first
+    def random_school_partnership
+      SchoolPartnership.find_by(api_id: partnership_id)
     end
 
-    def random_contract_period(lead_provider:)
+    def random_contract_period
       lead_provider
         .lead_provider_delivery_partnerships
         .joins(:contract_period)
@@ -119,7 +115,7 @@ module ParityCheck
         &.contract_period
     end
 
-    def lead_provider_delivery_partnerships(lead_provider:, contract_period:)
+    def lead_provider_delivery_partnerships(contract_period:)
       lead_provider
         .lead_provider_delivery_partnerships
         .joins(:active_lead_provider)
