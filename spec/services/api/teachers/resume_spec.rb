@@ -3,7 +3,7 @@ RSpec.describe API::Teachers::Resume, type: :model do
     described_class.new(
       lead_provider_id:,
       teacher_api_id:,
-      course_identifier:
+      teacher_type:
     )
   end
 
@@ -13,7 +13,7 @@ RSpec.describe API::Teachers::Resume, type: :model do
         context "for #{trainee_type}" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
-          let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
+          let(:teacher_type) { trainee_type }
 
           it { is_expected.to be_valid }
 
@@ -44,7 +44,7 @@ RSpec.describe API::Teachers::Resume, type: :model do
     describe "#resume" do
       %i[ect mentor].each do |trainee_type|
         context "for #{trainee_type}" do
-          let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
+          let(:teacher_type) { trainee_type }
 
           context "when invalid" do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing) }
