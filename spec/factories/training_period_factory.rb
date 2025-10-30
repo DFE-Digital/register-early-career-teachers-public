@@ -87,6 +87,13 @@ FactoryBot.define do
       ect_at_school_period { nil }
     end
 
+    trait :active do
+      withdrawn_at { nil }
+      withdrawal_reason { nil }
+      deferred_at { nil }
+      deferral_reason { nil }
+    end
+
     trait :withdrawn do
       withdrawn_at { Faker::Date.between(from: started_on, to: (finished_on || Date.current)) }
       withdrawal_reason { TrainingPeriod.withdrawal_reasons.values.sample }
