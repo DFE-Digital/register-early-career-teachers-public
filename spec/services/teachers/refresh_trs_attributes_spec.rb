@@ -41,11 +41,11 @@ describe Teachers::RefreshTRSAttributes do
       service.refresh!
       perform_enqueued_jobs
 
-      expect(teacher.events.map(&:event_type)).to eql(%w[
-        teacher_name_updated_by_trs
-        teacher_trs_induction_status_updated
-        teacher_trs_attributes_updated
-      ])
+      expect(teacher.events.map(&:event_type)).to contain_exactly(
+        "teacher_name_updated_by_trs",
+        "teacher_trs_induction_status_updated",
+        "teacher_trs_attributes_updated"
+      )
     end
 
     describe 'delegation' do

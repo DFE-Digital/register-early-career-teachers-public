@@ -18,6 +18,8 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
           let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
 
+          it { is_expected.to be_valid }
+
           context "when reason is invalid" do
             let(:reason) { "does-not-exist" }
 

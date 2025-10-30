@@ -81,7 +81,7 @@ RSpec.describe Teachers::Withdraw do
             )
           end
 
-          it "sets `withdrawn_at` and `finished_on`` to the current date" do
+          it "sets `withdrawn_at` and `finished_on` to the current date" do
             freeze_time
 
             expect(service.withdraw).not_to be(false)
@@ -98,7 +98,7 @@ RSpec.describe Teachers::Withdraw do
 
           it "records a teacher withdraws training period event" do
             freeze_time do
-              expect(Events::Record).to receive(:record_teacher_withdraws_training_period_event!)
+              expect(Events::Record).to receive(:record_teacher_training_period_withdrawn_event!)
                 .with(author:,
                       teacher:,
                       lead_provider:,
