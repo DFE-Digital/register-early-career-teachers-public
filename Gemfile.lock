@@ -482,7 +482,7 @@ GEM
       bigdecimal
     notifications-ruby-client (6.2.0)
       jwt (>= 1.5, < 3)
-    oj (3.16.11)
+    oj (3.16.12)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
     omniauth (2.1.4)
@@ -510,7 +510,7 @@ GEM
       validate_url
       webfinger (~> 2.0)
     os (1.1.4)
-    ostruct (0.6.1)
+    ostruct (0.6.3)
     pagy (9.4.0)
     parallel (1.27.0)
     parser (3.3.9.0)
