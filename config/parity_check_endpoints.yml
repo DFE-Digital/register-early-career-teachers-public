@@ -162,3 +162,11 @@ put:
       ecf_path: "/api/v3/partnerships/ecf/:id"
       id: ":partnership_id"
       body: partnership_update_body
+  - "/api/v3/participants/:id/withdraw":
+      ecf_path: "/api/v3/participants/ecf/:id/withdraw"
+      id: ":teacher_api_id_for_withdraw"
+      body: participant_withdraw_body
+  - "/api/v3/participants/:id/withdraw":
+      ecf_path: "/api/v3/participants/ecf/:id/withdraw"
+      id: ":withdrawn_teacher_api_id_for_withdraw"
+      body: withdrawn_participant_withdraw_body
