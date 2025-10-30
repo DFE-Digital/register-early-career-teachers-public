@@ -15,6 +15,37 @@ describe MentorAtSchoolPeriod do
     it { is_expected.to have_many(:currently_assigned_ects).through(:mentorship_periods).source(:mentee) }
   end
 
+  describe '.current_or_next_training_period' do
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.year.ago) }
+
+    it { is_expected.to have_one(:current_or_next_training_period).class_name('TrainingPeriod') }
+
+    context 'when there is a current period' do
+      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
+
+      it 'returns the current training_period' do
+        expect(mentor_at_school_period.current_or_next_training_period).to eql(training_period)
+      end
+    end
+
+    context 'when there is a current period and a future period' do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.year.ago, finished_on: 2.weeks.from_now, mentor_at_school_period:) }
+      let!(:future_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 2.weeks.from_now, finished_on: nil, mentor_at_school_period:) }
+
+      it 'returns the current mentor_at_school_period' do
+        expect(mentor_at_school_period.current_or_next_training_period).to eql(training_period)
+      end
+    end
+
+    context 'when there is no current period' do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :finished, mentor_at_school_period:) }
+
+      it 'returns nil' do
+        expect(mentor_at_school_period.current_or_next_training_period).to be_nil
+      end
+    end
+  end
+
   describe "validations" do
     subject { FactoryBot.build(:mentor_at_school_period) }
 

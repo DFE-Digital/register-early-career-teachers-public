@@ -17,9 +17,18 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
 
   let(:old_lead_provider) { training_period.lead_provider }
   let(:new_lead_provider) { lead_provider }
-  let(:training_programme) { 'provider_led' }
 
   describe '#call' do
+    context 'when the new lead provider is the same as the old lead provider' do
+      let(:lead_provider) { old_lead_provider }
+
+      it 'raises an error' do
+        expect { subject.call }.to raise_error(MentorAtSchoolPeriods::ChangeLeadProvider::LeadProviderNotChangedError)
+
+        expect(training_period.finished_on).to be_nil
+      end
+    end
+
     context 'when there is no school partnership with the new lead provider' do
       it 'creates a new expression of interest for the current year and assigns it to the new training period' do
         expect { subject.call }.to change(ActiveLeadProvider, :count).by(1)
@@ -31,10 +40,6 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         new_training_period = mentor_at_school_period.training_periods.ongoing.first
         expect(new_training_period.school_partnership).to be_nil
         expect(new_training_period.training_programme).to eq('provider_led')
-      end
-
-      it 'is truthy' do
-        expect(subject.call).to be_truthy
       end
     end
 
@@ -49,19 +54,23 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         expect(new_training_period.training_programme).to eq('provider_led')
       end
 
-      it 'is truthy' do
-        expect(subject.call).to be_truthy
-      end
-
       context 'when there are existing training periods' do
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:) }
-        let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
+        context 'when the training period started in the past' do
+          it 'closes existing training periods and opens a new training period' do
+            expect { subject.call }.to change(TrainingPeriod, :count).by(1)
 
-        it 'closes existing training periods and opens a new training period' do
-          expect { subject.call }.to change(TrainingPeriod, :count).by(1)
+            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+          end
+        end
 
-          expect(training_period.reload.finished_on).to eq(Time.zone.today)
-          expect(mentorship_period.reload.finished_on).to eq(Time.zone.today)
+        context 'when the training period started today' do
+          let(:started_on) { Date.current }
+
+          it 'closes existing periods and starts a new one' do
+            expect { subject.call }.to change(TrainingPeriod, :count).by(1)
+
+            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+          end
         end
       end
 
@@ -80,30 +89,6 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
           expect { subject.call }.to change(TrainingPeriod, :count).by(1)
         end
       end
-
-      context 'when the new lead provider is the same as the old lead provider' do
-        let(:lead_provider) { old_lead_provider }
-
-        it 'is falsy' do
-          expect(subject.call).to be_falsey
-        end
-
-        it 'does not create a new training period' do
-          expect { subject.call }.not_to change(TrainingPeriod, :count)
-        end
-
-        it 'does not alter the existing partnership' do
-          training_period = mentor_at_school_period.training_periods.ongoing.first
-
-          expect {
-            subject.call
-          }.not_to(change { training_period.reload.attributes })
-        end
-
-        it 'does not create a new active lead provider' do
-          expect { subject.call }.not_to change(ActiveLeadProvider, :count)
-        end
-      end
     end
 
     context 'when there is no school partnership with the old lead provider' do
@@ -119,6 +104,24 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       it 'deletes the existing training period' do
         expect { subject.call }.not_to change(TrainingPeriod, :count)
       end
+    end
+
+    it "records an event" do
+      freeze_time
+
+      expect(Events::Record)
+        .to receive(:record_mentor_lead_provider_updated_event!)
+        .with(
+          old_lead_provider_name: old_lead_provider.name,
+          new_lead_provider_name: new_lead_provider.name,
+          author:,
+          mentor_at_school_period:,
+          school:,
+          teacher:,
+          happened_at: Date.current
+        )
+
+      subject.call
     end
   end
 end

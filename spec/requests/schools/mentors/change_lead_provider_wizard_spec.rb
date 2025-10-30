@@ -17,6 +17,9 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
   let(:old_lead_provider) { training_period.lead_provider }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+  let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
   describe "GET #new" do
     context "when not signed in" do
@@ -128,9 +131,9 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
 
           follow_redirect!
 
-          expect { post(path_for_step("check-answers")) }
-            .to change(TrainingPeriod, :count).by(1)
+          post(path_for_step("check-answers"))
 
+          expect(training_period.reload.finished_on).to eq(Date.current)
           new_training_period = mentor_at_school_period.training_periods.ongoing.first
           expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
 
