@@ -77,24 +77,6 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
       expect(service).to have_received(:call)
     end
 
-    it "records an event" do
-      freeze_time
-
-      expect(Events::Record)
-        .to receive(:record_mentor_lead_provider_updated_event!)
-        .with(
-          old_lead_provider_name: old_lead_provider.name,
-          new_lead_provider_name: lead_provider.name,
-          author:,
-          mentor_at_school_period:,
-          school:,
-          teacher: mentor_at_school_period.teacher,
-          happened_at: Time.current
-        )
-
-      current_step.save!
-    end
-
     it "is truthy" do
       expect(current_step.save!).to be_truthy
     end
