@@ -1,4 +1,4 @@
-RSpec.describe ParityCheck::DynamicRequestContent do
+RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:instance) { described_class.new(lead_provider:) }
@@ -26,7 +26,7 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { is_expected.to eq(statement.api_id) }
     end
 
-    context "when fetching school_id", :with_metadata do
+    context "when fetching school_id" do
       let(:identifier) { :school_id }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, active_lead_provider:) }
@@ -43,7 +43,7 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { is_expected.to eq(school.api_id) }
     end
 
-    context "when fetching delivery_partner_id", :with_metadata do
+    context "when fetching delivery_partner_id" do
       let(:identifier) { :delivery_partner_id }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:delivery_partner) { lead_provider_delivery_partnership.delivery_partner }
@@ -167,6 +167,106 @@ RSpec.describe ParityCheck::DynamicRequestContent do
         expect(API::Statements::Query).to receive(:new).once.and_call_original
 
         2.times { instance.fetch(identifier) }
+      end
+    end
+
+    context "when fetching `teacher_api_id_for_withdraw`" do
+      let(:identifier) { :teacher_api_id_for_withdraw }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Withdrawn participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:)
+        # Participants for different lead providers should not be used
+        FactoryBot.create(:training_period, :for_ect, :ongoing)
+      end
+
+      it { is_expected.to eq(teacher.api_id) }
+    end
+
+    context "when fetching `withdrawn_teacher_api_id_for_withdraw`" do
+      let(:identifier) { :withdrawn_teacher_api_id_for_withdraw }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Active participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:)
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Participant for different lead providers should not be used.
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn)
+      end
+
+      it { is_expected.to eq(teacher.api_id) }
+    end
+
+    context "when fetching `participant_withdraw_body`" do
+      let(:identifier) { :participant_withdraw_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Active participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:)
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Participant for different lead providers should not be used.
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn)
+        # Stub withdrawal reasons so we have a predictable value
+        allow(TrainingPeriod).to receive(:withdrawal_reasons).and_return({ parental_leave: "parental_leave" })
+      end
+
+      it "returns a participant withdraw body" do
+        expect(fetch).to eq({
+          data: {
+            type: "participant-withdraw",
+            attributes: {
+              reason: "parental-leave",
+              course_identifier: "ecf-induction"
+            },
+          },
+        })
+      end
+    end
+
+    context "when fetching `withdrawn_participant_withdraw_body`" do
+      let(:identifier) { :withdrawn_participant_withdraw_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Active participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:)
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Participant for different lead providers should not be used.
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn)
+        # Stub withdrawal reasons so we have a predictable value
+        allow(TrainingPeriod).to receive(:withdrawal_reasons).and_return({ parental_leave: "parental_leave" })
+      end
+
+      it "returns a withdrawn participant withdraw body" do
+        expect(fetch).to eq({
+          data: {
+            type: "participant-withdraw",
+            attributes: {
+              reason: "parental-leave",
+              course_identifier: "ecf-induction"
+            },
+          },
+        })
       end
     end
   end

@@ -52,6 +52,22 @@ module ParityCheck
         .pick(:api_id)
     end
 
+    def teacher_api_id_for_withdraw
+      @teacher_api_id_for_withdraw ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "active")
+                                      .teachers
+                                      .distinct(false)
+                                      .reorder("RANDOM()")
+                                      .pick(:api_id)
+    end
+
+    def withdrawn_teacher_api_id_for_withdraw
+      @withdrawn_teacher_api_id_for_withdraw ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "withdrawn")
+                                                .teachers
+                                                .distinct(false)
+                                                .reorder("RANDOM()")
+                                                .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body
@@ -97,6 +113,30 @@ module ParityCheck
           },
         },
       }
+    end
+
+    def participant_withdraw_payload(participant)
+      {
+        data: {
+          type: "participant-withdraw",
+          attributes: {
+            reason: TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).sample,
+            course_identifier: participant.api_ect_training_record_id.present? ? "ecf-induction" : "ecf-mentor",
+          },
+        },
+      }
+    end
+
+    def participant_withdraw_body
+      participant = Teacher.find_by(api_id: teacher_api_id_for_withdraw)
+
+      participant_withdraw_payload(participant)
+    end
+
+    def withdrawn_participant_withdraw_body
+      participant = Teacher.find_by(api_id: withdrawn_teacher_api_id_for_withdraw)
+
+      participant_withdraw_payload(participant)
     end
 
     # Helpers
