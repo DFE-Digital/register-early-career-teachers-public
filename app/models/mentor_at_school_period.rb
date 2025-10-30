@@ -12,6 +12,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
            -> { ongoing.includes(:teacher) },
            through: :mentorship_periods,
            source: :mentee
+  has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
