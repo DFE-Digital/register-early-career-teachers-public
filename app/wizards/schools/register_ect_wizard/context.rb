@@ -9,28 +9,15 @@ module Schools
         @status    = Context::Status.new(context: self, queries: @queries)
       end
 
-      def fetch(key)
-        __getobj__.public_send(key)
-      end
-
       delegate :full_name, to: :@presenter
 
-      def ect_at_school_period
-        id = fetch(:ect_at_school_period_id)
-        ECTAtSchoolPeriod.find_by_id(id) if id.present?
-      end
+      delegate :ect_at_school_period, to: :queries
 
       def active_at_school?(urn)
         active_record_at_school(urn).present?
       end
 
-      def active_record_at_school(urn)
-        @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn:, urn:).ongoing.last
-      end
-
-      def appropriate_body
-        @appropriate_body ||= AppropriateBody.find_by_id(appropriate_body_id)
-      end
+      delegate :active_record_at_school, :appropriate_body, to: :queries
 
       # appropriate_body_name
       delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
@@ -76,12 +63,10 @@ module Schools
       end
 
       def induction_start_date
-        first_induction_period&.started_on
+        queries.first_induction_period&.started_on
       end
 
-      def lead_provider
-        @lead_provider ||= LeadProvider.find(lead_provider_id) if lead_provider_id
-      end
+      delegate :lead_provider, to: :queries
 
       # lead_provider_name
       delegate :name, to: :lead_provider, prefix: true, allow_nil: true
@@ -92,45 +77,35 @@ module Schools
         trs_date_of_birth.to_date == date_of_birth.to_date
       end
 
-      def lead_providers_within_contract_period
-        return [] unless contract_start_date
-
-        @lead_providers_within_contract_period ||= LeadProviders::Active.in_contract_period(contract_start_date).select(:id, :name)
-      end
-
-      def contract_start_date
-        ContractPeriod.containing_date(start_date&.to_date)
-      end
+      delegate :lead_providers_within_contract_period, :contract_start_date, to: :queries
 
       def previously_registered?
         previous_ect_at_school_period.present?
       end
 
       def previous_appropriate_body_name
-        previous_appropriate_body&.name
+        queries.previous_appropriate_body&.name
       end
 
       def previous_delivery_partner_name
-        previous_delivery_partner&.name
+        queries.previous_delivery_partner&.name
       end
 
       def previous_lead_provider_name
-        previous_lead_provider&.name
+        queries.previous_lead_provider&.name
       end
 
       def previous_provider_led?
-        previous_training_period&.provider_led_training_programme?
+        queries.previous_training_period&.provider_led_training_programme?
       end
 
-      def previous_school
-        previous_ect_at_school_period&.school
-      end
+      delegate :previous_school, to: :queries
 
       # previous_school_name
       delegate :name, to: :previous_school, prefix: true, allow_nil: true
 
       def previous_training_programme
-        previous_training_period&.training_programme
+        queries.previous_training_period&.training_programme
       end
 
       def provider_led?
@@ -161,63 +136,26 @@ module Schools
         Teachers::Name.new(self).full_name_in_trs
       end
 
-      def previous_ect_at_school_period
-        @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
-          .new(order: :started_on)
-          .ect_periods(trn:)
-          .last
-      end
+      delegate :previous_ect_at_school_period, to: :queries
 
       def lead_provider_has_confirmed_partnership_for_contract_period?(school)
-        return false unless previous_lead_provider && contract_start_date && school
+        return false unless queries.previous_lead_provider && contract_start_date && school
 
         SchoolPartnerships::Search
-          .new(school:, lead_provider: previous_lead_provider, contract_period: contract_start_date)
+          .new(school:, lead_provider: queries.previous_lead_provider, contract_period: contract_start_date)
           .exists?
       end
 
       def previous_eoi_lead_provider_name
+        previous_training_period = queries.previous_training_period
         return unless previous_training_period&.expression_of_interest
 
-        previous_training_period&.expression_of_interest&.lead_provider&.name
+        previous_training_period.expression_of_interest&.lead_provider&.name
       end
 
     private
 
-      def first_induction_period
-        ordered_induction_periods.first
-      end
-
-      def ordered_induction_periods
-        @ordered_induction_periods ||= InductionPeriods::Search
-          .new(order: :started_on)
-          .induction_periods(trn:)
-      end
-
-      def previous_appropriate_body
-        previous_induction_period&.appropriate_body
-      end
-
-      def previous_delivery_partner
-        previous_training_period&.delivery_partner
-      end
-
-      def previous_induction_period
-        ordered_induction_periods.last
-      end
-
-      def previous_lead_provider
-        previous_training_period&.lead_provider
-      end
-
-      def previous_training_period
-        return unless previous_ect_at_school_period
-
-        @previous_training_period ||= TrainingPeriods::Search
-          .new(order: :started_on)
-          .training_periods(ect_id: previous_ect_at_school_period.id)
-          .last
-      end
+      attr_reader :queries
     end
   end
 end
