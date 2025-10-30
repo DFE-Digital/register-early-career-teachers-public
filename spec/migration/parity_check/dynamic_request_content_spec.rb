@@ -69,6 +69,46 @@ RSpec.describe ParityCheck::DynamicRequestContent do
       it { is_expected.to eq(partnership.api_id) }
     end
 
+    context "when fetching `active_ect_teacher_api_id`" do
+      let(:identifier) { :active_ect_teacher_api_id }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :active, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Withdrawn participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:)
+
+        # Participants for different lead providers should not be used.
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :active)
+      end
+
+      it { is_expected.to eq(teacher.api_id) }
+    end
+
+    context "when fetching `deferred_ect_teacher_api_id`" do
+      let(:identifier) { :deferred_ect_teacher_api_id }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Active participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :active, school_partnership:)
+        # Withdrawn participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:)
+
+        # Participant for different lead providers should not be used.
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred)
+      end
+
+      it { is_expected.to eq(teacher.api_id) }
+    end
+
     context "when fetching partnership_create_body" do
       let(:identifier) { :partnership_create_body }
       let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }

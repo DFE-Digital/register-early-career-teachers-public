@@ -52,6 +52,28 @@ module ParityCheck
         .pick(:api_id)
     end
 
+    def active_ect_teacher_api_id
+      # Random Teacher with training_status active ECT for lead provider
+      Teacher
+        .joins(ect_at_school_periods: { training_periods: :lead_provider })
+        .where(lead_providers: { id: lead_provider.id })
+        .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
+    def deferred_ect_teacher_api_id
+      # Random Teacher with training_status deferred ECT for lead provider
+      Teacher
+        .joins(ect_at_school_periods: { training_periods: :lead_provider })
+        .where(lead_providers: { id: lead_provider.id })
+        .where.not(training_periods: { deferred_at: nil })
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body
@@ -94,6 +116,18 @@ module ParityCheck
           type: "partnerships",
           attributes: {
             delivery_partner_id: delivery_partner.api_id,
+          },
+        },
+      }
+    end
+
+    def ect_teacher_defer_body
+      {
+        data: {
+          type: "participant-defer",
+          attributes: {
+            reason: TrainingPeriod.deferral_reasons.values.map(&:dasherize).sample,
+            course_identifier: "ecf-induction",
           },
         },
       }
