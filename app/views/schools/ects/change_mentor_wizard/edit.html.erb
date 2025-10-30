@@ -5,15 +5,15 @@
 
 <%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
-
-  <%= form.govuk_collection_radio_buttons(
-        :mentor_at_school_period_id,
-        @wizard.current_step.mentors_for_select,
-        :id,
-        -> { @wizard.name_for(it.teacher) },
-        legend: {text: "Select the mentor", hidden: true}
-      ) %>
-
+  
+  <%= form.govuk_radio_buttons_fieldset(:mentor_at_school_period_id, legend: {text: "Select the mentor", hidden: true}) do %>
+    <% @wizard.current_step.mentors_for_select.each do |mentor| %>
+      <%= form.govuk_radio_button :mentor_at_school_period_id, mentor.id, label: { text: @wizard.name_for(mentor.teacher) } %>
+    <% end %>
+    <%= form.govuk_radio_divider %>
+    <%= form.govuk_radio_button :mentor_at_school_period_id, 0, label: { text: 'Register a new mentor' } %>
+  <% end %>
+  
   <%= form.govuk_submit "Continue" %>
 
   <p class="govuk-body">

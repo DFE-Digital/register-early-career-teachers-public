@@ -2,6 +2,8 @@ module Schools
   module ECTs
     module ChangeMentorWizard
       class Wizard < ECTs::Wizard
+        attr_accessor :new_mentor_requested
+
         steps do
           [{
             edit: EditStep,
