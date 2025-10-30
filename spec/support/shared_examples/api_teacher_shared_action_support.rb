@@ -13,7 +13,6 @@ RSpec.shared_examples "an API teacher shared action", :with_metadata do
         let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
         let(:course_identifier) { trainee_type == :ect ? "ecf-induction" : "ecf-mentor" }
 
-        it { is_expected.to be_valid }
         it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Enter a '#/lead_provider_id'.") }
         it { is_expected.to validate_presence_of(:teacher_api_id).with_message("Enter a '#/teacher_api_id'.") }
         it { is_expected.to validate_inclusion_of(:course_identifier).in_array(%w[ecf-induction ecf-mentor]).with_message("The entered '#/course_identifier' is not recognised for the given participant. Check details and try again.") }

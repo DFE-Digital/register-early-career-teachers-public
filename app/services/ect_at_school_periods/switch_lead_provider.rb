@@ -1,5 +1,7 @@
 module ECTAtSchoolPeriods
   class SwitchLeadProvider
+    class SchoolLedTrainingProgrammeError < StandardError; end
+
     include TrainingPeriodSources
 
     def self.switch(...) = new(...).switch
@@ -12,6 +14,8 @@ module ECTAtSchoolPeriods
     end
 
     def switch
+      raise SchoolLedTrainingProgrammeError if training_period&.school_led_training_programme?
+
       ActiveRecord::Base.transaction do
         if date_of_transition.future? || training_period.school_partnership.blank?
           training_period.destroy!

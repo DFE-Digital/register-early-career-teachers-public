@@ -42,19 +42,23 @@ private
   end
 
   def ect_profile
-    @ect_profile = if teacher.api_ect_training_record_id.present?
-                     Migration::ParticipantProfilePresenter.new(
-                       Migration::ParticipantProfile.find(teacher.api_ect_training_record_id)
-                     )
-                   end
+    @ect_profile ||= if teacher.api_ect_training_record_id.present?
+                       Migration::ParticipantProfilePresenter.new(
+                         Migration::ParticipantProfile.find(teacher.api_ect_training_record_id)
+                       )
+                     end
   end
 
   def mentor_profile
-    @mentor_profile = if teacher.api_mentor_training_record_id.present?
-                        Migration::ParticipantProfilePresenter.new(
-                          Migration::ParticipantProfile.find(teacher.api_mentor_training_record_id)
-                        )
-                      end
+    @mentor_profile ||= if teacher.api_mentor_training_record_id.present?
+                          Migration::ParticipantProfilePresenter.new(
+                            Migration::ParticipantProfile.find(teacher.api_mentor_training_record_id)
+                          )
+                        end
+  end
+
+  def make_gantt_chart?
+    ect_profile&.induction_records&.any? || mentor_profile&.induction_records&.any?
   end
 
   def user
@@ -64,4 +68,6 @@ private
   def teacher
     @teacher ||= Admin::TeacherPresenter.new(Teacher.find(params[:id]))
   end
+
+  helper_method :make_gantt_chart?
 end

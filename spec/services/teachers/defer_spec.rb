@@ -98,7 +98,7 @@ RSpec.describe Teachers::Defer do
 
           it "records a teacher defers training period event" do
             freeze_time do
-              expect(Events::Record).to receive(:record_teacher_defers_training_period_event!)
+              expect(Events::Record).to receive(:record_teacher_training_period_deferred_event!)
                 .with(author:,
                       teacher:,
                       lead_provider:,

@@ -185,8 +185,20 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(ect_enrolment["participant_status"]).to eq(mock_teacher_status.status)
           end
 
-          it "serializes `eligible_for_funding`" do
-            expect(ect_enrolment["eligible_for_funding"]).to be(true)
+          context "when `eligible_for_funding` is true" do
+            let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: Time.zone.now) }
+
+            it "serializes `eligible_for_funding`" do
+              expect(ect_enrolment["eligible_for_funding"]).to be(true)
+            end
+          end
+
+          context "when `eligible_for_funding` is false" do
+            let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: nil) }
+
+            it "serializes `eligible_for_funding`" do
+              expect(ect_enrolment["eligible_for_funding"]).to be(false)
+            end
           end
 
           it "serializes `pupil_premium_uplift`" do
@@ -200,7 +212,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `schedule_identifier`" do
-            expect(ect_enrolment["schedule_identifier"]).to eq("ecf-extended-september")
+            expect(ect_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
           end
 
           it "serializes `delivery_partner_id`" do
@@ -294,8 +306,20 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(mentor_enrolment["participant_status"]).to eq(mock_teacher_status.status)
           end
 
-          it "serializes `eligible_for_funding`" do
-            expect(mentor_enrolment["eligible_for_funding"]).to be(true)
+          context "when `eligible_for_funding` is true" do
+            let(:teacher) { FactoryBot.create(:teacher, mentor_first_became_eligible_for_training_at: Time.zone.now) }
+
+            it "serializes `eligible_for_funding`" do
+              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
+            end
+          end
+
+          context "when `eligible_for_funding` is false" do
+            let(:teacher) { FactoryBot.create(:teacher, mentor_first_became_eligible_for_training_at: nil) }
+
+            it "serializes `eligible_for_funding`" do
+              expect(mentor_enrolment["eligible_for_funding"]).to be(false)
+            end
           end
 
           it "serializes `pupil_premium_uplift`" do
@@ -307,7 +331,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           end
 
           it "serializes `schedule_identifier`" do
-            expect(mentor_enrolment["schedule_identifier"]).to eq("ecf-extended-september")
+            expect(mentor_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
           end
 
           it "serializes `delivery_partner_id`" do

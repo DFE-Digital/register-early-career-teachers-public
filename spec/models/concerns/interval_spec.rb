@@ -271,6 +271,34 @@ describe Interval do
       it { expect(second_interval.last_finished_sibling).to be_nil }
     end
   end
+
+  describe '#ongoing_today?' do
+    context 'without finished_on' do
+      subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: nil) }
+
+      it { is_expected.to be_ongoing_today }
+    end
+
+    context 'with finished_on' do
+      context 'in the future' do
+        subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.from_now) }
+
+        it { is_expected.to be_ongoing_today }
+      end
+
+      context 'in the past' do
+        subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: 1.day.ago) }
+
+        it { is_expected.not_to be_ongoing_today }
+      end
+
+      context 'in the present' do
+        subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on: Time.zone.today) }
+
+        it { is_expected.not_to be_ongoing_today }
+      end
+    end
+  end
 end
 
 class DummyMentor < ApplicationRecord
