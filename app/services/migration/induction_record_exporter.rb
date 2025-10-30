@@ -9,6 +9,7 @@ module Migration
       :start_date,
       :end_date,
       :right_way_round,
+      :duration,
       :training_status,
       :school_transfer,
       :induction_record_created,
@@ -17,7 +18,6 @@ module Migration
       :urn,
       :challenged,
       :lead_provider_name,
-      :duration,
       keyword_init: true
     ) do
       def range = start_date..end_date
