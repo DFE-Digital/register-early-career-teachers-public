@@ -4,9 +4,6 @@
     backlink_href: schools_mentor_path(@mentor_at_school_period),
 ) %>
 
-
-
-
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
