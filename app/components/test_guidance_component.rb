@@ -25,14 +25,14 @@ class TestGuidanceComponent < ApplicationComponent
   end
 
   class TRSExampleTeacherDetails < ApplicationComponent
-    NO_QTS                     = "No QTS"
-    NO_MENTOR_FUNDING          = "No mentor funding"
-    PASSED_INDUCTION           = "Passed induction"
-    EXEMPT_FROM_INDUCTION      = "Exempt from induction"
-    FAILED_INDUCTION           = "Failed induction"
-    FAILED_INDUCTION_IN_WALES  = "Failed induction in Wales"
-    PROHIBITED_IN_PROGRESS     = "Prohibited from teaching (In progress)"
-    PROHIBITED_PASSED          = "Prohibited from teaching (Passed)"
+    EXEMPT_FROM_INDUCTION     = "Exempt from induction"
+    FAILED_INDUCTION          = "Failed induction"
+    FAILED_INDUCTION_IN_WALES = "Failed induction in Wales"
+    NO_MENTOR_FUNDING         = "No mentor funding"
+    NO_QTS                    = "No QTS"
+    PASSED_INDUCTION          = "Passed induction"
+    PROHIBITED_IN_PROGRESS    = "Prohibited from teaching (In progress)"
+    PROHIBITED_PASSED         = "Prohibited from teaching (Passed)"
 
     def head
       ["Name", "TRN", "Date of birth", "National Insurance Number", "Notes", ""]
