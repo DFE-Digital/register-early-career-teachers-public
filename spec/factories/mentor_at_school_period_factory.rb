@@ -2,9 +2,14 @@ FactoryBot.define do
   factory(:mentor_at_school_period) do
     transient do
       # default start date to be a realistic past date
-      start_date { rand(2.years.ago..6.months.ago) }
+      # the date aligns sequentially with a previous period if same teacher is passed in
+      start_date do
+        last_period_end_date = teacher&.mentor_at_school_periods&.latest_first&.first&.finished_on
+        last_period_end_date&.tomorrow || rand(2.years.ago..6.months.ago)
+      end
+
       # default end date to be a realistic end date
-      end_date { (started_on || start_date) + 1.year }
+      end_date { (started_on || start_date) + rand(6.months..1.year) }
     end
 
     association :school
