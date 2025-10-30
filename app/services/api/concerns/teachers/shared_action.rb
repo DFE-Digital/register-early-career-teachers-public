@@ -2,7 +2,7 @@ module API::Concerns::Teachers
   module SharedAction
     extend ActiveSupport::Concern
 
-    COURSE_IDENTIFIERS = %w[ecf-mentor ecf-induction].freeze
+    TEACHER_TYPES = %i[ect mentor].freeze
 
     included do
       include ActiveModel::Model
@@ -10,17 +10,17 @@ module API::Concerns::Teachers
 
       attribute :lead_provider_id
       attribute :teacher_api_id
-      attribute :course_identifier
+      attribute :teacher_type
 
       validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
       validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
-      validates :course_identifier, presence: { message: "Enter a '#/course_identifier'." }
+      validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }
 
       validate :lead_provider_exists
       validate :teacher_training_exists
-      validates :course_identifier, inclusion: {
-        in: COURSE_IDENTIFIERS,
-        message: "The entered '#/course_identifier' is not recognised for the given participant. Check details and try again."
+      validates :teacher_type, inclusion: {
+        in: TEACHER_TYPES,
+        message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
       }, allow_blank: true
     end
 
@@ -55,10 +55,10 @@ module API::Concerns::Teachers
     def training_period
       return unless metadata
 
-      @training_period ||= case course_identifier
-                           when "ecf-induction"
+      @training_period ||= case teacher_type
+                           when :ect
                              metadata.latest_ect_training_period
-                           when "ecf-mentor"
+                           when :mentor
                              metadata.latest_mentor_training_period
                            end
     end
