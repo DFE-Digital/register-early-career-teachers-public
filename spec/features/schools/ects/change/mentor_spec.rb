@@ -102,6 +102,27 @@ describe "School user can change early career teachers mentor", :enable_schools_
     end
   end
 
+  context "when the mentor needs to be registered" do
+    it "directs the user to the register mentor wizard for this mentee" do
+      and_the_mentee_is_on_school_led_training
+      and_the_mentee_has_an_assigned_mentor
+      and_there_is_another_registered_mentor
+
+      when_i_visit_the_early_career_teacher_show_page
+      then_i_can_change_the_assigned_mentor
+      and_i_see_the_change_mentor_form
+      and_the_current_mentor_is_not_an_option
+
+      when_i_change_the_mentor_to_a_new_mentor
+      and_i_click_continue
+      then_i_am_redirected_to_the_register_new_mentor_wizard_for_this_mentee
+
+      when_i_click_the_back_link
+      and_i_see_the_change_mentor_form
+      then_the_register_new_mentor_radio_is_selected
+    end
+  end
+
 private
 
   def given_there_is_a_school
@@ -247,6 +268,11 @@ private
     expect(mentor_radio).to be_checked
   end
 
+  def then_the_register_new_mentor_radio_is_selected
+    mentor_radio = page.get_by_label("Register a new mentor")
+    expect(mentor_radio).to be_checked
+  end
+
   def and_i_confirm_the_change
     page.get_by_role("button", name: "Confirm change").click
   end
@@ -278,5 +304,14 @@ private
     expect(success_panel).to have_text(
       "You have changed John Doe’s mentor to Jane Smith"
     )
+  end
+
+  def when_i_change_the_mentor_to_a_new_mentor
+    page.get_by_label("Register a new mentor").check
+  end
+
+  def then_i_am_redirected_to_the_register_new_mentor_wizard_for_this_mentee
+    heading = page.locator("h1")
+    expect(heading).to have_text("What you'll need to add a new mentor for John Doe")
   end
 end
