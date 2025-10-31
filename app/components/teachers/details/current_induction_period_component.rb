@@ -1,6 +1,8 @@
 module Teachers::Details
   class CurrentInductionPeriodComponent < ApplicationComponent
-    attr_reader :mode, :teacher, :induction, :enable_release, :enable_edit, :enable_delete
+    include UserModes
+
+    attr_reader :teacher, :induction, :enable_release, :enable_edit, :enable_delete
 
     # @param mode [Symbol] either :admin, :appropriate_body, or :school
     # @param teacher [Teacher] the teacher whose induction period is being displayed
@@ -8,7 +10,8 @@ module Teachers::Details
     # @param enable_delete [Boolean] display links to delete path depends on mode (only for admin mode)
     # @param enable_release [Boolean] display link to release the teacher (only for appropriate body mode)
     def initialize(mode:, teacher:, enable_edit: false, enable_delete: false, enable_release: false)
-      @mode = mode
+      super
+
       @teacher = teacher
       @induction = Teachers::Induction.new(teacher)
       @enable_edit = enable_edit
@@ -75,11 +78,6 @@ module Teachers::Details
 
       delete_path = confirm_delete_admin_teacher_induction_period_path(teacher_id: teacher.id, id: current_period.id)
       govuk_link_to('Delete', delete_path, method: :get, class: 'govuk-link--destructive', no_visited_state: true)
-    end
-
-    # @return [Boolean]
-    def admin_mode?
-      mode == :admin
     end
 
     # @return [String]

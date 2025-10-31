@@ -1,4 +1,4 @@
-RSpec.describe "Admin deletes an induction period" do
+RSpec.describe "Admin deleting an induction" do
   include ActiveJob::TestHelper
 
   include_context "test trs api client"
@@ -13,7 +13,7 @@ RSpec.describe "Admin deletes an induction period" do
   context "when it is the only induction period" do
     let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
 
-    context "and a ticket and reason are provided" do
+    context "with a ticket and reason" do
       it "deletes the induction, resets TRS, adds context to the timeline" do
         given_i_am_on_the_teacher_page
         then_i_should_see_the_delete_link
@@ -38,7 +38,7 @@ RSpec.describe "Admin deletes an induction period" do
       end
     end
 
-    context "and no reason is provided" do
+    context "with a ticket but no reason" do
       it "deletes the induction, resets TRS, adds context to the timeline" do
         given_i_am_on_the_teacher_page
         then_i_should_see_the_delete_link
@@ -56,7 +56,7 @@ RSpec.describe "Admin deletes an induction period" do
       end
     end
 
-    context 'and the zendesk ticket is invalid' do
+    context 'with an invalid ticket' do
       it "shows an error message" do
         given_i_am_on_the_teacher_page
         then_i_should_see_the_delete_link

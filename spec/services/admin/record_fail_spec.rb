@@ -1,21 +1,17 @@
-RSpec.describe AppropriateBodies::RecordFail do
-  include ActiveJob::TestHelper
-
+RSpec.describe Admin::RecordFail do
   subject(:service) do
     described_class.new(
       appropriate_body:,
       pending_induction_submission:,
-      author:
+      author:,
+      note:,
+      zendesk_ticket_id: '#123456'
     )
   end
 
   include_context 'test trs api client'
 
-  let(:author) do
-    FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
-  end
-
+  let(:author) { FactoryBot.create(:dfe_user, email: 'dfe_user@education.gov.uk') }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -25,6 +21,8 @@ RSpec.describe AppropriateBodies::RecordFail do
                       finished_on: 1.day.ago.to_date,
                       number_of_terms: 6)
   end
+
+  let(:note) { 'Original outcome recorded in error' }
 
   describe "#fail!" do
     context "with an ongoing induction period" do
@@ -64,20 +62,15 @@ RSpec.describe AppropriateBodies::RecordFail do
       end
 
       it "records an induction failed event" do
-        allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
-
-        service.fail!
-
-        expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
+        expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
           appropriate_body:,
           teacher:,
           induction_period:,
-          author: an_instance_of(Sessions::Users::AppropriateBodyUser)
+          author:,
+          body: note,
+          zendesk_ticket_id: '123456'
         )
-
-        perform_enqueued_jobs
-
-        expect(Event.last.event_type).to eq("teacher_fails_induction")
+        service.fail!
       end
     end
 

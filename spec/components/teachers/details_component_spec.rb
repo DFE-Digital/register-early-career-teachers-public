@@ -18,7 +18,7 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
     it "rejects invalid modes" do
       expect {
         described_class.new(teacher:, mode: :invalid_mode)
-      }.to raise_error(RuntimeError)
+      }.to raise_error(UserModes::InvalidModeError)
     end
   end
 

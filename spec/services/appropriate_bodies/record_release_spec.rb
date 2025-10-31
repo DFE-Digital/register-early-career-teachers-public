@@ -2,7 +2,7 @@ RSpec.describe AppropriateBodies::RecordRelease do
   include ActiveJob::TestHelper
 
   subject(:service) do
-    AppropriateBodies::RecordRelease.new(
+    described_class.new(
       appropriate_body:,
       pending_induction_submission:,
       author:

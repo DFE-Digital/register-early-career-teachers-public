@@ -1,7 +1,7 @@
 module AppropriateBodies
   class RecordPass < CloseInduction
-    def pass!
-      raise CloseInduction::TeacherHasNoOngoingInductionPeriod if induction_period.blank?
+    def call
+      super
 
       InductionPeriod.transaction do
         close_induction_period(outcome: 'pass')
@@ -11,6 +11,8 @@ module AppropriateBodies
       end
     end
 
+    alias_method :pass!, :call
+
   private
 
     def record_pass_induction_event!
@@ -18,15 +20,15 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
-        induction_period:
+        induction_period: ongoing_induction_period
       )
     end
 
     def send_pass_induction_notification_to_trs
       PassECTInductionJob.perform_later(
-        trn: teacher.trn,
-        start_date: teacher.first_induction_period.started_on,
-        completed_date: teacher.last_induction_period.finished_on
+        trn:,
+        start_date: first_induction_period.started_on,
+        completed_date: last_induction_period.finished_on
       )
     end
   end

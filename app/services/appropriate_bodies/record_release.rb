@@ -1,7 +1,7 @@
 module AppropriateBodies
   class RecordRelease < CloseInduction
-    def release!
-      raise CloseInduction::TeacherHasNoOngoingInductionPeriod if induction_period.blank?
+    def call
+      super
 
       InductionPeriod.transaction do
         close_induction_period
@@ -10,6 +10,8 @@ module AppropriateBodies
       end
     end
 
+    alias_method :release!, :call
+
   private
 
     def record_close_induction_event!
@@ -17,7 +19,7 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
-        induction_period:
+        induction_period: ongoing_induction_period
       )
     end
   end

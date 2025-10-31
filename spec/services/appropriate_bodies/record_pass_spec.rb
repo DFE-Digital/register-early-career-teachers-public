@@ -2,7 +2,7 @@ RSpec.describe AppropriateBodies::RecordPass do
   include ActiveJob::TestHelper
 
   subject(:service) do
-    AppropriateBodies::RecordPass.new(
+    described_class.new(
       appropriate_body:,
       pending_induction_submission:,
       author:
@@ -78,28 +78,6 @@ RSpec.describe AppropriateBodies::RecordPass do
         perform_enqueued_jobs
 
         expect(Event.last.event_type).to eq("teacher_passes_induction")
-      end
-
-      context "when the author is a DfE user" do
-        let(:dfe_user) { FactoryBot.create(:user, email: 'dfe_user@education.gov.uk') }
-        let(:author) { Sessions::Users::DfEUser.new(email: dfe_user.email) }
-
-        it "records an induction passed event" do
-          allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-
-          service.pass!
-
-          expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
-            appropriate_body:,
-            teacher:,
-            induction_period:,
-            author:
-          )
-
-          perform_enqueued_jobs
-
-          expect(Event.last.event_type).to eq("teacher_passes_induction")
-        end
       end
 
       context "when induction submission is invalid" do
