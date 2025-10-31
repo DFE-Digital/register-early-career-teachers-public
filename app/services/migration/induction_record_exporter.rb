@@ -33,7 +33,7 @@ module Migration
       @query = base_query
     end
 
-    def where_ect_participant_profile_id_is(participant_profile_id)
+    def where_participant_profile_id_is(participant_profile_id)
       fail unless Migration::ParticipantProfile.exists?(participant_profile_id)
 
       @query = query.where(participant_profile_id:)

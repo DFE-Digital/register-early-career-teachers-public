@@ -42,19 +42,29 @@ private
   end
 
   def ect_profile
-    @ect_profile ||= if teacher.api_ect_training_record_id.present?
-                       Migration::ParticipantProfilePresenter.new(
-                         Migration::ParticipantProfile.find(teacher.api_ect_training_record_id)
-                       )
-                     end
+    @ect_profile ||= find_ect_profile_for_teacher
+  end
+
+  def find_ect_profile_for_teacher
+    profile = if teacher.api_ect_training_record_id.present?
+                Migration::ParticipantProfile.find(teacher.api_ect_training_record_id)
+              else
+                Migration::TeacherProfile.joins(:participant_profiles).where(trn: teacher.trn).first.participant_profiles.ect.first
+              end
+    Migration::ParticipantProfilePresenter.new(profile) if profile.present?
   end
 
   def mentor_profile
-    @mentor_profile ||= if teacher.api_mentor_training_record_id.present?
-                          Migration::ParticipantProfilePresenter.new(
-                            Migration::ParticipantProfile.find(teacher.api_mentor_training_record_id)
-                          )
-                        end
+    @mentor_profile ||= find_mentor_profile_for_teacher
+  end
+
+  def find_mentor_profile_for_teacher
+    profile = if teacher.api_mentor_training_record_id.present?
+                Migration::ParticipantProfile.find(teacher.api_mentor_training_record_id)
+              else
+                Migration::TeacherProfile.joins(:participant_profiles).where(trn: teacher.trn).first.participant_profiles.mentor.first
+              end
+    Migration::ParticipantProfilePresenter.new(profile) if profile.present?
   end
 
   def make_gantt_chart?
