@@ -165,9 +165,9 @@ put:
 
   - "/api/v3/participants/:id/defer":
       ecf_path: "/api/v3/participants/ecf/:id/defer"
-      id: ":active_ect_teacher_api_id"
-      body: ect_teacher_defer_body
+      id: ":active_teacher_api_id_for_participant_action"
+      body: participant_defer_body
   - "/api/v3/participants/:id/defer":
       ecf_path: "/api/v3/participants/ecf/:id/defer"
-      id: ":deferred_ect_teacher_api_id"
-      body: ect_teacher_defer_body
+      id: ":deferred_teacher_api_id_for_participant_action"
+      body: deferred_participant_defer_body

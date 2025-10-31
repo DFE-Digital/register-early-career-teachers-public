@@ -52,26 +52,20 @@ module ParityCheck
         .pick(:api_id)
     end
 
-    def active_ect_teacher_api_id
-      # Random Teacher with training_status active ECT for lead provider
-      Teacher
-        .joins(ect_at_school_periods: { training_periods: :lead_provider })
-        .where(lead_providers: { id: lead_provider.id })
-        .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
-        .distinct(false)
-        .reorder("RANDOM()")
-        .pick(:api_id)
+    def active_teacher_api_id_for_participant_action
+      @active_teacher_api_id_for_participant_action ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "active")
+                                                        .teachers
+                                                        .distinct(false)
+                                                        .reorder("RANDOM()")
+                                                        .pick(:api_id)
     end
 
-    def deferred_ect_teacher_api_id
-      # Random Teacher with training_status deferred ECT for lead provider
-      Teacher
-        .joins(ect_at_school_periods: { training_periods: :lead_provider })
-        .where(lead_providers: { id: lead_provider.id })
-        .where.not(training_periods: { deferred_at: nil })
-        .distinct(false)
-        .reorder("RANDOM()")
-        .pick(:api_id)
+    def deferred_teacher_api_id_for_participant_action
+      @deferred_teacher_api_id_for_participant_action ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "deferred")
+                                                           .teachers
+                                                           .distinct(false)
+                                                           .reorder("RANDOM()")
+                                                           .pick(:api_id)
     end
 
     # Request body methods
@@ -121,13 +115,25 @@ module ParityCheck
       }
     end
 
-    def ect_teacher_defer_body
+    def active_participant_defer_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      participant_defer_payload(participant)
+    end
+
+    def deferred_participant_defer_body
+      participant = Teacher.find_by(api_id: deferred_teacher_api_id_for_participant_action)
+
+      participant_defer_payload(participant)
+    end
+
+    def participant_defer_payload(participant)
       {
         data: {
           type: "participant-defer",
           attributes: {
             reason: TrainingPeriod.deferral_reasons.values.map(&:dasherize).sample,
-            course_identifier: "ecf-induction",
+            course_identifier: participant.api_ect_training_record_id.present? ? "ecf-induction" : "ecf-mentor",
           },
         },
       }
