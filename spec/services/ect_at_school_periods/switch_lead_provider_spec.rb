@@ -1,10 +1,10 @@
 module ECTAtSchoolPeriods
   describe SwitchLeadProvider do
     subject(:switch_lead_provider) do
-      SwitchLeadProvider.switch(
+      SwitchLeadProvider.call(
         ect_at_school_period,
-        to: lead_provider,
-        from: current_lead_provider,
+        new_lead_provider: lead_provider,
+        old_lead_provider:,
         author:
       )
     end
@@ -27,11 +27,11 @@ module ECTAtSchoolPeriods
       )
     end
 
-    let(:current_lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
     let(:current_active_lead_provider) do
       FactoryBot.create(
         :active_lead_provider,
-        lead_provider: current_lead_provider,
+        lead_provider: old_lead_provider,
         contract_period:
       )
     end
@@ -60,6 +60,16 @@ module ECTAtSchoolPeriods
           started_on: ect_at_school_period.started_on,
           school_partnership:
         )
+      end
+
+      context 'when the new lead provider is the same as the old lead provider' do
+        let(:lead_provider) { old_lead_provider }
+
+        it 'raises an error' do
+          expect { switch_lead_provider }.to raise_error(Teachers::SwitchLeadProviderHelper::LeadProviderNotChangedError)
+
+          expect(training_period.finished_on).to be_nil
+        end
       end
 
       context "when the date of transition is today" do
