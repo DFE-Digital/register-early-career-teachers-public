@@ -2,17 +2,9 @@ module Admin
   class RecordFail < ::AppropriateBodies::RecordFail
     include Auditable
 
-    def fail!
-      validate!
-
-      fail unless valid?
-
-      super
-    end
-
   private
 
-    def record_fail_induction_event!
+    def update_event_history
       Events::Record.record_teacher_fails_induction_event!(
         author:,
         teacher:,

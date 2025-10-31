@@ -1,11 +1,26 @@
 module Admin
   module Teachers
     class RecordPassedInductionController < CloseInductionController
+      def new
+        @record_pass = RecordPass.new(
+          teacher: @teacher,
+          appropriate_body:,
+          author: current_user
+        )
+
+        super
+      end
+
       def create
         if @teacher.ongoing_induction_period.present?
-          @pending_induction_submission = build_closing_induction_period(outcome: 'pass')
+          @record_pass = RecordPass.new(
+            teacher: @teacher,
+            appropriate_body:,
+            author: current_user,
+            **auditable_params
+          )
 
-          if @pending_induction_submission.save(context: :record_outcome) && record_pass.pass!
+          if @record_pass.call(induction_params)
             redirect_to admin_teacher_record_passed_outcome_path(@teacher)
           else
             render :new, status: :unprocessable_content
@@ -14,22 +29,19 @@ module Admin
         else
           redirect_to admin_teacher_path(@teacher)
         end
-      rescue ActiveModel::ValidationError
-        record_pass.errors.each do |error|
-          @pending_induction_submission.errors.add(error.attribute, error.message)
-        end
-
+      rescue ActiveRecord::RecordInvalid,
+             ActiveModel::ValidationError
         render :new, status: :unprocessable_content
       end
 
     private
 
-      def record_pass
-        @record_pass ||= RecordPass.new(
-          appropriate_body:,
-          pending_induction_submission: @pending_induction_submission,
-          **auditable_params
-        )
+      def auditable_params
+        params.expect(RecordPass.auditable_params)
+      end
+
+      def induction_params
+        params.expect(RecordPass.induction_params)
       end
     end
   end

@@ -1,21 +1,23 @@
 module AppropriateBodies
   class RecordPass < CloseInduction
-    def call
+    def outcome = :pass
+
+    def call(*)
       super
 
+      validate_submission(context: :record_outcome)
+
       InductionPeriod.transaction do
-        close_induction_period(outcome: 'pass')
+        close_induction_period
         delete_submission
-        send_pass_induction_notification_to_trs
-        record_pass_induction_event!
+        sync_with_trs
+        update_event_history
       end
     end
 
-    alias_method :pass!, :call
-
   private
 
-    def record_pass_induction_event!
+    def update_event_history
       Events::Record.record_teacher_passes_induction_event!(
         author:,
         teacher:,
@@ -24,7 +26,7 @@ module AppropriateBodies
       )
     end
 
-    def send_pass_induction_notification_to_trs
+    def sync_with_trs
       PassECTInductionJob.perform_later(
         trn:,
         start_date: first_induction_period.started_on,

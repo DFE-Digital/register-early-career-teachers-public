@@ -1,21 +1,23 @@
 module AppropriateBodies
   class RecordFail < CloseInduction
-    def call
+    def outcome = :fail
+
+    def call(*)
       super
 
+      validate_submission(context: :record_outcome)
+
       InductionPeriod.transaction do
-        close_induction_period(outcome: 'fail')
+        close_induction_period
         delete_submission
-        send_fail_induction_notification_to_trs
-        record_fail_induction_event!
+        sync_with_trs
+        update_event_history
       end
     end
 
-    alias_method :fail!, :call
-
   private
 
-    def record_fail_induction_event!
+    def update_event_history
       Events::Record.record_teacher_fails_induction_event!(
         author:,
         teacher:,
@@ -24,7 +26,7 @@ module AppropriateBodies
       )
     end
 
-    def send_fail_induction_notification_to_trs
+    def sync_with_trs
       FailECTInductionJob.perform_later(
         trn:,
         start_date: first_induction_period.started_on,

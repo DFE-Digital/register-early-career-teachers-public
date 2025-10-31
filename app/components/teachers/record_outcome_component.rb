@@ -2,33 +2,32 @@ module Teachers
   class RecordOutcomeComponent < ApplicationComponent
     class InvalidOutcomeError < StandardError; end
     class MissingAppropriateBodyError < StandardError; end
+    class InvalidServiceError < StandardError; end
+
+    attr_reader :service, :teacher_full_name
 
     include UserModes
 
-    attr_reader :teacher,
-                :teacher_full_name,
-                :model,
-                :outcome,
-                :appropriate_body
+    delegate :appropriate_body,
+             :teacher,
+             :pending_induction_submission,
+             :outcome,
+             to: :service
 
     # @param mode [Symbol] either :admin or :appropriate_body
-    # @param teacher [Teacher]
-    # @param pending_induction_submission [PendingInductionSubmission]
-    # @param outcome [Symbol] either :pass or :fail
-    # @param appropriate_body [AppropriateBody, nil]
+    # @param service [Object]
     # @raise [Teachers::RecordOutcomeComponent::InvalidOutcomeError]
     # @raise [Teachers::RecordOutcomeComponent::MissingAppropriateBodyError]
-    def initialize(mode:, teacher:, pending_induction_submission:, outcome:, appropriate_body: nil)
+    def initialize(mode:, service:)
       super
 
-      raise(InvalidOutcomeError) unless outcome.in?(::INDUCTION_OUTCOMES.keys)
-      raise(MissingAppropriateBodyError) if appropriate_body_mode? && appropriate_body.nil?
+      @service = service
 
-      @teacher = teacher
+      raise(InvalidServiceError) if unsupported_service?
+      raise(InvalidOutcomeError) if unsupported_outcome?
+      raise(MissingAppropriateBodyError) if appropriate_body_required?
+
       @teacher_full_name = ::Teachers::Name.new(teacher).full_name
-      @model = pending_induction_submission
-      @outcome = outcome
-      @appropriate_body = appropriate_body
     end
 
   private
@@ -50,6 +49,19 @@ module Teachers
 
     def failed?
       outcome == :fail
+    end
+
+    def appropriate_body_required?
+      appropriate_body_mode? && service.appropriate_body.nil?
+    end
+
+    def unsupported_outcome?
+      !outcome.in?(::INDUCTION_OUTCOMES.keys)
+    end
+
+    def unsupported_service?
+      !service.is_a?(::AppropriateBodies::RecordPass) &&
+        !service.is_a?(::AppropriateBodies::RecordFail)
     end
   end
 end

@@ -2,17 +2,9 @@ module Admin
   class RecordPass < ::AppropriateBodies::RecordPass
     include Auditable
 
-    def pass!
-      validate!
-
-      fail unless valid?
-
-      super
-    end
-
   private
 
-    def record_pass_induction_event!
+    def update_event_history
       Events::Record.record_teacher_passes_induction_event!(
         author:,
         teacher:,

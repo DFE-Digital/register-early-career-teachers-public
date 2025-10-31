@@ -1,5 +1,4 @@
 RSpec.describe 'Appropriate Body bulk claims upload', type: :request do
-  include AuthHelper
   include ActionDispatch::TestProcess
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

@@ -7,6 +7,12 @@ module Auditable
   include ActiveModel::Validations::Callbacks
   include ActiveRecord::Normalization
 
+  class_methods do
+    def auditable_params
+      { model_name.param_key => %i[zendesk_ticket_id note] }
+    end
+  end
+
   included do
     # @param author [Sessions::User]
     attribute :author
@@ -17,14 +23,14 @@ module Auditable
 
     validates :author, presence: true
     validates :zendesk_ticket_id,
-              if: -> { author.dfe_user? && zendesk_ticket_id.present? },
+              if: -> { author&.dfe_user? && zendesk_ticket_id.present? },
               format: {
                 with: /\A\d{6}\z/,
                 message: "Ticket number must be 6 digits"
               }
 
     validate :note_or_zendesk_ticket_present,
-             if: -> { author.dfe_user? }
+             if: -> { author&.dfe_user? }
 
     normalizes :zendesk_ticket_id,
                with: ->(ticket) { ticket.delete_prefix('#').strip }

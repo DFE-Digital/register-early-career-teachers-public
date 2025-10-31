@@ -1,20 +1,20 @@
 module AppropriateBodies
   class RecordRelease < CloseInduction
-    def call
+    def call(*)
       super
+
+      validate_submission(context: :release_ect)
 
       InductionPeriod.transaction do
         close_induction_period
         delete_submission
-        record_close_induction_event!
+        update_event_history
       end
     end
 
-    alias_method :release!, :call
-
   private
 
-    def record_close_induction_event!
+    def update_event_history
       Events::Record.record_induction_period_closed_event!(
         author:,
         teacher:,

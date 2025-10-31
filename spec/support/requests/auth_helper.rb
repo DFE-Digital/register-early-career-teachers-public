@@ -102,5 +102,3 @@ private
     Sessions::Users::SchoolPersona.new(school_urn: school.urn, email:, name:)
   end
 end
-
-RSpec.configure { |config| config.include(AuthHelper, type: :request) }
