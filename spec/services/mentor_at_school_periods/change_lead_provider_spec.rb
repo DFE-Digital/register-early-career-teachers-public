@@ -112,11 +112,12 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       freeze_time
 
       expect(Events::Record)
-        .to receive(:record_mentor_lead_provider_updated_event!)
+        .to receive(:record_teacher_training_lead_provider_updated_event!)
         .with(
           old_lead_provider_name: old_lead_provider.name,
           new_lead_provider_name: new_lead_provider.name,
           author:,
+          ect_at_school_period: nil,
           mentor_at_school_period:,
           school:,
           teacher:,
