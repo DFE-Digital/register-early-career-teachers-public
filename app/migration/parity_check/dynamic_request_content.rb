@@ -83,6 +83,8 @@ module ParityCheck
                                                            .distinct(false)
                                                            .reorder("RANDOM()")
                                                            .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body

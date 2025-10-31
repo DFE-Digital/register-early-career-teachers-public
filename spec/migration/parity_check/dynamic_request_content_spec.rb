@@ -94,11 +94,14 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:from_teacher) { FactoryBot.create(:teacher) }
 
       before do
+        # Should return results from this teacher_id_change
         FactoryBot.create(:teacher_id_change, teacher:, api_from_teacher_id: from_teacher.api_id)
 
-        # Participants for different lead providers should not be used.
-        FactoryBot.create(:training_period, :for_ect, :ongoing)
-        FactoryBot.create(:training_period, :for_mentor, :ongoing)
+        # Participants with teacher_id_change for different lead providers should not be used.
+        unused_teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing).trainee.teacher
+        FactoryBot.create(:teacher_id_change, teacher: unused_teacher1)
+        unused_teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing).trainee.teacher
+        FactoryBot.create(:teacher_id_change, teacher: unused_teacher2)
       end
 
       it { is_expected.to eq(from_teacher.api_id) }
