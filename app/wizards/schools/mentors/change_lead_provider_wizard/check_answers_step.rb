@@ -14,9 +14,10 @@ module Schools
         delegate :name, to: :old_lead_provider, prefix: true
 
         def save!
-          MentorAtSchoolPeriods::ChangeLeadProvider.new(mentor_at_school_period:,
-                                                        lead_provider: new_lead_provider,
-                                                        author: wizard.author).call
+          MentorAtSchoolPeriods::ChangeLeadProvider.call(mentor_at_school_period,
+                                                         new_lead_provider:,
+                                                         old_lead_provider:,
+                                                         author: wizard.author)
 
           true
         rescue MentorAtSchoolPeriods::ChangeLeadProvider::LeadProviderNotChangedError
