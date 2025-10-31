@@ -1,54 +1,74 @@
 get:
   - "/api/v3/statements":
       paginate: true
+      exclude:
+        - type
   - "/api/v3/statements":
       query:
         filter:
           cohort: 2021
+      exclude:
+        - type
   - "/api/v3/statements":
       paginate: true
       query:
         filter:
           cohort: "2022,2023"
+      exclude:
+        - type
   - "/api/v3/statements":
       paginate: true
       query:
         filter:
           cohort: "2022,2023"
           updated_since: "2024-11-13T11:21:55Z"
+      exclude:
+        - type
   - "/api/v3/statements/:id":
       id: ":statement_id"
-
+      exclude:
+        - type
+        
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
       query:
         filter:
           cohort: 2021
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
       query:
         filter:
           cohort: 2022
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
       query:
         filter:
           cohort: 2023
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
       query:
         filter:
           cohort: 2024
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
       query:
         filter:
           cohort: 2025
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -56,6 +76,8 @@ get:
         filter:
           urn: "102396"
           cohort: 2023
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -63,6 +85,8 @@ get:
         filter:
           cohort: 2023
           updated_since: "2025-04-13T11:21:55Z"
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -70,6 +94,8 @@ get:
         filter:
           cohort: 2021
           sort: "-updated_at"
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -78,12 +104,16 @@ get:
           cohort: "2021,2022"
           urn: "102396"
           updated_since: "2025-04-13T11:21:55Z"
+      exclude:
+        - expression_of_interest
   - "/api/v3/schools/:id":
       query:
         filter:
           cohort: 2022
       ecf_path: "/api/v3/schools/ecf/:id"
       id: ":school_id"
+      exclude:
+        - expression_of_interest
 
   - "/api/v3/delivery-partners":
       paginate: true
@@ -108,17 +138,32 @@ get:
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       paginate: true
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       paginate: true
       query:
         filter:
           cohort: 2023
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       paginate: true
       query:
         sort: "-updated_at"
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       paginate: true
@@ -126,6 +171,11 @@ get:
         filter:
           cohort: 2023
         sort: "+created_at"
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       paginate: true
@@ -133,6 +183,11 @@ get:
         filter:
           cohort: "2021,2022"
           updated_since: "2025-04-13T11:21:55Z"
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       paginate: true
@@ -140,6 +195,11 @@ get:
         filter:
           updated_since: "2025-04-13T11:21:55Z"
           delivery_partner_id: ":delivery_partner_id"
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       paginate: true
@@ -148,9 +208,19 @@ get:
           cohort: "2023,2024"
           updated_since: "2025-04-13T11:21:55Z"
           delivery_partner_id: ":delivery_partner_id"
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
   - "/api/v3/partnerships/:id":
       ecf_path: "/api/v3/partnerships/ecf/:id"
       id: ":partnership_id"
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
 
   - "/api/v3/participants":
       ecf_path: "/api/v3/participants/ecf"
@@ -221,13 +291,22 @@ post:
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
       body: partnership_create_body
-
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
 put:
   - "/api/v3/partnerships/:id":
       ecf_path: "/api/v3/partnerships/ecf/:id"
       id: ":partnership_id"
       body: partnership_update_body
-
+      exclude:
+        - participants_currently_training
+        - challenged_at
+        - challenged_reason
+        - status
+        
   - "/api/v3/participants/:id/withdraw":
       ecf_path: "/api/v3/participants/ecf/:id/withdraw"
       id: ":active_teacher_api_id_for_participant_action"

@@ -133,13 +133,34 @@ module ParityCheck
 
       parsed_body = JSON.parse(body)
 
-      parsed_body&.deep_symbolize_keys if parsed_body.is_a?(Hash)
+      deep_remove_keys(parsed_body&.deep_symbolize_keys, keys_to_exclude) if parsed_body.is_a?(Hash)
     rescue JSON::ParserError
       nil
     end
 
     def clear_bodies
       self.ecf_body = self.rect_body = nil
+    end
+
+    def keys_to_exclude
+      (request.endpoint.options[:exclude] || []).map(&:to_sym)
+    end
+
+    def deep_remove_keys(hash, keys_to_remove)
+      return hash if keys_to_remove.blank?
+
+      case hash
+      when Hash
+        hash.each_with_object({}) do |(key, value), result|
+          next if key.in?(keys_to_remove)
+
+          result[key] = deep_remove_keys(value, keys_to_remove)
+        end
+      when Array
+        hash.map { |item| deep_remove_keys(item, keys_to_remove) }
+      else
+        hash
+      end
     end
   end
 end
