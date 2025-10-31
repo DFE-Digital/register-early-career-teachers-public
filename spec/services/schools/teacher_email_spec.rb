@@ -38,7 +38,7 @@ describe Schools::TeacherEmail do
     context "when the email has been used by the same teacher in the past" do
       let(:teacher) { ongoing_ect_at_school_period.teacher }
       let(:trn) { teacher.trn }
-      let(:email) { FactoryBot.create(:ect_at_school_period, teacher:).email }
+      let(:email) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 3.years.ago).email }
 
       it "returns false" do
         expect(subject.is_currently_used?).to be false
