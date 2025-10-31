@@ -39,6 +39,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
 
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
   let(:old_lead_provider) { training_period.lead_provider }
+  let(:new_lead_provider) { lead_provider }
 
   describe "#previous_step" do
     it "returns the previous step" do
@@ -57,24 +58,21 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
 
     before do
       allow(MentorAtSchoolPeriods::ChangeLeadProvider)
-        .to receive(:new)
-        .and_return(service)
-
-      allow(service).to receive(:call).and_return(true)
+        .to receive(:call)
+        .and_return(true)
     end
 
     it "calls the ChangeLeadProvider service" do
       current_step.save!
 
       expect(MentorAtSchoolPeriods::ChangeLeadProvider)
-        .to have_received(:new)
+        .to have_received(:call)
         .with(
-          mentor_at_school_period:,
-          lead_provider:,
+          mentor_at_school_period,
+          new_lead_provider:,
+          old_lead_provider:,
           author: wizard.author
         )
-
-      expect(service).to have_received(:call)
     end
 
     it "is truthy" do
