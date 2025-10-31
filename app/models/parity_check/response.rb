@@ -7,6 +7,7 @@ module ParityCheck
     delegate :run, to: :request
 
     before_validation :clear_bodies, if: :bodies_matching?
+    before_validation :calculate_match_rate
 
     validates :request, presence: true
     validates :ecf_status_code, inclusion: { in: 100..599 }
@@ -29,10 +30,6 @@ module ParityCheck
       ratio = ecf_time_ms.to_f / rect_time_ms
 
       (ratio < 1 ? -(1 / ratio) : ratio).round(1)
-    end
-
-    def match_rate
-      matching? ? 100 : 0
     end
 
     def matching?
@@ -109,6 +106,16 @@ module ParityCheck
 
   private
 
+    def calculate_match_rate
+      return self.match_rate = 100 if matching?
+      return self.match_rate = 0 if ecf_status_code != rect_status_code
+
+      total_lines = ecf_body.to_s.lines.size + rect_body.to_s.lines.size
+      diff_lines  = body_diff.count { |line| line.start_with?('+', '-') }
+
+      self.match_rate = (100 * (1 - diff_lines.to_f / total_lines)).floor
+    end
+
     def format_body(body)
       parsed_json = parse_json_body(body)
 
@@ -122,7 +129,11 @@ module ParityCheck
     end
 
     def parse_json_body(body)
-      JSON.parse(body)&.deep_symbolize_keys if body
+      return nil unless body
+
+      parsed_body = JSON.parse(body)
+
+      parsed_body&.deep_symbolize_keys if parsed_body.is_a?(Hash)
     rescue JSON::ParserError
       nil
     end
