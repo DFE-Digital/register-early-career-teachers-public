@@ -52,6 +52,23 @@ module ParityCheck
         .pick(:api_id)
     end
 
+    def teacher_api_id
+      API::Teachers::Query.new(lead_provider_id: lead_provider.id)
+        .teachers
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
+    def from_teacher_api_id
+      TeacherIdChange
+        .joins(teacher: { ect_at_school_periods: { training_periods: :lead_provider } })
+        .where(lead_providers: { id: lead_provider.id })
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_from_teacher_id)
+    end
+
     # Request body methods
 
     def partnership_create_body
