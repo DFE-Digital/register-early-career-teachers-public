@@ -1,0 +1,17 @@
+RSpec.describe Schools::Mentors::ChangeLeadProviderWizard::Wizard do
+  subject(:wizard) do
+    FactoryBot.build(:change_mentor_lead_provider_wizard, mentor_at_school_period:)
+  end
+
+  let(:teacher) do
+    FactoryBot.create(:teacher, trs_first_name: 'Alastair', trs_last_name: 'Sim')
+  end
+
+  let(:mentor_at_school_period) do
+    FactoryBot.create(:mentor_at_school_period, teacher:)
+  end
+
+  describe '#current_step_path' do
+    it { expect(wizard.current_step_path).to eq "/school/mentors/#{mentor_at_school_period.id}/change-lead-provider/edit" }
+  end
+end
