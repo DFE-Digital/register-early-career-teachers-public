@@ -198,7 +198,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `deferral` with the details of the deferral" do
-              expect(ect_enrolment["deferral"]).to eq({ "deferred_at" => ect_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
+              expect(ect_enrolment["deferral"]).to eq({ "date" => ect_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
             end
           end
 
@@ -343,7 +343,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
 
             it "serializes `deferral` with the details of the deferral" do
-              expect(mentor_enrolment["deferral"]).to eq({ "deferred_at" => mentor_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
+              expect(mentor_enrolment["deferral"]).to eq({ "date" => mentor_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
             end
           end
 
