@@ -1,14 +1,19 @@
 FactoryBot.define do
-  sequence(:base_training_date) { |n| 3.years.ago.to_date + (2 * n).days }
-
   factory(:training_period) do
+    transient do
+      # default start date to be a realistic past date
+      period_start_date { ect_at_school_period&.started_on || mentor_at_school_period&.started_on || rand(2.years.ago..6.months.ago) }
+      # default end date to be a realistic end date
+      period_end_date { started_on || ect_at_school_period&.finished_on || mentor_at_school_period&.finished_on || period_start_date + 1.year }
+    end
+
     for_ect
     with_school_partnership
     with_schedule
     provider_led
 
-    started_on { generate(:base_training_date) }
-    finished_on { started_on + 1.day }
+    started_on { period_start_date }
+    finished_on { period_end_date }
 
     trait :not_started_yet do
       started_on { 2.weeks.from_now }
