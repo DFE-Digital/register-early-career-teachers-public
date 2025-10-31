@@ -54,29 +54,37 @@ describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :mo
   end
 
   describe "save!" do
-    let(:service) { instance_double(MentorAtSchoolPeriods::ChangeLeadProvider) }
+    context "when a valid lead provider is selected" do
+      before do
+        allow(MentorAtSchoolPeriods::ChangeLeadProvider)
+          .to receive(:call)
+          .and_return(true)
+      end
 
-    before do
-      allow(MentorAtSchoolPeriods::ChangeLeadProvider)
-        .to receive(:call)
-        .and_return(true)
+      it "calls the ChangeLeadProvider service" do
+        current_step.save!
+
+        expect(MentorAtSchoolPeriods::ChangeLeadProvider)
+          .to have_received(:call)
+          .with(
+            mentor_at_school_period,
+            new_lead_provider:,
+            old_lead_provider:,
+            author: wizard.author
+          )
+      end
+
+      it "is truthy" do
+        expect(current_step.save!).to be_truthy
+      end
     end
 
-    it "calls the ChangeLeadProvider service" do
-      current_step.save!
+    context "when the lead provider has not changed" do
+      let(:lead_provider) { old_lead_provider }
 
-      expect(MentorAtSchoolPeriods::ChangeLeadProvider)
-        .to have_received(:call)
-        .with(
-          mentor_at_school_period,
-          new_lead_provider:,
-          old_lead_provider:,
-          author: wizard.author
-        )
-    end
-
-    it "is truthy" do
-      expect(current_step.save!).to be_truthy
+      it "is falsy" do
+        expect(current_step.save!).to be_falsey
+      end
     end
   end
 end

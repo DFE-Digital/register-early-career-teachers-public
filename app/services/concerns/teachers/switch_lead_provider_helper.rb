@@ -70,13 +70,7 @@ module Teachers
       )
     end
 
-    def expression_of_interest
-      @expression_of_interest ||= create_expression_of_interest
-    end
-
-    def create_expression_of_interest
-      return if school_partnership.present?
-
+    def active_lead_provider
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
     end
 
@@ -97,7 +91,6 @@ module Teachers
     end
 
     delegate :school, to: :period
-
     delegate :teacher, to: :period
 
     def lead_provider_changed?
@@ -113,8 +106,8 @@ module Teachers
     private :lead_provider_changed?,
             :school, :teacher,
             :school_partnership,
-            :expression_of_interest,
-            :create_expression_of_interest,
+            # :expression_of_interest,
+            :active_lead_provider,
             :lead_provider,
             :started_on, :date_of_transition,
             :training_period, :training_period_not_confirmed,
