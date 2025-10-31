@@ -1,6 +1,6 @@
 RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
   subject(:component) do
-    described_class.new(form:, appropriate_body:)
+    described_class.new(mode:, form:, appropriate_body:)
   end
 
   let(:model) { double("model", number_of_terms: nil, finished_on: nil) }
@@ -12,6 +12,7 @@ RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
   before { render_inline(component) }
 
   context "without appropriate body" do
+    let(:mode) { :admin }
     let(:appropriate_body) { nil }
 
     it "finished_on" do
@@ -28,6 +29,7 @@ RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
   end
 
   context "with appropriate body" do
+    let(:mode) { :appropriate_body }
     let(:appropriate_body) { FactoryBot.build(:appropriate_body, name: 'OmniCorp') }
 
     it "finished_on" do

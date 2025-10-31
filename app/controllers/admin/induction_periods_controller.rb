@@ -1,7 +1,5 @@
 module Admin
   class InductionPeriodsController < AdminController
-    include AuditableParams
-
     before_action :set_teacher
     before_action :set_induction_period, except: %i[new create]
 
@@ -92,9 +90,14 @@ module Admin
 
     def delete_induction_period_service
       InductionPeriods::DeleteInductionPeriod.new(
+        author: current_user,
         induction_period: @induction_period,
-        **auditable_params_for(InductionPeriods::DeleteInductionPeriod.model_name)
+        **auditable_params
       )
+    end
+
+    def auditable_params
+      params.expect(InductionPeriods::DeleteInductionPeriod.auditable_params)
     end
   end
 end

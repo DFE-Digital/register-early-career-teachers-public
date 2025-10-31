@@ -1,12 +1,24 @@
 RSpec.describe "appropriate_bodies/teachers/record_failed_induction/new.html.erb" do
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
-  let(:pending_induction_submission) { PendingInductionSubmission.new }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+
+  let(:author) do
+    FactoryBot.create(:appropriate_body_user,
+                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+  end
+
+  let(:record_fail) do
+    AppropriateBodies::RecordFail.new(teacher:, appropriate_body:, author:)
+  end
 
   before do
+    FactoryBot.create(:induction_period, :ongoing,
+                      appropriate_body:,
+                      teacher:)
+
     assign(:appropriate_body, appropriate_body)
-    assign(:pending_induction_submission, pending_induction_submission)
     assign(:teacher, teacher)
+    assign(:record_fail, record_fail)
 
     render
   end

@@ -1,5 +1,4 @@
 RSpec.describe 'Appropriate Body bulk claims confirmation', type: :request do
-  include AuthHelper
   include ActiveJob::TestHelper
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

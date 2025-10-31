@@ -1,5 +1,4 @@
 RSpec.describe "Appropriate Body teacher extensions edit", type: :request do
-  include AuthHelper
   include ActionView::Helpers::SanitizeHelper
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

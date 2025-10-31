@@ -1,12 +1,10 @@
 <% page_data(
   title: "Record failed outcome for #{teacher_full_name(@teacher)}",
-  error: @pending_induction_submission.errors.any?,
+  error: @record_fail.errors.any?,
   backlink_href: admin_teacher_path(@teacher)
 ) %>
 
 <%= render Teachers::RecordOutcomeComponent.new(
   mode: :admin,
-  outcome: :fail,
-  teacher: @teacher,
-  pending_induction_submission: @pending_induction_submission,
+  service: @record_fail
 ) %>

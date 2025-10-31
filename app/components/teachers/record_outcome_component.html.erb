@@ -4,13 +4,14 @@
   </p>
 <% end %>
 
-<%= form_with(model:, url:) do |form| %>
+<%= form_with(model: service, url:, method: :post) do |form| %>
 
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
-  <%= render Teachers::OutcomeFormFieldsComponent.new(form:, appropriate_body:) %>
+  <%= render Teachers::OutcomeFormFieldsComponent.new(mode:, form:, appropriate_body:) %>
 
   <%= render Admin::ContextFormFieldsComponent.new(form:) if admin_mode? %>
 
   <%= form.govuk_submit submit_text, warning: failed? %>
+
 <% end %>

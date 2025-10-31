@@ -1,5 +1,4 @@
 RSpec.describe "Appropriate Body bulk actions index page", type: :request do
-  include AuthHelper
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   describe 'GET /appropriate-body/bulk/actions' do
