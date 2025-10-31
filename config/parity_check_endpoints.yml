@@ -165,6 +165,24 @@ get:
       ecf_path: "/api/v3/participants/ecf"
       paginate: true
       query:
+        filter:
+          updated_since: "2025-04-13T11:21:55Z"
+  - "/api/v3/participants":
+      ecf_path: "/api/v3/participants/ecf"
+      paginate: true
+      query:
+        filter:
+          training_status: "withdrawn"
+  - "/api/v3/participants":
+      ecf_path: "/api/v3/participants/ecf"
+      paginate: true
+      query:
+        filter:
+          from_participant_id: ":from_teacher_api_id"
+  - "/api/v3/participants":
+      ecf_path: "/api/v3/participants/ecf"
+      paginate: true
+      query:
         sort: "-updated_at"
   - "/api/v3/participants":
       ecf_path: "/api/v3/participants/ecf"
@@ -195,12 +213,6 @@ get:
           cohort: "2023,2024"
           updated_since: "2025-04-13T11:21:55Z"
           training_status: "deferred"
-  - "/api/v3/participants":
-      ecf_path: "/api/v3/participants/ecf"
-      paginate: true
-      query:
-        filter:
-          from_participant_id: ":from_teacher_api_id"
   - "/api/v3/participants/:id":
       ecf_path: "/api/v3/participants/ecf/:id"
       id: ":teacher_api_id"
