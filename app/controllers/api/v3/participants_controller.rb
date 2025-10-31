@@ -33,7 +33,17 @@ module API
         respond_with_service(service:, action: :defer)
       end
 
-      def resume = head(:method_not_allowed)
+      def resume
+        validate_resume_participant_params!
+
+        service = API::Teachers::Resume.new(
+          lead_provider_id: current_lead_provider.id,
+          teacher_api_id: teacher.api_id,
+          teacher_type:
+        )
+
+        respond_with_service(service:, action: :resume)
+      end
 
       def withdraw
         service = API::Teachers::Withdraw.new(
@@ -71,6 +81,12 @@ module API
       def defer_participant_params
         params.require(:data).expect({ attributes: %i[reason] })
       end
+
+      def resume_participant_params
+        params.require(:data).expect({ attributes: %i[course_identifier] })
+      end
+
+      def validate_resume_participant_params! = resume_participant_params
 
       def withdraw_participant_params
         params.require(:data).expect({ attributes: %i[reason] })
