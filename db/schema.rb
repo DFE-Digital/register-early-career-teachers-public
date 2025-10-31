@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_23_134806) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_31_180733) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -480,6 +480,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_23_134806) do
     t.string "ecf_request_uri"
     t.string "rect_request_uri"
     t.jsonb "request_body"
+    t.integer "match_rate", default: 0, null: false
     t.index ["request_id", "page"], name: "index_parity_check_responses_on_request_id_and_page", unique: true
     t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
   end
