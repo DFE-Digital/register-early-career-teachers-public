@@ -1,7 +1,6 @@
 module Migration
   class LegacyProfileGanttController < AdminController
     def show
-      profile_id = params[:profile_id]
       legacy_induction_records = legacy_induction_records(profile_id)
       legacy_declarations = legacy_declarations(profile_id)
 
@@ -9,6 +8,14 @@ module Migration
     end
 
   private
+
+    def profile_id
+      @profile_id ||= safe_params[:profile_id]
+    end
+
+    def safe_params
+      params.permit(:profile_id)
+    end
 
     def legacy_induction_records(participant_profile_id)
       return unless participant_profile_id
