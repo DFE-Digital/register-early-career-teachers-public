@@ -56,7 +56,7 @@ class API::TeacherSerializer < Blueprinter::Base
         training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
         if training_status == :withdrawn
           {
-            "withdrawn_at" => training_period.withdrawn_at.utc.rfc3339,
+            "date" => training_period.withdrawn_at.utc.rfc3339,
             "reason" => training_period.withdrawal_reason.dasherize
           }
         end
