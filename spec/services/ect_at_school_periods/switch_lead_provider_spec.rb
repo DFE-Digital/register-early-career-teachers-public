@@ -102,6 +102,7 @@ module ECTAtSchoolPeriods
               new_lead_provider_name: lead_provider.name,
               author:,
               ect_at_school_period:,
+              mentor_at_school_period: nil,
               school: ect_at_school_period.school,
               teacher: ect_at_school_period.teacher,
               happened_at: Time.current
@@ -149,6 +150,7 @@ module ECTAtSchoolPeriods
               new_lead_provider_name: lead_provider.name,
               author:,
               ect_at_school_period:,
+              mentor_at_school_period: nil,
               school: ect_at_school_period.school,
               teacher: ect_at_school_period.teacher,
               happened_at: Time.current
@@ -202,6 +204,7 @@ module ECTAtSchoolPeriods
               new_lead_provider_name: lead_provider.name,
               author:,
               ect_at_school_period:,
+              mentor_at_school_period: nil,
               school: ect_at_school_period.school,
               teacher: ect_at_school_period.teacher,
               happened_at: Time.current
@@ -249,6 +252,7 @@ module ECTAtSchoolPeriods
               new_lead_provider_name: lead_provider.name,
               author:,
               ect_at_school_period:,
+              mentor_at_school_period: nil,
               school: ect_at_school_period.school,
               teacher: ect_at_school_period.teacher,
               happened_at: Time.current
