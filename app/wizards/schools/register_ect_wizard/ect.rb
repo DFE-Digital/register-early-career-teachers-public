@@ -127,7 +127,7 @@ module Schools
         training_programme == 'provider_led'
       end
 
-      def register!(school, author:)
+      def register!(school, author:, store:)
         Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
                                  corrected_name:,
                                  email:,
@@ -139,8 +139,8 @@ module Schools
                                  trs_first_name:,
                                  trs_last_name:,
                                  working_pattern:,
-                                 author:)
-                            .register!
+                                 author:,
+                                 store:).register!
       end
 
       def school_led?
@@ -170,6 +170,16 @@ module Schools
         return unless previous_training_period&.expression_of_interest
 
         previous_training_period&.expression_of_interest&.lead_provider&.name
+      end
+
+      def normalized_start_date
+        return nil if start_date.blank?
+
+        case start_date
+        when Date   then start_date
+        when String then Date.parse(start_date)
+        when Hash   then Schools::Validation::ECTStartDate.new(date_as_hash: start_date).value_as_date
+        end
       end
 
     private
