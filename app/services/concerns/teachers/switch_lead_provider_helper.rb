@@ -1,0 +1,108 @@
+module Teachers
+  module SwitchLeadProviderHelper
+    class LeadProviderNotChangedError < StandardError; end
+
+    extend ActiveSupport::Concern
+
+    include TrainingPeriodSources
+
+    class_methods do
+      def call(*args, **kwargs)
+        new(*args, **kwargs).call
+      end
+    end
+
+    included do
+      attr_reader :period,
+                  :new_lead_provider,
+                  :old_lead_provider,
+                  :author
+
+      private :period,
+              :old_lead_provider,
+              :new_lead_provider,
+              :author
+    end
+
+    def initialize(period, new_lead_provider:, old_lead_provider:, author:)
+      @period = period
+      @new_lead_provider = new_lead_provider
+      @old_lead_provider = old_lead_provider
+      @author = author
+    end
+
+    def call
+      raise LeadProviderNotChangedError unless lead_provider_changed?
+
+      ActiveRecord::Base.transaction do
+        if date_of_transition.future? || training_period_not_confirmed
+          training_period.destroy!
+        else
+          finish_training_period!
+        end
+
+        create_training_period!
+        record_lead_provider_updated_event!
+      end
+    end
+
+    def create_training_period!
+      TrainingPeriods::Create.provider_led(
+        period:,
+        started_on: date_of_transition,
+        school_partnership:,
+        expression_of_interest:
+      ).call
+    end
+
+    def expression_of_interest
+      @expression_of_interest ||= create_expression_of_interest
+    end
+
+    def create_expression_of_interest
+      return if school_partnership.present?
+
+      ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
+    end
+
+    def school_partnership
+      earliest_matching_school_partnership
+    end
+
+    def training_period_not_confirmed
+      training_period && training_period.school_partnership.blank?
+    end
+
+    def date_of_transition
+      [period.started_on, Date.current].max
+    end
+
+    def training_period
+      period.current_or_next_training_period
+    end
+
+    delegate :school, to: :period
+
+    delegate :teacher, to: :period
+
+    def lead_provider_changed?
+      old_lead_provider != new_lead_provider
+    end
+
+    def lead_provider
+      new_lead_provider
+    end
+
+    alias_method :started_on, :date_of_transition
+
+    private :lead_provider_changed?,
+            :school, :teacher,
+            :school_partnership,
+            :expression_of_interest,
+            :create_expression_of_interest,
+            :lead_provider,
+            :started_on, :date_of_transition,
+            :training_period, :training_period_not_confirmed,
+            :create_training_period!
+  end
+end
