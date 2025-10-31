@@ -471,6 +471,20 @@ describe TrainingPeriod do
         end
       end
     end
+
+    describe "schedule presence" do
+      context "when training period is provider-led" do
+        subject { FactoryBot.build(:training_period, :provider_led) }
+
+        it { is_expected.to validate_presence_of(:schedule).with_message("Schedule is required for provider-led training periods") }
+      end
+
+      context "when training period is school-led" do
+        subject { FactoryBot.build(:training_period, :school_led) }
+
+        it { is_expected.not_to validate_presence_of(:schedule) }
+      end
+    end
   end
 
   describe "scopes" do
