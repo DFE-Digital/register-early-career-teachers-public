@@ -52,20 +52,20 @@ module ParityCheck
         .pick(:api_id)
     end
 
-    def teacher_api_id_for_withdraw
-      @teacher_api_id_for_withdraw ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "active")
-                                      .teachers
-                                      .distinct(false)
-                                      .reorder("RANDOM()")
-                                      .pick(:api_id)
+    def active_teacher_api_id_for_participant_action
+      @active_teacher_api_id_for_participant_action ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "active")
+                                                        .teachers
+                                                        .distinct(false)
+                                                        .reorder("RANDOM()")
+                                                        .pick(:api_id)
     end
 
-    def withdrawn_teacher_api_id_for_withdraw
-      @withdrawn_teacher_api_id_for_withdraw ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "withdrawn")
-                                                .teachers
-                                                .distinct(false)
-                                                .reorder("RANDOM()")
-                                                .pick(:api_id)
+    def withdrawn_teacher_api_id_for_participant_action
+      @withdrawn_teacher_api_id_for_participant_action ||= API::Teachers::Query.new(lead_provider_id: lead_provider.id, training_status: "withdrawn")
+                                                           .teachers
+                                                           .distinct(false)
+                                                           .reorder("RANDOM()")
+                                                           .pick(:api_id)
     end
 
     # Request body methods
@@ -127,14 +127,14 @@ module ParityCheck
       }
     end
 
-    def participant_withdraw_body
-      participant = Teacher.find_by(api_id: teacher_api_id_for_withdraw)
+    def active_participant_withdraw_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
 
       participant_withdraw_payload(participant)
     end
 
     def withdrawn_participant_withdraw_body
-      participant = Teacher.find_by(api_id: withdrawn_teacher_api_id_for_withdraw)
+      participant = Teacher.find_by(api_id: withdrawn_teacher_api_id_for_participant_action)
 
       participant_withdraw_payload(participant)
     end
