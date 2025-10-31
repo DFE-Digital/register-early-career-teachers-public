@@ -15,8 +15,8 @@ class Teacher < ApplicationRecord
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
   has_many :induction_extensions, inverse_of: :teacher
-  has_many :teacher_id_changes, inverse_of: :teacher
-  has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider"
+  has_many :teacher_id_changes, inverse_of: :teacher, dependent: :destroy
+  has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider", dependent: :destroy
 
   has_many :induction_periods
   has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
