@@ -142,31 +142,48 @@ describe ParityCheck::Response do
     end
   end
 
-  describe "#ecf_body=" do
-    let(:ecf_body) { { key: "value" } }
-    let(:response) { FactoryBot.build(:parity_check_response, ecf_body: ecf_body.to_json) }
+  describe "custom body setters" do
+    let(:endpoint) { FactoryBot.create(:parity_check_endpoint, options: { exclude: [:key_to_exclude] }) }
+    let(:request) { FactoryBot.create(:parity_check_request, endpoint:) }
 
-    it { expect(response.ecf_body).to eq(JSON.pretty_generate(ecf_body)) }
+    describe "#ecf_body=" do
+      let(:ecf_body) { { key: "value" } }
+      let(:response) { FactoryBot.build(:parity_check_response, request:, ecf_body: ecf_body.to_json) }
 
-    context "when ecf_body is not JSON" do
-      let(:ecf_body) { "not json" }
-      let(:response) { FactoryBot.build(:parity_check_response, ecf_body:) }
+      it { expect(response.ecf_body).to eq(JSON.pretty_generate(ecf_body)) }
 
-      it { expect(response.ecf_body).to eq("not json") }
+      context "when ecf_body contains keys to exclude" do
+        let(:ecf_body) { { key: [{ key_to_exclude: "value", other_key: "other_value" }] } }
+
+        it { expect(JSON.parse(response.ecf_body)).to eq({ "key" => [{ "other_key" => "other_value" }] }) }
+      end
+
+      context "when ecf_body is not JSON" do
+        let(:ecf_body) { "not json" }
+        let(:response) { FactoryBot.build(:parity_check_response, ecf_body:) }
+
+        it { expect(response.ecf_body).to eq("not json") }
+      end
     end
-  end
 
-  describe "#rect_body=" do
-    let(:rect_body) { { key: "value" } }
-    let(:response) { FactoryBot.build(:parity_check_response, rect_body: rect_body.to_json) }
+    describe "#rect_body=" do
+      let(:rect_body) { { key: "value" } }
+      let(:response) { FactoryBot.build(:parity_check_response, request:, rect_body: rect_body.to_json) }
 
-    it { expect(response.rect_body).to eq(JSON.pretty_generate(rect_body)) }
+      it { expect(response.rect_body).to eq(JSON.pretty_generate(rect_body)) }
 
-    context "when ecf_body is not JSON" do
-      let(:rect_body) { "not json" }
-      let(:response) { FactoryBot.build(:parity_check_response, rect_body:) }
+      context "when ecf_body contains keys to exclude" do
+        let(:rect_body) { { key: [{ key_to_exclude: "value", other_key: "other_value" }] } }
 
-      it { expect(response.rect_body).to eq("not json") }
+        it { expect(JSON.parse(response.rect_body)).to eq({ "key" => [{ "other_key" => "other_value" }] }) }
+      end
+
+      context "when ecf_body is not JSON" do
+        let(:rect_body) { "not json" }
+        let(:response) { FactoryBot.build(:parity_check_response, rect_body:) }
+
+        it { expect(response.rect_body).to eq("not json") }
+      end
     end
   end
 

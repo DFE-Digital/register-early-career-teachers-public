@@ -26,11 +26,12 @@ module ParityCheck
 
         raise RequestError, "Constructed requests do not match between ECF and RECT" unless requests_consistent?(ecf_response, rect_response)
 
-        response = create_response(ecf_response, rect_response)
+        response = build_response(ecf_response, rect_response)
+        next_page = request_builder.advance_page(response)
 
-        yield(response)
+        response.save!
 
-        break unless request_builder.advance_page(response)
+        break unless next_page
       end
     rescue *REQUEST_ERRORS => e
       raise RequestError, e.message
@@ -45,8 +46,9 @@ module ParityCheck
       true
     end
 
-    def create_response(ecf_response, rect_response)
+    def build_response(ecf_response, rect_response)
       Response.new(
+        request:,
         ecf_body: ecf_response.body,
         ecf_status_code: ecf_response.status,
         ecf_time_ms: ecf_response.env[:request_duration_ms],
