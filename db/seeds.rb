@@ -16,6 +16,7 @@ priority_seeds = %w[
   schools
   lead_provider_delivery_partnerships
   school_partnerships
+  schedules_and_milestones
   teachers
   metadata
 ]
