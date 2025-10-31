@@ -18,7 +18,8 @@
 <%= render "previous_choices_summary",
            choices: @decorated_school.latest_registration_choices,
            provider_led: provider_led_last_time,
-           last_chosen_training_programme: @decorated_school.last_chosen_training_programme %>
+           last_chosen_training_programme: @decorated_school.last_chosen_training_programme,
+           reuse_preview: @wizard.current_step.reusable_partnership_preview %>
 
 <% if provider_led_last_time && display_lp.present? && !current_year_has_lp_dp %>
   <%= render "reuse_inset_or_note",
