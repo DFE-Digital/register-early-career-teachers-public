@@ -6,12 +6,14 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
   let!(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:teacher) do
-    FactoryBot.create(:teacher,
-                      :with_sparsity_uplift,
-                      :with_pupil_premium_uplift,
-                      :ineligible_for_mentor_funding,
-                      api_ect_training_record_id: SecureRandom.uuid,
-                      api_mentor_training_record_id: SecureRandom.uuid)
+    FactoryBot.create(
+      :teacher,
+      :with_sparsity_uplift,
+      :with_pupil_premium_uplift,
+      :ineligible_for_mentor_funding,
+      api_ect_training_record_id: SecureRandom.uuid,
+      api_mentor_training_record_id: SecureRandom.uuid
+    )
   end
 
   before do
@@ -20,12 +22,9 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
   end
 
   describe "core attributes" do
-    it "serializes `id`" do
+    it "serializes correctly" do
       expect(response["id"]).to be_present
       expect(response["id"]).to eq(teacher.api_id)
-    end
-
-    it "serializes `type`" do
       expect(response["type"]).to eq("participant")
     end
   end
@@ -33,17 +32,13 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
   describe "nested attributes" do
     subject(:attributes) { response["attributes"] }
 
-    it "serializes `full_name`" do
+    it "serializes correctly" do
       expect(attributes["full_name"]).to be_present
       expect(attributes["full_name"]).to eq(Teachers::Name.new(teacher).full_name_in_trs)
-    end
 
-    it "serializes `updated_at`" do
       expect(attributes["updated_at"]).to be_present
       expect(attributes["updated_at"]).to eq(teacher.updated_at.utc.rfc3339)
-    end
 
-    it "serializes `teacher_reference_number`" do
       expect(attributes["teacher_reference_number"]).to be_present
       expect(attributes["teacher_reference_number"]).to eq(teacher.trn)
     end
@@ -57,29 +52,21 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
         let!(:teacher_id_change_1) { travel_to(2.days.ago) { FactoryBot.create(:teacher_id_change, teacher:) } }
         let!(:teacher_id_change_2) { FactoryBot.create(:teacher_id_change, teacher:) }
 
-        it { expect(participant_id_changes.count).to eq(2) }
+        it "serializes correctly" do
+          expect(participant_id_changes.count).to eq(2)
 
-        it "serializes `from_participant_id`" do
           expect(participant_id_changes[0]["from_participant_id"]).to be_present
-          expect(participant_id_changes[1]["from_participant_id"]).to be_present
-
           expect(participant_id_changes[0]["from_participant_id"]).to eq(teacher_id_change_1.api_from_teacher_id)
-          expect(participant_id_changes[1]["from_participant_id"]).to eq(teacher_id_change_2.api_from_teacher_id)
-        end
-
-        it "serializes `to_participant_id`" do
           expect(participant_id_changes[0]["to_participant_id"]).to be_present
-          expect(participant_id_changes[1]["to_participant_id"]).to be_present
-
           expect(participant_id_changes[0]["to_participant_id"]).to eq(teacher_id_change_1.api_to_teacher_id)
-          expect(participant_id_changes[1]["to_participant_id"]).to eq(teacher_id_change_2.api_to_teacher_id)
-        end
-
-        it "serializes `changed_at`" do
           expect(participant_id_changes[0]["changed_at"]).to be_present
-          expect(participant_id_changes[1]["changed_at"]).to be_present
-
           expect(participant_id_changes[0]["changed_at"]).to eq(teacher_id_change_1.created_at.utc.rfc3339)
+
+          expect(participant_id_changes[1]["from_participant_id"]).to be_present
+          expect(participant_id_changes[1]["from_participant_id"]).to eq(teacher_id_change_2.api_from_teacher_id)
+          expect(participant_id_changes[1]["to_participant_id"]).to be_present
+          expect(participant_id_changes[1]["to_participant_id"]).to eq(teacher_id_change_2.api_to_teacher_id)
+          expect(participant_id_changes[1]["changed_at"]).to be_present
           expect(participant_id_changes[1]["changed_at"]).to eq(teacher_id_change_2.created_at.utc.rfc3339)
         end
       end
@@ -132,19 +119,54 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
         describe "ECT enrolment" do
           subject(:ect_enrolment) { response["attributes"]["ecf_enrolments"][0] }
 
-          it "serializes `training_record_id`" do
+          it "serializes correctly" do
             expect(ect_enrolment["training_record_id"]).to be_present
             expect(ect_enrolment["training_record_id"]).to eq(teacher.api_ect_training_record_id)
-          end
 
-          it "serializes `email`" do
             expect(ect_enrolment["email"]).to be_present
             expect(ect_enrolment["email"]).to eq(ect_at_school_period.email)
-          end
 
-          it "serializes `mentor_id`" do
             expect(ect_enrolment["mentor_id"]).to be_present
             expect(ect_enrolment["mentor_id"]).to eq(latest_mentorship_period.mentor.teacher.api_id)
+
+            expect(ect_enrolment["school_urn"]).to be_present
+            expect(ect_enrolment["school_urn"]).to eq(ect_training_period.school_partnership.school.urn.to_s)
+
+            expect(ect_enrolment["participant_type"]).to eq("ect")
+
+            expect(ect_enrolment["cohort"]).to be_present
+            expect(ect_enrolment["cohort"]).to eq(ect_training_period.school_partnership.contract_period.year.to_s)
+
+            expect(ect_enrolment["training_status"]).to eq(mock_training_status.status)
+
+            expect(ect_enrolment["withdrawal"]).to be_nil
+
+            expect(ect_enrolment["deferral"]).to be_nil
+
+            expect(ect_enrolment["participant_status"]).to eq(mock_teacher_status.status)
+
+            expect(ect_enrolment["pupil_premium_uplift"]).to be_present
+            expect(ect_enrolment["pupil_premium_uplift"]).to eq(teacher.ect_pupil_premium_uplift)
+
+            expect(ect_enrolment["sparsity_uplift"]).to be_present
+            expect(ect_enrolment["sparsity_uplift"]).to eq(teacher.ect_sparsity_uplift)
+
+            expect(ect_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
+
+            expect(ect_enrolment["delivery_partner_id"]).to be_present
+            expect(ect_enrolment["delivery_partner_id"]).to eq(ect_training_period.school_partnership.delivery_partner.api_id)
+
+            expect(ect_enrolment["created_at"]).to eq(teacher.earliest_ect_at_school_period.created_at.utc.rfc3339)
+
+            expect(ect_enrolment["induction_end_date"]).to be_nil
+
+            expect(ect_enrolment["overall_induction_start_date"]).to be_nil
+
+            expect(ect_enrolment["mentor_funding_end_date"]).to be_nil
+
+            expect(ect_enrolment["mentor_became_ineligible_for_funding_reason"]).to be_nil
+
+            expect(ect_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.ect_payments_frozen_year.present?)
           end
 
           context "when there is no latest mentor training period" do
@@ -153,36 +175,6 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             it "serializes `mentor_id` as nil" do
               expect(ect_enrolment["mentor_id"]).to be_nil
             end
-          end
-
-          it "serializes `school_urn`" do
-            expect(ect_enrolment["school_urn"]).to be_present
-            expect(ect_enrolment["school_urn"]).to eq(ect_training_period.school_partnership.school.urn.to_s)
-          end
-
-          it "serializes `participant_type`" do
-            expect(ect_enrolment["participant_type"]).to eq("ect")
-          end
-
-          it "serializes `cohort`" do
-            expect(ect_enrolment["cohort"]).to be_present
-            expect(ect_enrolment["cohort"]).to eq(ect_training_period.school_partnership.contract_period.year.to_s)
-          end
-
-          it "serializes `training_status`" do
-            expect(ect_enrolment["training_status"]).to eq(mock_training_status.status)
-          end
-
-          it "serializes `withdrawal`" do
-            expect(ect_enrolment["withdrawal"]).to be_nil
-          end
-
-          it "serializes `deferral`" do
-            expect(ect_enrolment["deferral"]).to be_nil
-          end
-
-          it "serializes `participant_status`" do
-            expect(ect_enrolment["participant_status"]).to eq(mock_teacher_status.status)
           end
 
           context "when `eligible_for_funding` is true" do
@@ -201,109 +193,72 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          it "serializes `pupil_premium_uplift`" do
-            expect(ect_enrolment["pupil_premium_uplift"]).to be_present
-            expect(ect_enrolment["pupil_premium_uplift"]).to eq(teacher.ect_pupil_premium_uplift)
-          end
+          context "when there is finished induction period" do
+            let!(:finished_induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
 
-          it "serializes `sparsity_uplift`" do
-            expect(ect_enrolment["sparsity_uplift"]).to be_present
-            expect(ect_enrolment["sparsity_uplift"]).to eq(teacher.ect_sparsity_uplift)
-          end
-
-          it "serializes `schedule_identifier`" do
-            expect(ect_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
-          end
-
-          it "serializes `delivery_partner_id`" do
-            expect(ect_enrolment["delivery_partner_id"]).to be_present
-            expect(ect_enrolment["delivery_partner_id"]).to eq(ect_training_period.school_partnership.delivery_partner.api_id)
-          end
-
-          it "serializes `created_at`" do
-            expect(ect_enrolment["created_at"]).to eq(teacher.earliest_ect_at_school_period.created_at.utc.rfc3339)
-          end
-
-          it "serializes `induction_end_date`" do
-            finished_induction_period = FactoryBot.create(:induction_period, :pass, teacher:)
-            expect(ect_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
-          end
-
-          context "when there is no finished induction period" do
-            it "serializes `induction_end_date` as nil" do
-              expect(ect_enrolment["induction_end_date"]).to be_nil
+            it "serializes `induction_end_date`" do
+              expect(ect_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
             end
           end
 
-          it "serializes `overall_induction_start_date`" do
-            started_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:)
-            expect(ect_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
-          end
+          context "when there is started induction period" do
+            let!(:started_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
-          context "when there is no started induction period" do
-            it "serializes `overall_induction_start_date` as nil" do
-              expect(ect_enrolment["overall_induction_start_date"]).to be_nil
+            it "serializes `overall_induction_start_date`" do
+              expect(ect_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
             end
-          end
-
-          it "serializes `mentor_funding_end_date`" do
-            expect(ect_enrolment["mentor_funding_end_date"]).to be_nil
-          end
-
-          it "serializes `mentor_became_ineligible_for_funding_reason`" do
-            expect(ect_enrolment["mentor_became_ineligible_for_funding_reason"]).to be_nil
-          end
-
-          it "serializes `cohort_changed_after_payments_frozen`" do
-            expect(ect_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.ect_payments_frozen_year.present?)
           end
         end
 
         describe "mentor enrolment" do
           subject(:mentor_enrolment) { response["attributes"]["ecf_enrolments"][1] }
 
-          it "serializes `training_record_id`" do
+          it "serializes correctly" do
             expect(mentor_enrolment["training_record_id"]).to be_present
             expect(mentor_enrolment["training_record_id"]).to eq(teacher.api_mentor_training_record_id)
-          end
 
-          it "serializes `email`" do
             expect(mentor_enrolment["email"]).to be_present
             expect(mentor_enrolment["email"]).to eq(mentor_at_school_period.email)
-          end
 
-          it "serializes `mentor_id`" do
             expect(mentor_enrolment["mentor_id"]).to be_nil
-          end
 
-          it "serializes `school_urn`" do
             expect(mentor_enrolment["school_urn"]).to be_present
             expect(mentor_enrolment["school_urn"]).to eq(mentor_training_period.school_partnership.school.urn.to_s)
-          end
 
-          it "serializes `participant_type`" do
             expect(mentor_enrolment["participant_type"]).to eq("mentor")
-          end
 
-          it "serializes `cohort`" do
             expect(mentor_enrolment["cohort"]).to be_present
             expect(mentor_enrolment["cohort"]).to eq(mentor_training_period.school_partnership.contract_period.year.to_s)
-          end
 
-          it "serializes `training_status`" do
             expect(mentor_enrolment["training_status"]).to eq(mock_training_status.status)
-          end
 
-          it "serializes `withdrawal`" do
             expect(mentor_enrolment["withdrawal"]).to be_nil
-          end
 
-          it "serializes `deferral`" do
             expect(mentor_enrolment["deferral"]).to be_nil
-          end
 
-          it "serializes `participant_status`" do
             expect(mentor_enrolment["participant_status"]).to eq(mock_teacher_status.status)
+
+            expect(mentor_enrolment["pupil_premium_uplift"]).to be(false)
+
+            expect(mentor_enrolment["sparsity_uplift"]).to be(false)
+
+            expect(mentor_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
+
+            expect(mentor_enrolment["delivery_partner_id"]).to be_present
+            expect(mentor_enrolment["delivery_partner_id"]).to eq(mentor_training_period.school_partnership.delivery_partner.api_id)
+
+            expect(mentor_enrolment["created_at"]).to eq(teacher.earliest_mentor_at_school_period.created_at.utc.rfc3339)
+
+            expect(mentor_enrolment["induction_end_date"]).to be_nil
+
+            expect(mentor_enrolment["overall_induction_start_date"]).to be_nil
+
+            expect(mentor_enrolment["mentor_funding_end_date"]).to eq(teacher.mentor_became_ineligible_for_funding_on.rfc3339)
+
+            expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to be_present
+            expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to eq(teacher.mentor_became_ineligible_for_funding_reason)
+
+            expect(mentor_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.mentor_payments_frozen_year.present?)
           end
 
           context "when `eligible_for_funding` is true" do
@@ -322,51 +277,20 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          it "serializes `pupil_premium_uplift`" do
-            expect(mentor_enrolment["pupil_premium_uplift"]).to be(false)
-          end
+          context "when there is finished induction period" do
+            let!(:finished_induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
 
-          it "serializes `sparsity_uplift`" do
-            expect(mentor_enrolment["sparsity_uplift"]).to be(false)
-          end
-
-          it "serializes `schedule_identifier`" do
-            expect(mentor_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
-          end
-
-          it "serializes `delivery_partner_id`" do
-            expect(mentor_enrolment["delivery_partner_id"]).to be_present
-            expect(mentor_enrolment["delivery_partner_id"]).to eq(mentor_training_period.school_partnership.delivery_partner.api_id)
-          end
-
-          it "serializes `created_at`" do
-            expect(mentor_enrolment["created_at"]).to eq(teacher.earliest_mentor_at_school_period.created_at.utc.rfc3339)
-          end
-
-          it "serializes `induction_end_date`" do
-            finished_induction_period = FactoryBot.create(:induction_period, :pass, teacher:)
-            expect(mentor_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
-          end
-
-          context "when there is no finished induction period" do
-            it "serializes `induction_end_date` as nil" do
-              expect(mentor_enrolment["induction_end_date"]).to be_nil
+            it "serializes `induction_end_date`" do
+              expect(mentor_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
             end
-          end
-
-          it "serializes `overall_induction_start_date`" do
-            started_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:)
-            expect(mentor_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
           end
 
           context "when there is no started induction period" do
-            it "serializes `overall_induction_start_date` as nil" do
-              expect(mentor_enrolment["overall_induction_start_date"]).to be_nil
-            end
-          end
+            let!(:started_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
-          it "serializes `mentor_funding_end_date`" do
-            expect(mentor_enrolment["mentor_funding_end_date"]).to eq(teacher.mentor_became_ineligible_for_funding_on.rfc3339)
+            it "serializes `overall_induction_start_date`" do
+              expect(mentor_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
+            end
           end
 
           context "when there is no `mentor_funding_end_date`" do
@@ -375,15 +299,6 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             it "serializes `mentor_funding_end_date` as nil" do
               expect(mentor_enrolment["mentor_funding_end_date"]).to be_nil
             end
-          end
-
-          it "serializes `mentor_ineligible_for_funding_reason`" do
-            expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to be_present
-            expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to eq(teacher.mentor_became_ineligible_for_funding_reason)
-          end
-
-          it "serializes `cohort_changed_after_payments_frozen`" do
-            expect(mentor_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.mentor_payments_frozen_year.present?)
           end
         end
       end
