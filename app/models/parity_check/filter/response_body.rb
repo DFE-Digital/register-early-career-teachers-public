@@ -23,7 +23,7 @@ module ParityCheck::Filter
     #  }
     # }
     def filterable_key_hash
-      rect_key_hash.merge(ecf_key_hash)
+      rect_key_hash.deep_merge(ecf_key_hash)
     end
 
     # Checks if a key path has been selected for filtering, for example:
