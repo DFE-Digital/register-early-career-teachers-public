@@ -10,6 +10,10 @@ def generate_new_value(attribute_to_change:)
     (instance[attribute_to_change] || Date.current) + 1.day
   elsif attribute_to_change == :finished_on
     (instance[attribute_to_change] || Date.current) - 1.day
+  elsif attribute_to_change.to_s.end_with?("_id")
+    association_name = attribute_to_change.to_s.delete_suffix("_id").to_sym
+    klass = instance.class.reflect_on_association(association_name).klass
+    ActiveRecord::Base.connection.select_value("SELECT last_value FROM #{klass.sequence_name}") + 1
   else
     Faker::Types.send("rb_#{column.type}")
   end
