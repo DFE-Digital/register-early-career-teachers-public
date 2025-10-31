@@ -3,12 +3,11 @@ class API::DeliveryPartnerSerializer < Blueprinter::Base
     exclude :id
 
     field :name
+    field :created_at
+    field(:api_updated_at, name: :updated_at)
     field(:cohort) do |delivery_partner, options|
       lead_provider_metadata(delivery_partner:, options:).contract_period_years.map(&:to_s)
     end
-
-    field :created_at
-    field(:api_updated_at, name: :updated_at)
 
     class << self
       def lead_provider_metadata(delivery_partner:, options:)
