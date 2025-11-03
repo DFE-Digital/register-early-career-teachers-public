@@ -9,6 +9,8 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
   def validate_navigation_items(expected_items)
     expect(rendered_content).to have_css(nav_list_selector)
 
+    expect(page).to have_css('nav[aria-label="Menu"] a.govuk-service-navigation__link', count: expected_items.count)
+
     expected_items.each do |item|
       expect(rendered_content).to have_link(item[:text], href: item[:href])
     end
@@ -63,6 +65,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
         expected_items = [
           { text: "ECTs", href: "/school/home/ects" },
+          { text: "Mentors", href: "/school/home/mentors" }
         ]
 
         validate_navigation_items(expected_items)
@@ -116,6 +119,22 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         ["Swagger API documentation", "Release notes", "Sandbox", "Guidance"].each do |other_page|
           expect(rendered_content).to have_css(".govuk-service-navigation__link", text: other_page)
         end
+      end
+    end
+
+    context "when dfe user is impersonating a school user" do
+      let(:current_user_type) { :dfe_user_impersonating_school_user }
+      let(:current_path) { "/schools" }
+
+      it "renders the same items a school user would see" do
+        render_inline(subject)
+
+        expected_items = [
+          { text: "ECTs", href: "/school/home/ects" },
+          { text: "Mentors", href: "/school/home/mentors" }
+        ]
+
+        validate_navigation_items(expected_items)
       end
     end
   end
