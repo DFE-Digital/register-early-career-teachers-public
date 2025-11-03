@@ -80,6 +80,7 @@ RSpec.configure do |config|
           Participant: PARTICIPANT,
           ParticipantsFilter: PARTICIPANTS_FILTER,
           ParticipantResponse: PARTICIPANT_RESPONSE,
+          ParticipantWithdrawRequest: PARTICIPANT_WITHDRAW_REQUEST,
           ParticipantsResponse: PARTICIPANTS_RESPONSE,
           ParticipantECFEnrolment: PARTICIPANT_ECF_ENROLMENT,
           ParticipantIDChange: PARTICIPANT_ID_CHANGE,
