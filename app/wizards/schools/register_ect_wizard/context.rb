@@ -96,14 +96,7 @@ module Schools
       end
 
       delegate :previous_ect_at_school_period, to: :queries
-
-      def lead_provider_has_confirmed_partnership_for_contract_period?(school)
-        return false unless queries.previous_lead_provider && contract_start_date && school
-
-        SchoolPartnerships::Search
-          .new(school:, lead_provider: queries.previous_lead_provider, contract_period: contract_start_date)
-          .exists?
-      end
+      delegate :lead_provider_has_confirmed_partnership_for_contract_period?, to: :@status
 
       def previous_eoi_lead_provider_name
         previous_training_period = queries.previous_training_period
