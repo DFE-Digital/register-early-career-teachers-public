@@ -399,5 +399,104 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         })
       end
     end
+
+    context "when fetching `withdrawn_participant_resume_body`" do
+      let(:identifier) { :withdrawn_participant_resume_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Active participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:)
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Participant for different lead providers should not be used.
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn)
+      end
+
+      it "returns a participant resume body for withdrawn participant" do
+        expect(Teacher)
+          .to receive(:find_by)
+          .with(api_id: teacher.api_id)
+          .and_call_original
+
+        expect(fetch).to eq({
+          data: {
+            type: "participant-resume",
+            attributes: {
+              course_identifier: "ecf-induction"
+            },
+          },
+        })
+      end
+    end
+
+    context "when fetching `deferred_participant_resume_body`" do
+      let(:identifier) { :deferred_participant_resume_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :deferred, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Active participant for current lead provider
+        FactoryBot.create(:training_period, :for_mentor, :ongoing, :active, school_partnership:)
+        # Withdrawn participant for current lead provider
+        FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, school_partnership:)
+        # Deferred participant for different lead provider
+        FactoryBot.create(:training_period, :for_mentor, :ongoing, :deferred)
+      end
+
+      it "returns a participant resume body for deferred participant" do
+        expect(Teacher)
+          .to receive(:find_by)
+          .with(api_id: teacher.api_id)
+          .and_call_original
+
+        expect(fetch).to eq({
+          data: {
+            type: "participant-resume",
+            attributes: {
+              course_identifier: "ecf-mentor"
+            },
+          },
+        })
+      end
+    end
+
+    context "when fetching `active_participant_resume_body`" do
+      let(:identifier) { :active_participant_resume_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Withdrawn participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:)
+        # Participants for different lead providers should not be used
+        FactoryBot.create(:training_period, :for_ect, :ongoing)
+      end
+
+      it "returns a participant resume body for active participant" do
+        expect(Teacher)
+          .to receive(:find_by)
+          .with(api_id: teacher.api_id)
+          .and_call_original
+
+        expect(fetch).to eq({
+          data: {
+            type: "participant-resume",
+            attributes: {
+              course_identifier: "ecf-induction"
+            },
+          },
+        })
+      end
+    end
   end
 end
