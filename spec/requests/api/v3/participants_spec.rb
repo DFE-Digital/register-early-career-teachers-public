@@ -18,8 +18,8 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
       FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:)
     ]
     training_periods.each do |training_period|
-      training_period.update!(withdrawn_at: 1.day.ago, withdrawal_reason: :other) if training_status == :withdrawn
-      training_period.update!(deferred_at: 1.day.ago, deferral_reason: :other) if training_status == :deferred
+      training_period.update!(withdrawn_at: 1.day.ago, finished_on: 1.day.ago, withdrawal_reason: :other) if training_status == :withdrawn
+      training_period.update!(deferred_at: 1.day.ago, finished_on: 1.day.ago, deferral_reason: :other) if training_status == :deferred
     end
 
     teacher.tap do |teacher|
@@ -97,14 +97,31 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
   end
 
   describe "#resume" do
-    let(:path) { resume_api_v3_participant_path(123) }
+    let(:path) { resume_api_v3_participant_path(resource.api_id) }
+    let(:service) { API::Teachers::Resume }
+    let(:resource_type) { Teacher }
+    let(:resource) { create_resource(active_lead_provider:, training_status: :withdrawn) }
+    let(:course_identifier) { "ecf-induction" }
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        teacher_api_id: resource.api_id,
+        teacher_type: :ect,
+      }
+    end
+    let(:params) do
+      {
+        data: {
+          type: "participant-resume",
+          attributes: {
+            course_identifier:,
+          }
+        }
+      }
+    end
 
     it_behaves_like "a token authenticated endpoint", :put
-
-    it "returns method not allowed" do
-      authenticated_api_put path
-      expect(response).to be_method_not_allowed
-    end
+    it_behaves_like "an API update endpoint"
   end
 
   describe "#withdraw" do
