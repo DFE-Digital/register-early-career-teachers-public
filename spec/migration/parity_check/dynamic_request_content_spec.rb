@@ -366,16 +366,16 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:identifier) { :deferred_participant_defer_body }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
-      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :deferred, school_partnership:) }
       let(:teacher) { training_period.trainee.teacher }
 
       before do
         # Active participant for current lead provider
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :active, school_partnership:)
+        FactoryBot.create(:training_period, :for_mentor, :ongoing, :active, school_partnership:)
         # Withdrawn participant for current lead provider
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:)
+        FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, school_partnership:)
         # Deferred participant for different lead provider
-        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred)
+        FactoryBot.create(:training_period, :for_mentor, :ongoing, :deferred)
         # Stub deferred reasons so we have a predictable value
         allow(TrainingPeriod).to receive(:deferral_reasons).and_return({ parental_leave: "moved_school" })
       end
@@ -386,7 +386,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
             type: "participant-defer",
             attributes: {
               reason: "moved-school",
-              course_identifier: "ecf-induction"
+              course_identifier: "ecf-mentor"
             },
           },
         })
