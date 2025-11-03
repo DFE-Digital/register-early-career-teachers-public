@@ -14,6 +14,12 @@
 <%= render partial: "failures", locals: { failures: @failures } %>
 
 <% if make_gantt_chart? %>
-  <h2 class="govuk-heading-m">ECT induction record data</h2>
-  <%= tag.img(src: migration_teacher_legacy_ect_gantt_path(@teacher), class: 'migration-gantt') %>
+  <% if @ect_profile.present? %>
+    <h2 class="govuk-heading-m">ECT induction record data</h2>
+    <%= tag.img(src: migration_legacy_profile_gantt_path(profile_id: @ect_profile), class: 'migration-gantt') %>
+  <% end %>
+  <% if @mentor_profile.present? %>
+    <h2 class="govuk-heading-m">Mentor induction record data</h2>
+    <%= tag.img(src: migration_legacy_profile_gantt_path(profile_id: @mentor_profile), class: 'migration-gantt') %>
+  <% end %>
 <% end %>

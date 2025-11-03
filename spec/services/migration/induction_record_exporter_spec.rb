@@ -29,9 +29,9 @@ RSpec.describe Migration::InductionRecordExporter do
     end
   end
 
-  describe "#where_ect_participant_profile_id_is" do
+  describe "#where_participant_profile_id_is" do
     let(:participant_id) { induction_record_1.participant_profile_id }
-    let!(:csv_output) { exporter.where_ect_participant_profile_id_is(participant_id).generate_csv }
+    let!(:csv_output) { exporter.where_participant_profile_id_is(participant_id).generate_csv }
 
     it "limits the results to the specified participant_profile_id" do
       csv = CSV.parse(csv_output, headers: true)
