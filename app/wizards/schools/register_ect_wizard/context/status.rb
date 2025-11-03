@@ -45,10 +45,6 @@ module Schools
           context.trs_date_of_birth.to_date == context.date_of_birth.to_date
         end
 
-        def previous_provider_led?
-          queries.previous_training_period&.provider_led_training_programme?
-        end
-
         def provider_led?
           context.training_programme == 'provider_led'
         end

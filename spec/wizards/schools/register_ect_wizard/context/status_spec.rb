@@ -224,38 +224,6 @@ RSpec.describe Schools::RegisterECTWizard::Context::Status do
     end
   end
 
-  describe '#previous_provider_led?' do
-    context 'when there is no previous training period' do
-      let(:previous_training_period) { nil }
-
-      it 'returns nil' do
-        expect(status.previous_provider_led?).to be_nil
-      end
-    end
-
-    context 'when there is a previous training period' do
-      let(:previous_training_period) do
-        instance_double(TrainingPeriod, provider_led_training_programme?: provider_led_training_programme)
-      end
-
-      context 'and it was provider led' do
-        let(:provider_led_training_programme) { true }
-
-        it 'returns true' do
-          expect(status.previous_provider_led?).to be(true)
-        end
-      end
-
-      context 'and it was not provider led' do
-        let(:provider_led_training_programme) { false }
-
-        it 'returns false' do
-          expect(status.previous_provider_led?).to be(false)
-        end
-      end
-    end
-  end
-
   describe '#provider_led?' do
     context "when the training programme is 'provider_led'" do
       let(:training_programme) { 'provider_led' }
