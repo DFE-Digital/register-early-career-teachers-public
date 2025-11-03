@@ -1,5 +1,5 @@
 module Teachers
-  module SwitchLeadProviderHelper
+  module LeadProviderChanger
     class LeadProviderNotChangedError < StandardError; end
 
     extend ActiveSupport::Concern

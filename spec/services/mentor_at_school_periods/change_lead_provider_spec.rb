@@ -23,7 +23,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       let(:lead_provider) { old_lead_provider }
 
       it 'raises an error' do
-        expect { subject }.to raise_error(Teachers::SwitchLeadProviderHelper::LeadProviderNotChangedError)
+        expect { subject }.to raise_error(Teachers::LeadProviderChanger::LeadProviderNotChangedError)
 
         expect(training_period.finished_on).to be_nil
       end

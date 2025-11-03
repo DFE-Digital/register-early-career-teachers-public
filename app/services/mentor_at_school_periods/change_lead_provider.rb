@@ -1,6 +1,6 @@
 module MentorAtSchoolPeriods
   class ChangeLeadProvider
-    include Teachers::SwitchLeadProviderHelper
+    include Teachers::LeadProviderChanger
 
   private
 
