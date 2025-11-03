@@ -15,7 +15,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on: Time.zone.today) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_school_partnership, mentor_at_school_period:, started_on: Time.zone.today) }
 
   let(:params) { { lead_provider_id: lead_provider.id } }
 
@@ -45,6 +45,17 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
         expect(current_step).to be_invalid
         expect(current_step.errors.messages_for(:lead_provider_id)).to contain_exactly(
           "Select a lead provider to contact your school"
+        )
+      end
+    end
+
+    context "when the lead_provider has not changed" do
+      let(:params) { { lead_provider_id: training_period.active_lead_provider.lead_provider.id } }
+
+      it "is invalid" do
+        expect(current_step).to be_invalid
+        expect(current_step.errors.messages_for(:lead_provider_id)).to contain_exactly(
+          "Select a different lead provider to contact your school"
         )
       end
     end

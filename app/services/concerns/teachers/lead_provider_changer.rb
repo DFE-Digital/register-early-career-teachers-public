@@ -48,7 +48,7 @@ module Teachers
       end
     end
 
-    private
+  private
 
     def create_training_period!
       TrainingPeriods::Create.provider_led(

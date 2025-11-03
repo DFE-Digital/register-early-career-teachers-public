@@ -3,14 +3,15 @@ describe "School user can change a mentor's lead provider", :enable_schools_inte
     given_there_is_a_school
     and_there_is_a_mentor
     and_i_am_logged_in_as_a_school_user
+
+    and_there_is_a_contract_period
+    and_there_is_an_active_lead_provider
+    with_provider_led_training
+    and_there_is_another_active_lead_provider
   end
 
   context 'when an active lead provider is selected' do
     it "changes the lead provider to an active lead provider" do
-      and_there_is_a_contract_period
-      and_there_is_an_active_lead_provider
-      with_provider_led_training
-      and_there_is_another_active_lead_provider
       with_a_partnership_with_the_school
 
       when_i_visit_the_mentor_page
@@ -37,11 +38,6 @@ describe "School user can change a mentor's lead provider", :enable_schools_inte
 
   context 'when a lead provider without a partnership is selected' do
     it "creates a new expression of interest" do
-      and_there_is_a_contract_period
-      and_there_is_an_active_lead_provider
-      with_provider_led_training
-      and_there_is_another_active_lead_provider
-
       when_i_visit_the_mentor_page
       then_i_can_change_the_assigned_lead_provider
       and_i_see_the_change_lead_provider_form
@@ -50,12 +46,6 @@ describe "School user can change a mentor's lead provider", :enable_schools_inte
       when_i_choose_a_lead_provider
       and_i_continue
       then_i_am_asked_to_check_and_confirm_the_change
-
-      when_i_navigate_back_to_the_form
-      and_i_see_the_change_lead_provider_form
-      then_the_lead_provider_is_selected
-
-      when_i_continue
       and_i_confirm_the_change
       then_i_see_the_confirmation_message
 

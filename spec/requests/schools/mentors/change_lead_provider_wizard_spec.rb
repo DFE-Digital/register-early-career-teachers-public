@@ -158,10 +158,6 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
         it "returns unprocessable_content" do
           post(path_for_step("edit"), params:)
 
-          follow_redirect!
-
-          post(path_for_step("check-answers"))
-
           expect(response).to have_http_status(:unprocessable_content)
         end
       end

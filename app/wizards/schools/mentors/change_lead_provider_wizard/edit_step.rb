@@ -29,7 +29,9 @@ module Schools
         end
 
         def lead_provider_has_changed
-          lead_provider_id != lead_provider_for_mentor_at_school_period.id.to_s
+          return if lead_provider_id != lead_provider_for_mentor_at_school_period.id.to_s
+
+          errors.add(:lead_provider_id, "Select a different lead provider to contact your school")
         end
 
         def active_lead_providers_in_contract_period
