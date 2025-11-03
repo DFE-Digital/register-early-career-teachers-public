@@ -1,7 +1,7 @@
 module ECTAtSchoolPeriods
-  describe SwitchLeadProvider do
-    subject(:switch_lead_provider) do
-      SwitchLeadProvider.call(
+  describe ChangeLeadProvider do
+    subject(:change_lead_provider) do
+      ChangeLeadProvider.call(
         ect_at_school_period,
         new_lead_provider: lead_provider,
         old_lead_provider:,
@@ -66,7 +66,7 @@ module ECTAtSchoolPeriods
         let(:lead_provider) { old_lead_provider }
 
         it 'raises an error' do
-          expect { switch_lead_provider }.to raise_error(Teachers::SwitchLeadProviderHelper::LeadProviderNotChangedError)
+          expect { change_lead_provider }.to raise_error(Teachers::LeadProviderChanger::LeadProviderNotChangedError)
 
           expect(training_period.finished_on).to be_nil
         end
@@ -76,14 +76,14 @@ module ECTAtSchoolPeriods
         it "finishes the existing training period" do
           freeze_time
 
-          switch_lead_provider
+          change_lead_provider
 
           expect { training_period.reload }.not_to raise_error
           expect(training_period.finished_on).to eq(Date.current)
         end
 
         it "creates a new training period with the new lead provider" do
-          switch_lead_provider
+          change_lead_provider
 
           new_training_period = ect_at_school_period.reload.current_or_next_training_period
           expect(new_training_period.started_on).to eq(Date.current)
@@ -108,7 +108,7 @@ module ECTAtSchoolPeriods
               happened_at: Time.current
             )
 
-          switch_lead_provider
+          change_lead_provider
         end
       end
 
@@ -124,14 +124,14 @@ module ECTAtSchoolPeriods
         it "destroys the existing training period" do
           freeze_time
 
-          switch_lead_provider
+          change_lead_provider
 
           expect { training_period.reload }
             .to raise_error(ActiveRecord::RecordNotFound)
         end
 
         it "creates a new training period" do
-          switch_lead_provider
+          change_lead_provider
 
           new_training_period = ect_at_school_period.reload.current_or_next_training_period
           expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
@@ -156,7 +156,7 @@ module ECTAtSchoolPeriods
               happened_at: Time.current
             )
 
-          switch_lead_provider
+          change_lead_provider
         end
       end
     end
@@ -178,14 +178,14 @@ module ECTAtSchoolPeriods
         it "destroys the existing training period" do
           freeze_time
 
-          switch_lead_provider
+          change_lead_provider
 
           expect { training_period.reload }
             .to raise_error(ActiveRecord::RecordNotFound)
         end
 
         it "creates a new training period" do
-          switch_lead_provider
+          change_lead_provider
 
           new_training_period = ect_at_school_period.reload.current_or_next_training_period
           expect(new_training_period.started_on).to eq(Date.current)
@@ -210,7 +210,7 @@ module ECTAtSchoolPeriods
               happened_at: Time.current
             )
 
-          switch_lead_provider
+          change_lead_provider
         end
       end
 
@@ -226,14 +226,14 @@ module ECTAtSchoolPeriods
         it "destroys the existing training period" do
           freeze_time
 
-          switch_lead_provider
+          change_lead_provider
 
           expect { training_period.reload }
             .to raise_error(ActiveRecord::RecordNotFound)
         end
 
         it "creates a new training period" do
-          switch_lead_provider
+          change_lead_provider
 
           new_training_period = ect_at_school_period.reload.current_or_next_training_period
           expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
@@ -258,7 +258,7 @@ module ECTAtSchoolPeriods
               happened_at: Time.current
             )
 
-          switch_lead_provider
+          change_lead_provider
         end
       end
 
@@ -275,8 +275,8 @@ module ECTAtSchoolPeriods
 
         it "raises and does not mutate state" do
           expect {
-            switch_lead_provider
-          }.to raise_error(ECTAtSchoolPeriods::SwitchLeadProvider::SchoolLedTrainingProgrammeError)
+            change_lead_provider
+          }.to raise_error(ECTAtSchoolPeriods::ChangeLeadProvider::SchoolLedTrainingProgrammeError)
 
           expect { training_period.reload }.not_to raise_error
           expect(training_period.finished_on).to be_nil

@@ -1,8 +1,8 @@
 module ECTAtSchoolPeriods
-  class SwitchLeadProvider
+  class ChangeLeadProvider
     class SchoolLedTrainingProgrammeError < StandardError; end
 
-    include Teachers::SwitchLeadProviderHelper
+    include Teachers::LeadProviderChanger
 
     def call
       raise SchoolLedTrainingProgrammeError if training_period&.school_led_training_programme?
