@@ -11,6 +11,7 @@ RSpec.describe Schools::RegisterECTWizard::Context::Status do
   let(:training_programme) { nil }
   let(:date_of_birth) { nil }
   let(:trs_date_of_birth) { nil }
+  let(:contract_start_date) { nil }
 
   let(:context) do
     Struct.new(
@@ -23,7 +24,8 @@ RSpec.describe Schools::RegisterECTWizard::Context::Status do
       :previous_training_programme,
       :training_programme,
       :date_of_birth,
-      :trs_date_of_birth
+      :trs_date_of_birth,
+      :contract_start_date
     ).new(
       email,
       trn,
@@ -34,14 +36,18 @@ RSpec.describe Schools::RegisterECTWizard::Context::Status do
       previous_training_programme,
       training_programme,
       date_of_birth,
-      trs_date_of_birth
+      trs_date_of_birth,
+      contract_start_date
     )
   end
 
-  let(:previous_training_period) { nil }
   let(:queries) do
-    instance_double(Schools::RegisterECTWizard::Context::Queries, previous_training_period:)
+    instance_double(Schools::RegisterECTWizard::Context::Queries,
+                    previous_training_period:,
+                    previous_lead_provider:)
   end
+  let(:previous_training_period) { nil }
+  let(:previous_lead_provider) { nil }
 
   describe '#cant_use_email?' do
     let(:teacher_email_service) { instance_double(Schools::TeacherEmail, is_currently_used?: result) }
@@ -282,6 +288,63 @@ RSpec.describe Schools::RegisterECTWizard::Context::Status do
 
       it 'returns false' do
         expect(status.school_led?).to be(false)
+      end
+    end
+  end
+
+  describe '#lead_provider_has_confirmed_partnership_for_contract_period?' do
+    let(:school) { instance_double(School) }
+
+    context 'when previous lead provider, contract period and school are present' do
+      let(:previous_lead_provider) { instance_double(LeadProvider) }
+      let(:contract_start_date) { Date.new(2024, 9, 1) }
+      let(:search_instance) { instance_double(SchoolPartnerships::Search, exists?: search_result) }
+
+      before do
+        allow(SchoolPartnerships::Search)
+          .to receive(:new)
+          .with(school:, lead_provider: previous_lead_provider, contract_period: contract_start_date)
+          .and_return(search_instance)
+      end
+
+      context 'and the partnership exists' do
+        let(:search_result) { true }
+
+        it 'returns true' do
+          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(true)
+        end
+      end
+
+      context 'and the partnership does not exist' do
+        let(:search_result) { false }
+
+        it 'returns false' do
+          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(false)
+        end
+      end
+    end
+
+    context 'when prerequisites are missing' do
+      it 'returns false when previous lead provider is nil' do
+        expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(false)
+      end
+
+      context 'when contract period is nil' do
+        let(:contract_start_date) { nil }
+        let(:previous_lead_provider) { instance_double(LeadProvider) }
+
+        it 'returns false' do
+          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(false)
+        end
+      end
+
+      context 'when school is nil' do
+        let(:previous_lead_provider) { instance_double(LeadProvider) }
+        let(:contract_start_date) { Date.new(2024, 9, 1) }
+
+        it 'returns false' do
+          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be(false)
+        end
       end
     end
   end
