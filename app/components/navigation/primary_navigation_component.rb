@@ -29,6 +29,8 @@ module Navigation
     def navigation_area
       if current_path.start_with?('/api/guidance')
         :api_guidance
+      elsif current_user_type == :dfe_user_impersonating_school_user
+        :school_user
       else
         current_user_type
       end
