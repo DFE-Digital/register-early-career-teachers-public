@@ -48,6 +48,8 @@ module Teachers
       end
     end
 
+    private
+
     def create_training_period!
       TrainingPeriods::Create.provider_led(
         period:,
@@ -102,16 +104,5 @@ module Teachers
     end
 
     alias_method :started_on, :date_of_transition
-
-    private :lead_provider_changed?,
-            :school, :teacher,
-            :school_partnership,
-            # :expression_of_interest,
-            :active_lead_provider,
-            :lead_provider,
-            :started_on, :date_of_transition,
-            :training_period, :training_period_not_confirmed,
-            :create_training_period!,
-            :record_lead_provider_updated_event!
   end
 end
