@@ -31,9 +31,9 @@ describe Schools::Mentors::ChangeLeadProviderWizard::ConfirmationStep, type: :mo
     end
   end
 
-  describe "#new_lead_provider" do
+  describe "#new_lead_provider_name" do
     it "returns the mentor's lead provider" do
-      expect(current_step.new_lead_provider).to eq(lead_provider)
+      expect(current_step.new_lead_provider_name).to eq(lead_provider.name)
     end
   end
 end
