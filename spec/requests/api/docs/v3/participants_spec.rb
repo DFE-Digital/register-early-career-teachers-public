@@ -127,7 +127,7 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                     let(:params) do
                       {
                         data: {
-                          type: "participant",
+                          type: "participant-defer",
                           attributes: {
                             course_identifier: "ecf-induction",
                             reason: "career-break"
@@ -139,7 +139,56 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                     let(:invalid_params) do
                       {
                         data: {
-                          type: "participant",
+                          type: "participant-defer",
+                          attributes: {
+                            course_identifier: "something-invalid",
+                            reason: "invalid-reason"
+                          }
+                        }
+                      }
+                    end
+                  end
+
+  it_behaves_like "an API update endpoint documentation",
+                  {
+                    url: "/api/v3/participants/{id}/resume",
+                    tag: "Participants",
+                    resource_description: "participant",
+                    request_schema_ref: "#/components/schemas/ParticipantResumeRequest",
+                    response_schema_ref: "#/components/schemas/ParticipantResponse",
+                  } do
+                    before do
+                      training_period.update!(
+                        withdrawn_at: 1.day.ago,
+                        finished_on: 1.day.ago,
+                        withdrawal_reason: :other
+                      )
+                    end
+
+                    let(:response_example) do
+                      extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v3).tap do |example|
+                        example[:data][:attributes][:ecf_enrolments][0][:training_status] = "active"
+                        example[:data][:attributes][:ecf_enrolments][0][:deferral] = nil
+                        example[:data][:attributes][:ecf_enrolments][0][:withdrawal] = nil
+                      end
+                    end
+
+                    let(:params) do
+                      {
+                        data: {
+                          type: "participant-resume",
+                          attributes: {
+                            course_identifier: "ecf-induction",
+                            reason: "moved-school"
+                          }
+                        }
+                      }
+                    end
+
+                    let(:invalid_params) do
+                      {
+                        data: {
+                          type: "participant-resume",
                           attributes: {
                             course_identifier: "something-invalid",
                             reason: "invalid-reason"
