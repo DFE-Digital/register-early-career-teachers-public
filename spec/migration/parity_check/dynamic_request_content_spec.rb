@@ -69,6 +69,44 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       it { is_expected.to eq(partnership.api_id) }
     end
 
+    context "when fetching `teacher_api_id`", :with_metadata do
+      let(:identifier) { :teacher_api_id }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        # Participants for different lead providers should not be used.
+        FactoryBot.create(:training_period, :for_ect, :ongoing)
+        FactoryBot.create(:training_period, :for_mentor, :ongoing)
+      end
+
+      it { is_expected.to eq(teacher.api_id) }
+    end
+
+    context "when fetching `from_teacher_api_id`", :with_metadata do
+      let(:identifier) { :from_teacher_api_id }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+      let(:from_teacher) { FactoryBot.create(:teacher) }
+
+      before do
+        # Should return results from this teacher_id_change
+        FactoryBot.create(:teacher_id_change, teacher:, api_from_teacher_id: from_teacher.api_id)
+
+        # Participants with teacher_id_change for different lead providers should not be used.
+        unused_teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing).trainee.teacher
+        FactoryBot.create(:teacher_id_change, teacher: unused_teacher1)
+        unused_teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing).trainee.teacher
+        FactoryBot.create(:teacher_id_change, teacher: unused_teacher2)
+      end
+
+      it { is_expected.to eq(from_teacher.api_id) }
+    end
+
     context "when fetching partnership_create_body" do
       let(:identifier) { :partnership_create_body }
       let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
