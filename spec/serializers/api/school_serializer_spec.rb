@@ -6,9 +6,11 @@ describe API::SchoolSerializer, type: :serializer do
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:contract_period) { FactoryBot.create(:contract_period) }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, created_at:, api_updated_at:) }
   let!(:contract_period_metadata) { FactoryBot.create(:school_contract_period_metadata, school:, contract_period:) }
   let!(:lead_provider_contract_period_metadata) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school:, lead_provider:, contract_period:) }
+  let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
+  let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
 
   before do
     # Ensure other metadata exists.
@@ -20,11 +22,8 @@ describe API::SchoolSerializer, type: :serializer do
   end
 
   describe "core attributes" do
-    it "serializes `id`" do
+    it "serializes correctly" do
       expect(response["id"]).to eq(school.api_id)
-    end
-
-    it "serializes `type`" do
       expect(response["type"]).to eq("school")
     end
   end
@@ -32,39 +31,14 @@ describe API::SchoolSerializer, type: :serializer do
   describe "nested attributes" do
     subject(:attributes) { response["attributes"] }
 
-    it "serializes `name`" do
+    it "serializes correctly" do
       expect(attributes["name"]).to eq(school.name)
-    end
-
-    it "serializes `urn`" do
       expect(attributes["urn"]).to eq(school.urn.to_s)
-    end
-
-    it "serializes `cohort`" do
       expect(attributes["cohort"]).to eq(contract_period.year.to_s)
-    end
-
-    it "serializes `in_partnership`" do
       expect(attributes["in_partnership"]).to eq(contract_period_metadata.in_partnership)
-    end
-
-    it "serializes `induction_programme_choice`" do
       expect(attributes["induction_programme_choice"]).to eq(contract_period_metadata.induction_programme_choice)
-    end
-
-    it "serializes `expression_of_interest`" do
       expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest_or_school_partnership)
-    end
-
-    it "serializes `created_at`" do
-      school.created_at = Time.utc(2023, 7, 1, 12, 0, 0)
-
       expect(attributes["created_at"]).to eq(school.created_at.utc.rfc3339)
-    end
-
-    it "serializes `api_updated_at`" do
-      school.api_updated_at = Time.utc(2023, 7, 2, 12, 0, 0)
-
       expect(attributes["updated_at"]).to eq(school.api_updated_at.utc.rfc3339)
     end
   end
