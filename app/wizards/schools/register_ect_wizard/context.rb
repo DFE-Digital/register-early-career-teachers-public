@@ -9,7 +9,10 @@ module Schools
         @status    = Context::Status.new(context: self, queries: @queries)
       end
 
-      delegate :full_name, to: :@presenter
+      delegate :full_name,
+               :formatted_working_pattern,
+               :govuk_date_of_birth,
+               to: :@presenter
 
       delegate :ect_at_school_period, to: :queries
 
@@ -35,14 +38,6 @@ module Schools
                :provider_led?,
                :school_led?,
                to: :@status
-
-      def formatted_working_pattern
-        working_pattern.humanize
-      end
-
-      def govuk_date_of_birth
-        trs_date_of_birth&.to_date&.to_formatted_s(:govuk)
-      end
 
       def induction_start_date
         queries.first_induction_period&.started_on
