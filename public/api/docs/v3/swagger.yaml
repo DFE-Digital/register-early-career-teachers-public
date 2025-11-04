@@ -919,6 +919,18 @@ components:
               type: boolean
               nullable: false
               example: false
+            induction_tutor_name:
+              description: The name of the induction tutor at the school you are in
+                partnership with
+              type: string
+              nullable: true
+              example: John Doe
+            induction_tutor_email:
+              description: The email address of the induction tutor at the school
+                you are in partnership with
+              type: string
+              nullable: true
+              example: john.doe@example.com
             created_at:
               description: The date and time the school was created
               type: string
