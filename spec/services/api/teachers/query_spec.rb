@@ -280,7 +280,7 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
       describe "by `updated_since`" do
         it "filters by `updated_since`" do
-          FactoryBot.create(:teacher).tap { it.update(updated_at: 2.days.ago) }
+          FactoryBot.create(:teacher).tap { it.update(api_updated_at: 2.days.ago) }
           teacher2 = FactoryBot.create(:teacher)
 
           query = described_class.new(updated_since: 1.day.ago)
@@ -289,15 +289,15 @@ RSpec.describe API::Teachers::Query, :with_metadata do
         end
 
         it "does not filter by `updated_since` if omitted" do
-          teacher1 = FactoryBot.create(:teacher).tap { it.update(updated_at: 1.week.ago) }
-          teacher2 = FactoryBot.create(:teacher).tap { it.update(updated_at: 2.weeks.ago) }
+          teacher1 = FactoryBot.create(:teacher).tap { it.update(api_updated_at: 1.week.ago) }
+          teacher2 = FactoryBot.create(:teacher).tap { it.update(api_updated_at: 2.weeks.ago) }
 
           expect(described_class.new.teachers).to contain_exactly(teacher1, teacher2)
         end
 
         it "does not filter by `updated_since` if blank" do
-          teacher1 = FactoryBot.create(:teacher).tap { it.update(updated_at: 1.week.ago) }
-          teacher2 = FactoryBot.create(:teacher).tap { it.update(updated_at: 2.weeks.ago) }
+          teacher1 = FactoryBot.create(:teacher).tap { it.update(api_updated_at: 1.week.ago) }
+          teacher2 = FactoryBot.create(:teacher).tap { it.update(api_updated_at: 2.weeks.ago) }
 
           query = described_class.new(updated_since: " ")
 
