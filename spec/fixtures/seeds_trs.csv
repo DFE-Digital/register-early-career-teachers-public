@@ -1,0 +1,33 @@
+Name,TRN,Date of birth,NI number,Status,QTS awarded
+Chloe Nolan,3002586,1977-02-03,OA647867D,RequiredToComplete,2021-10-09
+Delilah Frost,3002585,1966-01-02,MA251209B,RequiredToComplete,2021-02-13
+Theo Willis,3002584,1955-11-24,RE937588C,RequiredToComplete,2023-11-11
+Marvin Fuller,3002583,1977-09-24,PG050037C,RequiredToComplete,2024-10-01
+Daisy Dudley,3002576,1999-03-04,GE377928A,RequiredToComplete,2021-09-01
+Jonas Bloggs,3002577,2000-12-02,BT524135A,RequiredToComplete,2022-11-10
+Cynthia Parks,3002578,1977-09-10,CB196295D,RequiredToComplete,2021-11-03
+Taylor Hawkins,3002579,2001-08-01,WJ584009B,RequiredToComplete,2023-04-04
+Muhammed Ali (no mentor funding),3002580,1955-03-04,BJ833983C,RequiredToComplete,2022-12-13
+Robson Scottie (no mentor funding),3002582,1980-05-11,WX999679C,RequiredToComplete,2024-10-01
+Rebecca Jones (ineligible),1209937,1993-10-12,J698546XA,Passed,2016-09-09
+Joseph Waller (ineligible),1062313,1988-05-30,1A7T689J2,Passed,2016-07-07
+Jacqueline Bartlett (ineligible),2057184,1976-08-31,82063AJE7,Exempt,1998-08-01
+George James (ineligible),2136110,1968-07-29,BN19500R8,Exempt,1998-08-13
+Carol Burns (ineligible),1058354,1991-04-02,27313BJL9,Failed,2012-07-03
+Nicola Borschmann (ineligible),2467487,1975-02-02,532B10J1A,Failed,2004-07-16
+John Smith (ineligible),1247646,1986-06-19,6J8B903G8,FailedInWales,2008-08-01
+Jim Laney (ineligible),3002065,1990-01-01,OA046772B,FailedInWales,2024-03-03
+George Orwell (prohibited),2632412,1984-02-16,,InProgress,2023-03-12
+Neils Clarke-Dolan (prohibited),2908239,1978-08-12,,Passed,2020-08-01
+Dona Msa (no QTS),3003943,1964-02-02,AB722128C,None,
+Claire Cool (no QTS),3012235,1993-01-03,BB123456C,None,
+Linda Belcher (no QTS),3012238,1980-12-01,QQ123456C,None,
+James Rocket (no QTS),3012239,1976-11-26,AA223456C,None,
+Buffy Summers (no QTS),3012240,1987-09-09,AA333456C,None,
+Ash Ketchum (no QTS),3012241,2000-01-25,QQ553456C,None,
+Jigglypuff Jewels (no QTS),3012242,1993-01-05,QQ773456C,None,
+Clefairy Cuddles (no QTS),3012243,1993-01-09,QQ993456C,None,
+Bulbasaur Brown (no QTS),3012244,1992-01-19,QQ893456C,None,
+Squirtle Samuels (no QTS),3012245,1992-03-19,QQ123445C,None,
+Ditto Debbie (no QTS),3012246,1970-04-28,QQ783445C,None,
+Butterfree Barnaby (no QTS),3012247,2002-06-18,QQ799445C,None,

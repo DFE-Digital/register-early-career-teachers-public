@@ -2,6 +2,6 @@
 
 <p class="govuk-body">To successfully locate an ECT from the TRS API, use credentials from the table below:</p>
 
-<%= govuk_table(head:, rows: rows_with_buttons) %>
+<%= govuk_table(head:, rows:) %>
 
 <%= javascript_include_tag('populate-find-ect-form', data: { turbo_track: 'reload' }, defer: true) %>

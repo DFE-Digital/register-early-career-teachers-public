@@ -230,7 +230,6 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
 
           allow(Teachers::InductionStatus).to receive(:new).with(
             teacher:,
-            induction_periods: teacher.induction_periods,
             trs_induction_status: teacher.trs_induction_status
           ).and_return(status_service)
           allow(status_service).to receive(:status_tag_kwargs).and_return(expected_kwargs)
