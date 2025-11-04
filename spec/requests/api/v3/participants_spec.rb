@@ -40,8 +40,8 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
     it_behaves_like "a filter by from_participant_id endpoint"
     it_behaves_like "a filter by training_status endpoint"
-    # it_behaves_like "a filter by updated_since endpoint" TODO: uncomment when Teacher has an api_updated_at
-    # it_behaves_like "a sortable endpoint" TODO: uncomment when Teacher has an api_updated_at
+    it_behaves_like "a filter by updated_since endpoint"
+    it_behaves_like "a sortable endpoint"
   end
 
   describe "#show" do
@@ -51,7 +51,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
 
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
-    # it_behaves_like "a does not filter by updated_since endpoint" # TODO: uncomment when Teacher has an api_updated_at
+    it_behaves_like "a does not filter by updated_since endpoint"
   end
 
   describe "#change_schedule" do
