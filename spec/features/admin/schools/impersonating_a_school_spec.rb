@@ -6,6 +6,7 @@ RSpec.describe 'Impersonating a school user', :enable_schools_interface do
     when_i_click_sign_in_as_school
     then_i_should_be_on_the_schools_home_page
     and_i_should_be_impersonating_the_school
+    and_i_should_see_the_same_navbar_a_school_sees
 
     when_i_click_sign_out
     then_i_should_be_on_the_admin_school_show_page
@@ -49,6 +50,11 @@ private
     body = page.locator('body')
 
     expect(body).to have_text("You are signed in as #{@school.name}")
+  end
+
+  def and_i_should_see_the_same_navbar_a_school_sees
+    expect(page.get_by_role('link', name: 'ECTs')).to be_visible
+    expect(page.get_by_role('link', name: 'Mentors')).to be_visible
   end
 
   def when_i_click_sign_out
