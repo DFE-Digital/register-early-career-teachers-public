@@ -5,8 +5,8 @@ RSpec.describe 'Visiting the service' do
     end
 
     scenario 'the home page is the appropriate body landing page' do
-      given_i_browse_to_the_app_root
-      i_am_redirected_to_the_ab_landing_page
+      given_i_browse_to("/")
+      then_i_am_redirected_to_the_ab_landing_page
     end
   end
 
@@ -16,24 +16,46 @@ RSpec.describe 'Visiting the service' do
     end
 
     scenario 'the home page is the school landing page' do
-      given_i_browse_to_the_app_root
+      given_i_browse_to("/")
       then_i_see_the_school_landing_page
+    end
+  end
+
+  context 'when accessing restricted areas' do
+    scenario 'Admin console redirects to authenticate' do
+      given_i_browse_to("/admin")
+      then_i_see_the_admin_sign_in_page
+    end
+
+    scenario 'Blazer redirects to authenticate' do
+      given_i_browse_to("/admin/blazer")
+      then_i_see_the_admin_sign_in_page
+    end
+
+    scenario 'MissionControl redirects to authenticate' do
+      given_i_browse_to("/admin/jobs")
+      then_i_see_the_admin_sign_in_page
     end
   end
 
 private
 
-  def given_i_browse_to_the_app_root
-    page.goto(root_path)
+  def given_i_browse_to(path)
+    page.goto(path)
   end
 
-  def i_am_redirected_to_the_ab_landing_page
+  def then_i_am_redirected_to_the_ab_landing_page
     expect(page).to have_path('/appropriate-body')
-    expect(page.title).to include('Record inductions as an appropriate body')
+    expect(page.title).to start_with('Record inductions as an appropriate body')
   end
 
   def then_i_see_the_school_landing_page
     expect(page).to have_path('/')
-    expect(page.title).to include('Register early career teachers')
+    expect(page.title).to start_with('Register early career teachers')
+  end
+
+  def then_i_see_the_admin_sign_in_page
+    expect(page).to have_path('/sign-in')
+    expect(page.title).to start_with('Select a sign in method')
   end
 end
