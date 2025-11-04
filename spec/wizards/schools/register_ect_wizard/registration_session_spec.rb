@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::Context do
+RSpec.describe Schools::RegisterECTWizard::RegistrationSession do
   subject(:ect) { described_class.new(store) }
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }

@@ -1,17 +1,23 @@
 module Schools
   module RegisterECTWizard
     # This class is a decorator for the SessionRepository
-    class Context < SimpleDelegator
+    class RegistrationSession < SimpleDelegator
       def initialize(store)
         super(store)
-        @queries   = Context::Queries.new(context: self)
-        @presenter = Context::Presenter.new(context: self)
-        @previous_registration = Context::PreviousRegistration.new(context: self, queries:)
-        @status = Context::Status.new(context: self, queries:)
+        @queries   = RegistrationSession::Queries.new(context: self)
+        @presenter = RegistrationSession::Presenter.new(context: self)
+        @previous_registration = RegistrationSession::PreviousRegistration.new(context: self, queries:)
+        @status = RegistrationSession::Status.new(context: self, queries:)
       end
 
       delegate :ect_at_school_period,
-               :active_record_at_school, :appropriate_body, :lead_providers_within_contract_period, :contract_start_date, :lead_provider, :previous_ect_at_school_period, to: :queries
+               :active_record_at_school,
+               :appropriate_body,
+               :lead_providers_within_contract_period,
+               :contract_start_date,
+               :lead_provider,
+               :previous_ect_at_school_period,
+               to: :queries
 
       delegate :full_name,
                :formatted_working_pattern,

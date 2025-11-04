@@ -64,7 +64,7 @@ module Schools
       end
 
       def ect
-        @ect ||= Context.new(store)
+        @ect ||= RegistrationSession.new(store)
       end
 
       # def wrapper

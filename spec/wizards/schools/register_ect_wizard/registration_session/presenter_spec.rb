@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::Context::Presenter do
+RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Presenter do
   subject(:presenter) { described_class.new(context:) }
 
   let(:context) do

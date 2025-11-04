@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::Context::Status do
+RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Status do
   subject(:status) { described_class.new(context:, queries:) }
 
   let(:email) { 'ect@example.com' }
@@ -42,7 +42,7 @@ RSpec.describe Schools::RegisterECTWizard::Context::Status do
   end
 
   let(:queries) do
-    instance_double(Schools::RegisterECTWizard::Context::Queries,
+    instance_double(Schools::RegisterECTWizard::RegistrationSession::Queries,
                     previous_training_period:,
                     previous_lead_provider:)
   end

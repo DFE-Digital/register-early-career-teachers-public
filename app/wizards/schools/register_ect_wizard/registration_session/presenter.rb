@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class Context
+    class RegistrationSession
       class Presenter
         def initialize(context:)
           @context = context
