@@ -37,9 +37,8 @@ module AppropriateBodyHelper
             value: {
               text: govuk_tag(
                 **Teachers::InductionStatus.new(
-                  teacher:,
-                  induction_periods: teacher.induction_periods,
-                  trs_induction_status: teacher.trs_induction_status
+                  trs_induction_status: teacher.trs_induction_status,
+                  teacher:
                 ).status_tag_kwargs
               ),
             },
