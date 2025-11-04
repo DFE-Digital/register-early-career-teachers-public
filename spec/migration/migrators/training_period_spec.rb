@@ -5,10 +5,10 @@ describe Migrators::TrainingPeriod do
       FactoryBot.create(:migration_induction_record, participant_profile: ect)
       school = ect.school_cohort.school
       cohort = ect.school_cohort.cohort
-      induction_programme = ect.school_cohort.default_induction_programme
       partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
-      induction_programme.update!(partnership:)
+      induction_programme = ect.school_cohort.default_induction_programme
       FactoryBot.create(:migration_provider_relationship, lead_provider: partnership.lead_provider, delivery_partner: partnership.delivery_partner, cohort: partnership.cohort)
+      induction_programme.update!(partnership:)
       ect.teacher_profile
     end
 
