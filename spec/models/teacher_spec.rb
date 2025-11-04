@@ -6,6 +6,40 @@ describe Teacher do
     it_behaves_like "a declarative metadata model", on_event: %i[create update]
   end
 
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:teacher) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative touch model", when_changing: %i[api_id
+                                                                   corrected_name
+                                                                   trs_first_name
+                                                                   trs_last_name
+                                                                   trn
+                                                                   api_ect_training_record_id
+                                                                   api_mentor_training_record_id
+                                                                   mentor_became_ineligible_for_funding_on
+                                                                   mentor_became_ineligible_for_funding_reason
+                                                                   ect_first_became_eligible_for_training_at
+                                                                   mentor_first_became_eligible_for_training_at
+                                                                   ect_pupil_premium_uplift
+                                                                   ect_sparsity_uplift
+                                                                   ect_payments_frozen_year
+                                                                   mentor_payments_frozen_year], timestamp_attribute: :api_updated_at
+
+    context "target mentee_teachers" do
+      let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: instance, started_on: 3.years.ago) }
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: mentor.started_on) }
+
+      let(:target) { instance.mentee_teachers }
+
+      before do
+        FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:)
+      end
+
+      it_behaves_like "a declarative touch model", when_changing: %i[api_id], timestamp_attribute: :api_updated_at
+    end
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
@@ -19,6 +53,9 @@ describe Teacher do
     it { is_expected.to have_one(:finished_induction_period).class_name("InductionPeriod") }
     it { is_expected.to have_one(:earliest_ect_at_school_period).class_name("ECTAtSchoolPeriod") }
     it { is_expected.to have_one(:earliest_mentor_at_school_period).class_name("MentorAtSchoolPeriod") }
+    it { is_expected.to have_many(:mentorship_periods).class_name("MentorshipPeriod").through(:mentor_at_school_periods) }
+    it { is_expected.to have_many(:mentees).class_name("ECTAtSchoolPeriod").through(:mentorship_periods) }
+    it { is_expected.to have_many(:mentee_teachers).class_name("Teacher").source(:teacher).through(:mentees) }
 
     describe ".started_induction_period" do
       subject { teacher.started_induction_period }
