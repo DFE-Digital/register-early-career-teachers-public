@@ -2,7 +2,7 @@
   page_data(title: @organisation_name.present? ? "You do not have approved access to this service" : "You do not have access to this service")
 %>
 
-<%= render @organisation_name.present? ? '/pages/access_denied/with_org' : '/pages/access_denied/without_org' %>
+<%= render @organisation_name.present? ? '/pages/access_denied/with_organisation' : '/pages/access_denied/without_organisation' %>
 
 <p class="govuk-body">
   <%=
