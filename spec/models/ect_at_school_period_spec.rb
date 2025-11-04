@@ -365,6 +365,16 @@ describe ECTAtSchoolPeriod do
     end
   end
 
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:ect_at_school_period) }
+
+    context "target teacher" do
+      let(:target) { instance.teacher }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[email], timestamp_attribute: :api_updated_at
+    end
+  end
+
   describe "#siblings" do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
