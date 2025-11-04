@@ -28,6 +28,7 @@ module TrainingPeriods
         finished_on: @finished_on,
         schedule: @schedule
       )
+      # TODO Hook in the Schedules::Assignment service here to assign a schedule if needed
     end
 
   private

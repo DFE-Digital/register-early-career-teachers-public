@@ -1,71 +1,126 @@
 module Schedules
   class Assignment
-    def initialize(ect_at_school_period:)
-      @ect_at_school_period = ect_at_school_period
+    attr_accessor :training_period
+
+    def initialize(training_period:)
+      @training_period = training_period
     end
 
     def self.for_ects(...) = new(...).call
  
     def call
-      ActiveRecord::Base.transaction do
-        if has_previous_training_periods?
-          current_training_period.schedule = schedule
-          current_training_period.save!
-        else
-          current_training_period.schedule = schedule
-          current_training_period.save!
-        end
-      end
+      # if the trainging period is school-led DO NOTHING
+      return unless provider_led?
+
+      # (1) is this the first training period for an ECT?
+
+      # if has_previous_training_periods?
+      #   # YES
+      #   # Then the previous training period must either be school-led or provider-led
+      #   # If it is school led
+      #   # Then set the schedule based on the start date of this new provider-led training period
+      #   # If it is provider led
+      #   # Then the ECT is already on a schedule AND WHAT SHOULD WE DO???
+      # else
+        # NO
+        # Then set the schedule based on a date
+        training_period.schedule = schedule
+        training_period.save!
+      # end
+
+      
+      
+
+
     end
 
     private
 
+    def provider_led?
+      training_period.training_programme == "provider_led"
+    end
+
+
     def period
-      @ect_at_school_period
+      training_period.ect_at_school_period
     end
+    
 
-    def current_training_period
-      period.current_or_next_training_period
-    end
-
+ 
     def schedule
-      # TODO
-      Schedule.last
+      Schedule.where(contract_period_year:, identifier: ).first
     end
 
-    def contract_period
-      # TODO
-      ContractPeriod.all.first
+    def contract_period_year
+      training_period.contract_period.year
     end
 
+    # TODO - this assumes the training period has been committed to the DB
     def has_previous_training_periods?
-      period.training_periods.where.not(id: current_training_period.id).exists?
+      period.training_periods.where.not(id: training_period.id).exists?
     end
 
     def schedule_date
-      registered_after_started_on? ? registered_on : started_on
-    end
+      return started_on if has_previous_training_periods?
 
-    def registered_after_start?
-      registered_on > started_on
+      [started_on, registered_on].max
     end
 
     def started_on
-      period.started_on
+      training_period.started_on
     end
 
     def registered_on
-      # TODO
-      period.started_on
+      period.created_at.to_date
     end
 
-    def provider_led?
-      # TODO
+    def schedule_month
+      if (june_start..october_end).cover?(schedule_date)
+        'september'
+      elsif (november_start..february_end).cover?(schedule_date)
+        'january'
+      elsif (march_start..may_end).cover?(schedule_date)
+        'april'
+      end
     end
 
-    def school_led?
-      # TODO
+    def next_year
+      contract_period_year + 1
     end
+
+    def june_start
+      Date.new(contract_period_year, 6, 1)
+    end
+
+    def october_end
+      november_start - 1
+    end
+
+    def november_start
+      Date.new(contract_period_year, 11, 1)
+    end
+
+    def february_end
+      march_start - 1
+    end
+
+    def march_start
+      Date.new(next_year, 3, 1)
+    end
+
+    def may_end
+      Date.new(next_year, 5, 31)
+    end
+
+    def schedule_type
+      # TODO
+      'standard' # or 'extended' or 'reduced' or 'replacement'
+    end
+
+    def identifier
+      "ecf-#{schedule_type}-#{schedule_month}"
+    end
+
 
     # To assign a schedule for an ECT, if the ECT does not have any previous training periods (i.e. school led or provider led) we'll use either:
 
