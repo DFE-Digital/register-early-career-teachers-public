@@ -3,6 +3,7 @@ module API::Teachers
     include API::Concerns::Teachers::SharedAction
 
     validate :not_already_active
+    validate :no_ongoing_today_training_period
     validate :school_period_ongoing_today
 
     def resume
@@ -22,6 +23,19 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
 
       errors.add(:teacher_api_id, "The '#/teacher_api_id' is already active.") if training_status&.active?
+    end
+
+    def no_ongoing_today_training_period
+      return if errors[:teacher_api_id].any?
+
+      school_period = training_period.trainee
+
+      if school_period.training_periods
+        .ongoing_today
+        .without(training_period)
+        .exists?
+        errors.add(:teacher_api_id, "The '#/teacher_api_id' is already active.")
+      end
     end
 
     def school_period_ongoing_today
