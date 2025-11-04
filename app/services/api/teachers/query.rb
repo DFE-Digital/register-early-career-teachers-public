@@ -143,8 +143,7 @@ module API::Teachers
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      # TODO: update when we have an accurate updated_at field
-      @scope = scope.where(updated_at: updated_since..)
+      @scope = scope.where(api_updated_at: updated_since..)
     end
 
     def set_sort_by(sort)
