@@ -50,6 +50,8 @@ private
   # @return [String]
   def pre_login_redirect_path(requested_path)
     requested_path.start_with?("/admin") ? sign_in_path : root_path
+  rescue ActionController::UrlGenerationError
+    "/sign-in"
   end
 
   # @return [String]
