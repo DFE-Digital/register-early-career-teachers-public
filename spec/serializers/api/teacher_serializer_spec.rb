@@ -5,6 +5,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
   end
 
   let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
   let(:teacher) do
     FactoryBot.create(
       :teacher,
@@ -12,7 +13,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
       :with_pupil_premium_uplift,
       :ineligible_for_mentor_funding,
       api_ect_training_record_id: SecureRandom.uuid,
-      api_mentor_training_record_id: SecureRandom.uuid
+      api_mentor_training_record_id: SecureRandom.uuid,
+      api_updated_at:
     )
   end
 
@@ -35,10 +37,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
     it "serializes correctly" do
       expect(attributes["full_name"]).to be_present
       expect(attributes["full_name"]).to eq(Teachers::Name.new(teacher).full_name_in_trs)
-
       expect(attributes["updated_at"]).to be_present
-      expect(attributes["updated_at"]).to eq(teacher.updated_at.utc.rfc3339)
-
+      expect(attributes["updated_at"]).to eq(api_updated_at.utc.rfc3339)
       expect(attributes["teacher_reference_number"]).to be_present
       expect(attributes["teacher_reference_number"]).to eq(teacher.trn)
     end

@@ -98,7 +98,7 @@ class API::TeacherSerializer < Blueprinter::Base
 
     field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name_in_trs }
     field(:trn, name: :teacher_reference_number) # TODO: ensure we return nil for invalid TRNs
-    field :updated_at
+    field(:api_updated_at, name: :updated_at)
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
       metadata = ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)
