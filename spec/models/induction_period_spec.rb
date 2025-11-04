@@ -64,6 +64,16 @@ RSpec.describe InductionPeriod do
       end
     end
 
+    describe "declarative touch" do
+      let(:instance) { FactoryBot.create(:induction_period) }
+
+      context "target teacher" do
+        let(:target) { instance.teacher }
+
+        it_behaves_like "a declarative touch model", when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at
+      end
+    end
+
     describe '#induction_programme' do
       it { is_expected.to validate_inclusion_of(:induction_programme).in_array(%w[fip cip diy unknown pre_september_2021]).with_message("Choose an induction programme") }
     end

@@ -1,5 +1,9 @@
 class TeacherIdChange < ApplicationRecord
+  include DeclarativeUpdates
+
   belongs_to :teacher
+
+  touch -> { teacher }, on_event: %i[create update destroy], timestamp_attribute: :api_updated_at, when_changing: %i[api_from_teacher_id api_to_teacher_id]
 
   validates :teacher, :api_from_teacher_id, :api_to_teacher_id, presence: true
 

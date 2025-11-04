@@ -1,4 +1,6 @@
 class InductionPeriod < ApplicationRecord
+  include DeclarativeUpdates
+
   VALID_NUMBER_OF_TERMS = { min: 0, max: 16 }.freeze
 
   include Interval
@@ -9,6 +11,8 @@ class InductionPeriod < ApplicationRecord
   belongs_to :appropriate_body
   belongs_to :teacher
   has_many :events
+
+  touch -> { teacher }, when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at
 
   # Validations
   validates :appropriate_body_id, presence: { message: "Select an appropriate body" }

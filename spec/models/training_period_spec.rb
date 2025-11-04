@@ -45,6 +45,40 @@ describe TrainingPeriod do
     end
   end
 
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
+
+    context "target teacher" do
+      let(:target) { instance.trainee.teacher }
+
+      def will_change_attribute(attribute_to_change:, new_value:)
+        case attribute_to_change
+        when :school_partnership_id
+          active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
+          lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+          FactoryBot.create(:school_partnership, id: new_value, lead_provider_delivery_partnership:)
+        when :schedule_id
+          FactoryBot.create(:schedule, id: new_value)
+        when :ect_at_school_period_id
+          FactoryBot.create(:ect_at_school_period, id: new_value, teacher: instance.trainee.teacher)
+        when :mentor_at_school_period_id
+          FactoryBot.create(:mentor_at_school_period, id: new_value, teacher: instance.trainee.teacher)
+        end
+      end
+
+      it_behaves_like "a declarative touch model", when_changing: %i[ withdrawn_at
+                                                                      withdrawal_reason
+                                                                      deferred_at
+                                                                      deferral_reason
+                                                                      started_on
+                                                                      finished_on
+                                                                      ect_at_school_period_id
+                                                                      mentor_at_school_period_id
+                                                                      schedule_id
+                                                                      school_partnership_id], timestamp_attribute: :api_updated_at
+    end
+  end
+
   describe "enums" do
     it "uses the training programme enum" do
       expect(subject).to define_enum_for(:training_programme)
