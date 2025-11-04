@@ -43,23 +43,11 @@ module Schools
                :lead_provider_has_confirmed_partnership_for_contract_period?,
                to: :status
 
-      def active_at_school?(urn)
-        active_record_at_school(urn).present?
-      end
-
       # appropriate_body_name
       delegate :name, to: :appropriate_body, prefix: true, allow_nil: true
 
-      def induction_start_date
-        queries.first_induction_period&.started_on
-      end
-
       # lead_provider_name
       delegate :name, to: :lead_provider, prefix: true, allow_nil: true
-
-      def previously_registered?
-        previous_registration.present?
-      end
 
       def register!(school, author:)
         Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
@@ -75,6 +63,18 @@ module Schools
                                  working_pattern:,
                                  author:)
                             .register!
+      end
+
+      def active_at_school?(urn)
+        active_record_at_school(urn).present?
+      end
+
+      def induction_start_date
+        queries.first_induction_period&.started_on
+      end
+
+      def previously_registered?
+        previous_registration.present?
       end
 
       def trs_full_name
