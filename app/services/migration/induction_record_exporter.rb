@@ -18,6 +18,7 @@ module Migration
       :urn,
       :challenged,
       :lead_provider_name,
+      :cohort_year,
       keyword_init: true
     ) do
       def range = start_date..end_date
@@ -76,6 +77,7 @@ module Migration
         urn
         challenged
         lead_provider_name
+        cohort_year
       ].freeze
     end
 
@@ -93,7 +95,8 @@ module Migration
         mentor_participant_profile_id: mentor_profile_id(induction_record),
         urn: induction_record.induction_programme.school_cohort.school.urn,
         challenged: challenged?(induction_record),
-        lead_provider_name: induction_record.induction_programme&.partnership&.lead_provider&.name
+        lead_provider_name: induction_record.induction_programme&.partnership&.lead_provider&.name,
+        cohort_year: induction_record.schedule.cohort.start_year
       )
     end
 
@@ -126,6 +129,7 @@ module Migration
     def base_query
       InductionRecord.eager_load(:participant_profile,
                                  :preferred_identity,
+                                 schedule: :cohort,
                                  induction_programme: { school_cohort: :school, partnership: :lead_provider })
                      .order(start_date: :asc)
     end
