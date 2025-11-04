@@ -1,6 +1,6 @@
 module Schools
   module RegisterECTWizard
-    class Context
+    class RegistrationSession
       class PreviousRegistration
         def initialize(context:, queries:)
           @context = context

@@ -37,7 +37,7 @@ RSpec.describe 'schools/register_ect_wizard/registered_before.html.erb' do
     )
   end
 
-  let(:context) { Schools::RegisterECTWizard::Context.new(store) }
+  let(:context) { Schools::RegisterECTWizard::RegistrationSession.new(store) }
 
   context 'Provider-led' do
     before do

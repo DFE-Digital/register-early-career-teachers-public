@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECTWizard::Context::Queries do
+RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Queries do
   subject(:queries) { described_class.new(context:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
