@@ -1,0 +1,15 @@
+<%
+  page_data(title: @organisation_name.present? ? "You do not have approved access to this service" : "You do not have access to this service")
+%>
+
+<%= render @organisation_name.present? ? '/pages/access_denied/with_organisation' : '/pages/access_denied/without_organisation' %>
+
+<p class="govuk-body">
+  <%=
+    govuk_link_to('Go to DfE Sign-In profile',
+        no_visited_state: true,
+        new_tab: true,
+        href: @dfe_sign_in_profile_url
+    )
+  %>
+</p>
