@@ -25,6 +25,30 @@ RSpec.describe API::Teachers::Resume, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
           end
 
+          context "when there is another active/ongoing training period for the school period at a different lead provider" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.month.ago) }
+            let!(:other_training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: 2.weeks.ago) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
+          end
+
+          context "when there is another active/ongoing training period that finishes in the future for the school period at a different lead provider" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.month.ago) }
+            let!(:other_training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: 2.weeks.ago, finished_on: 3.months.from_now) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
+
+            context "when resuming after the other active/ongoing training period has finished" do
+              before { travel_to 3.months.from_now }
+
+              it { is_expected.to be_valid }
+            end
+          end
+
           context "when at school period is finished" do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: 2.months.ago) }
 
