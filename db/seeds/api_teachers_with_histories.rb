@@ -54,7 +54,11 @@ def create_teacher(attrs:)
   traits = attrs.delete(:traits) || []
   FactoryBot.build(:teacher, :with_realistic_name, *traits, attrs).tap do
     random_date = rand(1..100).days.ago
-    it.update!(created_at: random_date, updated_at: random_date)
+    it.update!(
+      created_at: random_date,
+      updated_at: random_date,
+      api_updated_at: random_date
+    )
   end
 end
 
