@@ -22,6 +22,10 @@ RSpec.describe 'Visiting the service' do
   end
 
   context 'when accessing restricted areas' do
+    before do
+      allow(Rails.application.config).to receive(:enable_blazer).and_return(true)
+    end
+
     scenario 'Admin console redirects to authenticate' do
       given_i_browse_to("/admin")
       then_i_see_the_admin_sign_in_page
