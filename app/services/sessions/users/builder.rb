@@ -58,11 +58,11 @@ module Sessions
 
     private
 
-      delegate :appropriate_body_id, to: :user_info
+      delegate :appropriate_body_id, to: :user_info # currently an AppropriateBodyPeriod
 
       # @return [Sessions::Users::AppropriateBodyPersona]
       def appropriate_body_persona
-        AppropriateBodyPersona.new(email:, name:, appropriate_body_id:)
+        AppropriateBodyPersona.new(email:, name:, appropriate_body_period_id: appropriate_body_id)
       end
 
       # @return [Boolean]
@@ -93,7 +93,7 @@ module Sessions
         #   .present?
 
         if organisation.id.present? &&
-            ::AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id) &&
+            ::AppropriateBodyPeriod.exists?(dfe_sign_in_organisation_id: organisation.id) &&
             dfe_sign_in_roles.include?("AppropriateBodyUser")
 
           migrate_appropriate_bodies!

@@ -32,13 +32,13 @@ end
 def describe_pending_induction_submission(pending_induction_submission)
   suffix = "(pending_induction_submission)"
 
-  print_seed_info("* has one pending induction submission from #{pending_induction_submission.appropriate_body.name} #{suffix}", indent: 4)
+  print_seed_info("* has one pending induction submission from #{pending_induction_submission.appropriate_body_period.name} #{suffix}", indent: 4)
 end
 
 def describe_induction_period(ip)
   suffix = "(induction period)"
 
-  print_seed_info("* is having their induction overseen by #{ip.appropriate_body.name} (AB) #{describe_period_duration(ip)} #{suffix}", indent: 4)
+  print_seed_info("* is having their induction overseen by #{ip.appropriate_body_period.name} (AB) #{describe_period_duration(ip)} #{suffix}", indent: 4)
 
   author_attributes = {
     author_email: "fkend@appropriate-body.org",
@@ -51,8 +51,8 @@ def describe_induction_period(ip)
     event_type: "induction_period_opened",
     induction_period: ip,
     teacher: ip.teacher,
-    appropriate_body: ip.appropriate_body,
-    heading: "#{teacher_name(ip.teacher)} was claimed by #{ip.appropriate_body.name}",
+    appropriate_body_period: ip.appropriate_body_period,
+    heading: "#{teacher_name(ip.teacher)} was claimed by #{ip.appropriate_body_period.name}",
     happened_at: ip.started_on.at_midday + rand(-300..300).minutes,
     **author_attributes
   )
@@ -63,8 +63,8 @@ def describe_induction_period(ip)
       event_type: "induction_period_opened",
       induction_period: ip,
       teacher: ip.teacher,
-      appropriate_body: ip.appropriate_body,
-      heading: "#{teacher_name(ip.teacher)} was released by #{ip.appropriate_body.name}",
+      appropriate_body_period: ip.appropriate_body_period,
+      heading: "#{teacher_name(ip.teacher)} was released by #{ip.appropriate_body_period.name}",
       happened_at: ip.finished_on.at_midday + rand(-300..300).minutes,
       **author_attributes
     )
@@ -117,9 +117,9 @@ artisan_education_group = DeliveryPartner.find_by!(name: "Artisan Education Grou
 grain_teaching_school_hub = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
 capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partner")
 
-south_yorkshire_studio_hub = AppropriateBody.find_by!(name: "South Yorkshire Studio Hub")
-golden_leaf_teaching_school_hub = AppropriateBody.find_by!(name: "Golden Leaf Teaching School Hub")
-umber_teaching_school_hub = AppropriateBody.find_by!(name: "Umber Teaching School Hub")
+south_yorkshire_studio_hub = AppropriateBodyPeriod.find_by!(name: "South Yorkshire Studio Hub")
+golden_leaf_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Golden Leaf Teaching School Hub")
+umber_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Umber Teaching School Hub")
 active_appropriate_bodies = [umber_teaching_school_hub, golden_leaf_teaching_school_hub]
 
 def find_school_partnership(delivery_partner:, lead_provider:, contract_period:)
@@ -245,7 +245,7 @@ FactoryBot.create(:induction_period,
                   started_on: Date.new(2021, 9, 1),
                   finished_on: Date.new(2024, 9, 1),
                   number_of_terms: 3,
-                  appropriate_body: golden_leaf_teaching_school_hub,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
                   induction_programme: "fip",
                   training_programme: "school_led").tap { |ip| describe_induction_period(ip) }
 
@@ -253,7 +253,7 @@ FactoryBot.create(:induction_period,
                   teacher: kate_winslet,
                   started_on: Date.new(2024, 9, 1),
                   finished_on: nil,
-                  appropriate_body: umber_teaching_school_hub,
+                  appropriate_body_period: umber_teaching_school_hub,
                   induction_programme: "fip",
                   training_programme: "school_led",
                   number_of_terms: nil).tap { |ip| describe_induction_period(ip) }
@@ -305,7 +305,7 @@ FactoryBot.create(:training_period,
 
 FactoryBot.create(:induction_period,
                   teacher: alan_rickman,
-                  appropriate_body: golden_leaf_teaching_school_hub,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
                   started_on: Date.new(2022, 11, 1),
                   finished_on: nil,
                   induction_programme: "fip",
@@ -316,9 +316,9 @@ FactoryBot.create(:induction_extension,
                   teacher: alan_rickman,
                   number_of_terms: 1.5).tap { |ext| describe_extension(ext) }
 
-active_appropriate_bodies.each do |appropriate_body|
+active_appropriate_bodies.each do |appropriate_body_period|
   FactoryBot.create(:pending_induction_submission,
-                    appropriate_body:,
+                    appropriate_body_period:,
                     trn: alan_rickman.trn,
                     date_of_birth: Date.new(1946, 2, 21),
                     started_on: Date.new(2023, 9, 1),
@@ -350,7 +350,7 @@ FactoryBot.create(:training_period,
 
 FactoryBot.create(:induction_period,
                   teacher: hugh_grant,
-                  appropriate_body: golden_leaf_teaching_school_hub,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
                   started_on: Date.new(2021, 9, 4),
                   finished_on: Date.new(2022, 5, 1),
                   induction_programme: "fip",
@@ -392,7 +392,7 @@ FactoryBot.create(:training_period,
 
 FactoryBot.create(:induction_period,
                   teacher: colin_firth,
-                  appropriate_body: golden_leaf_teaching_school_hub,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
                   started_on: Date.new(2022, 9, 4),
                   finished_on: Date.new(2023, 6, 1),
                   induction_programme: "fip",
@@ -411,7 +411,7 @@ print_seed_info("Harriet Walter (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
 harriet_walter = Teacher.find_by!(trs_first_name: "Harriet", trs_last_name: "Walter")
 FactoryBot.create(:induction_period,
-                  appropriate_body: umber_teaching_school_hub,
+                  appropriate_body_period: umber_teaching_school_hub,
                   teacher: harriet_walter,
                   started_on: Date.new(2023, 9, 1),
                   finished_on: Date.new(2024, 8, 1),
@@ -420,7 +420,7 @@ FactoryBot.create(:induction_period,
                   number_of_terms: [1, 2, 3].sample).tap { |ip| describe_induction_period(ip) }
 
 FactoryBot.create(:induction_period,
-                  appropriate_body: golden_leaf_teaching_school_hub,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
                   teacher: harriet_walter,
                   started_on: Date.new(2024, 8, 1),
                   finished_on: nil,
@@ -440,7 +440,7 @@ print_seed_info("Imogen Stubbs (ECT)", indent: 2, colour: ECT_COLOUR)
 
 imogen_stubbs = Teacher.find_by!(trs_first_name: "Imogen", trs_last_name: "Stubbs")
 FactoryBot.create(:induction_period,
-                  appropriate_body: golden_leaf_teaching_school_hub,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
                   teacher: imogen_stubbs,
                   started_on: Date.new(2024, 9, 1),
                   finished_on: Date.new(2024, 11, 1),
@@ -449,7 +449,7 @@ FactoryBot.create(:induction_period,
                   number_of_terms: 1).tap { |ip| describe_induction_period(ip) }
 
 FactoryBot.create(:induction_period,
-                  appropriate_body: golden_leaf_teaching_school_hub,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
                   teacher: imogen_stubbs,
                   started_on: Date.new(2024, 11, 1),
                   finished_on: nil,
@@ -483,7 +483,7 @@ print_seed_info("Gemma Jones (ECT)", indent: 2, colour: ECT_COLOUR)
 
 gemma_jones = Teacher.find_by!(trs_first_name: "Gemma", trs_last_name: "Jones")
 FactoryBot.create(:induction_period,
-                  appropriate_body: umber_teaching_school_hub,
+                  appropriate_body_period: umber_teaching_school_hub,
                   teacher: gemma_jones,
                   started_on: Date.new(2023, 9, 1),
                   finished_on: nil,

@@ -36,7 +36,7 @@ module AppropriateBodies
     end
 
     def wrong_appropriate_body?
-      current_user.appropriate_body_id != @pending_induction_submission_batch.appropriate_body.id
+      current_user.appropriate_body_period_id != @pending_induction_submission_batch.appropriate_body_period.id
     end
 
     def find_batch

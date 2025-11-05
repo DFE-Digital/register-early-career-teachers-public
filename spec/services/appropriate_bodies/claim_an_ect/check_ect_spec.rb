@@ -1,12 +1,12 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::CheckECT do
-  subject { AppropriateBodies::ClaimAnECT::CheckECT.new(appropriate_body:, pending_induction_submission:) }
+  subject { AppropriateBodies::ClaimAnECT::CheckECT.new(appropriate_body_period:, pending_induction_submission:) }
 
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
 
   describe "#initialize" do
     it "assigns the provided appropriate body and pending induction submission params" do
-      expect(subject.appropriate_body).to eql(appropriate_body)
+      expect(subject.appropriate_body_period).to eql(appropriate_body_period)
       expect(subject.pending_induction_submission).to eql(pending_induction_submission)
     end
   end
