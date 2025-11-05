@@ -3,7 +3,7 @@ module AppropriateBodies
     class ClaimsController < PendingInductionSubmissionBatchController
       def index
         @pending_induction_submission_batches = PendingInductionSubmissionBatch
-            .for_appropriate_body(@appropriate_body)
+            .for_appropriate_body_period(@appropriate_body)
             .claim
             .order(id: :desc)
       end

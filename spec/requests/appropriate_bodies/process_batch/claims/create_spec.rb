@@ -10,7 +10,7 @@ RSpec.describe "Appropriate Body bulk claims upload", type: :request do
   end
 
   let(:batch) do
-    PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body).last
+    PendingInductionSubmissionBatch.for_appropriate_body_period(appropriate_body).last
   end
 
   include_context "test trs api client"

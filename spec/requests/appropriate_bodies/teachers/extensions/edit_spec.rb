@@ -1,9 +1,9 @@
 RSpec.describe "Appropriate Body teacher extensions edit", type: :request do
   include ActionView::Helpers::SanitizeHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
   let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
   let(:extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 2) }
 

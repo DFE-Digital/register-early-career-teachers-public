@@ -18,7 +18,7 @@ describe ECTAtSchoolPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
-    it { is_expected.to belong_to(:school_reported_appropriate_body).class_name("AppropriateBody").optional }
+    it { is_expected.to belong_to(:school_reported_appropriate_body).class_name("AppropriateBodyPeriod").optional }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentee) }
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:mentors).through(:mentorship_periods).source(:mentor) }

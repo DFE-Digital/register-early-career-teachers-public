@@ -358,8 +358,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         let!(:more_recent_body) { FactoryBot.create(:appropriate_body, name: "More Recent Body") }
 
         before do
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body: older_body)
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body: more_recent_body)
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body_period: older_body)
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body_period: more_recent_body)
         end
 
         it "returns the name of the latest appropriate body by started_on" do

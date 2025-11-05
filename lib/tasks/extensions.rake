@@ -23,7 +23,7 @@ namespace :extensions do
 
     data.map do |teacher_id, appropriate_body_id, induction_extension_id|
       teacher = Teacher.find(teacher_id)
-      appropriate_body = AppropriateBody.find(appropriate_body_id)
+      appropriate_body = AppropriateBodyPeriod.find(appropriate_body_id)
       induction_extension = InductionExtension.find(induction_extension_id)
       full_name = Teachers::Name.new(teacher).full_name
       logger.info "#{appropriate_body.name} extended #{full_name}'s induction by #{induction_extension.number_of_terms}"
