@@ -2,28 +2,28 @@ module Schools
   module RegisterECTWizard
     class RegistrationSession
       class Queries
-        def initialize(context:)
-          @context = context
+        def initialize(registration_session:)
+          @registration_session = registration_session
         end
 
         def ect_at_school_period
-          @ect_at_school_period ||= ECTAtSchoolPeriod.find_by_id(context.ect_at_school_period_id)
+          @ect_at_school_period ||= ECTAtSchoolPeriod.find_by_id(registration_session.ect_at_school_period_id)
         end
 
         def active_record_at_school(urn)
-          @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn: context.trn, urn:).ongoing.last
+          @active_record_at_school ||= ECTAtSchoolPeriods::Search.new.ect_periods(trn: registration_session.trn, urn:).ongoing.last
         end
 
         def appropriate_body
-          @appropriate_body ||= AppropriateBody.find_by_id(context.appropriate_body_id)
+          @appropriate_body ||= AppropriateBody.find_by_id(registration_session.appropriate_body_id)
         end
 
         def lead_provider
-          @lead_provider ||= LeadProvider.find(context.lead_provider_id) if context.lead_provider_id
+          @lead_provider ||= LeadProvider.find(registration_session.lead_provider_id) if registration_session.lead_provider_id
         end
 
         def contract_start_date
-          @contract_start_date ||= ContractPeriod.containing_date(context.start_date&.to_date)
+          @contract_start_date ||= ContractPeriod.containing_date(registration_session.start_date&.to_date)
         end
 
         def lead_providers_within_contract_period
@@ -35,7 +35,7 @@ module Schools
         def previous_ect_at_school_period
           @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
             .new(order: :started_on)
-            .ect_periods(trn: context.trn)
+            .ect_periods(trn: registration_session.trn)
             .last
         end
 
@@ -46,7 +46,7 @@ module Schools
         def ordered_induction_periods
           @ordered_induction_periods ||= InductionPeriods::Search
             .new(order: :started_on)
-            .induction_periods(trn: context.trn)
+            .induction_periods(trn: registration_session.trn)
         end
 
         def first_induction_period
@@ -80,7 +80,7 @@ module Schools
 
       private
 
-        attr_reader :context
+        attr_reader :registration_session
       end
     end
   end
