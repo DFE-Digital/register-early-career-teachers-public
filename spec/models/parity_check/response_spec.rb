@@ -14,16 +14,69 @@ describe ParityCheck::Response do
       response = FactoryBot.build(:parity_check_response, :different, ecf_body: "same", rect_body: "same")
       expect { response.save! }.to change { response.ecf_body }.to(nil).and change { response.rect_body }.to(nil)
     end
-  end
 
-  describe "before_save" do
-    it "does not format bodies if they are not valid JSON" do
-      response = FactoryBot.build(:parity_check_response, ecf_body: "not json", rect_body: "also not json")
+    describe "calculating the match rate" do
+      subject { response.match_rate }
 
-      response.save!
+      context "when the response is matching" do
+        let(:response) { FactoryBot.create(:parity_check_response, :matching) }
 
-      expect(response.ecf_body).to eq("not json")
-      expect(response.rect_body).to eq("also not json")
+        it { is_expected.to eq(100) }
+      end
+
+      context "when the response bodies differ by some lines but the status codes match" do
+        let(:ecf_body) do
+          <<~JSON
+            {
+              "data": [
+                {
+                  "id": 1,
+                  "name": "Alice"
+                },
+                {
+                  "id": 2,
+                  "name": "Bob"
+                },
+                {
+                  "id": 3,
+                  "name": "Charlie"
+                }
+              ]
+            }
+          JSON
+        end
+
+        let(:rect_body) do
+          <<~JSON
+            {
+              "data": [
+                {
+                  "id": 1,
+                  "name": "Alice"
+                },
+                {
+                  "id": 2,
+                  "name": "Robert"
+                },
+                {
+                  "id": 4,
+                  "name": "Diana"
+                }
+              ]
+            }
+          JSON
+        end
+
+        let(:response) { FactoryBot.create(:parity_check_response, ecf_body:, rect_body:, ecf_status_code: 200, rect_status_code: 200) }
+
+        it { is_expected.to eq(81) }
+      end
+
+      context "when the response bodies are the same but the status codes are different" do
+        let(:response) { FactoryBot.create(:parity_check_response, ecf_body: "body", rect_body: "body", ecf_status_code: 201, rect_status_code: 200) }
+
+        it { is_expected.to eq(0) }
+      end
     end
   end
 
@@ -89,18 +142,49 @@ describe ParityCheck::Response do
     end
   end
 
-  describe "#ecf_body=" do
-    let(:ecf_body) { { key: "value" } }
-    let(:response) { FactoryBot.build(:parity_check_response, ecf_body: ecf_body.to_json) }
+  describe "custom body setters" do
+    let(:endpoint) { FactoryBot.create(:parity_check_endpoint, options: { exclude: [:key_to_exclude] }) }
+    let(:request) { FactoryBot.create(:parity_check_request, endpoint:) }
 
-    it { expect(response.ecf_body).to eq(JSON.pretty_generate(ecf_body)) }
-  end
+    describe "#ecf_body=" do
+      let(:ecf_body) { { key: "value" } }
+      let(:response) { FactoryBot.build(:parity_check_response, request:, ecf_body: ecf_body.to_json) }
 
-  describe "#rect_body=" do
-    let(:rect_body) { { key: "value" } }
-    let(:response) { FactoryBot.build(:parity_check_response, rect_body: rect_body.to_json) }
+      it { expect(response.ecf_body).to eq(JSON.pretty_generate(ecf_body)) }
 
-    it { expect(response.rect_body).to eq(JSON.pretty_generate(rect_body)) }
+      context "when ecf_body contains keys to exclude" do
+        let(:ecf_body) { { key: [{ key_to_exclude: "value", other_key: "other_value" }] } }
+
+        it { expect(JSON.parse(response.ecf_body)).to eq({ "key" => [{ "other_key" => "other_value" }] }) }
+      end
+
+      context "when ecf_body is not JSON" do
+        let(:ecf_body) { "not json" }
+        let(:response) { FactoryBot.build(:parity_check_response, ecf_body:) }
+
+        it { expect(response.ecf_body).to eq("not json") }
+      end
+    end
+
+    describe "#rect_body=" do
+      let(:rect_body) { { key: "value" } }
+      let(:response) { FactoryBot.build(:parity_check_response, request:, rect_body: rect_body.to_json) }
+
+      it { expect(response.rect_body).to eq(JSON.pretty_generate(rect_body)) }
+
+      context "when ecf_body contains keys to exclude" do
+        let(:rect_body) { { key: [{ key_to_exclude: "value", other_key: "other_value" }] } }
+
+        it { expect(JSON.parse(response.rect_body)).to eq({ "key" => [{ "other_key" => "other_value" }] }) }
+      end
+
+      context "when ecf_body is not JSON" do
+        let(:rect_body) { "not json" }
+        let(:response) { FactoryBot.build(:parity_check_response, rect_body:) }
+
+        it { expect(response.rect_body).to eq("not json") }
+      end
+    end
   end
 
   describe "#rect_performance_gain_ratio" do
@@ -134,22 +218,6 @@ describe ParityCheck::Response do
       let(:ecf_time_ms) { 87 }
 
       it { is_expected.to eq(-2.9) }
-    end
-  end
-
-  describe "#match_rate" do
-    subject { response.match_rate }
-
-    context "when the response is matching" do
-      let(:response) { FactoryBot.build(:parity_check_response, :matching) }
-
-      it { is_expected.to eq(100) }
-    end
-
-    context "when the response is different" do
-      let(:response) { FactoryBot.build(:parity_check_response, :different) }
-
-      it { is_expected.to eq(0) }
     end
   end
 

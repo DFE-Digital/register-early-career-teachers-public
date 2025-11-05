@@ -24,7 +24,7 @@ RSpec.describe ParityCheck::RequestHandler do
 
     before do
       allow(ParityCheck::Client).to receive(:new).with(request:).and_return(client)
-      allow(client).to receive(:perform_requests).and_yield(response)
+      allow(client).to receive(:perform_requests) { response.update!(request:) }
     end
 
     it "calls the client to perform requests and persists the response" do
