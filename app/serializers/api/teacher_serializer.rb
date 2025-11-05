@@ -97,7 +97,7 @@ class API::TeacherSerializer < Blueprinter::Base
     exclude :id
 
     field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name_in_trs }
-    field(:trn, name: :teacher_reference_number) # TODO: ensure we return nil for invalid TRNs
+    field(:trn, name: :teacher_reference_number)
     field(:api_updated_at, name: :updated_at)
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
