@@ -58,15 +58,19 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
     context "when fetching `partnership_id`" do
       let(:identifier) { :partnership_id }
-      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-      let!(:partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let(:ecf_lead_provider) { FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id) }
+      let!(:ecf_partnership) { FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider) }
 
       before do
         # Partnership for different lead provider should not be used.
-        FactoryBot.create(:school_partnership)
+        FactoryBot.create(:migration_partnership)
+        # Challenged.
+        FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider, challenged_at: Time.current)
+        # Relationship.
+        FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider, relationship: true)
       end
 
-      it { is_expected.to eq(partnership.api_id) }
+      it { is_expected.to eq(ecf_partnership.id) }
     end
 
     context "when fetching `teacher_api_id`" do
@@ -228,17 +232,20 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
     context "when fetching partnership_update_body" do
       let(:identifier) { :partnership_update_body }
+      let(:cohort) { FactoryBot.create(:migration_cohort, start_year: active_lead_provider.contract_period_year) }
+      let(:ecf_lead_provider) { FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id) }
+      let!(:ecf_partnership) { FactoryBot.create(:migration_partnership, cohort:, lead_provider: ecf_lead_provider) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-      let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, api_id: ecf_partnership.id) }
       let!(:other_delivery_partner) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:).delivery_partner }
 
       before do
         # Different lead provider.
-        FactoryBot.create(:lead_provider_delivery_partnership)
-        # Different contract period.
-        other_contract_period = FactoryBot.create(:contract_period, year: active_lead_provider.contract_period_year - 1)
-        other_active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: other_contract_period)
-        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider)
+        FactoryBot.create(:migration_partnership, cohort:)
+        # Challenged.
+        FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider, challenged_at: Time.current)
+        # Relationship.
+        FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider, relationship: true)
       end
 
       it "returns a partnership update body" do
