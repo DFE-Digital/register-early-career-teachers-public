@@ -19,13 +19,19 @@ module DeclarativeUpdates
       end
     end
 
-    def touch(target, when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at)
+    def touch(target, when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, if: nil)
+      condition = binding.local_variable_get(:if)
+
       after_commit(on: on_event) do
         next if DeclarativeUpdates.skip?(:touch)
 
-        should_touch = when_changing.blank? || when_changing.any? do |attr|
+        should_touch_based_on_changes = when_changing.blank? || when_changing.any? do |attr|
           saved_change_to_attribute?(attr)
         end
+
+        should_touch_based_on_condition = condition.nil? || evaluate_condition(condition)
+
+        should_touch = should_touch_based_on_changes && should_touch_based_on_condition
 
         Array.wrap(instance_exec(&target)).map { it.update_column(timestamp_attribute, Time.zone.now) } if should_touch
       end
@@ -49,5 +55,18 @@ module DeclarativeUpdates
     key = SKIP_THREAD_KEY.fetch(type) { raise ArgumentError, "Unknown declarative type: #{type}" }
 
     Thread.current[key]
+  end
+
+private
+
+  def evaluate_condition(condition)
+    case condition
+    when Symbol, String
+      send(condition)
+    when Proc
+      instance_exec(&condition)
+    else
+      condition
+    end
   end
 end
