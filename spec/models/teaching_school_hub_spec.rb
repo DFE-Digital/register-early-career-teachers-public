@@ -13,25 +13,14 @@ RSpec.describe TeachingSchoolHub, type: :model do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }
 
-    describe "#lead_school_limit" do
-      before do
-        FactoryBot.create_list(:teaching_school_hub, 3, lead_school:)
-      end
+    it { is_expected.to validate_presence_of(:lead_school) }
+    it { is_expected.to validate_uniqueness_of(:lead_school) }
 
-      it "allows up to 3 hubs per lead school" do
-        expect(lead_school.led_teaching_school_hubs.count).to eq(3)
-      end
-
-      it "prevents more than 3 hubs per lead school" do
-        fourth_hub = FactoryBot.build(:teaching_school_hub, lead_school:)
-
-        expect(fourth_hub).not_to be_valid
-        expect(fourth_hub.errors[:lead_school]).to include("has reached the maximum of 3 teaching school hubs")
-      end
-    end
+    it { is_expected.to validate_presence_of(:dfe_sign_in_organisation) }
+    it { is_expected.to validate_uniqueness_of(:dfe_sign_in_organisation) }
   end
 
-  describe "appropriate_body_periods" do
+  describe "#appropriate_body_periods" do
     subject(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, lead_school:) }
 
     # TODO: A TSH can have a multiple periods:
@@ -41,5 +30,15 @@ RSpec.describe TeachingSchoolHub, type: :model do
       FactoryBot.create_list(:appropriate_body, 9, teaching_school_hub:)
       expect(teaching_school_hub.appropriate_body_periods.count).to eq(9)
     end
+  end
+
+  describe "#districts" do
+    subject(:teaching_school_hub) { FactoryBot.create(:teaching_school_hub, lead_school:) }
+
+    before do
+      FactoryBot.create_list(:region, 3, teaching_school_hub:)
+    end
+
+    it { expect(teaching_school_hub.districts).not_to be_empty }
   end
 end
