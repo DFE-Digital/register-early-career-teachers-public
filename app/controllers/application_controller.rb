@@ -15,9 +15,7 @@ class ApplicationController < ActionController::Base
   # @see config/blazer.yml
   # @return [String, nil]
   def require_admin
-    redirect_to(sign_in_path) unless current_user&.dfe_user?
-  rescue ActionController::UrlGenerationError
-    redirect_to "/sign-in"
+    redirect_to("/sign-in") unless current_user&.dfe_user?
   end
 
   def set_sentry_user
