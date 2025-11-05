@@ -1,8 +1,8 @@
 RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   let(:pending_induction_submission) do
-    FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_first_name: "Anna", trs_last_name: "Chancellor")
+    FactoryBot.create(:pending_induction_submission, appropriate_body_period:, trs_first_name: "Anna", trs_last_name: "Chancellor")
   end
 
   let(:teacher) do
@@ -39,7 +39,7 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
     context "when the ECT has an ongoing induction period with another appropriate body" do
       let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
-      before { assign(:current_appropriate_body, appropriate_body) }
+      before { assign(:current_appropriate_body, appropriate_body_period) }
 
       it "replaces the claim button with explanatory text" do
         render
@@ -66,7 +66,7 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
 
       it "shows the current induction period" do
         render
-        expect(rendered).to have_css(".govuk-summary-card__title", text: current_induction_period.appropriate_body.name)
+        expect(rendered).to have_css(".govuk-summary-card__title", text: current_induction_period.appropriate_body_period.name)
       end
 
       it "has no release link" do
@@ -80,7 +80,7 @@ RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
 
       it "shows a list of past induction periods" do
         render
-        expect(rendered).to have_css("ul.govuk-list > li .govuk-summary-card__title", text: past_induction_period.appropriate_body.name)
+        expect(rendered).to have_css("ul.govuk-list > li .govuk-summary-card__title", text: past_induction_period.appropriate_body_period.name)
       end
     end
   end

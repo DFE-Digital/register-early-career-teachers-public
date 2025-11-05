@@ -10,7 +10,7 @@ module Admin
       scope = Teacher.joins(:induction_periods).merge(InductionPeriod.ongoing)
 
       if appropriate_body_ids.any?
-        scope = scope.merge(InductionPeriod.for_appropriate_body(appropriate_body_ids))
+        scope = scope.merge(InductionPeriod.for_appropriate_body_period(appropriate_body_ids))
       end
 
       scope.distinct

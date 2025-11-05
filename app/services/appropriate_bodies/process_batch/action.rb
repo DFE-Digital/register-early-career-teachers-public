@@ -58,7 +58,7 @@ module AppropriateBodies
             capture_error("#{name} does not have an open induction")
             true
           elsif claimed_by_another_ab?
-            capture_error("#{name} is completing their induction with another appropriate body (#{teacher.current_appropriate_body.name})")
+            capture_error("#{name} is completing their induction with another appropriate body (#{teacher.current_appropriate_body_period.name})")
             true
           else
             false # can be claimed
