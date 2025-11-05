@@ -46,8 +46,10 @@ class AppropriateBodyPeriod < ApplicationRecord
 
   # National Bodies only have one unending AB period (TSHs can have many)
   def national_body_limit
-    return if national_body_id.blank?
-    return if NationalBody.find(national_body_id).appropriate_body_period.blank?
+    national_body = NationalBody.find_by(id: national_body_id)
+
+    return if national_body&.appropriate_body_period.blank?
+    return if national_body.appropriate_body_period.eql?(self)
 
     errors.add(:base, "A National Body can only have a single Appropriate Body period")
   end
