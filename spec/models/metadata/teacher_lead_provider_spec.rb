@@ -48,4 +48,16 @@ describe Metadata::TeacherLeadProvider do
       end
     end
   end
+
+  describe "declarative touch" do
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:instance) { FactoryBot.create(:teacher_lead_provider_metadata, teacher:) }
+    let(:target) { teacher }
+
+    around do |example|
+      Metadata::TeacherLeadProvider.bypass_update_restrictions { example.run }
+    end
+
+    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[api_mentor_id], timestamp_attribute: :api_updated_at
+  end
 end

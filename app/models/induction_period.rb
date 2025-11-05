@@ -12,7 +12,7 @@ class InductionPeriod < ApplicationRecord
   belongs_to :teacher
   has_many :events
 
-  touch -> { teacher }, when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at
+  touch -> { teacher }, when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at, if: :touch_teacher?
 
   # Validations
   validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
@@ -98,5 +98,12 @@ private
 
   def teacher_distinct_period
     overlap_validation(name: 'induction')
+  end
+
+  def touch_teacher?
+    first_period = saved_change_to_id? && teacher.induction_periods.count == 1
+    outcome_changed = saved_change_to_outcome?
+
+    first_period || outcome_changed
   end
 end

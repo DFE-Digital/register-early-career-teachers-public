@@ -70,7 +70,47 @@ RSpec.describe InductionPeriod do
       context "target teacher" do
         let(:target) { instance.teacher }
 
-        it_behaves_like "a declarative touch model", when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at
+        it_behaves_like "a declarative conditional touch model", when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at do
+          let(:conditional_method_name) { :touch_teacher? }
+        end
+      end
+
+      describe "#touch_teacher?" do
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body:, started_on: "2019-01-01", finished_on: "2019-07-01") }
+
+        context "when a new induction period is created" do
+          it "returns true if it is the first induction period for the teacher" do
+            expect(induction_period.send(:touch_teacher?)).to be(true)
+          end
+
+          it "returns false if it is not the first induction period and outcome has not changed" do
+            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: "2023-01-01")
+
+            expect(second_induction_period.send(:touch_teacher?)).to be(false)
+          end
+
+          it "returns true if it is not the first induction period but outcome is set on creation" do
+            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: "2023-01-01", outcome: "pass")
+
+            expect(second_induction_period.send(:touch_teacher?)).to be(true)
+          end
+        end
+
+        context "when an existing induction period is updated" do
+          it "returns true if the outcome is changed" do
+            induction_period.update!(outcome: "fail")
+
+            expect(induction_period.send(:touch_teacher?)).to be(true)
+          end
+
+          it "returns false if the outcome is not changed" do
+            induction_period.update!(started_on: "2018-01-01")
+
+            expect(induction_period.send(:touch_teacher?)).to be(false)
+          end
+        end
       end
     end
 

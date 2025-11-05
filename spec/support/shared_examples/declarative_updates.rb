@@ -358,3 +358,41 @@ RSpec.shared_examples "a declarative metadata model", :with_metadata do |when_ch
     end
   end
 end
+
+RSpec.shared_examples "a declarative conditional touch model", :with_touches do |when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, target_optional: true|
+  context "when the conditional method is defined ('if' option is present)" do
+    when_changing.each do |attribute_to_change|
+      context "when the #{attribute_to_change} attribute changes" do
+        let(:new_value) { generate_new_value(attribute_to_change:) }
+
+        context "when the conditional method is true" do
+          before { allow(instance).to receive(conditional_method_name).and_return(true) }
+
+          it "touches the #{timestamp_attribute} of the associated model when a watched attribute changes" do
+            expect {
+              instance.send("#{attribute_to_change}=", new_value)
+              instance.save!
+            }.to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } }.to(all(be_within(5.seconds).of(Time.current))))
+          end
+        end
+
+        context "when the conditional method is false" do
+          before { allow(instance).to receive(conditional_method_name).and_return(false) }
+
+          it "does not touch the #{timestamp_attribute} of the associated model even when a watched attribute changes" do
+            expect {
+              instance.send("#{attribute_to_change}=", new_value)
+              instance.save!
+            }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+          end
+        end
+      end
+    end
+
+    context "when the conditional method is not defined ('if' option is not present)" do
+      it_behaves_like "a declarative touch model", when_changing:, on_event:, timestamp_attribute:, target_optional: do
+        before { allow(instance).to receive(conditional_method_name).and_return(true) }
+      end
+    end
+  end
+end

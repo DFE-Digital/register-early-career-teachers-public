@@ -6,16 +6,9 @@ class DeliveryPartner < ApplicationRecord
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
   has_many :events
   has_many :lead_provider_metadata, class_name: "Metadata::DeliveryPartnerLeadProvider"
-  has_many :training_periods, through: :school_partnerships
-  has_many :ect_at_school_periods, through: :training_periods
-  has_many :mentor_at_school_periods, through: :training_periods
-  has_many :ect_teachers, -> { distinct }, through: :ect_at_school_periods, source: :teacher
-  has_many :mentor_teachers, -> { distinct }, through: :mentor_at_school_periods, source: :teacher
 
   touch -> { self }, when_changing: %i[name], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[name], timestamp_attribute: :api_updated_at
-  touch -> { ect_teachers }, when_changing: %i[api_id], timestamp_attribute: :api_updated_at
-  touch -> { mentor_teachers }, when_changing: %i[api_id], timestamp_attribute: :api_updated_at
 
   refresh_metadata -> { self }, on_event: %i[create]
 

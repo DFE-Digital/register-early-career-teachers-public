@@ -41,7 +41,6 @@ class Teacher < ApplicationRecord
         timestamp_attribute: :api_updated_at,
         when_changing: %i[
           api_id
-          corrected_name
           trs_first_name
           trs_last_name
           trn
@@ -56,10 +55,6 @@ class Teacher < ApplicationRecord
           ect_payments_frozen_year
           mentor_payments_frozen_year
         ]
-  touch -> { mentee_teachers },
-        on_event: :update,
-        timestamp_attribute: :api_updated_at,
-        when_changing: %i[api_id]
 
   refresh_metadata -> { self }, on_event: %i[create update]
 
