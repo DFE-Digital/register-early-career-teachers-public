@@ -147,8 +147,12 @@ RSpec.describe ParityCheck::Client do
       before do
         # Create some data to be used in the request body
         FactoryBot.create_list(:lead_provider_delivery_partnership, 2, active_lead_provider:)
+
         FactoryBot.create_list(:school, 2, :eligible)
-        FactoryBot.create_list(:school_partnership, 2, lead_provider_delivery_partnership:)
+
+        school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, active_lead_provider:)
+        ecf_lead_provider = FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id)
+        FactoryBot.create(:migration_partnership, id: school_partnership.api_id, lead_provider: ecf_lead_provider)
       end
 
       context "when performing a POST request" do
