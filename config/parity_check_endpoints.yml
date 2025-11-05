@@ -358,7 +358,7 @@ put:
   - "/api/v3/participants/:id/defer":
       ecf_path: "/api/v3/participants/ecf/:id/defer"
       id: ":active_teacher_api_id_for_participant_action"
-      body: participant_defer_body
+      body: active_participant_defer_body
       exclude:
         - teacher_reference_number_validated
         - overall_induction_start_date
