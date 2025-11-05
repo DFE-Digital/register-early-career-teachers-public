@@ -7,6 +7,7 @@ module Schools
           @queries = queries
         end
 
+        # previous_registration.present? is true if there is a previous ECT at school period
         delegate :present?, to: :ect_at_school_period
 
         def previous_appropriate_body_name
