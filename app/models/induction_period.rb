@@ -13,7 +13,7 @@ class InductionPeriod < ApplicationRecord
        suffix: true
 
   # Associations
-  belongs_to :appropriate_body
+  belongs_to :appropriate_body_period
   belongs_to :teacher
   has_many :events
 
@@ -24,7 +24,7 @@ class InductionPeriod < ApplicationRecord
                    when_changing: %i[outcome]
 
   # Validations
-  validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
+  validates :appropriate_body_period_id, presence: { message: "Select an appropriate body" }
 
   validates :started_on,
             presence: { message: "Enter a start date" }
@@ -50,7 +50,7 @@ class InductionPeriod < ApplicationRecord
 
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
-  scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
+  scope :for_appropriate_body_period, ->(appropriate_body_period) { where(appropriate_body_period:) }
   scope :ongoing, -> { where(finished_on: nil) }
   scope :with_outcome, -> { where.not(outcome: nil) }
   scope :without_outcome, -> { where(outcome: nil) }

@@ -45,14 +45,14 @@ module Sessions
       session["user_session"]["type"] = "Sessions::Users::#{new_role}" # update the user type in the session
 
       if current_user.dfe_sign_in_organisation_id
-        appropriate_body = AppropriateBody.find_by(dfe_sign_in_organisation_id: current_user.dfe_sign_in_organisation_id)
+        appropriate_body = AppropriateBodyPeriod.find_by(dfe_sign_in_organisation_id: current_user.dfe_sign_in_organisation_id)
         gias_school = GIAS::School.find_by(name: appropriate_body.name)
 
         session["user_session"]["school_urn"] ||= gias_school.urn
 
       elsif current_user.school_urn
         gias_school = GIAS::School.find_by(urn: current_user.school_urn)
-        appropriate_body = AppropriateBody.find_by(name: gias_school.name)
+        appropriate_body = AppropriateBodyPeriod.find_by(name: gias_school.name)
 
         session["user_session"]["dfe_sign_in_organisation_id"] ||= appropriate_body.dfe_sign_in_organisation_id
       end

@@ -21,16 +21,16 @@ namespace :extensions do
       [70_688, 	      416, 	                1168],
     ]
 
-    data.map do |teacher_id, appropriate_body_id, induction_extension_id|
+    data.map do |teacher_id, appropriate_body_period_id, induction_extension_id|
       teacher = Teacher.find(teacher_id)
-      appropriate_body = AppropriateBody.find(appropriate_body_id)
+      appropriate_body_period = AppropriateBodyPeriod.find(appropriate_body_period_id)
       induction_extension = InductionExtension.find(induction_extension_id)
       full_name = Teachers::Name.new(teacher).full_name
-      logger.info "#{appropriate_body.name} extended #{full_name}'s induction by #{induction_extension.number_of_terms}"
+      logger.info "#{appropriate_body_period.name} extended #{full_name}'s induction by #{induction_extension.number_of_terms}"
 
       Events::Record.record_induction_extension_created_event!(
         author:,
-        appropriate_body:,
+        appropriate_body_period:,
         teacher:,
         induction_extension:,
         modifications: [
