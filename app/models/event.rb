@@ -70,7 +70,7 @@ class Event < ApplicationRecord
   belongs_to :user
   belongs_to :teacher
   belongs_to :school
-  belongs_to :appropriate_body
+  belongs_to :appropriate_body_period
 
   # providers
   belongs_to :active_lead_provider

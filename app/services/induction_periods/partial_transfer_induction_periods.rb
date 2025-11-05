@@ -20,7 +20,7 @@ module InductionPeriods
           induction_period.update!(finished_on: 1.day.before(cut_off_date), number_of_terms: terms_in_first_half)
 
           new_induction_period = InductionPeriod.create!(
-            appropriate_body: new_appropriate_body,
+            appropriate_body_period: new_appropriate_body,
             started_on: cut_off_date,
             teacher: induction_period.teacher,
             **original_induction_values
@@ -31,7 +31,7 @@ module InductionPeriods
 
           induction_period.events.happened_on_or_after(cut_off_date).each do |event|
             event.update!(
-              appropriate_body: new_appropriate_body,
+              appropriate_body_period: new_appropriate_body,
               induction_period: new_induction_period,
               heading: event.heading.gsub(current_appropriate_body.name, new_appropriate_body.name),
               body: event_body_context
@@ -54,7 +54,7 @@ module InductionPeriods
 
     # @return [InductionPeriod::ActiveRecord_Relation] inductions that span cut off date
     def target_inductions
-      inductions_before_cut_off = InductionPeriod.for_appropriate_body(current_appropriate_body).started_before(cut_off_date)
+      inductions_before_cut_off = InductionPeriod.for_appropriate_body_period(current_appropriate_body).started_before(cut_off_date)
       inductions_before_cut_off.finished_on_or_after(cut_off_date).or(inductions_before_cut_off.ongoing)
     end
 
@@ -63,15 +63,15 @@ module InductionPeriods
     def processed_inductions(trns:)
       InductionPeriod
         .joins(:teacher)
-        .where(teacher: { trn: trns }, appropriate_body: [current_appropriate_body, new_appropriate_body])
-        .order(:appropriate_body_id, :teacher_id)
+        .where(teacher: { trn: trns }, appropriate_body_period: [current_appropriate_body, new_appropriate_body])
+        .order(:appropriate_body_period_id, :teacher_id)
     end
 
     # @param induction_period [InductionPeriod]
     # @return [Boolean]
     def create_release_event(induction_period:)
       Event.create!(
-        appropriate_body: current_appropriate_body,
+        appropriate_body_period: current_appropriate_body,
         induction_period:,
         teacher: induction_period.teacher,
         happened_at: induction_period.finished_on,
@@ -86,7 +86,7 @@ module InductionPeriods
     # @return [Boolean]
     def create_claim_event(induction_period:)
       Event.create!(
-        appropriate_body: new_appropriate_body,
+        appropriate_body_period: new_appropriate_body,
         induction_period:,
         teacher: induction_period.teacher,
         happened_at: induction_period.started_on,

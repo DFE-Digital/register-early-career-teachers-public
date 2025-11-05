@@ -7,7 +7,7 @@ class NationalBody < ApplicationRecord
 
   # Associations
   belongs_to :dfe_sign_in_organisation
-  has_one :appropriate_body_period, class_name: "AppropriateBody"
+  has_one :appropriate_body_period
 
   # Validations
   validates :name,

@@ -13,7 +13,7 @@ class School < ApplicationRecord
   # Associations
   belongs_to :dfe_sign_in_organisation, foreign_key: :urn, primary_key: :urn, inverse_of: :school
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
-  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBody"
+  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBodyPeriod" # NB or TSH through: :appropriate_body_period
   belongs_to :last_chosen_lead_provider, class_name: "LeadProvider"
   belongs_to :induction_tutor_last_nominated_in, class_name: "ContractPeriod", primary_key: "year", foreign_key: "induction_tutor_last_nominated_in", optional: true
 

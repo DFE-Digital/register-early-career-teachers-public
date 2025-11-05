@@ -95,7 +95,7 @@ RSpec.describe Teachers::Induction do
     let(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
     it "returns true when the current induction is with the body" do
-      expect(service.with_appropriate_body?(induction_period.appropriate_body)).to be true
+      expect(service.with_appropriate_body?(induction_period.appropriate_body_period)).to be true
     end
 
     it "returns false when the current induction is with another body" do

@@ -3,7 +3,7 @@ RSpec.describe Events::AppropriateBodyBatchAuthor do
     Events::AppropriateBodyBatchAuthor.new(
       email: "test@test.org",
       name: "Mr Test",
-      appropriate_body_id: batch.appropriate_body.id,
+      appropriate_body_period_id: batch.appropriate_body_period.id,
       batch_id: batch.id
     )
   end
@@ -18,7 +18,7 @@ RSpec.describe Events::AppropriateBodyBatchAuthor do
         author_name: "Mr Test",
         author_email: "test@test.org",
         author_type: :appropriate_body_user,
-        appropriate_body_id: batch.appropriate_body.id,
+        appropriate_body_period_id: batch.appropriate_body_period.id,
         pending_induction_submission_batch_id: batch.id,
       })
     end

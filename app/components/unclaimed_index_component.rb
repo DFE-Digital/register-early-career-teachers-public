@@ -1,12 +1,12 @@
 class UnclaimedIndexComponent < ApplicationComponent
   renders_one :detailed_review_section, -> {
-    UnclaimedIndex::DetailedReviewSectionComponent.new(appropriate_body:)
+    UnclaimedIndex::DetailedReviewSectionComponent.new(appropriate_body_period:)
   }
 
-  attr_reader :appropriate_body
+  attr_reader :appropriate_body_period
 
-  def initialize(appropriate_body:)
-    @appropriate_body = appropriate_body
+  def initialize(appropriate_body_period:)
+    @appropriate_body_period = appropriate_body_period
   end
 
   def period

@@ -1,11 +1,11 @@
 RSpec.describe AppropriateBodies::ProcessBatch::Download do
   subject(:service) { described_class.new(pending_induction_submission_batch:) }
 
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body) }
 
   let(:pending_induction_submission_batch) do
     FactoryBot.build(:pending_induction_submission_batch, :action,
-                     appropriate_body:,
+                     appropriate_body_period:,
                      file_name: "foo.csv",
                      data:)
   end
@@ -73,7 +73,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Download do
     context "with failed submissions" do
       before do
         FactoryBot.create(:pending_induction_submission,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           pending_induction_submission_batch:,
                           trn: "1234567",
                           error_messages: [
@@ -84,7 +84,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Download do
                           ])
 
         FactoryBot.create(:pending_induction_submission,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           pending_induction_submission_batch:,
                           trn: "7654321")
       end

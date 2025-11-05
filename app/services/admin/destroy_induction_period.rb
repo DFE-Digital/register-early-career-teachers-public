@@ -1,12 +1,12 @@
 module Admin
   class DestroyInductionPeriod
-    attr_reader :author, :induction_period, :teacher, :appropriate_body
+    attr_reader :author, :induction_period, :teacher, :appropriate_body_period
 
     def initialize(author:, induction_period:)
       @author = author
       @induction_period = induction_period
       @teacher = induction_period.teacher
-      @appropriate_body = induction_period.appropriate_body
+      @appropriate_body_period = induction_period.appropriate_body_period
     end
 
     def destroy_induction_period!
@@ -14,24 +14,13 @@ module Admin
         modifications = induction_period.attributes
         induction_period.destroy!
 
-        record_induction_period_deleted_event!(
+        Events::Record.record_induction_period_deleted_event!(
           author:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           modifications:
         )
       end
-    end
-
-  private
-
-    def record_induction_period_deleted_event!(author:, teacher:, appropriate_body:, modifications:)
-      Events::Record.record_induction_period_deleted_event!(
-        author:,
-        teacher:,
-        appropriate_body:,
-        modifications:
-      )
     end
   end
 end

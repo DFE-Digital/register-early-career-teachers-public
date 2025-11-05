@@ -2,7 +2,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
   subject(:registration_store) { described_class.new(store) }
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, :national) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, :national) }
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:store) do
     FactoryBot.build(:session_repository,
@@ -10,7 +10,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
                      corrected_name: nil,
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
-                     appropriate_body_id: appropriate_body.id,
+                     appropriate_body_id: appropriate_body_period.id,
                      training_programme: "school_led",
                      start_date: "January 2025", # FIXME: this should be a Date?
                      trn: "3002586",
@@ -359,8 +359,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         let!(:more_recent_body) { FactoryBot.create(:appropriate_body, name: "More Recent Body") }
 
         before do
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body: older_body)
-          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body: more_recent_body)
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body_period: older_body)
+          FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body_period: more_recent_body)
         end
 
         it "returns the name of the latest appropriate body by started_on" do

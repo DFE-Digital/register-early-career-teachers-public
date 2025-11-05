@@ -3,7 +3,7 @@ module Events
   # can be recorded in the event log
   #
   # ActiveRecord shows changes in this format:
-  # ab = AppropriateBody.assign_attributes(local_authority_code: 419)
+  # ab = AppropriateBodyPeriod.assign_attributes(local_authority_code: 419)
   # ab.changes
   # => {"local_authority_code"=>[418, 419]}
   #

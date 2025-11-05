@@ -91,7 +91,7 @@ module BatchHelper
       rows: batches.map do |batch|
         [
           batch.id.to_s,
-          batch.appropriate_body.name,
+          batch.appropriate_body_period.name,
           batch_type_tag(batch),
           batch_status_tag(batch),
           batch.file_name || "-",
@@ -99,7 +99,7 @@ module BatchHelper
           batch.tally[:uploaded_count].to_s,
           batch.tally[:processed_count].to_s,
           batch.tally[:errored_count].to_s,
-          govuk_link_to("View", admin_appropriate_body_batch_path(batch.appropriate_body, batch))
+          govuk_link_to("View", admin_appropriate_body_batch_path(batch.appropriate_body_period, batch))
         ]
       end
     )

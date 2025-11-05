@@ -8,7 +8,7 @@ Rails.application.config.middleware.use(OmniAuth::Builder) do
     provider(
       :developer,
       name: "persona",
-      fields: %i[name email school_urn appropriate_body_id dfe_staff],
+      fields: %i[name email school_urn appropriate_body_period_id dfe_staff],
       uid_field: :email
     )
   end

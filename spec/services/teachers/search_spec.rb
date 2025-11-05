@@ -24,8 +24,8 @@ describe Teachers::Search do
     let(:teacher2) { FactoryBot.create(:teacher) }
     let(:teacher3) { FactoryBot.create(:teacher) }
 
-    let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher1, appropriate_body: ab1) }
-    let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher2, appropriate_body: ab2) }
+    let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher1, appropriate_body_period: ab1) }
+    let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher2, appropriate_body_period: ab2) }
 
     describe "belonging to appropriate bodies" do
       context "when one appropriate body is provided" do
@@ -43,7 +43,7 @@ describe Teachers::Search do
       context "when multiple appropriate bodies are provided" do
         subject { Teachers::Search.new(appropriate_bodies: [ab1, ab3]) }
 
-        let!(:induction_period3) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher3, appropriate_body: ab3) }
+        let!(:induction_period3) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher3, appropriate_body_period: ab3) }
 
         it "includes teachers with ongoing induction periods with the specified appropriate bodies" do
           expect(subject.search).to include(teacher1, teacher3)
@@ -76,8 +76,8 @@ describe Teachers::Search do
       let(:teacher_with_completed_induction) { FactoryBot.create(:teacher) }
       let(:teacher_with_no_induction) { FactoryBot.create(:teacher) }
 
-      let!(:open_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher_with_open_induction, appropriate_body: ab1) }
-      let!(:completed_induction_period) { FactoryBot.create(:induction_period, :pass, teacher: teacher_with_completed_induction, appropriate_body: ab1) }
+      let!(:open_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: teacher_with_open_induction, appropriate_body_period: ab1) }
+      let!(:completed_induction_period) { FactoryBot.create(:induction_period, :pass, teacher: teacher_with_completed_induction, appropriate_body_period: ab1) }
 
       context 'when status is "open"' do
         subject { Teachers::Search.new(appropriate_bodies: ab1, status: "open") }

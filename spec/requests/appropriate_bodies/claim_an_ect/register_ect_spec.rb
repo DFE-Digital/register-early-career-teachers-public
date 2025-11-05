@@ -1,7 +1,7 @@
 RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
   let(:trs_qts_awarded_on) { 3.years.ago.to_date }
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_qts_awarded_on:) }
+  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period:, trs_qts_awarded_on:) }
   let(:page_heading) { "Tell us about" }
   let(:pending_induction_submission_id_param) { pending_induction_submission.id.to_s }
 
@@ -15,12 +15,12 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
     end
 
     context "when signed in as an appropriate body user" do
-      before { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      before { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       it "searches within the scope of the current appropriate body" do
-        allow(PendingInductionSubmissions::Search).to receive(:new).with(appropriate_body:).and_call_original
+        allow(PendingInductionSubmissions::Search).to receive(:new).with(appropriate_body_period:).and_call_original
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}/edit")
-        expect(PendingInductionSubmissions::Search).to have_received(:new).with(appropriate_body:).once
+        expect(PendingInductionSubmissions::Search).to have_received(:new).with(appropriate_body_period:).once
       end
 
       it "finds the right PendingInductionSubmission record and renders the page" do
@@ -44,7 +44,7 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
       let(:author_first_name) { "Anette" }
       let(:author_last_name) { "Benning" }
       let(:author_email) { "ab@something.com" }
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:, method: :dfe_sign_in, first_name: author_first_name, last_name: author_last_name, email: author_email) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period, method: :dfe_sign_in, first_name: author_first_name, last_name: author_last_name, email: author_email) }
 
       before { allow(AppropriateBodies::ClaimAnECT::RegisterECT).to receive(:new).with(any_args).and_call_original }
 
@@ -65,12 +65,12 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
         end
 
         it "searches within the scope of the current appropriate body" do
-          allow(PendingInductionSubmissions::Search).to receive(:new).with(appropriate_body:).and_call_original
+          allow(PendingInductionSubmissions::Search).to receive(:new).with(appropriate_body_period:).and_call_original
           patch(
             "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
             params: { pending_induction_submission: registration_params }
           )
-          expect(PendingInductionSubmissions::Search).to have_received(:new).with(appropriate_body:).once
+          expect(PendingInductionSubmissions::Search).to have_received(:new).with(appropriate_body_period:).once
         end
 
         it "passes the parameters to the AppropriateBodies::ClaimAnECT::RegisterECT service and redirects" do
@@ -80,7 +80,7 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
           )
 
           expect(AppropriateBodies::ClaimAnECT::RegisterECT).to have_received(:new).with(
-            appropriate_body:,
+            appropriate_body_period:,
             pending_induction_submission:,
             author: instance_of(Sessions::Users::AppropriateBodyUser)
           ) do |arguments|
@@ -125,7 +125,7 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
             )
 
             expect(AppropriateBodies::ClaimAnECT::RegisterECT).to have_received(:new).with(
-              appropriate_body:,
+              appropriate_body_period:,
               pending_induction_submission:,
               author: instance_of(Sessions::Users::AppropriateBodyUser)
             ) do |arguments|
@@ -168,12 +168,12 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
     end
 
     context "when signed in" do
-      before { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      before { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       it "searches within the scope of the current appropriate body" do
-        allow(PendingInductionSubmissions::Search).to receive(:new).with(appropriate_body:).and_call_original
+        allow(PendingInductionSubmissions::Search).to receive(:new).with(appropriate_body_period:).and_call_original
         get("/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}/")
-        expect(PendingInductionSubmissions::Search).to have_received(:new).with(appropriate_body:).once
+        expect(PendingInductionSubmissions::Search).to have_received(:new).with(appropriate_body_period:).once
       end
 
       it "finds the right PendingInductionSubmission record and renders the page" do

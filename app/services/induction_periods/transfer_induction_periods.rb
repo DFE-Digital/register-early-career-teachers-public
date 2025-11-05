@@ -7,7 +7,7 @@ module InductionPeriods
       id
       started_on
       finished_on
-      appropriate_body_id
+      appropriate_body_period_id
       teacher_id
     ].freeze
 
@@ -17,8 +17,8 @@ module InductionPeriods
       induction_period.id
       induction_period.started_on
       induction_period.finished_on
-      appropriate_body.id
-      appropriate_body.name
+      appropriate_body_period.id
+      appropriate_body_period.name
       teacher.trn
       heading
       body
@@ -32,8 +32,8 @@ module InductionPeriods
                 :cut_off_date,
                 :inductions
 
-    # @param from [AppropriateBody] current owner
-    # @param to [AppropriateBody] new owner
+    # @param from [AppropriateBodyPeriod] current owner
+    # @param to [AppropriateBodyPeriod] new owner
     # @param on [Date] when the change of ownership occurred
     def initialize(from:, to:, on:)
       @current_appropriate_body = from

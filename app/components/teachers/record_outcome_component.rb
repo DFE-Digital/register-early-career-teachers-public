@@ -8,7 +8,7 @@ module Teachers
 
     include UserModes
 
-    delegate :appropriate_body,
+    delegate :appropriate_body_period,
              :teacher,
              :pending_induction_submission,
              :outcome,
@@ -48,7 +48,7 @@ module Teachers
     end
 
     def appropriate_body_required?
-      appropriate_body_mode? && service.appropriate_body.nil?
+      appropriate_body_mode? && service.appropriate_body_period.nil?
     end
 
     def unsupported_outcome?

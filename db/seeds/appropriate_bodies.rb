@@ -10,13 +10,13 @@ def describe_lead_school(school)
   print_seed_info("🏫 Lead school: #{school.name} (#{school_urn})", indent: 4)
 end
 
-def describe_appropriate_body(appropriate_body)
-  type = Colourize.text(appropriate_body.body_type, :cyan)
-  uuid = Colourize.text(appropriate_body.dfe_sign_in_organisation_id, :magenta)
-  ab_text = "#{appropriate_body.name} (#{type}) #{uuid}"
+def describe_appropriate_body_period(appropriate_body_period)
+  type = Colourize.text(appropriate_body_period.body_type, :cyan)
+  uuid = Colourize.text(appropriate_body_period.dfe_sign_in_organisation_id, :magenta)
+  ab_text = "#{appropriate_body_period.name} (#{type}) #{uuid}"
 
   print_seed_info(ab_text, indent: 2)
-  describe_lead_school(appropriate_body.lead_school) if appropriate_body.lead_school.present?
+  describe_lead_school(appropriate_body_period.lead_school) if appropriate_body_period.lead_school.present?
 end
 
 # DfE Sign-In environment domain prefix
@@ -220,7 +220,7 @@ appropriate_bodies.each do |data|
 
   # Skip seeding new Appropriate Body models
   if ENV["SEED_NEW_APPROPRIATE_BODY_MODELS"] != "y"
-    describe_appropriate_body(appropriate_body_period)
+    describe_appropriate_body_period(appropriate_body_period)
     next
   end
 
@@ -267,7 +267,7 @@ appropriate_bodies.each do |data|
     appropriate_body_period.update!(national_body:)
   end
 
-  describe_appropriate_body(appropriate_body_period)
+  describe_appropriate_body_period(appropriate_body_period)
 end
 
 # Seed Teaching School Hubs with multiple regions
@@ -278,9 +278,9 @@ if ENV["SEED_NEW_APPROPRIATE_BODY_MODELS"] == "y"
 
   # Bright Futures' second region
   second_hub = FactoryBot.create(:teaching_school_hub,
+                                 #  region: "Manchester, Stockport",
                                  lead_school: School.find_by(urn: 137_289),
                                  name: "Bright Futures Teaching School Hub (Manchester & Stockport)")
-  #  region: "Manchester, Stockport"
 
   print_seed_info("#{second_hub.name} (#{type})", indent: 2)
   describe_lead_school(second_hub.lead_school)

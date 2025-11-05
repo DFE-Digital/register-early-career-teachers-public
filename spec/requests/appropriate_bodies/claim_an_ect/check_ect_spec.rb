@@ -1,7 +1,7 @@
 RSpec.describe "Appropriate body claiming an ECT: checking we have the right ECT" do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:page_heading) { "Check details for" }
-  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:) }
+  let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period:) }
   let(:pending_induction_submission_id_param) { pending_induction_submission.id.to_s }
 
   describe "GET /appropriate-body/claim-an-ect/check-ect/:id/edit" do
@@ -13,7 +13,7 @@ RSpec.describe "Appropriate body claiming an ECT: checking we have the right ECT
     end
 
     context "when signed in as an appropriate body user" do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       it "finds the right PendingInductionSubmission record and renders the page" do
         allow(PendingInductionSubmissions::Search).to receive(:new).and_call_original
@@ -25,7 +25,7 @@ RSpec.describe "Appropriate body claiming an ECT: checking we have the right ECT
       end
 
       context "when alerts are present" do
-        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[some alerts]) }
+        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period:, trs_alerts: %w[some alerts]) }
 
         it "includes info about the check a teachers record service" do
           get("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
@@ -35,7 +35,7 @@ RSpec.describe "Appropriate body claiming an ECT: checking we have the right ECT
       end
 
       context "when alerts are absent" do
-        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:, trs_alerts: %w[]) }
+        let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period:, trs_alerts: %w[]) }
 
         it "does not include info about the check a teachers record service" do
           get("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
@@ -55,7 +55,7 @@ RSpec.describe "Appropriate body claiming an ECT: checking we have the right ECT
     end
 
     context "when signed in" do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       before { allow(AppropriateBodies::ClaimAnECT::CheckECT).to receive(:new).with(any_args).and_call_original }
 
@@ -69,7 +69,7 @@ RSpec.describe "Appropriate body claiming an ECT: checking we have the right ECT
           )
 
           expect(AppropriateBodies::ClaimAnECT::CheckECT).to have_received(:new).with(
-            appropriate_body:,
+            appropriate_body_period:,
             pending_induction_submission:
           )
 

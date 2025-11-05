@@ -1,11 +1,11 @@
 RSpec.describe "Admin recording a passed outcome for a teacher" do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
     FactoryBot.create(:induction_period, :ongoing,
                       teacher:,
-                      appropriate_body:)
+                      appropriate_body_period:)
   end
 
   describe "GET /admin/teachers/:teacher_id/record-passed-outcome/new" do

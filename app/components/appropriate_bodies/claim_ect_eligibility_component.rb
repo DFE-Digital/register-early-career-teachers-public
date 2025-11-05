@@ -2,13 +2,13 @@ module AppropriateBodies
   # Renders a message if an ECT cannot be claimed or a CTA if they can
   class ClaimECTEligibilityComponent < ApplicationComponent
     attr_reader :pending_induction_submission,
-                :appropriate_body,
+                :appropriate_body_period,
                 :teacher,
                 :name
 
-    def initialize(pending_induction_submission:, appropriate_body:, teacher:)
+    def initialize(pending_induction_submission:, appropriate_body_period:, teacher:)
       @pending_induction_submission = pending_induction_submission
-      @appropriate_body = appropriate_body
+      @appropriate_body_period = appropriate_body_period
       @teacher = teacher
       @name = ::PendingInductionSubmissions::Name.new(pending_induction_submission).full_name
     end
@@ -43,7 +43,7 @@ module AppropriateBodies
     def claimed_by_another_ab?
       return false if teacher&.ongoing_induction_period.blank?
 
-      teacher.ongoing_induction_period.appropriate_body != appropriate_body
+      teacher.ongoing_induction_period.appropriate_body_period != appropriate_body_period
     end
   end
 end

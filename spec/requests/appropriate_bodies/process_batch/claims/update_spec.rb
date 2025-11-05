@@ -1,11 +1,11 @@
 RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
   include ActiveJob::TestHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
   let(:batch) do
     FactoryBot.create(:pending_induction_submission_batch, :claim, :processed,
-                      appropriate_body:,
+                      appropriate_body_period:,
                       data:,
                       file_name:)
   end

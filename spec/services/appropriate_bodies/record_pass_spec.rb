@@ -26,8 +26,8 @@ RSpec.describe AppropriateBodies::RecordPass do
 
     it "records an induction passed event" do
       expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
-        appropriate_body:,
         teacher:,
+        appropriate_body_period:,
         induction_period:,
         ect_at_school_period:,
         mentorship_period:,
@@ -43,8 +43,8 @@ RSpec.describe AppropriateBodies::RecordPass do
 
       it "assigns the period to the event" do
         expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
-          appropriate_body:,
           teacher:,
+          appropriate_body_period:,
           induction_period:,
           ect_at_school_period:,
           mentorship_period:,
@@ -59,7 +59,7 @@ RSpec.describe AppropriateBodies::RecordPass do
     context "when ongoing induction period only has the legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           teacher:)
       end
 

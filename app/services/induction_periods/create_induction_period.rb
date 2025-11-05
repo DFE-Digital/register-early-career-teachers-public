@@ -44,7 +44,7 @@ module InductionPeriods
       Events::Record.record_induction_period_opened_event!(
         author:,
         teacher:,
-        appropriate_body: induction_period.appropriate_body,
+        appropriate_body_period: induction_period.appropriate_body_period,
         induction_period:,
         modifications: induction_period.changes
       )

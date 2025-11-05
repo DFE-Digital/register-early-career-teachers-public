@@ -35,8 +35,8 @@ RSpec.describe AppropriateBodies::RecordFail do
 
     it "records an induction failed event" do
       expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
-        appropriate_body:,
         teacher:,
+        appropriate_body_period:,
         induction_period:,
         ect_at_school_period:,
         mentorship_period:,
@@ -53,8 +53,8 @@ RSpec.describe AppropriateBodies::RecordFail do
 
       it "assigns the period to the event" do
         expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
-          appropriate_body:,
           teacher:,
+          appropriate_body_period:,
           induction_period:,
           ect_at_school_period:,
           mentorship_period:,
@@ -115,7 +115,7 @@ RSpec.describe AppropriateBodies::RecordFail do
     context "when ongoing induction period only has a mappable legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           teacher:)
       end
 
@@ -133,7 +133,7 @@ RSpec.describe AppropriateBodies::RecordFail do
     context "when ongoing induction period only has an unmappable legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :pre_2021, :legacy_programme_type,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           teacher:)
       end
 

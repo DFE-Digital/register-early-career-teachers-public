@@ -3,12 +3,12 @@ module AppropriateBodies
     class RegisterECT
       include ::Teachers::Manageable
 
-      attr_reader :appropriate_body,
+      attr_reader :appropriate_body_period,
                   :pending_induction_submission,
                   :author
 
-      def initialize(appropriate_body:, pending_induction_submission:, author:)
-        @appropriate_body = appropriate_body
+      def initialize(appropriate_body_period:, pending_induction_submission:, author:)
+        @appropriate_body_period = appropriate_body_period
         @pending_induction_submission = pending_induction_submission
         @author = author
       end
@@ -43,7 +43,7 @@ module AppropriateBodies
           trn: pending_induction_submission.trn,
           trs_first_name: pending_induction_submission.trs_first_name,
           trs_last_name: pending_induction_submission.trs_last_name,
-          event_metadata: Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body:)
+          event_metadata: Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body_period:)
         )
       end
 
@@ -65,7 +65,7 @@ module AppropriateBodies
           author:,
           teacher:,
           params: {
-            appropriate_body:,
+            appropriate_body_period:,
             started_on: pending_induction_submission.started_on,
             induction_programme: pending_induction_submission.induction_programme,
             training_programme: pending_induction_submission.training_programme,

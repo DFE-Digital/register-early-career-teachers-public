@@ -93,9 +93,9 @@ private
 
   def sign_in_with_appropriate_body_persona(appropriate_body:, email:, name:)
     Rails.logger.debug("Signing in with persona as appropriate body user")
-    post("/auth/persona/callback", params: { email:, name:, appropriate_body_id: appropriate_body.id })
+    post("/auth/persona/callback", params: { email:, name:, appropriate_body_period_id: appropriate_body.id })
 
-    Sessions::Users::AppropriateBodyPersona.new(appropriate_body_id: appropriate_body.id, email:, name:)
+    Sessions::Users::AppropriateBodyPersona.new(appropriate_body_period_id: appropriate_body.id, email:, name:)
   end
 
   def sign_in_with_dfe_persona(user:)

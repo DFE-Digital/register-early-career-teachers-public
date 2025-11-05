@@ -1,6 +1,6 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
   include ActiveJob::TestHelper
-  subject { described_class.new(appropriate_body:, pending_induction_submission:, author:) }
+  subject { described_class.new(appropriate_body_period:, pending_induction_submission:, author:) }
 
   include_context "test TRS API returns a teacher"
 
@@ -10,16 +10,16 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
     allow(author).to receive(:is_a?).with(any_args).and_call_original
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+                      dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
   end
 
   describe "#initialize" do
     it "assigns the provided appropriate body and pending induction submission" do
-      expect(subject.appropriate_body).to eq(appropriate_body)
+      expect(subject.appropriate_body_period).to eq(appropriate_body_period)
       expect(subject.pending_induction_submission).to eq(pending_induction_submission)
     end
   end
@@ -67,7 +67,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
         induction_period = InductionPeriod.last
         expect(induction_period.teacher).to eq(teacher)
         expect(induction_period.started_on).to eq(Date.new(2023, 5, 2))
-        expect(induction_period.appropriate_body).to eq(appropriate_body)
+        expect(induction_period.appropriate_body_period).to eq(appropriate_body_period)
         expect(induction_period.induction_programme).to eq("fip")
       end
 
@@ -85,8 +85,8 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           hash_including(
             author:,
             event_type: :induction_period_opened,
-            appropriate_body:,
-            heading: "John Doe was claimed by #{appropriate_body.name}"
+            appropriate_body_period:,
+            heading: "John Doe was claimed by #{appropriate_body_period.name}"
           )
         )
         perform_enqueued_jobs
@@ -215,7 +215,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
             hash_including(
               author:,
               event_type: :teacher_name_updated_by_trs,
-              appropriate_body:,
+              appropriate_body_period:,
               teacher: existing_teacher,
               heading: "Name changed from 'Jonathan Dole' to 'John Doe'"
             )
@@ -236,7 +236,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           induction_period = InductionPeriod.last
           expect(induction_period.teacher).to eq(existing_teacher)
           expect(induction_period.started_on).to eq(Date.new(2023, 5, 2))
-          expect(induction_period.appropriate_body).to eq(appropriate_body)
+          expect(induction_period.appropriate_body_period).to eq(appropriate_body_period)
           expect(induction_period.induction_programme).to eq("fip")
         end
       end

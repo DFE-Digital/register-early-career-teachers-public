@@ -1,8 +1,8 @@
 RSpec.describe "Admin recording a passed induction" do
   include ActiveJob::TestHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
   let(:teacher) { FactoryBot.create(:teacher, :with_name) }
   let(:today) { Time.zone.today }
 

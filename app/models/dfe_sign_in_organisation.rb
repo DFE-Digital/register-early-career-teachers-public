@@ -3,7 +3,6 @@ class DfESignInOrganisation < ApplicationRecord
   # Associations
   # TODO: remove appropriate_body_period when dfe_sign_in_organisation_id is removed from AppropriateBody
   has_one :appropriate_body_period,
-          class_name: "AppropriateBody",
           foreign_key: :dfe_sign_in_organisation_id,
           primary_key: :uuid,
           inverse_of: :dfe_sign_in_organisation

@@ -28,7 +28,7 @@ module InductionPeriods
     # @return [InductionPeriod::ActiveRecord_Relation] inductions that came after cut off date
     def target_inductions
       InductionPeriod
-        .for_appropriate_body(current_appropriate_body)
+        .for_appropriate_body_period(current_appropriate_body)
         .started_on_or_after(cut_off_date)
         .order(started_on: :asc)
     end
@@ -37,7 +37,7 @@ module InductionPeriods
     # @return [Boolean]
     def transfer_event(event)
       event.update!(
-        appropriate_body: new_appropriate_body,
+        appropriate_body_period: new_appropriate_body,
         heading: event.heading.gsub(current_appropriate_body.name, new_appropriate_body.name),
         body: event_body_context
       )
@@ -47,7 +47,7 @@ module InductionPeriods
     # @return [Boolean]
     def transfer_induction_period(induction_period)
       induction_period.update!(
-        appropriate_body: new_appropriate_body
+        appropriate_body_period: new_appropriate_body
       )
     end
   end
