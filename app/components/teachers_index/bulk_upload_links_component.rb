@@ -26,6 +26,6 @@ private
   end
 
   def batches
-    PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body)
+    PendingInductionSubmissionBatch.for_appropriate_body_period(appropriate_body)
   end
 end

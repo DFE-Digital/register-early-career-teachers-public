@@ -64,7 +64,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
     t.index ["token"], name: "index_api_tokens_on_token", unique: true
   end
 
-  create_table "appropriate_bodies", force: :cascade do |t|
+  create_table "appropriate_body_periods", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -74,10 +74,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
     t.bigint "teaching_school_hub_id"
     t.bigint "lead_school_id"
     t.bigint "national_body_id"
-    t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id", unique: true
-    t.index ["lead_school_id"], name: "index_appropriate_bodies_on_lead_school_id"
-    t.index ["national_body_id"], name: "index_appropriate_bodies_on_national_body_id"
-    t.index ["teaching_school_hub_id"], name: "index_appropriate_bodies_on_teaching_school_hub_id"
+    t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
+    t.index ["lead_school_id"], name: "index_appropriate_body_periods_on_lead_school_id"
+    t.index ["national_body_id"], name: "index_appropriate_body_periods_on_national_body_id"
+    t.index ["teaching_school_hub_id"], name: "index_appropriate_body_periods_on_teaching_school_hub_id"
   end
 
   create_table "blazer_audits", force: :cascade do |t|
@@ -226,7 +226,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
     t.text "event_type"
     t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }
     t.integer "teacher_id"
-    t.integer "appropriate_body_id"
+    t.integer "appropriate_body_period_id"
     t.integer "induction_period_id"
     t.integer "induction_extension_id"
     t.integer "school_id"
@@ -254,7 +254,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
     t.integer "zendesk_ticket_id"
     t.bigint "schedule_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
-    t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
+    t.index ["appropriate_body_period_id"], name: "index_events_on_appropriate_body_period_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
     t.index ["delivery_partner_id"], name: "index_events_on_delivery_partner_id"
@@ -325,7 +325,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
   end
 
   create_table "induction_periods", force: :cascade do |t|
-    t.bigint "appropriate_body_id", null: false
+    t.bigint "appropriate_body_period_id", null: false
     t.date "started_on", null: false
     t.date "finished_on"
     t.datetime "created_at", null: false
@@ -336,7 +336,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
     t.bigint "teacher_id"
     t.enum "outcome", enum_type: "induction_outcomes"
     t.enum "training_programme", enum_type: "training_programme"
-    t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
+    t.index ["appropriate_body_period_id"], name: "index_induction_periods_on_appropriate_body_period_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
   end
 
@@ -546,7 +546,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
-    t.bigint "appropriate_body_id", null: false
+    t.bigint "appropriate_body_period_id", null: false
     t.enum "batch_type", null: false, enum_type: "batch_type"
     t.enum "batch_status", default: "pending", null: false, enum_type: "batch_status"
     t.string "error_message"
@@ -563,11 +563,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
     t.integer "claimed_count"
     t.integer "file_size"
     t.string "file_type"
-    t.index ["appropriate_body_id"], name: "idx_on_appropriate_body_id_58d86a161e"
+    t.index ["appropriate_body_period_id"], name: "idx_on_appropriate_body_period_id_6d39c36e05"
   end
 
   create_table "pending_induction_submissions", force: :cascade do |t|
-    t.bigint "appropriate_body_id"
+    t.bigint "appropriate_body_period_id"
     t.string "establishment_id", limit: 8
     t.string "trn", limit: 7, null: false
     t.string "trs_first_name", limit: 80
@@ -597,7 +597,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
     t.boolean "trs_prohibited_from_teaching"
     t.date "trs_induction_completed_date"
     t.date "trs_date_of_birth"
-    t.index ["appropriate_body_id"], name: "index_pending_induction_submissions_on_appropriate_body_id"
+    t.index ["appropriate_body_period_id"], name: "idx_on_appropriate_body_period_id_b868757d9f"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
@@ -909,14 +909,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
-  add_foreign_key "appropriate_bodies", "national_bodies"
-  add_foreign_key "appropriate_bodies", "schools", column: "lead_school_id"
-  add_foreign_key "appropriate_bodies", "teaching_school_hubs"
-  add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
+  add_foreign_key "appropriate_body_periods", "national_bodies"
+  add_foreign_key "appropriate_body_periods", "schools", column: "lead_school_id"
+  add_foreign_key "appropriate_body_periods", "teaching_school_hubs"
+  add_foreign_key "ect_at_school_periods", "appropriate_body_periods", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
   add_foreign_key "events", "active_lead_providers", on_delete: :nullify
-  add_foreign_key "events", "appropriate_bodies", on_delete: :nullify
+  add_foreign_key "events", "appropriate_body_periods", on_delete: :nullify
   add_foreign_key "events", "delivery_partners", on_delete: :nullify
   add_foreign_key "events", "ect_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "induction_extensions", on_delete: :nullify
@@ -936,9 +936,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
   add_foreign_key "events", "users", on_delete: :nullify
   add_foreign_key "gias_school_links", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "induction_extensions", "teachers"
-  add_foreign_key "induction_periods", "appropriate_bodies"
+  add_foreign_key "induction_periods", "appropriate_body_periods"
   add_foreign_key "induction_periods", "teachers"
-  add_foreign_key "legacy_appropriate_bodies", "appropriate_bodies", column: "appropriate_body_period_id"
+  add_foreign_key "legacy_appropriate_bodies", "appropriate_body_periods"
   add_foreign_key "mentor_at_school_periods", "schools"
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
@@ -962,12 +962,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_110033) do
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"
   add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
   add_foreign_key "parity_check_responses", "parity_check_requests", column: "request_id"
-  add_foreign_key "pending_induction_submission_batches", "appropriate_bodies"
-  add_foreign_key "pending_induction_submissions", "appropriate_bodies"
+  add_foreign_key "pending_induction_submission_batches", "appropriate_body_periods"
+  add_foreign_key "pending_induction_submissions", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"
-  add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
+  add_foreign_key "schools", "appropriate_body_periods", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

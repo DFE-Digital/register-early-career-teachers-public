@@ -13,7 +13,7 @@ class School < ApplicationRecord
   # Associations
   belongs_to :dfe_sign_in_organisation, foreign_key: :urn, primary_key: :urn, inverse_of: :school
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
-  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBody"
+  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBodyPeriod" # NB or TSH through: :appropriate_body_period
   belongs_to :last_chosen_lead_provider, class_name: "LeadProvider"
 
   has_many :ect_at_school_periods, inverse_of: :school
@@ -25,6 +25,12 @@ class School < ApplicationRecord
   has_many :lead_provider_contract_period_metadata, class_name: "Metadata::SchoolLeadProviderContractPeriod"
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
   has_many :training_periods, through: :school_partnerships
+
+  # if RIAB decides to store multiple TSHs and regions
+  has_many :led_teaching_school_hubs, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
+
+  # if RIAB decides to consolidate TSH activity and ignore regions
+  has_one :led_teaching_school_hub, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
 
   # if RIAB decides to store multiple TSHs and regions
   has_many :led_teaching_school_hubs, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school

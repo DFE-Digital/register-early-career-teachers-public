@@ -32,7 +32,7 @@ class PendingInductionSubmissionBatch < ApplicationRecord
   has_many :events, dependent: :nullify
 
   # Scopes
-  scope :for_appropriate_body, ->(appropriate_body) { where(appropriate_body:) }
+  scope :for_appropriate_body_period, ->(appropriate_body_period) { where(appropriate_body_period:) }
 
   # Validations
   validates :appropriate_body, presence: true
