@@ -1,3 +1,4 @@
+# TODO: make the DP records behave like periods with start/stop dates
 class DeliveryPartner < ApplicationRecord
   include DeclarativeUpdates
 

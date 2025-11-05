@@ -1,30 +1,42 @@
 FactoryBot.define do
   factory(:appropriate_body) do
     sequence(:name) { |n| "Appropriate Body #{n}" }
+    dfe_sign_in_organisation_id { Faker::Internet.uuid }
 
-    dfe_sign_in_organisation_id { SecureRandom.uuid }
-    teaching_school_hub
+    trait :inactive do
+      dfe_sign_in_organisation_id { nil }
+    end
+
+    # Once data migration has started
+    trait :active do
+      association :dfe_sign_in_organisation
+    end
 
     initialize_with do
       AppropriateBody.find_or_initialize_by(name:)
-    end
-
-    trait :istip do
-      body_type { "national" }
-      name { AppropriateBodies::Search::ISTIP }
-      dfe_sign_in_organisation_id { "203606a4-4199-46a9-84e4-56fbc5da2a36" }
-    end
-
-    trait :local_authority do
-      body_type { "local_authority" }
     end
 
     trait :national do
       body_type { "national" }
     end
 
+    trait :istip do
+      national
+      name { NationalBody::ISTIP }
+    end
+
+    trait :esp do
+      national
+      name { NationalBody::ESP }
+    end
+
     trait :teaching_school_hub do
       body_type { "teaching_school_hub" }
+    end
+
+    trait :local_authority do
+      inactive
+      body_type { "local_authority" }
     end
   end
 end

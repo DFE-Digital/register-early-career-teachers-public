@@ -23,7 +23,8 @@ RSpec.describe Sessions::Users::Builder do
           raw_info: {
             organisation: {
               id: organisation_id,
-              urn: organisation_urn
+              urn: organisation_urn,
+              name: (Faker::Company.name if organisation_id)
             }
           }
         }
@@ -52,7 +53,7 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
-      context "when the School exists and the user has the SchoolUser role" do
+      context "when the School exists and the user has the SchoolUser role", :enable_schools_interface do
         let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { school.urn }
         let(:dfe_sign_in_roles) { %w[SchoolUser] }
@@ -62,9 +63,9 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
-      context "when the school has not been linked but the gias school exists and the user has the SchoolUser role" do
-        let(:organisation_id) { Faker::Internet.uuid }
+      context "when the school has not been linked but the gias school exists and the user has the SchoolUser role", :enable_schools_interface do
         let(:gias_school) { FactoryBot.create(:gias_school, :open) }
+        let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { gias_school.urn }
         let(:dfe_sign_in_roles) { %w[SchoolUser] }
 
@@ -75,7 +76,7 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
-      context "when both the AppropriateBody and School exist and the user has both roles" do
+      context "when both the AppropriateBody and School exist and the user has both roles", :enable_schools_interface do
         let(:organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
         let(:organisation_urn) { school.urn }
         let(:dfe_sign_in_roles) { %w[SchoolUser AppropriateBodyUser] }
@@ -86,12 +87,11 @@ RSpec.describe Sessions::Users::Builder do
       end
 
       context "when neither the AppropriateBody or School exist" do
-        let(:organisation_id) { "c399f5a7-44e4-4c86-bb4a-e3e2dbe69421" }
+        let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { nil }
 
         it do
-          expect { session_user }.to raise_error(described_class::UnknownOrganisation,
-                                                 '#<OmniAuth::AuthHash id="c399f5a7-44e4-4c86-bb4a-e3e2dbe69421" urn=nil>')
+          expect { session_user }.to raise_error(described_class::UnknownOrganisation, /#{organisation_id}/)
         end
       end
     end
