@@ -9,6 +9,7 @@ describe Teacher do
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
+    it { is_expected.to have_many(:training_periods).through(:ect_at_school_periods) }
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:appropriate_bodies).through(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }

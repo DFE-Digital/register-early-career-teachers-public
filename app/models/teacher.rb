@@ -14,6 +14,8 @@ class Teacher < ApplicationRecord
   # Associations
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
+  has_many :training_periods, through: :ect_at_school_periods
+
   has_many :induction_extensions, inverse_of: :teacher
   has_many :teacher_id_changes, inverse_of: :teacher
   has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider"

@@ -22,7 +22,7 @@ module Schedules
     end
 
     def previous_provider_led_periods
-      period.training_periods.where(training_programme: 'provider_led')
+      period.teacher.training_periods.where(training_programme: 'provider_led')
     end
 
     def most_recent_provider_led_period
