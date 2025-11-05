@@ -1,0 +1,39 @@
+<% page_data(
+    title: "Change lead provider for #{@wizard.teacher_full_name}",
+    error: @mentor_at_school_period.errors.present?,
+    backlink_href: schools_mentor_path(@mentor_at_school_period)
+) %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+  <p>We recommend that you keep a mentor's lead provider the same until they complete their training.</p>
+  <p>If you change <%= @wizard.teacher_full_name %>’s lead provider, it means immediately:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>the old lead provider will no longer have access to <%= @wizard.teacher_full_name %>’s training record</li>
+    <li>training will stop and <%= @wizard.teacher_full_name %> will have to wait until the new lead provider confirms the partnership before they can continue</li>
+  </ul>
+
+  <p>Changing the lead provider might mean <%= @wizard.teacher_full_name %> will have a different delivery partner. Their training might be delivered differently.</p>
+  <p>If you do change lead provider, we’ll let the:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>new provider know that you want to work with them</li>
+    <li>old provider know they're no longer working with the mentor</li>
+  </ul>
+  <p>The new provider will confirm the delivery partner they’re working with.</p>
+  <h2 class="govuk-heading-m">Select the new lead provider for <%= @wizard.teacher_full_name %></h2>
+
+  <%= form.govuk_collection_radio_buttons(
+        :lead_provider_id,
+        @wizard.current_step.lead_providers_for_select,
+        :id,
+        :name,
+        legend: {text: "Select lead provider", hidden: true},
+      ) %>
+
+  <%= form.govuk_submit 'Continue' %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to "Cancel and go back to #{@wizard.teacher_full_name}’s details", schools_mentor_path(@mentor_at_school_period) %>
+</p>
