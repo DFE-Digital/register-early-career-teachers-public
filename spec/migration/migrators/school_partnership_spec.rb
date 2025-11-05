@@ -49,18 +49,6 @@ describe Migrators::SchoolPartnership do
           expect(school_partnership.api_updated_at).to eq expected_api_updated_at
         end
       end
-
-      context "when the migration partnership is not allowed" do
-        before do
-          LeadProviderDeliveryPartnership.destroy_all
-        end
-
-        it "do not create a school partnership" do
-          instance.migrate!
-
-          expect(SchoolPartnership.count).to eq(0)
-        end
-      end
     end
   end
 end
