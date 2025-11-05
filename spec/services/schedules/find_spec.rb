@@ -1,4 +1,4 @@
-RSpec.describe Schedules::Assignment do
+RSpec.describe Schedules::Find do
   include ActiveJob::TestHelper
 
   let(:year) { Date.current.year }

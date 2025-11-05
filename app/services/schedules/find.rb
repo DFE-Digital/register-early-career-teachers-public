@@ -1,5 +1,5 @@
 module Schedules
-  class Assignment
+  class Find
     attr_accessor :period, :training_programme, :started_on, :contract_period_year
 
     def initialize(contract_period_year:, period:, training_programme:, started_on:)
@@ -78,6 +78,7 @@ module Schedules
       Date.new(next_year, 5, 31)
     end
 
+    # TODO: in due course, we will assign non-standard identifiers
     def identifier
       return most_recent_schedule_identifier if most_recent_provider_led_period.present?
 
