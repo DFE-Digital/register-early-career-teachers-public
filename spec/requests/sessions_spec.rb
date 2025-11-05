@@ -33,6 +33,7 @@ RSpec.describe "Sessions", type: :request do
     let(:first_name) { Faker::Name.first_name }
     let(:last_name) { Faker::Name.last_name }
     let(:name) { [first_name, last_name].join(" ").strip }
+    let(:dfe_sign_in_organisation_name) { Faker::Company.name }
     let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
     let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
     let(:school_urn) { "123456" }
@@ -61,7 +62,8 @@ RSpec.describe "Sessions", type: :request do
                                    email:,
                                    first_name:,
                                    last_name:,
-                                   organisation_id: dfe_sign_in_organisation_id)
+                                   organisation_id: dfe_sign_in_organisation_id,
+                                   organisation_name: dfe_sign_in_organisation_name)
       end
 
       after do
@@ -76,7 +78,7 @@ RSpec.describe "Sessions", type: :request do
       end
     end
 
-    context "when using a school user" do
+    context "when using a school user", :enable_schools_interface do
       let(:params) do
         {
           email:,
@@ -111,7 +113,7 @@ RSpec.describe "Sessions", type: :request do
       end
     end
 
-    context "when using a multi-role user" do
+    context "when using a multi-role user", :enable_schools_interface do
       let(:params) do
         {
           email:,
