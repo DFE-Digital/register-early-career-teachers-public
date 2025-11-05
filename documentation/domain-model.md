@@ -118,6 +118,13 @@ erDiagram
     datetime updated_at
   }
   Schedule }o--|| ContractPeriod : belongs_to
+  Region {
+    integer id
+    string code
+    string districts
+    datetime created_at
+    datetime updated_at
+  }
   PendingInductionSubmissionBatch {
     integer id
     integer appropriate_body_period_id
