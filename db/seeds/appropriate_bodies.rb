@@ -2,8 +2,6 @@
 # we also seed other model records to reflect the relationships.
 #
 # Appropriate Bodies authenticate using a DfE Sign-In UUID unique to each ENV.
-#
-# TODO: remove regions from names if TSHs are consolidated in future
 # ----------------------------------------------------------------------------
 def describe_lead_school(school)
   school_urn = Colourize.text(school.urn, :yellow)
@@ -48,13 +46,16 @@ appropriate_bodies = [
     }
   },
 
-  # Bright Futures Teaching School Hub (shared lead school)
+  # Bright Futures Teaching School Hub
   # ----------------------------------------------------------------------------
   {
     name: "Bright Futures Teaching School Hub (Salford & Trafford)",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
-    # region: "Salford, Trafford",
+    regions: [
+      { code: "NW7", districts: "Manchester, Stockport", },
+      { code: "NW9", districts: "Salford, Trafford", },
+    ],
     lead_school: {
       urn: 137_289,
       name: "Altrincham Grammar School for Girls",
@@ -72,7 +73,10 @@ appropriate_bodies = [
     name: "Five Counties Teaching School Hubs Alliance (Somerset)",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
-    # region: "Somerset",
+    regions: [
+      { code: "SW5", districts: "Somerset", },
+      { code: "SW9", districts: "Bristol, North Somerset", },
+    ],
     lead_school: {
       urn: 135_959,
       name: "Bristol Metropolitan Academy",
@@ -87,7 +91,9 @@ appropriate_bodies = [
     name: "Five Counties Teaching School Hubs Alliance (South Glos/BANES)",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
-    # region: "Bath and North East Somerset, South Gloucestershire",
+    regions: [
+      { code: "SW6", districts: "Bath and North East Somerset, South Gloucestershire", }
+    ],
     lead_school: {
       urn: 149_948,
       name: "Mangotsfield Church of England Primary School",
@@ -106,7 +112,9 @@ appropriate_bodies = [
     name: "Star Teaching School Hub Birmingham South",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
-    # region: "Birmingham South",
+    regions: [
+      { code: "WM10", districts: "Birmingham South", }
+    ],
     lead_school: {
       urn: 141_969,
       name: "Eden Boys' School, Birmingham",
@@ -121,7 +129,11 @@ appropriate_bodies = [
     name: "Star Teaching School Hub Pennine Lancashire",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
-    # region: "Blackburn with Darwen, Burnley, Hyndburn, Pendle, Ribble Valley, Rossendale",
+    regions: [
+      { code: "NW3", districts: "Bolton, Bury, Rochdale", },
+      { code: "NW4", districts: "Blackpool, Preston, Lancaster, Wyre", },
+      { code: "NW5", districts: "Hyndburn, Burnley, Pendle, Blackburn with Darwen, Ribble Valley, Rossendale", },
+    ],
     lead_school: {
       urn: 140_959,
       name: "Eden Boys' School, Bolton",
@@ -138,7 +150,9 @@ appropriate_bodies = [
     name: "STEP Ahead Teaching School Hub",
     body_type: "teaching_school_hub",
     dqt_id: Faker::Internet.uuid,
-    # region: "Brighton and Hove, Eastbourne, Hastings, Lewes, Rother, Wealden",
+    regions: [
+      { code: "WM2", districts: "Telford and Wrekin, Shropshire", }
+    ],
     lead_school: {
       urn: 141_666,
       name: "Angel Oak Academy",
@@ -237,24 +251,25 @@ appropriate_bodies.each do |data|
   next if dfe_sign_in_organisation_id.blank?
 
   # Teaching School Hubs
-  if appropriate_body_period.teaching_school_hub?
+  if appropriate_body_period.teaching_school_hub? && appropriate_body_period.teaching_school_hub.blank?
     school_name = data.dig(:lead_school, :name)
     urn = data.dig(:lead_school, :urn)
-    # region = data[:region]
+    regions = data[:regions]
 
-    # If the AB is a TSH there will be a school acting as its lead school
-    gias_school = FactoryBot.create(:gias_school, :with_school, :eligible_type, :in_england,
-                                    name: school_name,
-                                    urn:)
+    gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england, name: school_name, urn:)
 
-    teaching_school_hub = FactoryBot.create(:teaching_school_hub,
-                                            lead_school: gias_school.school,
-                                            name:)
+    lead_school = FactoryBot.create(:school, :eligible, urn:, gias_school:)
 
-    appropriate_body_period.update!(
-      lead_school: gias_school.school,
-      teaching_school_hub:
-    )
+    teaching_school_hub = FactoryBot.create(:teaching_school_hub, lead_school:, name:)
+
+    regions.each do |region|
+      FactoryBot.create(:region,
+                        code: region[:code],
+                        districts: region[:districts].split(", "),
+                        teaching_school_hub:)
+    end
+
+    appropriate_body_period.update!(lead_school:, teaching_school_hub:)
 
     # Delivery Partner role for TSH
     FactoryBot.create(:delivery_partner,
@@ -262,26 +277,10 @@ appropriate_bodies.each do |data|
   end
 
   # National Bodies
-  if appropriate_body_period.national?
+  if appropriate_body_period.national? && appropriate_body_period.national_body.blank?
     national_body = FactoryBot.create(:national_body, name:)
     appropriate_body_period.update!(national_body:)
   end
 
   describe_appropriate_body_period(appropriate_body_period)
-end
-
-# Seed Teaching School Hubs with multiple regions
-# -----------------------------------------------------------------------------
-if ENV["SEED_NEW_APPROPRIATE_BODY_MODELS"] == "y"
-  print_seed_info("Teaching School Hubs", colour: :green, blank_lines_before: 1)
-  type = Colourize.text("teaching_school_hub", :cyan)
-
-  # Bright Futures' second region
-  second_hub = FactoryBot.create(:teaching_school_hub,
-                                 #  region: "Manchester, Stockport",
-                                 lead_school: School.find_by(urn: 137_289),
-                                 name: "Bright Futures Teaching School Hub (Manchester & Stockport)")
-
-  print_seed_info("#{second_hub.name} (#{type})", indent: 2)
-  describe_lead_school(second_hub.lead_school)
 end
