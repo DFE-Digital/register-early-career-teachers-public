@@ -1,9 +1,9 @@
 RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Queries do
-  subject(:queries) { described_class.new(context:) }
+  subject(:queries) { described_class.new(registration_session:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:trn) { teacher.trn }
-  let(:context) do
+  let(:registration_session) do
     Struct.new(:trn, :appropriate_body_id, :lead_provider_id, :start_date, :ect_at_school_period_id)
       .new(trn, appropriate_body_id, lead_provider_id, start_date, ect_at_school_period_id)
   end

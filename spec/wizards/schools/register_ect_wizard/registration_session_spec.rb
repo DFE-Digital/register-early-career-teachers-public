@@ -68,7 +68,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession do
       before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(true) }
 
       it "returns true" do
-        expect(subject.cant_use_email?).to be true
+        expect(registration_session.cant_use_email?).to be true
       end
     end
 
@@ -76,7 +76,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession do
       before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(false) }
 
       it "returns false" do
-        expect(subject.cant_use_email?).to be false
+        expect(registration_session.cant_use_email?).to be false
       end
     end
   end

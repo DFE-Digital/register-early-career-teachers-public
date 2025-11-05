@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Presenter do
-  subject(:presenter) { described_class.new(context:) }
+  subject(:presenter) { described_class.new(registration_session:) }
 
-  let(:context) do
+  let(:registration_session) do
     Struct.new(:corrected_name, :trs_full_name, :working_pattern, :trs_date_of_birth)
       .new(corrected_name, trs_full_name, working_pattern, trs_date_of_birth)
   end

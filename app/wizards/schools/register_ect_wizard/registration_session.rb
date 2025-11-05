@@ -4,10 +4,10 @@ module Schools
     class RegistrationSession < SimpleDelegator
       def initialize(store)
         super(store)
-        @queries   = RegistrationSession::Queries.new(context: self)
-        @presenter = RegistrationSession::Presenter.new(context: self)
-        @previous_registration = RegistrationSession::PreviousRegistration.new(context: self, queries:)
-        @status = RegistrationSession::Status.new(context: self, queries:)
+        @queries   = RegistrationSession::Queries.new(registration_session: self)
+        @presenter = RegistrationSession::Presenter.new(registration_session: self)
+        @previous_registration = RegistrationSession::PreviousRegistration.new(registration_session: self, queries:)
+        @status = RegistrationSession::Status.new(registration_session: self, queries:)
       end
 
       delegate :ect_at_school_period,

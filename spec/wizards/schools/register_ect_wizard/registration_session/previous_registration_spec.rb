@@ -1,7 +1,7 @@
 RSpec.describe Schools::RegisterECTWizard::RegistrationSession::PreviousRegistration do
-  subject(:previous_registration) { described_class.new(context:, queries:) }
+  subject(:previous_registration) { described_class.new(registration_session:, queries:) }
 
-  let(:context) { instance_double(Schools::RegisterECTWizard::RegistrationSession) }
+  let(:registration_session) { instance_double(Schools::RegisterECTWizard::RegistrationSession) }
   let(:queries) { instance_double(Schools::RegisterECTWizard::RegistrationSession::Queries) }
 
   let(:previous_ect_period) { nil }
