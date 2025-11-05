@@ -1,13 +1,13 @@
 RSpec.describe "appropriate_bodies/teachers/show.html.erb" do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   before do
-    FactoryBot.create(:induction_period, teacher:, appropriate_body:, started_on: 24.months.ago, finished_on: 12.months.ago)
-    FactoryBot.create(:induction_period, teacher:, appropriate_body:, started_on: 11.months.ago, finished_on: 3.months.ago)
+    FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: 24.months.ago, finished_on: 12.months.ago)
+    FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: 11.months.ago, finished_on: 3.months.ago)
 
     assign(:teacher, teacher)
-    assign(:appropriate_body, appropriate_body)
+    assign(:appropriate_body, appropriate_body_period)
   end
 
   it "shows a list of past induction periods" do

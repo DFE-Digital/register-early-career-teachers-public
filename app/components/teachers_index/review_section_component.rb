@@ -2,8 +2,8 @@ module TeachersIndex
   class ReviewSectionComponent < ApplicationComponent
     include Rails.application.routes.url_helpers
 
-    def initialize(appropriate_body:)
-      @appropriate_body = appropriate_body
+    def initialize(appropriate_body_period:)
+      @appropriate_body = appropriate_body_period
     end
 
     def render?

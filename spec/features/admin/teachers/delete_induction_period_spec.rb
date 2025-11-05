@@ -3,7 +3,7 @@ RSpec.describe "Admin deleting an induction" do
 
   include_context "test TRS API returns a teacher"
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   before do
@@ -11,7 +11,7 @@ RSpec.describe "Admin deleting an induction" do
   end
 
   context "when it is the only induction period" do
-    let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
+    let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
 
     context "with a ticket and reason" do
       it "deletes the induction, resets TRS, adds context to the timeline" do
@@ -70,8 +70,8 @@ RSpec.describe "Admin deleting an induction" do
   end
 
   context "when there are multiple induction periods" do
-    let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
-    let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
+    let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
+    let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date is updated to next earliest period" do
       given_i_am_on_the_teacher_induction_page
@@ -93,8 +93,8 @@ RSpec.describe "Admin deleting an induction" do
   end
 
   context "when deleting the later induction period" do
-    let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
-    let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
+    let!(:induction_period1) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2020, 1, 1), finished_on: Date.new(2020, 12, 31), number_of_terms: 2) }
+    let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date remains unchanged" do
       given_i_am_on_the_teacher_induction_page

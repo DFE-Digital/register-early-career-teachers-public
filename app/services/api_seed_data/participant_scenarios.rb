@@ -200,7 +200,7 @@ module APISeedData
               :induction_period,
               teacher: school_period.teacher,
               started_on: start_date,
-              appropriate_body: random_or_create_appropriate_body
+              appropriate_body_period: random_or_create_appropriate_body
             )
 
             log_seed_info("Created ECT with induction start date #{start_date} in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
@@ -722,7 +722,7 @@ module APISeedData
     end
 
     def random_or_create_appropriate_body
-      AppropriateBody.order(Arel.sql("RANDOM()")).first ||
+      AppropriateBodyPeriod.order(Arel.sql("RANDOM()")).first ||
         FactoryBot.create(:appropriate_body)
     end
 

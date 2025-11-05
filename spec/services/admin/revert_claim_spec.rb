@@ -1,7 +1,7 @@
 RSpec.describe Admin::RevertClaim do
   subject(:service) do
     described_class.new(
-      appropriate_body:,
+      appropriate_body_period:,
       teacher:,
       author:,
       induction_period:
@@ -18,10 +18,10 @@ RSpec.describe Admin::RevertClaim do
     )
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:author) { FactoryBot.create(:user) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:) }
 
   describe "#revert_claim" do
     it "destroys the induction period" do
@@ -38,7 +38,7 @@ RSpec.describe Admin::RevertClaim do
       it "records an event with the correct parameters" do
         expect(Events::Record).to receive(:record_teacher_induction_status_reset_event!).with(
           author:,
-          appropriate_body:,
+          appropriate_body_period:,
           teacher:
         )
         service.revert_claim

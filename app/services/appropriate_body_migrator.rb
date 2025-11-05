@@ -31,7 +31,7 @@ private
   # @return [AppropriateBody]
   def appropriate_body_period
     @appropriate_body_period ||=
-      AppropriateBody.find_by(dfe_sign_in_organisation_id: organisation.id)
+      AppropriateBodyPeriod.find_by(dfe_sign_in_organisation_id: organisation.id)
   end
 
   # @return [LegacyAppropriateBody]

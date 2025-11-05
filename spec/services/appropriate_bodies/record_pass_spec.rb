@@ -30,7 +30,7 @@ RSpec.describe AppropriateBodies::RecordPass do
       service_call
 
       expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
-        appropriate_body:,
+        appropriate_body_period:,
         teacher:,
         induction_period:,
         author:
@@ -40,7 +40,7 @@ RSpec.describe AppropriateBodies::RecordPass do
     context "when ongoing induction period only has the legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           teacher:)
       end
 

@@ -25,11 +25,11 @@ describe "Events::Metadata" do
     end
 
     describe ".with_author_and_appropriate_body" do
-      subject { Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body:) }
+      subject { Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body_period:) }
 
       context "when no author is present but an appropriate body is" do
         let(:author) { nil }
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
         it "fails with MissingAuthorError" do
           expect { subject }.to raise_error(Events::Metadata::MissingAuthorError)
@@ -38,33 +38,33 @@ describe "Events::Metadata" do
 
       context "when author is present but appropriate body is not" do
         let(:author) { FactoryBot.create(:appropriate_body_user, :at_random_appropriate_body) }
-        let(:appropriate_body) { nil }
+        let(:appropriate_body_period) { nil }
 
         it "fails with MissingAppropriateBodyError" do
-          expect { subject }.to raise_error(Events::Metadata::MissingAppropriateBodyError)
+          expect { subject }.to raise_error(Events::Metadata::MissingAppropriateBodyPeriodError)
         end
       end
 
       context "when both author and appropriate_body are present" do
         let(:author) { FactoryBot.create(:appropriate_body_user, :at_random_appropriate_body) }
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
         it "assigns both the author and appropriate body correctly" do
           expect(subject.author).to eql(author)
-          expect(subject.appropriate_body).to eql(appropriate_body)
+          expect(subject.appropriate_body_period).to eql(appropriate_body_period)
         end
       end
     end
   end
 
   describe "#to_hash (splattable)" do
-    subject { Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body:) }
+    subject { Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body_period:) }
 
     let(:author) { FactoryBot.create(:appropriate_body_user, :at_random_appropriate_body) }
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
     it "returns a hash containing the author and appropriate body" do
-      expect(subject.to_hash).to eql({ author:, appropriate_body: })
+      expect(subject.to_hash).to eql({ author:, appropriate_body_period: })
     end
   end
 end

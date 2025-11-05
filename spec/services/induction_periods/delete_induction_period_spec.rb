@@ -11,13 +11,13 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
   let(:note) { "Induction period created in error" }
   let(:zendesk_ticket_id) { "#123456" }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:user) { FactoryBot.create(:user) }
   let(:trs_client) { instance_double(TRS::APIClient) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
   end
 
   before do
@@ -55,7 +55,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           zendesk_ticket_id: "123456",
           modifications: hash_including("id" => [induction_period.id, nil]),
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           happened_at: instance_of(ActiveSupport::TimeWithZone)
         )
 
@@ -93,7 +93,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
         :induction_period,
         :ongoing,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         started_on: Date.new(2020, 1, 1),
         finished_on: Date.new(2020, 12, 31),
         number_of_terms: 3
@@ -105,7 +105,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
         :induction_period,
         :ongoing,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         started_on: Date.new(2021, 1, 1),
         finished_on: Date.new(2021, 12, 31),
         number_of_terms: 3
@@ -143,7 +143,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           .with(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             induction_period: later_period
           )
 
@@ -159,7 +159,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
             zendesk_ticket_id: "123456",
             modifications: hash_including("id" => [earliest_period.id, nil]),
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             happened_at: instance_of(ActiveSupport::TimeWithZone)
           )
 
@@ -199,7 +199,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
             zendesk_ticket_id: "123456",
             modifications: hash_including("id" => [later_period.id, nil]),
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             happened_at: instance_of(ActiveSupport::TimeWithZone)
           )
 

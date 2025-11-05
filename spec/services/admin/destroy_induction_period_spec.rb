@@ -13,10 +13,10 @@ RSpec.describe Admin::DestroyInductionPeriod do
     allow(Events::Record).to receive(:record_induction_period_deleted_event!).and_return(true)
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:author) { FactoryBot.create(:user) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:) }
 
   describe "#destroy_induction_period!" do
     it "destroys the induction period" do
@@ -27,7 +27,7 @@ RSpec.describe Admin::DestroyInductionPeriod do
       expect(Events::Record).to receive(:record_induction_period_deleted_event!).with(
         author:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         modifications: induction_period.attributes
       )
       service.destroy_induction_period!
