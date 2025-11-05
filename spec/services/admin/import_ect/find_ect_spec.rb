@@ -3,7 +3,7 @@ RSpec.describe Admin::ImportECT::FindECT do
 
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,
-                      appropriate_body: nil)
+                      appropriate_body_period: nil)
   end
 
   describe "#initialize" do
@@ -17,7 +17,7 @@ RSpec.describe Admin::ImportECT::FindECT do
       let(:pending_induction_submission) do
         FactoryBot.create(:pending_induction_submission,
                           date_of_birth: nil,
-                          appropriate_body: nil)
+                          appropriate_body_period: nil)
       end
 
       it do

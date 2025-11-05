@@ -1,6 +1,6 @@
 RSpec.describe UnclaimedIndexComponent, type: :component do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:component) { described_class.new(appropriate_body:) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:component) { described_class.new(appropriate_body_period:) }
 
   before do
     render_inline(component)

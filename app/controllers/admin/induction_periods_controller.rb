@@ -67,7 +67,7 @@ module Admin
           number_of_terms
           induction_programme
           training_programme
-          appropriate_body_id
+          appropriate_body_period_id
         ]
       )
     end

@@ -1,6 +1,6 @@
 ---
 shared:
-  :appropriate_bodies:
+  :appropriate_body_periods:
     - id
     - name
     - created_at
@@ -15,7 +15,7 @@ shared:
     - updated_at
   :induction_periods:
     - id
-    - appropriate_body_id
+    - appropriate_body_period_id
     - started_on
     - finished_on
     - created_at
@@ -45,7 +45,7 @@ shared:
     - trs_induction_completed_date
   :pending_induction_submission_batches:
     - id
-    - appropriate_body_id
+    - appropriate_body_period_id
     - batch_status
     - batch_type
     - created_at

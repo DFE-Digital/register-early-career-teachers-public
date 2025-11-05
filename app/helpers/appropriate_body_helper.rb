@@ -1,8 +1,9 @@
 module AppropriateBodyHelper
   FormChoice = Data.define(:identifier, :name)
 
+  # TODO: appropriate_bodies_options_for_collection shows inaccurate and inactive TSHs
   def appropriate_bodies_options_for_collection
-    AppropriateBody.teaching_school_hub.select(:id, :name).all
+    AppropriateBodyPeriod.teaching_school_hub.select(:id, :name).all
   end
 
   # @return [Array<FormChoice>]

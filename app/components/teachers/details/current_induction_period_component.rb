@@ -39,7 +39,7 @@ module Teachers::Details
 
     # @return [String]
     def title
-      current_period.appropriate_body.name
+      current_period.appropriate_body_period.name
     end
 
     # @return [Array<String>]

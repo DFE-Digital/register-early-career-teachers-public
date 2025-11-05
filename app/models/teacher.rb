@@ -28,7 +28,7 @@ class Teacher < ApplicationRecord
   has_many :teacher_id_changes, inverse_of: :teacher, dependent: :destroy
   has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider", dependent: :destroy
   has_many :induction_periods
-  has_many :appropriate_bodies, through: :induction_periods
+  has_many :appropriate_body_periods, through: :induction_periods
   has_many :events
   has_many :mentor_declarations, through: :mentor_training_periods, source: :declarations
   has_many :ect_declarations, through: :ect_training_periods, source: :declarations
@@ -40,7 +40,9 @@ class Teacher < ApplicationRecord
   has_one :finished_induction_period, -> { finished.with_outcome.latest_first }, class_name: "InductionPeriod"
   has_one :earliest_ect_at_school_period, -> { earliest_first }, class_name: "ECTAtSchoolPeriod"
   has_one :earliest_mentor_at_school_period, -> { earliest_first }, class_name: "MentorAtSchoolPeriod"
-  has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
+  has_one :current_appropriate_body_period, through: :ongoing_induction_period, source: :appropriate_body_period # NB or TSH through period
+  has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: "ECTAtSchoolPeriod"
+  has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: "ECTAtSchoolPeriod"
   has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
 

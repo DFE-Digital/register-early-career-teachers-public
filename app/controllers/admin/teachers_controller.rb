@@ -3,7 +3,7 @@ module Admin
     layout "full"
 
     def index
-      @appropriate_bodies = AppropriateBody.order(:name)
+      @appropriate_bodies = AppropriateBodyPeriod.order(:name)
       @pagy, @teachers = pagy(
         ::Teachers::Search.new(
           query_string: params[:q]
@@ -11,7 +11,7 @@ module Admin
         .search
         .includes(
           :induction_periods,
-          :current_appropriate_body
+          :current_appropriate_body_period
         )
       )
     end

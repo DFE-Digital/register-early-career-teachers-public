@@ -12,13 +12,13 @@ RSpec.shared_context "it transfers an induction" do
     # ========================================================================
 
     skip_pre_cut_off_induction = FactoryBot.create(:induction_period,
-                                                   appropriate_body: current_appropriate_body,
+                                                   appropriate_body_period: current_appropriate_body,
                                                    started_on: 1.year.before(cut_off_date),
                                                    finished_on: 1.month.before(cut_off_date))
 
     FactoryBot.create(:event,
                       induction_period: skip_pre_cut_off_induction,
-                      appropriate_body: skip_pre_cut_off_induction.appropriate_body,
+                      appropriate_body_period: skip_pre_cut_off_induction.appropriate_body_period,
                       teacher: skip_pre_cut_off_induction.teacher,
                       heading: "skip_pre_cut_off_induction: #{current_appropriate_body.name}")
 
@@ -26,23 +26,23 @@ RSpec.shared_context "it transfers an induction" do
     # ========================================================================
 
     partial_completed_induction = FactoryBot.create(:induction_period,
-                                                    appropriate_body: current_appropriate_body,
+                                                    appropriate_body_period: current_appropriate_body,
                                                     started_on: 1.year.before(cut_off_date),
                                                     finished_on: 1.week.ago)
 
     FactoryBot.create(:event,
                       induction_period: partial_completed_induction,
-                      appropriate_body: partial_completed_induction.appropriate_body,
+                      appropriate_body_period: partial_completed_induction.appropriate_body_period,
                       teacher: partial_completed_induction.teacher,
                       heading: "partial_completed_induction: #{current_appropriate_body.name}")
 
     partial_in_progress_induction = FactoryBot.create(:induction_period, :ongoing,
-                                                      appropriate_body: current_appropriate_body,
+                                                      appropriate_body_period: current_appropriate_body,
                                                       started_on: 10.months.before(cut_off_date))
 
     FactoryBot.create(:event,
                       induction_period: partial_in_progress_induction,
-                      appropriate_body: partial_in_progress_induction.appropriate_body,
+                      appropriate_body_period: partial_in_progress_induction.appropriate_body_period,
                       teacher: partial_in_progress_induction.teacher,
                       heading: "partial_in_progress_induction: #{current_appropriate_body.name}")
 
@@ -50,23 +50,23 @@ RSpec.shared_context "it transfers an induction" do
     # ========================================================================
 
     full_completed_induction = FactoryBot.create(:induction_period,
-                                                 appropriate_body: current_appropriate_body,
+                                                 appropriate_body_period: current_appropriate_body,
                                                  started_on: 1.day.after(cut_off_date),
                                                  finished_on: 1.day.ago)
 
     FactoryBot.create(:event,
                       induction_period: full_completed_induction,
-                      appropriate_body: full_completed_induction.appropriate_body,
+                      appropriate_body_period: full_completed_induction.appropriate_body_period,
                       teacher: full_completed_induction.teacher,
                       heading: "full_completed_induction: #{current_appropriate_body.name}")
 
     full_in_progress_induction = FactoryBot.create(:induction_period, :ongoing,
-                                                   appropriate_body: current_appropriate_body,
+                                                   appropriate_body_period: current_appropriate_body,
                                                    started_on: 1.week.after(cut_off_date))
 
     FactoryBot.create(:event,
                       induction_period: full_in_progress_induction,
-                      appropriate_body: full_in_progress_induction.appropriate_body,
+                      appropriate_body_period: full_in_progress_induction.appropriate_body_period,
                       teacher: full_in_progress_induction.teacher,
                       heading: "full_in_progress_induction: #{current_appropriate_body.name}")
   end

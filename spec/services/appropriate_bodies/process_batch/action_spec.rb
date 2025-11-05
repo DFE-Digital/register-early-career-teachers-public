@@ -7,7 +7,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+                      dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
   end
 
   let(:trn) { "1000890" }
@@ -19,7 +19,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   let(:outcome) { "pass" }
   let(:error) { nil }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   let(:teacher) do
     FactoryBot.create(:teacher, :with_corrected_name,
@@ -30,7 +30,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
   let(:pending_induction_submission_batch) do
     FactoryBot.create(:pending_induction_submission_batch, :action,
-                      appropriate_body:,
+                      appropriate_body_period:,
                       data: [
                         { trn:, date_of_birth:, finished_on:, number_of_terms:, outcome:, error: }
                       ])
@@ -293,7 +293,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,
-                          appropriate_body: other_body,
+                          appropriate_body_period: other_body,
                           teacher:,
                           started_on: "2024-1-1")
       end
@@ -308,7 +308,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     context "with an ongoing induction" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           teacher:,
                           started_on: "2024-1-1")
       end

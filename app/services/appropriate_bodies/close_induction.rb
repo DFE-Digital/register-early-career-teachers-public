@@ -11,7 +11,7 @@ module AppropriateBodies
     include ActiveModel::Attributes
 
     attribute :teacher
-    attribute :appropriate_body
+    attribute :appropriate_body_period
     attribute :author
 
     validates :finished_on, presence: { message: "Enter a finish date" }
@@ -51,7 +51,7 @@ module AppropriateBodies
     def pending_induction_submission
       @pending_induction_submission ||= PendingInductionSubmissions::Build.closing_induction_period(
         ongoing_induction_period,
-        appropriate_body_id: appropriate_body.id,
+        appropriate_body_period_id: appropriate_body_period.id,
         trn:
       ).pending_induction_submission
     end

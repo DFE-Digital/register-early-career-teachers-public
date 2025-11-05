@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+                      dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
   end
   let(:trn) { "1000890" }
   let(:date_of_birth) { "1997-03-15" }
@@ -13,11 +13,11 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   let(:training_programme) { "provider-led" }
   let(:error) { nil }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   let(:pending_induction_submission_batch) do
     FactoryBot.create(:pending_induction_submission_batch, :claim,
-                      appropriate_body:,
+                      appropriate_body_period:,
                       data: [
                         { trn:, date_of_birth:, started_on:, training_programme:, error: }
                       ])
@@ -65,7 +65,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
 
       before do
         FactoryBot.create(:induction_period, teacher:,
-                                             appropriate_body:,
+                                             appropriate_body_period:,
                                              started_on: 30.days.ago.to_date,
                                              finished_on: 15.days.ago.to_date)
         service.process!
@@ -449,7 +449,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
     before do
-      FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:)
+      FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body_period:)
       service.process!
     end
 
@@ -472,7 +472,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
     before do
-      FactoryBot.create(:induction_period, :fail, teacher:, appropriate_body:)
+      FactoryBot.create(:induction_period, :fail, teacher:, appropriate_body_period:)
       service.process!
     end
 
@@ -496,7 +496,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body: other_body)
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_body)
       service.process!
     end
 

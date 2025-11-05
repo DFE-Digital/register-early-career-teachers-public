@@ -35,7 +35,7 @@
     - appropriate_body_period_id
     - created_at
     - updated_at
-  :appropriate_bodies:
+  :appropriate_body_periods:
     - body_type
     - teaching_school_hub_id
     - lead_school_id
@@ -230,7 +230,7 @@
   - updated_at
   :pending_induction_submissions:
   - id
-  - appropriate_body_id
+  - appropriate_body_period_id
   - establishment_id
   - trn
   - date_of_birth
@@ -281,7 +281,7 @@
   - event_type
   - happened_at
   - teacher_id
-  - appropriate_body_id
+  - appropriate_body_period_id
   - induction_period_id
   - induction_extension_id
   - school_id

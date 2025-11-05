@@ -4,7 +4,7 @@ module Admin
       layout "full", only: "index"
 
       def index
-        @appropriate_body = AppropriateBody.find(params[:appropriate_body_id])
+        @appropriate_body = AppropriateBodyPeriod.find(params[:appropriate_body_id])
 
         @claimed_inductions_count = ::Teachers::Search.new(appropriate_bodies: @appropriate_body).search.count
 

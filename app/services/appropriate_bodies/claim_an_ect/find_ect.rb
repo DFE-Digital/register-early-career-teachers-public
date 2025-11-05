@@ -4,11 +4,11 @@ module AppropriateBodies
       class TeacherHasOngoingInductionPeriodWithCurrentAB < StandardError
       end
 
-      attr_reader :api_client, :appropriate_body, :pending_induction_submission
+      attr_reader :api_client, :appropriate_body_period, :pending_induction_submission
 
-      def initialize(appropriate_body:, pending_induction_submission:)
+      def initialize(appropriate_body_period:, pending_induction_submission:)
         @api_client = TRS::APIClient.build
-        @appropriate_body = appropriate_body
+        @appropriate_body_period = appropriate_body_period
         @pending_induction_submission = pending_induction_submission
       end
 
@@ -30,7 +30,7 @@ module AppropriateBodies
         #       below a case and add different errors to the :base
         return false unless pending_induction_submission.valid?(:find_ect)
 
-        pending_induction_submission.assign_attributes(appropriate_body:, **trs_teacher.to_h)
+        pending_induction_submission.assign_attributes(appropriate_body_period:, **trs_teacher.to_h)
         check_if_teacher_has_ongoing_induction_period_with_appropriate_body!
         trs_teacher.check_eligibility!
         pending_induction_submission.save(context: :find_ect)
@@ -53,7 +53,7 @@ module AppropriateBodies
 
         return unless existing_teacher&.ongoing_induction_period
 
-        if existing_teacher.ongoing_induction_period.appropriate_body == appropriate_body
+        if existing_teacher.ongoing_induction_period.appropriate_body_period == appropriate_body_period
           raise TeacherHasOngoingInductionPeriodWithCurrentAB
         end
       end

@@ -3,8 +3,8 @@ class PersonasController < ApplicationController
 
   def index
     persona_data = Struct.new(:name, :email, :school_name, :school_type, :image, :alt, :appropriate_body_name, :dfe_staff, :type, :role) do
-      def appropriate_body_id
-        AppropriateBody.find_by!(name: appropriate_body_name).id if appropriate_body_name.present?
+      def appropriate_body_period_id
+        AppropriateBodyPeriod.find_by!(name: appropriate_body_name).id if appropriate_body_name.present?
       end
 
       def school_urn

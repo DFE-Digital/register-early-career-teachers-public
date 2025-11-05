@@ -1,10 +1,10 @@
 RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Alpha Teaching School Hub") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Alpha Teaching School Hub") }
   let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe") }
   let(:ect) do
     FactoryBot.create(:ect_at_school_period,
                       teacher:,
-                      school_reported_appropriate_body: appropriate_body,
+                      school_reported_appropriate_body: appropriate_body_period,
                       started_on: Date.new(2023, 9, 1))
   end
 
@@ -23,7 +23,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
 
   context "when induction start date is available" do
     let!(:induction_period) do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2023, 9, 1))
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: Date.new(2023, 9, 1))
     end
 
     before do

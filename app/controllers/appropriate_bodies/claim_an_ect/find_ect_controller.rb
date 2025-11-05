@@ -38,12 +38,12 @@ module AppropriateBodies
       end
 
       def pending_induction_submission_attributes
-        { appropriate_body_id: @appropriate_body.id }
+        { appropriate_body_period_id: @appropriate_body.id }
       end
 
       def find_ect
         @find_ect ||= FindECT.new(
-          appropriate_body: @appropriate_body,
+          appropriate_body_period: @appropriate_body,
           pending_induction_submission: PendingInductionSubmission.new(
             **pending_induction_submission_params,
             **pending_induction_submission_attributes

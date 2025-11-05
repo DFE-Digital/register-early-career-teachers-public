@@ -1,4 +1,4 @@
-describe AppropriateBody do
+describe AppropriateBodyPeriod do
   describe "enums" do
     it do
       expect(subject).to define_enum_for(:body_type)

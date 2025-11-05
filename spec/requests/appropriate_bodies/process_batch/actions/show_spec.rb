@@ -1,8 +1,8 @@
 RSpec.describe "Appropriate Body bulk actions show page", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:batch) do
     FactoryBot.create(:pending_induction_submission_batch, :action,
-                      appropriate_body:,
+                      appropriate_body_period:,
                       data:,
                       file_name:)
   end
@@ -20,7 +20,7 @@ RSpec.describe "Appropriate Body bulk actions show page", type: :request do
 
     context "when signed in as an appropriate body user" do
       before do
-        sign_in_as(:appropriate_body_user, appropriate_body:)
+        sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period)
       end
 
       it "renders the page successfully" do

@@ -12,8 +12,8 @@
     <%= form_with model: [:admin, @teacher, @induction_period], local: true do |f| %>
       <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-      <%= f.govuk_collection_select(:appropriate_body_id,
-                                    AppropriateBody.select(:id, :name).all,
+      <%= f.govuk_collection_select(:appropriate_body_period_id,
+                                    AppropriateBodyPeriod.select(:id, :name).all,
                                     :id,
                                     :name,
                                     label: { text: "Which appropriate body was this induction period completed with" },
