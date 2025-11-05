@@ -51,6 +51,13 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.") }
           end
 
+          context "when training not started yet" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 3.months.from_now) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' has not yet started their training so cannot be withdrawn") }
+          end
+
           context "guarded error messages" do
             subject(:instance) { described_class.new }
 

@@ -12,6 +12,7 @@ module API::Teachers
       message: "The entered '#/reason' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
     validate :not_already_withdrawn
+    validate :not_started_yet
 
     def withdraw
       return false unless valid?
@@ -32,6 +33,13 @@ module API::Teachers
       return unless training_status&.withdrawn?
 
       errors.add(:teacher_api_id, "The '#/teacher_api_id' is already withdrawn.")
+    end
+
+    def not_started_yet
+      return if errors[:teacher_api_id].any?
+      return unless training_period&.started_on&.future?
+
+      errors.add(:teacher_api_id, "The '#/teacher_api_id' has not yet started their training so cannot be withdrawn")
     end
   end
 end
