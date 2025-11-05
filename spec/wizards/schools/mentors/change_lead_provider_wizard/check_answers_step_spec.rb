@@ -1,0 +1,90 @@
+describe Schools::Mentors::ChangeLeadProviderWizard::CheckAnswersStep, type: :model do
+  subject(:current_step) { wizard.current_step }
+
+  let(:wizard) do
+    Schools::Mentors::ChangeLeadProviderWizard::Wizard.new(
+      current_step: :check_answers,
+      step_params: ActionController::Parameters.new(check_answers: params),
+      author:,
+      store:,
+      mentor_at_school_period:
+    )
+  end
+
+  let(:store) do
+    FactoryBot.build(:session_repository, lead_provider_id: lead_provider.id)
+  end
+  let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
+
+  let(:params) { { lead_provider_id: lead_provider.id } }
+
+  let(:started_on) { 3.months.ago.to_date }
+  let(:school) { FactoryBot.create(:school) }
+  let!(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
+  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:mentor_at_school_period) do
+    FactoryBot.create(
+      :mentor_at_school_period,
+      :ongoing,
+      teacher:,
+      school:,
+      email: "mentor@example.com"
+    )
+  end
+
+  let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
+  let(:old_lead_provider) { training_period.lead_provider }
+  let(:new_lead_provider) { lead_provider }
+
+  describe "#previous_step" do
+    it "returns the previous step" do
+      expect(current_step.previous_step).to eq(:edit)
+    end
+  end
+
+  describe "#next_step" do
+    it "returns the next step" do
+      expect(current_step.next_step).to eq(:confirmation)
+    end
+  end
+
+  describe "save!" do
+    context "when a valid lead provider is selected" do
+      before do
+        allow(MentorAtSchoolPeriods::ChangeLeadProvider)
+          .to receive(:call)
+          .and_return(true)
+      end
+
+      it "calls the ChangeLeadProvider service" do
+        current_step.save!
+
+        expect(MentorAtSchoolPeriods::ChangeLeadProvider)
+          .to have_received(:call)
+          .with(
+            mentor_at_school_period,
+            new_lead_provider:,
+            old_lead_provider:,
+            author: wizard.author
+          )
+      end
+
+      it "is truthy" do
+        expect(current_step.save!).to be_truthy
+      end
+    end
+
+    context "when the lead provider has not changed" do
+      let(:lead_provider) { old_lead_provider }
+
+      it "is falsy" do
+        expect(current_step.save!).to be_falsey
+      end
+    end
+  end
+end

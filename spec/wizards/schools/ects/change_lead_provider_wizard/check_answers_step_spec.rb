@@ -34,11 +34,11 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       contract_period:
     )
   end
-  let(:current_lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
   let(:current_active_lead_provider) do
     FactoryBot.create(
       :active_lead_provider,
-      lead_provider: current_lead_provider,
+      lead_provider: old_lead_provider,
       contract_period:
     )
   end
@@ -67,10 +67,10 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
     end
   end
 
-  describe "#current_lead_provider_name" do
+  describe "#old_lead_provider_name" do
     it "returns the current lead provider's name" do
-      expect(current_step.current_lead_provider_name)
-        .to eq(current_lead_provider.name)
+      expect(current_step.old_lead_provider_name)
+        .to eq(old_lead_provider.name)
     end
   end
 
@@ -84,12 +84,20 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
     it "changes the lead provider" do
       expect { current_step.save! }
         .to change { lead_provider_for(ect_at_school_period) }
-        .from(current_lead_provider)
+        .from(old_lead_provider)
         .to(lead_provider)
     end
 
     it "is truthy" do
       expect(current_step.save!).to be_truthy
+    end
+
+    context "when the new lead provider is the same as the old lead provider" do
+      let(:old_lead_provider) { lead_provider }
+
+      it "is falsy" do
+        expect(current_step.save!).to be_falsey
+      end
     end
   end
 
