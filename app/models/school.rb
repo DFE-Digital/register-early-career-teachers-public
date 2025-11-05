@@ -27,10 +27,6 @@ class School < ApplicationRecord
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
   has_many :training_periods, through: :school_partnerships
 
-  # if RIAB decides to store multiple TSHs and regions
-  has_many :led_teaching_school_hubs, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
-
-  # if RIAB decides to consolidate TSH activity and ignore regions
   has_one :led_teaching_school_hub, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
 
   touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
@@ -42,7 +38,7 @@ class School < ApplicationRecord
   refresh_metadata -> { self }, on_event: %i[create]
 
   # Scopes
-  scope :lead_schools, -> { joins(:led_teaching_school_hubs).distinct }
+  scope :lead_schools, -> { joins(:led_teaching_school_hub).distinct }
 
   # Validations
   validates :last_chosen_lead_provider_id,
@@ -86,6 +82,8 @@ class School < ApplicationRecord
   validate :induction_tutor_details_cannot_be_confirmed_if_blank
 
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
+
+  # validate :lead_school_region_limit, if: -> { led_teaching_school_hub.present? }
 
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
@@ -146,6 +144,12 @@ class School < ApplicationRecord
   end
 
   def last_programme_choices? = last_chosen_appropriate_body_id.present? && last_chosen_training_programme.present?
+
+  # def lead_school_region_limit
+  #   if led_teaching_school_hub.regions.count >= 3
+  #     errors.add(:base, "has reached the maximum of 3 teaching school hub regions")
+  #   end
+  # end
 
   def to_param = urn
 

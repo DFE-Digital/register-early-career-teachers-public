@@ -76,5 +76,11 @@ FactoryBot.define do
         association :dfe_sign_in_organisation, name: gias_school.name, urn:
       end
     end
+
+    trait :with_dsi do
+      dfe_sign_in_organisation do
+        association :dfe_sign_in_organisation, name: gias_school.name, urn:
+      end
+    end
   end
 end
