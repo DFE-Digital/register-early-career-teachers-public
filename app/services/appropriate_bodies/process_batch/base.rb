@@ -4,13 +4,13 @@ module AppropriateBodies
       attr_reader :row,
                   :pending_induction_submission_batch,
                   :pending_induction_submission,
-                  :appropriate_body,
+                  :appropriate_body_period,
                   :author
 
       def initialize(pending_induction_submission_batch:, author:)
         @pending_induction_submission_batch = pending_induction_submission_batch
         @author = author
-        @appropriate_body = pending_induction_submission_batch.appropriate_body
+        @appropriate_body_period = pending_induction_submission_batch.appropriate_body_period
       end
 
       # @return [true] validate each row and create a submission capturing the errors
@@ -42,7 +42,7 @@ module AppropriateBodies
       def sparse_pending_induction_submission
         ::PendingInductionSubmission.find_or_create_by(
           pending_induction_submission_batch:,
-          appropriate_body:,
+          appropriate_body_period:,
           trn: row.sanitised_trn,
           date_of_birth: row.date_of_birth
         )
@@ -76,7 +76,7 @@ module AppropriateBodies
       # @return [Boolean]
       def claimed_by_another_ab?
         teacher.ongoing_induction_period.present? &&
-          teacher.current_appropriate_body != appropriate_body
+          teacher.current_appropriate_body_period != appropriate_body_period
       end
 
       # @return [Boolean]

@@ -2,11 +2,11 @@ module AppropriateBodies
   class ECTs
     attr_reader :scope, :appropriate_body
 
-    def initialize(appropriate_body)
+    def initialize(appropriate_body_period)
       @scope = Teacher.joins(:induction_periods)
-                      .merge(InductionPeriod.for_appropriate_body(appropriate_body))
+                      .merge(InductionPeriod.for_appropriate_body_period(appropriate_body_period))
 
-      @appropriate_body = appropriate_body
+      @appropriate_body = appropriate_body_period
     end
 
     def with_status(status)

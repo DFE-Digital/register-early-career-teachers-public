@@ -8,7 +8,7 @@ module AppropriateBodies
       def update
         register_ect = AppropriateBodies::ClaimAnECT::RegisterECT
           .new(
-            appropriate_body: @appropriate_body,
+            appropriate_body_period: @appropriate_body,
             pending_induction_submission: find_pending_induction_submission,
             author: current_user
           )
@@ -40,7 +40,7 @@ module AppropriateBodies
       end
 
       def find_pending_induction_submission
-        PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.find(params[:id])
+        PendingInductionSubmissions::Search.new(appropriate_body_period: @appropriate_body).pending_induction_submissions.find(params[:id])
       end
     end
   end
