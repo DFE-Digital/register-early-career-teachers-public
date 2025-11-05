@@ -1,0 +1,17 @@
+<% page_data(
+  title: @teaching_school_hub.name,
+) %>
+
+<h2 class="govuk-heading-m">Lead school</h2>
+<p class="govuk-body">
+    <%=
+      if @teaching_school_hub.lead_school.present?
+        govuk_link_to(
+          @teaching_school_hub.lead_school.name,
+          href: admin_school_overview_path(@teaching_school_hub.lead_school.urn)
+          )
+      else
+        "No lead school assigned"
+      end
+    %>
+</p>
