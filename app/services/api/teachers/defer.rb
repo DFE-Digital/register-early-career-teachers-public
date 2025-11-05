@@ -14,6 +14,7 @@ module API::Teachers
               }, allow_blank: true
     validate :not_already_deferred
     validate :not_already_withdrawn
+    validate :not_started_yet
 
     def defer
       return false if invalid?
@@ -41,6 +42,13 @@ module API::Teachers
       return unless training_status&.deferred?
 
       errors.add(:teacher_api_id, "The '#/teacher_api_id' is already deferred.")
+    end
+
+    def not_started_yet
+      return if errors[:teacher_api_id].any?
+      return unless training_period&.started_on&.future?
+
+      errors.add(:teacher_api_id, "The '#/teacher_api_id' has not yet started their training so cannot be deferred")
     end
   end
 end
