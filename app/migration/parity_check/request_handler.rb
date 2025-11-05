@@ -15,7 +15,7 @@ module ParityCheck
 
       request.start!
 
-      client.perform_requests { |response| response.update!(request:) }
+      client.perform_requests
 
       request.complete!
     rescue Client::Error

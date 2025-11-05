@@ -481,6 +481,7 @@
   - ecf_request_uri
   - rect_request_uri
   - request_body
+  - match_rate
   - page
   - created_at
   - updated_at

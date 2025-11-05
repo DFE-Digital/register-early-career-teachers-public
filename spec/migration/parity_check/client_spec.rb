@@ -37,7 +37,7 @@ RSpec.describe ParityCheck::Client do
       include_examples "client performs requests"
 
       it "makes requests with the correct query parameters" do
-        instance.perform_requests {}
+        instance.perform_requests
 
         query_parameters = endpoint.options[:query].to_query
         expect(ecf_requests.first.uri.query).to eq(query_parameters)
@@ -56,7 +56,7 @@ RSpec.describe ParityCheck::Client do
         page_query_parameters = { page: { page: 1, per_page: } }
         all_query_parameters = path_query_parameters.merge(options_query_parameters, page_query_parameters).to_query
 
-        instance.perform_requests {}
+        instance.perform_requests
 
         expect(ecf_requests.first.uri.query).to eq(all_query_parameters)
         expect(rect_requests.first.uri.query).to eq(all_query_parameters)
@@ -82,10 +82,7 @@ RSpec.describe ParityCheck::Client do
           { status: 200, body: partial_page_of_data }
         )
 
-        yielded_responses = []
-        instance.perform_requests { yielded_responses << it }
-
-        expect(yielded_responses.count).to eq(2)
+        expect { instance.perform_requests }.to change(ParityCheck::Response, :count).by(2)
 
         first_page_query = { page: { page: 1, per_page: } }.to_query
         expect(ecf_requests.first.uri.query).to include(first_page_query)
@@ -109,7 +106,7 @@ RSpec.describe ParityCheck::Client do
           before { allow(request_builder).to receive(:body).and_return({ foo: :bar }.to_json, { foo: :baz }.to_json) }
 
           it "raises an error" do
-            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+            expect { instance.perform_requests }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
           end
         end
 
@@ -121,7 +118,7 @@ RSpec.describe ParityCheck::Client do
           end
 
           it "raises an error" do
-            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+            expect { instance.perform_requests }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
           end
         end
 
@@ -129,7 +126,7 @@ RSpec.describe ParityCheck::Client do
           before { allow(request_builder).to receive(:headers).and_return({ "Authorization" => "Bearer token1" }, { "Authorization" => "Bearer token2" }) }
 
           it "raises an error" do
-            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+            expect { instance.perform_requests }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
           end
         end
 
@@ -137,7 +134,7 @@ RSpec.describe ParityCheck::Client do
           before { allow(request_builder).to receive(:query).and_return({ foo: :bar }, { foo: :baz }) }
 
           it "raises an error" do
-            expect { instance.perform_requests {} }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
+            expect { instance.perform_requests }.to raise_error(described_class::RequestError, "Constructed requests do not match between ECF and RECT")
           end
         end
       end
@@ -176,7 +173,7 @@ RSpec.describe ParityCheck::Client do
 
     it "raises an RequestError" do
       expect {
-        instance.perform_requests {}
+        instance.perform_requests
       }.to raise_error(described_class::RequestError, "undefined method 'fetch' for an instance of Faraday::Connection")
     end
   end
@@ -186,7 +183,7 @@ RSpec.describe ParityCheck::Client do
 
     it "raises an RequestError" do
       expect {
-        instance.perform_requests {}
+        instance.perform_requests
       }.to raise_error(described_class::RequestError, "Path contains ID, but options[:id] is missing")
     end
   end
@@ -196,7 +193,7 @@ RSpec.describe ParityCheck::Client do
 
     it "raises an RequestError" do
       expect {
-        instance.perform_requests {}
+        instance.perform_requests
       }.to raise_error(described_class::RequestError, "Identifier not recognized: missing")
     end
   end
@@ -206,7 +203,7 @@ RSpec.describe ParityCheck::Client do
 
     it "raises an RequestError" do
       expect {
-        instance.perform_requests {}
+        instance.perform_requests
       }.to raise_error(described_class::RequestError, "Token not found for lead provider: #{request.lead_provider.ecf_id}")
     end
   end
