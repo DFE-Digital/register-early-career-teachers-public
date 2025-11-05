@@ -12,7 +12,9 @@
   Appropriate bodies are responsible for assuring the quality of the statutory
   induction of ECTs
 </p>
-<hr class="govuk-section-break--l govuk-section-break--visible">
+
+<%= govuk_section_break(visible:true, size: "l") %>
+
 <h2 class="govuk-heading-m">
   <%= govuk_link_to(
     "Lead providers",
@@ -25,7 +27,9 @@
   Lead providers are responsible for the online learning platform used for
   training ECTs and mentors.
 </p>
-<hr class="govuk-section-break--l govuk-section-break--visible">
+
+<%= govuk_section_break(visible:true, size: "l") %>
+
 <h2 class="govuk-heading-m">
   <%= govuk_link_to(
     "Delivery partners",
@@ -37,3 +41,19 @@
 <p class="govuk-body">
   Delivery partners are responsible for delivering training events.
 </p>
+
+<% if Rails.application.config.enable_teaching_school_hubs %>
+  <%= govuk_section_break(visible:true, size: "l") %>
+
+  <h2 class="govuk-heading-m">
+    <%= govuk_link_to(
+      "Teaching school hubs",
+      admin_teaching_school_hubs_path,
+      no_visited_state: true,
+      no_underline: true,
+    ) %>
+  </h2>
+  <p class="govuk-body">
+    Teaching school hubs are responsible for overseeing and quality-assuring ECT inductions.
+  </p>
+<% end %>

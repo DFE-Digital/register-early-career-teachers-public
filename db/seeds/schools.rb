@@ -1,13 +1,9 @@
 def describe_school(school)
-  print_seed_info("#{school.name} (URN #{school.urn})", indent: 2)
+  school_urn = Colourize.text(school.urn, :yellow)
+  print_seed_info("#{school.name} (#{school_urn})", indent: 2)
 end
 
 [
-  {
-    urn: 141_666,
-    name: "Angel Oak Academy", # Used by developers for DfE Sign In
-    type: :state_school_type
-  },
   {
     urn: 3_375_958,
     name: "Ackley Bridge",

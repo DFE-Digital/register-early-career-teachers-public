@@ -7,7 +7,7 @@ module Schools
 
       def initialize(opts = {})
         if opts[:appropriate_body_type] == "national"
-          @appropriate_body = AppropriateBodies::Search.istip
+          @appropriate_body = AppropriateBodies::Search.istip # National org (one of two)
           opts[:appropriate_body_id] = @appropriate_body.id.to_s
         end
 

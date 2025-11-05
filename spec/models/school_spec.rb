@@ -1,4 +1,4 @@
-describe School do
+RSpec.describe School do
   describe "declarative updates" do
     let(:instance) { FactoryBot.create(:school) }
     let(:target) { instance }
@@ -69,8 +69,10 @@ describe School do
   end
 
   describe "associations" do
+    it { is_expected.to belong_to(:dfe_sign_in_organisation) }
     it { is_expected.to belong_to(:gias_school).class_name("GIAS::School").with_foreign_key(:urn).inverse_of(:school) }
     it { is_expected.to belong_to(:induction_tutor_last_nominated_in).class_name("ContractPeriod").optional(true) }
+    it { is_expected.to belong_to(:dfe_sign_in_organisation).with_foreign_key(:urn).inverse_of(:school) }
     it { is_expected.to have_many(:ect_at_school_periods).inverse_of(:school) }
     it { is_expected.to have_many(:ect_teachers).through(:ect_at_school_periods).source(:teacher) }
     it { is_expected.to have_many(:events) }
@@ -80,6 +82,20 @@ describe School do
     it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod") }
     it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod") }
     it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
+    it { is_expected.to have_many(:led_teaching_school_hubs).class_name("TeachingSchoolHub") }
+  end
+
+  describe "scopes" do
+    describe ".lead_schools" do
+      before do
+        FactoryBot.create(:school)
+        FactoryBot.create(:teaching_school_hub)
+      end
+
+      it "finds schools that are lead schools" do
+        expect(described_class.lead_schools.count).to be(1)
+      end
+    end
   end
 
   describe "delegation" do
