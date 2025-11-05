@@ -1,24 +1,24 @@
 module TrainingPeriods
   class Create
-    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil, schedule: nil)
+    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil)
       @period = period
       @started_on = started_on
       @school_partnership = school_partnership
       @expression_of_interest = expression_of_interest
       @training_programme = training_programme
       @finished_on = finished_on
-      @schedule = schedule
     end
 
     def self.school_led(period:, started_on:)
       new(period:, started_on:, training_programme: 'school_led')
     end
 
-    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil)
-      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:, schedule:)
+    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil)
+      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:)
     end
 
     def call
+      # binding.break
       ::TrainingPeriod.create!(
         period_type_key => @period,
         started_on: @started_on,
@@ -26,9 +26,8 @@ module TrainingPeriods
         expression_of_interest: @expression_of_interest,
         training_programme: @training_programme,
         finished_on: @finished_on,
-        schedule: @schedule
+        schedule:
       )
-      # TODO Hook in the Schedules::Assignment service here to assign a schedule if needed
     end
 
   private
@@ -39,6 +38,19 @@ module TrainingPeriods
       when ::MentorAtSchoolPeriod then :mentor_at_school_period
       else raise ArgumentError, "Unsupported period type: #{@period.class}"
       end
+    end
+
+    # TODO: Hook in the Schedules::Assignment service here to assign a schedule if needed
+    def schedule
+      Schedules::Assignment.new(contract_period_year:, period: @period, training_programme: @training_programme, started_on: @started_on).call
+    end
+
+    def contract_period
+      @school_partnership&.contract_period || @expression_of_interest&.contract_period
+    end
+
+    def contract_period_year
+      contract_period&.year
     end
   end
 end

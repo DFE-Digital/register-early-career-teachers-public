@@ -1,59 +1,56 @@
 RSpec.describe Schedules::Assignment do
   include ActiveJob::TestHelper
 
-  
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
-  
   let(:year) { Date.current.year }
-  
+
   let(:contract_period) { FactoryBot.create(:contract_period, year:) }
+  let(:previous_contract_period) { FactoryBot.create(:contract_period, year: year - 1) }
+  let(:contract_period_year) { year }
+
+  let(:training_programme) { 'provider_led' }
+  let(:period) { ect_at_school_period }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
 
-  
-
-  let(:identifier) { "ecf-#{schedule_type}-#{schedule_month}" }
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
   before do
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
+    FactoryBot.create(:schedule, contract_period:, identifier: "ecf-reduced-september")
   end
 
   describe '#for_ects' do
     subject(:service) do
-      described_class.new(training_period:).call
+      described_class.new(contract_period_year:, period:, training_programme:, started_on:).call
     end
 
     context 'when the training period is school-led' do
-      let!(:training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, started_on:, ect_at_school_period:) }
       let(:started_on) { Date.new(year, 9, 1) }
+      let(:training_programme) { 'school_led' }
 
       it 'does not assign a schedule to the current training period' do
-        service
-        expect(training_period.schedule).to be_nil
+        expect(service).to be_nil
       end
     end
 
     context 'when the training period is provider-led' do
-
       context 'when there are no previous training periods' do
-        let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period:, started_on:, school_partnership:) }
         let(:started_on) { Date.new(year, 7, 1) }
 
         it 'assigns a standard schedule' do
-          service
-          expect(training_period.schedule.identifier).to include('standard')
+          expect(service.identifier).to include('standard')
         end
 
         context 'when they were registered before their start date' do
-          let(:registered_on) { started_on - 1.days }
+          let(:registered_on) { started_on - 1.day }
 
           around do |example|
             travel_to(registered_on) do
@@ -65,8 +62,7 @@ RSpec.describe Schedules::Assignment do
             let(:started_on) { Date.new(year, 7, 1) }
 
             it 'assigns the schedule to the current training period' do
-              service
-              expect(training_period.schedule.identifier).to include('september')
+              expect(service.identifier).to include('september')
             end
           end
 
@@ -77,8 +73,7 @@ RSpec.describe Schedules::Assignment do
               let(:started_on) { Date.new(year + 1, 2, 29) }
 
               it 'assigns the schedule to the current training period' do
-                service
-                expect(training_period.schedule.identifier).to include('january')
+                expect(service.identifier).to include('january')
               end
             end
 
@@ -86,8 +81,7 @@ RSpec.describe Schedules::Assignment do
               let(:started_on) { Date.new(year + 1, 1, 15) }
 
               it 'assigns the schedule to the current training period' do
-                service
-                expect(training_period.schedule.identifier).to include('january')
+                expect(service.identifier).to include('january')
               end
             end
           end
@@ -96,8 +90,7 @@ RSpec.describe Schedules::Assignment do
             let(:started_on) { Date.new(year + 1, 4, 10) }
 
             it 'assigns the schedule to the current training period' do
-              service
-              expect(training_period.schedule.identifier).to include('april')
+              expect(service.identifier).to include('april')
             end
           end
         end
@@ -105,51 +98,105 @@ RSpec.describe Schedules::Assignment do
         context 'when they were registered after their start date' do
           let(:registered_on) { Date.new(year, 12, 1) }
           let(:started_on) { Date.new(year, 7, 1) }
-          
+
           around do |example|
             travel_to(registered_on) do
               example.run
             end
           end
 
-
           it 'assigns the schedule based on the registration date to the current training period' do
-            service
-            expect(training_period.schedule.identifier).to include('january')
+            expect(service.identifier).to include('january')
           end
         end
-        
-
-
-        
       end
 
-      context 'when there is a previous school-led training period' do  
-        let(:started_on) { Date.new(year, 7, 1) }
+      #  A little more context here.
+      # A school led training period does not have a schedule
+      # Past school led training period should not affect the schedule assignment for the new provider led training period.
+      # So if the previous period is school led and the new period is provider led then we pick a new schedule
+      # If the previous period is provider led then we switch to school led then that doesn't have a schedule and that's covered by the covered
+      # But if we switch 3 times... then it's the last provider led period that matters.
+      # This also helps us carry accross the schedule if the teacher resumes
+
+      # We also need to specifically test what happens when a teacher moves school.
+      # Again the previous provider led training period is what matters.
+
+      context 'when there is one previous training period' do
+        let(:started_on) { provider_led_started_on }
         let(:registered_on) { Date.new(year, 6, 15) }
         let(:provider_led_started_on) { Date.new(year, 12, 1) }
+        let(:school_led_started_on) { Date.new(year, 7, 1) }
 
+        context 'when the previous training period is school-led' do
+          it 'assigns the schedule based on the start date of the current training period' do
+            first_training_period = nil
+            travel_to(registered_on) do
+              first_training_period = FactoryBot.create(:training_period, :school_led, :ongoing, started_on: school_led_started_on, ect_at_school_period:)
+            end
 
-        it 'assigns the schedule based on the start date of the current training period' do
-          first_training_period = nil
-          travel_to(registered_on) do
-            first_training_period = FactoryBot.create(:training_period, :school_led, :ongoing , started_on:, ect_at_school_period:)
-          end
-
-          travel_to(provider_led_started_on) do
-            first_training_period.finished_on = provider_led_started_on - 1.day
-            first_training_period.save!
-
-            training_period = FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period:, started_on: provider_led_started_on, school_partnership:) 
-          
-            described_class.new(training_period:).call
-            expect(training_period.schedule.identifier).to include('january')
+            travel_to(provider_led_started_on) do
+              expect(service.identifier).to include('standard-january')
+            end
           end
         end
+
+        context 'when the previous training period is provider-led' do
+          let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: 'ecf-reduced-september') }
+
+          it 'uses the identifier from the previous provider-led training period' do
+            first_training_period = nil
+            travel_to(registered_on) do
+              first_training_period = FactoryBot.create(:training_period, :provider_led, :ongoing,
+                                                        started_on: school_led_started_on,
+                                                        ect_at_school_period:,
+                                                        schedule:,
+                                                        school_partnership:)
+            end
+
+            travel_to(provider_led_started_on) do
+              expect(service.identifier).to include('reduced-september')
+            end
+          end
+        end
+      end
+
+      context 'when there is more than one previous training period' do
+        let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: 'ecf-reduced-september') }
+
+        let(:started_on) { provider_led_started_on }
+        let(:registered_on) { Date.new(year - 1, 6, 15) }
+        let(:provider_led_started_on) { Date.new(year - 1, 12, 1) }
+        let(:school_led_started_on) { Date.new(year, 7, 1) }
+
+        context 'when the first training period is provider-led and the second is school-led' do
+          it 'uses the identifier from the most recent provider-led training period' do
+            first_training_period = nil
+            travel_to(registered_on) do
+              first_training_period = FactoryBot.create(:training_period, :provider_led,
+                                                        started_on: school_led_started_on,
+                                                        finished_on: school_led_started_on + 50.days,
+                                                        ect_at_school_period:,
+                                                        schedule:,
+                                                        school_partnership:)
+            end
+
+            second_training_period = nil
+            travel_to(registered_on + 60.days) do
+              second_training_period = FactoryBot.create(:training_period, :school_led, :ongoing,
+                                                         started_on: school_led_started_on + 60.days,
+                                                         ect_at_school_period:)
+            end
+
+            travel_to(provider_led_started_on) do
+              expect(service.identifier).to include('reduced-september')
+            end
+          end
+        end
+      end
+
+      context 'when the teacher has moved school' do
       end
     end
   end
-
-
-
 end

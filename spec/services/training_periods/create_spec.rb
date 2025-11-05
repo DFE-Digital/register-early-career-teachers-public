@@ -6,17 +6,30 @@ RSpec.describe TrainingPeriods::Create do
       school_partnership:,
       expression_of_interest:,
       training_programme:,
-      finished_on:,
-      schedule:
+      finished_on:
     ).call
   end
 
   let(:started_on) { Time.zone.today - 1.month }
-  let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  let(:year) { Date.current.year }
+  let(:contract_period) { FactoryBot.create(:contract_period, year:) }
+
+  let(:lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+  let(:school) { FactoryBot.create(:school) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
   let(:expression_of_interest) { nil }
   let(:training_programme) { 'provider_led' }
   let(:finished_on) { Time.zone.today - 3.weeks }
-  let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
+  # let!(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
+
+  before do
+    FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
+    FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
+    FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
+  end
 
   context 'with an ECTAtSchoolPeriod' do
     let(:teacher) { FactoryBot.create(:teacher) }
@@ -96,7 +109,7 @@ RSpec.describe TrainingPeriods::Create do
     it 'calls new with the provider_led arguments' do
       allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
 
-      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, schedule:)
+      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:)
 
       expect(TrainingPeriods::Create).to have_received(:new).with(
         period:,
@@ -104,8 +117,7 @@ RSpec.describe TrainingPeriods::Create do
         school_partnership:,
         expression_of_interest:,
         training_programme: 'provider_led',
-        finished_on:,
-        schedule:
+        finished_on:
       )
     end
   end
