@@ -23,7 +23,7 @@ RSpec.describe TrainingPeriods::Create do
   let(:expression_of_interest) { nil }
   let(:training_programme) { 'provider_led' }
   let(:finished_on) { Time.zone.today - 3.weeks }
-  # let!(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
+  let!(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-september") }
 
   before do
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
@@ -42,17 +42,19 @@ RSpec.describe TrainingPeriods::Create do
       )
     end
 
-    it 'creates a TrainingPeriod associated with the ECTAtSchoolPeriod' do
-      expect { result }.to change(TrainingPeriod, :count).by(1)
+    it 'creates a TrainingPeriod associated with the ECTAtSchoolPeriod with the correct schedule' do
+      travel_to(Date.new(2025, 10, 15)) do
+        expect { result }.to change(TrainingPeriod, :count).by(1)
 
-      training_period = result
-      expect(training_period.ect_at_school_period).to eq(period)
-      expect(training_period.mentor_at_school_period).to be_nil
-      expect(training_period.started_on).to eq(started_on)
-      expect(training_period.school_partnership).to eq(school_partnership)
-      expect(training_period.expression_of_interest).to eq(expression_of_interest)
-      expect(training_period.finished_on).to eq(finished_on)
-      expect(training_period.schedule).to eq(schedule)
+        training_period = result
+        expect(training_period.ect_at_school_period).to eq(period)
+        expect(training_period.mentor_at_school_period).to be_nil
+        expect(training_period.started_on).to eq(started_on)
+        expect(training_period.school_partnership).to eq(school_partnership)
+        expect(training_period.expression_of_interest).to eq(expression_of_interest)
+        expect(training_period.finished_on).to eq(finished_on)
+        expect(training_period.schedule).to eq(schedule)
+      end
     end
   end
 
@@ -68,16 +70,18 @@ RSpec.describe TrainingPeriods::Create do
     end
 
     it 'creates a TrainingPeriod associated with the MentorAtSchoolPeriod' do
-      expect { result }.to change(TrainingPeriod, :count).by(1)
+      travel_to(Date.new(2025, 10, 15)) do
+        expect { result }.to change(TrainingPeriod, :count).by(1)
 
-      training_period = result
-      expect(training_period.mentor_at_school_period).to eq(period)
-      expect(training_period.ect_at_school_period).to be_nil
-      expect(training_period.started_on).to eq(started_on)
-      expect(training_period.school_partnership).to eq(school_partnership)
-      expect(training_period.expression_of_interest).to eq(expression_of_interest)
-      expect(training_period.finished_on).to eq(finished_on)
-      expect(training_period.schedule).to eq(schedule)
+        training_period = result
+        expect(training_period.mentor_at_school_period).to eq(period)
+        expect(training_period.ect_at_school_period).to be_nil
+        expect(training_period.started_on).to eq(started_on)
+        expect(training_period.school_partnership).to eq(school_partnership)
+        expect(training_period.expression_of_interest).to eq(expression_of_interest)
+        expect(training_period.finished_on).to eq(finished_on)
+        expect(training_period.schedule).to eq(schedule)
+      end
     end
   end
 

@@ -18,7 +18,6 @@ module TrainingPeriods
     end
 
     def call
-      # binding.break
       ::TrainingPeriod.create!(
         period_type_key => @period,
         started_on: @started_on,
@@ -40,7 +39,6 @@ module TrainingPeriods
       end
     end
 
-    # TODO: Hook in the Schedules::Assignment service here to assign a schedule if needed
     def schedule
       Schedules::Assignment.new(contract_period_year:, period: @period, training_programme: @training_programme, started_on: @started_on).call
     end
