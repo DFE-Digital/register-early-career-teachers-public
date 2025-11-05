@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
   # @return [User, nil]
   delegate :user, to: :current_user, allow_nil: true
 
+  # FIXME: path helpers bork for /admin/foo/bar
   # Used by Blazer to restrict access
   # @see config/blazer.yml
   # @return [String, nil]
