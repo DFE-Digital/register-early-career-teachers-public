@@ -35,7 +35,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
       induction_period.outcome = nil
       induction_period.number_of_terms = nil
       modifications = induction_period.changes
-      appropriate_body = induction_period.appropriate_body
+      appropriate_body_period = induction_period.appropriate_body_period
       induction_period.reload
 
       expect(Events::Record)
@@ -47,7 +47,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
           induction_period:,
           modifications:,
           teacher:,
-          appropriate_body:
+          appropriate_body_period:
         )
 
       service.reopen_induction_period!
