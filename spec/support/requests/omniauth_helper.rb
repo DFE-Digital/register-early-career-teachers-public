@@ -15,6 +15,7 @@ module OmniAuthHelper
           organisation: {
             id: args[:organisation_id],
             urn: args[:organisation_urn],
+            name: args[:organisation_name],
           }
         }
       },
