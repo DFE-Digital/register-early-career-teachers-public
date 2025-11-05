@@ -1,6 +1,11 @@
 RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
   let!(:teaching_school_hub) do
-    FactoryBot.create(:teaching_school_hub)
+    FactoryBot.create(:teaching_school_hub, name: "Hub Name")
+  end
+
+  before do
+    FactoryBot.create(:region, districts: %w[West East], teaching_school_hub:)
+    FactoryBot.create(:region, districts: %w[North], teaching_school_hub:)
   end
 
   describe "GET /index" do
@@ -10,7 +15,7 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
       it "returns http success" do
         get "/admin/organisations/teaching-school-hubs"
         expect(response).to have_http_status(:success)
-        expect(response.body).to include(teaching_school_hub.name)
+        expect(response.body).to include("Hub Name")
       end
     end
 
@@ -38,7 +43,8 @@ RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
       it "returns http success" do
         get "/admin/organisations/teaching-school-hubs/#{teaching_school_hub.id}"
         expect(response).to have_http_status(:success)
-        expect(response.body).to include(teaching_school_hub.name)
+        expect(response.body).to include("Hub Name")
+        expect(response.body).to include("West, East, and North")
       end
     end
 

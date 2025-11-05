@@ -151,6 +151,15 @@ erDiagram
     datetime updated_at
   }
   Schedule }o--|| ContractPeriod : belongs_to
+  Region {
+    integer id
+    string code
+    array[string] districts
+    integer teaching_school_hub_id
+    datetime created_at
+    datetime updated_at
+  }
+  Region }o--|| TeachingSchoolHub : belongs_to
   PendingInductionSubmissionBatch {
     integer id
     integer appropriate_body_period_id
