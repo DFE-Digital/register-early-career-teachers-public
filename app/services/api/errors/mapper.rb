@@ -20,7 +20,7 @@ module API
       def load_mappings!
         raise MappingsFileNotFoundError, "Mappings file not found: #{YAML_FILE_PATH}" unless File.exist?(YAML_FILE_PATH)
 
-        YAML.load_file(YAML_FILE_PATH) || {}
+        YAML.load_file(YAML_FILE_PATH)&.sort_by(&:length)&.reverse || {}
       end
 
       def replace(text)

@@ -26,6 +26,17 @@ RSpec.describe API::Errors::Mapper do
       end
     end
 
+    context "when some terms are substrings of other terms" do
+      let(:error) { { title: "longer_rect_term", detail: "maps rect_term after longer_rect_term" } }
+
+      it "correctly replaces all terms (prioritising whole terms over substring terms)" do
+        result = map_error
+
+        expect(result[:title]).to eql("something_different_in_ecf")
+        expect(result[:detail]).to eql("maps ecf_term after something_different_in_ecf")
+      end
+    end
+
     context "when the mappings file is missing" do
       before { stub_const("#{described_class}::YAML_FILE_PATH", "non_existent_file.yml") }
 
