@@ -1,0 +1,16 @@
+<%
+  page_data(
+    title: @organisation.name,
+    caption: "DFE Sign-In Organisation ID: #{@organisation.uuid}"
+  )
+%>
+
+<p class="govuk-body">
+  Category: <%= @organisation.organisation_type %>
+</p>
+
+<% if @organisation.last_authenticated_at.present? %>
+  <p class="govuk-body">
+    Last authenticated: <%= time_ago_in_words(@organisation.last_authenticated_at) %> ago
+  </p>
+<% end %>

@@ -9,6 +9,7 @@ ENABLE_API: false
 ENABLE_MIGRATION_TESTING: false
 ENABLE_INCIDENT_BANNER: false
 ENABLE_APPROPRIATE_BODY_RECORDS_TO_REVIEW: false
+ENABLE_HUBS: false
 DFE_SIGN_IN_API_AUDIENCE: signin.education.gov.uk
 DFE_SIGN_IN_PROFILE: "https://profile.signin.education.gov.uk"
 DFE_SIGN_IN_API_BASE_URL: "https://api.signin.education.gov.uk"
