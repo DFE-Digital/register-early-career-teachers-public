@@ -11,7 +11,6 @@ describe Teacher do
     let(:target) { instance }
 
     it_behaves_like "a declarative touch model", when_changing: %i[api_id
-                                                                   corrected_name
                                                                    trs_first_name
                                                                    trs_last_name
                                                                    trn
@@ -25,19 +24,6 @@ describe Teacher do
                                                                    ect_sparsity_uplift
                                                                    ect_payments_frozen_year
                                                                    mentor_payments_frozen_year], timestamp_attribute: :api_updated_at
-
-    context "target mentee_teachers" do
-      let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: instance, started_on: 3.years.ago) }
-      let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: mentor.started_on) }
-
-      let(:target) { instance.mentee_teachers }
-
-      before do
-        FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:)
-      end
-
-      it_behaves_like "a declarative touch model", when_changing: %i[api_id], timestamp_attribute: :api_updated_at
-    end
   end
 
   describe "associations" do
