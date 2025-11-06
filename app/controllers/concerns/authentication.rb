@@ -47,9 +47,10 @@ private
     authenticated? && !current_user.has_multiple_roles?
   end
 
+  # FIXME: path helpers bork for /admin/foo/bar
   # @return [String]
   def pre_login_redirect_path(requested_path)
-    requested_path.start_with?("/admin") ? sign_in_path : root_path
+    requested_path.start_with?("/admin") ? "/sign-in" : "/"
   end
 
   # @return [String]
