@@ -11,11 +11,12 @@ class ApplicationController < ActionController::Base
   # @return [User, nil]
   delegate :user, to: :current_user, allow_nil: true
 
+  # FIXME: path helpers bork for /admin/foo/bar
   # Used by Blazer to restrict access
   # @see config/blazer.yml
   # @return [String, nil]
   def require_admin
-    redirect_to(sign_in_path) unless current_user&.dfe_user?
+    redirect_to("/sign-in") unless current_user&.dfe_user?
   end
 
   def set_sentry_user
