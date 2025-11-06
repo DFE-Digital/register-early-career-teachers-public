@@ -28,7 +28,7 @@ get:
       id: ":statement_id"
       exclude:
         - type
-        
+
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -306,7 +306,7 @@ put:
         - challenged_at
         - challenged_reason
         - status
-        
+
   - "/api/v3/participants/:id/withdraw":
       ecf_path: "/api/v3/participants/ecf/:id/withdraw"
       id: ":active_teacher_api_id_for_participant_action"
@@ -324,3 +324,16 @@ put:
       ecf_path: "/api/v3/participants/ecf/:id/defer"
       id: ":deferred_teacher_api_id_for_participant_action"
       body: deferred_participant_defer_body
+
+  - "/api/v3/participants/:id/resume":
+      ecf_path: "/api/v3/participants/ecf/:id/resume"
+      id: ":withdrawn_teacher_api_id_for_participant_action"
+      body: withdrawn_participant_resume_body
+  - "/api/v3/participants/:id/resume":
+      ecf_path: "/api/v3/participants/ecf/:id/resume"
+      id: ":deferred_teacher_api_id_for_participant_action"
+      body: deferred_participant_resume_body
+  - "/api/v3/participants/:id/resume":
+      ecf_path: "/api/v3/participants/ecf/:id/resume"
+      id: ":active_teacher_api_id_for_participant_action"
+      body: active_participant_resume_body
