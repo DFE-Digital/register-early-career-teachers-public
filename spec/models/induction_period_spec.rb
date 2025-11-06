@@ -70,9 +70,7 @@ RSpec.describe InductionPeriod do
       context "target teacher" do
         let(:target) { instance.teacher }
 
-        it_behaves_like "a declarative conditional touch model", when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at do
-          let(:conditional_method_name) { :touch_teacher? }
-        end
+        it_behaves_like "a declarative touch model", when_changing: %i[started_on finished_on], conditional_method: :touch_teacher?, timestamp_attribute: :api_updated_at
       end
 
       describe "#touch_teacher?" do
