@@ -165,7 +165,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           appropriate_body_id: 1,
           training_programme: 'school_led'
         )
-        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
       end
 
       it 'includes all necessary steps for completion' do
@@ -218,7 +218,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           appropriate_body_id: 1,
           training_programme: 'school_led'
         )
-        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
       end
 
       it 'allows progression through all required steps' do
@@ -264,7 +264,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           appropriate_body_id: 1,
           training_programme: 'school_led'
         )
-        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
       end
 
       it 'includes independent_school_appropriate_body instead of state_school_appropriate_body' do
@@ -289,7 +289,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           start_date: '2024-09-01',
           working_pattern: 'full_time'
         )
-        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
       end
 
       it 'includes use_previous_ect_choices step' do
@@ -323,7 +323,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           appropriate_body_id: 1,
           training_programme: 'provider_led'
         )
-        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false, provider_led?: true)
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false, provider_led?: true)
       end
 
       it 'includes lead_provider step' do
@@ -392,7 +392,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           appropriate_body_id: appropriate_body.id,
           training_programme: 'school_led'
         )
-        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
       end
 
       it 'includes change_email_address step' do
@@ -400,7 +400,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       end
 
       it 'includes cant_use_changed_email when email cannot be used' do
-        allow(wizard.ect).to receive(:cant_use_email?).and_return(true)
+        allow(wizard.ect).to receive(:email_taken?).and_return(true)
         expect(wizard.allowed_steps).to include(:cant_use_changed_email)
       end
 
@@ -510,7 +510,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         email: 'test@example.com',
         start_date: future_date.strftime('%Y-%m-%d')
       )
-      allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, cant_use_email?: false, previously_registered?: false)
+      allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
     end
 
     let(:future_date) { 1.month.from_now }

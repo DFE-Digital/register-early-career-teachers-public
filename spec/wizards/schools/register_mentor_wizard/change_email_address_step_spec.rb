@@ -3,7 +3,7 @@ require_relative './shared_examples/email_step'
 describe Schools::RegisterMentorWizard::ChangeEmailAddressStep, type: :model do
   context 'when email is in use' do
     before do
-      allow(subject.mentor).to receive(:cant_use_email?).and_return(true)
+      allow(subject.mentor).to receive(:email_taken?).and_return(true)
     end
 
     it_behaves_like 'an email step',

@@ -13,7 +13,7 @@ module Schools
       class InvalidMentorshipStatus < StandardError; end
 
       def next_step
-        return :cant_use_email if mentor.cant_use_email?
+        return :cant_use_email if mentor.email_taken?
         return :review_mentor_eligibility if eligible_for_review?
         return :lead_provider if lead_provider_rules.needs_selection_for_new_registration?
         return :check_answers unless mentor.previously_registered_as_mentor?
