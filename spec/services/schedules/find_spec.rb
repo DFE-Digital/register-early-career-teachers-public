@@ -20,6 +20,8 @@ RSpec.describe Schedules::Find do
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
+  # include_context 'current schedules'
+
   before do
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
@@ -29,7 +31,7 @@ RSpec.describe Schedules::Find do
 
   describe '#for_ects' do
     subject(:service) do
-      described_class.new(contract_period_year:, period:, training_programme:, started_on:).call
+      described_class.new(period:, training_programme:, started_on:).call
     end
 
     context 'when the training period is school-led' do
@@ -67,10 +69,10 @@ RSpec.describe Schedules::Find do
           end
 
           context 'when the training period started between 1st November and 29th February' do
-            let(:year) { 2023 }
+            let(:year) { 2024 }
 
             context 'when the year is a leap year' do
-              let(:started_on) { Date.new(year + 1, 2, 29) }
+              let(:started_on) { Date.new(year, 2, 29) }
 
               it 'assigns the schedule to the current training period' do
                 expect(service.identifier).to include('january')
@@ -78,7 +80,9 @@ RSpec.describe Schedules::Find do
             end
 
             context 'when the year is not a leap year' do
-              let(:started_on) { Date.new(year + 1, 1, 15) }
+              let(:year) { 2023 }
+
+              let(:started_on) { Date.new(year, 1, 15) }
 
               it 'assigns the schedule to the current training period' do
                 expect(service.identifier).to include('january')
@@ -87,7 +91,7 @@ RSpec.describe Schedules::Find do
           end
 
           context 'when the training period started between 1st March and 31st May' do
-            let(:started_on) { Date.new(year + 1, 4, 10) }
+            let(:started_on) { Date.new(year, 4, 10) }
 
             it 'assigns the schedule to the current training period' do
               expect(service.identifier).to include('april')

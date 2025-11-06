@@ -1,12 +1,11 @@
 module Schedules
   class Find
-    attr_accessor :period, :training_programme, :started_on, :contract_period_year
+    attr_accessor :period, :training_programme, :started_on
 
-    def initialize(contract_period_year:, period:, training_programme:, started_on:)
+    def initialize(period:, training_programme:, started_on:)
       @period = period
       @training_programme = training_programme
       @started_on = started_on
-      @contract_period_year = contract_period_year
     end
 
     def call
@@ -43,15 +42,17 @@ module Schedules
       case schedule_date
       when june_start..october_end
         'september'
-      when november_start..february_end
+      when november_start..december_end
+        'january'
+      when january_start..february_end
         'january'
       when march_start..may_end
         'april'
       end
     end
 
-    def next_year
-      contract_period_year + 1
+    def contract_period_year
+      schedule_date.year
     end
 
     def june_start
@@ -66,16 +67,24 @@ module Schedules
       Date.new(contract_period_year, 11, 1)
     end
 
+    def december_end
+      Date.new(contract_period_year, 12, 31)
+    end
+    
+    def january_start
+      Date.new(contract_period_year, 1, 1)
+    end
+
     def february_end
       march_start - 1
     end
 
     def march_start
-      Date.new(next_year, 3, 1)
+      Date.new(contract_period_year, 3, 1)
     end
 
     def may_end
-      Date.new(next_year, 5, 31)
+      Date.new(contract_period_year, 5, 31)
     end
 
     # TODO: in due course, we will assign non-standard identifiers

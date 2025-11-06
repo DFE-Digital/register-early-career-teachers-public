@@ -40,7 +40,7 @@ module TrainingPeriods
     end
 
     def schedule
-      Schedules::Find.new(contract_period_year:, period: @period, training_programme: @training_programme, started_on: @started_on).call
+      Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call
     end
 
     def contract_period
