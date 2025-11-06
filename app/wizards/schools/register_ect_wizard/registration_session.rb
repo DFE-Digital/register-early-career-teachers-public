@@ -35,7 +35,7 @@ module Schools
                :previous_eoi_lead_provider_name,
                to: :previous_registration
 
-      delegate :cant_use_email?,
+      delegate :email_taken?,
                :in_trs?,
                :induction_completed?,
                :induction_exempt?,

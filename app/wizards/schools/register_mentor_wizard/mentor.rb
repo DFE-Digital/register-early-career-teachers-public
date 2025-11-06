@@ -15,7 +15,7 @@ module Schools
         @active_record_at_school ||= MentorAtSchoolPeriods::Search.new.mentor_periods(trn:, urn: school_urn).ongoing.last
       end
 
-      def cant_use_email?
+      def email_taken?
         Schools::TeacherEmail.new(email:, trn:).is_currently_used?
       end
 

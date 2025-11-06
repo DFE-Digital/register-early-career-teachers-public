@@ -3,7 +3,7 @@ require_relative './shared_examples/email_step'
 describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
   context 'when email is in use' do
     before do
-      allow(wizard.mentor).to receive(:cant_use_email?).and_return(true)
+      allow(wizard.mentor).to receive(:email_taken?).and_return(true)
     end
 
     it_behaves_like 'an email step', current_step: :email_address,
@@ -46,7 +46,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
 
   context 'provider-led, eligible for funding, previously registered, previously a mentor' do
     before do
-      allow(wizard.mentor).to receive_messages(cant_use_email?: false, funding_available?: true, previously_registered_as_mentor?: true, mentorship_status: :previously_a_mentor)
+      allow(wizard.mentor).to receive_messages(email_taken?: false, funding_available?: true, previously_registered_as_mentor?: true, mentorship_status: :previously_a_mentor)
     end
 
     it_behaves_like 'an email step',
@@ -58,7 +58,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
 
   context 'provider-led, eligible for funding, previously registered, currently a mentor' do
     before do
-      allow(wizard.mentor).to receive_messages(cant_use_email?: false, funding_available?: true, previously_registered_as_mentor?: true, mentorship_status: :currently_a_mentor)
+      allow(wizard.mentor).to receive_messages(email_taken?: false, funding_available?: true, previously_registered_as_mentor?: true, mentorship_status: :currently_a_mentor)
     end
 
     it_behaves_like 'an email step',
@@ -84,7 +84,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
     before do
       FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect)
       allow(wizard.mentor).to receive_messages(
-        cant_use_email?: false,
+        email_taken?: false,
         previously_registered_as_mentor?: true,
         mentorship_status: :unknown_state
       )
@@ -99,7 +99,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
   context 'when ect lead provider is not valid for mentor contract period' do
     before do
       allow(wizard.mentor).to receive_messages(
-        cant_use_email?: false,
+        email_taken?: false,
         previously_registered_as_mentor?: false,
         funding_available?: true,
         ect_lead_provider_invalid?: true

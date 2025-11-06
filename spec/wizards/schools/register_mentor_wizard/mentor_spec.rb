@@ -55,7 +55,7 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
   end
 
-  describe '#cant_use_email?' do
+  describe '#email_taken?' do
     let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
 
     before do
@@ -66,7 +66,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(true) }
 
       it "returns true" do
-        expect(subject.cant_use_email?).to be true
+        expect(subject.email_taken?).to be true
       end
     end
 
@@ -74,7 +74,7 @@ describe Schools::RegisterMentorWizard::Mentor do
       before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(false) }
 
       it "returns false" do
-        expect(subject.cant_use_email?).to be false
+        expect(subject.email_taken?).to be false
       end
     end
   end
