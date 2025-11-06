@@ -72,7 +72,7 @@ module Schools
 
             steps << :email_address
             return steps unless mentor.email
-            return steps + %i[change_email_address cant_use_changed_email cant_use_email] if mentor.cant_use_email?
+            return steps + %i[change_email_address cant_use_changed_email cant_use_email] if mentor.email_taken?
 
             steps << if mentor.currently_mentor_at_another_school?
                        :mentoring_at_new_school_only

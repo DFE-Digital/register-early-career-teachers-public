@@ -49,7 +49,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Status do
   let(:previous_training_period) { nil }
   let(:previous_lead_provider) { nil }
 
-  describe '#cant_use_email?' do
+  describe '#email_taken?' do
     let(:teacher_email_service) { instance_double(Schools::TeacherEmail, is_currently_used?: result) }
 
     before do
@@ -60,7 +60,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Status do
       let(:result) { true }
 
       it 'returns true' do
-        expect(status.cant_use_email?).to be(true)
+        expect(status.email_taken?).to be(true)
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Status do
       let(:result) { false }
 
       it 'returns false' do
-        expect(status.cant_use_email?).to be(false)
+        expect(status.email_taken?).to be(false)
       end
     end
   end

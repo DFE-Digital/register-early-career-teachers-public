@@ -101,7 +101,7 @@ module Schools
 
         steps << :email_address
         return steps unless ect.email
-        return steps + %i[cant_use_email] if ect.cant_use_email? && !can_reach_check_answers?
+        return steps + %i[cant_use_email] if ect.email_taken? && !can_reach_check_answers?
 
         steps << :start_date
         return steps unless ect.start_date
@@ -138,7 +138,7 @@ module Schools
         # Only allow change steps if user has reached check_answers step
         # This prevents direct access to change steps without completing the flow
         steps << :change_email_address
-        return steps + %i[cant_use_changed_email] if ect.cant_use_email?
+        return steps + %i[cant_use_changed_email] if ect.email_taken?
 
         steps << (school.independent? ? :change_independent_school_appropriate_body : :change_state_school_appropriate_body)
 

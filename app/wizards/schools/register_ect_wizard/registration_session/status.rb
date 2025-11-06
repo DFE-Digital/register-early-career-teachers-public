@@ -7,7 +7,7 @@ module Schools
           @queries = queries
         end
 
-        def cant_use_email?
+        def email_taken?
           Schools::TeacherEmail.new(email: registration_session.email, trn: registration_session.trn).is_currently_used?
         end
 
