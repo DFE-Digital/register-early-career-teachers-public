@@ -88,13 +88,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_the_new_lead_provider
 
-    when_i_try_to_change_the_programme_choices_used_by_your_school_previously
-    then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
-    when_i_select_that_i_want_to_use_the_previous_ect_choices
-    and_i_click_continue
-    then_i_should_be_taken_to_the_check_answers_page
-    and_i_should_see_the_previous_programme_choices
-
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
 
@@ -113,7 +106,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def create_contract_period_for_start_date
-    # Use explicit, non-overlapping years so everything lines up deterministically.
     @current_contract_year  = 2024
     @previous_contract_year = 2023
 
@@ -125,7 +117,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     @orange_institute_lead_provider = FactoryBot.create(:lead_provider, name: 'Orange Institute')
     @reuse_delivery_partner = FactoryBot.create(:delivery_partner, name: 'DP for Reuse')
 
-    # IMPORTANT: key ActiveLeadProviders by year (your code looks them up by year)
     @alp_previous_year = FactoryBot.create(
       :active_lead_provider,
       lead_provider: @orange_institute_lead_provider,
@@ -137,7 +128,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
       contract_period_year: @current_contract_year
     )
 
-    # LP–DP pairings for both years, same DP (so it’s reusable this year)
     @lpdp_previous_year = FactoryBot.create(
       :lead_provider_delivery_partnership,
       active_lead_provider: @alp_previous_year,
@@ -166,7 +156,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def create_reusable_previous_partnership
-    # Previous-year school partnership with SAME LP+DP as current year
     FactoryBot.create(
       :school_partnership,
       school: @school,
@@ -336,10 +325,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
 
   def and_i_should_see_the_new_email
     expect(page.get_by_text('new@example.com')).to be_visible
-  end
-
-  def when_i_try_to_change_the_programme_choices_used_by_your_school_previously
-    page.get_by_role('link', name: 'change choices used by your school previously').first.click
   end
 
   def then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
