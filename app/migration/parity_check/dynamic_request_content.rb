@@ -146,7 +146,7 @@ module ParityCheck
           type: "participant-withdraw",
           attributes: {
             reason: TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).sample,
-            course_identifier: participant.api_ect_training_record_id.present? ? "ecf-induction" : "ecf-mentor",
+            course_identifier: course_identifier_for(participant),
           },
         },
       }
@@ -170,7 +170,7 @@ module ParityCheck
           type: "participant-defer",
           attributes: {
             reason: TrainingPeriod.deferral_reasons.values.map(&:dasherize).sample,
-            course_identifier: participant.api_ect_training_record_id.present? ? "ecf-induction" : "ecf-mentor",
+            course_identifier: course_identifier_for(participant),
           },
         },
       }
@@ -186,6 +186,43 @@ module ParityCheck
       participant = Teacher.find_by(api_id: deferred_teacher_api_id_for_participant_action)
 
       participant_defer_payload(participant)
+    end
+
+    def participant_resume_payload(participant)
+      {
+        data: {
+          type: "participant-resume",
+          attributes: {
+            course_identifier: course_identifier_for(participant),
+          }
+        }
+      }
+    end
+
+    def withdrawn_participant_resume_body
+      participant = Teacher.find_by(api_id: withdrawn_teacher_api_id_for_participant_action)
+
+      participant_resume_payload(participant)
+    end
+
+    def deferred_participant_resume_body
+      participant = Teacher.find_by(api_id: deferred_teacher_api_id_for_participant_action)
+
+      participant_resume_payload(participant)
+    end
+
+    def active_participant_resume_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      participant_resume_payload(participant)
+    end
+
+    def course_identifier_for(participant)
+      if participant.api_ect_training_record_id.present?
+        "ecf-induction"
+      else
+        "ecf-mentor"
+      end
     end
 
     # Helpers
