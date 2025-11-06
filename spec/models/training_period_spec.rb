@@ -107,7 +107,7 @@ describe TrainingPeriod do
     it { is_expected.not_to validate_presence_of(:deferred_at) }
     it { is_expected.not_to validate_presence_of(:deferral_reason) }
     it { is_expected.to validate_presence_of(:started_on) }
-
+    
     context "when deferred_at and withdrawn_at are both present" do
       subject { FactoryBot.build(:training_period, deferred_at: Time.zone.now, withdrawn_at: Time.zone.now) }
 
@@ -467,6 +467,17 @@ describe TrainingPeriod do
             subject.valid?
 
             expect(subject.errors[:schedule]).to include("Schedule must be absent for school-led training programmes")
+          end
+        end
+
+
+        context 'when the training period is `provider-led`' do
+          subject { FactoryBot.build(:training_period, :provider_led, schedule: nil) }
+  
+          it "adds an error to schedule" do
+            subject.valid?
+  
+            expect(subject.errors[:schedule]).to include("Schedule must be present for provider-led training programmes")
           end
         end
       end
