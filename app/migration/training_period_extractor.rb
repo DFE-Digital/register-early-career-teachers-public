@@ -1,5 +1,6 @@
 class TrainingPeriodExtractor
   include Enumerable
+  include DataFixes
 
   def initialize(induction_records:)
     @induction_records = induction_records
@@ -20,6 +21,7 @@ private
   def build_training_periods
     current_period = nil
     current_programme = nil
+    first_record = true
 
     @induction_records.each_with_object([]) do |induction_record, periods|
       record_programme = induction_record.induction_programme
@@ -42,13 +44,20 @@ private
         core_materials = current_programme.core_induction_programme&.name
         school_urn = current_programme.school_cohort.school.urn
 
+        start_date = if first_record
+                       first_record = false
+                       earliest_initial_start_date(induction_record:)
+                     else
+                       induction_record.start_date
+                     end
+
         current_period = Migration::TrainingPeriodData.new(training_programme:,
                                                            school_urn:,
                                                            lead_provider:,
                                                            delivery_partner:,
                                                            core_materials:,
                                                            cohort_year: induction_record.schedule.cohort.start_year,
-                                                           start_date: induction_record.start_date,
+                                                           start_date:,
                                                            end_date: induction_record.end_date,
                                                            start_source_id: induction_record.id,
                                                            end_source_id: induction_record.id)
