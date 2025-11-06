@@ -38,16 +38,11 @@ module Migrators
         .ect
         .eager_load(:schedule, induction_records: [induction_programme: [school_cohort: %i[school cohort]]])
         .find_each do |participant_profile|
-          sanitizer = InductionRecordSanitizer.new(participant_profile:, group_by: :school)
-
-          school_periods = []
+          # testing data fixes so remove grouping
+          sanitizer = InductionRecordSanitizer.new(participant_profile:)
 
           if sanitizer.valid?
-            sanitizer.induction_records.each_value do |induction_records_group|
-              school_periods << SchoolPeriodExtractor.new(induction_records: induction_records_group).school_periods
-            end
-
-            school_periods.flatten!
+            school_periods = SchoolPeriodExtractor.new(induction_records: sanitizer).school_periods
 
             ect_payments_frozen_year = participant_profile.previous_payments_frozen_cohort_start_year
             teacher.ect_payments_frozen_year = ect_payments_frozen_year if ect_payments_frozen_year

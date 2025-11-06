@@ -1,5 +1,6 @@
 class SchoolPeriodExtractor
   include Enumerable
+  include DataFixes
 
   attr_reader :induction_records
 
@@ -28,6 +29,7 @@ private
   def build_school_periods_from_induction_records
     current_period = nil
     current_school = nil
+    first_record = true
 
     induction_records.each_with_object([]) do |induction_record, periods|
       record_school = induction_record.induction_programme.school_cohort.school
@@ -36,8 +38,15 @@ private
       if current_school != record_school
         current_school = record_school
 
+        start_date = if first_record
+                       first_record = false
+                       earliest_initial_start_date(induction_record:)
+                     else
+                       induction_record.start_date
+                     end
+
         current_period = Migration::SchoolPeriod.new(urn: current_school.urn,
-                                                     start_date: induction_record.start_date,
+                                                     start_date:,
                                                      end_date: induction_record.end_date,
                                                      start_source_id: induction_record.id,
                                                      end_source_id: induction_record.id,
