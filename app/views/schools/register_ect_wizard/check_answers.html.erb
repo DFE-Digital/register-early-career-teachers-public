@@ -44,16 +44,6 @@ end %>
 <h2 class="govuk-heading-m">Programme details</h2>
 
 <%= govuk_summary_list do |summary_list|
-  if @school.last_programme_choices?
-    summary_list.with_row do |row|
-      row.with_key(text: 'Choices used by your school previously')
-      row.with_value(text: previous_choice_message(@ect.use_previous_ect_choices))
-      row.with_action(text: 'Change',
-                      href: schools_register_ect_wizard_change_use_previous_ect_choices_path,
-                      visually_hidden_text: 'choices used by your school previously')
-    end
-  end
-
   summary_list.with_row do |row|
     row.with_key(text: 'Appropriate body')
     row.with_value(text: @ect.appropriate_body_name)

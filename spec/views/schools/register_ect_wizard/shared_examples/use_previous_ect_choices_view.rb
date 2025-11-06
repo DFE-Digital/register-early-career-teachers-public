@@ -158,55 +158,11 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
       expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Delivery partner')
     end
 
-    it 'renders the explanatory paragraph' do
-      expect(rendered.squish).to include(
-        "#{last_chosen_lead_provider.name} will confirm if they’ll be working with your school and which delivery partner will deliver training events."
-      )
-    end
-
     it 'calls #has_partnership_with? using the lead provider and contract period' do
       expect(decorated_school).to have_received(:has_partnership_with?).with(
         lead_provider: decorated_school.latest_registration_choices.lead_provider,
         contract_period: wizard.ect.contract_start_date
       )
-    end
-  end
-
-  context 'when provider-led and a previous partnership can be reused' do
-    let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
-
-    before do
-      choices = double(
-        'Schools::LatestRegistrationChoices',
-        lead_provider: last_chosen_lead_provider,
-        appropriate_body: last_chosen_appropriate_body,
-        delivery_partner: nil
-      )
-
-      allow(decorated_school).to receive_messages(
-        latest_registration_choices: choices,
-        has_partnership_with?: false
-      )
-
-      reusable = double(
-        lead_provider: FactoryBot.build(:lead_provider, name: "Reused LP"),
-        delivery_partner: FactoryBot.build(:delivery_partner, name: "Reused DP")
-      )
-      allow(wizard.current_step).to receive(:reusable_partnership_preview).and_return(reusable)
-
-      assign(:school, school)
-      assign(:decorated_school, decorated_school)
-      render
-    end
-
-    it 'shows the inset with the reusable pairing' do
-      expect(rendered).to include("We can reuse your previous partnership")
-      expect(rendered).to include("Reused LP")
-      expect(rendered).to include("Reused DP")
-    end
-
-    it 'does not show the explanatory paragraph' do
-      expect(rendered).not_to include("will confirm if they’ll be working with your school")
     end
   end
 

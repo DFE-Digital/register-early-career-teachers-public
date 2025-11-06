@@ -4,28 +4,20 @@
 
 <p class="govuk-body">You used these programme choices the last time you registered an ECT.</p>
 
-<% provider_led_last_time = @decorated_school.provider_led_training_programme_chosen? %>
-<% display_lp = @decorated_school.latest_registration_choices&.lead_provider || @decorated_school.last_chosen_lead_provider %>
-<% year = @ect.contract_start_date&.year %>
+<% display_lead_provider = @decorated_school.latest_registration_choices&.lead_provider || @decorated_school.last_chosen_lead_provider %>
 
 <% current_year_has_lp_dp =
-     display_lp.present? &&
+     display_lead_provider.present? &&
      @decorated_school.has_partnership_with?(
-       lead_provider: display_lp,
-       contract_period: year
+       lead_provider: display_lead_provider,
+       contract_period: @ect.contract_start_date&.year
      ) %>
 
 <%= render "previous_choices_summary",
            choices: @decorated_school.latest_registration_choices,
-           provider_led: provider_led_last_time,
+           provider_led: @decorated_school.provider_led_training_programme_chosen?,
            last_chosen_training_programme: @decorated_school.last_chosen_training_programme,
            reuse_preview: @wizard.current_step.reusable_partnership_preview %>
-
-<% if provider_led_last_time && display_lp.present? && !current_year_has_lp_dp %>
-  <%= render "reuse_inset_or_note",
-             reuse_preview: @wizard.current_step.reusable_partnership_preview,
-             lead_provider: display_lp %>
-<% end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
@@ -36,7 +28,6 @@
     <%= f.govuk_radio_button :use_previous_ect_choices,
                              :true,
                              label: { text: "Yes" },
-                             hint: (@wizard.current_step.reusable_partnership_preview.present? ? nil : { text: "You can’t reuse for this year. You’ll choose a lead provider next." }),
                              link_errors: true %>
     <%= f.govuk_radio_button :use_previous_ect_choices, :false, label: { text: "No" } %>
   <% end %>
