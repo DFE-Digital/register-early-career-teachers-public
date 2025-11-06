@@ -62,7 +62,7 @@ RSpec.describe API::Teachers::Defer, type: :model do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 3.months.from_now) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' has not yet started their training so cannot be deferred") }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot defer '#/teacher_api_id'. This is because they've not started their training.") }
           end
 
           context "guarded error messages" do
