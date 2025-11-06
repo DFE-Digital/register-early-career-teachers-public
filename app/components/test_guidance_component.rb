@@ -27,23 +27,47 @@ class TestGuidanceComponent < ApplicationComponent
   class TRSExampleTeacherDetails < ApplicationComponent
   private
 
-    def head = ["Name", "TRN", "Date of birth", "Status", ""]
+    # @return [Array<String>]
+    def head
+      [
+        "Name",
+        "TRN",
+        "Date of birth",
+        "Induction status",
+        "Claimed by",
+        ""
+      ]
+    end
 
+    # @return [Array<Array>]
     def rows
-      test_data.map do |row|
-        name, trn, dob, ni_number, status, * = row.values_at
+      teachers.map do |name, trn, dob, ni_number, status, *|
+        teacher = Teacher.find_by(trn:)
+
+        next if exhausted?(teacher)
+
         [
-          name, trn, dob, status_indicator(status), populate_button(trn, dob, ni_number)
+          name,
+          trn,
+          dob,
+          status_indicator(status, teacher),
+          claimed_by(teacher),
+          populate_button(trn, dob, ni_number)
         ]
       end
     end
 
-    def test_data = CSV.read(file_path, headers: true)
+    # @return [Array<Array>]
+    def teachers
+      CSV.read(file_path, headers: true).map(&:values_at)
+    end
 
     def file_path = Rails.root.join('spec/fixtures/seeds_trs.csv')
 
-    def status_indicator(trs_induction_status)
-      govuk_tag(**Teachers::InductionStatus.new(trs_induction_status:).status_tag_kwargs)
+    def status_indicator(trs_induction_status, teacher)
+      trs_induction_status = teacher&.induction_periods&.any? ? 'InProgress' : trs_induction_status
+      induction_status = Teachers::InductionStatus.new(trs_induction_status:, teacher:)
+      govuk_tag(**induction_status.status_tag_kwargs)
     end
 
     def populate_button(trn, dob, national_insurance_number)
@@ -55,6 +79,26 @@ class TestGuidanceComponent < ApplicationComponent
                              dob: Date.parse(dob).strftime("%d/%m/%Y"),
                              national_insurance_number:
                            })
+    end
+
+    def claimed_by(teacher, inactive: '-')
+      return inactive if teacher.nil?
+
+      case
+      when Current.user.appropriate_body_user?
+        teacher.ongoing_induction_period&.appropriate_body&.name || inactive
+      when Current.user.school_user?
+        teacher.current_or_next_ect_at_school_period&.school&.gias_school&.name || inactive
+      else
+        inactive
+      end
+    end
+
+    # Teacher is not available for further testing and cannot be claimed until TRS is reset
+    def exhausted?(teacher)
+      return false if teacher.nil?
+
+      TRS::Teacher::INELIGIBLE_INDUCTION_STATUSES.include?(teacher.trs_induction_status)
     end
   end
 end
