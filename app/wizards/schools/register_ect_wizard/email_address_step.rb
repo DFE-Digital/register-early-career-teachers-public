@@ -10,7 +10,7 @@ module Schools
       end
 
       def next_step
-        return :cant_use_email if ect.cant_use_email?
+        return :cant_use_email if ect.email_taken?
 
         :start_date
       end

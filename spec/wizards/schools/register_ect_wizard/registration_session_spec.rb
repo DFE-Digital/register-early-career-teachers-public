@@ -1,5 +1,5 @@
-RSpec.describe Schools::RegisterECTWizard::ECT do
-  subject(:ect) { described_class.new(store) }
+RSpec.describe Schools::RegisterECTWizard::RegistrationSession do
+  subject(:registration_session) { described_class.new(store) }
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, :national) }
@@ -28,7 +28,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher:) }
 
       it 'returns the ECT record' do
-        expect(ect.active_record_at_school(school.urn)).to eq(existing_ect_record)
+        expect(registration_session.active_record_at_school(school.urn)).to eq(existing_ect_record)
       end
     end
 
@@ -36,39 +36,39 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, school:, teacher:) }
 
       it 'returns nil' do
-        expect(ect.active_record_at_school(school.urn)).to be_nil
+        expect(registration_session.active_record_at_school(school.urn)).to be_nil
       end
     end
   end
 
   describe '#active_at_school?' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: ect.trn) }
+    let(:teacher) { FactoryBot.create(:teacher, trn: registration_session.trn) }
 
     it 'returns true if the ECT is active at the given school' do
       FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
 
-      expect(ect.active_at_school?(school.urn)).to be_truthy
+      expect(registration_session).to be_active_at_school(school.urn)
     end
 
     it 'returns false if the ECT is not at the given school' do
       FactoryBot.create(:ect_at_school_period, teacher:)
 
-      expect(ect.active_at_school?(school.urn)).to be_falsey
+      expect(registration_session).not_to be_active_at_school(school.urn)
     end
   end
 
-  describe '#cant_use_email?' do
+  describe '#email_taken?' do
     let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
 
     before do
-      allow(Schools::TeacherEmail).to receive(:new).with(email: ect.email, trn: ect.trn).and_return(teacher_email_service)
+      allow(Schools::TeacherEmail).to receive(:new).with(email: registration_session.email, trn: registration_session.trn).and_return(teacher_email_service)
     end
 
     context "when the email is used in an ongoing school period" do
       before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(true) }
 
       it "returns true" do
-        expect(subject.cant_use_email?).to be true
+        expect(registration_session.email_taken?).to be true
       end
     end
 
@@ -76,26 +76,26 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       before { allow(teacher_email_service).to receive(:is_currently_used?).and_return(false) }
 
       it "returns false" do
-        expect(subject.cant_use_email?).to be false
+        expect(registration_session.email_taken?).to be false
       end
     end
   end
 
   describe '#email' do
     it 'returns the email address' do
-      expect(ect.email).to eq("dusty@rhodes.com")
+      expect(registration_session.email).to eq("dusty@rhodes.com")
     end
   end
 
   describe '#formatted_working_pattern' do
     it 'returns the formatted working pattern' do
-      expect(ect.formatted_working_pattern).to eq('Full time')
+      expect(registration_session.formatted_working_pattern).to eq('Full time')
     end
   end
 
   describe '#full_name' do
     it 'returns the full name of the ECT' do
-      expect(ect.full_name).to eq("Dusty Rhodes")
+      expect(registration_session.full_name).to eq("Dusty Rhodes")
     end
 
     context 'when corrected_name is set' do
@@ -105,14 +105,14 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns the corrected_name as the full name' do
-        expect(ect.full_name).to eq('Randy Marsh')
+        expect(registration_session.full_name).to eq('Randy Marsh')
       end
     end
   end
 
   describe '#govuk_date_of_birth' do
     it 'formats the date of birth in the govuk format' do
-      expect(ect.govuk_date_of_birth).to eq("11 October 1945")
+      expect(registration_session.govuk_date_of_birth).to eq("11 October 1945")
     end
   end
 
@@ -123,7 +123,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when trs_induction_status is 'Passed'" do
       it 'returns true' do
-        expect(ect).to be_induction_completed
+        expect(registration_session).to be_induction_completed
       end
     end
 
@@ -133,7 +133,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect).not_to be_induction_completed
+        expect(registration_session).not_to be_induction_completed
       end
     end
   end
@@ -145,7 +145,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when trs_induction_status is 'Exempt'" do
       it 'returns true' do
-        expect(ect.induction_exempt?).to be_truthy
+        expect(registration_session).to be_induction_exempt
       end
     end
 
@@ -155,7 +155,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.induction_exempt?).to be_falsey
+        expect(registration_session).not_to be_induction_exempt
       end
     end
   end
@@ -167,7 +167,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when trs_induction_status is 'Failed'" do
       it 'returns true' do
-        expect(ect).to be_induction_failed
+        expect(registration_session).to be_induction_failed
       end
     end
 
@@ -177,7 +177,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect).not_to be_induction_failed
+        expect(registration_session).not_to be_induction_failed
       end
     end
   end
@@ -185,7 +185,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
   describe '#in_trs?' do
     context "when trs_first_name has been set" do
       it 'returns true' do
-        expect(ect.in_trs?).to be_truthy
+        expect(registration_session).to be_in_trs
       end
     end
 
@@ -195,7 +195,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.in_trs?).to be_falsey
+        expect(registration_session).not_to be_in_trs
       end
     end
   end
@@ -207,7 +207,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.matches_trs_dob?).to be_falsey
+        expect(registration_session).not_to be_matches_trs_dob
       end
     end
 
@@ -217,7 +217,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.matches_trs_dob?).to be_falsey
+        expect(registration_session).not_to be_matches_trs_dob
       end
     end
 
@@ -227,13 +227,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.matches_trs_dob?).to be_falsey
+        expect(registration_session).not_to be_matches_trs_dob
       end
     end
 
     context "when date_of_birth and trs_date_of_birth are the same date" do
       it 'returns true' do
-        expect(ect.matches_trs_dob?).to be_truthy
+        expect(registration_session).to be_matches_trs_dob
       end
     end
   end
@@ -245,7 +245,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when training_programme is 'provider_led'" do
       it 'returns true' do
-        expect(ect.provider_led?).to be_truthy
+        expect(registration_session).to be_provider_led
       end
     end
 
@@ -255,7 +255,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.provider_led?).to be_falsey
+        expect(registration_session).not_to be_provider_led
       end
     end
   end
@@ -265,11 +265,11 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
     let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
 
     it "creates a new ECT at the given school" do
-      expect(Teacher.find_by_trn(ect.trn)).to be_nil
+      expect(Teacher.find_by_trn(registration_session.trn)).to be_nil
 
-      ect.register!(school, author:)
+      registration_session.register!(school, author:)
 
-      expect(teacher.trn).to eq(ect.trn)
+      expect(teacher.trn).to eq(registration_session.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)
       expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
       expect(ect_at_school_period.email).to eq('dusty@rhodes.com')
@@ -284,7 +284,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
     context "when training_programme is 'school_led'" do
       it 'returns true' do
-        expect(ect.school_led?).to be_truthy
+        expect(registration_session).to be_school_led
       end
     end
 
@@ -294,32 +294,32 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.school_led?).to be_falsey
+        expect(registration_session).not_to be_school_led
       end
     end
   end
 
   describe '#trn' do
     it 'returns the trn' do
-      expect(ect.trn).to eq("3002586")
+      expect(registration_session.trn).to eq("3002586")
     end
   end
 
   describe '#trs_full_name' do
     it 'returns the full name of the ECT' do
-      expect(ect.trs_full_name).to eq("Dusty Rhodes")
+      expect(registration_session.trs_full_name).to eq("Dusty Rhodes")
     end
   end
 
   describe '#trs_national_insurance_number' do
     it 'returns the national insurance number in trs' do
-      expect(ect.trs_national_insurance_number).to eq("OWAD23455")
+      expect(registration_session.trs_national_insurance_number).to eq("OWAD23455")
     end
   end
 
   describe '#working_pattern' do
     it 'returns the working pattern' do
-      expect(ect.working_pattern).to eq("full_time")
+      expect(registration_session.working_pattern).to eq("full_time")
     end
   end
 
@@ -341,13 +341,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns the earliest started_on date' do
-          expect(ect.induction_start_date).to eq(Date.new(2023, 6, 10))
+          expect(registration_session.induction_start_date).to eq(Date.new(2023, 6, 10))
         end
       end
 
       context 'when the teacher has no induction periods' do
         it 'returns nil' do
-          expect(ect.induction_start_date).to be_nil
+          expect(registration_session.induction_start_date).to be_nil
         end
       end
     end
@@ -363,13 +363,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns the name of the latest appropriate body by started_on' do
-          expect(ect.previous_appropriate_body_name).to eq('More Recent Body')
+          expect(registration_session.previous_appropriate_body_name).to eq('More Recent Body')
         end
       end
 
       context 'when the teacher has no induction periods' do
         it 'returns nil' do
-          expect(ect.previous_appropriate_body_name).to be_nil
+          expect(registration_session.previous_appropriate_body_name).to be_nil
         end
       end
     end
@@ -384,13 +384,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
-          expect(ect.previous_training_programme).to eq('provider_led')
+          expect(registration_session.previous_training_programme).to eq('provider_led')
         end
       end
 
       context 'when the teacher has no ECTAtSchoolPeriods' do
         it 'returns nil' do
-          expect(ect.previous_training_programme).to be_nil
+          expect(registration_session.previous_training_programme).to be_nil
         end
       end
     end
@@ -403,7 +403,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns true' do
-          expect(ect.previous_provider_led?).to be(true)
+          expect(registration_session.previous_provider_led?).to be(true)
         end
       end
 
@@ -414,13 +414,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns false' do
-          expect(ect.previous_provider_led?).to be(false)
+          expect(registration_session.previous_provider_led?).to be(false)
         end
       end
 
       context 'when there are no ECTAtSchoolPeriods' do
         it 'returns nil' do
-          expect(ect.previous_provider_led?).to be_nil
+          expect(registration_session.previous_provider_led?).to be_nil
         end
       end
     end
@@ -439,7 +439,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns the name of the lead provider from the latest training period' do
-        expect(ect.previous_lead_provider_name).to eq('Confirmed LP')
+        expect(registration_session.previous_lead_provider_name).to eq('Confirmed LP')
       end
     end
 
@@ -456,7 +456,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns the name of the delivery partner from the latest training period' do
-        expect(ect.previous_delivery_partner_name).to eq("DP")
+        expect(registration_session.previous_delivery_partner_name).to eq("DP")
       end
     end
 
@@ -474,13 +474,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns the name of the most recent school by started_on' do
-          expect(ect.previous_school_name).to eq('Recent School')
+          expect(registration_session.previous_school_name).to eq('Recent School')
         end
       end
 
       context 'when no ECTAtSchoolPeriods exist' do
         it 'returns nil' do
-          expect(ect.previous_school_name).to be_nil
+          expect(registration_session.previous_school_name).to be_nil
         end
       end
     end
@@ -496,15 +496,15 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns lead providers active in the contract period' do
-        expect(ect.lead_providers_within_contract_period).to include(lp_in)
-        expect(ect.lead_providers_within_contract_period).not_to include(lp_out)
+        expect(registration_session.lead_providers_within_contract_period).to include(lp_in)
+        expect(registration_session.lead_providers_within_contract_period).not_to include(lp_out)
       end
 
       context 'when no contract period matches the start_date' do
         before { store.start_date = nil }
 
         it 'returns an empty array' do
-          expect(ect.lead_providers_within_contract_period).to eq([])
+          expect(registration_session.lead_providers_within_contract_period).to eq([])
         end
       end
     end
@@ -547,20 +547,20 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns true' do
-          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be true
+          expect(registration_session.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be true
         end
       end
 
       context 'when previous_lead_provider is nil' do
         # No ect_period or training period created
         it 'returns false' do
-          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
+          expect(registration_session.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
         end
       end
 
       context 'when school is nil' do
         it 'returns false' do
-          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
+          expect(registration_session.lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
         end
       end
 
@@ -582,7 +582,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns false' do
-          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
+          expect(registration_session.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
         end
       end
 
@@ -606,7 +606,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns false' do
-          expect(ect.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
+          expect(registration_session.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
         end
       end
 
@@ -645,13 +645,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns the name of the EOI lead provider for the previous training period' do
-          expect(ect.previous_eoi_lead_provider_name).to eq(training_period.expression_of_interest.lead_provider.name)
+          expect(registration_session.previous_eoi_lead_provider_name).to eq(training_period.expression_of_interest.lead_provider.name)
         end
       end
 
       context 'when there is no previous training period' do
         it 'returns nil' do
-          expect(ect.previous_eoi_lead_provider_name).to be_nil
+          expect(registration_session.previous_eoi_lead_provider_name).to be_nil
         end
       end
 
@@ -679,7 +679,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
         end
 
         it 'returns nil' do
-          expect(ect.previous_eoi_lead_provider_name).to be_nil
+          expect(registration_session.previous_eoi_lead_provider_name).to be_nil
         end
       end
     end
@@ -687,24 +687,24 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
 
   describe '#registered?' do
     context 'when ect_at_school_period_id is present' do
-      before { ect.update!(ect_at_school_period_id: 123) }
+      before { registration_session.update!(ect_at_school_period_id: 123) }
 
       it 'returns true' do
-        expect(ect.registered?).to be true
+        expect(registration_session.registered?).to be true
       end
     end
 
     context 'when ect_at_school_period_id is nil' do
-      before { ect.update!(ect_at_school_period_id: nil) }
+      before { registration_session.update!(ect_at_school_period_id: nil) }
 
       it 'returns false' do
-        expect(ect.registered?).to be false
+        expect(registration_session.registered?).to be false
       end
     end
   end
 
   describe '#was_school_led?' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: ect.trn) }
+    let(:teacher) { FactoryBot.create(:teacher, trn: registration_session.trn) }
 
     context 'when previous training programme was school-led' do
       before do
@@ -713,7 +713,7 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns true' do
-        expect(ect.was_school_led?).to be true
+        expect(registration_session.was_school_led?).to be true
       end
     end
 
@@ -724,13 +724,13 @@ RSpec.describe Schools::RegisterECTWizard::ECT do
       end
 
       it 'returns false' do
-        expect(ect.was_school_led?).to be false
+        expect(registration_session.was_school_led?).to be false
       end
     end
 
     context 'when there is no previous training programme' do
       it 'returns false' do
-        expect(ect.was_school_led?).to be false
+        expect(registration_session.was_school_led?).to be false
       end
     end
   end

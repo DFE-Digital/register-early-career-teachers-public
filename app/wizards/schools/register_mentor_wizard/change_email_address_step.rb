@@ -2,7 +2,7 @@ module Schools
   module RegisterMentorWizard
     class ChangeEmailAddressStep < EmailAddressStep
       def previous_step
-        return :cant_use_changed_email if mentor.cant_use_email?
+        return :cant_use_changed_email if mentor.email_taken?
 
         :check_answers
       end

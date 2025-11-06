@@ -219,7 +219,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context 'when the email is in use by another participant' do
-        before { allow(wizard.mentor).to receive(:cant_use_email?).and_return(true) }
+        before { allow(wizard.mentor).to receive(:email_taken?).and_return(true) }
 
         it do
           expect(subject).to eq(%i[find_mentor
@@ -269,7 +269,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context 'when the email is in use by another participant' do
-        before { allow(wizard.mentor).to receive(:cant_use_email?).and_return(true) }
+        before { allow(wizard.mentor).to receive(:email_taken?).and_return(true) }
 
         it do
           expect(subject).to eq(%i[find_mentor
