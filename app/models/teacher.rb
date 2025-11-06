@@ -28,9 +28,6 @@ class Teacher < ApplicationRecord
   has_many :appropriate_bodies, through: :induction_periods
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: 'ECTAtSchoolPeriod'
-  has_many :mentorship_periods, class_name: "MentorshipPeriod", through: :mentor_at_school_periods
-  has_many :mentees, class_name: "ECTAtSchoolPeriod", through: :mentorship_periods
-  has_many :mentee_teachers, class_name: "Teacher", source: :teacher, through: :mentees
   has_many :events
 
   # TODO: remove after migration complete
