@@ -10,6 +10,7 @@ module Schedules
 
     def call
       return unless provider_led?
+      return most_recent_schedule if previous_provider_led_periods.exists?
 
       Schedule.find_by(contract_period_year:, identifier:)
     end
@@ -28,13 +29,11 @@ module Schedules
       previous_provider_led_periods.latest_first.first
     end
 
-    def most_recent_schedule_identifier
-      most_recent_provider_led_period&.schedule&.identifier
+    def most_recent_schedule
+      most_recent_provider_led_period.schedule
     end
 
     def schedule_date
-      return started_on if previous_provider_led_periods.exists?
-
       [started_on, Time.zone.today].max
     end
 
@@ -89,8 +88,6 @@ module Schedules
 
     # TODO: in due course, we will assign non-standard identifiers
     def identifier
-      return most_recent_schedule_identifier if most_recent_provider_led_period.present?
-
       "ecf-standard-#{schedule_month}"
     end
   end
