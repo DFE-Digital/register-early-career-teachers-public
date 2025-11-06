@@ -22,6 +22,15 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Presenter do
         expect(presenter.full_name).to eq('Marjorie Simpson')
       end
     end
+
+    context 'when both corrected and TRS names are blank' do
+      let(:corrected_name) { nil }
+      let(:trs_full_name) { nil }
+
+      it 'returns nil' do
+        expect(presenter.full_name).to be_nil
+      end
+    end
   end
 
   describe '#formatted_working_pattern' do
