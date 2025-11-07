@@ -204,7 +204,7 @@ describe Teacher do
           ect_training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
 
           other_ect_at_school_period = FactoryBot.create(:ect_at_school_period)
-          other_ect_training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period: other_ect_at_school_period)
+          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: other_ect_at_school_period)
 
           expect(teacher.ect_training_periods).to contain_exactly(ect_training_period)
         end
@@ -217,7 +217,7 @@ describe Teacher do
           mentor_training_period = FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:)
 
           other_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period)
-          other_mentor_training_period = FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: other_mentor_at_school_period)
+          FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: other_mentor_at_school_period)
 
           expect(teacher.mentor_training_periods).to contain_exactly(mentor_training_period)
         end

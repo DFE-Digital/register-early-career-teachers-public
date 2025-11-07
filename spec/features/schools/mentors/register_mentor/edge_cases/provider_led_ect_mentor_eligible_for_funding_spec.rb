@@ -76,7 +76,8 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
     another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: 'Kirk', trs_last_name: 'Van Houten', corrected_name: nil)
     @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: another_school, teacher: @teacher)
-    @training_period = FactoryBot.create(:training_period, :for_mentor, :with_school_partnership, :ongoing, started_on: @existing_mentor_at_school_period.started_on, mentor_at_school_period: @existing_mentor_at_school_period)
+    another_school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: @school_partnership.lead_provider_delivery_partnership, school: another_school)
+    @training_period = FactoryBot.create(:training_period, :for_mentor, :ongoing, started_on: @existing_mentor_at_school_period.started_on, mentor_at_school_period: @existing_mentor_at_school_period, school_partnership: another_school_partnership)
   end
 
   def and_i_am_on_the_schools_landing_page
