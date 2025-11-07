@@ -11,7 +11,10 @@ describe TestGuidanceComponent, type: :component do
   end
 
   context 'when enabled' do
+    let(:current_user) { double(appropriate_body_user?: false, school_user?: false) }
+
     before do
+      allow(Current).to receive(:user).and_return(current_user)
       allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
       render_inline(described_class.new) { "some content" }
     end
@@ -29,12 +32,28 @@ describe TestGuidanceComponent, type: :component do
         expect(rendered_content).to have_text('To successfully locate an ECT from the TRS API')
         expect(rendered_content).to have_table
 
-        ["Name", "TRN", "Date of birth", "Induction status", "Claimed by", ""].each do |header|
-          expect(rendered_content).to have_selector('table thead tr th', text: header)
-        end
-
         ["Chloe Nolan", "3002586", "1977-02-03"].each do |cell|
           expect(rendered_content).to have_selector('table tbody tr td', text: cell)
+        end
+      end
+
+      context 'with an Appropriate body persona' do
+        let(:current_user) { double(appropriate_body_user?: true, school_user?: false) }
+
+        it 'has headers' do
+          ["Name", "TRN", "Date of birth", "Induction status", "Claimed by", ""].each do |header|
+            expect(rendered_content).to have_selector('table thead tr th', text: header)
+          end
+        end
+      end
+
+      context 'with a School persona' do
+        let(:current_user) { double(appropriate_body_user?: false, school_user?: true) }
+
+        it 'has headers' do
+          ["Name", "TRN", "Date of birth", "Induction status", "Registered wit", ""].each do |header|
+            expect(rendered_content).to have_selector('table thead tr th', text: header)
+          end
         end
       end
     end

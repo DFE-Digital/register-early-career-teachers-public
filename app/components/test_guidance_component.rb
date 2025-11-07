@@ -34,7 +34,7 @@ class TestGuidanceComponent < ApplicationComponent
         "TRN",
         "Date of birth",
         "Induction status",
-        "Claimed by",
+        active_period_with_header,
         ""
       ]
     end
@@ -51,7 +51,7 @@ class TestGuidanceComponent < ApplicationComponent
           trn,
           dob,
           status_indicator(status, teacher),
-          claimed_by(teacher),
+          active_period_with(teacher),
           populate_button(trn, dob, ni_number)
         ]
       end
@@ -64,6 +64,7 @@ class TestGuidanceComponent < ApplicationComponent
 
     def file_path = Rails.root.join('spec/fixtures/seeds_trs.csv')
 
+    # Once used by RIAB the status changes to "In progress" if active or "Induction paused" once released
     def status_indicator(trs_induction_status, teacher)
       trs_induction_status = teacher&.induction_periods&.any? ? 'InProgress' : trs_induction_status
       induction_status = Teachers::InductionStatus.new(trs_induction_status:, teacher:)
@@ -81,7 +82,19 @@ class TestGuidanceComponent < ApplicationComponent
                            })
     end
 
-    def claimed_by(teacher, inactive: '-')
+    # @return [String]
+    def active_period_with_header
+      case
+      when Current.user.appropriate_body_user? then "Claimed by"
+      when Current.user.school_user? then "Registered with"
+      else
+        "N/A"
+      end
+    end
+
+    # @param [Teacher, nil]
+    # @return [String]
+    def active_period_with(teacher, inactive: '-')
       return inactive if teacher.nil?
 
       case
@@ -95,6 +108,8 @@ class TestGuidanceComponent < ApplicationComponent
     end
 
     # Teacher is not available for further testing and cannot be claimed until TRS is reset
+    # @param [Teacher, nil]
+    # @return [Boolean]
     def exhausted?(teacher)
       return false if teacher.nil?
 
