@@ -1,4 +1,11 @@
 RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface do
+  let(:started_on) { Date.new(2023, 9, 1) }
+  around do |example|
+    travel_to(started_on + 1.day) do
+      example.run
+    end
+  end
+
   before do
     given_there_is_a_school_in_the_service
     and_the_school_has_a_provider_led_ect_with_no_mentor
@@ -98,7 +105,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
   end
 
   def and_the_school_has_a_provider_led_ect_with_no_mentor
-    @cp_2023 = FactoryBot.create(:contract_period, year: 2023)
+    @cp_2023 = FactoryBot.create(:contract_period, :with_schedules, year: 2023)
 
     @lead_provider = FactoryBot.create(:lead_provider, name: "Goku")
     @lead_provider_2 = FactoryBot.create(:lead_provider, name: "Vegeta")
@@ -113,7 +120,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
       :ect_at_school_period,
       :ongoing,
       school: @school,
-      started_on: Date.new(2023, 9, 1)
+      started_on:
     )
 
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
@@ -126,7 +133,7 @@ RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface d
       :mentor_at_school_period,
       :ongoing,
       school: @school,
-      started_on: Date.new(2023, 9, 1)
+      started_on:
     )
 
     @mentor_name = Teachers::Name.new(@mentor.teacher).full_name

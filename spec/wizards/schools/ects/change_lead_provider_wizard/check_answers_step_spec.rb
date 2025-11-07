@@ -16,7 +16,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
   let(:contract_period) do
-    FactoryBot.create(:contract_period, :current)
+    FactoryBot.create(:contract_period, :with_schedules, :current)
   end
   let(:ect_at_school_period) do
     FactoryBot.create(
