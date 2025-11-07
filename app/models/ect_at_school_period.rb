@@ -16,6 +16,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: 'MentorshipPeriod'
   has_one :latest_mentorship_period, -> { latest_first }, class_name: 'MentorshipPeriod'
 
+  touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
+
   refresh_metadata -> { school }, on_event: %i[create destroy update]
   refresh_metadata -> { teacher }, on_event: %i[create destroy]
 

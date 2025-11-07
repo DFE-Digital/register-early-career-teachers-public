@@ -1,5 +1,7 @@
 module Metadata
   class TeacherLeadProvider < Metadata::Base
+    include DeclarativeUpdates
+
     self.table_name = :metadata_teachers_lead_providers
 
     belongs_to :teacher
@@ -9,6 +11,8 @@ module Metadata
     belongs_to :latest_mentor_training_period, optional: true, class_name: "TrainingPeriod"
     belongs_to :latest_ect_contract_period, optional: true, class_name: "ContractPeriod", foreign_key: :latest_ect_contract_period_year
     belongs_to :latest_mentor_contract_period, optional: true, class_name: "ContractPeriod", foreign_key: :latest_mentor_contract_period_year
+
+    touch -> { teacher }, on_event: :update, timestamp_attribute: :api_updated_at, when_changing: %i[api_mentor_id]
 
     validates :teacher, presence: true
     validates :lead_provider, presence: true
