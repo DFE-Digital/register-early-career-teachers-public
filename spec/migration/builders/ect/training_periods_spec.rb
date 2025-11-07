@@ -4,7 +4,7 @@ describe Builders::ECT::TrainingPeriods do
   subject(:service) { described_class.new(teacher:, training_period_data:) }
 
   let(:school_1) { FactoryBot.create(:school, :independent, urn: "123456") }
-  let(:contract_period) { FactoryBot.create(:contract_period) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
 
   let(:partnership_1) { make_partnership_for(school_1, contract_period) }
   let(:partnership_2) { make_partnership_for(school_1, contract_period, lead_provider_name: 'Naruto Ninja Academy') }

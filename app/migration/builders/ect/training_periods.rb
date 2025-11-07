@@ -44,7 +44,7 @@ module Builders
           training_period.school_partnership = if period.training_programme == "provider_led"
                                                  find_school_partnership!(period, school)
                                                end
-
+          training_period.schedule = Schedules::Find.new(period: ect_at_school_period, training_programme: period.training_programme, started_on: period.start_date).call
           training_period.save!
         rescue ActiveRecord::ActiveRecordError => e
           ::TeacherMigrationFailure.create!(teacher:, model: :training_period, message: e.message, migration_item_id: period.start_source_id, migration_item_type: "Migration::InductionRecord")

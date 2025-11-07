@@ -114,6 +114,8 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   def create_contract_period_for_start_date
     @contract_period = FactoryBot.create(
       :contract_period,
+      :with_schedules,
+      year: 7.months.ago.year,
       started_on: 7.months.ago.beginning_of_month,
       finished_on: 7.months.from_now.end_of_month
     )
