@@ -6,6 +6,7 @@ class SchoolPartnership < ApplicationRecord
   belongs_to :school
   has_many :events
   has_many :ongoing_training_periods, -> { ongoing_today }, class_name: "TrainingPeriod"
+  has_many :training_periods
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider

@@ -31,7 +31,11 @@ module SandboxSeedData
         trn: Helpers::TRNGenerator.next
       ).tap do |t|
         random_date = rand(1..100).days.ago
-        t.update!(created_at: random_date, updated_at: random_date)
+        t.update!(
+          created_at: random_date,
+          updated_at: random_date,
+          api_updated_at: random_date
+        )
       end
 
       log_seed_info(::Teachers::Name.new(teacher).full_name, indent: 2)

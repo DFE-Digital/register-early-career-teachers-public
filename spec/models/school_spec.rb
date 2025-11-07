@@ -25,6 +25,26 @@ describe School do
 
       it_behaves_like "a declarative touch model", when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
     end
+
+    context "target ect_teachers" do
+      let(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school: instance) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
+
+      let(:target) { instance.ect_teachers }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_updated_at
+    end
+
+    context "target mentor_teachers" do
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: instance) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
+
+      let(:target) { instance.mentor_teachers }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_updated_at
+    end
   end
 
   describe "enums" do

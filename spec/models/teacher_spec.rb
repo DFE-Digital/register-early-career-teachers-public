@@ -6,6 +6,26 @@ describe Teacher do
     it_behaves_like "a declarative metadata model", on_event: %i[create update]
   end
 
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:teacher) }
+    let(:target) { instance }
+
+    it_behaves_like "a declarative touch model", when_changing: %i[api_id
+                                                                   trs_first_name
+                                                                   trs_last_name
+                                                                   trn
+                                                                   api_ect_training_record_id
+                                                                   api_mentor_training_record_id
+                                                                   mentor_became_ineligible_for_funding_on
+                                                                   mentor_became_ineligible_for_funding_reason
+                                                                   ect_first_became_eligible_for_training_at
+                                                                   mentor_first_became_eligible_for_training_at
+                                                                   ect_pupil_premium_uplift
+                                                                   ect_sparsity_uplift
+                                                                   ect_payments_frozen_year
+                                                                   mentor_payments_frozen_year], timestamp_attribute: :api_updated_at
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }

@@ -10,16 +10,26 @@ def generate_new_value(attribute_to_change:)
     (instance[attribute_to_change] || Date.current) + 1.day
   elsif attribute_to_change == :finished_on
     (instance[attribute_to_change] || Date.current) - 1.day
+  elsif attribute_to_change.to_s.start_with?("api") && attribute_to_change.to_s.end_with?("_id")
+    SecureRandom.uuid
   elsif attribute_to_change.to_s.end_with?("_id")
     association_name = attribute_to_change.to_s.delete_suffix("_id").to_sym
     klass = instance.class.reflect_on_association(association_name).klass
     ActiveRecord::Base.connection.select_value("SELECT last_value FROM #{klass.sequence_name}") + 1
+  elsif column.type == :datetime
+    Faker::Time.between(from: 1.month.ago, to: 1.day.ago)
+  elsif column.type == :date
+    Faker::Date.between(from: 2.months.ago, to: Date.yesterday)
+  elsif attribute_to_change.to_s.end_with?("_payments_frozen_year")
+    FactoryBot.create(:contract_period).year
   else
     Faker::Types.send("rb_#{column.type}")
   end
 end
 
-RSpec.shared_examples "a declarative touch model", :with_touches do |when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, target_optional: true|
+RSpec.shared_examples "a declarative touch model", :with_touches do |when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, target_optional: true, conditional_method: nil|
+  before { allow(instance).to receive(conditional_method).and_return(true) if conditional_method }
+
   if :update.in?(on_event)
     context "when updating" do
       before { instance } # Ensure it's created first.
@@ -34,6 +44,18 @@ RSpec.shared_examples "a declarative touch model", :with_touches do |when_changi
             expect {
               instance.update_attribute(attribute_to_change, new_value)
             }.to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } }.to(all(be_within(5.seconds).of(Time.current))))
+          end
+
+          if conditional_method
+            context "when the conditional method is defined and returns false" do
+              before { allow(instance).to receive(conditional_method).and_return(false) if conditional_method }
+
+              it "does not touch the #{timestamp_attribute} of the associated model(s)" do
+                expect {
+                  instance.update_attribute(attribute_to_change, new_value)
+                }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+              end
+            end
           end
 
           context "when wrapped in a skip(:touch) block" do
@@ -128,6 +150,18 @@ RSpec.shared_examples "a declarative touch model", :with_touches do |when_changi
         }.not_to(change { Array.wrap(target).map { |t| t.reload.updated_at } })
       end
 
+      if conditional_method
+        context "when the conditional method is defined and returns false" do
+          before { allow(instance).to receive(conditional_method).and_return(false) if conditional_method }
+
+          it "does not touch the #{timestamp_attribute} of the associated model(s)" do
+            expect {
+              instance
+            }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+          end
+        end
+      end
+
       context "when wrapped in a skip(:touch) block" do
         around { |example| DeclarativeUpdates.skip(:touch) { example.run } }
 
@@ -160,6 +194,18 @@ RSpec.shared_examples "a declarative touch model", :with_touches do |when_changi
         expect {
           instance.destroy!
         }.not_to(change { Array.wrap(target).map { |t| t.reload.updated_at } })
+      end
+
+      if conditional_method
+        context "when the conditional method is defined and returns false" do
+          before { allow(instance).to receive(conditional_method).and_return(false) if conditional_method }
+
+          it "does not touch the #{timestamp_attribute} of the associated model(s)" do
+            expect {
+              instance.destroy!
+            }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
+          end
+        end
       end
 
       context "when wrapped in a skip(:touch) block" do
