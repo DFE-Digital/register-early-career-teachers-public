@@ -25,7 +25,7 @@ RSpec.describe Schools::RegisterMentor do
   let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
   let(:finish_existing_at_school_periods) { false }
-   
+
   around do |example|
     travel_to(started_on + 1.day) do
       example.run

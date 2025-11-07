@@ -1,5 +1,6 @@
 RSpec.describe 'Add a mentor to a provider led ECT', :enable_schools_interface do
   let(:started_on) { Date.new(2023, 9, 1) }
+
   around do |example|
     travel_to(started_on + 1.day) do
       example.run

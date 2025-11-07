@@ -18,9 +18,9 @@ FactoryBot.define do
 
     trait :with_schedules do
       after(:create) do |contract_period|
-        FactoryBot.create(:schedule, contract_period: contract_period, identifier: 'ecf-standard-september')
-        FactoryBot.create(:schedule, contract_period: contract_period, identifier: 'ecf-standard-january')
-        FactoryBot.create(:schedule, contract_period: contract_period, identifier: 'ecf-standard-april')
+        FactoryBot.create(:schedule, contract_period:, identifier: 'ecf-standard-september')
+        FactoryBot.create(:schedule, contract_period:, identifier: 'ecf-standard-january')
+        FactoryBot.create(:schedule, contract_period:, identifier: 'ecf-standard-april')
       end
     end
   end
