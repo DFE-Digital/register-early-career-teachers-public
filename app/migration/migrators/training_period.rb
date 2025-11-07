@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[ect_at_school_period mentor_at_school_period school_partnership]
+      %i[ect_at_school_period mentor_at_school_period school_partnership schedule]
     end
 
     def self.reset!

@@ -1,5 +1,5 @@
 describe Migrators::TrainingPeriod do
-  it_behaves_like "a migrator", :training_period, %i[ect_at_school_period mentor_at_school_period school_partnership] do
+  it_behaves_like "a migrator", :training_period, %i[ect_at_school_period mentor_at_school_period school_partnership schedule] do
     def create_migration_resource
       ect = FactoryBot.create(:migration_participant_profile, :ect)
       FactoryBot.create(:migration_induction_record, participant_profile: ect)
