@@ -50,7 +50,7 @@ module Schools
 
       def persist
         ect.update!(start_date: start_date_formatted)
-        store[:start_date] = start_date_as_date
+        store[:start_date_as_date] = start_date_as_date
       end
 
       def pre_populate_attributes
