@@ -58,13 +58,13 @@ SCHOOL = {
           example: false,
         },
         induction_tutor_name: {
-          description: "The name of the induction tutor at the school you are in partnership with",
+          description: "The name of the person nominated by this school to coordinate the registration of ECTs and mentors",
           type: "string",
           nullable: true,
           example: "John Doe"
         },
         induction_tutor_email: {
-          description: "The email address of the induction tutor at the school you are in partnership with",
+          description: "The induction tutor's email address",
           type: "string",
           nullable: true,
           example: "john.doe@example.com"
