@@ -10,6 +10,7 @@ describe Event do
     it { is_expected.to belong_to(:mentor_at_school_period).optional }
     it { is_expected.to belong_to(:training_period).optional }
     it { is_expected.to belong_to(:mentorship_period).optional }
+    it { is_expected.to belong_to(:schedule).optional }
     it { is_expected.to belong_to(:school_partnership).optional }
     it { is_expected.to belong_to(:lead_provider).optional }
     it { is_expected.to belong_to(:delivery_partner).optional }

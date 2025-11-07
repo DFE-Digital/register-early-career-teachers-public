@@ -18,6 +18,7 @@ module Events
                 :mentor_at_school_period,
                 :training_period,
                 :mentorship_period,
+                :schedule,
                 :school_partnership,
                 :lead_provider,
                 :delivery_partner,
@@ -46,6 +47,7 @@ module Events
       mentor_at_school_period: nil,
       training_period: nil,
       mentorship_period: nil,
+      schedule: nil,
       school_partnership: nil,
       lead_provider: nil,
       delivery_partner: nil,
@@ -73,6 +75,7 @@ module Events
       @mentor_at_school_period = mentor_at_school_period
       @training_period = training_period
       @mentorship_period = mentorship_period
+      @schedule = schedule
       @school_partnership = school_partnership
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
@@ -286,8 +289,9 @@ module Events
       event_type = :teacher_registered_as_ect
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was registered as an ECT at #{school.name}"
+      schedule = training_period.schedule
 
-      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
+      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, schedule:, happened_at:).record_event!
     end
 
     def self.record_teacher_left_school_as_ect!(author:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:)
@@ -793,6 +797,7 @@ module Events
         ect_at_school_period:,
         mentor_at_school_period:,
         training_period:,
+        schedule:,
         mentorship_period:,
         school_partnership:,
         lead_provider:,

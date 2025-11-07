@@ -668,6 +668,7 @@ RSpec.describe Events::Record do
           training_period:,
           heading: "Rhys Ifans was registered as an ECT at #{school.name}",
           event_type: :teacher_registered_as_ect,
+          schedule: training_period.schedule,
           happened_at: Time.zone.now,
           **author_params
         )

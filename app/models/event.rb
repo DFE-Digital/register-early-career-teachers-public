@@ -65,6 +65,7 @@ class Event < ApplicationRecord
   belongs_to :delivery_partner
   belongs_to :lead_provider_delivery_partnership
   belongs_to :school_partnership
+  belongs_to :schedule
 
   # extensions
   belongs_to :induction_extension
