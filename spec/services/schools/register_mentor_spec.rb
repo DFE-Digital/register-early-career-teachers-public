@@ -25,6 +25,13 @@ RSpec.describe Schools::RegisterMentor do
   let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
   let(:finish_existing_at_school_periods) { false }
+  let!(:schedule) { FactoryBot.create(:schedule, identifier: 'ecf-standard-september', contract_period_year: 2024) }
+
+  around do |example|
+    travel_to(started_on + 1.day) do
+      example.run
+    end
+  end
 
   describe '#register!' do
     context 'when no ActiveLeadProvider exists for the registration period' do
