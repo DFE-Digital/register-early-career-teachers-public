@@ -3,8 +3,8 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
     JSON.parse(described_class.render(partnership))
   end
 
-  let!(:partnership) { FactoryBot.create(:school_partnership, created_at:, api_updated_at:) }
-  let(:school) { partnership.school }
+  let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
+  let!(:partnership) { FactoryBot.create(:school_partnership, created_at:, api_updated_at:, school:) }
   let(:delivery_partner) { partnership.delivery_partner }
   let(:contract_period) { partnership.contract_period }
   let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
@@ -26,7 +26,9 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
       expect(attributes["school_id"]).to eq(school.api_id)
       expect(attributes["delivery_partner_id"]).to eq(delivery_partner.api_id)
       expect(attributes["delivery_partner_name"]).to eq(delivery_partner.name)
+      expect(attributes["induction_tutor_name"]).not_to be_nil
       expect(attributes["induction_tutor_name"]).to eq(school.induction_tutor_name)
+      expect(attributes["induction_tutor_email"]).not_to be_nil
       expect(attributes["induction_tutor_email"]).to eq(school.induction_tutor_email)
       expect(attributes["created_at"]).to eq(created_at.utc.rfc3339)
       expect(attributes["updated_at"]).to eq(api_updated_at.utc.rfc3339)
