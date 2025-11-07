@@ -44,7 +44,9 @@ describe API::SchoolSerializer, type: :serializer do
       expect(attributes["in_partnership"]).to eq(contract_period_metadata.in_partnership)
       expect(attributes["induction_programme_choice"]).to eq(contract_period_metadata.induction_programme_choice)
       expect(attributes["expression_of_interest"]).to eq(lead_provider_contract_period_metadata.expression_of_interest_or_school_partnership)
+      expect(attributes["induction_tutor_name"]).not_to be_nil
       expect(attributes["induction_tutor_name"]).to eq(school.induction_tutor_name)
+      expect(attributes["induction_tutor_email"]).not_to be_nil
       expect(attributes["induction_tutor_email"]).to eq(school.induction_tutor_email)
       expect(attributes["created_at"]).to eq(school.created_at.utc.rfc3339)
       expect(attributes["updated_at"]).to eq(school.api_updated_at.utc.rfc3339)
