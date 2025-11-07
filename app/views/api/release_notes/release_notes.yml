@@ -21,6 +21,146 @@
 #
 #     **bold** and _italic_ text
 
+- title: GET participants endpoints added to sandbox   
+  date: 2025-11-07
+  tags: 
+    - sandbox-release 
+    - new-field 
+    - removed-field
+  body: |
+    We’ve added the `GET /participants` endpoints to the ‘Register early career teachers’ API sandbox:
+    
+    * `GET /participants` to retrieve data for multiple participants 
+    * `GET /participants/{id}` to get information about a single participant 
+    
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API? 
+    
+    ### New induction start date field
+    
+    We’ve introduced the `overall_induction_start_date` field to show when an early career teacher (ECT) officially began their induction, as recorded by their appropriate body. Each ECT will only ever have one induction start date. 
+    This field will not be populated over the API until the appropriate body has submitted the induction start date. This may sometimes be after an ECT would be expected to start training. 
+    
+    #### Why we’ve made this change 
+    
+    Lead providers requested this field to help:
+    
+    * confirm when induction has officially started
+    * improve onboarding and schedule accuracy
+    * identify transfers or ECTs with previous training history 
+   
+    ### TRN validated field removed
+    
+    The `trn_validated` field is no longer needed because every participant now needs a validated TRN checked with our records to be registered on the ‘Register ECTs’ service.
+
+    ### Default schedule logic updated
+    
+    We’ve introduced a new approach for setting default schedules for participants. 
+    
+    For ECTs, default schedules will be based on school-provided start dates or when they were registered.
+    
+    For mentors, the logic will relate to: 
+    
+    * when we expect the mentor to start 
+    * if they’re identified by the service as a replacement mentor 
+    
+    Existing records migrated from ‘Manage training for early career teachers’ will keep their current schedules. 
+    
+    #### Why we’ve made this change
+    
+    Lead providers requested this change to help:
+    
+    * reduce manual scheduling effort
+    * automatically align new participants with realistic start times
+    
+    ### Additional participant status logic
+    
+    We’ve expanded how the `participant_status` field behaves so that is now shows providers:
+    
+    * if a participant has been reassigned to a different lead provider
+    * if a participant has had their programme type changed to `school-led`
+    
+    If either value changes after a partnership has been formed, the participant will appear as `left` in the `GET /participants` and `GET /participants/{id}` responses. 
+    This ensures they no longer disappear unexpectedly.
+    
+    #### Why we’ve made this change
+    
+    Previously, changing lead provider or programme type caused participants to vanish from the API. 
+    
+    This update improves data continuity and helps providers offboard correctly.
+    
+    ### Participant visibility updated 
+    We’ve changed the logic for which participants are shown to lead providers. 
+    
+    Providers will now see any participant where both:
+    
+    * a school has stated at some point they’re the lead provider for that participant
+    * a lead provider has either submitted a partnership or it’s been rolled over from a previous cohort by the school 
+    
+    This includes participants who later:
+    
+    * change lead provider or programme type
+    * leave the school
+    
+    #### Why we’ve made this change
+    
+    Previously participants could disappear when partnerships changed.
+    
+    This update:
+    
+    * improves visibility and offboarding processes
+    * ensures data security when multiple partnerships exist for the same school   
+
+    ### We’ve removed the `withdrawn` attribute from `participant_status`   
+    
+    To simplify the data model and remove confusion, we’ve decided not to support the `withdrawn` attribute in the `participant_status` field. 
+    
+    Participants marked as `withdrawn` with no declarations will have their induction records removed. This allows them to be registered correctly at another school.
+    
+    Participants marked as `withdrawn` with declarations will be corrected to `left` to reflect valid, billable records.
+    
+    In some cases, participants that were previously visible to lead providers will be removed. These records were created in error and should not have been shared.
+    
+    We’ll contact affected providers in advance when we make these changes. 
+    
+    Going forward, if a school reports a participant was registered in error:
+    
+    * we'll remove the record
+    * providers will be notified so they understand why the participant no longer appears in their data  
+    
+    #### Why we’ve made this change
+    
+    The withdrawn status was rarely used correctly and often caused confusion for lead providers and schools.
+    
+    Removing it improves:
+    
+    * data quality by ensuring only valid participant records are visible
+    * clarity by replacing ambiguous `withdrawn` statuses with more accurate `left` records
+    * future consistency by making sure new registrations and API responses are cleaner and easier to interpret 
+    
+    ### ECTs yet to start at a school shown as `joining`
+    
+    The `participant_status` field will show as `joining` for ECTs whose school start date is in the future, regardless of whether it's their first school or not.
+    
+    #### Why we’ve made this change
+    
+    We’ve made this change to give lead providers more accurate, easier-to-understand data through the API.
+    
+    ### Updated sparsity uplift and pupil premium attributes
+    
+    Sparsity uplift and pupil premium for mentors will now just show as `false`, rather than a mix of `true` or `false`.  
+    
+    #### Why we’ve made this change
+    
+    This uplift is no longer applied to mentors. 
+    
+    ### More filter options
+    
+    `GET /participants` can now be filtered by multiple cohorts at once, not just one.
+    
+    #### Why we’ve made this change
+    
+    It has the dual benefit of giving more functionality for lead providers and simplifying the endpoint build for us.  
+
 - title: Partnerships endpoints now in sandbox for testing   
   date: 2025-09-26
   tags: 
