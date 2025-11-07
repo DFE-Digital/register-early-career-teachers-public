@@ -67,11 +67,13 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
     end
 
     around do |example|
-      perform_enqueued_jobs { example.run }
+      travel_to(started_on + 1.day) do
+        perform_enqueued_jobs { example.run }
+      end
     end
 
     before do
-      contract_period = FactoryBot.create(:contract_period, year: 2023)
+      contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2023)
       FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
     end
 

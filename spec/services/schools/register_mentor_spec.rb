@@ -22,11 +22,10 @@ RSpec.describe Schools::RegisterMentor do
   let(:started_on) { Date.new(2024, 9, 17) }
   let(:teacher) { subject.teacher }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
   let(:finish_existing_at_school_periods) { false }
-  let!(:schedule) { FactoryBot.create(:schedule, identifier: 'ecf-standard-september', contract_period_year: 2024) }
-
+   
   around do |example|
     travel_to(started_on + 1.day) do
       example.run

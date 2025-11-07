@@ -64,8 +64,8 @@ class TrainingPeriod < ApplicationRecord
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
   validate :schedule_contract_period_matches, if: :provider_led_training_programme?
-  validates :schedule, absence: {message: 'Schedule must be absent for school-led training programmes'}, if: :school_led_training_programme?
-  validates :schedule, presence: {message: 'Schedule must be present for provider-led training programmes'}, if: :provider_led_training_programme?
+  validates :schedule, absence: { message: 'Schedule must be absent for school-led training programmes' }, if: :school_led_training_programme?
+  validates :schedule, presence: { message: 'Schedule must be present for provider-led training programmes' }, if: :provider_led_training_programme?
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
@@ -167,17 +167,5 @@ private
     unless contract_periods_to_check.all?(schedule.contract_period)
       errors.add(:schedule, "Contract period of schedule must match contract period of EOI and/or school partnership")
     end
-  end
-
-  def schedule_absent_for_school_led
-    return if schedule.blank?
-
-    errors.add(:schedule, 'Schedule must be absent for school-led training programmes')
-  end
-
-  def schedule_present_for_provider_led
-    return if schedule.present?
-
-    errors.add(:schedule, 'Schedule must be present for provider-led training programmes')
   end
 end

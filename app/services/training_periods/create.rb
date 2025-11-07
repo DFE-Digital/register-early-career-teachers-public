@@ -42,13 +42,5 @@ module TrainingPeriods
     def schedule
       Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call
     end
-
-    def contract_period
-      @school_partnership&.contract_period || @expression_of_interest&.contract_period
-    end
-
-    def contract_period_year
-      contract_period&.year
-    end
   end
 end

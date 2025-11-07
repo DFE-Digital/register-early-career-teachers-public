@@ -86,8 +86,8 @@ class Teacher < ApplicationRecord
   normalizes :corrected_name, with: -> { it.squish }
 
   def training_periods
-    return self.ect_training_periods if ect_at_school_periods.exists?
-    
-    self.mentor_training_periods if mentor_at_school_periods.exists?
+    return ect_training_periods if ect_at_school_periods.exists?
+
+    mentor_training_periods if mentor_at_school_periods.exists?
   end
 end

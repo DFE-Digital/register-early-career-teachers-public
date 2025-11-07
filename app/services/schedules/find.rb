@@ -69,7 +69,7 @@ module Schedules
     def december_end
       Date.new(contract_period_year, 12, 31)
     end
-    
+
     def january_start
       Date.new(contract_period_year, 1, 1)
     end

@@ -53,7 +53,7 @@ RSpec.describe 'Redirect to register a new mentor for an ECT', :enable_schools_i
   end
 
   def and_the_school_is_in_a_partnership_with_a_lead_provider
-    @contract_period = FactoryBot.create(:contract_period, :current)
+    @contract_period = FactoryBot.create(:contract_period, :with_schedules, :current)
     @school_partnership = make_partnership_for(@school, @contract_period)
   end
 
