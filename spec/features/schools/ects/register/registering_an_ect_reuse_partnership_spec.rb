@@ -34,7 +34,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
 
     when_i_enter_a_valid_start_date
     and_i_click_continue
-    then_i_should_i_should_be_taken_to_the_working_pattern_page
+    then_i_should_be_taken_to_the_working_pattern_page
 
     when_i_select_full_time
     and_i_click_continue
@@ -76,7 +76,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
 
     when_i_enter_a_valid_start_date
     and_i_click_continue
-    then_i_should_i_should_be_taken_to_the_working_pattern_page
+    then_i_should_be_taken_to_the_working_pattern_page
 
     when_i_select_full_time
     and_i_click_continue
@@ -252,7 +252,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership" do
     page.get_by_label("year").fill(@entered_start_date.year.to_s)
   end
 
-  def then_i_should_i_should_be_taken_to_the_working_pattern_page
+  def then_i_should_be_taken_to_the_working_pattern_page
     expect(page).to have_path("/school/register-ect/working-pattern")
   end
 
