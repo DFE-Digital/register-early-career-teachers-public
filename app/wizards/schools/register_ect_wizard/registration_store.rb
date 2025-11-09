@@ -55,7 +55,7 @@ module Schools
       # lead_provider_name
       delegate :name, to: :lead_provider, prefix: true, allow_nil: true
 
-      def register!(school, author:)
+      def register!(school, author:, store: nil)
         Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
                                  corrected_name:,
                                  email:,
@@ -67,7 +67,8 @@ module Schools
                                  trs_first_name:,
                                  trs_last_name:,
                                  working_pattern:,
-                                 author:)
+                                 author:,
+                                 store:)
                             .register!
       end
 
@@ -85,6 +86,16 @@ module Schools
 
       def trs_full_name
         Teachers::Name.new(self).full_name_in_trs
+      end
+
+      def normalized_start_date
+        return store[:start_date_as_date] if respond_to?(:store) && store[:start_date_as_date].present?
+
+        case start_date
+        when Date   then start_date
+        when String then Date.parse(start_date)
+        when Hash   then Schools::Validation::ECTStartDate.new(date_as_hash: start_date).value_as_date
+        end
       end
 
     private
