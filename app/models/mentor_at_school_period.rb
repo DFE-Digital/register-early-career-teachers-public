@@ -15,6 +15,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
 
   touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
+  touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_unfunded_mentor_updated_at
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 

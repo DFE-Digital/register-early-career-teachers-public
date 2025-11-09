@@ -53,6 +53,15 @@ class Teacher < ApplicationRecord
           mentor_payments_frozen_year
         ]
 
+  touch -> { self },
+        on_event: :update,
+        timestamp_attribute: :api_unfunded_mentor_updated_at,
+        when_changing: %i[
+          trs_first_name
+          trs_last_name
+          trn
+        ]
+
   refresh_metadata -> { self }, on_event: %i[create update]
 
   # Validations

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_03_152540) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_07_160952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -792,9 +792,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_152540) do
     t.datetime "mentor_first_became_eligible_for_training_at"
     t.boolean "trnless", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
+    t.index ["api_unfunded_mentor_updated_at"], name: "index_teachers_on_api_unfunded_mentor_updated_at"
     t.index ["api_updated_at"], name: "index_teachers_on_api_updated_at"
     t.index ["corrected_name"], name: "index_teachers_on_corrected_name"
     t.index ["created_at"], name: "index_teachers_on_created_at"
