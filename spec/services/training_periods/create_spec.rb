@@ -6,10 +6,12 @@ RSpec.describe TrainingPeriods::Create do
       school_partnership:,
       expression_of_interest:,
       training_programme:,
-      finished_on:
+      finished_on:,
+      author:
     ).call
   end
 
+  let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:started_on) { Time.zone.today - 1.month }
   let(:year) { Date.current.year }
   let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year:) }
@@ -54,6 +56,18 @@ RSpec.describe TrainingPeriods::Create do
       expect(training_period.finished_on).to eq(finished_on)
       expect(training_period.schedule).to eq(schedule)
     end
+
+    it 'records an event for assigning the schedule to the training period' do
+      allow(Events::Record).to receive(:record_teacher_schedule_assigned_to_training_period!)
+      training_period = result
+      expect(Events::Record).to have_received(:record_teacher_schedule_assigned_to_training_period!).with(
+        training_period:,
+        teacher: period.teacher,
+        schedule: training_period.schedule,
+        author:,
+        happened_at: Time.current
+      )
+    end
   end
 
   context 'with a MentorAtSchoolPeriod' do
@@ -79,6 +93,18 @@ RSpec.describe TrainingPeriods::Create do
       expect(training_period.finished_on).to eq(finished_on)
       expect(training_period.schedule).to eq(schedule)
     end
+
+    it 'records an event for assigning the schedule to the training period' do
+      allow(Events::Record).to receive(:record_teacher_schedule_assigned_to_training_period!)
+      training_period = result
+      expect(Events::Record).to have_received(:record_teacher_schedule_assigned_to_training_period!).with(
+        training_period:,
+        teacher: period.teacher,
+        schedule: training_period.schedule,
+        author:,
+        happened_at: Time.current
+      )
+    end
   end
 
   context "with unsupported period type" do
@@ -101,6 +127,14 @@ RSpec.describe TrainingPeriods::Create do
 
       expect(TrainingPeriods::Create).to have_received(:new).with(period:, started_on:, training_programme: 'school_led')
     end
+
+    it 'does not record an event' do
+      allow(TrainingPeriods::Create).to receive(:new).and_return(true)
+
+      TrainingPeriods::Create.school_led(period:, started_on:)
+
+      expect(Events::Record).not_to receive(:record_teacher_schedule_assigned_to_training_period!)
+    end
   end
 
   describe '.provider_led' do
@@ -109,7 +143,7 @@ RSpec.describe TrainingPeriods::Create do
     it 'calls new with the provider_led arguments' do
       allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
 
-      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:)
+      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, author:)
 
       expect(TrainingPeriods::Create).to have_received(:new).with(
         period:,
@@ -117,7 +151,8 @@ RSpec.describe TrainingPeriods::Create do
         school_partnership:,
         expression_of_interest:,
         training_programme: 'provider_led',
-        finished_on:
+        finished_on:,
+        author:
       )
     end
   end
