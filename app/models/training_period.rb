@@ -44,6 +44,8 @@ class TrainingPeriod < ApplicationRecord
   has_many :declarations, inverse_of: :training_period
   has_many :events
 
+  touch -> { self }, when_changing: %i[finished_on], timestamp_attribute: :api_updated_at
+
   touch -> { trainee&.teacher },
         on_event: %i[create destroy update],
         timestamp_attribute: :api_updated_at,

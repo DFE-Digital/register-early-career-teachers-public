@@ -48,6 +48,12 @@ describe TrainingPeriod do
   describe "declarative touch" do
     let(:instance) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
 
+    context "target self" do
+      let(:target) { instance }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[finished_on], timestamp_attribute: :api_updated_at
+    end
+
     context "target teacher" do
       let(:target) { instance.trainee.teacher }
 

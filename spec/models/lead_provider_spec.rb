@@ -1,4 +1,19 @@
 describe LeadProvider do
+  describe "declarative touch" do
+    let(:instance) { FactoryBot.create(:lead_provider) }
+
+    context "target training periods" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: instance) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let!(:training_period) { FactoryBot.create(:training_period, school_partnership:) }
+
+      let(:target) { instance.training_periods }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[name], timestamp_attribute: :api_updated_at
+    end
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:active_lead_providers).inverse_of(:lead_provider) }
