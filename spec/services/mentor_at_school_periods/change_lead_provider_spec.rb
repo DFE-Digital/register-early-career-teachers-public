@@ -8,14 +8,18 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
   let(:started_on) { 3.months.ago.to_date }
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
 
-  let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
 
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
+  let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
+  let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
+  let(:old_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: old_active_lead_provider, contract_period:) }
+  let(:old_school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: old_lead_provider_delivery_partnership) }
 
-  let(:old_lead_provider) { training_period.lead_provider }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
+
   let(:new_lead_provider) { lead_provider }
 
   describe '#call' do
@@ -84,7 +88,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       end
 
       context 'when the existing training period has already finished' do
-        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :finished, mentor_at_school_period:, started_on:) }
+        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :finished, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
 
         it 'opens a new training period' do
           expect { subject }.to change(TrainingPeriod, :count).by(1)
@@ -93,15 +97,22 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
     end
 
     context 'when there is no school partnership with the old lead provider' do
+      let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
+      let(:old_school_partnership) { nil }
+      let(:old_lead_provider_delivery_partnership) { nil }
+
+      let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
       let!(:training_period) do
         FactoryBot.create(:training_period,
                           :for_mentor,
                           :ongoing,
-                          :with_only_expression_of_interest,
+                          expression_of_interest: old_active_lead_provider,
+                          school_partnership: nil,
+                          schedule:,
                           mentor_at_school_period:,
                           started_on:)
       end
-      let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
 
       it 'deletes the existing training period' do
         expect { subject }.not_to change(TrainingPeriod, :count)
