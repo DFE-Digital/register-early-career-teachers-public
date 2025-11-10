@@ -16,7 +16,8 @@ module Teachers
           started_on: Time.zone.today,
           finished_on: training_period.trainee.finished_on,
           school_partnership: training_period.school_partnership,
-          expression_of_interest: training_period.expression_of_interest
+          expression_of_interest: training_period.expression_of_interest,
+          author:
         ).call
 
         record_resume_event!(new_training_period)

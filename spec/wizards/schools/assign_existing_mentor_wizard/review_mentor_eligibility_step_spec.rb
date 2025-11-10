@@ -87,6 +87,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
 
       events = Event.where(teacher: [mentor_at_school_period.teacher, ect_at_school_period.teacher])
       expect(events.pluck(:event_type)).to contain_exactly(
+        'teacher_schedule_assigned_to_training_period',
         'teacher_starts_training_period',
         'teacher_starts_mentoring',
         'teacher_starts_being_mentored'
