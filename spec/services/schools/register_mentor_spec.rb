@@ -113,7 +113,6 @@ RSpec.describe Schools::RegisterMentor do
           expect(training_period.expression_of_interest).to eq(active_lead_provider)
           expect(training_period.school_partnership).to be_nil
           expect(training_period.training_programme).to eql('provider_led')
-          
         end
 
         it 'assigns the correct schedule to the TrainingPeriod' do
@@ -122,7 +121,7 @@ RSpec.describe Schools::RegisterMentor do
           training_period = TrainingPeriod.find_by!(started_on:)
 
           expect(training_period.schedule.identifier).to eql('ecf-standard-september')
-          expect(training_period.schedule.contract_period_year).to eql(2024)
+          expect(training_period.schedule.contract_period_year).to be(2024)
         end
       end
 
@@ -146,7 +145,7 @@ RSpec.describe Schools::RegisterMentor do
           training_period = TrainingPeriod.find_by!(started_on:)
 
           expect(training_period.schedule.identifier).to eql('ecf-standard-september')
-          expect(training_period.schedule.contract_period_year).to eql(2024)
+          expect(training_period.schedule.contract_period_year).to be(2024)
         end
       end
 

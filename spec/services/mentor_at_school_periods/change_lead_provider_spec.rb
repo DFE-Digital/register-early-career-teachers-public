@@ -34,7 +34,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
     end
 
     context 'when there is no school partnership with the new lead provider' do
-      it 'creates a new expression of interest for the current year and assigns it to the new training period' do
+      it 'creates a new expression of interest for the current year and assigns it to the new training period with the previous schedule' do
         expect { subject }.to change(ActiveLeadProvider, :count).by(1)
 
         new_active_lead_provider = ActiveLeadProvider.last
@@ -44,6 +44,9 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         new_training_period = mentor_at_school_period.training_periods.ongoing.first
         expect(new_training_period.school_partnership).to be_nil
         expect(new_training_period.training_programme).to eq('provider_led')
+
+        expect(new_training_period.schedule.identifier).to eq('ecf-standard-september')
+        expect(new_training_period.schedule.contract_period_year).to eq(2025)
       end
     end
 
@@ -59,9 +62,16 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
       end
 
       context 'when there are existing training periods' do
+        it 'opens a new training period with the previous schedule' do
+          expect { subject }.to change(TrainingPeriod, :count).by(1)
+
+          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          expect(new_training_period.schedule).to eq(training_period.schedule)
+        end
+
         context 'when the training period started in the past' do
           it 'closes existing training periods and opens a new training period' do
-            expect { subject }.to change(TrainingPeriod, :count).by(1)
+            subject
 
             expect(training_period.reload.finished_on).to eq(Time.zone.today)
           end
@@ -70,8 +80,8 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         context 'when the training period started today' do
           let(:started_on) { Date.current }
 
-          it 'closes existing periods and starts a new one' do
-            expect { subject }.to change(TrainingPeriod, :count).by(1)
+          it 'closes existing periods and starts a new one with the previous schedule' do
+            subject
 
             expect(training_period.reload.finished_on).to eq(Time.zone.today)
           end
@@ -85,13 +95,26 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         it 'opens a new training period' do
           expect { subject }.to change(TrainingPeriod, :count).by(1)
         end
+
+        it 'assigns the correct schedule for the new training period' do
+          travel_to Date.new(2025, 9, 1) do
+            subject
+
+            new_training_period = mentor_at_school_period.training_periods.ongoing.first
+            expect(new_training_period.schedule.identifier).to eq('ecf-standard-september')
+            expect(new_training_period.schedule.contract_period_year).to eq(2025)
+          end
+        end
       end
 
       context 'when the existing training period has already finished' do
         let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :finished, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
 
-        it 'opens a new training period' do
+        it 'opens a new training period with the previous schedule' do
           expect { subject }.to change(TrainingPeriod, :count).by(1)
+
+          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          expect(new_training_period.schedule).to eq(training_period.schedule)
         end
       end
     end

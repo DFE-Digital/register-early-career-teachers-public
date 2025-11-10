@@ -173,7 +173,7 @@ module ECTAtSchoolPeriods
 
               expect(new_training_period.schedule.identifier).to eq('ecf-standard-september')
               expect(new_training_period.schedule.contract_period_year).to eq(2025)
-            end 
+            end
           end
 
           it "records a `teacher_starts_training_period` event" do
