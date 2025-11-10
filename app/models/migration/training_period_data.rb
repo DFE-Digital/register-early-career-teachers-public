@@ -19,5 +19,6 @@ module Migration
       @start_source_id = start_source_id
       @end_source_id = end_source_id
     end
+
   end
 end
