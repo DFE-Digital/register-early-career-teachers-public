@@ -29,6 +29,7 @@ erDiagram
     datetime withdrawn_at
     enum withdrawal_reason
     integer schedule_id
+    datetime api_updated_at
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to

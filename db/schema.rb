@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_03_152540) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_10_162648) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -822,7 +822,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_152540) do
     t.datetime "withdrawn_at"
     t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
     t.bigint "schedule_id"
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
+    t.index ["api_updated_at"], name: "index_training_periods_on_api_updated_at"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
     t.index ["expression_of_interest_id"], name: "index_training_periods_on_expression_of_interest_id"

@@ -184,6 +184,7 @@
   - finished_on
   - created_at
   - updated_at
+  - api_updated_at
   - ect_at_school_period_id
   - mentor_at_school_period_id
   - range
