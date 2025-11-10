@@ -44,6 +44,7 @@ class Event < ApplicationRecord
     teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
+    teacher_schedule_assigned_to_training_period
     teacher_defers_training_period
     teacher_resumes_training_period
     teacher_withdraws_training_period
