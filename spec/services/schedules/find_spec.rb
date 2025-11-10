@@ -20,8 +20,6 @@ RSpec.describe Schedules::Find do
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
-  # include_context 'current schedules'
-
   before do
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
@@ -114,17 +112,6 @@ RSpec.describe Schedules::Find do
           end
         end
       end
-
-      #  A little more context here.
-      # A school led training period does not have a schedule
-      # Past school led training period should not affect the schedule assignment for the new provider led training period.
-      # So if the previous period is school led and the new period is provider led then we pick a new schedule
-      # If the previous period is provider led then we switch to school led then that doesn't have a schedule and that's covered by the covered
-      # But if we switch 3 times... then it's the last provider led period that matters.
-      # This also helps us carry accross the schedule if the teacher resumes
-
-      # We also need to specifically test what happens when a teacher moves school.
-      # Again the previous provider led training period is what matters.
 
       context 'when there is one previous training period' do
         let(:started_on) { provider_led_start_date }
