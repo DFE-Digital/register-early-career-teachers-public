@@ -14,6 +14,9 @@ class Teacher < ApplicationRecord
   # Associations
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
+  has_many :ect_training_periods, through: :ect_at_school_periods, source: :training_periods
+  has_many :mentor_training_periods, through: :mentor_at_school_periods, source: :training_periods
+
   has_many :induction_extensions, inverse_of: :teacher
   has_many :teacher_id_changes, inverse_of: :teacher
   has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider"
@@ -98,4 +101,10 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
 
   normalizes :corrected_name, with: -> { it.squish }
+
+  def training_periods
+    return ect_training_periods if ect_at_school_periods.exists?
+
+    mentor_training_periods if mentor_at_school_periods.exists?
+  end
 end

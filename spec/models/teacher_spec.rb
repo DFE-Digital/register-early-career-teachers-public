@@ -29,6 +29,8 @@ describe Teacher do
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
+    it { is_expected.to have_many(:ect_training_periods).through(:ect_at_school_periods) }
+    it { is_expected.to have_many(:mentor_training_periods).through(:mentor_at_school_periods) }
     it { is_expected.to have_many(:induction_periods) }
     it { is_expected.to have_many(:appropriate_bodies).through(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
@@ -212,6 +214,34 @@ describe Teacher do
       )
 
       expect(teacher.current_appropriate_body).to be_nil
+    end
+
+    describe "training_periods" do
+      context "ect_training_periods" do
+        it "returns training periods associated with the teacher's ect at school periods" do
+          teacher = FactoryBot.create(:teacher)
+          ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:)
+          ect_training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
+
+          other_ect_at_school_period = FactoryBot.create(:ect_at_school_period)
+          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: other_ect_at_school_period)
+
+          expect(teacher.ect_training_periods).to contain_exactly(ect_training_period)
+        end
+      end
+
+      context "mentor_training_periods" do
+        it "returns training periods associated with the teacher's mentor at school periods" do
+          teacher = FactoryBot.create(:teacher)
+          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, teacher:)
+          mentor_training_period = FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:)
+
+          other_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period)
+          FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: other_mentor_at_school_period)
+
+          expect(teacher.mentor_training_periods).to contain_exactly(mentor_training_period)
+        end
+      end
     end
   end
 
