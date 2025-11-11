@@ -321,7 +321,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
     context 'when there are no mentor_at_school_periods' do
       it 'raises an error' do
         expect { registration_session.mentorship_status }
-          .to raise_error(RuntimeError, /no mentor_at_school_periods/)
+          .to raise_error(described_class::Status::MentorStatusError, /No mentor_at_school_periods/)
       end
     end
   end

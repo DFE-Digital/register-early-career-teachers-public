@@ -7,6 +7,8 @@ module Schools
           @queries = queries
         end
 
+        class MentorStatusError < StandardError; end
+
         def email_taken?
           Schools::TeacherEmail.new(email: registration_session.email, trn: registration_session.trn).is_currently_used?
         end
@@ -61,7 +63,7 @@ module Schools
           elsif mentor_at_school_periods.any?
             :previously_a_mentor
           else
-            raise 'Unexpected state: no mentor_at_school_periods found for previously registered mentor'
+            raise MentorStatusError, 'No mentor_at_school_periods found for a previously registered mentor'
           end
         end
 
