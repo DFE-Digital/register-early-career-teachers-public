@@ -22,9 +22,15 @@ RSpec.describe Schools::RegisterMentor do
   let(:started_on) { Date.new(2024, 9, 17) }
   let(:teacher) { subject.teacher }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
   let(:finish_existing_at_school_periods) { false }
+
+  around do |example|
+    travel_to(started_on + 1.day) do
+      example.run
+    end
+  end
 
   describe '#register!' do
     context 'when no ActiveLeadProvider exists for the registration period' do
@@ -108,6 +114,15 @@ RSpec.describe Schools::RegisterMentor do
           expect(training_period.school_partnership).to be_nil
           expect(training_period.training_programme).to eql('provider_led')
         end
+
+        it 'assigns the correct schedule to the TrainingPeriod' do
+          expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+          training_period = TrainingPeriod.find_by!(started_on:)
+
+          expect(training_period.schedule.identifier).to eql('ecf-standard-september')
+          expect(training_period.schedule.contract_period_year).to be(2024)
+        end
       end
 
       context 'when a SchoolPartnership exists' do
@@ -122,6 +137,15 @@ RSpec.describe Schools::RegisterMentor do
 
           expect(training_period.expression_of_interest).to be_nil
           expect(training_period.school_partnership).to eq(school_partnership)
+        end
+
+        it 'assigns the correct schedule to the TrainingPeriod' do
+          expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+          training_period = TrainingPeriod.find_by!(started_on:)
+
+          expect(training_period.schedule.identifier).to eql('ecf-standard-september')
+          expect(training_period.schedule.contract_period_year).to be(2024)
         end
       end
 

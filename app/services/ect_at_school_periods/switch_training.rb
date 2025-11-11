@@ -79,7 +79,8 @@ module ECTAtSchoolPeriods
         period: @ect_at_school_period,
         started_on: date_of_transition,
         school_partnership: earliest_matching_school_partnership,
-        expression_of_interest:
+        expression_of_interest:,
+        author: @author
       ).call
     end
 
