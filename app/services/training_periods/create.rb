@@ -9,7 +9,6 @@ module TrainingPeriods
       @expression_of_interest = expression_of_interest
       @training_programme = training_programme
       @finished_on = finished_on
-      @schedule = schedule
       @author = author
     end
 
