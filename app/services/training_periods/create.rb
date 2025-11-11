@@ -1,5 +1,7 @@
 module TrainingPeriods
   class Create
+    class ScheduleNotFound < StandardError; end
+
     def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil, author: nil)
       @period = period
       @started_on = started_on
@@ -42,7 +44,7 @@ module TrainingPeriods
         expression_of_interest: @expression_of_interest,
         training_programme: @training_programme,
         finished_on: @finished_on,
-        schedule: 
+        schedule:
       )
     end
 
@@ -59,7 +61,9 @@ module TrainingPeriods
     end
 
     def schedule
-      Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call
+      return if @training_programme == 'school_led'
+
+      Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call || raise(ScheduleNotFound)
     end
   end
 end
