@@ -13,14 +13,14 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
     )
   end
 
-  let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
-  let(:old_lead_provider) { training_period.lead_provider }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:, school_partnership:) }
+  let(:old_lead_provider) { FactoryBot.create(:lead_provider) }
   let(:new_lead_provider) { lead_provider }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
-  let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
 
   describe "GET #new" do
     context "when not signed in" do
