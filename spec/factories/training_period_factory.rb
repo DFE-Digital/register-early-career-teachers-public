@@ -46,7 +46,10 @@ FactoryBot.define do
 
     trait :with_schedule do
       transient do
-        schedule { FactoryBot.build(:schedule, contract_period: contract_period || expression_of_interest_contract_period) }
+        schedule do
+          teacher_type = ect_at_school_period.nil? ? :mentor_teacher_type : :ect_teacher_type
+          FactoryBot.build(:schedule, teacher_type, contract_period: contract_period || expression_of_interest_contract_period)
+        end
       end
 
       after(:build) do |training_period, evaluator|
