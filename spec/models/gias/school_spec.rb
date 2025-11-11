@@ -133,4 +133,12 @@ describe GIAS::School do
       end
     end
   end
+
+  describe 'scopes' do
+    describe '.ordered_by_name' do
+      it 'amends the query so results are ordered by name, ascending' do
+        expect(GIAS::School.ordered_by_name.to_sql).to end_with('ORDER BY "gias_schools"."name" ASC')
+      end
+    end
+  end
 end

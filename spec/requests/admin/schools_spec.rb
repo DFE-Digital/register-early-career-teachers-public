@@ -1,6 +1,38 @@
 RSpec.describe 'Admin::Schools', type: :request do
   let(:school) { FactoryBot.create(:school) }
 
+  describe 'GET /admin/schools' do
+    before { school }
+
+    it 'redirects to sign in path when not authenticated' do
+      get admin_schools_path
+      expect(response).to redirect_to(sign_in_path)
+    end
+
+    context 'with an authenticated non-DfE user' do
+      include_context 'sign in as non-DfE user'
+
+      it 'requires authorisation' do
+        get admin_schools_path
+        expect(response.status).to eq(401)
+      end
+    end
+
+    context 'with an authenticated DfE user' do
+      include_context 'sign in as DfE user'
+
+      it 'lists the schools' do
+        get admin_schools_path
+        expect(response.body).to include(school.name)
+      end
+
+      it 'allows searching for schools' do
+        get admin_schools_path(q: school.name.split(' ').first)
+        expect(response.body).to include(school.name)
+      end
+    end
+  end
+
   describe 'GET /admin/schools/:urn' do
     it 'redirects to sign in path when not authenticated' do
       get admin_school_path(school.urn)
