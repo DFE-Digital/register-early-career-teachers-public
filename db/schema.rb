@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_03_152540) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_07_093813) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -225,6 +225,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_152540) do
     t.bigint "statement_id"
     t.bigint "statement_adjustment_id"
     t.integer "zendesk_ticket_id"
+    t.bigint "schedule_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
@@ -858,6 +859,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_03_152540) do
   add_foreign_key "events", "lead_providers", on_delete: :nullify
   add_foreign_key "events", "mentor_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "mentorship_periods", on_delete: :nullify
+  add_foreign_key "events", "schedules"
   add_foreign_key "events", "school_partnerships", on_delete: :nullify
   add_foreign_key "events", "schools", on_delete: :nullify
   add_foreign_key "events", "statement_adjustments", on_delete: :nullify

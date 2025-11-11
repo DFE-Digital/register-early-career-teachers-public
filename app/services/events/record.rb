@@ -18,6 +18,7 @@ module Events
                 :mentor_at_school_period,
                 :training_period,
                 :mentorship_period,
+                :schedule,
                 :school_partnership,
                 :lead_provider,
                 :delivery_partner,
@@ -46,6 +47,7 @@ module Events
       mentor_at_school_period: nil,
       training_period: nil,
       mentorship_period: nil,
+      schedule: nil,
       school_partnership: nil,
       lead_provider: nil,
       delivery_partner: nil,
@@ -73,6 +75,7 @@ module Events
       @mentor_at_school_period = mentor_at_school_period
       @training_period = training_period
       @mentorship_period = mentorship_period
+      @schedule = schedule
       @school_partnership = school_partnership
       @lead_provider = lead_provider
       @delivery_partner = delivery_partner
@@ -286,8 +289,9 @@ module Events
       event_type = :teacher_registered_as_ect
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was registered as an ECT at #{school.name}"
+      schedule = training_period.schedule
 
-      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
+      new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, schedule:, happened_at:).record_event!
     end
 
     def self.record_teacher_left_school_as_ect!(author:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:)
@@ -447,6 +451,15 @@ module Events
       heading = "#{teacher_name}’s #{training_type} training period was resumed by #{lead_provider.name}"
 
       new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, metadata:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_schedule_assigned_to_training_period!(author:, training_period:, teacher:, schedule:, happened_at: Time.zone.now)
+      event_type = :teacher_schedule_assigned_to_training_period
+      teacher_name = Teachers::Name.new(teacher).full_name
+      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      heading = "#{teacher_name}’s #{training_type} training period schedule was set to #{schedule.identifier} for #{schedule.contract_period_year}"
+
+      new(event_type:, author:, heading:, training_period:, teacher:, schedule:, happened_at:).record_event!
     end
 
     def self.record_training_period_assigned_to_school_partnership_event!(
@@ -793,6 +806,7 @@ module Events
         ect_at_school_period:,
         mentor_at_school_period:,
         training_period:,
+        schedule:,
         mentorship_period:,
         school_partnership:,
         lead_provider:,
