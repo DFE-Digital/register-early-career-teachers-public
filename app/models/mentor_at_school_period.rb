@@ -60,6 +60,9 @@ class MentorAtSchoolPeriod < ApplicationRecord
     teacher.mentor_at_school_periods.for_school(school_id).excluding(self)
   end
 
+  delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
+  delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
+
 private
 
   def teacher_school_distinct_period
