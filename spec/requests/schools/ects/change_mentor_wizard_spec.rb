@@ -1,5 +1,5 @@
 describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interface do
-  let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+  let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:ect_at_school_period) do
