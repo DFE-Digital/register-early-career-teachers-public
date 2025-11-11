@@ -4,18 +4,20 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
   let(:last_chosen_delivery_partner) { FactoryBot.build(:delivery_partner) }
 
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     full_name: "John Doe",
-                     trn: "123456",
-                     email: "foo@bar.com",
-                     formatted_date_of_birth: "12 January 1931",
-                     start_date: "September 2022",
-                     training_programme: "school_led",
-                     appropriate_body_type: "teaching_school_hub",
-                     appropriate_body: double(name: "Teaching Regulation Agency"),
-                     lead_provider: double(name: "Acme Lead Provider"),
-                     formatted_working_pattern: "Full time",
-                     use_previous_ect_choices: false)
+    FactoryBot.build(
+      :session_repository,
+      full_name: "John Doe",
+      trn: "123456",
+      email: "foo@bar.com",
+      govuk_date_of_birth: "12 January 1931",
+      start_date: "September 2022",
+      training_programme: "school_led",
+      appropriate_body_type: "teaching_school_hub",
+      appropriate_body: double(name: "Teaching Regulation Agency"),
+      lead_provider: double(name: "Acme Lead Provider"),
+      formatted_working_pattern: "Full time",
+      use_previous_ect_choices: false
+    )
   end
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:decorated_school) { Schools::DecoratedSchool.new(school) }
@@ -30,7 +32,6 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
 
   it "sets the page title" do
     render
-
     expect(sanitize(view.content_for(:page_title))).to eql("Programme choices used by your school previously")
   end
 
@@ -130,20 +131,31 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
 
   context "when provider-led with expression of interest only" do
     let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
+    let(:contract_start_date) { Date.new(2025, 9, 1) }
 
     before do
+      # ensure a valid contract period includes that date
+      FactoryBot.create(
+        :contract_period,
+        started_on: Date.new(2025, 9, 1),
+        finished_on: Date.new(2026, 8, 31),
+        enabled: true
+      )
+
       choices = double(
         "Schools::LatestRegistrationChoices",
         lead_provider: last_chosen_lead_provider,
         appropriate_body: last_chosen_appropriate_body,
         delivery_partner: nil
       )
+
       allow(decorated_school).to receive_messages(
         latest_registration_choices: choices,
         has_partnership_with?: false
       )
 
-      allow(wizard.current_step).to receive(:reusable_partnership_preview).and_return(nil)
+      allow(wizard.ect).to receive(:contract_start_date).and_return(contract_start_date)
+
       assign(:school, school)
       assign(:decorated_school, decorated_school)
       render
@@ -156,6 +168,17 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
 
     it "does not render the delivery partner row" do
       expect(rendered).not_to have_css(".govuk-summary-list__key", text: "Delivery partner")
+    end
+
+    it "renders the explanatory paragraph" do
+      expect(rendered).to include("#{last_chosen_lead_provider.name} will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
+    end
+
+    it "calls #has_partnership_with? using the lead provider and contract period" do
+      expect(decorated_school).to have_received(:has_partnership_with?).with(
+        lead_provider: decorated_school.latest_registration_choices.lead_provider,
+        contract_period: contract_start_date
+      )
     end
   end
 
