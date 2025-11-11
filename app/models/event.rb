@@ -44,6 +44,7 @@ class Event < ApplicationRecord
     teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
+    teacher_schedule_assigned_to_training_period
     teacher_defers_training_period
     teacher_resumes_training_period
     teacher_withdraws_training_period
@@ -65,6 +66,7 @@ class Event < ApplicationRecord
   belongs_to :delivery_partner
   belongs_to :lead_provider_delivery_partnership
   belongs_to :school_partnership
+  belongs_to :schedule
 
   # extensions
   belongs_to :induction_extension

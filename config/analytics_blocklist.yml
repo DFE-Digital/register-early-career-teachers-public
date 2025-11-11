@@ -348,6 +348,7 @@
   - active_lead_provider_id
   - lead_provider_delivery_partnership_id
   - pending_induction_submission_batch_id
+  - schedule_id
   - statement_id
   - statement_adjustment_id
   - user_id
