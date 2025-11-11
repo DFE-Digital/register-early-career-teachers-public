@@ -205,7 +205,7 @@ RSpec.describe TrainingPeriods::Create do
     it "calls new with the provider_led arguments" do
       allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
 
-      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, schedule:, author:)
+      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, author:)
 
       expect(TrainingPeriods::Create).to have_received(:new).with(
         period:,
@@ -214,7 +214,6 @@ RSpec.describe TrainingPeriods::Create do
         expression_of_interest:,
         training_programme: "provider_led",
         finished_on:,
-        schedule:,
         author:
       )
     end
