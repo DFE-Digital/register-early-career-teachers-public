@@ -59,7 +59,7 @@ module Schedules
     end
 
     def october_end
-      november_start - 1
+      Date.new(contract_period_year, 10, 1).end_of_month
     end
 
     def november_start
@@ -67,7 +67,7 @@ module Schedules
     end
 
     def december_end
-      Date.new(contract_period_year, 12, 31)
+      Date.new(contract_period_year, 12, 1).end_of_month
     end
 
     def january_start
@@ -75,7 +75,7 @@ module Schedules
     end
 
     def february_end
-      march_start - 1
+      Date.new(contract_period_year, 2, 1).end_of_month
     end
 
     def march_start
@@ -83,7 +83,7 @@ module Schedules
     end
 
     def may_end
-      Date.new(contract_period_year, 5, 31)
+      Date.new(contract_period_year, 5, 1).end_of_month
     end
 
     # TODO: in due course, we will assign non-standard identifiers
