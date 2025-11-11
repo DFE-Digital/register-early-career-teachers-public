@@ -919,6 +919,17 @@ components:
               type: boolean
               nullable: false
               example: false
+            induction_tutor_name:
+              description: The name of the person nominated by this school to coordinate
+                the registration of ECTs and mentors
+              type: string
+              nullable: true
+              example: John Doe
+            induction_tutor_email:
+              description: The induction tutor's email address
+              type: string
+              nullable: true
+              example: john.doe@example.com
             created_at:
               description: The date and time the school was created
               type: string
