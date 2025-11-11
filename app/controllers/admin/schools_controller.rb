@@ -5,7 +5,7 @@ module Admin
     layout "full"
 
     def index
-      schools = params[:q].present? ? School.search(params[:q]) : School.includes(:gias_school)
+      schools = ::Schools::Search.new(params[:q]).search
       @pagy, @schools = pagy(schools)
     end
 
