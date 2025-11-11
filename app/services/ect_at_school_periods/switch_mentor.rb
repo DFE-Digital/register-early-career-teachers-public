@@ -42,7 +42,8 @@ module ECTAtSchoolPeriods
         period: mentor_at_school_period,
         started_on: earliest_possible_start_date,
         school_partnership: earliest_matching_school_partnership,
-        expression_of_interest:
+        expression_of_interest:,
+        author:
       ).call
     end
 
