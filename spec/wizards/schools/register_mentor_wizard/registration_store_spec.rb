@@ -173,6 +173,38 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     it "returns the latest training period for the mentor" do
       expect(registration_store.previous_training_period).to eq(training_period)
     end
+
+    it 'returns nil when only expression of interest periods exist' do
+      expect(registration_store.previous_training_period).to be_nil
+    end
+
+    context 'when there is a confirmed partnership' do
+      let!(:older_confirmed) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          training_programme: :provider_led,
+          school_partnership: FactoryBot.create(:school_partnership),
+          started_on: Date.new(2024, 5, 1), finished_on: Date.new(2024, 6, 1)
+        )
+      end
+
+      let!(:newer_confirmed) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          training_programme: :provider_led,
+          school_partnership: FactoryBot.create(:school_partnership),
+          started_on: Date.new(2025, 3, 1), finished_on: Date.new(2025, 4, 1)
+        )
+      end
+
+      it 'returns the most recent confirmed training period' do
+        expect(registration_store.previous_training_period).to eq(newer_confirmed)
+      end
+    end
   end
 
   describe "#register!" do
@@ -200,7 +232,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
     context "when school_urn is not set" do
       before do
-        registration_store.update!(school_urn: nil)
+        store.school_urn = nil
       end
 
       it "returns nil" do

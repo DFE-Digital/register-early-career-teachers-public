@@ -8,29 +8,21 @@
     actions: false,
     rows: [
       {
-        key: {
-          text: "School name",
-        },
-        value: {
-          text: @mentor.latest_registration_choice.school&.name || 'Not confirmed', # MentorRegistrationFlow: AC 9a
-        },
+        key:   { text: "School name" },
+        value: { text: @mentor.latest_registration_choice.school&.name || "Not confirmed" },
       },
       {
-        key: {
-          text: "Lead provider",
-        },
-        value: {
-          text: @mentor.latest_registration_choice.lead_provider&.name || 'Not confirmed',
-        },
+        key:   { text: "Lead provider" },
+        value: { text: (@mentor.previous_training_period&.lead_provider_name || "Not confirmed") },
       },
-      {
-        key: {
-          text: "Delivery partner",
-        },
-        value: {
-          text: @mentor.latest_registration_choice.delivery_partner&.name || 'Not confirmed',
-        },
-      },
+      *(
+        @mentor.previous_provider_led? ? [
+          {
+            key:   { text: "Delivery partner" },
+            value: { text: (@mentor.previous_training_period&.delivery_partner_name || "Not confirmed") },
+          }
+        ] : []
+      )
     ],
   )
 end %>
@@ -39,6 +31,5 @@ end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
-
   <%= f.govuk_submit "Continue" %>
 <% end %>

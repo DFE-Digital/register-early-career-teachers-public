@@ -14,6 +14,15 @@ module MentorAtSchoolPeriods
         .first
     end
 
+    def confirmed_training_period
+      @confirmed_training_period ||= ::TrainingPeriod
+        .includes(:school_partnership, mentor_at_school_period: [:teacher])
+        .where(teacher: { trn: })
+        .where.not(school_partnership_id: nil)
+        .latest_first
+        .first
+    end
+
     def lead_provider
       school_partnership&.lead_provider || expression_of_interest&.lead_provider
     end
