@@ -59,5 +59,17 @@ FactoryBot.define do
         )
       end
     end
+
+    factory :ect do
+      after(:create) do |teacher|
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+      end
+    end
+
+    factory :mentor do
+      after(:create) do |teacher|
+        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:)
+      end
+    end
   end
 end
