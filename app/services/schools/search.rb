@@ -4,18 +4,18 @@ module Schools
       @q = q
     end
 
-    def call
-      query.order("gias_schools.name")
+    def search
+      query.merge(GIAS::School.ordered_by_name)
     end
 
   private
 
     def all_schools
-      School.includes(:gias_school).references(:gias_schools).all
+      School.joins(:gias_school)
     end
 
     def query
-      @q.blank? ? all_schools : School.search(@q)
+      @q.blank? ? all_schools : all_schools.search(@q)
     end
   end
 end

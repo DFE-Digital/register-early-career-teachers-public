@@ -59,6 +59,7 @@ class GIAS::School < ApplicationRecord
 
   # Scopes
   scope :search, ->(q) { where("gias_schools.search @@ websearch_to_tsquery('unaccented', ?)", q) }
+  scope :ordered_by_name, -> { order(name: :asc) }
 
   # Instance Methods
   def closed?
