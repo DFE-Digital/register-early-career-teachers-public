@@ -105,6 +105,7 @@ module SandboxSeedData
       end
 
       Schedule
+        .excluding_replacement_schedules
         .where(contract_period:)
         .order(Arel.sql("RANDOM()"))
         .first
