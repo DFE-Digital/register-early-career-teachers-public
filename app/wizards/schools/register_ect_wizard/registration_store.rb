@@ -1,13 +1,13 @@
 module Schools
   module RegisterECTWizard
     # This class is a decorator for the SessionRepository
-    class RegistrationSession < SimpleDelegator
+    class RegistrationStore < SimpleDelegator
       def initialize(store)
         super(store)
-        @queries   = RegistrationSession::Queries.new(registration_session: self)
-        @presenter = RegistrationSession::Presenter.new(registration_session: self)
-        @previous_registration = RegistrationSession::PreviousRegistration.new(registration_session: self, queries:)
-        @status = RegistrationSession::Status.new(registration_session: self, queries:)
+        @queries   = RegistrationStore::Queries.new(registration_store: self)
+        @presenter = RegistrationStore::Presenter.new(registration_store: self)
+        @previous_registration = RegistrationStore::PreviousRegistration.new(registration_store: self, queries:)
+        @status = RegistrationStore::Status.new(registration_store: self, queries:)
       end
 
       delegate :ect_at_school_period,
