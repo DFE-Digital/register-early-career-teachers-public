@@ -96,7 +96,11 @@ module Schools
       end
 
       def previous_training_period
-        latest_registration_choice.training_period
+        @previous_training_period ||= latest_registration_choice.confirmed_training_period
+      end
+
+      def previous_provider_led?
+        previous_training_period&.training_programme == "provider_led"
       end
 
       def lead_providers_within_contract_period

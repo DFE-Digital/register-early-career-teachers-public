@@ -1,71 +1,62 @@
-<% page_data(title: "Programme choices used by your school previously",
-             error: @wizard.current_step.errors.present?,
-             backlink_href: @wizard.previous_step_path) %>
+<% page_data(
+  title: "Programme choices used by your school previously",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: @wizard.previous_step_path
+) %>
 
 <p class="govuk-body">You used these programme choices the last time you registered an ECT.</p>
 
 <%= govuk_summary_list do |summary_list|
-  if @decorated_school.latest_registration_choices.appropriate_body.present?
+  if @decorated_school.latest_registration_choices&.appropriate_body.present?
     summary_list.with_row do |row|
-      row.with_key(text: 'Appropriate body')
-      row.with_value(text: @decorated_school.latest_registration_choices.appropriate_body.name)
+      row.with_key(text: "Appropriate body")
+      row.with_value(text: @decorated_school.latest_registration_choices&.appropriate_body&.name)
     end
   end
 
   summary_list.with_row do |row|
-    row.with_key(text: 'Training programme')
+    row.with_key(text: "Training programme")
     row.with_value(text: training_programme_name(@decorated_school.last_chosen_training_programme))
   end
 
-  if @decorated_school.provider_led_training_programme_chosen? && @decorated_school.latest_registration_choices.lead_provider.present?
+  if @decorated_school.provider_led_training_programme_chosen? &&
+     @decorated_school.latest_registration_choices&.lead_provider.present?
     summary_list.with_row do |row|
-      row.with_key(text: 'Lead provider')
-      row.with_value(text: @decorated_school.latest_registration_choices.lead_provider.name)
+      row.with_key(text: "Lead provider")
+      row.with_value(text: @decorated_school.latest_registration_choices&.lead_provider&.name)
     end
 
-    if @decorated_school.latest_registration_choices.delivery_partner.present?
+    if @decorated_school.latest_registration_choices&.delivery_partner.present?
       summary_list.with_row do |row|
-        row.with_key(text: 'Delivery partner')
-        row.with_value(text: @decorated_school.latest_registration_choices.delivery_partner.name)
+        row.with_key(text: "Delivery partner")
+        row.with_value(text: @decorated_school.latest_registration_choices&.delivery_partner&.name)
       end
     end
   end
 end %>
 
-<% if @decorated_school.provider_led_training_programme_chosen? && !@decorated_school.has_partnership_with?(lead_provider: @decorated_school.latest_registration_choices.lead_provider, contract_period: @ect.contract_start_date) %>
+<% if @decorated_school.provider_led_training_programme_chosen? &&
+      (lead_provider = @decorated_school.latest_registration_choices&.lead_provider) &&
+      (start_date = @ect&.contract_start_date) &&
+      !@decorated_school.has_partnership_with?(lead_provider: lead_provider, contract_period: start_date) %>
   <p class="govuk-body">
-    <%= @decorated_school.latest_registration_choices.lead_provider.name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.
+    <%= lead_provider.name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.
   </p>
 <% end %>
 
-
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
-
   <%= f.govuk_radio_buttons_fieldset :use_previous_ect_choices,
                                      legend: { text: "Do you want to use the same choices for #{@ect.full_name}?" },
                                      inline: true do %>
     <%= f.govuk_radio_button :use_previous_ect_choices, :true, label: { text: "Yes" }, link_errors: true %>
     <%= f.govuk_radio_button :use_previous_ect_choices, :false, label: { text: "No" } %>
   <% end %>
-
-  <%= govuk_details(summary_text: 'What are the roles of an appropriate body, lead provider and delivery partner?') do %>
-    <p class="govuk-body">
-      An appropriate body is responsible for assuring the quality of the statutory induction of ECTs.
-    </p>
-
-    <p class="govuk-body">
-      For provider-led training, the lead provider provides the online learning platform used for training ECTs and mentors, while the delivery partner delivers training events.
-    </p>
-
-    <p class="govuk-body">
-      These roles are sometimes undertaken by the same organisation, for example an appropriate body might be the same organisation as the delivery partner.
-    </p>
-
-    <p class="govuk-body">
-      For school-led training your school will still work with an appropriate body to quality assure the induction process. You might choose to design your own training programme or use materials created by different lead providers.
-    </p>
+  <%= govuk_details(summary_text: "What are the roles of an appropriate body, lead provider and delivery partner?") do %>
+    <p class="govuk-body">An appropriate body is responsible for assuring the quality of the statutory induction of ECTs.</p>
+    <p class="govuk-body">For provider-led training, the lead provider provides the online learning platform used for training ECTs and mentors, while the delivery partner delivers training events.</p>
+    <p class="govuk-body">These roles are sometimes undertaken by the same organisation, for example an appropriate body might be the same organisation as the delivery partner.</p>
+    <p class="govuk-body">For school-led training your school will still work with an appropriate body to quality assure the induction process. You might choose to design your own training programme or use materials created by different lead providers.</p>
   <% end %>
-
   <%= f.govuk_submit "Continue" %>
 <% end %>

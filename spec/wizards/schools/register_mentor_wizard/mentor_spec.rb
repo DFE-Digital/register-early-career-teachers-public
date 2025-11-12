@@ -167,11 +167,60 @@ describe Schools::RegisterMentorWizard::Mentor do
 
   describe '#previous_training_period' do
     let(:teacher) { FactoryBot.create(:teacher, trn: mentor.trn) }
-    let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 3, 1)) }
-    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
+    let!(:mentor_at_school_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :ongoing,
+        teacher:,
+        started_on: Date.new(2024, 1, 1), # must be <= 2024-05-01 and <= 2025-03-01
+        finished_on: nil
+      )
+    end
 
-    it 'returns the latest training period for the mentor' do
-      expect(mentor.previous_training_period).to eq(training_period)
+    context 'when the latest record is EOI-only (no confirmed partnership)' do
+      let!(:eoi_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          training_programme: :provider_led,
+          expression_of_interest: FactoryBot.create(:active_lead_provider),
+          school_partnership: nil,
+          started_on: Date.new(2025, 3, 1)
+        )
+      end
+
+      it 'returns nil when only expression of interest periods exist' do
+        expect(mentor.previous_training_period).to be_nil
+      end
+    end
+
+    context 'when there is a confirmed partnership' do
+      let!(:older_confirmed) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          training_programme: :provider_led,
+          school_partnership: FactoryBot.create(:school_partnership),
+          started_on: Date.new(2024, 5, 1), finished_on: Date.new(2024, 6, 1)
+        )
+      end
+
+      let!(:newer_confirmed) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          training_programme: :provider_led,
+          school_partnership: FactoryBot.create(:school_partnership),
+          started_on: Date.new(2025, 3, 1), finished_on: Date.new(2025, 4, 1)
+        )
+      end
+
+      it 'returns the most recent confirmed training period' do
+        expect(mentor.previous_training_period).to eq(newer_confirmed)
+      end
     end
   end
 
