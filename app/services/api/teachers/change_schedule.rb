@@ -8,11 +8,10 @@ module API::Teachers
     validates :contract_period_year, presence: { message: "Enter a '#/contract_period_year'." }
     validates :schedule_identifier, presence: { message: "The property '#/schedule_identifier' must be present and correspond to a valid schedule." }
 
-    validate :contract_period_exists
     validate :schedule_exists
-    validate :training_period_not_already_withdrawn
+    validate :training_period_not_withdrawn
     validate :change_to_different_schedule
-    validate :valid_schedule_for_teacher_type
+    validate :schedule_applicable_for_trainee
     validate :school_partnership_exists_if_changing_contract_period
     validate :lead_provider_is_currently_training_teacher
 
@@ -31,7 +30,7 @@ module API::Teachers
   private
 
     def contract_period
-      @contract_period ||= contract_period_year.present? ? ContractPeriod.find_by(year: contract_period_year) : fallback_contract_period
+      @contract_period ||= ContractPeriod.find_by(year: contract_period_year) || fallback_contract_period
     end
 
     def fallback_contract_period
@@ -42,13 +41,6 @@ module API::Teachers
       @schedule ||= Schedule.find_by(contract_period_year:, identifier: schedule_identifier) if contract_period && schedule_identifier
     end
 
-    def contract_period_exists
-      return if errors[:contract_period_year].any?
-      return if contract_period
-
-      errors.add(:contract_period_year, "The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.")
-    end
-
     def schedule_exists
       return if errors[:schedule_identifier].any?
       return if schedule
@@ -56,7 +48,7 @@ module API::Teachers
       errors.add(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule")
     end
 
-    def training_period_not_already_withdrawn
+    def training_period_not_withdrawn
       return if errors[:teacher_api_id].any?
       return unless training_status&.withdrawn?
 
@@ -71,11 +63,11 @@ module API::Teachers
       errors.add(:schedule_identifier, "The '#/schedule_identifier' is already on the profile")
     end
 
-    def valid_schedule_for_teacher_type
+    def schedule_applicable_for_trainee
       return if errors[:schedule_identifier].any?
-      return if schedule&.teacher_type == training_period&.schedule&.teacher_type
+      return unless training_period&.for_ect?
 
-      errors.add(:schedule_identifier, "The '#/schedule_identifier' is not valid for '#/teacher_type'")
+      errors.add(:schedule_identifier, "Selected schedule is not valid for the teacher_type") if schedule.replacement_schedule?
     end
 
     def school_partnership_exists_if_changing_contract_period
