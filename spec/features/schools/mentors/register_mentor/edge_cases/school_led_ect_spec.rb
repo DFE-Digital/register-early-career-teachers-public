@@ -1,10 +1,6 @@
 RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   include_context 'test trs api client'
 
-  before do
-    allow(Rails.application.config).to receive_messages(enable_test_guidance: false)
-  end
-
   let(:trn) { '3002586' }
 
   scenario 'mentor has existing mentorship and mentoring at new school only with school-led ect' do

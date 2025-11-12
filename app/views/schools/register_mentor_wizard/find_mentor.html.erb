@@ -1,6 +1,11 @@
-<% page_data(title: "Find a mentor",
-             error: @wizard.current_step.errors.present?,
-             backlink_href: schools_register_mentor_wizard_start_path(ect_id: @wizard.ect.id)) %>
+<%
+  page_data(
+    title: "Find a mentor",
+    error: @wizard.current_step.errors.present?,
+    backlink_href: schools_register_mentor_wizard_start_path(ect_id: @wizard.ect.id),
+    test_guidance: true,
+  )
+%>
 
 <p class="govuk-body">Enter the mentor's teacher reference number and date of birth to find their teaching record.</p>
 
@@ -26,13 +31,3 @@
 <% end %>
 
 <p><%= govuk_link_to("They do not have a TRN", schools_register_mentor_wizard_no_trn_path) %></p>
-
-<%=
-  render TestGuidanceComponent.new do |component|
-    if Rails.application.config.enable_fake_trs_api
-      component.with_trs_fake_api_instructions
-    else
-      component.with_trs_example_teacher_details
-    end
-  end
-%>
