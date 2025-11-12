@@ -10,10 +10,11 @@ module Migrators
 
     def self.ects
       ::Migration::ParticipantProfile.ect
+        .where(id: Migration::InductionRecord.group(:participant_profile_id).having("count(participant_profile_id) = 1").count.keys)
+        .distinct
     end
 
     def self.dependencies
-      # %i[ect_at_school_period mentor_at_school_period]
       %i[teacher]
     end
 

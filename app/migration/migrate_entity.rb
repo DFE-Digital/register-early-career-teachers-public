@@ -76,7 +76,7 @@ class MigrateEntity
 
     teacher = Migrators::Teacher.new.migrate_one!(teacher_profile)
 
-    if teacher.api_ect_training_record_id.present?
+    if teacher&.api_ect_training_record_id.present?
       Migrators::MentorshipPeriod.new.migrate_one!(Migration::ParticipantProfile.find(teacher.api_ect_training_record_id))
     end
 
