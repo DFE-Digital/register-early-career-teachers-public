@@ -103,7 +103,19 @@ ActiveLeadProvider.find_each do |active_lead_provider|
       ).tap { |sp| send(:"describe_#{trainee_type}_at_school_period", sp) }
 
       school_partnership = random_school_partnership(active_lead_provider:)
-      schedule = Schedule.where(contract_period:).order("RANDOM()").first
+
+      schedule = if trainee_type == :mentor
+                   Schedule
+                    .where(contract_period:)
+                    .order("RANDOM()")
+                    .first
+                 else
+                   Schedule
+                    .excluding_replacement_schedules
+                    .where(contract_period:)
+                    .order("RANDOM()")
+                    .first
+                 end
 
       FactoryBot.create(
         :training_period,

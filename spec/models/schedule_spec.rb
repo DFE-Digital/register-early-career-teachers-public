@@ -26,39 +26,28 @@ describe Schedule do
     end
   end
 
-  describe '.teacher_type' do
-    %w[
-      ecf-extended-april
-      ecf-extended-january
-      ecf-extended-september
-      ecf-reduced-april
-      ecf-reduced-january
-      ecf-reduced-september
-      ecf-standard-april
-      ecf-standard-january
-      ecf-standard-september
-    ].each do |identifier|
-      context "when identifier is '#{identifier}'" do
-        subject(:schedule) { FactoryBot.build(:schedule, identifier:) }
+  describe "scopes" do
+    describe ".excluding_replacement_schedules" do
+      subject { Schedule.excluding_replacement_schedules }
 
-        it "returns :ect teacher type" do
-          expect(schedule.teacher_type).to eq(:ect)
-        end
+      let!(:replacement_schedule) { FactoryBot.create(:schedule, identifier: 'ecf-replacement-april') }
+      let!(:standard_schedule) { FactoryBot.create(:schedule, identifier: 'ecf-standard-april') }
+
+      it 'returns only standard schedules' do
+        expect(subject).to contain_exactly(standard_schedule)
       end
     end
+  end
 
-    %w[
-      ecf-replacement-april
-      ecf-replacement-january
-      ecf-replacement-september
-    ].each do |identifier|
-      context "when identifier is '#{identifier}'" do
-        subject(:schedule) { FactoryBot.build(:schedule, identifier:) }
+  describe "#replacement_schedule?" do
+    it "returns true for replacement schedules" do
+      schedule = Schedule.new(identifier: 'ecf-replacement-april')
+      expect(schedule).to be_replacement_schedule
+    end
 
-        it "returns :mentor teacher type" do
-          expect(schedule.teacher_type).to eq(:mentor)
-        end
-      end
+    it "returns false for non-replacement schedules" do
+      schedule = Schedule.new(identifier: 'ecf-standard-april')
+      expect(schedule).not_to be_replacement_schedule
     end
   end
 end

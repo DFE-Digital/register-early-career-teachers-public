@@ -1,5 +1,5 @@
 class Schedule < ApplicationRecord
-  MENTOR_TEACHER_TYPE_IDENTIFIERS = %w[
+  REPLACEMENT_SCHEDULE_IDENTIFIERS = %w[
     ecf-replacement-april
     ecf-replacement-january
     ecf-replacement-september
@@ -35,7 +35,11 @@ class Schedule < ApplicationRecord
               scope: :contract_period_year
             }
 
-  def teacher_type
-    @teacher_type ||= MENTOR_TEACHER_TYPE_IDENTIFIERS.include?(identifier) ? :mentor : :ect
+  scope :excluding_replacement_schedules, -> {
+    where.not(identifier: REPLACEMENT_SCHEDULE_IDENTIFIERS)
+  }
+
+  def replacement_schedule?
+    identifier.in?(REPLACEMENT_SCHEDULE_IDENTIFIERS)
   end
 end
