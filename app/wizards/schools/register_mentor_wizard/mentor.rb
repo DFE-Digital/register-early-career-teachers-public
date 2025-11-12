@@ -27,7 +27,7 @@ module Schools
         @full_name ||= (corrected_name || trs_full_name).strip
       end
 
-      def govuk_date_of_birth
+      def formatted_date_of_birth
         trs_date_of_birth.to_date&.to_formatted_s(:govuk)
       end
 
