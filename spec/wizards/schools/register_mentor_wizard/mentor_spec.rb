@@ -103,9 +103,9 @@ describe Schools::RegisterMentorWizard::Mentor do
     end
   end
 
-  describe '#govuk_date_of_birth' do
+  describe '#formatted_date_of_birth' do
     it 'formats the date of birth in the govuk format' do
-      expect(mentor.govuk_date_of_birth).to eq("11 October 1945")
+      expect(mentor.formatted_date_of_birth).to eq("11 October 1945")
     end
   end
 

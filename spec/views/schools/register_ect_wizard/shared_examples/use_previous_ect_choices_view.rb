@@ -8,7 +8,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
                      full_name: 'John Doe',
                      trn: '123456',
                      email: 'foo@bar.com',
-                     govuk_date_of_birth: '12 January 1931',
+                     formatted_date_of_birth: '12 January 1931',
                      start_date: 'September 2022',
                      training_programme: 'school_led',
                      appropriate_body_type: 'teaching_school_hub',
