@@ -84,6 +84,8 @@ module Migrators
         #
         teacher_periods = ::TeacherPeriodsExtractor.new(induction_records: sanitizer.induction_records).teacher_periods
 
+        teacher_periods = add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile) if participant_profile.mentor?
+
         result = create_teacher_periods(teacher, teacher_periods, participant_profile)
         set_teacher_profile_values!(teacher, participant_profile)
       else
@@ -164,6 +166,20 @@ module Migrators
         teacher.api_mentor_training_record_id = participant_profile.id
       end
       teacher.save!
+    end
+
+    def add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile)
+      urns = teacher_periods.map(&:urn)
+      participant_profile.school_mentors.eager_load(:school).find_each do |school_mentor|
+        next if urns.include? school_mentor.school.urn
+
+        teacher_periods << Migration::SchoolPeriod.new(urn: school_mentor.school.urn,
+                                                       start_date: school_mentor.created_at.to_date,
+                                                       end_date: nil,
+                                                       start_source_id: school_mentor.id,
+                                                       end_source_id: nil)
+      end
+      teacher_periods
     end
 
     def name_does_not_match?(teacher, full_name)

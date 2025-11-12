@@ -1,5 +1,5 @@
 RSpec.describe Migrators::MentorshipPeriod do
-  it_behaves_like "a migrator", :mentorship_period, %i[ect_at_school_period mentor_at_school_period] do
+  it_behaves_like "a migrator", :mentorship_period, %i[teacher] do
     def create_migration_resource
       ect = FactoryBot.create(:migration_participant_profile, :ect)
       mentor = FactoryBot.create(:migration_participant_profile, :mentor, school_cohort: ect.school_cohort)
