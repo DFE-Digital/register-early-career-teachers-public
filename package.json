@@ -4,7 +4,7 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.20",
     "accessible-autocomplete": "^3.0.1",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.27.0",
     "govuk-frontend": "5.13.0",
     "sass": "^1.94.0",
     "swagger-ui-dist": "^5.30.2"
@@ -16,8 +16,8 @@
     "stylelint-config-gds": "^2.0.0"
   },
   "optionalDependencies": {
-    "@esbuild/darwin-arm64": "^0.25.5",
-    "@esbuild/linux-x64": "^0.25.5"
+    "@esbuild/darwin-arm64": "^0.27.0",
+    "@esbuild/linux-x64": "^0.27.0"
   },
   "scripts": {
     "build:css": "sass ./app/assets/stylesheets/swagger.scss:./app/assets/builds/swagger.css ./app/assets/stylesheets/application.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules --quiet-deps",
