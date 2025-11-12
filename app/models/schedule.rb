@@ -1,10 +1,4 @@
 class Schedule < ApplicationRecord
-  MENTOR_TEACHER_TYPE_IDENTIFIERS = %w[
-    ecf-replacement-april
-    ecf-replacement-january
-    ecf-replacement-september
-  ].freeze
-
   enum :identifier,
        {
          'ecf-extended-april' => 'ecf-extended-april',
@@ -34,8 +28,4 @@ class Schedule < ApplicationRecord
               message: 'Can be used once per contract period',
               scope: :contract_period_year
             }
-
-  def teacher_type
-    @teacher_type ||= MENTOR_TEACHER_TYPE_IDENTIFIERS.include?(identifier) ? :mentor : :ect
-  end
 end
