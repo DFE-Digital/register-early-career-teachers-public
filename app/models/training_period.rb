@@ -81,6 +81,7 @@ class TrainingPeriod < ApplicationRecord
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
   validate :schedule_contract_period_matches, if: :provider_led_training_programme?
   validate :schedule_absent_for_school_led, if: :school_led_training_programme?
+  validate :schedule_applicable_for_trainee
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
@@ -188,5 +189,12 @@ private
     return if schedule.blank?
 
     errors.add(:schedule, 'Schedule must be absent for school-led training programmes')
+  end
+
+  def schedule_applicable_for_trainee
+    return if schedule.blank?
+    return unless for_ect?
+
+    errors.add(:schedule, "Only mentors can be assigned to replacement schedules") if schedule.replacement_schedule?
   end
 end

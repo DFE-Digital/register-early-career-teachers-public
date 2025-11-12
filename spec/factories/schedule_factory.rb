@@ -6,5 +6,9 @@ FactoryBot.define do
     initialize_with do
       Schedule.find_or_create_by(contract_period:, identifier:)
     end
+
+    trait :replacement_schedule do
+      identifier { 'ecf-replacement-september' }
+    end
   end
 end

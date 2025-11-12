@@ -1,4 +1,10 @@
 class Schedule < ApplicationRecord
+  REPLACEMENT_SCHEDULE_IDENTIFIERS = %w[
+    ecf-replacement-april
+    ecf-replacement-january
+    ecf-replacement-september
+  ].freeze
+
   enum :identifier,
        {
          'ecf-extended-april' => 'ecf-extended-april',
@@ -28,4 +34,12 @@ class Schedule < ApplicationRecord
               message: 'Can be used once per contract period',
               scope: :contract_period_year
             }
+
+  scope :excluding_replacement_schedules, -> {
+    where.not(identifier: REPLACEMENT_SCHEDULE_IDENTIFIERS)
+  }
+
+  def replacement_schedule?
+    identifier.in?(REPLACEMENT_SCHEDULE_IDENTIFIERS)
+  end
 end
