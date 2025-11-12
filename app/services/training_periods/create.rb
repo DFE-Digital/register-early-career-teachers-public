@@ -2,13 +2,14 @@ module TrainingPeriods
   class Create
     class ScheduleNotFound < StandardError; end
 
-    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil, author: nil)
+    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil, schedule: nil, author: nil)
       @period = period
       @started_on = started_on
       @school_partnership = school_partnership
       @expression_of_interest = expression_of_interest
       @training_programme = training_programme
       @finished_on = finished_on
+      @schedule = schedule
       @author = author
     end
 
@@ -16,8 +17,8 @@ module TrainingPeriods
       new(period:, started_on:, training_programme: 'school_led')
     end
 
-    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, author: nil)
-      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:, author:)
+    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil, author: nil)
+      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:, schedule:, author:)
     end
 
     def call
@@ -60,10 +61,15 @@ module TrainingPeriods
       )
     end
 
+    # TODO: Remove this once a presence validation can be added to TrainingPeriod model
     def schedule
       return if @training_programme == 'school_led'
 
-      Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call || raise(ScheduleNotFound)
+      @schedule ||= Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call
+
+      return @schedule if @schedule.present?
+
+      raise ScheduleNotFound
     end
   end
 end
