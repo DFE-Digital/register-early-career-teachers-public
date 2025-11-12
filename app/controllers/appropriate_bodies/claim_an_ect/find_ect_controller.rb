@@ -1,8 +1,6 @@
 module AppropriateBodies
   module ClaimAnECT
     class FindECTController < AppropriateBodiesController
-      layout 'full'
-
       def new
         @pending_induction_submission = PendingInductionSubmission.new
       end
