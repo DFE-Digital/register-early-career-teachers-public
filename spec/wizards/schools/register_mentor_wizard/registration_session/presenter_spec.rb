@@ -34,9 +34,9 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationSession::Presenter do
     end
   end
 
-  describe '#govuk_date_of_birth' do
+  describe '#formatted_date_of_birth' do
     it 'formats the TRS date of birth using the GOV.UK format' do
-      expect(presenter.govuk_date_of_birth).to eq('1 June 1975')
+      expect(presenter.formatted_date_of_birth).to eq('1 June 1975')
     end
   end
 
