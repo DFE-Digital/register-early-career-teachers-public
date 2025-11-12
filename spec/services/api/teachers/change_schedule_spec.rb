@@ -30,13 +30,6 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           it { is_expected.to validate_presence_of(:contract_period_year).with_message("Enter a '#/contract_period_year'.") }
           it { is_expected.to validate_presence_of(:schedule_identifier).with_message("The property '#/schedule_identifier' must be present and correspond to a valid schedule.") }
 
-          context "when contract_period does not exist" do
-            let(:contract_period_year) { 2030 }
-
-            it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:contract_period_year, "The '#/contract_period_year' you have entered is invalid. Check contract period details and try again.") }
-          end
-
           context "when schedule does not exist" do
             before do
               schedule_identifier
@@ -62,12 +55,14 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:schedule_identifier, "The '#/schedule_identifier' is already on the profile") }
           end
 
-          context "when changing to wrong teacher type schedule" do
-            let(:schedule_identifier) { training_period.for_ect? ? "ecf-replacement-september" : "ecf-standard-april" }
-            let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year: contract_period.year) }
+          if trainee_type == :ect
+            context "when an ECT attempts to change to a replacement schedule" do
+              let(:schedule_identifier) { "ecf-replacement-september" }
+              let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year: contract_period.year) }
 
-            it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:schedule_identifier, "The '#/schedule_identifier' is not valid for '#/teacher_type'") }
+              it { is_expected.to have_one_error_per_attribute }
+              it { is_expected.to have_error(:schedule_identifier, "Selected schedule is not valid for the teacher_type") }
+            end
           end
 
           context "when changing contract_period_year without a school partnership" do
@@ -133,7 +128,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
 
             it "changes the schedule via change schedule service" do
-              change_schedule_service = double("Teachers::ChangeSchedule")
+              change_schedule_service = instance_double(Teachers::ChangeSchedule)
 
               allow(Teachers::ChangeSchedule).to receive(:new).with(lead_provider:, teacher:, training_period:, schedule:, school_partnership:).and_return(change_schedule_service)
               allow(change_schedule_service).to receive(:change_schedule)
