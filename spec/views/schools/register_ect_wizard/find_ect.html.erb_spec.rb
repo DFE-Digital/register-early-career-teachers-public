@@ -38,4 +38,20 @@ RSpec.describe "schools/register_ect_wizard/find_ect.html.erb" do
     expect(rendered).to have_button('Continue')
     expect(rendered).to have_selector("form[action='#{schools_register_ect_wizard_find_ect_path}']")
   end
+
+  describe 'test guidance' do
+    let(:current_user) { double(appropriate_body_user?: false, school_user?: true) }
+
+    before do
+      allow(Current).to receive(:user).and_return(current_user)
+      allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
+    end
+
+    it 'renders' do
+      render
+      expect(view.content_for(:test_guidance)).to have_text('Information to review this journey')
+      expect(view.content_for(:test_guidance)).to have_text('Registered with')
+      expect(view.content_for(:test_guidance)).to have_table
+    end
+  end
 end

@@ -37,4 +37,23 @@ RSpec.describe "appropriate_bodies/claim_an_ect/find_ect/new.html.erb" do
 
     expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
   end
+
+  describe 'test guidance' do
+    let(:current_user) { double(appropriate_body_user?: true, school_user?: false) }
+
+    before do
+      allow(Current).to receive(:user).and_return(current_user)
+      allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
+    end
+
+    it 'renders' do
+      assign(:pending_induction_submission, pending_induction_submission)
+
+      render
+
+      expect(view.content_for(:test_guidance)).to have_text('Information to review this journey')
+      expect(view.content_for(:test_guidance)).to have_text('Claimed by')
+      expect(view.content_for(:test_guidance)).to have_table
+    end
+  end
 end

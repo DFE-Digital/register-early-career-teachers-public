@@ -103,6 +103,28 @@ RSpec.describe ApplicationHelper, type: :helper do
         end
       end
     end
+
+    describe 'test_guidance', :aggregate_failures do
+      let(:current_user) { double(appropriate_body_user?: false, school_user?: false) }
+
+      before do
+        allow(Current).to receive(:user).and_return(current_user)
+        allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
+      end
+
+      it "renders test guidance when enabled" do
+        page_data(title: 'Test guidance', test_guidance: true)
+
+        expect(content_for(:test_guidance)).to include('Information to review this journey')
+        expect(content_for(:test_guidance)).to include('Date of birth')
+        expect(content_for(:test_guidance)).to include('George Orwell')
+        expect(content_for(:test_guidance)).to include('Muhammed Ali')
+        expect(content_for(:test_guidance)).to include('Ash Ketchum')
+        expect(content_for(:test_guidance)).to include('Failed in Wales')
+        expect(content_for(:test_guidance)).to include('Required to complete')
+        expect(content_for(:test_guidance)).to include('Passed')
+      end
+    end
   end
 
   describe "#backlink_with_fallback" do
