@@ -25,4 +25,29 @@ describe Schedule do
       expect(duplicate.errors.messages.fetch(:identifier)).to include('Can be used once per contract period')
     end
   end
+
+  describe "scopes" do
+    describe ".excluding_replacement_schedules" do
+      subject { Schedule.excluding_replacement_schedules }
+
+      let!(:replacement_schedule) { FactoryBot.create(:schedule, identifier: 'ecf-replacement-april') }
+      let!(:standard_schedule) { FactoryBot.create(:schedule, identifier: 'ecf-standard-april') }
+
+      it 'returns only standard schedules' do
+        expect(subject).to contain_exactly(standard_schedule)
+      end
+    end
+  end
+
+  describe "#replacement_schedule?" do
+    it "returns true for replacement schedules" do
+      schedule = Schedule.new(identifier: 'ecf-replacement-april')
+      expect(schedule).to be_replacement_schedule
+    end
+
+    it "returns false for non-replacement schedules" do
+      schedule = Schedule.new(identifier: 'ecf-standard-april')
+      expect(schedule).not_to be_replacement_schedule
+    end
+  end
 end

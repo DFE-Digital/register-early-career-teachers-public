@@ -505,6 +505,29 @@ describe TrainingPeriod do
         end
       end
     end
+
+    describe "schedule applicable for trainee" do
+      it "adds an error when an ECT is assigned to a replacement schedule" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule, :replacement_schedule))
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to include("Only mentors can be assigned to replacement schedules")
+      end
+
+      it "does not add an error when a mentor is assigned to a replacement schedule" do
+        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        training_period = FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:, schedule: FactoryBot.create(:schedule, :replacement_schedule))
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to be_empty
+      end
+
+      it "does not add an error when an ECT is assigned to a non-replacement schedule" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule))
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to be_empty
+      end
+    end
   end
 
   describe "scopes" do
