@@ -1,7 +1,10 @@
-<% page_data(
-  title: "Find an early career teacher's (ECT) record",
-  error: @pending_induction_submission.errors.present?,
-  backlink_href: ab_teachers_path)
+<%
+  page_data(
+    title: "Find an early career teacher's (ECT) record",
+    error: @pending_induction_submission.errors.present?,
+    backlink_href: ab_teachers_path,
+    test_guidance: true,
+  )
 %>
 
 <%= form_with(model: @pending_induction_submission, url: ab_claim_an_ect_find_path) do |f| %>
@@ -26,12 +29,4 @@
   %>
 
   <%= f.govuk_submit %>
-<% end %>
-
-<%= render TestGuidanceComponent.new do |component| %>
-  <% if Rails.application.config.enable_fake_trs_api %>
-    <% component.with_trs_fake_api_instructions %>
-  <% else %>
-    <% component.with_trs_example_teacher_details %>
-  <% end %>
 <% end %>

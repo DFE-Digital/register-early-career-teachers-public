@@ -1,7 +1,11 @@
-<h3 class="govuk-heading-m">Information to review this journey</h3>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h3 class="govuk-heading-m">Information to review this journey</h3>
 
-<p class="govuk-body">To successfully locate an ECT from the TRS API, use credentials from the table below:</p>
+    <p class="govuk-body">To successfully locate an ECT from the TRS API, use credentials from the table below:</p>
 
-<%= govuk_table(head:, rows:) %>
+    <%= govuk_table(head:, rows:) %>
 
-<%= javascript_include_tag('populate-find-ect-form', data: { turbo_track: 'reload' }, defer: true) %>
+    <%= javascript_include_tag('populate-find-ect-form', data: { turbo_track: 'reload' }, defer: true) %>
+  </div>
+</div>
