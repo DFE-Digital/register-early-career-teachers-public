@@ -59,11 +59,7 @@ class MigrateEntity
         ]
       ]).first
 
-    teacher = Migrators::Teacher.new.migrate_one!(teacher_profile)
-
-    Migrators::ECTAtSchoolPeriod.new.migrate_one!(teacher_profile) if teacher_profile.participant_profiles.ect.any?
-    Migrators::MentorAtSchoolPeriod.new.migrate_one!(teacher_profile) if teacher_profile.participant_profiles.mentor.any?
-
+    # dependencies
     teacher_profile.participant_profiles.each do |participant_profile|
       fetch_partnerships(participant_profile:).each do |ecf_partnership|
         # create school partnerships and all their dependencies
@@ -76,53 +72,15 @@ class MigrateEntity
         # create mentors
         teacher(trn: ecf_mentor.teacher_profile.trn)
       end
-
-      Migrators::MentorshipPeriod.new.migrate_one!(participant_profile)
     end
 
-    Migrators::TrainingPeriod.new.migrate_one!(teacher_profile)
+    teacher = Migrators::Teacher.new.migrate_one!(teacher_profile)
+
+    if teacher.api_ect_training_record_id.present?
+      Migrators::MentorshipPeriod.new.migrate_one!(Migration::ParticipantProfile.find(teacher.api_ect_training_record_id))
+    end
 
     teacher
-  rescue StandardError => e
-    logger.error(e.message)
-  end
-
-
-  # migrate a teacher and their dependencies
-  def teacher_v2(trn:)
-    teacher_profile = Migration::TeacherProfile
-      .where(trn:)
-      .joins(:participant_profiles)
-      .eager_load(participant_profiles: [
-        induction_records: [
-          induction_programme: [
-            school_cohort: :school,
-            partnership: %i[
-              lead_provider delivery_partner
-            ]
-          ]
-        ]
-      ]).first
-
-    # dependencies
-    teacher_profile.participant_profiles.each do |participant_profile|
-      fetch_partnerships(participant_profile:).each do |ecf_partnership|
-        # create school partnerships and all their dependencies
-        school_partnership(ecf_partnership:)
-      end
-
-      next unless participant_profile.ect?
-
-      fetch_mentors(participant_profile:).each do |ecf_mentor|
-        # create mentors
-        teacher_v2(trn: ecf_mentor.teacher_profile.trn)
-      end
-
-      # Migrators::MentorshipPeriod.new.migrate_one!(participant_profile)
-    end
-
-    Migrators::Teacher.new.migrate_one!(teacher_profile)
-
   rescue StandardError => e
     logger.error(e.message)
   end
