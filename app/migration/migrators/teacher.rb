@@ -9,7 +9,8 @@ module Migrators
     end
 
     def self.teachers
-      ::Migration::TeacherProfile.joins(:participant_profiles).merge(Migration::ParticipantProfile.ect_or_mentor).where.not(trn: nil).distinct
+      ::Migration::TeacherProfile.where(id: ::Migration::ParticipantProfile.ect_or_mentor
+        .where(id: Migration::InductionRecord.group(:participant_profile_id).having("count(participant_profile_id) = 1").count.keys).select(:teacher_profile_id)).distinct
     end
 
     def self.dependencies
@@ -30,7 +31,6 @@ module Migrators
 
     def migrate_one!(teacher_profile)
       teacher = migrate_teacher!(teacher_profile)
-      result = true
 
       teacher_profile
         .participant_profiles
@@ -40,10 +40,10 @@ module Migrators
                                           school_cohort: :school
                                         ]])
         .find_each do |participant_profile|
-          result = migrate_profile_periods(teacher, participant_profile)
+          migrate_profile_periods(teacher, participant_profile)
         end
 
-      result ? teacher : result
+      teacher
     end
 
   private
@@ -143,7 +143,7 @@ module Migrators
         end
       rescue ActiveRecord::ActiveRecordError => e
         ::TeacherMigrationFailure.create!(teacher:,
-                                          model: is_an_ect ? :ect_at_school_period : :mentor_at_school_period,
+                                          model: participant_profile.ect? ? :ect_at_school_period : :mentor_at_school_period,
                                           message: e.message,
                                           migration_item_id: period.start_source_id,
                                           migration_item_type: "Migration::InductionRecord")
