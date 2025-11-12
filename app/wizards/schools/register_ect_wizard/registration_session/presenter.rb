@@ -14,7 +14,7 @@ module Schools
           registration_session.working_pattern&.humanize
         end
 
-        def govuk_date_of_birth
+        def formatted_date_of_birth
           registration_session.trs_date_of_birth&.to_date&.to_formatted_s(:govuk)
         end
 

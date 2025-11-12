@@ -47,16 +47,16 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Presenter do
     end
   end
 
-  describe '#govuk_date_of_birth' do
+  describe '#formatted_date_of_birth' do
     it 'formats the TRS date of birth' do
-      expect(presenter.govuk_date_of_birth).to eq('12 May 1980')
+      expect(presenter.formatted_date_of_birth).to eq('12 May 1980')
     end
 
     context 'when TRS date of birth is missing' do
       let(:trs_date_of_birth) { nil }
 
       it 'returns nil' do
-        expect(presenter.govuk_date_of_birth).to be_nil
+        expect(presenter.formatted_date_of_birth).to be_nil
       end
     end
   end

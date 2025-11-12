@@ -21,7 +21,7 @@ module Schools
 
       delegate :full_name,
                :formatted_working_pattern,
-               :govuk_date_of_birth,
+               :formatted_date_of_birth,
                to: :presenter
 
       delegate :previous_school,
