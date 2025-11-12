@@ -1,7 +1,19 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  def page_data(title:, header: :use_title, header_size: "l", error: false, backlink_href: nil, breadcrumbs: nil, caption: nil, caption_size: 'm', header_classes: [])
+  def render_test_guidance
+    content_for(:test_guidance) do
+      render TestGuidanceComponent.new do |component|
+        if Rails.application.config.enable_fake_trs_api
+          component.with_trs_fake_api_instructions
+        else
+          component.with_trs_example_teacher_details
+        end
+      end
+    end
+  end
+
+  def page_data(title:, header: :use_title, header_size: "l", error: false, backlink_href: nil, breadcrumbs: nil, caption: nil, caption_size: 'm', header_classes: [], test_guidance: false)
     page_title = title_with_error_prefix(title, error:)
     content_for(:page_title) { page_title }
 
@@ -19,6 +31,8 @@ module ApplicationHelper
       page_caption = tag.span(caption, class: "govuk-caption-#{caption_size}")
       content_for(:page_caption) { page_caption } unless caption.nil?
     end
+
+    render_test_guidance if test_guidance
   end
 
   def backlink_with_fallback(fallback:)

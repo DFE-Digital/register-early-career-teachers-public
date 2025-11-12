@@ -1,4 +1,11 @@
-<% page_data(title: "Find an ECT", error: @wizard.current_step.errors.present?, backlink_href: schools_register_ect_wizard_start_path) %>
+<%
+  page_data(
+    title: "Find an ECT",
+    error: @wizard.current_step.errors.present?,
+    backlink_href: schools_register_ect_wizard_start_path,
+    test_guidance: true,
+  )
+%>
 
 <p class="govuk-body">Enter the ECT's teacher reference number and date of birth to find their teaching record.</p>
 
@@ -22,13 +29,3 @@
 
   <%= f.govuk_submit "Continue" %>
 <% end %>
-
-<%=
-  render TestGuidanceComponent.new do |component|
-    if Rails.application.config.enable_fake_trs_api
-      component.with_trs_fake_api_instructions
-    else
-      component.with_trs_example_teacher_details
-    end
-  end
-%>
