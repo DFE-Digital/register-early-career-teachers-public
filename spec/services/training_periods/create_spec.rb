@@ -69,6 +69,27 @@ RSpec.describe TrainingPeriods::Create do
         happened_at: Time.current
       )
     end
+
+    context 'when a specific schedule is provided' do
+      let(:result_with_schedule) do
+        described_class.new(
+          period:,
+          started_on:,
+          school_partnership:,
+          training_programme:,
+          finished_on:,
+          schedule: other_schedule,
+          author:
+        ).call
+      end
+
+      let(:other_schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-january") }
+
+      it 'creates a TrainingPeriod with the provided schedule' do
+        training_period = result_with_schedule
+        expect(training_period.schedule).to eq(other_schedule)
+      end
+    end
   end
 
   context 'with a MentorAtSchoolPeriod' do
@@ -110,6 +131,27 @@ RSpec.describe TrainingPeriods::Create do
         author:,
         happened_at: Time.current
       )
+    end
+
+    context 'when a specific schedule is provided' do
+      let(:result_with_schedule) do
+        described_class.new(
+          period:,
+          started_on:,
+          school_partnership:,
+          training_programme:,
+          finished_on:,
+          schedule: other_schedule,
+          author:
+        ).call
+      end
+
+      let(:other_schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-january") }
+
+      it 'creates a TrainingPeriod with the provided schedule' do
+        training_period = result_with_schedule
+        expect(training_period.schedule).to eq(other_schedule)
+      end
     end
   end
 
@@ -161,7 +203,7 @@ RSpec.describe TrainingPeriods::Create do
     it 'calls new with the provider_led arguments' do
       allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
 
-      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, author:)
+      TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, schedule:, author:)
 
       expect(TrainingPeriods::Create).to have_received(:new).with(
         period:,
@@ -170,6 +212,7 @@ RSpec.describe TrainingPeriods::Create do
         expression_of_interest:,
         training_programme: 'provider_led',
         finished_on:,
+        schedule:,
         author:
       )
     end
