@@ -859,7 +859,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_07_093813) do
   add_foreign_key "events", "lead_providers", on_delete: :nullify
   add_foreign_key "events", "mentor_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "mentorship_periods", on_delete: :nullify
-  add_foreign_key "events", "schedules"
+  add_foreign_key "events", "schedules", on_delete: :nullify
   add_foreign_key "events", "school_partnerships", on_delete: :nullify
   add_foreign_key "events", "schools", on_delete: :nullify
   add_foreign_key "events", "statement_adjustments", on_delete: :nullify
