@@ -1,4 +1,7 @@
 class TeacherPeriodsExtractor
+  include Enumerable
+  include DataFixes
+
   attr_reader :induction_records
 
   def initialize(induction_records:)
@@ -24,16 +27,18 @@ private
     current_school = nil
     current_training = nil
 
-    induction_records.each_with_object([]) do |induction_record, periods|
+    induction_records.each_with_object([]).with_index do |(induction_record, periods), idx|
       record_school = induction_record.induction_programme.school_cohort.school
 
       if current_school != record_school
         # start at a new school
         current_school = record_school
 
+        start_date = corrected_start_date(induction_record:, sequence_number: idx)
+
         # TODO: adjust first period date
         current_period = Migration::SchoolPeriod.new(urn: current_school.urn,
-                                                     start_date: induction_record.start_date,
+                                                     start_date:,
                                                      end_date: induction_record.end_date,
                                                      start_source_id: induction_record.id,
                                                      end_source_id: induction_record.id)

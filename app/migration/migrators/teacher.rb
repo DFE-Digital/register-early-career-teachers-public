@@ -40,18 +40,7 @@ module Migrators
                                           school_cohort: :school
                                         ]])
         .find_each do |participant_profile|
-          sanitizer = ::InductionRecordSanitizer.new(participant_profile:)
-
-          if sanitizer.valid?
-            result = migrate_teacher_periods(teacher, sanitizer.induction_records)
-          else
-            ::TeacherMigrationFailure.create!(teacher:,
-                                              model: participant_profile.ect? ? :ect_at_school_period : :mentor_at_school_period,
-                                              message: sanitizer.error,
-                                              migration_item_id: participant_profile.id,
-                                              migration_item_type: participant_profile.class.name)
-            result = false
-          end
+          result = migrate_profile_periods(teacher, participant_profile)
         end
 
       result ? teacher : result
@@ -80,10 +69,38 @@ module Migrators
       teacher
     end
 
-    def build_teacher_periods(teacher, teacher_periods, participant_profile)
+    def migrate_profile_periods(teacher, participant_profile)
+      result = true
+      sanitizer = ::InductionRecordSanitizer.new(participant_profile:)
+
+      if sanitizer.valid?
+        # TeacherPeriodsExtractor creates nested periods for a teacher with school periods at the top
+        # |-school_period_1
+        # |    |-training_period_1
+        # |    |-training_period_2
+        # |
+        # |-school_period_2
+        # |    |-training_period_3
+        #
+        teacher_periods = ::TeacherPeriodsExtractor.new(induction_records: sanitizer.induction_records).teacher_periods
+
+        result = create_teacher_periods(teacher, teacher_periods, participant_profile)
+        set_teacher_profile_values!(teacher, participant_profile)
+      else
+        ::TeacherMigrationFailure.create!(teacher:,
+                                          model: participant_profile.ect? ? :ect_at_school_period : :mentor_at_school_period,
+                                          message: sanitizer.error,
+                                          migration_item_id: participant_profile.id,
+                                          migration_item_type: participant_profile.class.name)
+        result = false
+      end
+
+      result
+    end
+
+    def create_teacher_periods(teacher, teacher_periods, participant_profile)
       success = true
-      is_an_ect = participant_profile.ect?
-      school_period_class = is_an_ect ? ::ECTAtSchoolPeriod : ::MentorAtSchoolPeriod
+      school_period_class = participant_profile.ect? ? ::ECTAtSchoolPeriod : ::MentorAtSchoolPeriod
 
       teacher_periods.each_with_index do |period, idx|
         school = find_school_by_urn!(period.urn)
@@ -98,10 +115,15 @@ module Migrators
         school_period.save!
 
         period.training_periods.each do |training_record|
-        
+          next if participant_profile.mentor? && training_record.training_programme != "provider_led"
+
           training_period = ::TrainingPeriod.find_or_initialize_by(ecf_start_induction_record_id: training_record.start_source_id)
           training_period.training_programme = training_record.training_programme
-          training_period.ect_at_school_period = school_period
+          if participant_profile.ect?
+            training_period.ect_at_school_period = school_period
+          else
+            training_period.mentor_at_school_period = school_period
+          end
           training_period.started_on = training_record.start_date
           training_period.finished_on = training_record.end_date
           training_period.ecf_end_induction_record_id = training_record.end_source_id
@@ -125,14 +147,11 @@ module Migrators
                                           migration_item_type: "Migration::InductionRecord")
         success = false
       end
+
       success
     end
 
-    def migrate_teacher_periods(teacher, induction_records)
-      participant_profile = induction_records.first.participant_profile
-      teacher_periods = ::TeacherPeriodsExtractor.new(induction_records:).teacher_periods
-      result = true
-
+    def set_teacher_profile_values!(teacher, participant_profile)
       payments_frozen_year = participant_profile.previous_payments_frozen_cohort_start_year
 
       if participant_profile.ect?
@@ -140,37 +159,11 @@ module Migrators
         teacher.ect_pupil_premium_uplift = true if participant_profile.pupil_premium_uplift
         teacher.ect_sparsity_uplift = true if participant_profile.sparsity_uplift
         teacher.api_ect_training_record_id = participant_profile.id
-        teacher.save!
-
-        build_teacher_periods(teacher, teacher_periods, participant_profile)
-
-        # result = Builders::ECT::SchoolPeriods
-        #   .new(teacher:, school_periods:, created_at: participant_profile.created_at)
-        #   .build
-
       else
         teacher.mentor_payments_frozen_year = payments_frozen_year if payments_frozen_year
         teacher.api_mentor_training_record_id = participant_profile.id
-        teacher.save!
-
-        build_teacher_periods(teacher, teacher_periods, participant_profile)
-
-        # result = Builders::Mentor::SchoolPeriods
-        #   .new(teacher:, school_periods:, created_at: participant_profile.created_at)
-        #   .build
       end
-
-      if result
-        training_period_data = ::TrainingPeriodExtractor.new(induction_records:).training_periods
-
-        result = if participant_profile.ect?
-                   Builders::ECT::TrainingPeriods.new(teacher:, training_period_data:).build
-                 else
-                   Builders::Mentor::TrainingPeriods.new(teacher:, training_period_data:).build
-                 end
-      end
-
-      result
+      teacher.save!
     end
 
     def name_does_not_match?(teacher, full_name)
@@ -186,24 +179,34 @@ module Migrators
 
     def find_school_partnership!(training_period_data, school)
       lead_provider = CacheManager.instance.find_lead_provider_by_name(training_period_data.lead_provider)
-      raise(ActiveRecord::RecordNotFound,
-            "Couldn't find LeadProvider with name #{training_period_data.lead_provider}") unless lead_provider
+      unless lead_provider
+        raise(ActiveRecord::RecordNotFound,
+              "Couldn't find LeadProvider with name #{training_period_data.lead_provider}")
+      end
 
       active_lead_provider = CacheManager.instance.find_active_lead_provider(lead_provider_id: lead_provider.id, contract_period_year: training_period_data.cohort_year)
-      raise(ActiveRecord::RecordNotFound,
-            "Couldn't find ActiveLeadProvider with lead_provider_id #{lead_provider.id} and contract_period_year #{training_period_data.cohort_year}") unless active_lead_provider
+      unless active_lead_provider
+        raise(ActiveRecord::RecordNotFound,
+              "Couldn't find ActiveLeadProvider with lead_provider_id #{lead_provider.id} and contract_period_year #{training_period_data.cohort_year}")
+      end
 
       delivery_partner = CacheManager.instance.find_delivery_partner_by_name(training_period_data.delivery_partner)
-      raise(ActiveRecord::RecordNotFound,
-            "Couldn't find DeliveryPartner with name #{training_period_data.delivery_partner}") unless delivery_partner
+      unless delivery_partner
+        raise(ActiveRecord::RecordNotFound,
+              "Couldn't find DeliveryPartner with name #{training_period_data.delivery_partner}")
+      end
 
       lead_provider_delivery_partnership = CacheManager.instance.find_lead_provider_delivery_partnership_by_key(active_lead_provider_id: active_lead_provider.id, delivery_partner_id: delivery_partner.id)
-      raise(ActiveRecord::RecordNotFound,
-            "Couldn't find LeadProviderDeliveryPartnership with active_lead_provider_id #{active_lead_provider.id} and delivery_partner_id #{delivery_partner.id}") unless lead_provider_delivery_partnership
+      unless lead_provider_delivery_partnership
+        raise(ActiveRecord::RecordNotFound,
+              "Couldn't find LeadProviderDeliveryPartnership with active_lead_provider_id #{active_lead_provider.id} and delivery_partner_id #{delivery_partner.id}")
+      end
 
       school_partnership = CacheManager.instance.find_school_partnership(lead_provider_delivery_partnership_id: lead_provider_delivery_partnership.id, school_id: school.id)
-      raise(ActiveRecord::RecordNotFound,
-            "Couldn't find SchoolPartnership with lead_provider_delivery_partnership_id #{lead_provider_delivery_partnership.id} and school_id #{school.id}") unless school_partnership
+      unless school_partnership
+        raise(ActiveRecord::RecordNotFound,
+              "Couldn't find SchoolPartnership with lead_provider_delivery_partnership_id #{lead_provider_delivery_partnership.id} and school_id #{school.id}")
+      end
 
       school_partnership
     end
