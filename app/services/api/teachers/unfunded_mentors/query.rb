@@ -1,15 +1,14 @@
-module API::UnfundedMentors
+module API::Teachers::UnfundedMentors
   class Query
     include Queries::FilterIgnorable
 
-    attr_reader :scope, :lead_provider_id
+    attr_reader :scope
 
     def initialize(
-      lead_provider_id: :ignore,
+      lead_provider_id:,
       updated_since: :ignore,
       sort: { created_at: :asc }
     )
-      @lead_provider_id = lead_provider_id
       @scope = Teacher.distinct
 
       where_lead_provider_is(lead_provider_id)
@@ -36,33 +35,30 @@ module API::UnfundedMentors
   private
 
     def preload_associations(results)
-      # Joining with `mentor_at_school_periods`
-      # In case we don't filter by lead provider
-      # We still want to return only mentors
       results
         .strict_loading
-        .joins(:mentor_at_school_periods)
         .includes(
           :latest_mentor_at_school_period
         )
     end
 
     def where_lead_provider_is(lead_provider_id)
-      return if ignore?(filter: lead_provider_id)
-
       mentor_ids_associated_with_teachers_for_the_lead_provider = Metadata::TeacherLeadProvider
         .where(lead_provider_id:)
         .where.not(api_mentor_id: nil)
         .select(:api_mentor_id)
 
-      mentor_ids_where_the_mentor_has_also_been_trained_by_the_lead_provider = Teacher
-        .joins(lead_provider_metadata: :latest_mentor_training_period)
-        .where(lead_provider_metadata: { lead_provider_id: })
-        .select(:api_id)
+      teacher_ids_trained_by_the_lead_provider = Metadata::TeacherLeadProvider
+        .where(lead_provider_id:)
+        .where.not(
+          latest_ect_training_period: nil,
+          latest_mentor_training_period: nil
+        )
+        .select(:teacher_id)
 
       @scope = scope
         .where(api_id: mentor_ids_associated_with_teachers_for_the_lead_provider)
-        .where.not(api_id: mentor_ids_where_the_mentor_has_also_been_trained_by_the_lead_provider)
+        .where.not(id: teacher_ids_trained_by_the_lead_provider)
     end
 
     def where_updated_since(updated_since)
