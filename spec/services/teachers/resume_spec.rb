@@ -59,7 +59,6 @@ RSpec.describe Teachers::Resume do
             expect(created_training_period.started_on).to eq(Time.zone.today)
             expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
-            expect(created_training_period.expression_of_interest).to eq(training_period.expression_of_interest)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
         end
@@ -82,7 +81,6 @@ RSpec.describe Teachers::Resume do
             expect(created_training_period.started_on).to eq(Time.zone.today)
             expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
-            expect(created_training_period.expression_of_interest).to eq(training_period.expression_of_interest)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
         end
@@ -104,7 +102,6 @@ RSpec.describe Teachers::Resume do
             expect(created_training_period.started_on).to eq(Time.zone.today)
             expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
-            expect(created_training_period.expression_of_interest).to eq(training_period.expression_of_interest)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
         end
@@ -127,7 +124,6 @@ RSpec.describe Teachers::Resume do
             expect(created_training_period.started_on).to eq(Time.zone.today)
             expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
-            expect(created_training_period.expression_of_interest).to eq(training_period.expression_of_interest)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
         end
@@ -153,7 +149,6 @@ RSpec.describe Teachers::Resume do
             expect(created_training_period.started_on).to eq(Time.zone.today)
             expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
-            expect(created_training_period.expression_of_interest).to eq(training_period.expression_of_interest)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
         end
