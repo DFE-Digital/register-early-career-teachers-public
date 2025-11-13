@@ -1,48 +1,25 @@
 RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
-  # Helper method to create a full ECT/Mentor setup
-  def create_ect_and_unfunded_mentor_setup(lead_provider_id: nil)
-    ect = FactoryBot.create(:teacher)
-    school_partnership = if lead_provider_id.present?
-                           SchoolPartnership.joins(lead_provider_delivery_partnership: :active_lead_provider).where(active_lead_provider: { lead_provider_id: }).first
-                         else
-                           FactoryBot.create(:school_partnership)
-                         end
-    ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect, started_on: 2.months.ago)
-    ect_training_period = FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, school_partnership:, ect_at_school_period:)
+  def create_mentorship_period(mentor_school_partnership:, mentee_school_partnership:)
+    mentee = FactoryBot.create(:teacher)
+    mentee_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentee, started_on: 2.months.ago)
+    FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period: mentee_school_period, school_partnership: mentee_school_partnership)
 
     unfunded_mentor = FactoryBot.create(:teacher)
-    unfunded_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: unfunded_mentor, started_on: 2.months.ago)
+    unfunded_mentor_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: unfunded_mentor, started_on: 2.months.ago)
+    FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: unfunded_mentor_school_period, school_partnership: mentor_school_partnership)
 
-    latest_mentorship_period = FactoryBot.create(
+    FactoryBot.create(
       :mentorship_period,
       :ongoing,
-      mentee: ect_at_school_period,
-      mentor: unfunded_mentor_at_school_period,
-      started_on: ect_training_period.started_on + 1.week
+      mentee: mentee_school_period,
+      mentor: unfunded_mentor_school_period
     )
-
-    # Use the ECT's lead provider if not provided
-    effective_lead_provider_id = lead_provider_id || ect.lead_provider_metadata.first.lead_provider_id
-
-    {
-      ect:,
-      ect_at_school_period:,
-      ect_training_period:,
-      unfunded_mentor:,
-      unfunded_mentor_at_school_period:,
-      latest_mentorship_period:,
-      lead_provider_id: effective_lead_provider_id
-    }
   end
 
-  let(:setup) { create_ect_and_unfunded_mentor_setup }
-  let(:ect) { setup[:ect] }
-  let(:ect_at_school_period) { setup[:ect_at_school_period] }
-  let(:ect_training_period) { setup[:ect_training_period] }
-  let(:unfunded_mentor) { setup[:unfunded_mentor] }
-  let(:unfunded_mentor_at_school_period) { setup[:unfunded_mentor_at_school_period] }
-  let(:latest_mentorship_period) { setup[:latest_mentorship_period] }
-  let(:lead_provider_id) { setup[:lead_provider_id] }
+  let(:lead_provider_id) { school_partnership.lead_provider.id }
+  let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  let(:other_school_partnership) { FactoryBot.create(:school_partnership) }
+  let!(:unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
   let(:query) { described_class.new(lead_provider_id:) }
 
   it_behaves_like "a query that avoids includes" do
@@ -55,9 +32,7 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
     end
 
     describe "#unfunded_mentors" do
-      subject(:result) do
-        query.unfunded_mentors.first
-      end
+      subject(:result) { query.unfunded_mentors.first }
 
       include_context "preloaded associations"
     end
@@ -76,25 +51,19 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
   end
 
   describe "#unfunded_mentors" do
-    # Setup for the second unfunded mentor
-    let!(:another_setup) do
-      create_ect_and_unfunded_mentor_setup(lead_provider_id:)
-    end
-    let(:another_ect) { another_setup[:ect] }
-    let(:another_unfunded_mentor) { another_setup[:unfunded_mentor] }
-    let(:another_ect_at_school_period) { another_setup[:ect_at_school_period] }
-    let(:another_unfunded_mentor_at_school_period) { another_setup[:unfunded_mentor_at_school_period] }
-    let(:another_latest_mentorship_period) { another_setup[:latest_mentorship_period] }
-
-    # Create a funded mentor to ensure it's excluded
-    let(:funded_mentor) { FactoryBot.create(:teacher) }
-    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: funded_mentor, started_on: 2.months.ago) }
-    let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period:) }
-
     describe "filtering" do
       describe "by `lead_provider`" do
+        let!(:other_unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
+
+        before do
+          # Mentor associated with the lead provider (so not unfunded and should be ignored)
+          create_mentorship_period(mentor_school_partnership: school_partnership, mentee_school_partnership: school_partnership)
+          # Unfunded mentor for another lead provider (should be ignored)
+          create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: other_school_partnership)
+        end
+
         it "filters by `lead_provider`" do
-          expect(query.unfunded_mentors).to contain_exactly(unfunded_mentor, another_unfunded_mentor)
+          expect(query.unfunded_mentors).to contain_exactly(unfunded_mentor, other_unfunded_mentor)
         end
 
         it "returns empty if no unfunded mentors are found for the given `lead_provider`" do
@@ -117,65 +86,63 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
       end
 
       describe "by `updated_since`" do
-        it "filters by `updated_since`" do
-          another_unfunded_mentor.update!(api_updated_at: 3.days.ago)
-          unfunded_mentor.update!(api_updated_at: 1.day.ago)
+        let!(:other_unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
 
+        before do
+          unfunded_mentor.update!(api_updated_at: 3.days.ago)
+          other_unfunded_mentor.update!(api_updated_at: 1.day.ago)
+        end
+
+        it "filters by `updated_since`" do
           query = described_class.new(lead_provider_id:, updated_since: 2.days.ago)
 
-          expect(query.unfunded_mentors).to contain_exactly(unfunded_mentor)
+          expect(query.unfunded_mentors).to contain_exactly(other_unfunded_mentor)
         end
 
         it "does not filter by `updated_since` if omitted" do
-          another_unfunded_mentor.update!(api_updated_at: 1.week.ago)
-          unfunded_mentor.update!(api_updated_at: 2.weeks.ago)
-
-          expect(query.unfunded_mentors).to contain_exactly(another_unfunded_mentor, unfunded_mentor)
+          expect(query.unfunded_mentors).to contain_exactly(other_unfunded_mentor, unfunded_mentor)
         end
 
         it "does not filter by `updated_since` if blank" do
-          another_unfunded_mentor.update!(api_updated_at: 1.week.ago)
-          unfunded_mentor.update!(api_updated_at: 2.weeks.ago)
-
           query = described_class.new(lead_provider_id:, updated_since: " ")
 
-          expect(query.unfunded_mentors).to contain_exactly(another_unfunded_mentor, unfunded_mentor)
+          expect(query.unfunded_mentors).to contain_exactly(other_unfunded_mentor, unfunded_mentor)
         end
       end
     end
 
     describe "ordering" do
+      let!(:other_unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
+
       before do
-        unfunded_mentor.update!(created_at: 1.day.ago)
-        another_unfunded_mentor.update!(created_at: 3.days.ago)
+        unfunded_mentor.update!(api_updated_at: 1.day.ago)
+        other_unfunded_mentor.update!(api_updated_at: 4.days.ago)
       end
 
       describe "default order" do
         it "returns unfunded mentors ordered by created_at, in ascending order" do
-          expect(query.unfunded_mentors).to eq([another_unfunded_mentor, unfunded_mentor])
+          expect(query.unfunded_mentors).to eq([unfunded_mentor, other_unfunded_mentor])
         end
       end
 
       describe "order by created_at, in descending order" do
         it "returns unfunded mentors in correct order" do
           query = described_class.new(lead_provider_id:, sort: { created_at: :desc })
-          expect(query.unfunded_mentors).to eq([unfunded_mentor, another_unfunded_mentor])
+          expect(query.unfunded_mentors).to eq([other_unfunded_mentor, unfunded_mentor])
         end
       end
 
       describe "order by updated_at, in ascending order" do
-        before { another_unfunded_mentor.update!(updated_at: 1.day.from_now) }
-
         it "returns unfunded mentors in correct order" do
-          query = described_class.new(lead_provider_id:, sort: { updated_at: :asc })
-          expect(query.unfunded_mentors).to eq([unfunded_mentor, another_unfunded_mentor])
+          query = described_class.new(lead_provider_id:, sort: { api_updated_at: :asc })
+          expect(query.unfunded_mentors).to eq([other_unfunded_mentor, unfunded_mentor])
         end
       end
 
       describe "order by updated_at, in descending order" do
         it "returns unfunded mentors in correct order" do
-          query = described_class.new(lead_provider_id:, sort: { updated_at: :desc })
-          expect(query.unfunded_mentors).to eq([another_unfunded_mentor, unfunded_mentor])
+          query = described_class.new(lead_provider_id:, sort: { api_updated_at: :desc })
+          expect(query.unfunded_mentors).to eq([unfunded_mentor, other_unfunded_mentor])
         end
       end
     end
