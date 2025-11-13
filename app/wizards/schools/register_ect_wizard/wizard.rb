@@ -64,7 +64,7 @@ module Schools
       end
 
       def ect
-        @ect ||= RegistrationSession.new(store)
+        @ect ||= RegistrationStore.new(store)
       end
 
     private

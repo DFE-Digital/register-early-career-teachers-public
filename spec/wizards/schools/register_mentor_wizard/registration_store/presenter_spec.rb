@@ -1,7 +1,7 @@
-RSpec.describe Schools::RegisterMentorWizard::RegistrationSession::Presenter do
-  subject(:presenter) { described_class.new(registration_session:) }
+RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Presenter do
+  subject(:presenter) { described_class.new(registration_store:) }
 
-  let(:registration_session) do
+  let(:registration_store) do
     Struct.new(:corrected_name, :trs_first_name, :trs_last_name, :trs_date_of_birth)
           .new(corrected_name, trs_first_name, trs_last_name, trs_date_of_birth)
   end

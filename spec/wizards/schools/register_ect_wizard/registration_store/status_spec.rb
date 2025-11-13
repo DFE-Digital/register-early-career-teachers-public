@@ -1,5 +1,5 @@
-RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Status do
-  subject(:status) { described_class.new(registration_session:, queries:) }
+RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Status do
+  subject(:status) { described_class.new(registration_store:, queries:) }
 
   let(:email) { 'ect@example.com' }
   let(:trn) { '1234567' }
@@ -13,7 +13,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Status do
   let(:trs_date_of_birth) { nil }
   let(:contract_start_date) { nil }
 
-  let(:registration_session) do
+  let(:registration_store) do
     Struct.new(
       :email,
       :trn,
@@ -42,7 +42,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationSession::Status do
   end
 
   let(:queries) do
-    instance_double(Schools::RegisterECTWizard::RegistrationSession::Queries,
+    instance_double(Schools::RegisterECTWizard::RegistrationStore::Queries,
                     previous_training_period:,
                     previous_lead_provider:)
   end
