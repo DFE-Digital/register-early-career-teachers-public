@@ -76,25 +76,8 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") }
           end
 
-          context "when lead provider does not belong to the latest training period" do
-            let(:another_lead_provider) { FactoryBot.create(:lead_provider) }
-            let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: another_lead_provider, contract_period:) }
-            let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-            let!(:new_school_partnership) { FactoryBot.create(:school_partnership, school: at_school_period.school, lead_provider_delivery_partnership:) }
-
-            before do
-              training_period.update!(finished_on: Time.zone.today)
-              opts = {
-                started_on: Time.zone.today,
-                school_partnership: new_school_partnership,
-                schedule:
-              }
-              if training_period.for_ect?
-                FactoryBot.create(:training_period, :for_ect, **opts, ect_at_school_period: training_period.trainee)
-              else
-                FactoryBot.create(:training_period, :for_mentor, **opts, mentor_at_school_period: training_period.trainee)
-              end
-            end
+          context "when the training period is not ongoing today" do
+            before { training_period.update!(finished_on: 1.day.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "Lead provider is not currently training '#/teacher_api_id'.") }

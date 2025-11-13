@@ -93,18 +93,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period
 
-      ongoing_school_period =
-        if training_period.for_ect?
-          teacher.ect_at_school_periods.ongoing_today.first
-        elsif training_period.for_mentor?
-          teacher.mentor_at_school_periods.ongoing_today.first
-        end
-
-      latest_training_period = ongoing_school_period&.training_periods&.latest_first&.first
-
-      return if latest_training_period&.lead_provider == lead_provider
-
-      errors.add(:teacher_api_id, "Lead provider is not currently training '#/teacher_api_id'.")
+      errors.add(:teacher_api_id, "Lead provider is not currently training '#/teacher_api_id'.") unless training_period.ongoing_today?
     end
   end
 end
