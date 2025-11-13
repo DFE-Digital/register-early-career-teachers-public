@@ -2,7 +2,8 @@ module TrainingPeriods
   class Create
     class ScheduleNotFound < StandardError; end
 
-    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil, schedule: nil, author: nil)
+    def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil,
+                   finished_on: nil, schedule: nil, author: nil, mentee: nil)
       @period = period
       @started_on = started_on
       @school_partnership = school_partnership
@@ -10,14 +11,15 @@ module TrainingPeriods
       @training_programme = training_programme
       @finished_on = finished_on
       @author = author
+      @mentee = mentee
     end
 
     def self.school_led(period:, started_on:)
       new(period:, started_on:, training_programme: "school_led")
     end
 
-    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil, author: nil)
-      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: "provider_led", finished_on:, schedule:, author:)
+    def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil, author: nil, mentee: nil)
+      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:, schedule:, author:, mentee:)
     end
 
     def call
@@ -64,7 +66,7 @@ module TrainingPeriods
     def schedule
       return if @training_programme == "school_led"
 
-      @schedule ||= Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call
+      @schedule ||= Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on, period_type_key:, mentee: @mentee).call
 
       return @schedule if @schedule.present?
 

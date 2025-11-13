@@ -13,6 +13,7 @@ RSpec.describe Schedules::Find do
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
+  let(:mentee) {}
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -22,7 +23,7 @@ RSpec.describe Schedules::Find do
 
   describe "#call" do
     subject(:service) do
-      described_class.new(period:, training_programme:, started_on:).call
+      described_class.new(period:, training_programme:, started_on:, period_type_key:, mentee:).call
     end
 
     %i[mentor_at_school_period ect_at_school_period].each do |period_type|
@@ -32,6 +33,8 @@ RSpec.describe Schedules::Find do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-reduced-september")
       end
+
+      let(:period_type_key) { period_type }
 
       context "when the period is a #{period_type.to_s.humanize}" do
         let(:period) { send(period_type) }
@@ -220,6 +223,73 @@ RSpec.describe Schedules::Find do
                 end
               end
             end
+          end
+        end
+      end
+    end
+
+    context "replacement schedule for mentor" do
+      before do
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-january")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
+      end
+
+      let(:period_type_key) { :mentor_at_school_period }
+      let(:period) { mentor_at_school_period }
+
+      let(:started_on) { provider_led_start_date }
+      let(:registered_on) { Date.new(year, 6, 15) }
+      let(:provider_led_start_date) { Date.new(year, 12, 1) }
+      let(:previous_start_date) { Date.new(year, 7, 1) }
+      let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: 'ecf-standard-september') }
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
+      let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+
+      it 'assigns a replacement schedule' do
+        travel_to(provider_led_start_date) do
+          expect(service.identifier).to include('replacement')
+        end
+      end
+
+      context 'when there is a previous training period' do
+        it 'uses the identifier from the previous provider-led training period' do
+          first_training_period = nil
+          travel_to(registered_on) do
+            first_training_period = FactoryBot.create(:training_period, :provider_led, :ongoing,
+                                                      started_on: previous_start_date,
+                                                      ect_at_school_period:,
+                                                      schedule:,
+                                                      school_partnership:)
+          end
+
+          travel_to(provider_led_start_date) do
+            expect(service.identifier).not_to include('replacement')
+          end
+        end
+      end
+
+      context 'when the mentor is ineligible for funding' do
+        let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+
+        it 'does not assign a replacement schedule' do
+          travel_to(provider_led_start_date) do
+            expect(service.identifier).not_to include('replacement')
+            expect(service.identifier).not_to be_nil
+          end
+        end
+      end
+
+      context 'when the mentee is receiving school-led training' do
+        let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+        let!(:mentee_training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+
+        it 'does not assign a replacement schedule' do
+          travel_to(provider_led_start_date) do
+            expect(service.identifier).not_to include('replacement')
           end
         end
       end

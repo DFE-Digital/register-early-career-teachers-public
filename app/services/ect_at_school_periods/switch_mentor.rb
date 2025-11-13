@@ -13,10 +13,10 @@ module ECTAtSchoolPeriods
 
     def switch
       ActiveRecord::Base.transaction do
-        assign_mentor!
+        @mentee = assign_mentor!
 
         if mentor_eligible_for_training?
-          training_period = create_training_period!
+          training_period = create_training_period!(@mentee)
           record_training_period_event!(training_period)
         end
       end
@@ -37,13 +37,14 @@ module ECTAtSchoolPeriods
       ).assign!
     end
 
-    def create_training_period!
+    def create_training_period!(mentee)
       TrainingPeriods::Create.provider_led(
         period: mentor_at_school_period,
         started_on: earliest_possible_start_date,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:,
-        author:
+        author:,
+        mentee:
       ).call
     end
 
