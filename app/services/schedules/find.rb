@@ -10,80 +10,44 @@ module Schedules
 
     def call
       return unless provider_led?
-      return most_recent_schedule if previous_provider_led_periods.exists?
+      return teacher.most_recent_schedule if teacher.most_recent_provider_led_period
 
-      Schedule.find_by(contract_period_year:, identifier:)
+      find_schedule
     end
 
   private
+
+    def find_schedule
+      Schedule.find_by(contract_period_year:, identifier:)
+    end
 
     def provider_led?
       training_programme == "provider_led"
     end
 
-    def previous_provider_led_periods
-      period.teacher.training_periods.where(training_programme: 'provider_led')
+    def teacher
+      period.teacher
     end
 
-    def most_recent_provider_led_period
-      previous_provider_led_periods.latest_first.first
-    end
-
-    def most_recent_schedule
-      most_recent_provider_led_period.schedule
-    end
-
-    def schedule_date
+    def latest_start_date
       [started_on, Time.zone.today].max
     end
 
     def schedule_month
-      case schedule_date
-      when june_start..october_end
+      month = latest_start_date.month
+
+      case month
+      when 6..10
         'september'
-      when november_start..december_end
+      when 11, 12, 1, 2
         'january'
-      when january_start..february_end
-        'january'
-      when march_start..may_end
+      when 3..5
         'april'
       end
     end
 
     def contract_period_year
-      schedule_date.year
-    end
-
-    def june_start
-      Date.new(contract_period_year, 6, 1)
-    end
-
-    def october_end
-      Date.new(contract_period_year, 10, 1).end_of_month
-    end
-
-    def november_start
-      Date.new(contract_period_year, 11, 1)
-    end
-
-    def december_end
-      Date.new(contract_period_year, 12, 1).end_of_month
-    end
-
-    def january_start
-      Date.new(contract_period_year, 1, 1)
-    end
-
-    def february_end
-      Date.new(contract_period_year, 2, 1).end_of_month
-    end
-
-    def march_start
-      Date.new(contract_period_year, 3, 1)
-    end
-
-    def may_end
-      Date.new(contract_period_year, 5, 1).end_of_month
+      latest_start_date.year
     end
 
     # TODO: in due course, we will assign non-standard identifiers
