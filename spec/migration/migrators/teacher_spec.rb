@@ -30,7 +30,8 @@ RSpec.describe Migrators::Teacher do
     def setup_failure_state
       invalid_trn = '123'
       teacher_profile = FactoryBot.create(:migration_teacher_profile, trn: invalid_trn)
-      FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
+      ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
+      FactoryBot.create(:migration_induction_record, participant_profile: ect)
     end
 
     describe "#migrate!" do
@@ -81,16 +82,13 @@ RSpec.describe Migrators::Teacher do
     end
 
     describe ".teachers" do
-      it "excludes teacher profiles with nil TRN" do
+      it "includes teacher profiles with nil TRN" do
         teacher_profile_with_nil_trn = FactoryBot.create(:migration_teacher_profile, trn: nil)
-        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_nil_trn, user: teacher_profile_with_nil_trn.user)
-
-        teacher_profile_with_valid_trn = FactoryBot.create(:migration_teacher_profile)
-        FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_valid_trn, user: teacher_profile_with_valid_trn.user)
+        ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_with_nil_trn, user: teacher_profile_with_nil_trn.user)
+        FactoryBot.create(:migration_induction_record, participant_profile: ect)
 
         teachers = described_class.teachers
-        expect(teachers).to include(teacher_profile_with_valid_trn)
-        expect(teachers).not_to include(teacher_profile_with_nil_trn)
+        expect(teachers).to include(teacher_profile_with_nil_trn)
       end
     end
   end
