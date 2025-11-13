@@ -13,6 +13,7 @@ module API::Teachers
     validate :schedule_applicable_for_trainee
     validate :school_partnership_exists_if_changing_contract_period
     validate :lead_provider_is_currently_training_teacher
+    validate :no_future_training_periods_exist
 
     def change_schedule
       return false unless valid?
@@ -93,7 +94,28 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period
 
-      errors.add(:teacher_api_id, "Lead provider is not currently training '#/teacher_api_id'.") unless training_period.ongoing_today?
+      errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") unless training_period.ongoing_today?
+    end
+
+    def no_future_training_periods_exist
+      return if errors[:teacher_api_id].any?
+      return unless training_period
+
+      if future_training_periods.exists?
+        errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.")
+      end
+    end
+
+    def future_training_periods
+      if training_period.for_mentor?
+        TrainingPeriod
+          .where.not(mentor_at_school_period_id: nil)
+          .started_after(training_period.started_on)
+      else
+        TrainingPeriod
+          .where.not(ect_at_school_period_id: nil)
+          .started_after(training_period.started_on)
+      end
     end
   end
 end
