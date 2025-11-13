@@ -142,5 +142,18 @@ module Schools
     def record_event!
       Events::Record.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:, training_period:)
     end
+
+    def reuse_old_partnership
+      previous_id = @store&.school_partnership_to_reuse_id
+      return nil if previous_id.blank?
+
+      SchoolPartnerships::CreateFromPrevious
+        .new.call(
+          previous_school_partnership_id: previous_id,
+          school:,
+          author:,
+          current_contract_period_year: contract_period.year
+        )
+    end
   end
 end
