@@ -1,5 +1,5 @@
-RSpec.describe Schools::RegisterMentorWizard::RegistrationSession::Status do
-  subject(:status) { described_class.new(registration_session:, queries:) }
+RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
+  subject(:status) { described_class.new(registration_store:, queries:) }
 
   let(:email) { 'mentor@example.com' }
   let(:trn) { '7654321' }
@@ -11,7 +11,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationSession::Status do
   let(:store) { {} }
   let(:ect_lead_provider) { nil }
 
-  let(:registration_session) do
+  let(:registration_store) do
     Struct.new(
       :email,
       :trn,
@@ -40,7 +40,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationSession::Status do
   let(:contract_period) { nil }
   let(:ect) { nil }
   let(:queries) do
-    instance_double(Schools::RegisterMentorWizard::RegistrationSession::Queries,
+    instance_double(Schools::RegisterMentorWizard::RegistrationStore::Queries,
                     mentor_at_school_periods: mentor_periods_relation,
                     previous_school_mentor_at_school_periods: previous_school_periods_relation,
                     contract_period:,

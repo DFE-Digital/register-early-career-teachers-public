@@ -1,9 +1,9 @@
 module Schools
   module RegisterECTWizard
-    class RegistrationSession
+    class RegistrationStore
       class PreviousRegistration
-        def initialize(registration_session:, queries:)
-          @registration_session = registration_session
+        def initialize(registration_store:, queries:)
+          @registration_store = registration_store
           @queries = queries
         end
 
@@ -50,7 +50,7 @@ module Schools
 
       private
 
-        attr_reader :registration_session, :queries
+        attr_reader :registration_store, :queries
 
         def ect_at_school_period
           @ect_at_school_period ||= queries.previous_ect_at_school_period

@@ -1,11 +1,11 @@
-RSpec.describe Schools::RegisterMentorWizard::RegistrationSession::Queries do
-  subject(:queries) { described_class.new(registration_session:) }
+RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
+  subject(:queries) { described_class.new(registration_store:) }
 
   let(:teacher) { FactoryBot.create(:teacher, trn:) }
   let(:trn) { '3002586' }
   let(:school) { FactoryBot.create(:school) }
   let(:store) { {} }
-  let(:registration_session) do
+  let(:registration_store) do
     Struct.new(:trn, :school_urn, :lead_provider_id, :started_on, :start_date, :store)
           .new(trn, school_urn, lead_provider_id, started_on, start_date, store)
   end
