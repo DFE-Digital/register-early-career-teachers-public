@@ -1,4 +1,4 @@
-# Steps in Schools::RegisterMentorWizard will have a Schools::RegisterMentorWizard::RegistrationSession instance
+# Steps in Schools::RegisterMentorWizard will have a Schools::RegisterMentorWizard::RegistrationStore instance
 # available rather than the wizard store directly.
 # The aim of this class is to encapsulate and provide Mentor logic instead of spreading it across the various steps.
 #
@@ -6,12 +6,12 @@
 # that has been built on top of it by inheriting from Ruby SimpleDelegator class.
 module Schools
   module RegisterMentorWizard
-    class RegistrationSession < SimpleDelegator
+    class RegistrationStore < SimpleDelegator
       def initialize(store)
         super(store)
-        @presenter = RegistrationSession::Presenter.new(registration_session: self)
-        @queries   = RegistrationSession::Queries.new(registration_session: self)
-        @status    = RegistrationSession::Status.new(registration_session: self, queries:)
+        @presenter = RegistrationStore::Presenter.new(registration_store: self)
+        @queries   = RegistrationStore::Queries.new(registration_store: self)
+        @status    = RegistrationStore::Status.new(registration_store: self, queries:)
       end
 
       delegate :full_name,

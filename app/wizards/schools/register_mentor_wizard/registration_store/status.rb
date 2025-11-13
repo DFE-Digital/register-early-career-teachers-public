@@ -1,30 +1,30 @@
 module Schools
   module RegisterMentorWizard
-    class RegistrationSession
+    class RegistrationStore
       class Status
-        def initialize(registration_session:, queries:)
-          @registration_session = registration_session
+        def initialize(registration_store:, queries:)
+          @registration_store = registration_store
           @queries = queries
         end
 
         class MentorStatusError < StandardError; end
 
         def email_taken?
-          Schools::TeacherEmail.new(email: registration_session.email, trn: registration_session.trn).is_currently_used?
+          Schools::TeacherEmail.new(email: registration_store.email, trn: registration_store.trn).is_currently_used?
         end
 
         def corrected_name?
-          registration_session.corrected_name.present?
+          registration_store.corrected_name.present?
         end
 
         def in_trs?
-          registration_session.trs_first_name.present?
+          registration_store.trs_first_name.present?
         end
 
         def matches_trs_dob?
-          return false if [registration_session.date_of_birth, registration_session.trs_date_of_birth].any?(&:blank?)
+          return false if [registration_store.date_of_birth, registration_store.trs_date_of_birth].any?(&:blank?)
 
-          registration_session.trs_date_of_birth.to_date == registration_session.date_of_birth.to_date
+          registration_store.trs_date_of_birth.to_date == registration_store.date_of_birth.to_date
         end
 
         def funding_available?
@@ -40,7 +40,7 @@ module Schools
         end
 
         def prohibited_from_teaching?
-          registration_session.trs_prohibited_from_teaching == true
+          registration_store.trs_prohibited_from_teaching == true
         end
 
         def previously_registered_as_mentor?
@@ -72,21 +72,21 @@ module Schools
         end
 
         def ect_lead_provider_invalid?
-          return false unless registration_session.ect_lead_provider
+          return false unless registration_store.ect_lead_provider
 
-          !LeadProviders::Active.new(registration_session.ect_lead_provider).active_in_contract_period?(queries.contract_period)
+          !LeadProviders::Active.new(registration_store.ect_lead_provider).active_in_contract_period?(queries.contract_period)
         end
 
         def mentoring_at_new_school_only?
-          registration_session.store.fetch("mentoring_at_new_school_only", "yes") == "yes"
+          registration_store.store.fetch("mentoring_at_new_school_only", "yes") == "yes"
         end
 
       private
 
-        attr_reader :registration_session, :queries
+        attr_reader :registration_store, :queries
 
         def mentor_funding_eligibility
-          @mentor_funding_eligibility ||= Teachers::MentorFundingEligibility.new(trn: registration_session.trn)
+          @mentor_funding_eligibility ||= Teachers::MentorFundingEligibility.new(trn: registration_store.trn)
         end
       end
     end
