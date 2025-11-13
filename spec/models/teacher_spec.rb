@@ -39,6 +39,7 @@ describe Teacher do
     it { is_expected.to have_one(:finished_induction_period).class_name("InductionPeriod") }
     it { is_expected.to have_one(:earliest_ect_at_school_period).class_name("ECTAtSchoolPeriod") }
     it { is_expected.to have_one(:earliest_mentor_at_school_period).class_name("MentorAtSchoolPeriod") }
+    it { is_expected.to have_one(:latest_mentor_at_school_period).class_name("MentorAtSchoolPeriod") }
 
     describe ".started_induction_period" do
       subject { teacher.started_induction_period }
