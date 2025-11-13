@@ -5,7 +5,6 @@ module API::Teachers
     attribute :contract_period_year
     attribute :schedule_identifier
 
-    validates :contract_period_year, presence: { message: "Enter a '#/contract_period_year'." }
     validates :schedule_identifier, presence: { message: "The property '#/schedule_identifier' must be present and correspond to a valid schedule." }
 
     validate :schedule_exists
@@ -45,7 +44,7 @@ module API::Teachers
       return if errors[:schedule_identifier].any?
       return if schedule
 
-      errors.add(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule")
+      errors.add(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule.")
     end
 
     def training_period_not_withdrawn
@@ -60,7 +59,7 @@ module API::Teachers
       return unless training_period
       return if schedule != training_period.schedule
 
-      errors.add(:schedule_identifier, "The '#/schedule_identifier' is already on the profile")
+      errors.add(:schedule_identifier, "Selected schedule is already on the profile")
     end
 
     def schedule_applicable_for_trainee
@@ -76,7 +75,7 @@ module API::Teachers
       return if contract_period == training_period.contract_period
       return if school_partnership
 
-      errors.add(:contract_period_year, "You cannot change a participant to this '#/contract_period_year' as you do not have a partnership with the school for the cohort. Contact the DfE for assistance.")
+      errors.add(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.")
     end
 
     def school_partnership
