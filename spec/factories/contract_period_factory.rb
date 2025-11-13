@@ -15,5 +15,13 @@ FactoryBot.define do
     initialize_with do
       ContractPeriod.find_or_create_by(year:)
     end
+
+    trait :with_schedules do
+      after(:create) do |contract_period|
+        FactoryBot.create(:schedule, contract_period:, identifier: 'ecf-standard-september')
+        FactoryBot.create(:schedule, contract_period:, identifier: 'ecf-standard-january')
+        FactoryBot.create(:schedule, contract_period:, identifier: 'ecf-standard-april')
+      end
+    end
   end
 end
