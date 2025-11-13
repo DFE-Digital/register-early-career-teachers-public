@@ -113,4 +113,12 @@ class Teacher < ApplicationRecord
 
     mentor_training_periods if mentor_at_school_periods.exists?
   end
+
+  def most_recent_provider_led_period
+    training_periods&.provider_led_training_programme&.latest_first&.first
+  end
+
+  def most_recent_schedule
+    most_recent_provider_led_period&.schedule
+  end
 end
