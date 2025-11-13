@@ -11,11 +11,13 @@ module SchoolPartnerships
       previous_school_partnership = find_previous_school_partnership(previous_school_partnership_id)
       return nil unless previous_school_partnership
 
+      return nil unless previous_school_partnership.school_id == school.id
+
       previous_lead_provider_delivery_partnership = previous_school_partnership.lead_provider_delivery_partnership
       previous_active_lead_provider = previous_lead_provider_delivery_partnership&.active_lead_provider
       return nil unless previous_lead_provider_delivery_partnership && previous_active_lead_provider
 
-      previous_lead_provider_id    = previous_active_lead_provider.lead_provider_id
+      previous_lead_provider_id = previous_active_lead_provider.lead_provider_id
       previous_delivery_partner_id = previous_lead_provider_delivery_partnership.delivery_partner_id
 
       current_active_lead_provider_id = find_current_active_lead_provider_id(

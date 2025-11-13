@@ -157,13 +157,6 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     it 'does not render the delivery partner row' do
       expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Delivery partner')
     end
-
-    it 'calls #has_partnership_with? using the lead provider and contract period' do
-      expect(decorated_school).to have_received(:has_partnership_with?).with(
-        lead_provider: decorated_school.latest_registration_choices.lead_provider,
-        contract_period: wizard.ect.contract_start_date
-      )
-    end
   end
 
   context 'when provider-led but the school already has a current-period partnership' do

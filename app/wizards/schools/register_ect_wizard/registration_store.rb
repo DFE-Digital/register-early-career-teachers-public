@@ -89,7 +89,7 @@ module Schools
       end
 
       def normalized_start_date
-        return store[:start_date_as_date] if respond_to?(:store) && store[:start_date_as_date].present?
+        return store[:start_date_as_date] if store[:start_date_as_date].present?
 
         case start_date
         when Date   then start_date
