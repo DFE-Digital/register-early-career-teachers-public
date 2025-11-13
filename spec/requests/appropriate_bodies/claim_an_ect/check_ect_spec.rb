@@ -1,5 +1,4 @@
 RSpec.describe 'Appropriate body claiming an ECT: checking we have the right ECT' do
-  include AuthHelper
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:page_heading) { "Check details for" }
   let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body:) }

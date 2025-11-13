@@ -1,5 +1,4 @@
 RSpec.describe "Appropriate Body teacher extensions index", type: :request do
-  include AuthHelper
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }

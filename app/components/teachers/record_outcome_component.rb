@@ -1,58 +1,67 @@
 module Teachers
   class RecordOutcomeComponent < ApplicationComponent
-    include Rails.application.routes.url_helpers
+    class InvalidOutcomeError < StandardError; end
+    class MissingAppropriateBodyError < StandardError; end
+    class InvalidServiceError < StandardError; end
 
-    attr_reader :teacher, :pending_induction_submission, :mode, :outcome_type, :is_admin, :appropriate_body
+    attr_reader :service, :teacher_full_name
 
-    def initialize(teacher:, pending_induction_submission:, mode:, outcome_type:, appropriate_body: nil)
-      @teacher = teacher
-      @pending_induction_submission = pending_induction_submission
-      @mode = mode
-      @outcome_type = outcome_type
-      @is_admin = mode == :admin
-      @appropriate_body = appropriate_body
-    end
+    include UserModes
 
-    def title
-      "Record #{outcome_text} outcome for #{teacher_full_name}"
-    end
+    delegate :appropriate_body,
+             :teacher,
+             :pending_induction_submission,
+             :outcome,
+             to: :service
 
-    def backlink_href
-      public_send("#{user_type}_teacher_path", teacher)
-    end
+    # @param mode [Symbol] either :admin or :appropriate_body
+    # @param service [Object]
+    # @raise [Teachers::RecordOutcomeComponent::InvalidOutcomeError]
+    # @raise [Teachers::RecordOutcomeComponent::MissingAppropriateBodyError]
+    def initialize(mode:, service:)
+      super
 
-    def form_url
-      public_send("#{user_type}_teacher_record_#{outcome_type}_outcome_path", teacher)
-    end
+      @service = service
 
-    def submit_text
-      "Record #{outcome_verb} outcome for #{teacher_full_name}"
-    end
+      raise(InvalidServiceError) if unsupported_service?
+      raise(InvalidOutcomeError) if unsupported_outcome?
+      raise(MissingAppropriateBodyError) if appropriate_body_required?
 
-    def show_appeal_notice?
-      !is_admin && warning?
-    end
-
-    def warning?
-      outcome_type == :failed
+      @teacher_full_name = ::Teachers::Name.new(teacher).full_name
     end
 
   private
 
-    def user_type
-      is_admin ? :admin : :ab
+    def submit_text
+      type = { pass: "pass", fail: "failing" }[outcome]
+      "Record #{type} outcome for #{teacher_full_name}"
     end
 
-    def teacher_full_name
-      ::Teachers::Name.new(teacher).full_name
+    def appeal_notice
+      "#{teacher_full_name} can appeal this outcome. You must tell them about their right to appeal and the appeal process."
     end
 
-    def outcome_text
-      outcome_type == :passed ? "passed" : "failed"
+    def url
+      path_prefix = { admin: "admin", appropriate_body: "ab" }[mode]
+      type = { pass: "passed", fail: "failed" }[outcome]
+      public_send("#{path_prefix}_teacher_record_#{type}_outcome_path", teacher)
     end
 
-    def outcome_verb
-      outcome_type == :passed ? "pass" : "failing"
+    def failed?
+      outcome == :fail
+    end
+
+    def appropriate_body_required?
+      appropriate_body_mode? && service.appropriate_body.nil?
+    end
+
+    def unsupported_outcome?
+      !outcome.in?(::INDUCTION_OUTCOMES.keys)
+    end
+
+    def unsupported_service?
+      !service.is_a?(::AppropriateBodies::RecordPass) &&
+        !service.is_a?(::AppropriateBodies::RecordFail)
     end
   end
 end

@@ -1,16 +1,16 @@
 RSpec.describe "Recording a passed outcome for an ECT" do
   let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:teacher) { FactoryBot.create(:teacher, :with_name) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
-  let(:teacher) { FactoryBot.create(:teacher) }
   let(:today) { Time.zone.today }
   let(:number_of_completed_terms) { 4 }
 
   before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
   scenario 'Happy path' do
-    given_i_am_on_the_ect_page(teacher)
+    given_i_am_on_the_ect_page
     when_i_click_link('Pass induction')
-    then_i_should_be_on_the_record_outcome_page(teacher)
+    then_i_should_be_on_the_record_outcome_page
 
     when_i_enter_the_finish_date
     and_i_enter_a_terms_value_of(number_of_completed_terms)
@@ -23,7 +23,7 @@ RSpec.describe "Recording a passed outcome for an ECT" do
 
 private
 
-  def given_i_am_on_the_ect_page(teacher)
+  def given_i_am_on_the_ect_page
     path = "/appropriate-body/teachers/#{teacher.id}"
     page.goto(path)
     expect(page).to have_path(path)
@@ -33,7 +33,7 @@ private
     page.get_by_role('link', name: text).click
   end
 
-  def then_i_should_be_on_the_record_outcome_page(teacher)
+  def then_i_should_be_on_the_record_outcome_page
     expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome/new")
   end
 
@@ -50,8 +50,7 @@ private
   end
 
   def and_i_click_submit
-    teacher_name = Teachers::Name.new(teacher).full_name
-    page.get_by_role('button', name: "Record pass outcome for #{teacher_name}").click
+    page.get_by_role('button', name: "Record pass outcome for John Keating").click
   end
 
   def then_i_should_be_on_the_success_page

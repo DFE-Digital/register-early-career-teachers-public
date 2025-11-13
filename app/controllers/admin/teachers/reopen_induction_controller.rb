@@ -1,8 +1,6 @@
 module Admin
   module Teachers
     class ReopenInductionController < AdminController
-      include AuditableParams
-
       before_action :set_teacher
 
       before_action -> do
@@ -15,7 +13,8 @@ module Admin
       def update
         @reopen_induction = ReopenInductionPeriod.new(
           induction_period: @teacher.last_induction_period,
-          **auditable_params_for(ReopenInductionPeriod.model_name)
+          author: current_user,
+          **auditable_params
         )
         @reopen_induction.reopen_induction_period!
 
@@ -27,10 +26,12 @@ module Admin
 
     private
 
+      def auditable_params
+        params.expect(ReopenInductionPeriod.auditable_params)
+      end
+
       def set_teacher
-        @teacher = Teacher
-          .includes(:last_induction_period)
-          .find(params[:teacher_id])
+        @teacher = Teacher.includes(:last_induction_period).find(params[:teacher_id])
       end
 
       def induction_complete_with_outcome?

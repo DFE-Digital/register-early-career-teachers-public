@@ -1,6 +1,6 @@
 module Teachers
   class DetailsComponent < ApplicationComponent
-    MODES = %i[admin appropriate_body school].freeze
+    include UserModes
 
     renders_one :personal_details, -> {
       Teachers::Details::PersonalDetailsComponent.new(teacher:)
@@ -30,19 +30,12 @@ module Teachers
       Teachers::Details::InductionOutcomeActionsComponent.new(mode:, teacher:)
     }
 
-    attr_reader :mode, :teacher
+    attr_reader :teacher
 
     def initialize(mode:, teacher:)
-      fail unless mode.in?(MODES)
+      super
 
-      @mode = mode
       @teacher = teacher
-    end
-
-  private
-
-    def admin_mode?
-      mode == :admin
     end
   end
 end

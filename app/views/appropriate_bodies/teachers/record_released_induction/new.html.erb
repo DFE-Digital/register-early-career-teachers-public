@@ -1,10 +1,21 @@
-<% page_data(
-  title: "Release #{teacher_full_name(@teacher)}",
-  error: @pending_induction_submission.errors.any?,
-  backlink_href: ab_teacher_path(@teacher)
-) %>
+<%
+  page_data(
+    title: "Release #{teacher_full_name(@teacher)}",
+    error: @record_release.errors.any?,
+    backlink_href: ab_teacher_path(@teacher)
+  )
+%>
 
-<%= form_with(model: @pending_induction_submission, url: ab_teacher_release_ect_path(@teacher), method: 'post') do |f| %>
-  <%= render partial: 'appropriate_bodies/teachers/outcome_form', locals: { f: f } %>
-  <%= f.govuk_submit %>
+<%= form_with(model: @record_release, url: ab_teacher_release_ect_path(@teacher)) do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+  <%=
+    render Teachers::OutcomeFormFieldsComponent.new(
+        mode: :appropriate_body,
+        form:,
+        appropriate_body: @appropriate_body
+      )
+  %>
+
+  <%= form.govuk_submit %>
 <% end %>
