@@ -1,6 +1,4 @@
 RSpec.describe "Admin::Teachers::Extensions", type: :request do
-  include AuthHelper
-
   let(:admin_user) { FactoryBot.create(:user, :admin) }
   let(:teacher) { FactoryBot.create(:teacher) }
 

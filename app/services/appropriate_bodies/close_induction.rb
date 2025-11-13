@@ -1,39 +1,70 @@
 module AppropriateBodies
   # Closing an ongoing induction period comes in three flavours:
   #
-  # 1. RecordPass#pass!
-  # 2. RecordFail#fail!
-  # 3. RecordRelease#release!
+  # 1. RecordPass
+  # 2. RecordFail
+  # 3. RecordRelease
   class CloseInduction
-    class TeacherHasNoOngoingInductionPeriod < StandardError
+    class TeacherHasNoOngoingInductionPeriod < StandardError; end
+
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+
+    attribute :teacher
+    attribute :appropriate_body
+    attribute :author
+
+    validates :finished_on, presence: { message: "Enter a finish date" }
+    validates :number_of_terms, presence: { message: "Enter a number of terms" }
+
+    def self.induction_params
+      { model_name.param_key => %i[finished_on number_of_terms] }
     end
 
-    attr_reader :appropriate_body,
-                :pending_induction_submission,
-                :author,
-                :teacher,
-                :induction_period
+    def outcome = nil
 
-    def initialize(appropriate_body:, pending_induction_submission:, author:)
-      @appropriate_body = appropriate_body
-      @pending_induction_submission = pending_induction_submission
-      @author = author
-      @teacher = Teacher.find_by!(trn: pending_induction_submission.trn)
-      @induction_period = @teacher.ongoing_induction_period
+    def call(params)
+      raise TeacherHasNoOngoingInductionPeriod if ongoing_induction_period.blank?
+
+      pending_induction_submission.assign_attributes(outcome:, **params)
+
+      validate!
     end
 
   private
 
-    def close_induction_period(outcome: nil)
-      induction_period.update!(
-        number_of_terms: pending_induction_submission.number_of_terms,
-        finished_on: pending_induction_submission.finished_on,
-        outcome:
-      )
+    delegate :trn,
+             :ongoing_induction_period,
+             :first_induction_period,
+             :last_induction_period,
+             to: :teacher
+
+    delegate :number_of_terms,
+             :finished_on,
+             to: :pending_induction_submission
+
+    def close_induction_period
+      ongoing_induction_period.update!(number_of_terms:, finished_on:, outcome:)
+    end
+
+    def pending_induction_submission
+      @pending_induction_submission ||= PendingInductionSubmissions::Build.closing_induction_period(
+        ongoing_induction_period,
+        appropriate_body_id: appropriate_body.id,
+        trn:
+      ).pending_induction_submission
     end
 
     def delete_submission
       pending_induction_submission.update!(delete_at: 24.hours.from_now)
+    end
+
+    def validate_submission(context:)
+      if pending_induction_submission.invalid?(context:)
+        pending_induction_submission.errors.each do |error|
+          errors.add(error.attribute, error.message)
+        end
+      end
     end
   end
 end

@@ -1,28 +1,31 @@
 module AppropriateBodies
   module Teachers
     class RecordReleasedInductionController < CloseInductionController
+      def new
+        @record_release = record_release
+
+        super
+      end
+
       def create
         if @teacher.ongoing_induction_period.present?
-          @pending_induction_submission = build_closing_induction_period(outcome: nil)
+          @record_release = record_release
 
-          PendingInductionSubmission.transaction do
-            if @pending_induction_submission.save(context: :release_ect) && record_released_induction!
-              redirect_to ab_teacher_release_ect_path(@teacher)
-            else
-              render :new
-            end
+          if @record_release.call(induction_params)
+            redirect_to ab_teacher_release_ect_path(@teacher)
+          else
+            render :new, status: :unprocessable_content
           end
 
         else
           redirect_to ab_teacher_path(@teacher)
         end
+      rescue ActiveRecord::RecordInvalid,
+             ActiveModel::ValidationError
+        render :new, status: :unprocessable_content
       end
 
     private
-
-      def pending_induction_submission_params
-        params.expect(pending_induction_submission: %i[finished_on number_of_terms])
-      end
 
       def find_current_teacher
         @teacher = ects.current.find_by!(id: params[:teacher_id])
@@ -32,12 +35,16 @@ module AppropriateBodies
         @teacher = ects.former.find_by!(id: params[:teacher_id])
       end
 
-      def record_released_induction!
+      def record_release
         RecordRelease.new(
+          teacher: @teacher,
           appropriate_body: @appropriate_body,
-          pending_induction_submission: @pending_induction_submission,
           author: current_user
-        ).release!
+        )
+      end
+
+      def induction_params
+        params.expect(RecordRelease.induction_params)
       end
     end
   end

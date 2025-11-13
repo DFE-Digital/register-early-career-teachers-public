@@ -1,4 +1,4 @@
-describe "Admin adds an induction period" do
+describe "Admin adding an induction" do
   before do
     sign_in_as_dfe_user(role: :admin)
   end

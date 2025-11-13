@@ -14,6 +14,7 @@ data_sources:
 
     # https://blazer.dokkuapp.com/queries/2-smart-column
     smart_columns:
+      author_id: "SELECT id, name FROM users WHERE id IN {value}"
       appropriate_body_id: "SELECT id, name FROM appropriate_bodies WHERE id IN {value}"
       teacher_id: "SELECT id, CONCAT(trs_first_name, ' ', trs_last_name) AS full_name FROM teachers WHERE id IN {value}"
 
@@ -23,6 +24,7 @@ data_sources:
       teacher_id: "/admin/teachers/{value}"
       pending_induction_submission_batch_id: "/admin/bulk/batches/{value}"
       induction_period_id: "/admin/teachers/N/induction-periods/{value}/edit"
+      zendesk_ticket_id: "https://becomingateacher.zendesk.com/agent/tickets/{value}"
 
 
 # statement timeout, in seconds

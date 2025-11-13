@@ -2,10 +2,17 @@ RSpec.describe 'Appropriate body releasing an ECT' do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
+  let!(:induction_period) do
+    FactoryBot.create(:induction_period, :ongoing,
+                      teacher:,
+                      appropriate_body:)
+  end
+
   describe 'GET /appropriate-body/teachers/:id/release/new' do
     context 'when not signed in' do
       it 'redirects to the root page' do
         get("/appropriate-body/teachers/#{teacher.id}/release/new")
+
         expect(response).to redirect_to(root_url)
       end
     end
@@ -16,26 +23,29 @@ RSpec.describe 'Appropriate body releasing an ECT' do
       end
 
       context 'and a teacher actively training' do
-        before do
-          FactoryBot.create(:induction_period, :ongoing, appropriate_body:, teacher:)
-        end
-
-        it 'instantiates a new PendingInductionSubmission and renders the page' do
-          allow(PendingInductionSubmission).to receive(:new).and_call_original
-
+        it 'renders' do
           get("/appropriate-body/teachers/#{teacher.id}/release/new")
 
           expect(response).to be_successful
-          expect(PendingInductionSubmission).to have_received(:new).once
         end
       end
     end
   end
 
   describe 'POST /appropriate-body/teachers/:id/release' do
+    let(:params) do
+      {
+        appropriate_bodies_record_release: {
+          finished_on: Date.current,
+          number_of_terms: 3
+        }
+      }
+    end
+
     context 'when not signed in' do
       it 'redirects to the root page' do
-        post("/appropriate-body/teachers/#{teacher.id}/release")
+        post("/appropriate-body/teachers/#{teacher.id}/release", params:)
+
         expect(response).to redirect_to(root_url)
       end
     end
@@ -43,86 +53,52 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     context 'when signed in as an appropriate body user' do
       before do
         sign_in_as(:appropriate_body_user, appropriate_body:)
-        allow(AppropriateBodies::RecordRelease).to receive(:new).and_call_original
+
+        post("/appropriate-body/teachers/#{teacher.id}/release", params:)
       end
 
-      context "when the teacher has one ongoing induction period" do
-        before do
-          allow(PendingInductionSubmissions::Build).to receive(:closing_induction_period).and_call_original
-        end
-
-        let!(:induction_period) do
-          FactoryBot.create(:induction_period, :ongoing, appropriate_body:, teacher:, started_on: "2022-09-01")
-        end
-
-        let(:release_params) do
-          {
-            pending_induction_submission: {
-              finished_on: "2023-07-31",
-              number_of_terms: 6
-            }
-          }
-        end
-
-        it 'uses PendingInductionSubmissions::Build to instantiate the PendingInductionSubmission' do
-          post(
-            "/appropriate-body/teachers/#{teacher.id}/release",
-            params: release_params
+      context "with valid params" do
+        it 'releases the induction and redirects' do
+          expect(induction_period.reload).to have_attributes(
+            outcome: nil,
+            finished_on: Date.current,
+            number_of_terms: 3
           )
-
-          expect(PendingInductionSubmissions::Build).to have_received(:closing_induction_period).once
-        end
-
-        it 'updates the induction period and redirects to show page' do
-          post(
-            "/appropriate-body/teachers/#{teacher.id}/release",
-            params: release_params
-          )
-
-          induction_period.reload
-          expect(induction_period.finished_on).to eq(Date.parse("2023-07-31"))
-          expect(induction_period.number_of_terms).to eq(6)
 
           expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}/release")
         end
 
         context 'with missing params' do
-          let(:invalid_params) do
+          let(:params) do
             {
-              pending_induction_submission: {
+              appropriate_bodies_record_release: {
                 finished_on: nil,
                 number_of_terms: nil
               }
             }
           end
 
-          it 'renders the new form with errors' do
-            post(
-              "/appropriate-body/teachers/#{teacher.id}/release",
-              params: invalid_params
-            )
-
+          it 'renders errors' do
             expect(response.body).to include('There is a problem')
+            expect(response.body).to include('Enter a finish date')
+            expect(response.body).to include('Enter a number of terms')
           end
         end
 
-        context 'when finished_on is before started_on' do
-          let(:invalid_params) do
+        context 'with invalid params' do
+          let(:params) do
             {
-              pending_induction_submission: {
+              appropriate_bodies_record_release: {
                 finished_on: induction_period.started_on - 1.month,
-                number_of_terms: 5
+                number_of_terms: 16.99,
               }
             }
           end
 
-          specify do
-            post(
-              "/appropriate-body/teachers/#{teacher.id}/release",
-              params: invalid_params
-            )
-
+          it 'renders errors' do
+            expect(response.body).to include('There is a problem')
             expect(response.body).to include('The end date must be later than the start date')
+            expect(response.body).to include('Number of terms must be between 0 and 16')
           end
         end
       end

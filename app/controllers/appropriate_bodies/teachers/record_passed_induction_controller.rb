@@ -1,31 +1,42 @@
 module AppropriateBodies
   module Teachers
     class RecordPassedInductionController < CloseInductionController
+      def new
+        @record_pass = record_pass
+
+        super
+      end
+
       def create
         if @teacher.ongoing_induction_period.present?
-          @pending_induction_submission = build_closing_induction_period(outcome: 'pass')
+          @record_pass = record_pass
 
-          PendingInductionSubmission.transaction do
-            if @pending_induction_submission.save(context: :record_outcome) && record_passed_induction!
-              redirect_to ab_teacher_record_passed_outcome_path(@teacher)
-            else
-              render :new
-            end
+          if @record_pass.call(induction_params)
+            redirect_to ab_teacher_record_passed_outcome_path(@teacher)
+          else
+            render :new, status: :unprocessable_content
           end
 
         else
           redirect_to ab_teacher_path(@teacher)
         end
+      rescue ActiveRecord::RecordInvalid,
+             ActiveModel::ValidationError
+        render :new, status: :unprocessable_content
       end
 
     private
 
-      def record_passed_induction!
+      def record_pass
         RecordPass.new(
+          teacher: @teacher,
           appropriate_body: @appropriate_body,
-          pending_induction_submission: @pending_induction_submission,
           author: current_user
-        ).pass!
+        )
+      end
+
+      def induction_params
+        params.expect(RecordPass.induction_params)
       end
     end
   end
