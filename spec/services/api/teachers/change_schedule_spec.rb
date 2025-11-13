@@ -27,7 +27,6 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
           it { is_expected.to be_valid }
 
-          it { is_expected.to validate_presence_of(:contract_period_year).with_message("Enter a '#/contract_period_year'.") }
           it { is_expected.to validate_presence_of(:schedule_identifier).with_message("The property '#/schedule_identifier' must be present and correspond to a valid schedule.") }
 
           context "when schedule does not exist" do
@@ -37,7 +36,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule") }
+            it { is_expected.to have_error(:schedule_identifier, "The property '#/schedule_identifier' must be present and correspond to a valid schedule.") }
           end
 
           context "when training_period is withdrawn" do
@@ -52,7 +51,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             let(:schedule_identifier) { schedule.identifier }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:schedule_identifier, "The '#/schedule_identifier' is already on the profile") }
+            it { is_expected.to have_error(:schedule_identifier, "Selected schedule is already on the profile") }
           end
 
           if trainee_type == :ect
@@ -74,7 +73,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:contract_period_year, "You cannot change a participant to this '#/contract_period_year' as you do not have a partnership with the school for the cohort. Contact the DfE for assistance.") }
+            it { is_expected.to have_error(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") }
           end
 
           context "when lead provider does not belong to the latest training period" do
