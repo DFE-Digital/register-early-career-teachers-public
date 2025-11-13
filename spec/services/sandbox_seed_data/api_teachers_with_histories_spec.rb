@@ -14,7 +14,7 @@ RSpec.describe SandboxSeedData::APITeachersWithHistories do
     # Ensure the default and other schedules exist for some contract periods
     school_partnerships.each do |school_partnership|
       FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
-      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: Schedule.identifiers.keys.sample)
+      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: Schedule.excluding_replacement_schedules.identifiers.keys.sample)
     end
   end
 
