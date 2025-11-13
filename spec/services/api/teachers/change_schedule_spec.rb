@@ -21,8 +21,8 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
     describe "validations" do
       %i[ect mentor].each do |trainee_type|
         context "for #{trainee_type}" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.months.from_now) }
+          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.week.from_now) }
           let(:teacher_type) { trainee_type }
 
           it { is_expected.to be_valid }
@@ -40,7 +40,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           end
 
           context "when training_period is withdrawn" do
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :withdrawn, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :withdrawn, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.week.from_now) }
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "Cannot perform actions on a withdrawn participant") }
@@ -80,7 +80,16 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             before { training_period.update!(finished_on: 1.day.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "Lead provider is not currently training '#/teacher_api_id'.") }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
+          end
+
+          context "when there are future training periods" do
+            before do
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period)
+            end
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.") }
           end
 
           context "guarded error messages" do
