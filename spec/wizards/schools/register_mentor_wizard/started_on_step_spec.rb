@@ -4,13 +4,13 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   let(:wizard) do
     instance_double(
       Schools::RegisterMentorWizard::Wizard,
-      mentor: registration_session
+      mentor: registration_store
     )
   end
 
-  let(:registration_session) do
+  let(:registration_store) do
     double(
-      'Schools::RegisterMentorWizard::RegistrationSession',
+      'Schools::RegisterMentorWizard::RegistrationStore',
       mentoring_at_new_school_only: mentoring_only,
       became_ineligible_for_funding?: ineligible,
       provider_led_ect?: provider_led,

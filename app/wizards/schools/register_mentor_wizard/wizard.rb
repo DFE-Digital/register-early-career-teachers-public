@@ -95,7 +95,7 @@ module Schools
       end
 
       def mentor
-        @mentor ||= RegistrationSession.new(store)
+        @mentor ||= RegistrationStore.new(store)
       end
     end
   end

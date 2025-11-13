@@ -1,5 +1,5 @@
-describe Schools::RegisterMentorWizard::RegistrationSession do
-  subject(:registration_session) { described_class.new(store) }
+describe Schools::RegisterMentorWizard::RegistrationStore do
+  subject(:registration_store) { described_class.new(store) }
 
   let(:school) { FactoryBot.create(:school) }
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
@@ -22,7 +22,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       let!(:ongoing_mentor_record) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
 
       it 'returns true' do
-        expect(registration_session.active_at_school?).to be(true)
+        expect(registration_store.active_at_school?).to be(true)
       end
     end
 
@@ -30,7 +30,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       let!(:ongoing_mentor_record) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
 
       it 'returns false' do
-        expect(registration_session.active_at_school?).to be(false)
+        expect(registration_store.active_at_school?).to be(false)
       end
     end
   end
@@ -42,7 +42,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       let!(:ongoing_mentor_record) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
 
       it 'returns the mentor record' do
-        expect(registration_session.active_record_at_school).to eq(ongoing_mentor_record)
+        expect(registration_store.active_record_at_school).to eq(ongoing_mentor_record)
       end
     end
 
@@ -50,7 +50,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
 
       it 'returns nil' do
-        expect(registration_session.active_record_at_school).to be_nil
+        expect(registration_store.active_record_at_school).to be_nil
       end
     end
   end
@@ -59,7 +59,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
     let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
 
     before do
-      allow(Schools::TeacherEmail).to receive(:new).with(email: registration_session.email, trn: registration_session.trn).and_return(teacher_email_service)
+      allow(Schools::TeacherEmail).to receive(:new).with(email: registration_store.email, trn: registration_store.trn).and_return(teacher_email_service)
     end
 
     context "when the email is used in an ongoing school period" do
@@ -81,14 +81,14 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
 
   describe '#email' do
     it 'returns the email address' do
-      expect(registration_session.email).to eq("dusty@rhodes.com")
+      expect(registration_store.email).to eq("dusty@rhodes.com")
     end
   end
 
   describe '#full_name' do
     context 'when corrected_name is not set' do
       it 'returns the full name by joining first and last names of the mentor' do
-        expect(registration_session.full_name).to eq("Dusty Rhodes")
+        expect(registration_store.full_name).to eq("Dusty Rhodes")
       end
     end
 
@@ -98,21 +98,21 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns the corrected_name as the full name' do
-        expect(registration_session.full_name).to eq('Randy Marsh')
+        expect(registration_store.full_name).to eq('Randy Marsh')
       end
     end
   end
 
   describe '#formatted_date_of_birth' do
     it 'formats the date of birth in the govuk format' do
-      expect(registration_session.formatted_date_of_birth).to eq("11 October 1945")
+      expect(registration_store.formatted_date_of_birth).to eq("11 October 1945")
     end
   end
 
   describe '#in_trs?' do
     context "when trs_first_name has been set" do
       it 'returns true' do
-        expect(registration_session).to be_in_trs
+        expect(registration_store).to be_in_trs
       end
     end
 
@@ -122,7 +122,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns false' do
-        expect(registration_session).not_to be_in_trs
+        expect(registration_store).not_to be_in_trs
       end
     end
   end
@@ -134,7 +134,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns false' do
-        expect(registration_session).not_to be_matches_trs_dob
+        expect(registration_store).not_to be_matches_trs_dob
       end
     end
 
@@ -144,7 +144,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns false' do
-        expect(registration_session).not_to be_matches_trs_dob
+        expect(registration_store).not_to be_matches_trs_dob
       end
     end
 
@@ -154,24 +154,24 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns false' do
-        expect(registration_session).not_to be_matches_trs_dob
+        expect(registration_store).not_to be_matches_trs_dob
       end
     end
 
     context "when date_of_birth and trs_date_of_birth are the same date" do
       it 'returns true' do
-        expect(registration_session).to be_matches_trs_dob
+        expect(registration_store).to be_matches_trs_dob
       end
     end
   end
 
   describe '#previous_training_period' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: registration_session.trn) }
+    let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
     let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 3, 1)) }
     let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
 
     it 'returns the latest training period for the mentor' do
-      expect(registration_session.previous_training_period).to eq(training_period)
+      expect(registration_store.previous_training_period).to eq(training_period)
     end
   end
 
@@ -180,11 +180,11 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
     let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
 
     it "creates a new teacher registered at the given school" do
-      expect(Teacher.find_by_trn(registration_session.trn)).to be_nil
+      expect(Teacher.find_by_trn(registration_store.trn)).to be_nil
 
-      registration_session.register!(author:)
+      registration_store.register!(author:)
 
-      expect(teacher.trn).to eq(registration_session.trn)
+      expect(teacher.trn).to eq(registration_store.trn)
       expect(mentor_at_school_period.school_id).to eq(school.id)
       expect(mentor_at_school_period.started_on).to eq(Date.current)
       expect(mentor_at_school_period.email).to eq('dusty@rhodes.com')
@@ -194,24 +194,24 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
   describe '#school' do
     context 'when school_urn is set' do
       it 'returns the school instance' do
-        expect(registration_session.school).to eql(school)
+        expect(registration_store.school).to eql(school)
       end
     end
 
     context 'when school_urn is not set' do
       before do
-        registration_session.update!(school_urn: nil)
+        registration_store.update!(school_urn: nil)
       end
 
       it 'returns nil' do
-        expect(registration_session.school).to be_nil
+        expect(registration_store.school).to be_nil
       end
     end
   end
 
   describe '#trn' do
     it 'returns the trn' do
-      expect(registration_session.trn).to eq("3002586")
+      expect(registration_store.trn).to eq("3002586")
     end
   end
 
@@ -219,13 +219,13 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
     context "when mentoring_at_new_school_only set to yes" do
       before { store.mentoring_at_new_school_only = "yes" }
 
-      it { expect(registration_session.finish_existing_at_school_periods).to be(true) }
+      it { expect(registration_store.finish_existing_at_school_periods).to be(true) }
     end
 
     context "when mentoring_at_new_school_only set to no" do
       before { store.mentoring_at_new_school_only = "no" }
 
-      it { expect(registration_session.finish_existing_at_school_periods).to be(false) }
+      it { expect(registration_store.finish_existing_at_school_periods).to be(false) }
     end
   end
 
@@ -240,8 +240,8 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
     end
 
     it 'returns lead providers active in the contract period' do
-      expect(registration_session.lead_providers_within_contract_period).to include(lp_in)
-      expect(registration_session.lead_providers_within_contract_period).not_to include(lp_out)
+      expect(registration_store.lead_providers_within_contract_period).to include(lp_in)
+      expect(registration_store.lead_providers_within_contract_period).not_to include(lp_out)
     end
 
     context 'when no contract period matches the started_on' do
@@ -249,8 +249,8 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
 
       it 'falls back to today and returns providers in the current contract period' do
         travel_to(Date.new(2025, 5, 1)) do
-          expect(registration_session.lead_providers_within_contract_period).to include(lp_in)
-          expect(registration_session.lead_providers_within_contract_period).not_to include(lp_out)
+          expect(registration_store.lead_providers_within_contract_period).to include(lp_in)
+          expect(registration_store.lead_providers_within_contract_period).not_to include(lp_out)
         end
       end
     end
@@ -260,7 +260,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
 
       it 'returns an empty array' do
         travel_to(Date.new(2024, 6, 1)) do
-          expect(registration_session.lead_providers_within_contract_period).to eq([])
+          expect(registration_store.lead_providers_within_contract_period).to eq([])
         end
       end
     end
@@ -269,7 +269,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
   describe '#mentoring_at_new_school_only?' do
     context 'when mentoring_at_new_school_only is not set' do
       it 'returns true by default' do
-        expect(registration_session.mentoring_at_new_school_only?).to be true
+        expect(registration_store.mentoring_at_new_school_only?).to be true
       end
     end
 
@@ -277,7 +277,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       before { store.mentoring_at_new_school_only = 'yes' }
 
       it 'returns true' do
-        expect(registration_session.mentoring_at_new_school_only?).to be true
+        expect(registration_store.mentoring_at_new_school_only?).to be true
       end
     end
 
@@ -285,19 +285,19 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       before { store.mentoring_at_new_school_only = 'no' }
 
       it 'returns false' do
-        expect(registration_session.mentoring_at_new_school_only?).to be false
+        expect(registration_store.mentoring_at_new_school_only?).to be false
       end
     end
   end
 
   describe '#mentorship_status' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: registration_session.trn) }
+    let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
 
     context 'when there is an ongoing mentor_at_school_period' do
       let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
 
       it 'returns :currently_a_mentor' do
-        expect(registration_session.mentorship_status).to eq(:currently_a_mentor)
+        expect(registration_store.mentorship_status).to eq(:currently_a_mentor)
       end
     end
 
@@ -305,7 +305,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago) }
 
       it 'returns :previously_a_mentor' do
-        expect(registration_session.mentorship_status).to eq(:previously_a_mentor)
+        expect(registration_store.mentorship_status).to eq(:previously_a_mentor)
       end
     end
 
@@ -314,20 +314,20 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
 
       it 'returns :currently_a_mentor' do
-        expect(registration_session.mentorship_status).to eq(:currently_a_mentor)
+        expect(registration_store.mentorship_status).to eq(:currently_a_mentor)
       end
     end
 
     context 'when there are no mentor_at_school_periods' do
       it 'raises an error' do
-        expect { registration_session.mentorship_status }
+        expect { registration_store.mentorship_status }
           .to raise_error(described_class::Status::MentorStatusError, /No mentor_at_school_periods/)
       end
     end
   end
 
   describe '#currently_mentor_at_another_school?' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: registration_session.trn) }
+    let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
     let(:other_school) { FactoryBot.create(:school) }
 
     before { store.start_date = Date.current }
@@ -338,19 +338,19 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns true' do
-        expect(registration_session.currently_mentor_at_another_school?).to be(true)
+        expect(registration_store.currently_mentor_at_another_school?).to be(true)
       end
     end
 
     context 'when there are no qualifying records' do
       it 'returns false' do
-        expect(registration_session.currently_mentor_at_another_school?).to be(false)
+        expect(registration_store.currently_mentor_at_another_school?).to be(false)
       end
     end
   end
 
   describe '#previous_school_closed_mentor_at_school_periods?' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: registration_session.trn) }
+    let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
     let(:other_school) { FactoryBot.create(:school) }
 
     before { store.start_date = Date.current - 1.year }
@@ -365,7 +365,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns true' do
-        expect(registration_session.previous_school_closed_mentor_at_school_periods?).to be(true)
+        expect(registration_store.previous_school_closed_mentor_at_school_periods?).to be(true)
       end
     end
 
@@ -375,7 +375,7 @@ describe Schools::RegisterMentorWizard::RegistrationSession do
       end
 
       it 'returns false' do
-        expect(registration_session.previous_school_closed_mentor_at_school_periods?).to be(false)
+        expect(registration_store.previous_school_closed_mentor_at_school_periods?).to be(false)
       end
     end
   end
