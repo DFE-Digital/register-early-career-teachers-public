@@ -68,7 +68,6 @@ group :development do
   gem 'binding_of_caller'
   gem "pg_query"
   gem 'prosopite'
-  gem 'yard'
 end
 
 group :test do
