@@ -16,11 +16,9 @@ describe API::UnfundedMentorSerializer, type: :serializer do
   end
 
   before do
-    # Create latest mentor at school period for the unfunded mentor teacher
-    FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: unfunded_mentor_teacher, started_on: 6.months.ago)
-
-    # Ensure other metadata exists for another lead provider.
-    FactoryBot.create(:lead_provider)
+    # Create mentor at school periods for the unfunded mentor teacher
+    FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: unfunded_mentor_teacher, started_on: 6.months.ago, email: "test1@test.com")
+    FactoryBot.create(:mentor_at_school_period, teacher: unfunded_mentor_teacher, started_on: 1.year.ago, finished_on: 6.months.ago, email: "test2@test.com")
   end
 
   describe "core attributes" do
@@ -38,6 +36,7 @@ describe API::UnfundedMentorSerializer, type: :serializer do
       expect(attributes["full_name"]).to eq(Teachers::Name.new(unfunded_mentor_teacher).full_name_in_trs)
       expect(attributes["email"]).to be_present
       expect(attributes["email"]).to eq(unfunded_mentor_teacher.latest_mentor_at_school_period.email)
+      expect(attributes["email"]).to eq("test1@test.com")
       expect(attributes["teacher_reference_number"]).to be_present
       expect(attributes["teacher_reference_number"]).to eq(unfunded_mentor_teacher.trn)
       expect(attributes["created_at"]).to be_present
