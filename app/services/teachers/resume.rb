@@ -17,7 +17,6 @@ module Teachers
           finished_on: training_period.trainee.finished_on,
           school_partnership: training_period.school_partnership,
           expression_of_interest: training_period.expression_of_interest,
-          schedule: training_period.schedule,
           author:
         ).call
 

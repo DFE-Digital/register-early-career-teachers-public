@@ -26,7 +26,8 @@ module Schools
             period: mentor_at_school_period,
             started_on:,
             school_partnership: earliest_matching_school_partnership,
-            expression_of_interest:
+            expression_of_interest:,
+            author: wizard.author
           ).call
 
           record_training_period_event!(training_period)

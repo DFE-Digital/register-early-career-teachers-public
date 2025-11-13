@@ -137,7 +137,7 @@ RSpec.describe Teachers::Resume do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.months.from_now, teacher:) }
           let(:at_school_period_new) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.from_now, finished_on: nil, teacher:) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :deferred, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.month.ago) }
-          let!(:training_period_new) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period_new, started_on: at_school_period_new.started_on, finished_on: nil) }
+          let!(:training_period_new) { FactoryBot.build(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period_new, started_on: at_school_period_new.started_on, finished_on: nil) }
 
           it "resumes training period" do
             freeze_time

@@ -25,7 +25,13 @@ RSpec.describe Schools::RegisterECT do
   let(:trs_last_name) { "Rhodes" }
   let(:working_pattern) { "full_time" }
   let(:ect_at_school_period) { subject.teacher.ect_at_school_periods.first }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+
+  around do |example|
+    travel_to(started_on + 1.day) do
+      example.run
+    end
+  end
 
   describe '#register!' do
     context "when a Teacher record with the same TRN does not exist" do
@@ -87,7 +93,7 @@ RSpec.describe Schools::RegisterECT do
           let(:school_one) { FactoryBot.create(:school) }
           let(:school_two) { FactoryBot.create(:school) }
           let(:started_on) { Date.current + 1.month }
-          let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
+          let!(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: started_on.year) }
           let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
 
           before do
@@ -129,7 +135,7 @@ RSpec.describe Schools::RegisterECT do
         context "when a Teacher record with the same TRN has a future period at different school" do
           let(:other_school) { FactoryBot.create(:school) }
           let(:started_on) { Date.new(2025, 8, 1) + 1.year }
-          let!(:future_contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
+          let!(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: started_on.year) }
           let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
 
           before do

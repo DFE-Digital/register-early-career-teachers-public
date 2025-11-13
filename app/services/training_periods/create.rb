@@ -1,5 +1,7 @@
 module TrainingPeriods
   class Create
+    class ScheduleNotFound < StandardError; end
+
     def initialize(period:, started_on:, training_programme:, school_partnership: nil, expression_of_interest: nil, finished_on: nil, schedule: nil, author: nil)
       @period = period
       @started_on = started_on
@@ -43,13 +45,12 @@ module TrainingPeriods
         expression_of_interest: @expression_of_interest,
         training_programme: @training_programme,
         finished_on: @finished_on,
-        schedule: @schedule
+        schedule:
       )
     end
 
     def record_event!
       return if @training_programme == 'school_led'
-      return unless @new_training_period.schedule
 
       Events::Record.record_teacher_schedule_assigned_to_training_period!(
         training_period: @new_training_period,
@@ -58,6 +59,17 @@ module TrainingPeriods
         author: @author,
         happened_at: Time.current
       )
+    end
+
+    # TODO: Remove this once a presence validation can be added to TrainingPeriod model
+    def schedule
+      return if @training_programme == 'school_led'
+
+      @schedule ||= Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call
+
+      return @schedule if @schedule.present?
+
+      raise ScheduleNotFound
     end
   end
 end

@@ -55,7 +55,8 @@ module Teachers
         period:,
         started_on: date_of_transition,
         school_partnership:,
-        expression_of_interest:
+        expression_of_interest:,
+        author:
       ).call
     end
 

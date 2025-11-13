@@ -9,7 +9,7 @@ module ECTAtSchoolPeriods
       )
     end
 
-    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_schedules) }
     let(:author) do
       FactoryBot.create(:school_user, school_urn: ect_at_school_period.school.urn)
     end

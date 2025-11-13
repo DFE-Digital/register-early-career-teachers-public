@@ -91,7 +91,8 @@ module Schools
                              period: ect_at_school_period,
                              started_on: ect_at_school_period.started_on,
                              school_partnership:,
-                             expression_of_interest:
+                             expression_of_interest:,
+                             author:
                            ).call
                          end
     end
