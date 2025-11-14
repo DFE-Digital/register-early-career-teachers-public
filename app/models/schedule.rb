@@ -42,4 +42,8 @@ class Schedule < ApplicationRecord
   def replacement_schedule?
     identifier.in?(REPLACEMENT_SCHEDULE_IDENTIFIERS)
   end
+
+  def description
+    "#{identifier} for #{contract_period.year}"
+  end
 end
