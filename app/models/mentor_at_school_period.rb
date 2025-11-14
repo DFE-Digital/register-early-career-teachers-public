@@ -13,6 +13,8 @@ class MentorAtSchoolPeriod < ApplicationRecord
            through: :mentorship_periods,
            source: :mentee
   has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
+  has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
+  has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
 
   touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
 
