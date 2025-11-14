@@ -121,7 +121,8 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it "changes the schedule via change schedule service" do
               change_schedule_service = instance_double(Teachers::ChangeSchedule)
 
-              allow(Teachers::ChangeSchedule).to receive(:new).with(lead_provider:, teacher:, training_period:, schedule:, school_partnership:).and_return(change_schedule_service)
+              author = an_instance_of(Events::LeadProviderAPIAuthor)
+              allow(Teachers::ChangeSchedule).to receive(:new).with(lead_provider:, teacher:, training_period:, schedule:, school_partnership:, author:).and_return(change_schedule_service)
               allow(change_schedule_service).to receive(:change_schedule)
 
               instance.change_schedule

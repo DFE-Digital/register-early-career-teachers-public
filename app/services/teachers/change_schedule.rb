@@ -1,13 +1,14 @@
 module Teachers
   class ChangeSchedule
-    attr_reader :lead_provider, :teacher, :training_period, :schedule, :school_partnership
+    attr_reader :lead_provider, :teacher, :training_period, :schedule, :school_partnership, :author
 
-    def initialize(lead_provider:, teacher:, training_period:, schedule:, school_partnership:)
+    def initialize(author:, lead_provider:, teacher:, training_period:, schedule:, school_partnership:)
       @lead_provider = lead_provider
       @teacher = teacher
       @training_period = training_period
       @schedule = schedule
       @school_partnership = school_partnership
+      @author = author
     end
 
     def change_schedule
@@ -79,10 +80,6 @@ module Teachers
         teacher:,
         lead_provider:
       )
-    end
-
-    def author
-      @author ||= Events::LeadProviderAPIAuthor.new(lead_provider:)
     end
   end
 end

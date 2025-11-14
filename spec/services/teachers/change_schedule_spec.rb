@@ -6,9 +6,11 @@ RSpec.describe Teachers::ChangeSchedule do
   let(:new_contract_period) { FactoryBot.create(:contract_period) }
   let!(:new_school_partnership) { FactoryBot.create(:school_partnership, school: at_school_period.school, lead_provider_delivery_partnership:) }
   let(:new_schedule) { FactoryBot.create(:schedule, identifier: "ecf-standard-april", contract_period: new_contract_period) }
+  let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
 
   let(:service) do
     described_class.new(
+      author:,
       lead_provider:,
       teacher:,
       training_period:,
@@ -87,12 +89,6 @@ RSpec.describe Teachers::ChangeSchedule do
         end
 
         context "event recording" do
-          let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-
-          before do
-            allow(Events::LeadProviderAPIAuthor).to receive(:new).and_return(author)
-          end
-
           it "records a teacher changes schedule training period event" do
             freeze_time do
               allow(Events::Record).to receive(:record_teacher_schedule_changed_event!)
