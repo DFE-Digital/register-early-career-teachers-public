@@ -37,7 +37,7 @@ module API
       end
 
       def to_json(obj)
-        API::UnfundedMentorSerializer.render(obj, root: "data")
+        API::Teachers::UnfundedMentorSerializer.render(obj, root: "data")
       end
     end
   end
