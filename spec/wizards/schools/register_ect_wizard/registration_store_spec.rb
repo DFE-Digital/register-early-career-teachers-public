@@ -269,8 +269,6 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
 
       registration_store.register!(school, author:, store:)
 
-      registration_session.register!(school, author:, store:)
-
       expect(teacher.trn).to eq(registration_store.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)
       expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
