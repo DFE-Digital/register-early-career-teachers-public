@@ -49,6 +49,7 @@ class Event < ApplicationRecord
     teacher_defers_training_period
     teacher_resumes_training_period
     teacher_withdraws_training_period
+    teacher_changes_schedule_training_period
     training_period_assigned_to_school_partnership
     dfe_user_created
     dfe_user_updated

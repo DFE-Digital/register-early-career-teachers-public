@@ -50,4 +50,10 @@ describe Schedule do
       expect(schedule).not_to be_replacement_schedule
     end
   end
+
+  describe "#description" do
+    subject { FactoryBot.build(:schedule, identifier: 'ecf-standard-april', contract_period: FactoryBot.build(:contract_period, year: 2023)).description }
+
+    it { is_expected.to eq('ecf-standard-april for 2023') }
+  end
 end

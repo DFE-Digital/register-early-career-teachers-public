@@ -68,6 +68,12 @@ describe Interval do
       end
     end
 
+    describe '.started_after' do
+      it 'returns records where the started_on date is later than the provided date' do
+        expect(DummyMentor.started_after(Date.yesterday).to_sql).to end_with(%(started_on > '#{Date.yesterday.iso8601}'\)))
+      end
+    end
+
     describe '.started_on_or_before' do
       it 'returns records where the started_on date is equal to or earlier than the provided date' do
         expect(DummyMentor.started_on_or_before(Date.yesterday).to_sql).to end_with(%("started_on" <= '#{Date.yesterday.iso8601}'))

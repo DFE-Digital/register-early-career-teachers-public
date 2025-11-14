@@ -1231,6 +1231,70 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_teacher_schedule_changed_event!' do
+    let(:lead_provider) { original_training_period.lead_provider }
+    let(:teacher_name) { Teachers::Name.new(teacher).full_name }
+    let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
+    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:metadata) do
+      {
+        new_training_period_id: new_training_period.id,
+        from_schedule_id: original_training_period.schedule.id,
+        to_schedule_id: new_training_period.schedule.id
+      }
+    end
+
+    context 'when ECT training' do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
+      let(:original_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:new_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
+      let(:course_identifier) { "ecf-induction" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period: original_training_period,
+            schedule: original_training_period.schedule,
+            teacher:,
+            lead_provider:,
+            metadata:,
+            heading: "#{teacher_name}’s ECT training changed schedule from #{original_training_period.schedule.description} to #{new_training_period.schedule.description} by #{lead_provider.name}",
+            event_type: :teacher_changes_schedule_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+
+    context 'when Mentor training' do
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
+      let(:original_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:new_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
+      let(:course_identifier) { "ecf-mentor" }
+
+      it 'queues a RecordEventJob with the correct values' do
+        freeze_time do
+          Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:)
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            training_period: original_training_period,
+            schedule: original_training_period.schedule,
+            teacher:,
+            lead_provider:,
+            metadata:,
+            heading: "#{teacher_name}’s mentor training changed schedule from #{original_training_period.schedule.description} to #{new_training_period.schedule.description} by #{lead_provider.name}",
+            event_type: :teacher_changes_schedule_training_period,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        end
+      end
+    end
+  end
+
   describe '.record_bulk_upload_started_event!' do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 
