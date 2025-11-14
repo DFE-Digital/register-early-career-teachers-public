@@ -81,6 +81,12 @@ private
     core_materials = induction_programme.core_induction_programme&.name
     school_urn = induction_programme.school_cohort.school.urn
 
+    end_date = if induction_records.count == 1
+                 corrected_training_period_end_date(induction_record:)
+               else
+                 induction_record.end_date
+               end
+
     Migration::TrainingPeriodData.new(training_programme:,
                                       school_urn:,
                                       lead_provider:,
@@ -88,7 +94,7 @@ private
                                       core_materials:,
                                       cohort_year: induction_record.schedule.cohort.start_year,
                                       start_date: induction_record.start_date,
-                                      end_date: induction_record.end_date,
+                                      end_date:,
                                       start_source_id: induction_record.id,
                                       end_source_id: induction_record.id)
   end
