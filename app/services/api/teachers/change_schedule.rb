@@ -19,6 +19,7 @@ module API::Teachers
       return false unless valid?
 
       Teachers::ChangeSchedule.new(
+        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
         lead_provider:,
         teacher:,
         training_period:,
