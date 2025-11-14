@@ -1,3 +1,10 @@
+RSpec.shared_examples 'no replacement schedule assigned' do
+  it 'does not assign a replacement schedule' do
+    expect(service.identifier).not_to include('replacement')
+    expect(service.identifier).not_to be_nil
+  end
+end
+
 RSpec.describe Schedules::Find do
   include ActiveJob::TestHelper
 
@@ -229,6 +236,17 @@ RSpec.describe Schedules::Find do
     end
 
     context "replacement schedule for mentor" do
+      let(:period_type_key) { :mentor_at_school_period }
+      let(:period) { mentor_at_school_period }
+
+      let(:started_on) { provider_led_start_date }
+      let(:registered_on) { Date.new(year, 6, 15) }
+      let(:provider_led_start_date) { Date.new(year, 12, 1) }
+      let(:previous_start_date) { Date.new(year, 7, 1) }
+
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
+      let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: 'ecf-standard-september') }
+
       before do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
@@ -238,58 +256,52 @@ RSpec.describe Schedules::Find do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
       end
 
-      let(:period_type_key) { :mentor_at_school_period }
-      let(:period) { mentor_at_school_period }
-
-      let(:started_on) { provider_led_start_date }
-      let(:registered_on) { Date.new(year, 6, 15) }
-      let(:provider_led_start_date) { Date.new(year, 12, 1) }
-      let(:previous_start_date) { Date.new(year, 7, 1) }
-      let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: 'ecf-standard-september') }
-      let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
-      let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
-
-      it 'assigns a replacement schedule' do
+      around do |example|
         travel_to(provider_led_start_date) do
-          expect(service.identifier).to include('replacement')
+          example.run
         end
       end
 
-      context 'when there is a previous training period' do
-        it 'uses the identifier from the previous provider-led training period' do
-          first_training_period = nil
-          travel_to(registered_on) do
-            first_training_period = FactoryBot.create(:training_period, :provider_led, :ongoing,
-                                                      started_on: previous_start_date,
-                                                      ect_at_school_period:,
-                                                      schedule:,
-                                                      school_partnership:)
-          end
-
-          travel_to(provider_led_start_date) do
-            expect(service.identifier).not_to include('replacement')
-          end
-        end
+      context 'when the mentee has not previously received training' do
+        it_behaves_like 'no replacement schedule assigned'
       end
 
-      context 'when the mentor is ineligible for funding' do
-        let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
-
-        it 'does not assign a replacement schedule' do
-          travel_to(provider_led_start_date) do
-            expect(service.identifier).not_to include('replacement')
-            expect(service.identifier).not_to be_nil
-          end
-        end
-      end
-
-      context 'when the mentee is receiving school-led training' do
-        let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
+      context 'when the mentee has previously received school-led training' do
         let!(:mentee_training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
 
-        it 'does not assign a replacement schedule' do
-          travel_to(provider_led_start_date) do
-            expect(service.identifier).not_to include('replacement')
+        it_behaves_like 'no replacement schedule assigned'
+      end
+
+      context 'when the mentee has previously received provider-led training' do
+        let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+        let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
+        let!(:mentorship_period) { FactoryBot.create(:mentorship_period, started_on: previous_start_date, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
+
+        context 'when the previous mentor has a training period' do
+          let!(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: previous_start_date, mentor_at_school_period: previous_mentor) }
+
+          context 'when the previous mentor has not started training' do
+            it_behaves_like 'no replacement schedule assigned'
+          end
+
+          context 'when the previous mentor is the same as the current mentor' do
+            let!(:previous_mentor) { mentor_at_school_period }
+
+            it_behaves_like 'no replacement schedule assigned'
+          end
+
+          context 'when the previous mentor has started training' do
+            let!(:declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
+
+            it 'assigns a replacement schedule' do
+              expect(service.identifier).to include('replacement')
+            end
+
+            context 'when the mentor is ineligible for funding' do
+              let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+
+              it_behaves_like 'no replacement schedule assigned'
+            end
           end
         end
       end
