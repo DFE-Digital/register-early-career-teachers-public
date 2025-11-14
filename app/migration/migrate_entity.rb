@@ -59,11 +59,7 @@ class MigrateEntity
         ]
       ]).first
 
-    teacher = Migrators::Teacher.new.migrate_one!(teacher_profile)
-
-    Migrators::ECTAtSchoolPeriod.new.migrate_one!(teacher_profile) if teacher_profile.participant_profiles.ect.any?
-    Migrators::MentorAtSchoolPeriod.new.migrate_one!(teacher_profile) if teacher_profile.participant_profiles.mentor.any?
-
+    # dependencies
     teacher_profile.participant_profiles.each do |participant_profile|
       fetch_partnerships(participant_profile:).each do |ecf_partnership|
         # create school partnerships and all their dependencies
@@ -76,11 +72,13 @@ class MigrateEntity
         # create mentors
         teacher(trn: ecf_mentor.teacher_profile.trn)
       end
-
-      Migrators::MentorshipPeriod.new.migrate_one!(participant_profile)
     end
 
-    Migrators::TrainingPeriod.new.migrate_one!(teacher_profile)
+    teacher = Migrators::Teacher.new.migrate_one!(teacher_profile)
+
+    if teacher&.api_ect_training_record_id.present?
+      Migrators::MentorshipPeriod.new.migrate_one!(Migration::ParticipantProfile.find(teacher.api_ect_training_record_id))
+    end
 
     teacher
   rescue StandardError => e
