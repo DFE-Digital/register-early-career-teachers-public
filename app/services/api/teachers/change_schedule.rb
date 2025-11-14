@@ -39,7 +39,7 @@ module API::Teachers
     end
 
     def schedule
-      @schedule ||= Schedule.find_by(contract_period_year:, identifier: schedule_identifier) if contract_period && schedule_identifier
+      @schedule ||= Schedule.find_by(contract_period_year: contract_period.year, identifier: schedule_identifier) if contract_period && schedule_identifier
     end
 
     def schedule_exists
