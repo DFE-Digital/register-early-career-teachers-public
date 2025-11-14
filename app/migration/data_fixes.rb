@@ -15,7 +15,7 @@ module DataFixes
       induction_record.start_date
     end
   end
- 
+
   # there are some mentors with a single IR record that has no end date - we want to set an end date in the following circumstances:
   #
   #   1. If mentor has a completion date < 1/9/2021, keep end date NULL for at_school period
@@ -40,7 +40,7 @@ module DataFixes
         year = date.year
         year += 1 if date.month > 8
         corrected_date = Date.new(year, 8, 31)
-      elsif participant_profile.mentor_completion_date > Date.new(2024, 1, 1)
+      elsif participant_profile.mentor_completion_date >= Date.new(2024, 1, 1)
         corrected_date = participant_profile.mentor_completion_date
       end
     end

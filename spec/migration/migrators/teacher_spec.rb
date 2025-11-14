@@ -79,6 +79,89 @@ RSpec.describe Migrators::Teacher do
           end
         end
       end
+
+      context "when the teacher is a completed mentor with a single induction record without an end_date" do
+        let(:start_date) { 1.year.ago }
+        let(:mentor_completion_date) { nil }
+        let(:mentor) { FactoryBot.create(:migration_participant_profile, :mentor, mentor_completion_date:) }
+        let!(:mentor_data) do
+          FactoryBot.create(:migration_induction_record, participant_profile: mentor, start_date:)
+          school = mentor.school_cohort.school
+          cohort = mentor.school_cohort.cohort
+          partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
+          induction_programme = mentor.school_cohort.default_induction_programme
+          FactoryBot.create(:migration_provider_relationship,
+                            lead_provider: partnership.lead_provider,
+                            delivery_partner: partnership.delivery_partner,
+                            cohort: partnership.cohort)
+          induction_programme.update!(partnership:)
+
+          # RECT dependencies
+          rect_school = FactoryBot.create(:school, urn: school.urn)
+
+          lead_provider = FactoryBot.create(:lead_provider,
+                                            name: partnership.lead_provider.name,
+                                            ecf_id: partnership.lead_provider_id)
+          delivery_partner = FactoryBot.create(:delivery_partner,
+                                               name: partnership.delivery_partner.name,
+                                               api_id: partnership.delivery_partner_id)
+          contract_period = FactoryBot.create(:contract_period, year: cohort.start_year)
+          active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+          lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+          FactoryBot.create(:school_partnership, school: rect_school, lead_provider_delivery_partnership: lpdp)
+        end
+
+        it "migrates the mentor" do
+          expect {
+            instance.migrate!
+          }.to change(::MentorAtSchoolPeriod, :count).by(1)
+
+          expect(::Teacher.find_by(api_mentor_training_record_id: mentor.id)).to be_present
+        end
+
+        context "when the mentor completion is before 1/9/2021" do
+          let(:mentor_completion_date) { Date.new(2021, 6, 1) }
+
+          it "sets the training period end date" do
+            instance.migrate!
+
+            teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+            training_period = teacher.mentor_at_school_periods.ongoing.first.training_periods.first
+            expected_end_date = if training_period.started_on.month > 8
+                                  Date.new(training_period.started_on.year + 1, 8, 31)
+                                else
+                                  Date.new(training_period.started_on.year, 8, 31)
+                                end
+            expect(training_period.finished_on.to_date).to eq expected_end_date
+          end
+        end
+
+        context "when the mentor completion is on or after 1/1/2024" do
+          let(:mentor_completion_date) { Date.new(2024, 1, 1) }
+          let(:start_date) { mentor_completion_date - 1.year }
+
+          it "sets the training period end date to the completion date" do
+            instance.migrate!
+
+            teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+            training_period = teacher.mentor_at_school_periods.ongoing.first.training_periods.first
+            expect(training_period.finished_on.to_date).to eq mentor_completion_date
+          end
+        end
+
+        context "when the mentor completion is between 1/9/2021 and 1/1/2024" do
+          let(:mentor_completion_date) { Date.new(2022, 10, 1) }
+          let(:start_date) { mentor_completion_date - 1.year }
+
+          it "does not set the training period end date" do
+            instance.migrate!
+
+            teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+            training_period = teacher.mentor_at_school_periods.ongoing.first.training_periods.first
+            expect(training_period.finished_on).to be_blank
+          end
+        end
+      end
     end
 
     describe ".teachers" do
