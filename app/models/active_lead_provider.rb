@@ -10,12 +10,12 @@ class ActiveLeadProvider < ApplicationRecord
   validates :contract_period_year,
             presence: { message: 'Choose a contract period' },
             uniqueness: { scope: :lead_provider_id, message: 'Contract period and lead provider must be unique' }
-
   validates :lead_provider_id, presence: { message: 'Choose a lead provider' }
 
   scope :for_contract_period, ->(year) { where(contract_period_year: year) }
-  scope :for_lead_provider, ->(lead_provider_id) { where(lead_provider_id:) }
   scope :for_contract_period_year, ->(contract_period_year) { where(contract_period_year:) }
+  scope :excluding_contract_period_year, ->(year) { where.not(contract_period_year: year) }
+  scope :for_lead_provider, ->(lead_provider_id) { where(lead_provider_id:) }
   scope :without_existing_partnership_for, ->(delivery_partner, contract_period) {
     where.not(
       id: LeadProviderDeliveryPartnership.active_lead_provider_ids_for(delivery_partner, contract_period)

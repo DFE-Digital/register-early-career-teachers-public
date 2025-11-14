@@ -267,7 +267,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     it "creates a new ECT at the given school" do
       expect(Teacher.find_by_trn(registration_store.trn)).to be_nil
 
-      registration_store.register!(school, author:)
+      registration_store.register!(school, author:, store:)
 
       expect(teacher.trn).to eq(registration_store.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)

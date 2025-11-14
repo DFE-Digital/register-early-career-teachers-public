@@ -8,6 +8,7 @@ module Schools
                 :training_programme,
                 :school,
                 :started_on,
+                :store,
                 :teacher,
                 :trn,
                 :trs_first_name,
@@ -28,7 +29,8 @@ module Schools
                    trs_first_name:,
                    trs_last_name:,
                    working_pattern:,
-                   author:)
+                   author:,
+                   store: nil)
       @school_reported_appropriate_body = school_reported_appropriate_body
       @corrected_name = corrected_name
       @email = email
@@ -41,6 +43,7 @@ module Schools
       @trs_last_name = trs_last_name
       @working_pattern = working_pattern
       @author = author
+      @store = store
     end
 
     def register!
@@ -97,7 +100,7 @@ module Schools
     end
 
     def school_partnership
-      earliest_matching_school_partnership
+      @school_partnership ||= earliest_matching_school_partnership || reuse_old_partnership
     end
 
     def start_at_school!
@@ -138,6 +141,19 @@ module Schools
 
     def record_event!
       Events::Record.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:, training_period:)
+    end
+
+    def reuse_old_partnership
+      previous_id = @store&.school_partnership_to_reuse_id
+      return nil if previous_id.blank?
+
+      SchoolPartnerships::CreateFromPrevious
+        .new.call(
+          previous_school_partnership_id: previous_id,
+          school:,
+          author:,
+          current_contract_period_year: contract_period.year
+        )
     end
   end
 end

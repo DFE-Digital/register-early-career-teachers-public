@@ -274,10 +274,52 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
       end
     end
 
-    context 'when school has previous programme choices' do
+    context 'when the school has previous programme choices' do
       before do
-        allow(school).to receive(:last_programme_choices?).and_return(true)
-        # Set up ECT with TRS data
+        previous_contract_year = 2023
+        current_contract_year  = 2024
+
+        previous_contract_period = FactoryBot.create(:contract_period, year: previous_contract_year)
+        current_contract_period  = FactoryBot.create(:contract_period, year: current_contract_year)
+
+        lead_provider = FactoryBot.create(:lead_provider, name: 'Spec Lead Provider')
+        delivery_partner = FactoryBot.create(:delivery_partner, name: 'Spec Delivery Partner')
+
+        previous_active_lead_provider = FactoryBot.create(
+          :active_lead_provider,
+          lead_provider:,
+          contract_period: previous_contract_period
+        )
+
+        current_active_lead_provider = FactoryBot.create(
+          :active_lead_provider,
+          lead_provider:,
+          contract_period: current_contract_period
+        )
+
+        previous_lead_provider_delivery_partnership = FactoryBot.create(
+          :lead_provider_delivery_partnership,
+          active_lead_provider: previous_active_lead_provider,
+          delivery_partner:
+        )
+
+        FactoryBot.create(
+          :lead_provider_delivery_partnership,
+          active_lead_provider: current_active_lead_provider,
+          delivery_partner:
+        )
+
+        school.update!(
+          last_chosen_training_programme: 'provider_led',
+          last_chosen_lead_provider: lead_provider
+        )
+
+        FactoryBot.create(
+          :school_partnership,
+          school:,
+          lead_provider_delivery_partnership: previous_lead_provider_delivery_partnership
+        )
+
         wizard.ect.update!(
           trn: '1234567',
           date_of_birth: '1990-01-01',
@@ -289,7 +331,16 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
           start_date: '2024-09-01',
           working_pattern: 'full_time'
         )
-        allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
+
+        allow(school).to receive(:last_programme_choices?).and_return(true)
+
+        allow(wizard.ect).to receive_messages(
+          in_trs?: true,
+          matches_trs_dob?: true,
+          active_at_school?: false,
+          email_taken?: false,
+          previously_registered?: false
+        )
       end
 
       it 'includes use_previous_ect_choices step' do
@@ -309,7 +360,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
     context 'when ECT chooses provider-led training' do
       before do
-        # Set up ECT with TRS data for provider-led flow
+        FactoryBot.create(:contract_period, year: 2024)
         wizard.ect.update!(
           trn: '1234567',
           date_of_birth: '1990-01-01',

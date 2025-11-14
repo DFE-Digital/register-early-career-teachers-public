@@ -556,6 +556,42 @@ module Events
       ).record_event!
     end
 
+    def self.record_school_partnership_reused_event!(
+      author:,
+      school_partnership:,
+      previous_school_partnership_id:,
+      happened_at: Time.zone.now
+    )
+      fail(NotPersistedRecord, 'school_partnership') unless school_partnership&.persisted?
+
+      event_type = :school_partnership_reused
+      school           = school_partnership.school
+      delivery_partner = school_partnership.delivery_partner
+      lead_provider    = school_partnership.lead_provider
+      contract_period  = school_partnership.contract_period
+
+      heading = "#{school.name} reused a previous partnership "\
+                "with #{delivery_partner.name} (via #{lead_provider.name}) "\
+                "for #{contract_period.year}"
+
+      metadata = {
+        previous_school_partnership_id:,
+        reused_into_contract_period_year: contract_period.year
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        school_partnership:,
+        delivery_partner:,
+        school:,
+        lead_provider:,
+        happened_at:,
+        metadata:
+      ).record_event!
+    end
+
     def self.record_school_partnership_updated_event!(author:, school_partnership:, previous_delivery_partner:, modifications:)
       event_type = :school_partnership_updated
       school = school_partnership.school

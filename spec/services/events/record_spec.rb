@@ -1402,6 +1402,50 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe '.record_school_partnership_reused_event!' do
+    let(:school_partnership) { FactoryBot.create(:school_partnership) }
+    let(:previous_school_partnership) { FactoryBot.create(:school_partnership, school: school_partnership.school) }
+
+    before { allow(RecordEventJob).to receive(:perform_later) }
+
+    it 'queues RecordEventJob with correct payload' do
+      freeze_time do
+        Events::Record.record_school_partnership_reused_event!(
+          author:, school_partnership:,
+          previous_school_partnership_id: previous_school_partnership.id
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            event_type: :school_partnership_reused,
+            school_partnership:,
+            school: school_partnership.school,
+            lead_provider: school_partnership.lead_provider,
+            delivery_partner: school_partnership.delivery_partner,
+            heading: "#{school_partnership.school.name} reused a previous partnership with " \
+                     "#{school_partnership.delivery_partner.name} (via #{school_partnership.lead_provider.name}) " \
+                     "for #{school_partnership.contract_period.year}",
+            happened_at: Time.zone.now,
+            metadata: hash_including(
+              previous_school_partnership_id: previous_school_partnership.id,
+              reused_into_contract_period_year: school_partnership.contract_period.year
+            ),
+            **author_params
+          )
+        )
+      end
+    end
+
+    it 'raises NotPersistedRecord if school_partnership is unsaved' do
+      expect {
+        Events::Record.record_school_partnership_reused_event!(
+          author:, school_partnership: FactoryBot.build(:school_partnership),
+          previous_school_partnership_id: previous_school_partnership.id
+        )
+      }.to raise_error(Events::NotPersistedRecord, 'school_partnership')
+    end
+  end
+
   describe '.record_statement_adjustment_updated_event!' do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }

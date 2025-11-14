@@ -25,7 +25,7 @@ RSpec.describe Schools::RegisterECT do
   let(:trs_last_name) { "Rhodes" }
   let(:working_pattern) { "full_time" }
   let(:ect_at_school_period) { subject.teacher.ect_at_school_periods.first }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, year: started_on.year) }
 
   describe '#register!' do
     context "when a Teacher record with the same TRN does not exist" do
@@ -217,9 +217,7 @@ RSpec.describe Schools::RegisterECT do
       let(:training_programme) { 'school_led' }
       let(:lead_provider) { nil }
 
-      before do
-        FactoryBot.create(:teacher, trn:)
-      end
+      before { FactoryBot.create(:teacher, trn:) }
 
       it 'creates a TrainingPeriod' do
         expect { service.register! }.to change(TrainingPeriod, :count).by(1)

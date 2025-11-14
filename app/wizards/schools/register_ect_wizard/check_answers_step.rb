@@ -14,7 +14,7 @@ module Schools
     private
 
       def persist
-        ect_at_school_period_id = ect.register!(school, author: wizard.author).id
+        ect_at_school_period_id = ect.register!(school, author: wizard.author, store: wizard.store).id
         ect.update!(ect_at_school_period_id:)
       end
     end

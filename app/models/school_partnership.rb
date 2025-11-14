@@ -25,6 +25,18 @@ class SchoolPartnership < ApplicationRecord
             }
 
   # Scopes
+  scope :earliest_first, -> { order(created_at: :asc) }
   scope :for_contract_period, ->(year) { joins(:contract_period).where(contract_periods: { year: }) }
-  scope :earliest_first, -> { order(created_at: 'asc') }
+  scope :for_contract_period_year, ->(year) {
+    joins(lead_provider_delivery_partnership: :active_lead_provider)
+      .where(active_lead_providers: { contract_period_year: year })
+  }
+  scope :excluding_contract_period_year, ->(year) {
+    joins(lead_provider_delivery_partnership: :active_lead_provider)
+      .where.not(active_lead_providers: { contract_period_year: year })
+  }
+  scope :latest_by_contract_year, -> {
+    joins(lead_provider_delivery_partnership: :active_lead_provider)
+      .order('active_lead_providers.contract_period_year DESC, school_partnerships.created_at DESC')
+  }
 end
