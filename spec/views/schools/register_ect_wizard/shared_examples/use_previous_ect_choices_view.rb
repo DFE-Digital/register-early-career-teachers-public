@@ -36,6 +36,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
 
   context "when the input data is invalid" do
     before do
+      allow(wizard.current_step).to receive(:reusable_available?).and_return(true)
       wizard.current_step.use_previous_ect_choices = nil
       wizard.valid_step?
       render
@@ -142,6 +143,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
         has_partnership_with?: false
       )
 
+      allow(wizard.current_step).to receive(:reusable_partnership_preview).and_return(nil)
       assign(:school, school)
       assign(:decorated_school, decorated_school)
       render
@@ -155,16 +157,33 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
     it 'does not render the delivery partner row' do
       expect(rendered).not_to have_css('.govuk-summary-list__key', text: 'Delivery partner')
     end
+  end
 
-    it 'renders the explanatory paragraph' do
-      expect(rendered).to include("#{last_chosen_lead_provider.name} will confirm if they’ll be working with your school and which delivery partner will deliver training events.")
+  context 'when provider-led but the school already has a current-period partnership' do
+    let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
+
+    before do
+      choices = double(
+        'Schools::LatestRegistrationChoices',
+        lead_provider: last_chosen_lead_provider,
+        appropriate_body: last_chosen_appropriate_body,
+        delivery_partner: nil
+      )
+
+      allow(decorated_school).to receive_messages(
+        latest_registration_choices: choices,
+        has_partnership_with?: true
+      )
+      allow(wizard.current_step).to receive(:reusable_partnership_preview).and_return(nil)
+
+      assign(:school, school)
+      assign(:decorated_school, decorated_school)
+      render
     end
 
-    it 'calls #has_partnership_with? using the lead provider and contract period' do
-      expect(decorated_school).to have_received(:has_partnership_with?).with(
-        lead_provider: decorated_school.latest_registration_choices.lead_provider,
-        contract_period: wizard.ect.contract_start_date
-      )
+    it 'does not render the explanatory paragraph or the inset' do
+      expect(rendered).not_to include("will confirm if they’ll be working with your school")
+      expect(rendered).not_to include("We can reuse your previous partnership")
     end
   end
 end

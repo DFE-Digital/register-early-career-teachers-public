@@ -1,33 +1,36 @@
 class SessionRepository
+  def initialize(session:, form_key:)
+    @session  = session || {}
+    @form_key = form_key.to_s
+  end
+
+  def [](key)
+    store[key.to_s]
+  end
+
+  def []=(key, value)
+    store[key.to_s] = value.is_a?(Hash) ? value.deep_stringify_keys : value
+  end
+
   def reset
     @session.delete(@form_key)
   end
 
   def update(args = {})
-    args.each do |key, value|
-      store[key.to_s] = value.is_a?(Hash) ? value.deep_stringify_keys : value
-    end
-
+    args.each { |k, v| self[k] = v }
     true
   end
   alias_method :update!, :update
 
 private
 
-  def initialize(session:, form_key:)
-    @session = session
-    @form_key = form_key
-  end
-
-  def get(key)
-    store[key.to_s]
-  end
-
-  # Every missing methodname ending with '=' will call #update(name: args)
-  # Otherwise call #get(name)
   def method_missing(name, *args)
-    methodname = name.to_s
-    methodname.ends_with?("=") ? update!(methodname[0..-2] => args.first) : get(name)
+    string_name = name.to_s
+    if string_name.end_with?('=')
+      self[string_name[0..-2]] = args.first
+    else
+      self[string_name]
+    end
   end
 
   def respond_to_missing?(_, _)

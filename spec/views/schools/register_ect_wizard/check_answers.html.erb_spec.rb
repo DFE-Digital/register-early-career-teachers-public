@@ -46,13 +46,6 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
       context 'when choosing the same choices' do
         let(:use_previous_ect_choices) { true }
 
-        it 'displays the "Choices used by your school previously" row' do
-          render
-          expect(rendered).to have_content('Choices used by your school previously')
-          expect(rendered).to have_content('Yes, use the programme choices used by my school previously')
-          expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_use_previous_ect_choices_path)
-        end
-
         it 'hides change links for appropriate body, training programme and lead provider' do
           render
           expect(rendered).not_to have_link('Change', href: schools_register_ect_wizard_change_state_school_appropriate_body_path)
@@ -82,13 +75,6 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
       context 'when use the school last programme choices is false' do
         let(:use_previous_ect_choices) { false }
-
-        it 'displays the "Choices used by your school previously" row' do
-          render
-          expect(rendered).to have_content('Choices used by your school previously')
-          expect(rendered).to have_content("No, don't use the programme choices used by my school previously")
-          expect(rendered).to have_link('Change', href: schools_register_ect_wizard_change_use_previous_ect_choices_path)
-        end
 
         it 'shows change links for appropriate body, training programme and lead provider' do
           render

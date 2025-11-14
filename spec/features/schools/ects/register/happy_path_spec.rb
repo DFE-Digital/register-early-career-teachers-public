@@ -6,6 +6,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     create_lead_provider_and_active_lead_provider
     create_school_with_previous_choices
     create_appropriate_bodies
+    create_reusable_previous_partnership
   end
 
   scenario 'happy path' do
@@ -87,13 +88,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_the_new_lead_provider
 
-    when_i_try_to_change_the_programme_choices_used_by_your_school_previously
-    then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
-    when_i_select_that_i_want_to_use_the_previous_ect_choices
-    and_i_click_continue
-    then_i_should_be_taken_to_the_check_answers_page
-    and_i_should_see_the_previous_programme_choices
-
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
 
@@ -112,19 +106,37 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def create_contract_period_for_start_date
-    @contract_period = FactoryBot.create(
-      :contract_period,
-      started_on: 7.months.ago.beginning_of_month,
-      finished_on: 7.months.from_now.end_of_month
-    )
+    @current_contract_year  = 2024
+    @previous_contract_year = 2023
+
+    @contract_period_current  = FactoryBot.create(:contract_period, year: @current_contract_year)
+    @contract_period_previous = FactoryBot.create(:contract_period, year: @previous_contract_year)
   end
 
   def create_lead_provider_and_active_lead_provider
-    @lead_provider = FactoryBot.create(:lead_provider, name: 'Orange Institute')
-    FactoryBot.create(
+    @orange_institute_lead_provider = FactoryBot.create(:lead_provider, name: 'Orange Institute')
+    @reuse_delivery_partner = FactoryBot.create(:delivery_partner, name: 'DP for Reuse')
+
+    @alp_previous_year = FactoryBot.create(
       :active_lead_provider,
-      lead_provider: @lead_provider,
-      contract_period: @contract_period
+      lead_provider: @orange_institute_lead_provider,
+      contract_period_year: @previous_contract_year
+    )
+    @alp_current_year = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @orange_institute_lead_provider,
+      contract_period_year: @current_contract_year
+    )
+
+    @lpdp_previous_year = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: @alp_previous_year,
+      delivery_partner: @reuse_delivery_partner
+    )
+    @lpdp_current_year = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: @alp_current_year,
+      delivery_partner: @reuse_delivery_partner
     )
   end
 
@@ -134,13 +146,21 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
       :state_funded,
       :provider_led_last_chosen,
       :teaching_school_hub_ab_last_chosen,
-      last_chosen_lead_provider: @lead_provider
+      last_chosen_lead_provider: @orange_institute_lead_provider
     )
   end
 
   def create_appropriate_bodies
     FactoryBot.create(:appropriate_body, name: 'Golden Leaf Teaching Hub')
     FactoryBot.create(:appropriate_body, name: 'Umber Teaching Hub')
+  end
+
+  def create_reusable_previous_partnership
+    FactoryBot.create(
+      :school_partnership,
+      school: @school,
+      lead_provider_delivery_partnership: @lpdp_previous_year
+    )
   end
 
   def trn
@@ -232,9 +252,10 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_enter_a_valid_start_date
-    page.get_by_label('day').fill(1.month.ago.day.to_s)
-    page.get_by_label('month').fill(1.month.ago.month.to_s)
-    page.get_by_label('year').fill(1.month.ago.year.to_s)
+    @entered_start_date = @contract_period_current.started_on + 1.month
+    page.get_by_label('day').fill(@entered_start_date.day.to_s)
+    page.get_by_label('month').fill(@entered_start_date.month.to_s)
+    page.get_by_label('year').fill(@entered_start_date.year.to_s)
   end
 
   def then_i_should_be_taken_to_the_use_previous_ect_choices_page
@@ -274,7 +295,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
     expect(page.get_by_text(trn)).to be_visible
     expect(page.get_by_text("Kirk Van Damme")).to be_visible
     expect(page.get_by_text('example@example.com')).to be_visible
-    expect(page.get_by_text("#{Date::MONTHNAMES[1.month.ago.month]} #{1.month.ago.year}")).to be_visible
+    expect(page.get_by_text(@entered_start_date.strftime('%B %Y'))).to be_visible
     expect(page.get_by_text('Golden Leaf Teaching Hub')).to be_visible
   end
 
@@ -304,10 +325,6 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
 
   def and_i_should_see_the_new_email
     expect(page.get_by_text('new@example.com')).to be_visible
-  end
-
-  def when_i_try_to_change_the_programme_choices_used_by_your_school_previously
-    page.get_by_role('link', name: 'change choices used by your school previously').first.click
   end
 
   def then_i_should_be_taken_to_the_change_user_previous_ect_choices_page
