@@ -13,6 +13,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :mentor_at_school_periods, through: :teacher
   has_many :events
   has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
+  has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
+  has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
   has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: 'MentorshipPeriod'
   has_one :latest_mentorship_period, -> { latest_first }, class_name: 'MentorshipPeriod'
 
