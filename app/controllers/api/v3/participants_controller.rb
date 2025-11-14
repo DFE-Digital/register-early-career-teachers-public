@@ -20,9 +20,23 @@ module API
         render json: to_json(teachers_query.teacher_by_api_id(api_id))
       end
 
-      def change_schedule = head(:method_not_allowed)
+      def change_schedule
+        validate_change_schedule_params!
+
+        service = Teachers::ChangeSchedule.new(
+          lead_provider_id: current_lead_provider.id,
+          teacher_api_id: teacher.api_id,
+          teacher_type:,
+          schedule_identifier: change_schedule_params[:schedule_identifier],
+          contract_period_year: change_schedule_params[:contract_period_year]
+        )
+
+        respond_with_service(service:, action: :change_schedule)
+      end
 
       def defer
+        validate_defer_participant_params!
+
         service = API::Teachers::Defer.new(
           lead_provider_id: current_lead_provider.id,
           teacher_api_id: teacher.api_id,
@@ -46,6 +60,8 @@ module API
       end
 
       def withdraw
+        validate_withdraw_participant_params!
+
         service = API::Teachers::Withdraw.new(
           lead_provider_id: current_lead_provider.id,
           teacher_api_id: teacher.api_id,
@@ -57,6 +73,13 @@ module API
       end
 
     private
+
+      # We want to raise a 400 error if the params are malformed, however some actions
+      # don't reference the parameters directly, so we call these validate methods instead.
+      def validate_resume_participant_params! = resume_participant_params
+      def validate_withdraw_participant_params! = withdraw_participant_params
+      def validate_defer_participant_params! = defer_participant_params
+      def validate_change_schedule_params! = change_schedule_params
 
       def teachers_query(conditions: {})
         API::Teachers::Query.new(**(default_query_conditions.merge(conditions)).compact)
@@ -79,17 +102,19 @@ module API
       end
 
       def defer_participant_params
-        params.require(:data).expect({ attributes: %i[reason] })
+        params.require(:data).expect({ attributes: %i[reason course_identifier] })
+      end
+
+      def withdraw_participant_params
+        params.require(:data).expect({ attributes: %i[reason course_identifier] })
       end
 
       def resume_participant_params
         params.require(:data).expect({ attributes: %i[course_identifier] })
       end
 
-      def validate_resume_participant_params! = resume_participant_params
-
-      def withdraw_participant_params
-        params.require(:data).expect({ attributes: %i[reason] })
+      def change_schedule_params
+        params.require(:data).expect({ attributes: %i[schedule_identifier contract_period_year course_identifier] })
       end
 
       def api_from_teacher_id
