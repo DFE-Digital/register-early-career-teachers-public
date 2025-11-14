@@ -9,8 +9,7 @@ module Migrators
     end
 
     def self.teachers
-      ::Migration::TeacherProfile.where(id: ::Migration::ParticipantProfile.ect_or_mentor
-        .where(id: Migration::InductionRecord.group(:participant_profile_id).having("count(participant_profile_id) = 1").count.keys).select(:teacher_profile_id)).distinct
+      ::Migration::TeacherProfile.joins(:participant_profiles).merge(::Migration::ParticipantProfile.ect_or_mentor).distinct
     end
 
     def self.dependencies
