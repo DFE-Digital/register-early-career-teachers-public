@@ -15,11 +15,21 @@ module DataFixes
       induction_record.start_date
     end
   end
-
+ 
+  # there are some mentors with a single IR record that has no end date - we want to set an end date in the following circumstances:
+  #
+  #   1. If mentor has a completion date < 1/9/2021, keep end date NULL for at_school period
+  #   but set the training period end date to the next 31 August that follows their started date
+  #
+  #   2. If mentor has a completion date > 1/1/2024, keep end date NULL for at_school period but set the
+  #   training period end date to match the mentor completion date
+  #
+  # For all other ECTs and mentors with one induction record and no end date, keep end date NULL.
+  #
   def corrected_training_period_end_date(induction_record:)
-    return induction_record.end_date if induction_record.end_date.present?
-
     participant_profile = induction_record.participant_profile
+    return induction_record.end_date if participant_profile.ect? || induction_record.end_date.present?
+
     corrected_date = nil
 
     # logic only initially for mentors with 1 induction record that has a blank end_date
