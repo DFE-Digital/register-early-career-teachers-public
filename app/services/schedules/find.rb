@@ -62,16 +62,22 @@ module Schedules
       "ecf-#{identifier_type}-#{schedule_month}"
     end
 
-    # TODO: one more criterion here is that the ECTs previous mentor has started training
-    # IT says: We will determine that the previous mentor has started training if they have one or more submitted declarations
+    def last_mentor_for_mentee
+      mentee.mentors.where.not(id: teacher.id)&.latest_first
+    end
+
+    def previous_mentor_started_training?
+      return false unless last_mentor_for_mentee.exists?
+
+      last_mentor_for_mentee.first.declarations.exists?
+    end
 
     def replacement_schedule?
       return false unless period_type_key == :mentor_at_school_period
       return false unless mentee && mentee.provider_led_training_programme?
       return false if teacher.mentor_became_ineligible_for_funding_on.present?
-      return false if teacher.most_recent_provider_led_period
 
-      true
+      previous_mentor_started_training?
     end
   end
 end
