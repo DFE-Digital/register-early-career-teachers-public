@@ -1,5 +1,5 @@
 module Migration
-  class Gantt
+  class PreMigrationGantt
     attr_reader :id, :induction_records, :declarations
 
     def initialize(induction_records, declarations)
