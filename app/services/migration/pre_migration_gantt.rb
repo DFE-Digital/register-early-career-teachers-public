@@ -1,5 +1,7 @@
 module Migration
   class PreMigrationGantt
+    include Gantt
+
     attr_reader :id, :induction_records, :declarations
 
     def initialize(induction_records, declarations)
@@ -18,19 +20,10 @@ module Migration
         #{academic_year_boundaries.join("\n")}
         #{induction_record_descriptions.join("\n")}
         #{declaration_descriptions.join("\n")}
-        #{legend}
+        #{legend(present_lead_provider_names)}
 
         @endgantt
       PLANTUML
-    end
-
-    def to_png
-      IO.popen('plantuml -p', 'r+') do |pipe|
-        pipe.puts(build)
-        pipe.close_write
-
-        pipe.read
-      end
     end
 
   private
@@ -66,16 +59,8 @@ module Migration
       2020.upto(2025).map { |y| %(#{y}/09/01 is colored in salmon) }
     end
 
-    def colour(lead_provider)
-      {
-        'Ambition Institute' => 'gold',
-        'Best Practice Network' => 'deeppink',
-        'Capita' => 'cyan',
-        'Education Development Trust' => 'slateblue',
-        'National Institute of Teaching' => 'cadetblue',
-        'Teach First' => 'royalblue',
-        'UCL Institute of Education' => 'lightslategrey'
-      }.fetch(lead_provider, 'bisque')
+    def present_lead_provider_names
+      induction_records.map(&:lead_provider_name).uniq
     end
 
     def withdrawn_note(identifier)
@@ -85,19 +70,6 @@ module Migration
           withdrawn: true
         end note
       NOTE
-    end
-
-    def legend
-      entries = induction_records.map(&:lead_provider_name).uniq.map do |lead_provider_name|
-        %(| <##{colour(lead_provider_name)}> | #{lead_provider_name} |)
-      end
-
-      <<~LEGEND
-        legend
-        |= |= Lead provider |
-        #{entries.join("\n")}
-        end legend
-      LEGEND
     end
 
     def declaration_descriptions
