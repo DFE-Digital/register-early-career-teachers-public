@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.schedules
-      ::Migration::Schedule.where(type: "Finance::Schedule::ECF")
+      ::Migration::Schedule.where(type: ["Finance::Schedule::ECF", "Finance::Schedule::Mentor"])
     end
 
     def self.reset!
