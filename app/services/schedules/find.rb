@@ -63,7 +63,7 @@ module Schedules
     end
 
     def last_mentor_for_mentee
-      mentee.mentors.where.not(id: teacher.id)&.latest_first
+      mentee.mentors.where.not(teacher_id: teacher.id)&.latest_first
     end
 
     def previous_mentor_started_training?
