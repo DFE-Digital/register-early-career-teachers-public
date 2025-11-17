@@ -1,6 +1,6 @@
 RSpec.describe 'admin/induction_periods/new.html.erb' do
   let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
-  let(:back_path) { admin_teacher_path(ect.teacher) }
+  let(:back_path) { admin_teacher_induction_path(ect.teacher) }
   let(:induction_period) { FactoryBot.build(:induction_period, teacher: ect.teacher) }
 
   before do

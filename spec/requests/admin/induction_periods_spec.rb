@@ -32,7 +32,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       it "redirects to the teacher page with success message" do
         post admin_teacher_induction_periods_path(teacher), params: valid_params
 
-        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         expect(flash[:alert]).to eq('Induction period created successfully')
       end
 
@@ -380,7 +380,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         it "updates the induction period" do
           patch admin_teacher_induction_period_path(induction_period.teacher, induction_period), params: valid_params
 
-          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(induction_period.teacher))
           expect(flash[:alert]).to eq("Induction period updated successfully")
 
           induction_period.reload
@@ -440,7 +440,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
           it "returns error" do
             patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
-            expect(response).not_to redirect_to(admin_teacher_path(induction_period.teacher))
+            expect(response).not_to redirect_to(admin_teacher_induction_path(induction_period.teacher))
             expect(response).to have_http_status(:unprocessable_content)
             expect(response.body).to include("Start date cannot overlap another induction period")
           end
@@ -541,7 +541,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         it "updates all fields" do
           patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
-          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(induction_period.teacher))
           expect(flash[:alert]).to eq("Induction period updated successfully")
 
           induction_period.reload
@@ -575,7 +575,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         it "updates the number of terms" do
           patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
-          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(induction_period.teacher))
           expect(flash[:alert]).to eq("Induction period updated successfully")
 
           induction_period.reload
@@ -595,7 +595,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         it "updates the induction programme" do
           patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
-          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(induction_period.teacher))
           expect(flash[:alert]).to eq("Induction period updated successfully")
 
           induction_period.reload
@@ -631,7 +631,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         it "updates the end date" do
           patch(admin_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
 
-          expect(response).to redirect_to(admin_teacher_path(induction_period.teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(induction_period.teacher))
           expect(flash[:alert]).to eq("Induction period updated successfully")
 
           induction_period.reload
@@ -672,7 +672,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           delete admin_teacher_induction_period_path(teacher, induction_period), params:
         }.to change(InductionPeriod, :count).by(-1)
 
-        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         expect(flash[:alert]).to eq("Induction period deleted successfully")
         expect { induction_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
@@ -708,7 +708,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           end
         }.to change(InductionPeriod, :count).by(-1)
 
-        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         expect(flash[:alert]).to eq("Induction period deleted successfully")
         expect { induction_period1.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { induction_period2.reload }.not_to raise_error
@@ -727,7 +727,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
       it "redirects with error message" do
         delete(admin_teacher_induction_period_path(teacher, induction_period), params:)
 
-        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         expect(flash[:alert]).to match(/Could not delete induction period:/)
         expect { induction_period.reload }.not_to raise_error
       end

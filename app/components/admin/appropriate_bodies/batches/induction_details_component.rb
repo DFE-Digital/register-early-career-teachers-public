@@ -68,7 +68,7 @@ module Admin
         # @param teacher [Teacher]
         # @return [String]
         def link_to_teacher(teacher)
-          govuk_link_to(teacher_full_name(teacher), admin_teacher_path(teacher))
+          govuk_link_to(teacher_full_name(teacher), admin_teacher_induction_path(teacher))
         end
 
         # @return [InductionPeriod::ActiveRecord_Relation]

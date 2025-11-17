@@ -27,7 +27,7 @@ RSpec.describe 'admin/appropriate_bodies/current_ects/index.html.erb' do
 
     teachers.each do |teacher|
       expect(rendered).to have_css('.govuk-summary-card__title', text: Teachers::Name.new(teacher).full_name)
-      expect(rendered).to have_link('Show', href: admin_teacher_path(teacher))
+      expect(rendered).to have_link('Show', href: admin_teacher_induction_path(teacher))
     end
   end
 

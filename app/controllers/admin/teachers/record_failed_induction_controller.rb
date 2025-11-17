@@ -27,7 +27,7 @@ module Admin
           end
 
         else
-          redirect_to admin_teacher_path(@teacher)
+          redirect_to admin_teacher_induction_path(@teacher)
         end
       rescue ActiveRecord::RecordInvalid,
              ActiveModel::ValidationError

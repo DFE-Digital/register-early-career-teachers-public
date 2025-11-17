@@ -27,7 +27,7 @@ describe "Admin::Teachers::ReopenInductionController" do
         it "redirects to the teacher page" do
           get confirm_admin_teacher_reopen_induction_path(teacher)
 
-          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         end
       end
 
@@ -39,7 +39,7 @@ describe "Admin::Teachers::ReopenInductionController" do
         it "redirects to the teacher page" do
           get confirm_admin_teacher_reopen_induction_path(teacher)
 
-          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         end
       end
 
@@ -51,7 +51,7 @@ describe "Admin::Teachers::ReopenInductionController" do
         it "redirects to the teacher page" do
           get confirm_admin_teacher_reopen_induction_path(teacher)
 
-          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         end
       end
 
@@ -101,7 +101,7 @@ describe "Admin::Teachers::ReopenInductionController" do
         it "redirects to the teacher page without reopening the induction period" do
           patch(admin_teacher_reopen_induction_path(teacher), params:)
 
-          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         end
       end
 
@@ -114,7 +114,7 @@ describe "Admin::Teachers::ReopenInductionController" do
           expect { patch(admin_teacher_reopen_induction_path(teacher), params:) }
             .not_to(change { induction_period.reload.outcome })
 
-          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         end
       end
 
@@ -127,7 +127,7 @@ describe "Admin::Teachers::ReopenInductionController" do
           expect { patch(admin_teacher_reopen_induction_path(teacher), params:) }
             .not_to(change { induction_period.reload.outcome })
 
-          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         end
       end
 
@@ -141,7 +141,7 @@ describe "Admin::Teachers::ReopenInductionController" do
             .to change { induction_period.reload.outcome }
             .from("pass").to(nil)
 
-          expect(response).to redirect_to(admin_teacher_path(teacher))
+          expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         end
 
         context "when no extra information is provided" do

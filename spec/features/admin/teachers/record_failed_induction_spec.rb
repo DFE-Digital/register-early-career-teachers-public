@@ -10,7 +10,7 @@ RSpec.describe "Admin recording a failed induction" do
 
   context "with a ticket and reason" do
     it "fails the induction period and adds context to the timeline" do
-      given_i_am_on_the_teacher_page
+      given_i_am_on_the_teacher_induction_page
       when_i_click_link('Fail induction')
       then_i_should_be_on_the_record_outcome_page
 
@@ -34,7 +34,7 @@ RSpec.describe "Admin recording a failed induction" do
 
   context "without a ticket and reason" do
     it "raises a validation error" do
-      given_i_am_on_the_teacher_page
+      given_i_am_on_the_teacher_induction_page
       when_i_click_link('Fail induction')
       then_i_should_be_on_the_record_outcome_page
 
@@ -49,8 +49,8 @@ RSpec.describe "Admin recording a failed induction" do
 
 private
 
-  def given_i_am_on_the_teacher_page
-    page.goto(admin_teacher_path(teacher))
+  def given_i_am_on_the_teacher_induction_page
+    page.goto(admin_teacher_induction_path(teacher))
   end
 
   def when_i_click_link(text)

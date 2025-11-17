@@ -15,12 +15,5 @@ module Admin
         )
       )
     end
-
-    def show
-      @page = params[:page] || 1
-      teacher = Teacher.find_by(id: params[:id])
-      @teacher = TeacherPresenter.new(teacher)
-      @events = teacher.events.latest_first
-    end
   end
 end

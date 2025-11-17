@@ -29,7 +29,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
           post admin_teacher_extensions_path(teacher), params: valid_params
         }.to change(InductionExtension, :count).by(1)
 
-        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         expect(flash[:notice]).to eq("Extension was successfully added.")
       end
     end
@@ -54,7 +54,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
         patch admin_teacher_extension_path(teacher, extension), params: valid_params
         extension.reload
         expect(extension.number_of_terms).to eq(2.5)
-        expect(response).to redirect_to(admin_teacher_path(teacher))
+        expect(response).to redirect_to(admin_teacher_induction_path(teacher))
         expect(flash[:notice]).to eq("Extension was successfully updated.")
       end
     end
@@ -79,7 +79,7 @@ RSpec.describe "Admin::Teachers::Extensions", type: :request do
       delete admin_teacher_extension_path(teacher, extension)
 
       expect(manage_service).to have_received(:delete!).with(id: extension.id.to_s)
-      expect(response).to redirect_to(admin_teacher_path(teacher))
+      expect(response).to redirect_to(admin_teacher_induction_path(teacher))
       expect(flash[:notice]).to eq("Extension was successfully deleted.")
     end
 

@@ -4,9 +4,9 @@ RSpec.describe "Admin::Teachers#show", type: :request do
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
-  describe "GET /admin/teachers/:id" do
+  describe "GET /admin/teachers/:id/induction" do
     it "redirects to sign in path" do
-      get admin_teacher_path(teacher)
+      get admin_teacher_induction_path(teacher)
       expect(response).to redirect_to(sign_in_path)
     end
 
@@ -14,7 +14,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
       include_context 'sign in as non-DfE user'
 
       it "requires authorisation" do
-        get admin_teacher_path(teacher)
+        get admin_teacher_induction_path(teacher)
         expect(response.status).to eq(401)
       end
     end
@@ -23,7 +23,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
       include_context 'sign in as DfE user'
 
       it "returns http success" do
-        get admin_teacher_path(teacher)
+        get admin_teacher_induction_path(teacher)
         expect(response).to have_http_status(:success)
       end
 
@@ -33,14 +33,14 @@ RSpec.describe "Admin::Teachers#show", type: :request do
         end
 
         it "displays migration warning" do
-          get admin_teacher_path(teacher)
+          get admin_teacher_induction_path(teacher)
           expect(sanitize(response.body)).to include("Some of this teacher's records could not be migrated")
         end
       end
 
       context "when accessed from index page" do
         it "includes page parameter in backlink" do
-          get admin_teacher_path(teacher, page: 2)
+          get admin_teacher_induction_path(teacher, page: 2)
           expect(response.body).to include(admin_teachers_path(page: 2))
         end
       end
