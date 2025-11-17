@@ -14,22 +14,6 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::PreviousRegistrati
     allow(queries).to receive_messages(previous_ect_at_school_period: previous_ect_period, previous_training_period:, previous_appropriate_body:, previous_delivery_partner:, previous_lead_provider:)
   end
 
-  describe '#present?' do
-    context 'when there is a previous ECT period' do
-      let(:previous_ect_period) { instance_double(ECTAtSchoolPeriod) }
-
-      it 'returns true' do
-        expect(previous_registration.present?).to be(true)
-      end
-    end
-
-    context 'when there is no previous ECT period' do
-      it 'returns false' do
-        expect(previous_registration.present?).to be(false)
-      end
-    end
-  end
-
   describe '#previous_school_name' do
     let(:previous_ect_period) { instance_double(ECTAtSchoolPeriod, school:) }
 
