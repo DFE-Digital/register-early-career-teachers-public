@@ -81,7 +81,7 @@ module Schools
       end
 
       def previously_registered?
-        previous_registration.present?
+        queries.previous_ect_at_school_period.present?
       end
 
       def trs_full_name
