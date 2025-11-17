@@ -106,8 +106,8 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def create_contract_period_for_start_date
-    @current_contract_year  = 2024
-    @previous_contract_year = 2023
+    @current_contract_year  = Time.zone.today.year
+    @previous_contract_year = @current_contract_year - 1
 
     @contract_period_current  = FactoryBot.create(:contract_period, :with_schedules, year: @current_contract_year)
     @contract_period_previous = FactoryBot.create(:contract_period, :with_schedules, year: @previous_contract_year)
