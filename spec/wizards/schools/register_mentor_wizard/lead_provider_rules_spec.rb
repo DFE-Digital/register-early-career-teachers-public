@@ -8,7 +8,7 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       allow(registration_store).to receive_messages(
         provider_led_ect?: true,
         mentoring_at_new_school_only?: true,
-        funding_available?: true,
+        eligible_for_funding?: true,
         ect_lead_provider_invalid?: false
       )
       expect(rules.show_row_in_check_your_answers?).to be true
@@ -18,7 +18,7 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       allow(registration_store).to receive_messages(
         provider_led_ect?: true,
         mentoring_at_new_school_only?: false,
-        funding_available?: false,
+        eligible_for_funding?: false,
         ect_lead_provider_invalid?: true
       )
       expect(rules.show_row_in_check_your_answers?).to be true
@@ -28,7 +28,7 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       allow(registration_store).to receive_messages(
         provider_led_ect?: false,
         mentoring_at_new_school_only?: false,
-        funding_available?: false,
+        eligible_for_funding?: false,
         ect_lead_provider_invalid?: false
       )
       expect(rules.show_row_in_check_your_answers?).to be false

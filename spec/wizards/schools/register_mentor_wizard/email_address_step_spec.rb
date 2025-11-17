@@ -46,7 +46,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
 
   context 'provider-led, eligible for funding, previously registered, previously a mentor' do
     before do
-      allow(wizard.mentor).to receive_messages(email_taken?: false, funding_available?: true, previously_registered_as_mentor?: true, mentorship_status: :previously_a_mentor)
+      allow(wizard.mentor).to receive_messages(email_taken?: false, eligible_for_funding?: true, previously_registered_as_mentor?: true, mentorship_status: :previously_a_mentor)
     end
 
     it_behaves_like 'an email step',
@@ -58,7 +58,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
 
   context 'provider-led, eligible for funding, previously registered, currently a mentor' do
     before do
-      allow(wizard.mentor).to receive_messages(email_taken?: false, funding_available?: true, previously_registered_as_mentor?: true, mentorship_status: :currently_a_mentor)
+      allow(wizard.mentor).to receive_messages(email_taken?: false, eligible_for_funding?: true, previously_registered_as_mentor?: true, mentorship_status: :currently_a_mentor)
     end
 
     it_behaves_like 'an email step',
@@ -101,7 +101,7 @@ describe Schools::RegisterMentorWizard::EmailAddressStep, type: :model do
       allow(wizard.mentor).to receive_messages(
         email_taken?: false,
         previously_registered_as_mentor?: false,
-        funding_available?: true,
+        eligible_for_funding?: true,
         ect_lead_provider_invalid?: true
       )
     end

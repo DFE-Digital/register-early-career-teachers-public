@@ -36,7 +36,6 @@ module Schools
                :corrected_name?,
                :in_trs?,
                :matches_trs_dob?,
-               :funding_available?,
                :eligible_for_funding?,
                :became_ineligible_for_funding?,
                :prohibited_from_teaching?,

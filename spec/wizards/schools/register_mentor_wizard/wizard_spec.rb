@@ -232,7 +232,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context 'when the mentor is eligible for funding' do
-        before { allow(wizard.mentor).to receive(:funding_available?).and_return(true) }
+        before { allow(wizard.mentor).to receive(:eligible_for_funding?).and_return(true) }
 
         it do
           expect(subject).to eq(%i[find_mentor
@@ -283,7 +283,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       context 'when the mentor is eligible for funding' do
-        before { allow(wizard.mentor).to receive(:funding_available?).and_return(true) }
+        before { allow(wizard.mentor).to receive(:eligible_for_funding?).and_return(true) }
 
         it do
           expect(subject).to eq(%i[find_mentor

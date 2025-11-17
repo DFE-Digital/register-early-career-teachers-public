@@ -84,8 +84,8 @@ module Schools
             steps << :previous_training_period_details if mentor.eligible_for_funding? || mentor.provider_led_ect?
             steps << :programme_choices unless mentor.became_ineligible_for_funding?
             steps << :lead_provider unless mentor.use_same_programme_choices == "yes"
-            steps << :review_mentor_eligibility if mentor.funding_available?
-            steps << :eligibility_lead_provider if mentor.funding_available?
+            steps << :review_mentor_eligibility if mentor.eligible_for_funding?
+            steps << :eligibility_lead_provider if mentor.eligible_for_funding?
             steps += %i[change_mentor_details change_email_address check_answers]
             steps << :change_started_on if mentor.started_on
             steps << :change_lead_provider if mentor.lead_provider

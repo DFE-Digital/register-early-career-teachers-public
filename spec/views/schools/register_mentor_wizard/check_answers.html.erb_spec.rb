@@ -152,7 +152,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'when mentoring_at_new_school_only? is false' do
       before do
-        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: false, lead_provider:, funding_available?: true)
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: false, lead_provider:, eligible_for_funding?: true)
         render
       end
 
@@ -165,7 +165,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
 
     context 'when mentoring_at_new_school_only? is not present' do
       before do
-        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: nil, lead_provider:, funding_available?: true)
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: nil, lead_provider:, eligible_for_funding?: true)
         render
       end
 
@@ -176,9 +176,9 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
     end
 
-    context 'when funding_available? is false' do
+    context 'when eligible_for_funding? is false' do
       before do
-        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: true, lead_provider:, funding_available?: false)
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: true, lead_provider:, eligible_for_funding?: false)
         render
       end
 
@@ -189,9 +189,9 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
       end
     end
 
-    context 'when funding_available? is true' do
+    context 'when eligible_for_funding? is true' do
       before do
-        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: true, lead_provider:, funding_available?: true)
+        allow(mentor).to receive_messages(provider_led_ect?: true, mentoring_at_new_school_only?: true, lead_provider:, eligible_for_funding?: true)
         render
       end
 
@@ -265,7 +265,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
         allow(mentor).to receive_messages(
           provider_led_ect?: true,
           mentoring_at_new_school_only?: false,
-          funding_available?: false,
+          eligible_for_funding?: false,
           lead_provider: nil,
           ect_lead_provider: lead_provider,
           ect_lead_provider_invalid?: true
@@ -285,7 +285,7 @@ RSpec.describe "schools/register_mentor_wizard/check_answers.html.erb" do
         allow(mentor).to receive_messages(
           provider_led_ect?: true,
           mentoring_at_new_school_only?: false,
-          funding_available?: false,
+          eligible_for_funding?: false,
           lead_provider: nil,
           ect_lead_provider: lead_provider,
           ect_lead_provider_invalid?: false

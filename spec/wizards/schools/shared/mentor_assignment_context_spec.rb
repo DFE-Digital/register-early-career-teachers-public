@@ -37,9 +37,9 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     end
   end
 
-  describe '#funding_available?' do
+  describe '#eligible_for_funding?' do
     it 'returns true if mentor_became_ineligible_for_funding_reason is nil' do
-      expect(context.funding_available?).to be(true)
+      expect(context.eligible_for_funding?).to be(true)
     end
   end
 
