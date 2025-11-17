@@ -320,6 +320,31 @@ get:
         - teacher_reference_number_validated
         - overall_induction_start_date
 
+  - "/api/v3/unfunded-mentors":
+      ecf_path: "/api/v3/unfunded-mentors/ecf"
+      paginate: true
+  - "/api/v3/unfunded-mentors":
+      ecf_path: "/api/v3/unfunded-mentors/ecf"
+      paginate: true
+      query:
+        filter:
+          updated_since: "2025-04-13T11:21:55Z"
+  - "/api/v3/unfunded-mentors":
+      ecf_path: "/api/v3/unfunded-mentors/ecf"
+      paginate: true
+      query:
+        sort: "-updated_at"
+  - "/api/v3/unfunded-mentors":
+      ecf_path: "/api/v3/unfunded-mentors/ecf"
+      paginate: true
+      query:
+        filter:
+          updated_since: "2025-04-13T11:21:55Z"
+        sort: "+created_at"
+  - "/api/v3/unfunded-mentors/:id":
+      ecf_path: "/api/v3/unfunded-mentors/ecf/:id"
+      id: ":unfunded_mentor_teacher_api_id"
+
 post:
   - "/api/v3/partnerships":
       ecf_path: "/api/v3/partnerships/ecf"
@@ -369,7 +394,7 @@ put:
       exclude:
         - teacher_reference_number_validated
         - overall_induction_start_date
-        
+
   - "/api/v3/participants/:id/resume":
       ecf_path: "/api/v3/participants/ecf/:id/resume"
       id: ":withdrawn_teacher_api_id_for_participant_action"
