@@ -1,4 +1,6 @@
 RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
+  include MentorshipPeriodHelpers
+
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:instance) { described_class.new(lead_provider:) }
@@ -497,6 +499,21 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
           },
         })
       end
+    end
+
+    context "when fetching `unfunded_mentor_teacher_api_id`" do
+      let(:identifier) { :unfunded_mentor_teacher_api_id }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let(:other_school_partnership) { FactoryBot.create(:school_partnership) }
+      let!(:unfunded_mentor) { create_mentorship_period_for(mentee_school_partnership: school_partnership).mentor.teacher }
+
+      before do
+        # Unfunded mentor for different lead providers should not be used.
+        create_mentorship_period_for(mentee_school_partnership: FactoryBot.create(:school_partnership))
+      end
+
+      it { is_expected.to eq(unfunded_mentor.api_id) }
     end
   end
 end

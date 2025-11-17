@@ -93,6 +93,14 @@ module ParityCheck
                                                            .pick(:api_id)
     end
 
+    def unfunded_mentor_teacher_api_id
+      API::Teachers::UnfundedMentors::Query.new(lead_provider_id: lead_provider.id)
+        .unfunded_mentors
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body

@@ -10,10 +10,9 @@ RSpec.describe "Unfunded mentors API", :with_metadata, type: :request do
   def create_resource(active_lead_provider:)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
-    other_school_partnership = FactoryBot.create(:school_partnership)
 
     # Unfunded mentor associated with the lead provider (should be returned)
-    create_mentorship_period_for(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher
+    create_mentorship_period_for(mentee_school_partnership: school_partnership).mentor.teacher
   end
 
   describe "#index" do
