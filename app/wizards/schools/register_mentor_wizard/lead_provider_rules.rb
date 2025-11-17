@@ -3,7 +3,7 @@ module Schools
     class LeadProviderRules < ::Rules::Base
       delegate :provider_led_ect?,
                :mentoring_at_new_school_only?,
-               :funding_available?,
+               :eligible_for_funding?,
                :ect_lead_provider_invalid?,
                :previously_registered_as_mentor?,
                to: :subject
@@ -24,7 +24,7 @@ module Schools
 
     private
 
-      def mentoring_at_new_school_with_funding? = mentoring_at_new_school_only? && funding_available?
+      def mentoring_at_new_school_with_funding? = mentoring_at_new_school_only? && eligible_for_funding?
     end
   end
 end
