@@ -52,6 +52,14 @@ module Migrators
       teacher = ::Teacher.find_or_initialize_by(trn: teacher_profile.trn)
       user = teacher_profile.user
 
+      if teacher_profile.trn.present?
+        teacher = ::Teacher.find_or_initialize_by(trn: teacher_profile.trn)
+        teacher.api_id = user.id
+      else
+        teacher = ::Teacher.find_or_initialize_by(api_id: user.id)
+        teacher.trnless = true
+      end
+
       if teacher.persisted? && name_does_not_match?(teacher, user.full_name)
         teacher.corrected_name = user.full_name
       else
@@ -61,7 +69,6 @@ module Migrators
         teacher.trs_last_name = parser.last_name
       end
 
-      teacher.api_id = user.id
       teacher.created_at = user.created_at
       teacher.updated_at = user.updated_at
       teacher.save!
