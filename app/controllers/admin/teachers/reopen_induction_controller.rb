@@ -4,7 +4,7 @@ module Admin
       before_action :set_teacher
 
       before_action -> do
-        redirect_to admin_teacher_path(@teacher),
+        redirect_to admin_teacher_induction_path(@teacher),
                     notice: "No completed induction period found"
       end, unless: :induction_complete_with_outcome?
 
@@ -18,7 +18,7 @@ module Admin
         )
         @reopen_induction.reopen_induction_period!
 
-        redirect_to admin_teacher_path(@teacher),
+        redirect_to admin_teacher_induction_path(@teacher),
                     alert: "Induction was successfully reopened"
       rescue ActiveModel::ValidationError
         render :confirm, status: :unprocessable_content

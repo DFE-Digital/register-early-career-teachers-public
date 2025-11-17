@@ -51,7 +51,7 @@ RSpec.describe 'Admin importing an ECT' do
         given_i_am_on_the_find_ect_page
         when_i_enter_a_trn_for_existing_teacher
         and_i_click_continue
-        then_i_should_be_redirected_to_the_existing_teacher_page
+        then_i_should_be_redirected_to_the_existing_teacher_induction_page
         and_i_should_see_the_teacher_already_exists_message
       end
     end
@@ -227,9 +227,9 @@ private
     expect(page.get_by_text('No teacher with this TRN and date of birth was found')).to be_visible
   end
 
-  def then_i_should_be_redirected_to_the_existing_teacher_page
+  def then_i_should_be_redirected_to_the_existing_teacher_induction_page
     teacher = Teacher.find_by(trn: '1234567')
-    expect(page).to have_path("/admin/teachers/#{teacher.id}")
+    expect(page).to have_path("/admin/teachers/#{teacher.id}/induction")
   end
 
   def and_i_should_see_the_teacher_already_exists_message

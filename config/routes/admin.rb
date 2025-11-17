@@ -38,7 +38,10 @@ namespace :admin do
     end
   end
 
-  resources :teachers, only: %i[index show] do
+  resources :teachers, only: %i[index] do
+    scope module: :teachers do
+      resource :induction, only: %i[show]
+    end
     resources :induction_periods, only: %i[new create edit update destroy], path: 'induction-periods' do
       member do
         get :confirm_delete, path: 'confirm-delete'
