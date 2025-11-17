@@ -138,6 +138,13 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
       context "when the lead provider id is valid" do
         let(:lead_provider_id) { other_lead_provider.id }
 
+        # Force the new schedule to be assigned to ecf-standard-january
+        around do |example|
+          travel_to(Date.new(2025, 11, 1)) do
+            example.run
+          end
+        end
+
         it "updates the lead provider only after confirmation" do
           post(path_for_step("edit"), params:)
 
@@ -156,15 +163,6 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         end
 
         context 'when the previous school partnership was not confirmed' do
-          # Force the new schedule to be assigned to ecf-standard-january
-          around do |example|
-            travel_to(Date.new(2025, 11, 1)) do
-              example.run
-            end
-          end
-
-          let(:lead_provider_id) { other_lead_provider.id }
-
           it "assigns a new schedule" do
             post(path_for_step("edit"), params:)
 
@@ -178,13 +176,6 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         end
 
         context 'when the previous school partnership was confirmed' do
-          around do |example|
-            travel_to(Date.new(2025, 11, 1)) do
-              example.run
-            end
-          end
-
-          let(:lead_provider_id) { other_lead_provider.id }
           let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: other_lead_provider) }
           let(:other_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider) }
           let(:other_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: other_lead_provider_delivery_partnership, school:) }
@@ -200,7 +191,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
             )
           end
 
-          it "assigns a new schedule" do
+          it "assigns the previous schedule" do
             post(path_for_step("edit"), params:)
 
             follow_redirect!
