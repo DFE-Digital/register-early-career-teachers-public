@@ -734,4 +734,24 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       end
     end
   end
+
+  describe '#previously_registered?' do
+    context 'when there is a previous registration' do
+      before { store.trn = teacher.trn }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      let!(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
+      it 'returns true' do
+        expect(registration_store.previously_registered?).to be true
+      end
+    end
+
+    context 'when there is no previous training' do
+      it 'returns false' do
+        expect(registration_store.previously_registered?).to be false
+      end
+    end
+  end
 end
