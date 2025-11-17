@@ -47,7 +47,11 @@ module Schedules
     end
 
     def contract_period_year
-      latest_start_date.year
+      if schedule_month == 'april'
+        latest_start_date.year - 1
+      else
+        latest_start_date.year
+      end
     end
 
     # TODO: in due course, we will assign non-standard identifiers

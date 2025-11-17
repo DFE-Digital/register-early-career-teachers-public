@@ -91,7 +91,7 @@ RSpec.describe Schedules::Find do
               end
 
               context 'when the training period started between 1st March and 31st May' do
-                let(:started_on) { Date.new(year, 4, 10) }
+                let(:started_on) { Date.new(year + 1, 4, 10) }
 
                 it 'assigns the schedule to the current training period' do
                   expect(service.identifier).to include('april')
