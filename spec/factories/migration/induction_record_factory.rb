@@ -8,5 +8,9 @@ FactoryBot.define do
     training_status { :active }
     start_date { 1.month.ago }
     end_date { nil }
+
+    trait :with_mentor do
+      mentor_profile { FactoryBot.create(:migration_participant_profile, :mentor) }
+    end
   end
 end
