@@ -24,7 +24,7 @@ module Schools
     private
 
       def provider_led_with_funding?
-        ect.provider_led_training_programme? && mentor.funding_available?
+        ect.provider_led_training_programme? && mentor.eligible_for_funding?
       end
 
       def pop_back_to!(key)

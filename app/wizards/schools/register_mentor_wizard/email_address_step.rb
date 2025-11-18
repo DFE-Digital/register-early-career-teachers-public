@@ -37,7 +37,7 @@ module Schools
     private
 
       def eligible_for_review?
-        ect.provider_led_training_programme? && mentor.funding_available? && !mentor.previously_registered_as_mentor? && !mentor.ect_lead_provider_invalid?
+        ect.provider_led_training_programme? && mentor.eligible_for_funding? && !mentor.previously_registered_as_mentor? && !mentor.ect_lead_provider_invalid?
       end
 
       def persist

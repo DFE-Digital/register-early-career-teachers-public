@@ -97,7 +97,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       context 'when the ect is provider_led' do
         before do
           allow(wizard.ect).to receive(:provider_led_training_programme?).and_return(true)
-          allow(mentor).to receive(:funding_available?).and_return(false)
+          allow(mentor).to receive(:eligible_for_funding?).and_return(false)
         end
 
         it do
