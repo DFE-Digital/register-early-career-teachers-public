@@ -43,10 +43,23 @@ module Admin
         teacher.teacher_migration_failures.any?
     end
 
+    def most_recent_email
+      period = [latest_ect_period, latest_mentor_period].compact.max_by(&:started_on)
+      period&.email || 'No email recorded'
+    end
+
   private
 
     def teacher
       __getobj__
+    end
+
+    def latest_ect_period
+      teacher.ect_at_school_periods.latest_first.first
+    end
+
+    def latest_mentor_period
+      teacher.mentor_at_school_periods.latest_first.first
     end
   end
 end
