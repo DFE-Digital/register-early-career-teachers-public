@@ -82,10 +82,10 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         context "when the training period started today" do
           let(:started_on) { Date.current }
 
-          it "closes existing periods and starts a new one with the previous schedule" do
+          it "destroys the training period" do
             subject
 
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
           end
         end
       end
