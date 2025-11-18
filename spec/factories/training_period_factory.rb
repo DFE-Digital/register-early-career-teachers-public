@@ -4,7 +4,7 @@ FactoryBot.define do
       # default start date to be a realistic past date
       period_start_date { ect_at_school_period&.started_on || mentor_at_school_period&.started_on || rand(2.years.ago..6.months.ago) }
       # default end date to be a realistic end date
-      period_end_date { started_on || ect_at_school_period&.finished_on || mentor_at_school_period&.finished_on || period_start_date + 1.year }
+      period_end_date { started_on.tomorrow || ect_at_school_period&.finished_on&.tomorrow || mentor_at_school_period&.finished_on&.tomorrow || period_start_date + 1.year }
     end
 
     for_ect
