@@ -348,6 +348,8 @@ module ECTAtSchoolPeriods
           FactoryBot.create(:mentor_at_school_period, :ongoing)
         end
 
+        let(:mentorship_period) { nil }
+
         it "raises an error" do
           expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
             .to raise_error(ArgumentError)
