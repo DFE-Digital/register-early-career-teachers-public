@@ -1,1 +1,9 @@
+<% page_data(
+  title: teacher_full_name(@teacher),
+  caption: teacher_trn(@teacher),
+  caption_size: 'm',
+  error: false,
+  backlink_href: admin_teachers_path
+) %>
+
 <%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
