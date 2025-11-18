@@ -8,6 +8,8 @@
   )
 %>
 
+<%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
+
 <% if admin_latest_induction_complete_with_outcome?(@teacher) %>
   <%= govuk_button_link_to "Reopen induction", confirm_admin_teacher_reopen_induction_path(@teacher), warning: true %>
 <% end %>

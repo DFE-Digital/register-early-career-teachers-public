@@ -8,6 +8,7 @@ module Admin
         teacher = Teacher.find_by(id: params[:teacher_id])
         @teacher = TeacherPresenter.new(teacher)
         @events = teacher.events.latest_first
+        @navigation_items = helpers.admin_teacher_navigation_items(@teacher, :induction)
       end
     end
   end
