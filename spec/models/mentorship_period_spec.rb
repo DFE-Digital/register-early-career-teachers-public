@@ -166,6 +166,17 @@ describe MentorshipPeriod do
     end
   end
 
+  describe "check constraints" do
+    subject { FactoryBot.build(:mentorship_period, mentee:, mentor:, started_on: Date.current, finished_on: Date.current) }
+
+    let(:mentee) { FactoryBot.create(:ect_at_school_period) }
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period) }
+
+    it 'prevents 0 day periods from being written to the database' do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    end
+  end
+
   describe "scopes" do
     describe ".for_mentee" do
       it "returns only periods for the specified mentee" do
