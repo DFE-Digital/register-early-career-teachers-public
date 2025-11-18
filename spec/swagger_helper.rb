@@ -86,6 +86,13 @@ RSpec.configure do |config|
           ParticipantsResponse: PARTICIPANTS_RESPONSE,
           ParticipantECFEnrolment: PARTICIPANT_ECF_ENROLMENT,
           ParticipantIDChange: PARTICIPANT_ID_CHANGE,
+
+          # Unfunded mentors
+          UnfundedMentor: UNFUNDED_MENTOR,
+          UnfundedMentorsFilter: UNFUNDED_MENTORS_FILTER,
+          UnfundedMentorResponse: UNFUNDED_MENTOR_RESPONSE,
+          UnfundedMentorsResponse: UNFUNDED_MENTORS_RESPONSE,
+
         }
       }
     }

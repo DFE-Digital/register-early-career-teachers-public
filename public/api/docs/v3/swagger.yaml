@@ -776,6 +776,76 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v3/unfunded-mentors":
+    get:
+      summary: Retrieve multiple unfunded mentors
+      tags:
+      - Unfunded mentors
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/UnfundedMentorsFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      - name: sort
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SortingTimestamps"
+      responses:
+        '200':
+          description: A list of unfunded mentors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnfundedMentorsResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v3/unfunded-mentors/{id}":
+    get:
+      summary: Retrieve a single unfunded mentor
+      tags:
+      - Unfunded mentors
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: A single unfunded mentor
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnfundedMentorResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
 components:
   securitySchemes:
     api_key:
@@ -1764,3 +1834,72 @@ components:
           type: string
           format: date_time
           example: '2023-01-01T12:00:00Z'
+    UnfundedMentor:
+      description: An unfunded mentor
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: unfunded-mentor
+          enum:
+          - unfunded-mentor
+        attributes:
+          properties:
+            full_name:
+              description: The full name of this unfunded mentor
+              type: string
+              nullable: false
+              example: John Doe
+            email:
+              description: The email address registered for this unfunded mentor
+              type: string
+              example: jane.smith@example.com
+            teacher_reference_number:
+              description: The Teacher Reference Number (TRN) for this unfunded mentor
+              type: string
+              nullable: true
+              example: '1234567'
+            created_at:
+              description: The date and time the unfunded mentor was created
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+            updated_at:
+              description: The date and time the unfunded mentor was last updated
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    UnfundedMentorsFilter:
+      description: Filter unfunded mentors to return more specific results
+      type: object
+      properties:
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    UnfundedMentorResponse:
+      description: A single unfunded mentor.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/UnfundedMentor"
+    UnfundedMentorsResponse:
+      description: A list of unfunded mentors.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/UnfundedMentor"
