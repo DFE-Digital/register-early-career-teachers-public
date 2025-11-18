@@ -21,8 +21,8 @@ module Schools
         @mentor_at_school_period.school_id == @ect_at_school_period.school_id
       end
 
-      def funding_available?
-        Teachers::MentorFundingEligibility.new(trn: @mentor_at_school_period.teacher.trn).eligible?
+      def eligible_for_funding?
+        mentor_at_school_period.teacher.eligible_for_funding?
       end
 
       def user_selected_lead_provider

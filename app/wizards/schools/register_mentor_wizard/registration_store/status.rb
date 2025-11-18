@@ -27,10 +27,6 @@ module Schools
           registration_store.trs_date_of_birth.to_date == registration_store.date_of_birth.to_date
         end
 
-        def funding_available?
-          mentor_funding_eligibility.eligible?
-        end
-
         def eligible_for_funding?
           mentor_funding_eligibility.eligible?
         end

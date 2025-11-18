@@ -132,27 +132,6 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
     end
   end
 
-  describe '#funding_available?' do
-    let(:eligibility_service) { instance_double(Teachers::MentorFundingEligibility, eligible?: eligible) }
-    let(:eligible) { true }
-
-    before do
-      allow(Teachers::MentorFundingEligibility).to receive(:new).with(trn:).and_return(eligibility_service)
-    end
-
-    it 'delegates to the mentor funding eligibility service' do
-      expect(status.funding_available?).to be(true)
-    end
-
-    context 'when the mentor is not eligible' do
-      let(:eligible) { false }
-
-      it 'returns false' do
-        expect(status.funding_available?).to be(false)
-      end
-    end
-  end
-
   describe '#eligible_for_funding?' do
     let(:eligibility_service) { instance_double(Teachers::MentorFundingEligibility, eligible?: eligible) }
     let(:eligible) { true }
@@ -161,8 +140,16 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
       allow(Teachers::MentorFundingEligibility).to receive(:new).with(trn:).and_return(eligibility_service)
     end
 
-    it 'mirrors the funding_available? result' do
+    it 'delegates to the mentor funding eligibility service' do
       expect(status.eligible_for_funding?).to be(true)
+    end
+
+    context 'when the mentor is not eligible' do
+      let(:eligible) { false }
+
+      it 'returns false' do
+        expect(status.eligible_for_funding?).to be(false)
+      end
     end
   end
 
