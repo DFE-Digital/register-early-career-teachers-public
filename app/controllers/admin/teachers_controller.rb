@@ -17,6 +17,13 @@ module Admin
     end
 
     def show
+      @navigation_items = helpers.admin_teacher_navigation_items(teacher, :overview)
+    end
+
+  private
+
+    def teacher
+      @teacher = TeacherPresenter.new(Teacher.find(params[:id]))
     end
   end
 end
