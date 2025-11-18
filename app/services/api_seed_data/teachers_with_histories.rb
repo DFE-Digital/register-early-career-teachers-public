@@ -57,7 +57,7 @@ module APISeedData
       return if school_partnership.blank?
 
       school = school_partnership.school
-      finished_on = Faker::Boolean.boolean(true_ratio: 0.3) ? nil : 6.months.from_now.to_date + 1
+      finished_on = Faker::Boolean.boolean(true_ratio: 0.3) ? nil : 6.months.from_now.to_date
 
       teacher = create_teacher
       school_period = random_period_within(started_on: teacher.created_at.to_date, finished_on:)
