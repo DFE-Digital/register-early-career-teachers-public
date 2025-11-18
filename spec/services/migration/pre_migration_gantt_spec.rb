@@ -1,4 +1,4 @@
-RSpec.describe Migration::Gantt do
+describe Migration::PreMigrationGantt do
   subject(:service) { described_class.new(induction_records, []) }
 
   let(:induction_record_1) { FactoryBot.create(:migration_induction_record) }
