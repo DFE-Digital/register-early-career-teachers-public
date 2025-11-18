@@ -1,3 +1,4 @@
+# rubocop:disable RSpec/InstanceVariable
 RSpec.describe Teachers::SchoolTransfers::History do
   describe "#transfers" do
     let(:teacher) { FactoryBot.create(:teacher) }
@@ -345,3 +346,4 @@ private
     )
   end
 end
+# rubocop:enable RSpec/InstanceVariable
