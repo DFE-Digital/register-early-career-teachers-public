@@ -6,6 +6,14 @@ module ECTAtSchoolPeriods
       FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago)
     end
 
+    let(:mentor_at_school_period) do
+      FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on)
+    end
+
+    let!(:mentorship_period) do
+      FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period)
+    end
+
     let(:author) do
       FactoryBot.create(:school_user, school_urn: ect_at_school_period.school.urn)
     end
@@ -342,6 +350,105 @@ module ECTAtSchoolPeriods
         it "raises an error" do
           expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
             .to raise_error(ArgumentError)
+        end
+      end
+
+      context "for mentors" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :ongoing,
+            :school_led,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on
+          )
+        end
+
+        context "when the mentor has never had provider-led training" do
+          context "when there is no confirmed school partnership" do
+            it "assigns the mentor to the same lead provider with an expression of interest" do
+              expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }.to change(TrainingPeriod, :count).by(2)
+
+              expect(mentor_at_school_period.reload).to be_provider_led_training_programme
+              new_training_period = mentor_at_school_period.training_periods.last
+              expect(new_training_period.school_partnership).to be_nil
+              expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+            end
+          end
+
+          context "when there is a confirmed school partnership" do
+            let!(:lead_provider_delivery_partnership) do
+              FactoryBot.create(
+                :lead_provider_delivery_partnership,
+                active_lead_provider:
+              )
+            end
+            let!(:school_partnership) do
+              FactoryBot.create(
+                :school_partnership,
+                lead_provider_delivery_partnership:,
+                school: ect_at_school_period.school
+              )
+            end
+
+            it 'assigns the mentor to the same lead provider' do
+              expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }.to change(TrainingPeriod, :count).by(2)
+
+              expect(mentor_at_school_period.reload).to be_provider_led_training_programme
+              new_training_period = mentor_at_school_period.training_periods.last
+              expect(new_training_period.school_partnership).to eq(school_partnership)
+              expect(new_training_period.expression_of_interest).to be_nil
+            end
+          end
+
+          context "when the switch happens within the first contract year of the mentee's training" do
+            it "assigns a schedule to the mentor with this year's contract period" do
+            end
+          end
+
+          context "when the switch happens after the first contract year of the mentee's training" do
+            it "assigns a schedule to the mentor with the next contract period" do
+            end
+          end
+
+          context "when the lead provider is not available for the mentor" do
+            it "does not create a training period" do
+            end
+          end
+        end
+
+        context "when the mentor has had provider-led training before" do
+          it "does not create a new training period for the mentor" do
+            previous_training_period = FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period:)
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect(TrainingPeriod.where(mentor_at_school_period:)).to contain_exactly(previous_training_period)
+          end
+        end
+
+        context "when the mentor is ineligible for funding" do
+          let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+          let(:mentor_at_school_period) do
+            FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: ect_at_school_period.started_on)
+          end
+
+          it "does not create a new training period for the mentor" do
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+            expect(mentor_at_school_period.training_periods).to be_empty
+          end
+        end
+
+        context "when the mentee has no mentor" do
+          let(:mentorship_period) { nil }
+
+          it "raises an error" do
+            expect {
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+            }.to raise_error(NoMentorError)
+          end
         end
       end
     end
