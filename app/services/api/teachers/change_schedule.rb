@@ -35,7 +35,7 @@ module API::Teachers
     end
 
     def fallback_contract_period
-      training_period.contract_period
+      training_period&.contract_period
     end
 
     def schedule

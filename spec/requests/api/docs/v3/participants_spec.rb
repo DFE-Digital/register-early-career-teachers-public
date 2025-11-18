@@ -197,4 +197,52 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                       }
                     end
                   end
+
+  it_behaves_like "an API update endpoint documentation",
+                  {
+                    url: "/api/v3/participants/{id}/change-schedule",
+                    tag: "Participants",
+                    resource_description: "participant",
+                    request_schema_ref: "#/components/schemas/ParticipantChangeScheduleRequest",
+                    response_schema_ref: "#/components/schemas/ParticipantResponse",
+                  } do
+                    let(:new_schedule) do
+                      FactoryBot.create(
+                        :schedule,
+                        identifier: "ecf-extended-september",
+                        contract_period: school_partnership.contract_period
+                      )
+                    end
+                    let(:response_example) do
+                      extract_swagger_example(schema: "#/components/schemas/ParticipantResponse", version: :v3).tap do |example|
+                        example[:data][:attributes][:ecf_enrolments][0][:schedule_identifier] = new_schedule.identifier
+                        example[:data][:attributes][:ecf_enrolments][0][:cohort] = "2021"
+                      end
+                    end
+                    let(:params) do
+                      {
+                        data: {
+                          type: "participant-change-schedule",
+                          attributes: {
+                            schedule_identifier: new_schedule.identifier,
+                            course_identifier: "ecf-induction",
+                            cohort: active_lead_provider.contract_period_year
+                          }
+                        }
+                      }
+                    end
+
+                    let(:invalid_params) do
+                      {
+                        data: {
+                          type: "participant-change-schedule",
+                          attributes: {
+                            schedule_identifier: new_schedule.identifier,
+                            course_identifier: "invalid-course",
+                            cohort: active_lead_provider.contract_period_year
+                          }
+                        }
+                      }
+                    end
+                  end
 end
