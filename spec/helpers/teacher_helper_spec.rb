@@ -59,4 +59,28 @@ RSpec.describe TeacherHelper, type: :helper do
       it { expect(teacher_induction_ab_name(teacher)).to be_nil }
     end
   end
+
+  describe '#full_name_in_trs_different?' do
+    context 'when teacher is nil' do
+      it { expect(full_name_in_trs_different?(nil)).to be_nil }
+    end
+
+    context 'when corrected name is nil' do
+      let(:teacher) { FactoryBot.create(:teacher, corrected_name: nil) }
+
+      it { expect(full_name_in_trs_different?(teacher)).to be(false) }
+    end
+
+    context 'when corrected name differs from TRS name' do
+      let(:teacher) { FactoryBot.create(:teacher, corrected_name: 'Johnnie Walker', trs_first_name: 'James', trs_last_name: 'Bond') }
+
+      it { expect(full_name_in_trs_different?(teacher)).to be(true) }
+    end
+
+    context 'when corrected name and trs name is missing' do
+      let(:teacher) { FactoryBot.create(:teacher, corrected_name: nil, trs_first_name: nil, trs_last_name: nil) }
+
+      it { expect(full_name_in_trs_different?(teacher)).to be(false) }
+    end
+  end
 end
