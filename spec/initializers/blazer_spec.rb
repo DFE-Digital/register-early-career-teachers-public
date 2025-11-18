@@ -1,7 +1,7 @@
 RSpec.describe 'Blazer' do
   describe 'Gov.uk compatible mailer' do
     subject(:message) do
-      Blazer::CheckMailer.failing_checks('admin@example.com', []).deliver_now
+      Blazer::CheckMailer.failing_checks('headteacher@school.com', []).deliver_now
     end
 
     let(:notify) do
@@ -16,7 +16,7 @@ RSpec.describe 'Blazer' do
 
     before do
       allow_any_instance_of(Notifications::Client).to receive(:send_email).with(
-        email_address: 'admin@example.com',
+        email_address: 'headteacher@school.com',
         template_id: 'c437a1cb-9e1c-49ff-83ee-967c92f95637',
         personalisation: { subject: mail_subject, body: mail_body }
       ).and_return(kind_of(Notifications::Client::ResponseNotification))
