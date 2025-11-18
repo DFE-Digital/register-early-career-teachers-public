@@ -21,6 +21,7 @@ private
 
     ect_periods = school ? teacher.ect_at_school_periods.where(school:) : teacher.ect_at_school_periods
     mentor_periods = school ? teacher.mentor_at_school_periods.where(school:) : teacher.mentor_at_school_periods
+    induction_periods = school ? ::InductionPeriod.none : teacher.induction_periods
 
     if ect_periods.ongoing.any?
       result << "ECT"
@@ -32,6 +33,10 @@ private
       result << "Mentor"
     elsif mentor_periods.any?
       result << "Mentor (Inactive)"
+    end
+
+    if result.empty? && induction_periods.any?
+      result << "ECT (Inactive)"
     end
 
     result
