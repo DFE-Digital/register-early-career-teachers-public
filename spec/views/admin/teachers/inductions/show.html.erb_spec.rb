@@ -1,4 +1,4 @@
-RSpec.describe 'admin/teachers/show.html.erb' do
+RSpec.describe 'admin/teachers/inductions/show.html.erb' do
   let(:teacher) do
     FactoryBot.create(
       :teacher,

@@ -5,7 +5,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
 
   before do
     sign_in_as_dfe_user(role: :admin, user: admin_user)
-    page.goto admin_teacher_path(teacher)
+    page.goto admin_teacher_induction_path(teacher)
   end
 
   scenario "Admin can see extension links on ECT page" do
@@ -27,7 +27,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
     page.get_by_label("How many additional terms of induction do you need to add?").fill("1.5")
     page.get_by_role('button', name: 'Add extension').click
 
-    expect(page).to have_url(admin_teacher_path(teacher))
+    expect(page).to have_url(admin_teacher_induction_path(teacher))
     expect(page.get_by_text("Extension was successfully added.")).to be_visible
     expect(page.get_by_text("Sarah Connor")).to be_visible
     page.get_by_role('link', name: 'View extensions').click
@@ -40,7 +40,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
     let!(:existing_extension) { FactoryBot.create(:induction_extension, teacher:, number_of_terms: 1.0) }
 
     before do
-      page.goto admin_teacher_path(teacher)
+      page.goto admin_teacher_induction_path(teacher)
       page.get_by_role('link', name: 'View extensions').click
     end
 
@@ -55,7 +55,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
       page.get_by_label("How many additional terms of induction do you need to add?").fill("2.0")
       page.get_by_role('button', name: 'Update extension').click
 
-      expect(page).to have_url(admin_teacher_path(teacher))
+      expect(page).to have_url(admin_teacher_induction_path(teacher))
       expect(page.get_by_text("Extension was successfully updated.")).to be_visible
       expect(page.get_by_text("Sarah Connor")).to be_visible
       page.get_by_role('link', name: 'View extensions').click
@@ -74,7 +74,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
       expect(page.get_by_role('heading', name: "Are you sure you want to delete this extension?")).to be_visible
       page.get_by_role('button', name: 'Confirm deletion').click
 
-      expect(page).to have_url(admin_teacher_path(teacher))
+      expect(page).to have_url(admin_teacher_induction_path(teacher))
       expect(page.get_by_text("Extension was successfully deleted.")).to be_visible
       expect(page.get_by_text("Sarah Connor")).to be_visible
       page.get_by_role('link', name: 'Add extensions').click

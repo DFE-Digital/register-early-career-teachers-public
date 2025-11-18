@@ -13,7 +13,7 @@ module Admin
 
       def create
         if manage_extensions.create_or_update!(number_of_terms: extension_params[:number_of_terms])
-          redirect_to admin_teacher_path(@teacher), notice: "Extension was successfully added."
+          redirect_to admin_teacher_induction_path(@teacher), notice: "Extension was successfully added."
         else
           @extension = manage_extensions.induction_extension
           render :new, status: :unprocessable_content
@@ -25,7 +25,7 @@ module Admin
 
       def update
         if manage_extensions.create_or_update!(id: params[:id], number_of_terms: extension_params[:number_of_terms])
-          redirect_to admin_teacher_path(@teacher), notice: "Extension was successfully updated."
+          redirect_to admin_teacher_induction_path(@teacher), notice: "Extension was successfully updated."
         else
           @extension = manage_extensions.induction_extension
           render :edit, status: :unprocessable_content
@@ -37,7 +37,7 @@ module Admin
 
       def destroy
         if manage_extensions.delete!(id: params[:id])
-          redirect_to admin_teacher_path(@teacher), notice: "Extension was successfully deleted."
+          redirect_to admin_teacher_induction_path(@teacher), notice: "Extension was successfully deleted."
         else
           redirect_to admin_teacher_extensions_path(@teacher), alert: "Failed to delete extension."
         end

@@ -10,7 +10,7 @@ describe "Admin reopening an induction" do
 
   context "with a ticket and reason" do
     it "reopens the induction period, resets TRS, adds context to the timeline" do
-      given_i_am_on_the_teacher_page
+      given_i_am_on_the_teacher_induction_page
       then_there_is_no_current_induction_period
 
       when_i_reopen_the_induction
@@ -33,7 +33,7 @@ describe "Admin reopening an induction" do
 
   context "with a ticket but no reason" do
     it "reopens the induction period, resets TRS, adds context to the timeline" do
-      given_i_am_on_the_teacher_page
+      given_i_am_on_the_teacher_induction_page
       then_there_is_no_current_induction_period
 
       when_i_reopen_the_induction
@@ -50,7 +50,7 @@ describe "Admin reopening an induction" do
 
   context 'with an invalid ticket' do
     it "shows an error message" do
-      given_i_am_on_the_teacher_page
+      given_i_am_on_the_teacher_induction_page
       then_there_is_no_current_induction_period
       when_i_reopen_the_induction
       when_i_add_a_zendesk_ticket_id("123")
@@ -61,8 +61,8 @@ describe "Admin reopening an induction" do
 
 private
 
-  def given_i_am_on_the_teacher_page
-    page.goto(admin_teacher_path(teacher))
+  def given_i_am_on_the_teacher_induction_page
+    page.goto(admin_teacher_induction_path(teacher))
   end
 
   def then_there_is_no_current_induction_period

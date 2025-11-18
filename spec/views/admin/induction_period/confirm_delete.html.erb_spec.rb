@@ -1,6 +1,6 @@
 RSpec.describe 'admin/induction_periods/confirm_delete.html.erb' do
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Floella', trs_last_name: 'Benjamin') }
-  let(:back_path) { admin_teacher_path(teacher) }
+  let(:back_path) { admin_teacher_induction_path(teacher) }
   let(:induction_period) { FactoryBot.create(:induction_period, teacher:) }
 
   before do

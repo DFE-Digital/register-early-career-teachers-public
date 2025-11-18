@@ -33,7 +33,7 @@
     <% @teachers.each do |teacher| %>
       <%=
         govuk_summary_card(title: teacher_full_name(teacher)) do |card|
-          card.with_action { govuk_link_to("Show", admin_teacher_path(teacher)) }
+          card.with_action { govuk_link_to("Show", admin_teacher_induction_path(teacher)) }
           card.with_summary_list(
             actions: false,
             rows: [
