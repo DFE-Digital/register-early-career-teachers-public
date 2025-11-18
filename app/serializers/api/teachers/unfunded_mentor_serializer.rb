@@ -1,4 +1,4 @@
-class API::UnfundedMentorSerializer < Blueprinter::Base
+class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 
