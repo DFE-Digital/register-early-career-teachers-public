@@ -151,6 +151,17 @@ describe MentorAtSchoolPeriod do
     end
   end
 
+  describe "check constraints" do
+    subject { FactoryBot.build(:mentor_at_school_period, school:, teacher:, started_on: Date.current, finished_on: Date.current) }
+
+    let(:school) { FactoryBot.create(:school) }
+    let(:teacher) { FactoryBot.create(:teacher) }
+
+    it 'prevents 0 day periods from being written to the database' do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    end
+  end
+
   describe "scopes" do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { FactoryBot.create(:school) }

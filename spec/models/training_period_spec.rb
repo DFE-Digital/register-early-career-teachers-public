@@ -530,6 +530,16 @@ describe TrainingPeriod do
     end
   end
 
+  describe "check constraints" do
+    subject { FactoryBot.build(:training_period, ect_at_school_period:, started_on: Date.current, finished_on: Date.current) }
+
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
+
+    it 'prevents 0 day periods from being written to the database' do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    end
+  end
+
   describe "scopes" do
     describe ".for_ect" do
       it "returns training periods only for the specified ect at school period" do
