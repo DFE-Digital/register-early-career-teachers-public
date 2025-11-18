@@ -107,7 +107,7 @@ class Teacher < ApplicationRecord
   def eligible_for_funding?
     Teachers::MentorFundingEligibility.new(trn:).eligible?
   end
-  
+
   def training_periods
     return ect_training_periods if ect_at_school_periods.exists?
 
