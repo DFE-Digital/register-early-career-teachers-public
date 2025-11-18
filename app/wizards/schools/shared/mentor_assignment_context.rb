@@ -22,7 +22,7 @@ module Schools
       end
 
       def eligible_for_funding?
-        Teachers::MentorFundingEligibility.new(trn: @mentor_at_school_period.teacher.trn).eligible?
+        mentor_at_school_period.teacher.eligible_for_funding?
       end
 
       def user_selected_lead_provider

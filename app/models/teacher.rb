@@ -99,4 +99,9 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
 
   normalizes :corrected_name, with: -> { it.squish }
+
+  # Methods
+  def eligible_for_funding?
+    Teachers::MentorFundingEligibility.new(trn:).eligible?
+  end
 end
