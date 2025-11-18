@@ -167,6 +167,7 @@ module ECTAtSchoolPeriods
         let(:ect_at_school_period) do
           FactoryBot.create(:mentor_at_school_period, :ongoing)
         end
+        let(:mentorship_period) { nil }
 
         it "raises an error" do
           expect { SwitchTraining.to_school_led(ect_at_school_period, author:) }
@@ -402,18 +403,50 @@ module ECTAtSchoolPeriods
             end
           end
 
-          context "when the switch happens within the first contract year of the mentee's training" do
-            it "assigns a schedule to the mentor with this year's contract period" do
-            end
-          end
+          context "assigning the schedule based on the current date" do
+            context "when the switch happens between November and February" do
+              around do |example|
+                travel_to(Date.new(contract_period.year, 11, 15)) do
+                  example.run
+                end
+              end
 
-          context "when the switch happens after the first contract year of the mentee's training" do
-            it "assigns a schedule to the mentor with the next contract period" do
-            end
-          end
+              it "assigns a January schedule" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-          context "when the lead provider is not available for the mentor" do
-            it "does not create a training period" do
+                new_training_period = mentor_at_school_period.training_periods.last
+                expect(new_training_period.schedule.identifier).to eq("ecf-standard-january")
+              end
+            end
+
+            context "when the switch happens between June and October" do
+              around do |example|
+                travel_to(Date.new(contract_period.year, 9, 15)) do
+                  example.run
+                end
+              end
+
+              it "assigns a September schedule" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = mentor_at_school_period.training_periods.last
+                expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
+              end
+            end
+
+            context "when the switch happens between March and June" do
+              around do |example|
+                travel_to(Date.new(contract_period.year + 1, 5, 15)) do
+                  example.run
+                end
+              end
+
+              it "assigns an April schedule" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = mentor_at_school_period.training_periods.last
+                expect(new_training_period.schedule.identifier).to eq("ecf-standard-april")
+              end
             end
           end
         end
