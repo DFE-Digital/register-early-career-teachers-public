@@ -26,9 +26,9 @@ module DataFixes
   #
   # For all other ECTs and mentors with one induction record and no end date, keep end date NULL.
   #
-  def corrected_training_period_end_date(induction_record:)
+  def corrected_training_period_end_date(induction_record:, candidate_end_date:)
     participant_profile = induction_record.participant_profile
-    return induction_record.end_date if participant_profile.ect? || induction_record.end_date.present?
+    return candidate_end_date if participant_profile.ect? || candidate_end_date.present?
 
     corrected_date = nil
 
@@ -46,5 +46,11 @@ module DataFixes
     end
 
     corrected_date
+  end
+
+  def corrected_end_date(induction_record:, last_created:)
+    return induction_record.updated_at if last_created && induction_record.leaving? && induction_record.flipped_dates?
+
+    induction_record.end_date
   end
 end
