@@ -1,25 +1,10 @@
 RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
-  def create_mentorship_period(mentor_school_partnership:, mentee_school_partnership:)
-    mentee = FactoryBot.create(:teacher)
-    mentee_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentee, started_on: 2.months.ago)
-    FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period: mentee_school_period, school_partnership: mentee_school_partnership)
-
-    unfunded_mentor = FactoryBot.create(:teacher)
-    unfunded_mentor_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: unfunded_mentor, started_on: 2.months.ago)
-    FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: unfunded_mentor_school_period, school_partnership: mentor_school_partnership)
-
-    FactoryBot.create(
-      :mentorship_period,
-      :ongoing,
-      mentee: mentee_school_period,
-      mentor: unfunded_mentor_school_period
-    )
-  end
+  include MentorshipPeriodHelpers
 
   let(:lead_provider_id) { school_partnership.lead_provider.id }
   let(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:other_school_partnership) { FactoryBot.create(:school_partnership) }
-  let!(:unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
+  let!(:unfunded_mentor) { create_mentorship_period_for(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
   let(:query) { described_class.new(lead_provider_id:) }
 
   it_behaves_like "a query that avoids includes" do
@@ -53,13 +38,13 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
   describe "#unfunded_mentors" do
     describe "filtering" do
       describe "by `lead_provider`" do
-        let!(:other_unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
+        let!(:other_unfunded_mentor) { create_mentorship_period_for(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
 
         before do
           # Mentor associated with the lead provider (so not unfunded and should be ignored)
-          create_mentorship_period(mentor_school_partnership: school_partnership, mentee_school_partnership: school_partnership)
+          create_mentorship_period_for(mentor_school_partnership: school_partnership, mentee_school_partnership: school_partnership)
           # Unfunded mentor for another lead provider (should be ignored)
-          create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: other_school_partnership)
+          create_mentorship_period_for(mentor_school_partnership: other_school_partnership, mentee_school_partnership: other_school_partnership)
         end
 
         it "filters by `lead_provider`" do
@@ -86,7 +71,7 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
       end
 
       describe "by `updated_since`" do
-        let!(:other_unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
+        let!(:other_unfunded_mentor) { create_mentorship_period_for(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
 
         before do
           unfunded_mentor.update!(api_updated_at: 3.days.ago)
@@ -112,7 +97,7 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
     end
 
     describe "ordering" do
-      let!(:other_unfunded_mentor) { create_mentorship_period(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
+      let!(:other_unfunded_mentor) { create_mentorship_period_for(mentor_school_partnership: other_school_partnership, mentee_school_partnership: school_partnership).mentor.teacher }
 
       before do
         unfunded_mentor.update!(api_updated_at: 1.day.ago)

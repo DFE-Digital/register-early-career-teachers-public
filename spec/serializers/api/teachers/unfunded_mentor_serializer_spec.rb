@@ -1,4 +1,4 @@
-describe API::UnfundedMentorSerializer, type: :serializer do
+describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
   subject(:response) do
     options = { lead_provider_id: lead_provider.id }
     JSON.parse(described_class.render(unfunded_mentor_teacher, **options))
