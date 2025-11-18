@@ -27,7 +27,7 @@ module ECTAtSchoolPeriods
         @ect_at_school_period.school_led_training_programme?
 
       ActiveRecord::Base.transaction do
-        if date_of_transition.future? || @training_period.school_partnership.blank?
+        if @training_period.started_on.today? || date_of_transition.future? || @training_period.school_partnership.blank?
           @training_period.destroy!
         else
           finish_training_period!
@@ -42,7 +42,7 @@ module ECTAtSchoolPeriods
         @ect_at_school_period.provider_led_training_programme?
 
       ActiveRecord::Base.transaction do
-        if date_of_transition.future?
+        if @training_period.started_on.today? || date_of_transition.future?
           @training_period.destroy!
         else
           finish_training_period!
