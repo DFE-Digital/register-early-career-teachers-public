@@ -51,7 +51,7 @@ module SandboxSeedData
       return if school_partnership.blank?
 
       school = school_partnership.school
-      finished_on = Faker::Boolean.boolean(true_ratio: 0.3) ? nil : 6.months.from_now.to_date
+      finished_on = Faker::Boolean.boolean(true_ratio: 0.3) ? nil : 6.months.from_now.to_date + 1
 
       teacher = create_teacher
       school_period = random_period_within(started_on: teacher.created_at.to_date, finished_on:)
@@ -324,7 +324,7 @@ module SandboxSeedData
 
     def random_period_within(started_on:, finished_on:)
       started_on = rand(started_on..(finished_on || Time.zone.today))
-      finished_on = finished_on.present? ? rand(started_on..finished_on) : nil
+      finished_on = finished_on.present? ? rand(started_on.tomorrow..finished_on) : nil
 
       { started_on:, finished_on: }
     end
