@@ -4,7 +4,7 @@ module Migration
       legacy_induction_records = legacy_induction_records(profile_id)
       legacy_declarations = legacy_declarations(profile_id)
 
-      send_data(Migration::Gantt.new(legacy_induction_records, legacy_declarations).to_png, type: "image/png")
+      send_data(Migration::PreMigrationGantt.new(legacy_induction_records, legacy_declarations).to_png, type: "image/png")
     end
 
   private

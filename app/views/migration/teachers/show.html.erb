@@ -14,12 +14,17 @@
 <%= render partial: "failures", locals: { failures: @failures } %>
 
 <% if make_gantt_chart? %>
+  <h2 class="govuk-heading-m">ECF1 data</h2>
   <% if @ect_profile.present? %>
-    <h2 class="govuk-heading-m">ECT induction record data</h2>
+    <h3 class="govuk-heading-s">ECT induction record data</h3>
     <%= tag.img(src: migration_legacy_profile_gantt_path(profile_id: @ect_profile), class: 'migration-gantt') %>
   <% end %>
   <% if @mentor_profile.present? %>
-    <h2 class="govuk-heading-m">Mentor induction record data</h2>
+    <h3 class="govuk-heading-s">Mentor induction record data</h3>
     <%= tag.img(src: migration_legacy_profile_gantt_path(profile_id: @mentor_profile), class: 'migration-gantt') %>
   <% end %>
+
+  <h2 id="ecf2-data" class="govuk-heading-m">ECF2 data</h2>
+
+  <%= tag.img(src: migration_new_gantt_path(teacher_id: @teacher), class: 'migration-gantt') %>
 <% end %>
