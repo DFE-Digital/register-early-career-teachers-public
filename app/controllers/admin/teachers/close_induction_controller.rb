@@ -5,7 +5,7 @@ module Admin
 
       def new
         if @teacher.ongoing_induction_period.blank?
-          redirect_to admin_teacher_path(@teacher), notice: "No active induction period found"
+          redirect_to admin_teacher_induction_path(@teacher), notice: "No active induction period found"
         end
       end
 

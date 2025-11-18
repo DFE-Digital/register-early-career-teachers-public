@@ -45,7 +45,7 @@
         row.with_value do
           if mentor_present?
             if migrated_mentor.present?
-              govuk_link_to induction_record.mentor_name, admin_teacher_path(migrated_mentor)
+              govuk_link_to induction_record.mentor_name, admin_teacher_induction_path(migrated_mentor)
             else
               govuk_tag(text: induction_record.mentor_name, colour: "red")
             end

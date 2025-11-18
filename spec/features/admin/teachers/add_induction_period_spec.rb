@@ -6,7 +6,7 @@ describe "Admin adding an induction" do
   it "adds a closed induction period" do
     given_an_appropriate_body_exists(name: "Test Appropriate Body")
     given_a_teacher_exists(first_name: "Test", last_name: "Person")
-    when_i_go_to_the_teacher_page
+    when_i_go_to_the_teacher_induction_page
     then_there_is_no_induction_summary
     and_there_are_no_past_induction_periods
 
@@ -33,7 +33,7 @@ describe "Admin adding an induction" do
   it "adds an open induction period" do
     given_an_appropriate_body_exists(name: "Test Appropriate Body")
     given_a_teacher_exists(first_name: "Test", last_name: "Person")
-    when_i_go_to_the_teacher_page
+    when_i_go_to_the_teacher_induction_page
     then_there_is_no_induction_summary
     and_there_are_no_past_induction_periods
 
@@ -69,8 +69,8 @@ private
     )
   end
 
-  def when_i_go_to_the_teacher_page
-    page.goto(admin_teacher_path(@teacher))
+  def when_i_go_to_the_teacher_induction_page
+    page.goto(admin_teacher_induction_path(@teacher))
   end
 
   def then_there_is_no_induction_summary

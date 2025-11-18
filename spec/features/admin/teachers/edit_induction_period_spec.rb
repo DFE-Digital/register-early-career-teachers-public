@@ -13,11 +13,11 @@ RSpec.describe "Admin editing an induction" do
 
   before do
     sign_in_as_dfe_user(role: :admin)
-    page.goto(admin_teacher_path(teacher))
+    page.goto(admin_teacher_induction_path(teacher))
   end
 
   scenario 'Happy path - updating number of terms' do
-    given_i_am_on_the_teacher_page
+    given_i_am_on_the_teacher_induction_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
@@ -33,7 +33,7 @@ RSpec.describe "Admin editing an induction" do
   end
 
   scenario 'Validation - cannot enter invalid number of terms' do
-    given_i_am_on_the_teacher_page
+    given_i_am_on_the_teacher_induction_page
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
     when_i_update_the_number_of_terms(-1)
@@ -49,7 +49,7 @@ RSpec.describe "Admin editing an induction" do
       number_of_terms: 3
     )
 
-    given_i_am_on_the_teacher_page
+    given_i_am_on_the_teacher_induction_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
@@ -67,7 +67,7 @@ RSpec.describe "Admin editing an induction" do
       number_of_terms: 3 # Add initial number of terms
     )
 
-    given_i_am_on_the_teacher_page
+    given_i_am_on_the_teacher_induction_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
@@ -77,7 +77,7 @@ RSpec.describe "Admin editing an induction" do
   scenario 'Can edit induction period with outcome' do
     induction_period.update!(outcome: 'pass')
 
-    given_i_am_on_the_teacher_page
+    given_i_am_on_the_teacher_induction_page
     then_i_should_see_the_edit_link
     when_i_click_edit_link
     then_i_should_be_on_the_edit_induction_period_page
@@ -85,8 +85,8 @@ RSpec.describe "Admin editing an induction" do
 
 private
 
-  def given_i_am_on_the_teacher_page
-    expect(page).to have_path("/admin/teachers/#{teacher.id}")
+  def given_i_am_on_the_teacher_induction_page
+    expect(page).to have_path("/admin/teachers/#{teacher.id}/induction")
   end
 
   def then_i_should_see_the_edit_link
@@ -121,7 +121,7 @@ private
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page).to have_path("/admin/teachers/#{teacher.id}")
+    expect(page).to have_path("/admin/teachers/#{teacher.id}/induction")
     expect(page.get_by_text('Induction period updated successfully')).to be_visible
   end
 

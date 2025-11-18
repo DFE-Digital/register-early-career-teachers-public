@@ -15,7 +15,7 @@ RSpec.describe "Admin deleting an induction" do
 
     context "with a ticket and reason" do
       it "deletes the induction, resets TRS, adds context to the timeline" do
-        given_i_am_on_the_teacher_page
+        given_i_am_on_the_teacher_induction_page
         then_i_should_see_the_delete_link
         when_i_click_delete_link
         then_i_should_see_the_delete_confirmation_page
@@ -40,7 +40,7 @@ RSpec.describe "Admin deleting an induction" do
 
     context "with a ticket but no reason" do
       it "deletes the induction, resets TRS, adds context to the timeline" do
-        given_i_am_on_the_teacher_page
+        given_i_am_on_the_teacher_induction_page
         then_i_should_see_the_delete_link
         when_i_click_delete_link
         then_i_should_see_the_delete_confirmation_page
@@ -58,7 +58,7 @@ RSpec.describe "Admin deleting an induction" do
 
     context 'with an invalid ticket' do
       it "shows an error message" do
-        given_i_am_on_the_teacher_page
+        given_i_am_on_the_teacher_induction_page
         then_i_should_see_the_delete_link
         when_i_click_delete_link
         then_i_should_see_the_delete_confirmation_page
@@ -74,7 +74,7 @@ RSpec.describe "Admin deleting an induction" do
     let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date is updated to next earliest period" do
-      given_i_am_on_the_teacher_page
+      given_i_am_on_the_teacher_induction_page
       then_i_should_see_the_delete_link_for(induction_period1)
       when_i_click_delete_link_for(induction_period1)
       then_i_should_see_the_delete_confirmation_page
@@ -97,7 +97,7 @@ RSpec.describe "Admin deleting an induction" do
     let!(:induction_period2) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: Date.new(2021, 1, 1), finished_on: Date.new(2021, 12, 31), number_of_terms: 2) }
 
     scenario "TRS start date remains unchanged" do
-      given_i_am_on_the_teacher_page
+      given_i_am_on_the_teacher_induction_page
       then_i_should_see_the_delete_link_for(induction_period2)
       when_i_click_delete_link_for(induction_period2)
       then_i_should_see_the_delete_confirmation_page
@@ -122,8 +122,8 @@ RSpec.describe "Admin deleting an induction" do
 
 private
 
-  def given_i_am_on_the_teacher_page
-    page.goto(admin_teacher_path(teacher))
+  def given_i_am_on_the_teacher_induction_page
+    page.goto(admin_teacher_induction_path(teacher))
   end
 
   def then_i_should_see_the_delete_link
