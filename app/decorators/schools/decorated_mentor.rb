@@ -3,7 +3,7 @@ module Schools
     NOT_CONFIRMED = 'Not confirmed'
 
     def previous_registration_summary_rows
-      [
+      rows = [
         {
           key: { text: 'School name' },
           value: { text: previous_school_name },
@@ -12,8 +12,16 @@ module Schools
           key: { text: 'Lead provider' },
           value: { text: previous_lead_provider_name },
         },
-        *delivery_partner_row_if_needed,
       ]
+
+      if previous_provider_led?
+        rows << {
+          key: { text: 'Delivery partner' },
+          value: { text: previous_delivery_partner_name },
+        }
+      end
+
+      rows
     end
 
     def previous_school_name
@@ -26,17 +34,6 @@ module Schools
 
     def previous_delivery_partner_name
       previous_confirmed_training_period&.delivery_partner_name || NOT_CONFIRMED
-    end
-
-  private
-
-    def delivery_partner_row_if_needed
-      return [] unless previous_provider_led?
-
-      [{
-        key: { text: 'Delivery partner' },
-        value: { text: previous_delivery_partner_name },
-      }]
     end
   end
 end
