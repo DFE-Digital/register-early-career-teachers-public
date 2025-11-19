@@ -168,7 +168,7 @@ module ECTAtSchoolPeriods
 
     describe ".to_provider_led" do
       let!(:contract_period) do
-        FactoryBot.create(:contract_period, year: Date.current.year)
+        FactoryBot.create(:contract_period, :with_schedules, year: Date.current.year)
       end
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let!(:active_lead_provider) do

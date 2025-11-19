@@ -72,10 +72,11 @@ RSpec.describe 'Registering an ECT - reuse previous partnership', :enable_school
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
-    current_year  = 2024
-    previous_year = 2023
-    @contract_period_current  = FactoryBot.create(:contract_period, year: current_year)
-    @contract_period_previous = FactoryBot.create(:contract_period, year: previous_year)
+    current_year  = Time.zone.today.year
+    previous_year = current_year - 1
+
+    @contract_period_current  = FactoryBot.create(:contract_period, :with_schedules, year: current_year)
+    @contract_period_previous = FactoryBot.create(:contract_period, :with_schedules, year: previous_year)
 
     @lead_provider = FactoryBot.create(:lead_provider, name: 'Orange Institute')
     @delivery_partner = FactoryBot.create(:delivery_partner, name: 'Jaskolski College Delivery Partner 1')

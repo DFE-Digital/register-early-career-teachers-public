@@ -7,15 +7,16 @@ RSpec.describe TrainingPeriods::Create do
       expression_of_interest:,
       training_programme:,
       finished_on:,
-      schedule:,
       author:
     ).call
   end
 
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:started_on) { Time.zone.today - 1.month }
-  let(:year) { Date.current.year }
+  let(:started_on) { Date.new(2025, 9, 1) }
+  let(:year) { started_on.year }
   let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year:) }
+
+  let(:teacher) { FactoryBot.create(:teacher) }
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -28,14 +29,7 @@ RSpec.describe TrainingPeriods::Create do
   let(:finished_on) { Time.zone.today - 3.weeks }
   let!(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-september") }
 
-  around do |example|
-    travel_to(Date.new(2025, 10, 15)) do
-      example.run
-    end
-  end
-
   context 'with an ECTAtSchoolPeriod' do
-    let(:teacher) { FactoryBot.create(:teacher) }
     let(:period) do
       FactoryBot.create(
         :ect_at_school_period,
@@ -43,6 +37,12 @@ RSpec.describe TrainingPeriods::Create do
         started_on: started_on - 2.weeks,
         finished_on: started_on + 2.weeks
       )
+    end
+
+    around do |example|
+      travel_to(started_on + 3.weeks) do
+        example.run
+      end
     end
 
     it 'creates a TrainingPeriod associated with the ECTAtSchoolPeriod with the correct schedule' do
@@ -69,10 +69,30 @@ RSpec.describe TrainingPeriods::Create do
         happened_at: Time.current
       )
     end
+
+    context 'when a specific schedule is provided' do
+      let(:result_with_schedule) do
+        described_class.new(
+          period:,
+          started_on:,
+          school_partnership:,
+          training_programme:,
+          finished_on:,
+          schedule: other_schedule,
+          author:
+        ).call
+      end
+
+      let(:other_schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-january") }
+
+      it 'creates a TrainingPeriod with the provided schedule' do
+        training_period = result_with_schedule
+        expect(training_period.schedule).to eq(other_schedule)
+      end
+    end
   end
 
   context 'with a MentorAtSchoolPeriod' do
-    let(:teacher) { FactoryBot.create(:teacher) }
     let(:period) do
       FactoryBot.create(
         :mentor_at_school_period,
@@ -80,6 +100,12 @@ RSpec.describe TrainingPeriods::Create do
         started_on: started_on - 1.month,
         finished_on: started_on + 1.month
       )
+    end
+
+    around do |example|
+      travel_to(started_on + 3.weeks) do
+        example.run
+      end
     end
 
     it 'creates a TrainingPeriod associated with the MentorAtSchoolPeriod' do
@@ -106,6 +132,27 @@ RSpec.describe TrainingPeriods::Create do
         happened_at: Time.current
       )
     end
+
+    context 'when a specific schedule is provided' do
+      let(:result_with_schedule) do
+        described_class.new(
+          period:,
+          started_on:,
+          school_partnership:,
+          training_programme:,
+          finished_on:,
+          schedule: other_schedule,
+          author:
+        ).call
+      end
+
+      let(:other_schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-january") }
+
+      it 'creates a TrainingPeriod with the provided schedule' do
+        training_period = result_with_schedule
+        expect(training_period.schedule).to eq(other_schedule)
+      end
+    end
   end
 
   context "with unsupported period type" do
@@ -115,6 +162,18 @@ RSpec.describe TrainingPeriods::Create do
       expect {
         result
       }.to raise_error(ArgumentError, /Unsupported period type/)
+    end
+  end
+
+  context 'when the schedule cannot be found' do
+    let(:period) { FactoryBot.create(:ect_at_school_period) }
+
+    it 'raises an error' do
+      finder = instance_double(Schedules::Find)
+      allow(Schedules::Find).to receive(:new).and_return(finder)
+      allow(finder).to receive(:call).and_return(nil)
+
+      expect { result }.to raise_error(TrainingPeriods::Create::ScheduleNotFound)
     end
   end
 

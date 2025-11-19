@@ -9,7 +9,7 @@ module ECTAtSchoolPeriods
       )
     end
 
-    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_schedules) }
     let(:author) do
       FactoryBot.create(:school_user, school_urn: ect_at_school_period.school.urn)
     end
@@ -163,6 +163,17 @@ module ECTAtSchoolPeriods
               .to contain_exactly(new_training_period)
             expect(new_training_period.lead_provider)
               .to eq(ect_training_period.lead_provider)
+          end
+
+          it 'assigns the correct schedule to the new training period' do
+            travel_to(Date.new(2025, 9, 1)) do
+              switch_mentor
+
+              new_training_period = TrainingPeriod.last
+
+              expect(new_training_period.schedule.identifier).to eq('ecf-standard-september')
+              expect(new_training_period.schedule.contract_period_year).to eq(2025)
+            end
           end
 
           it "records a `teacher_starts_training_period` event" do

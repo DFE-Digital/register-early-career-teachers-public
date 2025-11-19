@@ -67,11 +67,13 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
     end
 
     around do |example|
-      perform_enqueued_jobs { example.run }
+      travel_to(started_on + 1.day) do
+        perform_enqueued_jobs { example.run }
+      end
     end
 
     before do
-      contract_period = FactoryBot.create(:contract_period, year: 2023)
+      contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2023)
       FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
     end
 
@@ -101,6 +103,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
 
       events = Event.where(teacher: [mentor_at_school_period.teacher, ect_at_school_period.teacher])
       expect(events.pluck(:event_type)).to contain_exactly(
+        'teacher_schedule_assigned_to_training_period',
         'teacher_starts_training_period',
         'teacher_starts_mentoring',
         'teacher_starts_being_mentored'
