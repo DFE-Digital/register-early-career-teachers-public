@@ -4,6 +4,7 @@ module Schools
 
     before_action :set_school_home
     before_action :set_mentor, only: :show
+    before_action :set_decorated_mentor, only: :show
     before_action :set_teacher, only: :show
     before_action :set_ects, only: :show
 
@@ -25,6 +26,10 @@ module Schools
 
     def set_mentor
       @mentor = MentorAtSchoolPeriod.find(params[:id])
+    end
+
+    def set_decorated_mentor
+      @decorated_mentor = Schools::DecoratedMentor.new(@mentor)
     end
 
     def set_teacher

@@ -659,6 +659,213 @@ describe TrainingPeriod do
         expect(TrainingPeriod.at_school(school.id)).not_to include(other_training_period)
       end
     end
+
+    describe '.for_mentor_trn' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+      let(:other_teacher) { FactoryBot.create(:teacher, trn: '7654321') }
+
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+      let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: other_teacher) }
+
+      let!(:training_period_for_teacher) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          started_on: mentor_at_school_period.started_on,
+          finished_on: mentor_at_school_period.finished_on
+        )
+      end
+
+      let!(:training_period_for_other_teacher) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period: other_mentor_at_school_period,
+          started_on: other_mentor_at_school_period.started_on,
+          finished_on: other_mentor_at_school_period.finished_on
+        )
+      end
+
+      it 'returns training periods for mentors with the given TRN' do
+        result = TrainingPeriod.for_mentor_trn(teacher.trn)
+
+        expect(result).to include(training_period_for_teacher)
+      end
+
+      it 'does not return training periods for mentors with a different TRN' do
+        result = TrainingPeriod.for_mentor_trn(teacher.trn)
+
+        expect(result).not_to include(training_period_for_other_teacher)
+      end
+    end
+
+    describe '.latest_for_mentor_trn' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+
+      # First mentor period (older)
+      let(:mentor_at_school_period_1) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          started_on: Date.new(2023, 9, 1),
+          finished_on: Date.new(2024, 7, 1)
+        )
+      end
+
+      # Second mentor period (newer)
+      let(:mentor_at_school_period_2) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          started_on: Date.new(2024, 7, 2),
+          finished_on: nil
+        )
+      end
+
+      let!(:older_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period: mentor_at_school_period_1,
+          started_on: mentor_at_school_period_1.started_on,
+          finished_on: mentor_at_school_period_1.finished_on
+        )
+      end
+
+      let!(:newer_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period: mentor_at_school_period_2,
+          started_on: mentor_at_school_period_2.started_on,
+          finished_on: mentor_at_school_period_2.finished_on
+        )
+      end
+
+      it 'returns the latest training period for the mentor TRN' do
+        result = TrainingPeriod.latest_for_mentor_trn(teacher.trn)
+
+        expect(result).to eq(newer_period)
+      end
+    end
+
+    describe '.latest_confirmed_for_mentor_trn' do
+      let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+
+      let(:mentor_at_school_period_1) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          started_on: Date.new(2023, 9, 1),
+          finished_on: Date.new(2024, 7, 1)
+        )
+      end
+
+      let(:school) { mentor_at_school_period_1.school }
+      let(:school_partnership) { make_partnership_for(school, contract_period) }
+
+      let!(:older_confirmed) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period: mentor_at_school_period_1,
+          school_partnership:,
+          started_on: mentor_at_school_period_1.started_on,
+          finished_on: mentor_at_school_period_1.finished_on
+        )
+      end
+
+      let(:mentor_at_school_period_2) do
+        FactoryBot.create(
+          :mentor_at_school_period,
+          teacher:,
+          started_on: Date.new(2024, 7, 2),
+          finished_on: nil
+        )
+      end
+
+      let!(:newer_eoi_only) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period: mentor_at_school_period_2,
+          school_partnership: nil,
+          expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
+          training_programme: 'provider_led',
+          started_on: mentor_at_school_period_2.started_on,
+          finished_on: mentor_at_school_period_2.finished_on
+        )
+      end
+
+      it 'returns the latest confirmed training period (ignoring EOI-only periods)' do
+        result = TrainingPeriod.latest_confirmed_for_mentor_trn(teacher.trn)
+
+        expect(result).to eq(older_confirmed)
+      end
+
+      context 'when there are no confirmed training periods' do
+        before do
+          older_confirmed.destroy!
+        end
+
+        it 'returns nil' do
+          result = TrainingPeriod.latest_confirmed_for_mentor_trn(teacher.trn)
+
+          expect(result).to be_nil
+        end
+      end
+    end
+
+    describe '.confirmed' do
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
+      let(:school) { ect_at_school_period.school }
+      let(:school_partnership) { make_partnership_for(school, contract_period) }
+
+      let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
+      let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
+
+      let!(:confirmed_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period:,
+          school_partnership:,
+          started_on: ect_at_school_period.started_on,
+          finished_on: ect_at_school_period.finished_on
+        )
+      end
+
+      let!(:unconfirmed_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period: other_ect_at_school_period,
+          expression_of_interest:,
+          school_partnership: nil,
+          started_on: other_ect_at_school_period.started_on,
+          finished_on: other_ect_at_school_period.finished_on
+        )
+      end
+
+      it 'returns only training periods with a school partnership' do
+        result = TrainingPeriod.confirmed
+
+        expect(result).to include(confirmed_training_period)
+        expect(result).not_to include(unconfirmed_training_period)
+      end
+    end
+
+    describe '.including_school_partnership' do
+      it 'eager loads the school_partnership association' do
+        relation = TrainingPeriod.including_school_partnership
+
+        expect(relation.includes_values).to include(:school_partnership)
+      end
+    end
   end
 
   describe "#siblings" do

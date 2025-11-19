@@ -89,9 +89,14 @@ class TrainingPeriod < ApplicationRecord
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
   scope :for_mentor, ->(mentor_at_school_period_id) { where(mentor_at_school_period_id:) }
   scope :for_school_partnership, ->(school_partnership_id) { where(school_partnership_id:) }
+  scope :for_mentor_trn, ->(trn) { joins(mentor_at_school_period: :teacher).where(teachers: { trn: }) }
+  scope :confirmed, -> { where.not(school_partnership_id: nil) }
   scope :at_school, ->(school) {
     left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
       .merge(ECTAtSchoolPeriod.for_school(school).or(MentorAtSchoolPeriod.for_school(school)))
+  }
+  scope :including_school_partnership, -> {
+    includes(:school_partnership)
   }
 
   # Delegations
@@ -118,6 +123,20 @@ class TrainingPeriod < ApplicationRecord
 
   def only_expression_of_interest?
     school_partnership_id.blank? && expression_of_interest.present?
+  end
+
+  def self.latest_for_mentor_trn(trn)
+    for_mentor_trn(trn)
+      .latest_first
+      .first
+  end
+
+  def self.latest_confirmed_for_mentor_trn(trn)
+    for_mentor_trn(trn)
+      .confirmed
+      .including_school_partnership
+      .latest_first
+      .first
   end
 
 private
