@@ -378,6 +378,28 @@ module ECTAtSchoolPeriods
               expect(new_training_period.school_partnership).to be_nil
               expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
             end
+
+            it "records a `new_training_period_for_mentor` event" do
+              freeze_time
+
+              allow(Events::Record).to receive(:record_teacher_starts_training_period_event!)
+
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = mentor_at_school_period.reload.training_periods.last
+
+              expect(Events::Record)
+                .to have_received(:record_teacher_starts_training_period_event!)
+                .with(
+                  school: ect_at_school_period.school,
+                  teacher: mentor_at_school_period.teacher,
+                  training_period: new_training_period,
+                  mentor_at_school_period:,
+                  ect_at_school_period: nil,
+                  author:,
+                  happened_at: Time.current
+                )
+            end
           end
 
           context "when there is a confirmed school partnership" do
@@ -454,12 +476,19 @@ module ECTAtSchoolPeriods
         end
 
         context "when the mentor has had provider-led training before" do
-          it "does not create a new training period for the mentor" do
-            previous_training_period = FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period:)
+          let!(:previous_training_period) { FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period:) }
 
-            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+          it "does not create a new training period for the mentor" do
+            expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }.to change(TrainingPeriod, :count).by(1)
 
             expect(TrainingPeriod.where(mentor_at_school_period:)).to contain_exactly(previous_training_period)
+          end
+
+          it "does not record a `new_training_period_for_mentor` event" do
+            expect(Events::Record)
+              .not_to receive(:record_teacher_starts_training_period_event!)
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
           end
         end
 
@@ -473,6 +502,13 @@ module ECTAtSchoolPeriods
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
             expect(mentor_at_school_period.training_periods).to be_empty
+          end
+
+          it "does not record a `new_training_period_for_mentor` event" do
+            expect(Events::Record)
+              .not_to receive(:record_teacher_starts_training_period_event!)
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
           end
         end
 
