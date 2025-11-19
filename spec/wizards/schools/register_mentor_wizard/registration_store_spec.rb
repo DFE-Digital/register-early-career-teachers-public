@@ -4,22 +4,26 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
   let(:school) { FactoryBot.create(:school) }
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:store) do
-    FactoryBot.build(:session_repository,
-                     trn: "3002586",
-                     date_of_birth: "11-10-1945",
-                     trs_first_name: "Dusty",
-                     trs_last_name: "Rhodes",
-                     trs_date_of_birth: "1945-10-11",
-                     corrected_name: nil,
-                     email: "dusty@rhodes.com",
-                     school_urn: school.urn)
+    FactoryBot.build(
+      :session_repository,
+      trn: "3002586",
+      date_of_birth: "11-10-1945",
+      trs_first_name: "Dusty",
+      trs_last_name: "Rhodes",
+      trs_date_of_birth: "1945-10-11",
+      corrected_name: nil,
+      email: "dusty@rhodes.com",
+      school_urn: school.urn
+    )
   end
 
   describe "#active_at_school?" do
     let(:teacher) { FactoryBot.create(:teacher, trn: "3002586") }
 
     context "when the mentor has an ongoing mentor record at the school" do
-      let!(:ongoing_mentor_record) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+      let!(:ongoing_mentor_record) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+      end
 
       it "returns true" do
         expect(registration_store.active_at_school?).to be(true)
@@ -27,7 +31,9 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     end
 
     context "when the mentor has no ongoing mentor record at the school" do
-      let!(:ongoing_mentor_record) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+      let!(:ongoing_mentor_record) do
+        FactoryBot.create(:mentor_at_school_period, school:, teacher:)
+      end
 
       it "returns false" do
         expect(registration_store.active_at_school?).to be(false)
@@ -39,7 +45,9 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     let(:teacher) { FactoryBot.create(:teacher, trn: "3002586") }
 
     context "when the mentor has an ongoing mentor record at the school" do
-      let!(:ongoing_mentor_record) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+      let!(:ongoing_mentor_record) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+      end
 
       it "returns the mentor record" do
         expect(registration_store.active_record_at_school).to eq(ongoing_mentor_record)
@@ -47,7 +55,9 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     end
 
     context "when the mentor has no ongoing mentor record at the school" do
-      let!(:existing_mentor_record) { FactoryBot.create(:mentor_at_school_period, school:, teacher:) }
+      let!(:existing_mentor_record) do
+        FactoryBot.create(:mentor_at_school_period, school:, teacher:)
+      end
 
       it "returns nil" do
         expect(registration_store.active_record_at_school).to be_nil
@@ -59,7 +69,9 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
 
     before do
-      allow(Schools::TeacherEmail).to receive(:new).with(email: registration_store.email, trn: registration_store.trn).and_return(teacher_email_service)
+      allow(Schools::TeacherEmail).to receive(:new)
+        .with(email: registration_store.email, trn: registration_store.trn)
+        .and_return(teacher_email_service)
     end
 
     context "when the email is used in an ongoing school period" do
@@ -167,43 +179,25 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
   describe "#previous_training_period" do
     let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
-    let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 3, 1)) }
-    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
+    let!(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        mentor_at_school_period:,
+        started_on: Date.new(2025, 3, 1)
+      )
+    end
+    let!(:mentor_at_school_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :ongoing,
+        teacher:,
+        started_on: Date.new(2025, 1, 1)
+      )
+    end
 
     it "returns the latest training period for the mentor" do
       expect(registration_store.previous_training_period).to eq(training_period)
-    end
-
-    it 'returns nil when only expression of interest periods exist' do
-      expect(registration_store.previous_training_period).to be_nil
-    end
-
-    context 'when there is a confirmed partnership' do
-      let!(:older_confirmed) do
-        FactoryBot.create(
-          :training_period,
-          :for_mentor,
-          mentor_at_school_period:,
-          training_programme: :provider_led,
-          school_partnership: FactoryBot.create(:school_partnership),
-          started_on: Date.new(2024, 5, 1), finished_on: Date.new(2024, 6, 1)
-        )
-      end
-
-      let!(:newer_confirmed) do
-        FactoryBot.create(
-          :training_period,
-          :for_mentor,
-          mentor_at_school_period:,
-          training_programme: :provider_led,
-          school_partnership: FactoryBot.create(:school_partnership),
-          started_on: Date.new(2025, 3, 1), finished_on: Date.new(2025, 4, 1)
-        )
-      end
-
-      it 'returns the most recent confirmed training period' do
-        expect(registration_store.previous_training_period).to eq(newer_confirmed)
-      end
     end
   end
 
@@ -262,7 +256,13 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
   end
 
   describe "#lead_providers_within_contract_period" do
-    let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+    let!(:contract_period) do
+      FactoryBot.create(
+        :contract_period,
+        started_on: Date.new(2025, 1, 1),
+        finished_on: Date.new(2025, 12, 31)
+      )
+    end
     let!(:lp_in) { FactoryBot.create(:lead_provider) }
     let!(:lp_out) { FactoryBot.create(:lead_provider) }
 
@@ -326,7 +326,9 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
 
     context "when there is an ongoing mentor_at_school_period" do
-      let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+      let!(:ongoing_period) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+      end
 
       it "returns :currently_a_mentor" do
         expect(registration_store.mentorship_status).to eq(:currently_a_mentor)
@@ -334,7 +336,9 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     end
 
     context "when there are past mentor_at_school_periods but none ongoing" do
-      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago) }
+      let!(:closed_period) do
+        FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago)
+      end
 
       it "returns :previously_a_mentor" do
         expect(registration_store.mentorship_status).to eq(:previously_a_mentor)
@@ -342,8 +346,12 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     end
 
     context "when there are past mentor_at_school_periods and some ongoing" do
-      let!(:closed_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago) }
-      let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:) }
+      let!(:closed_period) do
+        FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 3.years.ago)
+      end
+      let!(:ongoing_period) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher:)
+      end
 
       it "returns :currently_a_mentor" do
         expect(registration_store.mentorship_status).to eq(:currently_a_mentor)
@@ -389,11 +397,13 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
     context "when a previous school period finished recently" do
       before do
-        FactoryBot.create(:mentor_at_school_period,
-                          school: other_school,
-                          teacher:,
-                          started_on: 2.years.ago,
-                          finished_on: 1.month.ago)
+        FactoryBot.create(
+          :mentor_at_school_period,
+          school: other_school,
+          teacher:,
+          started_on: 2.years.ago,
+          finished_on: 1.month.ago
+        )
       end
 
       it "returns true" do

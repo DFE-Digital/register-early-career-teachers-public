@@ -7,20 +7,11 @@ module MentorAtSchoolPeriods
     end
 
     def training_period
-      @training_period ||= ::TrainingPeriod
-        .includes(mentor_at_school_period: [:teacher])
-        .where(teacher: { trn: })
-        .latest_first
-        .first
+      @training_period ||= ::TrainingPeriod.latest_for_mentor_trn(trn)
     end
 
     def confirmed_training_period
-      @confirmed_training_period ||= ::TrainingPeriod
-        .includes(:school_partnership, mentor_at_school_period: [:teacher])
-        .where(teacher: { trn: })
-        .where.not(school_partnership_id: nil)
-        .latest_first
-        .first
+      @confirmed_training_period ||= ::TrainingPeriod.latest_confirmed_for_mentor_trn(trn)
     end
 
     def lead_provider
