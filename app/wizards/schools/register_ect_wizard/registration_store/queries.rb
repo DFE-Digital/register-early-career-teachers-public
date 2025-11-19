@@ -26,6 +26,17 @@ module Schools
           @contract_start_date ||= ContractPeriod.containing_date(registration_store.start_date&.to_date)
         end
 
+        def lead_provider_partnership_for_contract_period(school:)
+          previous_lead_provider = self.previous_lead_provider
+          contract_period = contract_start_date
+
+          return SchoolPartnership.none unless previous_lead_provider && contract_period && school
+
+          SchoolPartnerships::Search
+            .new(school:, lead_provider: previous_lead_provider, contract_period:)
+            .school_partnerships
+        end
+
         def lead_providers_within_contract_period
           return [] unless contract_start_date
 
