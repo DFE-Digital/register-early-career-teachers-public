@@ -323,7 +323,7 @@ module SandboxSeedData
     end
 
     def random_period_within(started_on:, finished_on:)
-      started_on = rand(started_on..(finished_on || Time.zone.today))
+      started_on = rand(started_on..(finished_on&.yesterday || Time.zone.today))
       finished_on = finished_on.present? ? rand(started_on.tomorrow..finished_on) : nil
 
       { started_on:, finished_on: }
