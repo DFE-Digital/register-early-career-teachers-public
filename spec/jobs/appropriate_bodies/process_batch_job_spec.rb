@@ -1,5 +1,5 @@
 RSpec.describe AppropriateBodies::ProcessBatchJob, type: :job do
-  let(:author) { FactoryBot.build(:user, name: 'Barry Cryer', email: 'barry@not-a-clue.co.uk') }
+  let(:author) { FactoryBot.build(:user, name: "Barry Cryer", email: "barry@not-a-clue.co.uk") }
 
   let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
 
@@ -7,8 +7,8 @@ RSpec.describe AppropriateBodies::ProcessBatchJob, type: :job do
     FactoryBot.build(:pending_induction_submission_batch, appropriate_body:)
   end
 
-  describe '#perform' do
-    it 'raises an error intended for the subclass' do
+  describe "#perform" do
+    it "raises an error intended for the subclass" do
       expect {
         described_class.perform_now(pending_induction_submission_batch, author.email, author.name)
       }.to raise_error(NotImplementedError, "You must implement the AppropriateBodies::ProcessBatchJob#batch_service method")

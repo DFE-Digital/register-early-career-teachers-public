@@ -1,4 +1,4 @@
-require_relative './shared_examples/cant_use_email_step'
+require_relative "./shared_examples/cant_use_email_step"
 
 describe Schools::RegisterMentorWizard::CantUseChangedEmailStep, type: :model do
   it_behaves_like "a can't use email step",

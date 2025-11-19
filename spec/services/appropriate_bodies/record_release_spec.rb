@@ -5,8 +5,8 @@ RSpec.describe AppropriateBodies::RecordRelease do
     })
   end
 
-  it_behaves_like 'it closes an induction' do
-    it 'closes without an outcome' do
+  it_behaves_like "it closes an induction" do
+    it "closes without an outcome" do
       service_call
 
       expect(induction_period.reload).to have_attributes(

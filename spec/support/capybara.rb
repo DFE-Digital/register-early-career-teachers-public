@@ -1,4 +1,4 @@
-require 'capybara/rspec'
+require "capybara/rspec"
 
 class CapybaraNullDriver < Capybara::Driver::Base
   def needs_server?
@@ -12,4 +12,4 @@ Capybara.register_driver(:js_disabled) { CapybaraNullDriver.new }
 Capybara.default_max_wait_time = 5
 Capybara.default_driver = :js_disabled
 Capybara.javascript_driver = :js_enabled
-Capybara.save_path = 'tmp/capybara'
+Capybara.save_path = "tmp/capybara"

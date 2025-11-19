@@ -1,7 +1,7 @@
-RSpec.describe 'Registering a mentor', :enable_schools_interface do
-  include_context 'test trs api client'
+RSpec.describe "Registering a mentor", :enable_schools_interface do
+  include_context "test trs api client"
 
-  scenario 'An ECT becoming mentor cannot mentor themself' do
+  scenario "An ECT becoming mentor cannot mentor themself" do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
     and_i_sign_in_as_that_school_user
@@ -33,13 +33,13 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface do
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = '/school/home/ects'
+    path = "/school/home/ects"
     page.goto path
     expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role('link', name: 'Assign a mentor for this ECT').click
+    page.get_by_role("link", name: "Assign a mentor for this ECT").click
   end
 
   def then_i_am_in_the_requirements_page
@@ -48,27 +48,27 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface do
   end
 
   def when_i_click_continue
-    page.get_by_role('link', name: 'Continue').click
+    page.get_by_role("link", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_find_mentor_page
-    path = '/school/register-mentor/find-mentor'
+    path = "/school/register-mentor/find-mentor"
     expect(page).to have_path(path)
   end
 
   def when_i_submit_the_details_of_the_ect
-    page.get_by_label('trn').fill(@ect.trn)
-    page.get_by_label('day').fill('1')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1980')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill(@ect.trn)
+    page.get_by_label("day").fill("1")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1980")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_cannot_mentor_themself_page
-    expect(page).to have_path('/school/register-mentor/cannot-mentor-themself')
+    expect(page).to have_path("/school/register-mentor/cannot-mentor-themself")
   end
 
   def when_i_click_on_assign_a_different_mentor
-    page.get_by_role('link', name: 'Assign a different mentor').click
+    page.get_by_role("link", name: "Assign a different mentor").click
   end
 end

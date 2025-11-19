@@ -12,7 +12,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
            -> { ongoing.includes(:teacher) },
            through: :mentorship_periods,
            source: :mentee
-  has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
+  has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"
   has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
   has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
 
@@ -68,6 +68,6 @@ class MentorAtSchoolPeriod < ApplicationRecord
 private
 
   def teacher_school_distinct_period
-    overlap_validation(name: 'Teacher School Mentor')
+    overlap_validation(name: "Teacher School Mentor")
   end
 end

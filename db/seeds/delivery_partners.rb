@@ -3,14 +3,14 @@ def describe_delivery_partner(delivery_partner)
 end
 
 [
-  'Rise Teaching School Hub',
-  'Miller Teaching School Hub',
-  'Grain Teaching School Hub',
-  'Artisan Education Group',
-  'Rising Minds Network',
-  'Proving Potential Teaching School Hub',
-  'Harvest Academy',
-  'Capita Delivery Partner'
+  "Rise Teaching School Hub",
+  "Miller Teaching School Hub",
+  "Grain Teaching School Hub",
+  "Artisan Education Group",
+  "Rising Minds Network",
+  "Proving Potential Teaching School Hub",
+  "Harvest Academy",
+  "Capita Delivery Partner"
 ].each do |name|
   delivery_partner = FactoryBot.create(:delivery_partner, name:)
   describe_delivery_partner(delivery_partner)

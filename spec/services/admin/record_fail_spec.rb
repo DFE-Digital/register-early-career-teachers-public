@@ -11,25 +11,25 @@ RSpec.describe Admin::RecordFail do
     })
   end
 
-  it_behaves_like 'it closes an induction' do
+  it_behaves_like "it closes an induction" do
     subject(:service) do
       described_class.new(
         teacher:,
         appropriate_body:,
         author:,
         note:,
-        zendesk_ticket_id: '#123456'
+        zendesk_ticket_id: "#123456"
       )
     end
 
-    let(:author) { FactoryBot.create(:dfe_user, email: 'dfe_user@education.gov.uk') }
-    let(:note) { 'Original outcome recorded in error' }
+    let(:author) { FactoryBot.create(:dfe_user, email: "dfe_user@education.gov.uk") }
+    let(:note) { "Original outcome recorded in error" }
 
     it "closes with fail outcome" do
       service_call
 
       expect(induction_period.reload).to have_attributes(
-        outcome: 'fail',
+        outcome: "fail",
         finished_on: 1.day.ago.to_date,
         number_of_terms: 6
       )
@@ -50,7 +50,7 @@ RSpec.describe Admin::RecordFail do
         induction_period:,
         author:,
         body: note,
-        zendesk_ticket_id: '123456'
+        zendesk_ticket_id: "123456"
       )
 
       service_call
@@ -67,9 +67,9 @@ RSpec.describe Admin::RecordFail do
         service_call
 
         expect(induction_period.reload).to have_attributes(
-          outcome: 'fail',
-          induction_programme: 'fip',
-          training_programme: 'provider_led'
+          outcome: "fail",
+          induction_programme: "fip",
+          training_programme: "provider_led"
         )
       end
     end
@@ -85,8 +85,8 @@ RSpec.describe Admin::RecordFail do
         service_call
 
         expect(induction_period.reload).to have_attributes(
-          outcome: 'fail',
-          induction_programme: 'pre_september_2021',
+          outcome: "fail",
+          induction_programme: "pre_september_2021",
           training_programme: nil
         )
       end

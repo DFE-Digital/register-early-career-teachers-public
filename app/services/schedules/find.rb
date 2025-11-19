@@ -38,16 +38,16 @@ module Schedules
 
       case month
       when 6..10
-        'september'
+        "september"
       when 11, 12, 1, 2
-        'january'
+        "january"
       when 3..5
-        'april'
+        "april"
       end
     end
 
     def contract_period_year
-      if schedule_month == 'april'
+      if schedule_month == "april"
         latest_start_date.year - 1
       else
         latest_start_date.year

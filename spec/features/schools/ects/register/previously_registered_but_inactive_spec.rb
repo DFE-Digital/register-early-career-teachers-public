@@ -1,7 +1,7 @@
-RSpec.describe 'Registering an ECT', :enable_schools_interface do
-  include_context 'test trs api client'
+RSpec.describe "Registering an ECT", :enable_schools_interface do
+  include_context "test trs api client"
 
-  scenario 'previously registered' do
+  scenario "previously registered" do
     given_i_am_logged_in_as_a_state_funded_school_user_who_has_previously_registered_an_ect
     and_i_am_on_the_schools_ects_index_page
     and_i_start_adding_an_ect
@@ -21,7 +21,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def then_i_am_on_the_registered_before_page
-    expect(page).to have_path('/school/register-ect/registered-before')
+    expect(page).to have_path("/school/register-ect/registered-before")
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_who_has_previously_registered_an_ect
@@ -50,46 +50,46 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def and_i_am_on_the_schools_ects_index_page
-    page.goto '/school/home/ects'
+    page.goto "/school/home/ects"
   end
 
   def and_i_start_adding_an_ect
-    page.get_by_role('link', name: 'Register an ECT starting at your school').click
+    page.get_by_role("link", name: "Register an ECT starting at your school").click
   end
 
   def and_i_click_continue
-    page.get_by_role('link', name: 'Continue').click
+    page.get_by_role("link", name: "Continue").click
   end
 
   def when_i_click_back
-    page.get_by_role('link', name: 'Back', exact: true).click
+    page.get_by_role("link", name: "Back", exact: true).click
   end
 
   def and_i_click_the_continue_button
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_role("button", name: "Continue").click
   end
 
   def and_i_submit_the_find_ect_form
-    page.get_by_label('Teacher reference number (TRN)').fill(@teacher.trn)
-    page.get_by_label('day').fill('3')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1977')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("Teacher reference number (TRN)").fill(@teacher.trn)
+    page.get_by_label("day").fill("3")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1977")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def and_i_choose_that_the_details_are_correct
-    page.get_by_label('Yes').check
+    page.get_by_label("Yes").check
   end
 
   def and_i_click_confirm_and_continue
-    page.get_by_role('button', name: 'Confirm and continue').click
+    page.get_by_role("button", name: "Confirm and continue").click
   end
 
   def then_i_am_on_the_email_address_page
-    expect(page).to have_path('/school/register-ect/email-address')
+    expect(page).to have_path("/school/register-ect/email-address")
   end
 
   def then_i_am_on_the_review_ect_details_page
-    expect(page).to have_path('/school/register-ect/review-ect-details')
+    expect(page).to have_path("/school/register-ect/review-ect-details")
   end
 end

@@ -1,7 +1,7 @@
 RSpec.describe Auditable do
   let(:auditable_service) do
     Class.new do
-      def self.name = 'AuditableService'
+      def self.name = "AuditableService"
       include Auditable
     end
   end
@@ -10,11 +10,11 @@ RSpec.describe Auditable do
 
   it "defines expected auditable params" do
     expect(auditable_service.auditable_params).to eq({
-      'auditable_service' => %i[zendesk_ticket_id note]
+      "auditable_service" => %i[zendesk_ticket_id note]
     })
   end
 
-  context 'without arguments' do
+  context "without arguments" do
     subject(:service) { auditable_service.new }
 
     it do
@@ -23,37 +23,37 @@ RSpec.describe Auditable do
     end
   end
 
-  context 'with author' do
+  context "with author" do
     subject(:service) do
       auditable_service.new(author:)
     end
 
-    it 'requires either a note or support ticket' do
+    it "requires either a note or support ticket" do
       expect(service).to be_invalid
       expect(service.errors.messages).to eq({ base: ["Add a note or enter the Zendesk ticket number"] })
     end
   end
 
-  describe '#note' do
+  describe "#note" do
     subject(:service) do
-      auditable_service.new(author:, note: 'Context message')
+      auditable_service.new(author:, note: "Context message")
     end
 
     it "saves the note" do
       expect(service).to be_valid
       expect(service.author).to eq(author)
-      expect(service.note).to eq('Context message')
+      expect(service.note).to eq("Context message")
     end
   end
 
-  describe '#zendesk_ticket_id' do
+  describe "#zendesk_ticket_id" do
     subject(:service) do
-      auditable_service.new(author:, zendesk_ticket_id: '#123456')
+      auditable_service.new(author:, zendesk_ticket_id: "#123456")
     end
 
-    it 'saves the normalized ticket number' do
+    it "saves the normalized ticket number" do
       expect(service).to be_valid
-      expect(service.zendesk_ticket_id).to eq('123456')
+      expect(service.zendesk_ticket_id).to eq("123456")
     end
   end
 end

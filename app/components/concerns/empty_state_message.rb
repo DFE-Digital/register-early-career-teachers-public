@@ -14,6 +14,6 @@ private
   end
 
   def highlighted_query
-    tag.strong(query, class: 'govuk-!-font-weight-bold')
+    tag.strong(query, class: "govuk-!-font-weight-bold")
   end
 end

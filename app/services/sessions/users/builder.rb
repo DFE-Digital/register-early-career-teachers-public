@@ -83,7 +83,7 @@ module Sessions
       def appropriate_body_user?
         organisation.id.present? &&
           ::AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id) &&
-          dfe_sign_in_roles.include?('AppropriateBodyUser')
+          dfe_sign_in_roles.include?("AppropriateBodyUser")
       end
 
       # @return [Sessions::Users::DfEPersona]
@@ -175,7 +175,7 @@ module Sessions
       def school_user?
         organisation.urn.present? &&
           School.exists?(urn: organisation.urn) &&
-          dfe_sign_in_roles.include?('SchoolUser')
+          dfe_sign_in_roles.include?("SchoolUser")
       end
 
       # @return [String]

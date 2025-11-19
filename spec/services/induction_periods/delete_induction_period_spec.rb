@@ -5,11 +5,11 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     described_class.new(author:, induction_period:, note:, zendesk_ticket_id:)
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:note) { "Induction period created in error" }
-  let(:zendesk_ticket_id) { '#123456' }
+  let(:zendesk_ticket_id) { "#123456" }
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -52,7 +52,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
         .with(
           author:,
           body: note,
-          zendesk_ticket_id: '123456',
+          zendesk_ticket_id: "123456",
           modifications: hash_including("id" => [induction_period.id, nil]),
           teacher:,
           appropriate_body:,
@@ -156,7 +156,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           .with(
             author:,
             body: note,
-            zendesk_ticket_id: '123456',
+            zendesk_ticket_id: "123456",
             modifications: hash_including("id" => [earliest_period.id, nil]),
             teacher:,
             appropriate_body:,
@@ -196,7 +196,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
           .with(
             author:,
             body: note,
-            zendesk_ticket_id: '123456',
+            zendesk_ticket_id: "123456",
             modifications: hash_including("id" => [later_period.id, nil]),
             teacher:,
             appropriate_body:,

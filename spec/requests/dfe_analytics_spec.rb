@@ -2,7 +2,7 @@ require "dfe/analytics/rspec/matchers"
 
 RSpec.describe "DfE Analytics", type: :request do
   before do
-    stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => env_var_value)
+    stub_const("ENV", "DFE_ANALYTICS_ENABLED" => env_var_value)
   end
 
   context "when disabled" do
@@ -38,7 +38,7 @@ RSpec.describe "DfE Analytics", type: :request do
     end
 
     it "does not send a web request event for GET /healthcheck" do
-      expect { get '/healthcheck' }.not_to have_sent_analytics_event_types(:web_request)
+      expect { get "/healthcheck" }.not_to have_sent_analytics_event_types(:web_request)
     end
   end
 

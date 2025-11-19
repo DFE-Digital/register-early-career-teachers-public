@@ -8,18 +8,18 @@ RSpec.describe "Constants" do
   end
 
   describe "TRAINING_PROGRAMME" do
-    it { expect(TRAINING_PROGRAMME).to eq({ 'provider_led' => 'Provider-led', 'school_led' => 'School-led' }) }
+    it { expect(TRAINING_PROGRAMME).to eq({ "provider_led" => "Provider-led", "school_led" => "School-led" }) }
   end
 
   describe "INDUCTION_PROGRAMMES" do
-    it { expect(INDUCTION_PROGRAMMES).to eq({ fip: 'Full induction programme', cip: 'Core induction programme', diy: 'School-based induction programme' }) }
+    it { expect(INDUCTION_PROGRAMMES).to eq({ fip: "Full induction programme", cip: "Core induction programme", diy: "School-based induction programme" }) }
   end
 
   describe "INDUCTION_OUTCOMES" do
-    it { expect(INDUCTION_OUTCOMES).to eq({ pass: 'Passed', fail: 'Failed' }) }
+    it { expect(INDUCTION_OUTCOMES).to eq({ pass: "Passed", fail: "Failed" }) }
   end
 
   describe "WORKING_PATTERNS" do
-    it { expect(WORKING_PATTERNS).to eq({ part_time: 'Part-time', full_time: 'Full-time' }) }
+    it { expect(WORKING_PATTERNS).to eq({ part_time: "Part-time", full_time: "Full-time" }) }
   end
 end

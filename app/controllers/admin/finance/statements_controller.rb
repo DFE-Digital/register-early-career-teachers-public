@@ -1,6 +1,6 @@
 module Admin::Finance
   class StatementsController < AdminController
-    layout 'full'
+    layout "full"
 
     def index
       @pagy, statements = pagy(

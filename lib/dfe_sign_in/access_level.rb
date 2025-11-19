@@ -14,15 +14,15 @@ module DfESignIn
 
     def self.from_response_body(hash)
       new(
-        user_id: hash.fetch('userId'),
-        service_id: hash.fetch('serviceId'),
-        organisation_id: hash.fetch('organisationId'),
-        roles: hash.fetch('roles').map do |r|
+        user_id: hash.fetch("userId"),
+        service_id: hash.fetch("serviceId"),
+        organisation_id: hash.fetch("organisationId"),
+        roles: hash.fetch("roles").map do |r|
           Role.new(
-            id: r.fetch('id'),
-            name: r.fetch('name'),
-            code: r.fetch('code'),
-            numeric_id: r.fetch('numericId')
+            id: r.fetch("id"),
+            name: r.fetch("name"),
+            code: r.fetch("code"),
+            numeric_id: r.fetch("numericId")
           )
         end
       )

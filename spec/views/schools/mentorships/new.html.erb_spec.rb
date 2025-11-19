@@ -1,7 +1,7 @@
 RSpec.describe "schools/mentorships/new.html.erb" do
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
   let(:ect_name) { Teachers::Name.new(ect_at_school_period.teacher).full_name }
-  let(:mentor) { double("mentor_at_school_period", full_name: 'Peter Times', id: 7) }
+  let(:mentor) { double("mentor_at_school_period", full_name: "Peter Times", id: 7) }
   let(:mentor_id) { mentor.id }
   let(:mentor_form) { Schools::AssignMentorForm.new(ect: ect_at_school_period, mentor_id:) }
   let(:title) { "Who will mentor #{ect_name}?" }
@@ -29,24 +29,24 @@ RSpec.describe "schools/mentorships/new.html.erb" do
     end
 
     it "prefixes the page with 'Error:'" do
-      expect(view.content_for(:page_title)).to start_with('Error:')
+      expect(view.content_for(:page_title)).to start_with("Error:")
     end
 
-    it 'renders an error summary' do
-      expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
+    it "renders an error summary" do
+      expect(view.content_for(:error_summary)).to have_css(".govuk-error-summary")
     end
   end
 
-  it 'includes a back button that links to the school home page' do
+  it "includes a back button that links to the school home page" do
     render
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: back_path)
   end
 
-  it 'includes a continue button that posts to the mentorship creation action' do
+  it "includes a continue button that posts to the mentorship creation action" do
     render
 
-    expect(rendered).to have_button('Continue')
+    expect(rendered).to have_button("Continue")
     expect(rendered).to have_selector("form[action='#{continue_path}']")
   end
 end

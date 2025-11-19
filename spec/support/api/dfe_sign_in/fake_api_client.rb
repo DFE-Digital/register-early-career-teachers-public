@@ -6,7 +6,7 @@ module DfESignIn
       @role_codes = role_codes
     end
 
-    def access_levels(organisation_id:, user_id:, service_id: 'abc123')
+    def access_levels(organisation_id:, user_id:, service_id: "abc123")
       DfESignIn::AccessLevel.from_response_body(
         {
           "userId" => user_id,

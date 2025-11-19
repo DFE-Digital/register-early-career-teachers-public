@@ -24,7 +24,7 @@ module TeachersIndex
     end
 
     def showing_closed?
-      status == 'closed'
+      status == "closed"
     end
 
     def should_show_navigation_link?

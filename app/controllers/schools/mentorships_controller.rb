@@ -51,7 +51,7 @@ module Schools
     end
 
     def register_new_mentor?
-      mentor_id == '0'
+      mentor_id == "0"
     end
 
     def set_ect

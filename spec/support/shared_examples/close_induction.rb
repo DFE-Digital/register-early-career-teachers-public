@@ -1,9 +1,9 @@
-RSpec.shared_context 'it closes an induction' do
+RSpec.shared_context "it closes an induction" do
   subject(:service) do
     described_class.new(teacher:, appropriate_body:, author:)
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
@@ -23,7 +23,7 @@ RSpec.shared_context 'it closes an induction' do
                       teacher:)
   end
 
-  it 'deletes the pending induction submission after a day' do
+  it "deletes the pending induction submission after a day" do
     freeze_time do
       service_call
       expect(PendingInductionSubmission.count).to be(1)

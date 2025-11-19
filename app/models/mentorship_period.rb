@@ -58,7 +58,7 @@ private
   end
 
   def mentee_distinct_period
-    overlap_validation(name: 'Mentee')
+    overlap_validation(name: "Mentee")
   end
 
   def not_self_mentoring

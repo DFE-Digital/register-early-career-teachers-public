@@ -2,20 +2,20 @@ module BatchRows
   extend ActiveSupport::Concern
 
   CLAIM_CSV_HEADINGS = {
-    trn: 'TRN',
-    date_of_birth: 'Date of birth',
-    training_programme: 'Induction programme',
-    started_on: 'Induction period start date',
-    error: 'Error message',
+    trn: "TRN",
+    date_of_birth: "Date of birth",
+    training_programme: "Induction programme",
+    started_on: "Induction period start date",
+    error: "Error message",
   }.freeze
 
   ACTION_CSV_HEADINGS = {
-    trn: 'TRN',
-    date_of_birth: 'Date of birth',
-    finished_on: 'Induction period end date',
-    number_of_terms: 'Number of terms',
-    outcome: 'Outcome',
-    error: 'Error message',
+    trn: "TRN",
+    date_of_birth: "Date of birth",
+    finished_on: "Induction period end date",
+    number_of_terms: "Number of terms",
+    outcome: "Outcome",
+    error: "Error message",
   }.freeze
 
   # @return [Class] A class that represents a row in the CSV file

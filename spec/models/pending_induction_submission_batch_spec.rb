@@ -1,7 +1,7 @@
 RSpec.describe PendingInductionSubmissionBatch do
   subject(:batch) { FactoryBot.build(:pending_induction_submission_batch, :claim) }
 
-  describe 'associations' do
+  describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
     it { is_expected.to have_many(:pending_induction_submissions) }
     it { is_expected.to have_many(:events) }
@@ -21,13 +21,13 @@ RSpec.describe PendingInductionSubmissionBatch do
     end
   end
 
-  describe 'class methods' do
+  describe "class methods" do
     let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
-    describe '.new_claim_for' do
+    describe ".new_claim_for" do
       subject(:claim) { described_class.new_claim_for(appropriate_body:) }
 
-      it 'creates a batch claim' do
+      it "creates a batch claim" do
         expect(claim).to be_a(PendingInductionSubmissionBatch)
         expect(claim).to be_claim
         expect(claim).to be_pending
@@ -35,10 +35,10 @@ RSpec.describe PendingInductionSubmissionBatch do
       end
     end
 
-    describe '.new_action_for' do
+    describe ".new_action_for" do
       subject(:action) { described_class.new_action_for(appropriate_body:) }
 
-      it 'creates a batch action' do
+      it "creates a batch action" do
         expect(action).to be_a(PendingInductionSubmissionBatch)
         expect(action).to be_action
         expect(action).to be_pending
@@ -47,25 +47,25 @@ RSpec.describe PendingInductionSubmissionBatch do
     end
   end
 
-  describe 'validations' do
+  describe "validations" do
     it { is_expected.to be_valid }
 
     it { is_expected.to validate_presence_of(:batch_type) }
-    it { is_expected.to allow_value('action').for(:batch_type) }
-    it { is_expected.to allow_value('claim').for(:batch_type) }
+    it { is_expected.to allow_value("action").for(:batch_type) }
+    it { is_expected.to allow_value("claim").for(:batch_type) }
 
     it { is_expected.to validate_presence_of(:batch_status) }
-    it { is_expected.to allow_value('pending').for(:batch_status) }
-    it { is_expected.to allow_value('processing').for(:batch_status) }
-    it { is_expected.to allow_value('processed').for(:batch_status) }
-    it { is_expected.to allow_value('completing').for(:batch_status) }
-    it { is_expected.to allow_value('completed').for(:batch_status) }
-    it { is_expected.to allow_value('failed').for(:batch_status) }
+    it { is_expected.to allow_value("pending").for(:batch_status) }
+    it { is_expected.to allow_value("processing").for(:batch_status) }
+    it { is_expected.to allow_value("processed").for(:batch_status) }
+    it { is_expected.to allow_value("completing").for(:batch_status) }
+    it { is_expected.to allow_value("completed").for(:batch_status) }
+    it { is_expected.to allow_value("failed").for(:batch_status) }
   end
 
-  describe '#recorded_count' do
-    it 'stores number of submissions without errors' do
-      FactoryBot.create(:pending_induction_submission, :finishing, pending_induction_submission_batch: batch, error_messages: ['Some error'])
+  describe "#recorded_count" do
+    it "stores number of submissions without errors" do
+      FactoryBot.create(:pending_induction_submission, :finishing, pending_induction_submission_batch: batch, error_messages: ["Some error"])
       FactoryBot.create(:pending_induction_submission, :claimed, pending_induction_submission_batch: batch)
       FactoryBot.create(:pending_induction_submission, :passed, pending_induction_submission_batch: batch)
       FactoryBot.create(:pending_induction_submission, :failed, pending_induction_submission_batch: batch)
@@ -75,11 +75,11 @@ RSpec.describe PendingInductionSubmissionBatch do
     end
   end
 
-  describe 'metric tallying' do
-    it 'tallies row and submission metrics' do
+  describe "metric tallying" do
+    it "tallies row and submission metrics" do
       expect(batch.tally).to eq({ uploaded_count: 1, processed_count: 0, errored_count: 0, released_count: 0, failed_count: 0, passed_count: 0, claimed_count: 0 })
 
-      FactoryBot.create_list(:pending_induction_submission, 1, :finishing, pending_induction_submission_batch: batch, error_messages: ['Some error'])
+      FactoryBot.create_list(:pending_induction_submission, 1, :finishing, pending_induction_submission_batch: batch, error_messages: ["Some error"])
       FactoryBot.create_list(:pending_induction_submission, 2, :claimed, pending_induction_submission_batch: batch)
       FactoryBot.create_list(:pending_induction_submission, 3, :passed, pending_induction_submission_batch: batch)
       FactoryBot.create_list(:pending_induction_submission, 4, :failed, pending_induction_submission_batch: batch)
@@ -95,25 +95,25 @@ RSpec.describe PendingInductionSubmissionBatch do
     end
   end
 
-  describe '#redact!' do
-    context 'when the batch is not completed' do
-      it 'does nothing' do
+  describe "#redact!" do
+    context "when the batch is not completed" do
+      it "does nothing" do
         expect(batch.redact!).to be_nil
         expect(batch.data).not_to be_empty
       end
     end
 
-    context 'when the batch is completed with errors' do
-      it 'does nothing' do
+    context "when the batch is completed with errors" do
+      it "does nothing" do
         batch.completed!
-        FactoryBot.create(:pending_induction_submission, :finishing, pending_induction_submission_batch: batch, error_messages: ['Some error'])
+        FactoryBot.create(:pending_induction_submission, :finishing, pending_induction_submission_batch: batch, error_messages: ["Some error"])
         expect(batch.redact!).to be_nil
         expect(batch.data).not_to be_empty
       end
     end
 
-    context 'when the batch is completed with no errors' do
-      it 'removes JSON parsed from CSV data and the PII within' do
+    context "when the batch is completed with no errors" do
+      it "removes JSON parsed from CSV data and the PII within" do
         batch.completed!
         FactoryBot.create_list(:pending_induction_submission, 2, :claimed, pending_induction_submission_batch: batch)
         expect(batch.redact!).to be true

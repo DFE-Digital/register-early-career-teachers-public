@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory(:dfe_user, class: 'Sessions::Users::DfEUser') do
+  factory(:dfe_user, class: "Sessions::Users::DfEUser") do
     skip_create
 
     initialize_with do

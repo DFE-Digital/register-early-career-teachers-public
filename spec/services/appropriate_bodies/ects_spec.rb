@@ -6,7 +6,7 @@ RSpec.describe AppropriateBodies::ECTs do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   describe "#current_or_completed_while_at_appropriate_body" do
-    context 'when the latest induction period is with this appropriate body' do
+    context "when the latest induction period is with this appropriate body" do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
@@ -14,7 +14,7 @@ RSpec.describe AppropriateBodies::ECTs do
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
       let!(:latest_induction_period) do
@@ -23,17 +23,17 @@ RSpec.describe AppropriateBodies::ECTs do
                           appropriate_body:,
                           started_on: 6.months.ago,
                           finished_on: 1.month.ago,
-                          outcome: 'pass',
+                          outcome: "pass",
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
-      it 'includes the teacher' do
+      it "includes the teacher" do
         expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
       end
     end
 
-    context 'when the latest induction period is with another appropriate body' do
+    context "when the latest induction period is with another appropriate body" do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
@@ -41,7 +41,7 @@ RSpec.describe AppropriateBodies::ECTs do
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
       let!(:latest_induction_period) do
@@ -50,17 +50,17 @@ RSpec.describe AppropriateBodies::ECTs do
                           appropriate_body: other_appropriate_body,
                           started_on: 6.months.ago,
                           finished_on: 1.month.ago,
-                          outcome: 'pass', # pass or fail should be on last IP
+                          outcome: "pass", # pass or fail should be on last IP
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
-      it 'excludes the teacher' do
+      it "excludes the teacher" do
         expect(subject.current_or_completed_while_at_appropriate_body).not_to include(teacher)
       end
     end
 
-    context 'when the teacher has an ongoing induction period with this appropriate body' do
+    context "when the teacher has an ongoing induction period with this appropriate body" do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
@@ -68,7 +68,7 @@ RSpec.describe AppropriateBodies::ECTs do
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
       let!(:ongoing_induction_period) do
@@ -78,24 +78,24 @@ RSpec.describe AppropriateBodies::ECTs do
                           started_on: 6.months.ago,
                           finished_on: nil,
                           number_of_terms: nil,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
-      it 'includes the teacher' do
+      it "includes the teacher" do
         expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
       end
     end
 
-    context 'when the teacher has a failed outcome with this appropriate body' do
+    context "when the teacher has a failed outcome with this appropriate body" do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
                           appropriate_body:,
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
-                          outcome: 'pass',
+                          outcome: "pass",
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
       let!(:failed_induction_period) do
@@ -104,17 +104,17 @@ RSpec.describe AppropriateBodies::ECTs do
                           appropriate_body:,
                           started_on: 6.months.ago,
                           finished_on: 1.month.ago,
-                          outcome: 'fail',
+                          outcome: "fail",
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
-      it 'includes the teacher' do
+      it "includes the teacher" do
         expect(subject.current_or_completed_while_at_appropriate_body).to include(teacher)
       end
     end
 
-    context 'when the teacher has a finished induction period with no outcome' do
+    context "when the teacher has a finished induction period with no outcome" do
       let!(:induction_period_without_outcome) do
         FactoryBot.create(:induction_period,
                           teacher:,
@@ -123,42 +123,42 @@ RSpec.describe AppropriateBodies::ECTs do
                           finished_on: 1.month.ago,
                           outcome: nil,
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
-      it 'excludes the teacher' do
+      it "excludes the teacher" do
         expect(subject.current_or_completed_while_at_appropriate_body).not_to include(teacher)
       end
     end
   end
 
   describe "#former" do
-    context 'when the teacher has a finished induction period' do
+    context "when the teacher has a finished induction period" do
       let!(:finished_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
                           appropriate_body:,
                           finished_on: 1.month.ago,
                           number_of_terms: 3,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
-      it 'includes the teacher' do
+      it "includes the teacher" do
         expect(subject.former).to include(teacher)
       end
     end
 
-    context 'when the teacher has an ongoing induction period' do
+    context "when the teacher has an ongoing induction period" do
       let!(:ongoing_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
                           appropriate_body:,
                           finished_on: nil,
                           number_of_terms: nil,
-                          induction_programme: 'fip')
+                          induction_programme: "fip")
       end
 
-      it 'excludes the teacher' do
+      it "excludes the teacher" do
         expect(subject.former).not_to include(teacher)
       end
     end
@@ -166,26 +166,26 @@ RSpec.describe AppropriateBodies::ECTs do
 
   describe "#with_status" do
     context 'when status is "open"' do
-      it 'returns the same result as calling current method directly' do
-        expect(subject.with_status('open')).to eq(subject.current)
+      it "returns the same result as calling current method directly" do
+        expect(subject.with_status("open")).to eq(subject.current)
       end
     end
 
     context 'when status is "closed"' do
-      it 'returns the same result as calling completed_while_at_appropriate_body method directly' do
-        expect(subject.with_status('closed')).to eq(subject.completed_while_at_appropriate_body)
+      it "returns the same result as calling completed_while_at_appropriate_body method directly" do
+        expect(subject.with_status("closed")).to eq(subject.completed_while_at_appropriate_body)
       end
     end
 
-    context 'when status is nil' do
-      it 'returns the same result as calling current_or_completed_while_at_appropriate_body method directly' do
+    context "when status is nil" do
+      it "returns the same result as calling current_or_completed_while_at_appropriate_body method directly" do
         expect(subject.with_status(nil)).to eq(subject.current_or_completed_while_at_appropriate_body)
       end
     end
 
-    context 'when status is any other value' do
-      it 'returns the same result as calling current_or_completed_while_at_appropriate_body method directly' do
-        expect(subject.with_status('unknown_status')).to eq(subject.current_or_completed_while_at_appropriate_body)
+    context "when status is any other value" do
+      it "returns the same result as calling current_or_completed_while_at_appropriate_body method directly" do
+        expect(subject.with_status("unknown_status")).to eq(subject.current_or_completed_while_at_appropriate_body)
       end
     end
   end

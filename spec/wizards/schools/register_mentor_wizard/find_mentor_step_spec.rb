@@ -11,46 +11,46 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
   end
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, store:) }
 
-  describe '#initialize' do
+  describe "#initialize" do
     subject(:instance) { described_class.new(wizard:, **params) }
 
-    let(:trn) { '3333333' }
+    let(:trn) { "3333333" }
 
-    context 'when either trn or date_of_birth are provided' do
+    context "when either trn or date_of_birth are provided" do
       let(:params) { { trn: } }
 
-      it 'populate the instance from it' do
+      it "populate the instance from it" do
         expect(instance.trn).to eq(trn)
       end
     end
 
-    context 'when no trn or date_of_birth are provided' do
+    context "when no trn or date_of_birth are provided" do
       let(:params) { {} }
 
-      it 'populate it from the wizard store' do
-        expect(instance.trn).to eq('1234567')
+      it "populate it from the wizard store" do
+        expect(instance.trn).to eq("1234567")
         expect(instance.date_of_birth).to eq({ 1 => 1990, 2 => 1, 3 => 1 })
       end
     end
   end
 
-  describe 'validations' do
-    ['12345', 'RP99/12345', 'RP / 1234567', '  R P 99 / 1234', 'ZZ-123445 '].each do |trn|
+  describe "validations" do
+    ["12345", "RP99/12345", "RP / 1234567", "  R P 99 / 1234", "ZZ-123445 "].each do |trn|
       it { is_expected.to allow_value(trn).for(:trn) }
     end
 
-    ['1234', 'RP99/123457', 'No-numbers', '', nil].each do |trn|
+    ["1234", "RP99/123457", "No-numbers", "", nil].each do |trn|
       it { is_expected.not_to allow_value(trn).for(:trn) }
     end
 
-    [{ 1 => '1990', 2 => '02', 3 => '15' }].each do |dob|
+    [{ 1 => "1990", 2 => "02", 3 => "15" }].each do |dob|
       it { is_expected.to allow_value(dob).for(:date_of_birth) }
     end
 
     [
-      { 1 => 'invalid', 2 => '02', 3 => '30' },
-      { 1 => '3000', 2 => '02', 3 => '15' },
-      { 1 => (Date.current.year + 1).to_s, 2 => '02', 3 => '15' },
+      { 1 => "invalid", 2 => "02", 3 => "30" },
+      { 1 => "3000", 2 => "02", 3 => "15" },
+      { 1 => (Date.current.year + 1).to_s, 2 => "02", 3 => "15" },
       nil,
       {}
     ].each do |dob|
@@ -58,7 +58,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
   end
 
-  describe '#next_step' do
+  describe "#next_step" do
     subject { wizard.current_step }
 
     let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing) }
@@ -66,7 +66,7 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     let(:step_params) do
       ActionController::Parameters.new(
         "find_mentor" => {
-          "trn" => '1234568',
+          "trn" => "1234568",
           "date_of_birth(3i)" => "03",
           "date_of_birth(2i)" => "02",
           "date_of_birth(1i)" => "1977"
@@ -74,19 +74,19 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       )
     end
 
-    context 'when the mentor is not found in TRS' do
+    context "when the mentor is not found in TRS" do
       before do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_not_found: true))
         subject.save!
       end
 
-      it 'returns :trn_not_found' do
+      it "returns :trn_not_found" do
         expect(subject.next_step).to eq(:trn_not_found)
       end
     end
 
-    context 'when the mentor trn matches that of the ECT' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+    context "when the mentor trn matches that of the ECT" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
       let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
 
       before do
@@ -94,16 +94,16 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
         subject.save!
       end
 
-      it 'returns :cannot_mentor_themself' do
+      it "returns :cannot_mentor_themself" do
         expect(subject.next_step).to eq(:cannot_mentor_themself)
       end
     end
 
-    context 'when the date of birth does not match that on TRS' do
+    context "when the date of birth does not match that on TRS" do
       let(:step_params) do
         ActionController::Parameters.new(
           "find_mentor" => {
-            "trn" => '1234568',
+            "trn" => "1234568",
             "date_of_birth(3i)" => "13",
             "date_of_birth(2i)" => "12",
             "date_of_birth(1i)" => "1971"
@@ -116,13 +116,13 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
         subject.save!
       end
 
-      it 'returns :national_insurance_number' do
+      it "returns :national_insurance_number" do
         expect(subject.next_step).to eq(:national_insurance_number)
       end
     end
 
-    context 'when the mentor is already active at the school' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+    context "when the mentor is already active at the school" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
       let(:ongoing_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
       before do
@@ -131,28 +131,28 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
         subject.save!
       end
 
-      it 'returns :already_active_at_school' do
+      it "returns :already_active_at_school" do
         expect(subject.next_step).to eq(:already_active_at_school)
       end
     end
 
-    context 'when the mentor is prohibited from teaching' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234568') }
+    context "when the mentor is prohibited from teaching" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
 
       before do
         test_client = TRS::TestAPIClient.new
 
         allow(test_client).to receive(:find_teacher).and_return(
           TRS::Teacher.new(
-            'trn' => '1234568',
-            'firstName' => 'Jane',
-            'lastName' => 'Smith',
-            'dateOfBirth' => '1977-02-03',
-            'alerts' => [
+            "trn" => "1234568",
+            "firstName" => "Jane",
+            "lastName" => "Smith",
+            "dateOfBirth" => "1977-02-03",
+            "alerts" => [
               {
-                'alertType' => {
-                  'alertCategory' => {
-                    'alertCategoryId' => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
+                "alertType" => {
+                  "alertCategory" => {
+                    "alertCategoryId" => TRS::Teacher::PROHIBITED_FROM_TEACHING_CATEGORY_ID
                   }
                 }
               }
@@ -163,12 +163,12 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
         subject.save!
       end
 
-      it 'returns :cannot_register_mentor' do
+      it "returns :cannot_register_mentor" do
         expect(subject.next_step).to eq(:cannot_register_mentor)
       end
     end
 
-    context 'otherwise' do
+    context "otherwise" do
       let(:school) { FactoryBot.create(:school) }
 
       before do
@@ -177,19 +177,19 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
         subject.save!
       end
 
-      it 'returns :review_mentor_details' do
+      it "returns :review_mentor_details" do
         expect(subject.next_step).to eq(:review_mentor_details)
       end
     end
   end
 
-  describe '#save!' do
-    context 'when the step is not valid' do
+  describe "#save!" do
+    context "when the step is not valid" do
       subject { wizard.current_step }
 
       let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor) }
 
-      it 'does not update any data in the wizard mentor' do
+      it "does not update any data in the wizard mentor" do
         expect { subject.save! }.not_to change(subject.mentor, :trn)
         expect { subject.save! }.not_to change(subject.mentor, :date_of_birth)
         expect { subject.save! }.not_to change(subject.mentor, :trs_date_of_birth)
@@ -198,14 +198,14 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       end
     end
 
-    context 'when the step is valid' do
+    context "when the step is valid" do
       subject { wizard.current_step }
 
       let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :find_mentor, step_params:) }
       let(:step_params) do
         ActionController::Parameters.new(
           "find_mentor" => {
-            "trn" => '1234568',
+            "trn" => "1234568",
             "date_of_birth(3i)" => "03",
             "date_of_birth(2i)" => "02",
             "date_of_birth(1i)" => "1977"
@@ -217,13 +217,13 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
         allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new)
       end
 
-      it 'updates the wizard mentor trn and TRS data' do
+      it "updates the wizard mentor trn and TRS data" do
         expect { subject.save! }
-          .to change(subject.mentor, :trn).from(nil).to('1234568')
-          .and change(subject.mentor, :date_of_birth).from(nil).to('3-2-1977')
-          .and change(subject.mentor, :trs_date_of_birth).from(nil).to('1977-02-03')
-          .and change(subject.mentor, :trs_first_name).from(nil).to('Kirk')
-          .and change(subject.mentor, :trs_last_name).from(nil).to('Van Houten')
+          .to change(subject.mentor, :trn).from(nil).to("1234568")
+          .and change(subject.mentor, :date_of_birth).from(nil).to("3-2-1977")
+          .and change(subject.mentor, :trs_date_of_birth).from(nil).to("1977-02-03")
+          .and change(subject.mentor, :trs_first_name).from(nil).to("Kirk")
+          .and change(subject.mentor, :trs_last_name).from(nil).to("Van Houten")
       end
     end
   end

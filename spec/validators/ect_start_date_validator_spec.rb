@@ -2,7 +2,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
   context "when date is in an invalid format" do
     subject { test_class.new(start_date:) }
 
-    let(:start_date) { { 1 => "invalid year", 2 => "invalid month", 3 => 'invalid day' } }
+    let(:start_date) { { 1 => "invalid year", 2 => "invalid month", 3 => "invalid day" } }
     let(:test_class) do
       Class.new do
         include ActiveModel::Model

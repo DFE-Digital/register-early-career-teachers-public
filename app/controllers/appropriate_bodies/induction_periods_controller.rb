@@ -7,7 +7,7 @@ module AppropriateBodies
     def update
       service = update_induction_period_service
       service.update_induction_period!
-      redirect_to ab_teacher_path(@induction_period.teacher), alert: 'Induction period updated successfully'
+      redirect_to ab_teacher_path(@induction_period.teacher), alert: "Induction period updated successfully"
     rescue InductionPeriods::UpdateInductionPeriod::RecordedOutcomeError => e
       @induction_period.errors.add(:base, e.message)
       render :edit, status: :unprocessable_content

@@ -58,7 +58,7 @@ RSpec.describe "Admin finance statement selector" do
     elem = selector.get_by_label("Statement date", exact: true)
     elem.select_option(label: "May 2025")
 
-    selector.get_by_role('button', name: "View").click
+    selector.get_by_role("button", name: "View").click
   end
 
   def when_i_select_a_statement_that_does_not_exist
@@ -73,7 +73,7 @@ RSpec.describe "Admin finance statement selector" do
     elem = selector.get_by_label("Statement date", exact: true)
     elem.select_option(label: "July 2024")
 
-    selector.get_by_role('button', name: "View").click
+    selector.get_by_role("button", name: "View").click
   end
 
   def then_i_am_redirected_different_statement

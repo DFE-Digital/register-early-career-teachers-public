@@ -10,7 +10,7 @@ describe Statement do
     subject { FactoryBot.create(:statement) }
 
     it { is_expected.to validate_presence_of(:fee_type).with_message("Enter a fee type") }
-    it { is_expected.to allow_values('output', 'service').for(:fee_type).with_message("Fee type must be output or service") }
+    it { is_expected.to allow_values("output", "service").for(:fee_type).with_message("Fee type must be output or service") }
     it { is_expected.not_to allow_value(nil).for(:fee_type).with_message("Fee type must be output or service") }
     it { is_expected.to validate_numericality_of(:month).only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(12).with_message("Month must be a number between 1 and 12") }
     it { is_expected.to validate_numericality_of(:year).only_integer.is_greater_than_or_equal_to(2020).with_message("Year must be on or after 2020 and on or before #{described_class.maximum_year}") }
@@ -45,14 +45,14 @@ describe Statement do
       let!(:statement2) { FactoryBot.create(:statement, :service_fee) }
 
       context "when searching with 'output'" do
-        it 'selects only output fee statements' do
-          expect(described_class.with_fee_type('output')).to contain_exactly(statement1)
+        it "selects only output fee statements" do
+          expect(described_class.with_fee_type("output")).to contain_exactly(statement1)
         end
       end
 
       context "when searching with 'service'" do
-        it 'selects only output fee statements' do
-          expect(described_class.with_fee_type('service')).to contain_exactly(statement2)
+        it "selects only output fee statements" do
+          expect(described_class.with_fee_type("service")).to contain_exactly(statement2)
         end
       end
     end
@@ -133,17 +133,17 @@ describe Statement do
       subject { FactoryBot.build(:statement, :paid) }
 
       it "returns false" do
-        subject.fee_type = 'output'
+        subject.fee_type = "output"
         expect(subject.adjustment_editable?).to be(false)
 
-        subject.fee_type = 'service'
+        subject.fee_type = "service"
         expect(subject.adjustment_editable?).to be(false)
       end
     end
 
     context "non-paid statement" do
       context "output fee" do
-        subject { FactoryBot.build(:statement, :open, fee_type: 'output') }
+        subject { FactoryBot.build(:statement, :open, fee_type: "output") }
 
         it "returns true" do
           expect(subject.adjustment_editable?).to be(true)
@@ -151,7 +151,7 @@ describe Statement do
       end
 
       context "service fee" do
-        subject { FactoryBot.build(:statement, :open, fee_type: 'service') }
+        subject { FactoryBot.build(:statement, :open, fee_type: "service") }
 
         it "returns false" do
           expect(subject.adjustment_editable?).to be(false)

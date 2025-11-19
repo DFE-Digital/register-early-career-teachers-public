@@ -1,7 +1,7 @@
-RSpec.describe 'Registering an ECT', :enable_schools_interface do
-  include_context 'test trs api returns a teacher and then a teacher that has failed their induction'
+RSpec.describe "Registering an ECT", :enable_schools_interface do
+  include_context "test trs api returns a teacher and then a teacher that has failed their induction"
 
-  scenario 'User enters national insurance number but teacher has failed their induction' do
+  scenario "User enters national insurance number but teacher has failed their induction" do
     given_i_am_logged_in_as_a_school_user
     when_i_am_on_the_find_ect_step_page
     and_i_submit_a_date_of_birth_that_does_not_match
@@ -18,31 +18,31 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def when_i_am_on_the_find_ect_step_page
-    page.goto('/school/register-ect/find-ect')
+    page.goto("/school/register-ect/find-ect")
   end
 
   def and_i_submit_a_date_of_birth_that_does_not_match
-    page.get_by_label('trn').fill('9876543')
-    page.get_by_label('day').fill('1')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1980')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill("9876543")
+    page.get_by_label("day").fill("1")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1980")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_am_taken_to_the_teacher_has_failed_their_induction_error_page
-    expect(page).to have_path('/school/register-ect/induction-failed')
+    expect(page).to have_path("/school/register-ect/induction-failed")
   end
 
   def and_i_enter_a_matching_national_insurance_number_but_the_teacher_has_failed_their_induction
     page.get_by_label("National Insurance Number").fill("OA647867D")
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_role("button", name: "Continue").click
   end
 
   def when_i_click_register_another_ect
-    page.get_by_role('link', name: 'Register another ECT').click
+    page.get_by_role("link", name: "Register another ECT").click
   end
 
   def then_i_am_taken_to_the_find_ect_step_page
-    expect(page).to have_path('/school/register-ect/find-ect')
+    expect(page).to have_path("/school/register-ect/find-ect")
   end
 end

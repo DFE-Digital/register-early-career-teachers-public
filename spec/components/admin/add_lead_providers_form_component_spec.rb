@@ -151,7 +151,7 @@ RSpec.describe Admin::AddLeadProvidersFormComponent, type: :component do
         # Should not have any hidden fields for lead_provider_ids with actual values
         # (Rails includes an empty hidden field for checkbox arrays, so we check for fields with values)
         hidden_fields_with_values = result.css('input[name="lead_provider_ids[]"][type="hidden"]').select do |field|
-          field['value'].present? && field['value'] != ""
+          field["value"].present? && field["value"] != ""
         end
         expect(hidden_fields_with_values).to be_empty
       end

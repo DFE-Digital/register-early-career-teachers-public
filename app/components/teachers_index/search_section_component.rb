@@ -16,8 +16,8 @@ module TeachersIndex
     end
 
     def reset_path
-      if status == 'closed'
-        ab_teachers_path(status: 'closed')
+      if status == "closed"
+        ab_teachers_path(status: "closed")
       else
         ab_teachers_path
       end

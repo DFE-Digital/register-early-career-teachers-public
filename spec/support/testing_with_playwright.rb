@@ -1,12 +1,12 @@
-require_relative 'rspec_playwright'
+require_relative "rspec_playwright"
 
 # Directory for storing failure screenshots
-SCREENSHOT_DIR = Rails.root.join('tmp/failure_screenshots')
+SCREENSHOT_DIR = Rails.root.join("tmp/failure_screenshots")
 
 RSpec.configure do |config|
   config.add_setting :playwright_browser
   config.add_setting :playwright_page
-  config.include_context 'page', type: :feature
+  config.include_context "page", type: :feature
 
   # Ensure screenshot directory exists
   FileUtils.mkdir_p(SCREENSHOT_DIR) unless Dir.exist?(SCREENSHOT_DIR)

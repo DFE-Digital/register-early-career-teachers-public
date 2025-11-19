@@ -11,45 +11,45 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:store) { FactoryBot.build(:session_repository, lead_provider_id: lead_provider.id) }
 
-  let(:mentor_teacher) { FactoryBot.create(:teacher, trn: '1234567', trs_first_name: 'Goku', trs_last_name: 'Saiyan', mentor_became_ineligible_for_funding_reason: nil) }
-  let(:ect_teacher) { FactoryBot.create(:teacher, trs_first_name: 'King', trs_last_name: 'Vegeta') }
+  let(:mentor_teacher) { FactoryBot.create(:teacher, trn: "1234567", trs_first_name: "Goku", trs_last_name: "Saiyan", mentor_became_ineligible_for_funding_reason: nil) }
+  let(:ect_teacher) { FactoryBot.create(:teacher, trs_first_name: "King", trs_last_name: "Vegeta") }
 
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: mentor_teacher) }
   let(:ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period, school:, teacher: ect_teacher, started_on: Date.new(2025, 5, 1))
   end
 
-  describe '#ect_teacher_full_name' do
-    it 'returns the ECTs full name' do
-      expect(context.ect_teacher_full_name).to eq('King Vegeta')
+  describe "#ect_teacher_full_name" do
+    it "returns the ECTs full name" do
+      expect(context.ect_teacher_full_name).to eq("King Vegeta")
     end
   end
 
-  describe '#mentor_teacher_full_name' do
-    it 'returns the mentors full name' do
-      expect(context.mentor_teacher_full_name).to eq('Goku Saiyan')
+  describe "#mentor_teacher_full_name" do
+    it "returns the mentors full name" do
+      expect(context.mentor_teacher_full_name).to eq("Goku Saiyan")
     end
   end
 
   describe "#already_active_at_school" do
-    it 'returns true when both ECT and mentor are at the same school' do
+    it "returns true when both ECT and mentor are at the same school" do
       expect(context.already_active_at_school?).to be(true)
     end
   end
 
-  describe '#eligible_for_funding?' do
-    it 'returns true if mentor_became_ineligible_for_funding_reason is nil' do
+  describe "#eligible_for_funding?" do
+    it "returns true if mentor_became_ineligible_for_funding_reason is nil" do
       expect(context.eligible_for_funding?).to be(true)
     end
   end
 
-  describe '#user_selected_lead_provider' do
-    it 'returns the lead provider from the store' do
+  describe "#user_selected_lead_provider" do
+    it "returns the lead provider from the store" do
       expect(context.user_selected_lead_provider).to eq(lead_provider)
     end
   end
 
-  describe '#ect_lead_provider' do
+  describe "#ect_lead_provider" do
     let(:started_on) { 2.days.ago.to_date }
     let(:finished_on) { 2.days.from_now.to_date }
 
@@ -75,12 +75,12 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
       )
     end
 
-    it 'returns the ECT lead provider using CurrentTraining service' do
+    it "returns the ECT lead provider using CurrentTraining service" do
       expect(context.ect_lead_provider).to eq(lead_provider)
     end
   end
 
-  describe '#lead_providers_within_contract_period' do
+  describe "#lead_providers_within_contract_period" do
     let!(:in_contract_period) do
       FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31))
     end
@@ -99,7 +99,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
       FactoryBot.create(:active_lead_provider, contract_period: out_of_contract_period, lead_provider: excluded_provider)
     end
 
-    it 'returns only lead providers within the ECTs contract period' do
+    it "returns only lead providers within the ECTs contract period" do
       expect(context.lead_providers_within_contract_period).to contain_exactly(lead_provider_1, lead_provider_2)
     end
   end

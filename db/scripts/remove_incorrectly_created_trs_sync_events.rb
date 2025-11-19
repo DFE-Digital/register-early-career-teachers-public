@@ -11,7 +11,7 @@
 # See https://github.com/DFE-Digital/register-early-career-teachers-public/pull/462/ for more
 # details
 Event.transaction do
-  Event.where(event_type: 'teacher_trs_induction_status_updated').delete_all
+  Event.where(event_type: "teacher_trs_induction_status_updated").delete_all
 
   # get rid of teacher_trs_attributes_updated events where the modifications length
   # is 98 i.e., this:
@@ -20,7 +20,7 @@ Event.transaction do
   #
   # because trs_data_last_refreshed_at will always be present it's the minimum
   Event
-    .where(event_type: 'teacher_trs_attributes_updated')
-    .where('length(modifications::varchar) = 98')
+    .where(event_type: "teacher_trs_attributes_updated")
+    .where("length(modifications::varchar) = 98")
     .delete_all
 end

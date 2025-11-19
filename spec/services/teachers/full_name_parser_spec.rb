@@ -3,7 +3,7 @@ describe Teachers::FullNameParser do
 
   let(:full_name) { "\t Mrs. Alison Walnut Curtains-Handbag (Maiden-name ) \n" }
 
-  describe '#first_name' do
+  describe "#first_name" do
     it "returns the first name part" do
       expect(service.first_name).to eq "Alison"
     end
@@ -17,7 +17,7 @@ describe Teachers::FullNameParser do
     end
   end
 
-  describe '#last_name' do
+  describe "#last_name" do
     it "returns the last name part" do
       expect(service.last_name).to eq "Curtains-Handbag"
     end
