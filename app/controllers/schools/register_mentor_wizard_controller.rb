@@ -38,6 +38,7 @@ module Schools
       )
       @ect_name = Teachers::Name.new(@wizard.ect.teacher).full_name
       @mentor = @wizard.mentor
+      @decorated_mentor = Schools::DecoratedMentor.new(@mentor) if @mentor.present?
     end
 
     def check_allowed_step

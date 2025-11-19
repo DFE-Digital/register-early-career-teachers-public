@@ -1,6 +1,8 @@
-<% page_data(title: "Programme choices used by your school previously",
-             error: @wizard.current_step.errors.present?,
-             backlink_href: @wizard.previous_step_path) %>
+<% page_data(
+  title: "Programme choices used by your school previously",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: @wizard.previous_step_path
+) %>
 
 <p class="govuk-body">You used these programme choices the last time you registered an ECT.</p>
 
@@ -10,9 +12,14 @@
            last_chosen_training_programme: @decorated_school.last_chosen_training_programme,
            reuse_preview: @wizard.current_step.reusable_partnership_preview %>
 
+<% if @decorated_school.needs_lead_provider_confirmation_message?(ect: @ect) %>
+  <p class="govuk-body">
+    <%= @decorated_school.lead_provider_name %> will confirm if they’ll be working with your school and which delivery partner will deliver training events.
+  </p>
+<% end %>
+
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
-
   <%= f.govuk_radio_buttons_fieldset :use_previous_ect_choices,
                                      legend: { text: "Do you want to use the same choices for #{@ect.full_name}?" },
                                      inline: true do %>
