@@ -83,6 +83,7 @@ RSpec.configure do |config|
           ParticipantWithdrawRequest: PARTICIPANT_WITHDRAW_REQUEST,
           ParticipantDeferRequest: PARTICIPANT_DEFER_REQUEST,
           ParticipantResumeRequest: PARTICIPANT_RESUME_REQUEST,
+          ParticipantChangeScheduleRequest: PARTICIPANT_CHANGE_SCHEDULE_REQUEST,
           ParticipantsResponse: PARTICIPANTS_RESPONSE,
           ParticipantECFEnrolment: PARTICIPANT_ECF_ENROLMENT,
           ParticipantIDChange: PARTICIPANT_ID_CHANGE,

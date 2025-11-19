@@ -101,6 +101,14 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to be_valid }
           end
 
+          context "when the contract_period_year is not specified and the teacher_type is invalid" do
+            let(:contract_period_year) { nil }
+            let(:teacher_type) { "invalid" }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          end
+
           context "guarded error messages" do
             subject(:instance) { described_class.new }
 
