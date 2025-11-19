@@ -103,13 +103,37 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
   end
 
   context "when the mentor previously trained on a provider-led programme with only an expression of interest (no confirmed partnership)" do
-    before do
-      allow(mentor).to receive(:previous_training_period).and_return(nil)
-      allow(mentor).to receive_messages(previous_training_period: nil, previous_provider_led?: true)
+    let(:previous_school) { FactoryBot.create(:school) }
+
+    let!(:mentor_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :ongoing,
+        teacher: mentor_teacher,
+        school: previous_school
+      )
     end
 
-    it "shows Lead provider and Delivery partner rows with 'Not confirmed'" do
+    let(:lead_provider_from_eoi) { FactoryBot.create(:lead_provider, name: "EOI LP") }
+    let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider_from_eoi) }
+
+    let!(:eoi_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        :provider_led,
+        :ongoing,
+        mentor_at_school_period: mentor_period,
+        school_partnership: nil,
+        expression_of_interest:
+      )
+    end
+
+    it "shows the previous school name and 'Not confirmed' for lead provider and delivery partner" do
       render
+
+      expect(rendered).to have_css("dt", text: "School name")
+      expect(rendered).to have_css("dd", text: previous_school.name)
 
       expect(rendered).to have_css("dt", text: "Lead provider")
       expect(rendered).to have_css("dd", text: "Not confirmed")

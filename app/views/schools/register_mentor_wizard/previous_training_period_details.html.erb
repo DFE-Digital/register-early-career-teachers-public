@@ -3,23 +3,7 @@
   backlink_href: @wizard.previous_step_path,
 ) %>
 
-<% rows = [
-  {
-    key:   { text: "School name" },
-    value: { text: (@mentor.latest_registration_choice&.school&.name || "Not confirmed") },
-  },
-  {
-    key:   { text: "Lead provider" },
-    value: { text: (@mentor.previous_confirmed_training_period&.lead_provider_name || "Not confirmed") },
-  },
-] %>
-
-<% if @mentor.previous_provider_led? %>
-  <% rows << {
-    key:   { text: "Delivery partner" },
-    value: { text: (@mentor.previous_confirmed_training_period&.delivery_partner_name || "Not confirmed") },
-  } %>
-<% end %>
+<% rows = @decorated_mentor.previous_registration_summary_rows %>
 
 <%= govuk_summary_card(title: "Previously registered details") do |card|
   card.with_summary_list(
@@ -34,6 +18,5 @@ end %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
-  
   <%= f.govuk_submit "Continue" %>
 <% end %>
