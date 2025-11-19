@@ -46,6 +46,50 @@ describe MentorAtSchoolPeriod do
     end
   end
 
+  describe "leaving/joining training periods" do
+    let(:mentor_at_school_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :ongoing,
+        started_on: 2.years.ago
+      )
+    end
+    let!(:most_recent_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        started_on: 1.year.ago,
+        finished_on: 2.weeks.from_now,
+        mentor_at_school_period:
+      )
+    end
+    let!(:oldest_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_mentor,
+        started_on: 2.years.ago,
+        finished_on: 1.year.ago,
+        mentor_at_school_period:
+      )
+    end
+
+    describe "#earliest_training_period" do
+      subject(:earliest_training_period) do
+        mentor_at_school_period.earliest_training_period
+      end
+
+      it { is_expected.to eql(oldest_training_period) }
+    end
+
+    describe "#latest_training_period" do
+      subject(:latest_training_period) do
+        mentor_at_school_period.latest_training_period
+      end
+
+      it { is_expected.to eql(most_recent_training_period) }
+    end
+  end
+
   describe "validations" do
     subject { FactoryBot.build(:mentor_at_school_period) }
 
