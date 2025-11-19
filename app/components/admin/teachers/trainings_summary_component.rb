@@ -1,6 +1,7 @@
 module Admin
   module Teachers
     class TrainingsSummaryComponent < ApplicationComponent
+      class UnexpectedTrainingProgrammeError < StandardError; end
       attr_reader :training_period
 
       def initialize(training_period:)
@@ -25,8 +26,10 @@ module Admin
       def rows
         if training_period.provider_led_training_programme?
           provider_led_rows
+        elsif training_period.school_led_training_programme?
+          school_led_rows
         else
-          # school_led_rows
+          raise UnexpectedTrainingProgrammeError, "Unexpected training programme: #{training_period.training_programme}"
         end
       end
 
@@ -43,6 +46,15 @@ module Admin
         rows << summary_row('Start date', start_date_text)
         rows << summary_row('End date', end_date_text)
         rows
+      end
+
+      def school_led_rows
+        [
+          summary_row('School', training_school_name),
+          summary_row('Training programme', TRAINING_PROGRAMME[training_period.training_programme]),
+          summary_row('Start date', start_date_text),
+          summary_row('End date', end_date_text)
+        ]
       end
 
       def card_title
