@@ -234,9 +234,3 @@ Rails/SaveBang:
   Exclude:
     - 'spec/support/rspec_playwright.rb'
 
-# Offense count: 8616
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Enabled: false
