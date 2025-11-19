@@ -14,7 +14,7 @@ RSpec.describe API::RequestMiddleware do
   end
 
   before do
-    stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true")
+    stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true")
 
     allow(API::Request).to receive(:send_persist_api_request)
     allow(RequestLocals).to receive(:fetch).with(:dfe_analytics_request_id).and_return(mock_request_uuid)
@@ -40,7 +40,7 @@ RSpec.describe API::RequestMiddleware do
 
   describe "#call on an API path with POST data" do
     it "fires an API::Request including post data" do
-      request.post "/api/v3/partnerships", input: { foo: "bar" }.to_json, 'CONTENT_TYPE' => 'application/json'
+      request.post "/api/v3/partnerships", input: { foo: "bar" }.to_json, "CONTENT_TYPE" => "application/json"
 
       request_data = hash_including("headers", "path" => "/api/v3/partnerships", "method" => "POST", "body" => '{"foo":"bar"}')
       response_data = hash_including("body", "headers")

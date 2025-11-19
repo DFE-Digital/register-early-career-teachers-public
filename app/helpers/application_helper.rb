@@ -13,7 +13,7 @@ module ApplicationHelper
     end
   end
 
-  def page_data(title:, header: :use_title, header_size: "l", error: false, backlink_href: nil, breadcrumbs: nil, caption: nil, caption_size: 'm', header_classes: [], test_guidance: false)
+  def page_data(title:, header: :use_title, header_size: "l", error: false, backlink_href: nil, breadcrumbs: nil, caption: nil, caption_size: "m", header_classes: [], test_guidance: false)
     page_title = title_with_error_prefix(title, error:)
     content_for(:page_title) { page_title }
 
@@ -52,15 +52,15 @@ module ApplicationHelper
   end
 
   def support_mailto_link(text = Rails.application.config.support_email_address)
-    govuk_link_to(text, 'mailto:' + Rails.application.config.support_email_address)
+    govuk_link_to(text, "mailto:" + Rails.application.config.support_email_address)
   end
 
   def ruby_pants_options
     {
-      double_left_quote: '“',
-      double_right_quote: '”',
-      single_left_quote: '‘',
-      single_right_quote: '’',
+      double_left_quote: "“",
+      double_right_quote: "”",
+      single_left_quote: "‘",
+      single_right_quote: "’",
     }
   end
 
@@ -76,7 +76,7 @@ module ApplicationHelper
 
   def trs_alerts_text(alerts_present)
     if alerts_present
-      link = govuk_link_to("Check a teacher's record service", 'https://www.gov.uk/guidance/check-a-teachers-record')
+      link = govuk_link_to("Check a teacher's record service", "https://www.gov.uk/guidance/check-a-teachers-record")
 
       safe_join(["Yes", %(Use the #{link} to get more information.).html_safe], tag.br)
     else
@@ -85,6 +85,6 @@ module ApplicationHelper
   end
 
   def govuk_html_element(&block)
-    tag.html(lang: 'en', class: %w[govuk-template govuk-template--rebranded], &block)
+    tag.html(lang: "en", class: %w[govuk-template govuk-template--rebranded], &block)
   end
 end

@@ -16,11 +16,11 @@ RSpec.describe "schools/register_mentor_wizard/already_active_at_school.md.erb" 
     it { expect(sanitize(view.content_for(:page_title))).to eql("This mentor has already been registered") }
   end
 
-  it 'includes no back button' do
+  it "includes no back button" do
     expect(view.content_for(:backlink_or_breadcrumb)).to be_blank
   end
 
-  it 'includes a button to assign the existing mentor to the ECT' do
+  it "includes a button to assign the existing mentor to the ECT" do
     expect(rendered).to have_button("Assign #{mentor.full_name} to mentor #{ect_name}")
     expect(rendered).to have_selector("form[action='#{assign_mentor_path}']")
   end

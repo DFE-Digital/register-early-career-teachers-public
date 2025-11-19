@@ -7,7 +7,7 @@ class Events::LeadProviderAPIAuthor
 
   def lead_provider_api_author_params
     {
-      author_type: 'lead_provider_api',
+      author_type: "lead_provider_api",
       author_name: lead_provider.name,
     }
   end

@@ -13,59 +13,59 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
   let(:start_date) { nil }
   let(:ect_at_school_period_id) { nil }
 
-  describe '#ect_at_school_period' do
-    context 'when the stored ect_at_school_period_id is present' do
+  describe "#ect_at_school_period" do
+    context "when the stored ect_at_school_period_id is present" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
       let(:ect_at_school_period_id) { ect_at_school_period.id }
 
-      it 'returns the matching ECT at school period' do
+      it "returns the matching ECT at school period" do
         expect(queries.ect_at_school_period).to eq(ect_at_school_period)
       end
     end
 
-    context 'when the stored ect_at_school_period_id is blank' do
-      it 'returns nil' do
+    context "when the stored ect_at_school_period_id is blank" do
+      it "returns nil" do
         expect(queries.ect_at_school_period).to be_nil
       end
     end
   end
 
-  describe '#active_record_at_school' do
+  describe "#active_record_at_school" do
     let(:school) { FactoryBot.create(:school) }
     let!(:ongoing_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
 
-    it 'returns the ongoing period for the given urn' do
+    it "returns the ongoing period for the given urn" do
       expect(queries.active_record_at_school(school.urn)).to eq(ongoing_period)
     end
   end
 
-  describe '#contract_start_date' do
-    context 'when the start_date is present' do
+  describe "#contract_start_date" do
+    context "when the start_date is present" do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let(:start_date) { (contract_period.started_on + 1.day).to_s }
 
-      it 'returns the contract period containing the date' do
+      it "returns the contract period containing the date" do
         expect(queries.contract_start_date).to eq(contract_period)
       end
     end
 
-    context 'when the start_date is blank' do
-      it 'returns nil' do
+    context "when the start_date is blank" do
+      it "returns nil" do
         expect(queries.contract_start_date).to be_nil
       end
     end
   end
 
-  describe '#lead_providers_within_contract_period' do
-    context 'when there is no contract period' do
-      it 'returns an empty array without hitting the database' do
+  describe "#lead_providers_within_contract_period" do
+    context "when there is no contract period" do
+      it "returns an empty array without hitting the database" do
         expect(LeadProviders::Active).not_to receive(:in_contract_period)
 
         expect(queries.lead_providers_within_contract_period).to eq([])
       end
     end
 
-    context 'when a contract period is present' do
+    context "when a contract period is present" do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
       let(:start_date) { (contract_period.started_on + 2.days).to_s }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -76,7 +76,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: another_lead_provider)
       end
 
-      it 'returns the active lead providers for the contract period' do
+      it "returns the active lead providers for the contract period" do
         ids = queries.lead_providers_within_contract_period.map(&:id)
 
         expect(ids).to contain_exactly(lead_provider.id, another_lead_provider.id)
@@ -84,7 +84,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
   end
 
-  describe 'previous registration queries' do
+  describe "previous registration queries" do
     let!(:previous_ect_period) do
       FactoryBot.create(:ect_at_school_period,
                         teacher:,
@@ -111,27 +111,27 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
                         finished_on: previous_ect_period.finished_on)
     end
 
-    it 'returns the previous ect at school period' do
+    it "returns the previous ect at school period" do
       expect(queries.previous_ect_at_school_period).to eq(previous_ect_period)
     end
 
-    it 'returns the previous training period' do
+    it "returns the previous training period" do
       expect(queries.previous_training_period).to eq(training_period)
     end
 
-    it 'returns the previous appropriate body' do
+    it "returns the previous appropriate body" do
       expect(queries.previous_appropriate_body).to eq(previous_appropriate_body)
     end
 
-    it 'returns the previous delivery partner' do
+    it "returns the previous delivery partner" do
       expect(queries.previous_delivery_partner).to eq(previous_delivery_partner)
     end
 
-    it 'returns the previous lead provider' do
+    it "returns the previous lead provider" do
       expect(queries.previous_lead_provider).to eq(previous_lead_provider)
     end
 
-    it 'returns the previous school' do
+    it "returns the previous school" do
       expect(queries.previous_school).to eq(previous_school)
     end
   end

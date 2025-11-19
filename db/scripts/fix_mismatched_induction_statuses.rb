@@ -5,7 +5,7 @@
 # 1. Syncs with TRS to get latest status
 # 2. If still mismatched, sends the appropriate update to TRS
 
-require 'trs/api_client'
+require "trs/api_client"
 
 # First get all teachers with mismatched statuses
 sql = <<-SQL
@@ -51,8 +51,8 @@ mismatched_teachers.each do |teacher|
   latest_period = teacher.induction_periods.order(started_on: :desc).first
 
   expected_status = case latest_period.outcome
-                    when 'pass' then 'Passed'
-                    when 'fail' then 'Failed'
+                    when "pass" then "Passed"
+                    when "fail" then "Failed"
                     end
 
   if teacher.trs_induction_status == expected_status
@@ -68,13 +68,13 @@ mismatched_teachers.each do |teacher|
   Rails.logger.debug "[TRN: #{trn}] Sending update to TRS..."
 
   begin
-    if latest_period.outcome == 'pass'
+    if latest_period.outcome == "pass"
       TRS::APIClient.build.pass_induction!(
         trn:,
         start_date: latest_period.started_on,
         completed_date: latest_period.finished_on
       )
-    elsif latest_period.outcome == 'fail'
+    elsif latest_period.outcome == "fail"
       TRS::APIClient.build.fail_induction!(
         trn:,
         start_date: latest_period.started_on,

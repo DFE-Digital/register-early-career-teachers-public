@@ -6,19 +6,19 @@ describe MentorAtSchoolPeriods::LatestRegistrationChoices do
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, school_partnership:, started_on: mentor_at_school_period.started_on, mentor_at_school_period:) }
 
-  describe '#school' do
+  describe "#school" do
     it { expect(subject.school).to eq(school_partnership.school) }
   end
 
-  describe '#lead_provider' do
+  describe "#lead_provider" do
     it { expect(subject.lead_provider).to eq(school_partnership.lead_provider) }
   end
 
-  describe '#delivery_partner' do
+  describe "#delivery_partner" do
     it { expect(subject.delivery_partner).to eq(school_partnership.delivery_partner) }
   end
 
-  context 'when the latest training period has an EOI (no partnership)' do
+  context "when the latest training period has an EOI (no partnership)" do
     let(:school) { FactoryBot.create(:school) }
     let!(:mentor_at_school_period) do
       FactoryBot.create(
@@ -39,24 +39,24 @@ describe MentorAtSchoolPeriods::LatestRegistrationChoices do
         mentor_at_school_period:,
         school_partnership: nil,
         expression_of_interest:,
-        training_programme: 'provider_led'
+        training_programme: "provider_led"
       )
     end
 
-    describe '#school' do
-      it 'returns the school from the mentor_at_school_period when only an EOI exists' do
+    describe "#school" do
+      it "returns the school from the mentor_at_school_period when only an EOI exists" do
         expect(subject.school).to eq(school)
       end
     end
 
-    describe '#lead_provider' do
+    describe "#lead_provider" do
       it "returns the lead provider from the expression of interest (EOI)" do
         expect(subject.lead_provider).to eq(lp_from_eoi)
       end
     end
 
-    describe '#delivery_partner' do
-      it 'returns nil' do
+    describe "#delivery_partner" do
+      it "returns nil" do
         expect(subject.delivery_partner).to be_nil
       end
     end

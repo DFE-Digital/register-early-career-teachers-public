@@ -53,7 +53,7 @@ module AppropriateBodies
             true
           elsif no_ongoing_induction_period?
             if overlapping_with_induction_period?
-              capture_error('Induction start date must not overlap with any other induction periods')
+              capture_error("Induction start date must not overlap with any other induction periods")
               true
             else
               false # can be claimed
@@ -118,8 +118,8 @@ module AppropriateBodies
       def incorrectly_formatted?
         super
 
-        pending_induction_submission.errors.add(:base, 'Induction start date must be after 1 September 2021') if predates_ecf_rollout?
-        pending_induction_submission.errors.add(:base, 'Induction programme type must be school-led or provider-led') if invalid_training_programme?
+        pending_induction_submission.errors.add(:base, "Induction start date must be after 1 September 2021") if predates_ecf_rollout?
+        pending_induction_submission.errors.add(:base, "Induction programme type must be school-led or provider-led") if invalid_training_programme?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
       end

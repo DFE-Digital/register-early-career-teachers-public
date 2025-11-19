@@ -77,7 +77,7 @@ class TimelineComponent < ApplicationComponent
 
       safe_join(
         [
-          tag.h3('Changes', class: 'govuk-heading-s'),
+          tag.h3("Changes", class: "govuk-heading-s"),
           govuk_list(event.modifications)
         ]
       )

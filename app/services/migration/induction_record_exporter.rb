@@ -24,7 +24,7 @@ module Migration
       def range = start_date..end_date
       def right_way_round? = right_way_round
       def wrong_way_round? = !right_way_round
-      def withdrawn? = training_status == 'withdrawn'
+      def withdrawn? = training_status == "withdrawn"
       def school_transfer? = school_transfer
       def finished? = !end_date.nil?
       def finishes_after_other_starts?(other) = finished? && end_date > other.start_date

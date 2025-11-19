@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory(:school_user, class: 'Sessions::Users::SchoolUser') do
+  factory(:school_user, class: "Sessions::Users::SchoolUser") do
     skip_create
     initialize_with { new(email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles:) }
 

@@ -1,14 +1,14 @@
 describe Teachers::InductionExtensions do
   let(:teacher) { FactoryBot.create(:teacher) }
 
-  describe '#yes_or_no' do
+  describe "#yes_or_no" do
     subject(:yes_or_no) { described_class.new(teacher).yes_or_no }
 
-    context 'without extensions' do
+    context "without extensions" do
       it { expect(yes_or_no).to eq("No") }
     end
 
-    context 'with extensions' do
+    context "with extensions" do
       let!(:extension) { FactoryBot.create(:induction_extension, teacher:) }
 
       it { expect(yes_or_no).to eq("Yes") }

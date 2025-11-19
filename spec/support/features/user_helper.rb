@@ -7,7 +7,7 @@ module UserHelper
     Rails.logger.debug("Signing in with DfE Sign In as an unrecognised user")
 
     if organisation_id.present? || organisation_urn.present?
-      allow_any_instance_of(PagesController).to receive(:session).and_return({ invalid_user_organisation_name: 'Invalid Organisation' })
+      allow_any_instance_of(PagesController).to receive(:session).and_return({ invalid_user_organisation_name: "Invalid Organisation" })
     end
 
     allow(DfESignIn::APIClient).to receive(:new).and_return(DfESignIn::FakeAPIClient.new(role_codes: %w[UnknownRole]))
@@ -74,10 +74,10 @@ module UserHelper
 
   def sign_in_as_dfe_user(role:, user: FactoryBot.create(:user, role, email: Faker::Internet.email, name: Faker::Name.name))
     page.goto(otp_sign_in_path)
-    page.get_by_label('Email address').type(user.email)
-    page.get_by_role("button", name: 'Request code to sign in').click
-    page.get_by_label('Sign in code').type(ROTP::TOTP.new(user.reload.otp_secret, issuer: "ECF2").now)
-    page.get_by_role("button", name: 'Sign in').click
+    page.get_by_label("Email address").type(user.email)
+    page.get_by_role("button", name: "Request code to sign in").click
+    page.get_by_label("Sign in code").type(ROTP::TOTP.new(user.reload.otp_secret, issuer: "ECF2").now)
+    page.get_by_role("button", name: "Sign in").click
   end
 
   def sign_out

@@ -19,15 +19,15 @@ module Navigation
     end
 
     def service_url
-      '/'
+      "/"
     end
 
     def navigation_id
-      'register-early-career-teachers-service-navigation-list'
+      "register-early-career-teachers-service-navigation-list"
     end
 
     def navigation_area
-      if current_path.start_with?('/api/guidance')
+      if current_path.start_with?("/api/guidance")
         :api_guidance
       elsif current_user_type == :dfe_user_impersonating_school_user
         :school_user
@@ -40,22 +40,22 @@ module Navigation
       {
         appropriate_body_user: [],
         dfe_staff_user: [
-          { text: "Teachers", href: admin_teachers_path, active_when: '/admin/teachers' },
-          { text: "Schools", href: admin_schools_path, active_when: '/admin/schools' },
-          { text: "Organisations", href: admin_organisations_path, active_when: '/admin/organisations' },
-          { text: "Finance", href: admin_finance_path, active_when: '/admin/finance' },
-          { text: "Users", href: admin_users_path, active_when: '/admin/users' }
+          { text: "Teachers", href: admin_teachers_path, active_when: "/admin/teachers" },
+          { text: "Schools", href: admin_schools_path, active_when: "/admin/schools" },
+          { text: "Organisations", href: admin_organisations_path, active_when: "/admin/organisations" },
+          { text: "Finance", href: admin_finance_path, active_when: "/admin/finance" },
+          { text: "Users", href: admin_users_path, active_when: "/admin/users" }
         ],
         school_user: [
           { text: "ECTs", href: schools_ects_home_path },
           { text: "Mentors", href: schools_mentors_home_path },
         ],
         api_guidance: [
-          { text: "Home", href: '/api/guidance' },
-          { text: "Swagger API documentation", href: '/api/guidance/swagger-api-documentation' },
-          { text: "Release notes", href: '/api/guidance/release-notes', active_when: '/api/guidance/release-notes' },
-          { text: "Sandbox", href: '/api/guidance/sandbox' },
-          { text: "Guidance", href: '/api/guidance/guidance-for-lead-providers', active_when: "/api/guidance/guidance-for-lead-providers" },
+          { text: "Home", href: "/api/guidance" },
+          { text: "Swagger API documentation", href: "/api/guidance/swagger-api-documentation" },
+          { text: "Release notes", href: "/api/guidance/release-notes", active_when: "/api/guidance/release-notes" },
+          { text: "Sandbox", href: "/api/guidance/sandbox" },
+          { text: "Guidance", href: "/api/guidance/guidance-for-lead-providers", active_when: "/api/guidance/guidance-for-lead-providers" },
         ]
       }.fetch(navigation_area, [])
     end

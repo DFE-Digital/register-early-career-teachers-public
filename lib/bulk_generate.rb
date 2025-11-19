@@ -10,12 +10,12 @@ class BulkGenerate
   # @param action_csv_file [String] Action output relative file path
   def initialize(
     trs: true,
-    trn_csv_file: 'spec/fixtures/pre-prod-trns.csv',
+    trn_csv_file: "spec/fixtures/pre-prod-trns.csv",
     period_min_interval: 60,
     claim_csv_headings: ::BatchRows::CLAIM_CSV_HEADINGS.values,
     action_csv_headings: ::BatchRows::ACTION_CSV_HEADINGS.values,
-    claim_csv_file: 'tmp/bulk-claim.csv',
-    action_csv_file: 'tmp/bulk-action.csv'
+    claim_csv_file: "tmp/bulk-claim.csv",
+    action_csv_file: "tmp/bulk-action.csv"
   )
     @trs = trs
     @api_client = ::TRS::APIClient.build
@@ -68,11 +68,11 @@ private
       status = if trs
                  api_client.find_teacher(trn:, date_of_birth:).present[:trs_induction_status]
                else
-                 'TRS query disabled'
+                 "TRS query disabled"
                end
       [trn, date_of_birth, status]
     rescue StandardError
-      [trn, date_of_birth, 'API could not be contacted']
+      [trn, date_of_birth, "API could not be contacted"]
     end
   end
 
@@ -107,7 +107,7 @@ private
   # @param filename [String]
   # @return [Array<Array>]
   def export(headers:, rows:, filename:)
-    CSV.open(Rails.root.join(filename), 'w') do |csv|
+    CSV.open(Rails.root.join(filename), "w") do |csv|
       csv << headers
       rows.each { |row| csv << row }
     end

@@ -7,7 +7,7 @@ RSpec.describe "Rack::Attack" do
     set_request_ip(ip)
   end
 
-  ['/otp-sign-in', '/otp-sign-in/code', '/sign-in', '/otp-sign-in/code'].each do |protected_route|
+  ["/otp-sign-in", "/otp-sign-in/code", "/sign-in", "/otp-sign-in/code"].each do |protected_route|
     context "when requesting protected route #{protected_route}" do
       let(:path) { protected_route }
 

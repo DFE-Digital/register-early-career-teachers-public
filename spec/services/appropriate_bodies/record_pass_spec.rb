@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::RecordPass do
     })
   end
 
-  it_behaves_like 'it closes an induction' do
+  it_behaves_like "it closes an induction" do
     it "closes with pass outcome" do
       service_call
 
@@ -48,8 +48,8 @@ RSpec.describe AppropriateBodies::RecordPass do
         service_call
 
         expect(induction_period.reload).to have_attributes(
-          outcome: 'pass',
-          training_programme: 'provider_led'
+          outcome: "pass",
+          training_programme: "provider_led"
         )
       end
     end

@@ -16,15 +16,15 @@ module Schools
         end
 
         def induction_completed?
-          registration_store.trs_induction_status == 'Passed'
+          registration_store.trs_induction_status == "Passed"
         end
 
         def induction_exempt?
-          registration_store.trs_induction_status == 'Exempt'
+          registration_store.trs_induction_status == "Exempt"
         end
 
         def induction_failed?
-          registration_store.trs_induction_status == 'Failed'
+          registration_store.trs_induction_status == "Failed"
         end
 
         def prohibited_from_teaching?
@@ -36,7 +36,7 @@ module Schools
         end
 
         def was_school_led?
-          registration_store.previous_training_programme == 'school_led'
+          registration_store.previous_training_programme == "school_led"
         end
 
         def matches_trs_dob?
@@ -46,11 +46,11 @@ module Schools
         end
 
         def provider_led?
-          registration_store.training_programme == 'provider_led'
+          registration_store.training_programme == "provider_led"
         end
 
         def school_led?
-          registration_store.training_programme == 'school_led'
+          registration_store.training_programme == "school_led"
         end
 
         def lead_provider_has_confirmed_partnership_for_contract_period?(school)

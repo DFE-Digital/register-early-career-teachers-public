@@ -1,4 +1,4 @@
-RSpec.describe 'admin/lead_providers/index.html.erb' do
+RSpec.describe "admin/lead_providers/index.html.erb" do
   let(:number_of_lead_providers) { 2 }
   let(:lead_providers) { FactoryBot.create_list(:lead_provider, number_of_lead_providers) }
 
@@ -13,26 +13,26 @@ RSpec.describe 'admin/lead_providers/index.html.erb' do
   it %(sets the main heading and page title to 'Lead providers') do
     render
 
-    expect(view.content_for(:page_title)).to eql('Lead providers')
-    expect(view.content_for(:page_header)).to have_css('h1', text: 'Lead providers')
+    expect(view.content_for(:page_title)).to eql("Lead providers")
+    expect(view.content_for(:page_header)).to have_css("h1", text: "Lead providers")
   end
 
-  it 'renders breadcrumbs' do
+  it "renders breadcrumbs" do
     render
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Organisations', href: admin_organisations_path)
-    expect(view.content_for(:backlink_or_breadcrumb)).to include('Lead providers')
-    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link('Lead providers')
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Organisations", href: admin_organisations_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to include("Lead providers")
+    expect(view.content_for(:backlink_or_breadcrumb)).not_to have_link("Lead providers")
   end
 
-  it 'renders a table of lead providers' do
+  it "renders a table of lead providers" do
     render
 
-    expect(rendered).to have_css('table.govuk-table')
-    expect(rendered).to have_css('tbody tr', count: number_of_lead_providers)
+    expect(rendered).to have_css("table.govuk-table")
+    expect(rendered).to have_css("tbody tr", count: number_of_lead_providers)
   end
 
-  it 'displays lead provider names' do
+  it "displays lead provider names" do
     render
 
     lead_providers.each do |lead_provider|

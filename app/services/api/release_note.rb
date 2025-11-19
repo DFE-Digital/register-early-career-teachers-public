@@ -13,7 +13,7 @@ module API
   private
 
     def render(markdown)
-      GovukMarkdown.render(markdown.to_str, { strip_front_matter: false, headings_start_with: 'l' })
+      GovukMarkdown.render(markdown.to_str, { strip_front_matter: false, headings_start_with: "l" })
     end
   end
 end

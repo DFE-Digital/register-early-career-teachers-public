@@ -1,9 +1,9 @@
-RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
-  include_context 'test trs api client'
+RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
+  include_context "test trs api client"
 
-  let(:trn) { '3002586' }
+  let(:trn) { "3002586" }
 
-  scenario 'Teacher with email in use' do
+  scenario "Teacher with email in use" do
     given_there_is_a_school_in_the_service
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
     and_i_sign_in_as_that_school_user
@@ -52,13 +52,13 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = '/school/home/ects'
+    path = "/school/home/ects"
     page.goto path
     expect(page).to have_path(path)
   end
 
   def when_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role('link', name: 'Assign a mentor for this ECT').click
+    page.get_by_role("link", name: "Assign a mentor for this ECT").click
   end
 
   def then_i_am_in_the_requirements_page
@@ -67,24 +67,24 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   end
 
   def when_i_click_continue
-    page.get_by_role('link', name: 'Continue').click
+    page.get_by_role("link", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_find_mentor_page
-    path = '/school/register-mentor/find-mentor'
+    path = "/school/register-mentor/find-mentor"
     expect(page).to have_path(path)
   end
 
   def when_i_submit_the_find_mentor_form
-    page.get_by_label('trn').fill(trn)
-    page.get_by_label('day').fill('3')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1977')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill(trn)
+    page.get_by_label("day").fill("3")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1977")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_review_mentor_details_page
-    expect(page).to have_path('/school/register-mentor/review-mentor-details')
+    expect(page).to have_path("/school/register-mentor/review-mentor-details")
   end
 
   def and_i_should_see_the_mentor_details_in_the_review_page
@@ -98,34 +98,34 @@ RSpec.describe 'Registering a mentor', :enable_schools_interface, :js do
   end
 
   def and_i_enter_the_corrected_name
-    page.get_by_label('Enter the correct full name').fill('Kirk Van Damme')
+    page.get_by_label("Enter the correct full name").fill("Kirk Van Damme")
   end
 
   def and_i_click_confirm_and_continue
-    page.get_by_role('button', name: 'Confirm and continue').click
+    page.get_by_role("button", name: "Confirm and continue").click
   end
 
   def then_i_should_be_taken_to_the_email_address_page
-    expect(page).to have_path('/school/register-mentor/email-address')
+    expect(page).to have_path("/school/register-mentor/email-address")
   end
 
   def when_i_enter_an_email_address_already_in_use
-    page.get_by_label('email').fill(@ect.email)
+    page.get_by_label("email").fill(@ect.email)
   end
 
   def and_i_click_continue
-    page.get_by_role('button', name: "Continue").click
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_cant_use_email_page
-    expect(page).to have_path('/school/register-mentor/cant-use-email')
+    expect(page).to have_path("/school/register-mentor/cant-use-email")
   end
 
   def when_i_click_try_another_email
-    page.get_by_role('link', name: 'Try another email').click
+    page.get_by_role("link", name: "Try another email").click
   end
 
   def when_i_click_back
-    page.get_by_role('link', name: 'Back', exact: true).click
+    page.get_by_role("link", name: "Back", exact: true).click
   end
 end

@@ -11,7 +11,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get admin_teacher_induction_path(teacher)
@@ -20,7 +20,7 @@ RSpec.describe "Admin::Teachers#show", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "returns http success" do
         get admin_teacher_induction_path(teacher)

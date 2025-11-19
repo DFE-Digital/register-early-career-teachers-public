@@ -27,10 +27,10 @@ module AppropriateBodies
           render :new, status: :unprocessable_content
         end
       rescue ActionController::ParameterMissing
-        @pending_induction_submission_batch.errors.add(:csv_file, 'Select a file')
+        @pending_induction_submission_batch.errors.add(:csv_file, "Select a file")
         render :new, status: :unprocessable_content
       rescue CSV::MalformedCSVError
-        @pending_induction_submission_batch.errors.add(:csv_file, 'The selected file is malformed')
+        @pending_induction_submission_batch.errors.add(:csv_file, "The selected file is malformed")
         render :new, status: :unprocessable_content
       end
 

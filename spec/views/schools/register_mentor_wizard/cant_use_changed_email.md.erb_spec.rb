@@ -1,4 +1,4 @@
-require_relative './shared_examples/cant_use_email_view'
+require_relative "./shared_examples/cant_use_email_view"
 
 RSpec.describe "schools/register_mentor_wizard/cant_use_changed_email.md.erb" do
   it_behaves_like "a can't use email step view",

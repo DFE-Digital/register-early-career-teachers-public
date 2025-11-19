@@ -6,13 +6,13 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:store) do
     FactoryBot.build(:session_repository,
-                     change_name: 'no',
+                     change_name: "no",
                      corrected_name: nil,
                      date_of_birth: "11-10-1945",
                      email: "dusty@rhodes.com",
                      appropriate_body_id: appropriate_body.id,
                      training_programme: "school_led",
-                     start_date: 'January 2025', # FIXME: this should be a Date?
+                     start_date: "January 2025", # FIXME: this should be a Date?
                      trn: "3002586",
                      trs_first_name: "Dusty",
                      trs_last_name: "Rhodes",
@@ -21,43 +21,43 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
                      working_pattern: "full_time")
   end
 
-  describe '#active_record_at_school' do
-    let(:teacher) { FactoryBot.create(:teacher, trn: '3002586') }
+  describe "#active_record_at_school" do
+    let(:teacher) { FactoryBot.create(:teacher, trn: "3002586") }
 
-    context 'when the ECT has an ongoing ECT record at the school' do
+    context "when the ECT has an ongoing ECT record at the school" do
       let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher:) }
 
-      it 'returns the ECT record' do
+      it "returns the ECT record" do
         expect(registration_store.active_record_at_school(school.urn)).to eq(existing_ect_record)
       end
     end
 
-    context 'when the ECT has no ongoing ECT record at the school' do
+    context "when the ECT has no ongoing ECT record at the school" do
       let!(:existing_ect_record) { FactoryBot.create(:ect_at_school_period, school:, teacher:) }
 
-      it 'returns nil' do
+      it "returns nil" do
         expect(registration_store.active_record_at_school(school.urn)).to be_nil
       end
     end
   end
 
-  describe '#active_at_school?' do
+  describe "#active_at_school?" do
     let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
 
-    it 'returns true if the ECT is active at the given school' do
+    it "returns true if the ECT is active at the given school" do
       FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
 
       expect(registration_store).to be_active_at_school(school.urn)
     end
 
-    it 'returns false if the ECT is not at the given school' do
+    it "returns false if the ECT is not at the given school" do
       FactoryBot.create(:ect_at_school_period, teacher:)
 
       expect(registration_store).not_to be_active_at_school(school.urn)
     end
   end
 
-  describe '#email_taken?' do
+  describe "#email_taken?" do
     let(:teacher_email_service) { instance_double(Schools::TeacherEmail) }
 
     before do
@@ -81,48 +81,48 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     end
   end
 
-  describe '#email' do
-    it 'returns the email address' do
+  describe "#email" do
+    it "returns the email address" do
       expect(registration_store.email).to eq("dusty@rhodes.com")
     end
   end
 
-  describe '#formatted_working_pattern' do
-    it 'returns the formatted working pattern' do
-      expect(registration_store.formatted_working_pattern).to eq('Full time')
+  describe "#formatted_working_pattern" do
+    it "returns the formatted working pattern" do
+      expect(registration_store.formatted_working_pattern).to eq("Full time")
     end
   end
 
-  describe '#full_name' do
-    it 'returns the full name of the ECT' do
+  describe "#full_name" do
+    it "returns the full name of the ECT" do
       expect(registration_store.full_name).to eq("Dusty Rhodes")
     end
 
-    context 'when corrected_name is set' do
+    context "when corrected_name is set" do
       before do
-        store.change_name = 'yes'
-        store.corrected_name = 'Randy Marsh'
+        store.change_name = "yes"
+        store.corrected_name = "Randy Marsh"
       end
 
-      it 'returns the corrected_name as the full name' do
-        expect(registration_store.full_name).to eq('Randy Marsh')
+      it "returns the corrected_name as the full name" do
+        expect(registration_store.full_name).to eq("Randy Marsh")
       end
     end
   end
 
-  describe '#formatted_date_of_birth' do
-    it 'formats the date of birth in the govuk format' do
+  describe "#formatted_date_of_birth" do
+    it "formats the date of birth in the govuk format" do
       expect(registration_store.formatted_date_of_birth).to eq("11 October 1945")
     end
   end
 
-  describe '#induction_completed?' do
+  describe "#induction_completed?" do
     before do
-      store.trs_induction_status = 'Passed'
+      store.trs_induction_status = "Passed"
     end
 
     context "when trs_induction_status is 'Passed'" do
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store).to be_induction_completed
       end
     end
@@ -132,19 +132,19 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.trs_induction_status = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_induction_completed
       end
     end
   end
 
-  describe '#induction_exempt?' do
+  describe "#induction_exempt?" do
     before do
-      store.trs_induction_status = 'Exempt'
+      store.trs_induction_status = "Exempt"
     end
 
     context "when trs_induction_status is 'Exempt'" do
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store).to be_induction_exempt
       end
     end
@@ -154,19 +154,19 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.trs_induction_status = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_induction_exempt
       end
     end
   end
 
-  describe '#induction_failed?' do
+  describe "#induction_failed?" do
     before do
-      store.trs_induction_status = 'Failed'
+      store.trs_induction_status = "Failed"
     end
 
     context "when trs_induction_status is 'Failed'" do
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store).to be_induction_failed
       end
     end
@@ -176,15 +176,15 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.trs_induction_status = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_induction_failed
       end
     end
   end
 
-  describe '#in_trs?' do
+  describe "#in_trs?" do
     context "when trs_first_name has been set" do
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store).to be_in_trs
       end
     end
@@ -194,19 +194,19 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.trs_first_name = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_in_trs
       end
     end
   end
 
-  describe '#matches_trs_dob?' do
+  describe "#matches_trs_dob?" do
     context "when date_of_birth is blank" do
       before do
         store.date_of_birth = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_matches_trs_dob
       end
     end
@@ -216,7 +216,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.trs_date_of_birth = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_matches_trs_dob
       end
     end
@@ -226,25 +226,25 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.date_of_birth = "1935-10-11"
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_matches_trs_dob
       end
     end
 
     context "when date_of_birth and trs_date_of_birth are the same date" do
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store).to be_matches_trs_dob
       end
     end
   end
 
-  describe '#provider_led?' do
+  describe "#provider_led?" do
     before do
-      store.training_programme = 'provider_led'
+      store.training_programme = "provider_led"
     end
 
     context "when training_programme is 'provider_led'" do
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store).to be_provider_led
       end
     end
@@ -254,13 +254,13 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.training_programme = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_provider_led
       end
     end
   end
 
-  describe '#register!' do
+  describe "#register!" do
     let(:teacher) { Teacher.first }
     let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
 
@@ -271,19 +271,19 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
 
       expect(teacher.trn).to eq(registration_store.trn)
       expect(ect_at_school_period.school_id).to eq(school.id)
-      expect(ect_at_school_period.started_on).to eq(Date.parse('January 2025'))
-      expect(ect_at_school_period.email).to eq('dusty@rhodes.com')
-      expect(ect_at_school_period.school_reported_appropriate_body_type).to eq('national')
+      expect(ect_at_school_period.started_on).to eq(Date.parse("January 2025"))
+      expect(ect_at_school_period.email).to eq("dusty@rhodes.com")
+      expect(ect_at_school_period.school_reported_appropriate_body_type).to eq("national")
     end
   end
 
-  describe '#school_led?' do
+  describe "#school_led?" do
     before do
-      store.training_programme = 'school_led'
+      store.training_programme = "school_led"
     end
 
     context "when training_programme is 'school_led'" do
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store).to be_school_led
       end
     end
@@ -293,37 +293,37 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.training_programme = nil
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store).not_to be_school_led
       end
     end
   end
 
-  describe '#trn' do
-    it 'returns the trn' do
+  describe "#trn" do
+    it "returns the trn" do
       expect(registration_store.trn).to eq("3002586")
     end
   end
 
-  describe '#trs_full_name' do
-    it 'returns the full name of the ECT' do
+  describe "#trs_full_name" do
+    it "returns the full name of the ECT" do
       expect(registration_store.trs_full_name).to eq("Dusty Rhodes")
     end
   end
 
-  describe '#trs_national_insurance_number' do
-    it 'returns the national insurance number in trs' do
+  describe "#trs_national_insurance_number" do
+    it "returns the national insurance number in trs" do
       expect(registration_store.trs_national_insurance_number).to eq("OWAD23455")
     end
   end
 
-  describe '#working_pattern' do
-    it 'returns the working pattern' do
+  describe "#working_pattern" do
+    it "returns the working pattern" do
       expect(registration_store.working_pattern).to eq("full_time")
     end
   end
 
-  describe 'previous registration' do
+  describe "previous registration" do
     let(:teacher) { FactoryBot.create(:teacher) }
     let(:school) { FactoryBot.create(:school) }
     let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2023, 12, 25), finished_on: Date.new(2024, 12, 25)) }
@@ -332,50 +332,50 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       store.trn = teacher.trn
     end
 
-    describe '#induction_start_date' do
-      context 'when the teacher has induction periods' do
+    describe "#induction_start_date" do
+      context "when the teacher has induction periods" do
         before do
           FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30))
           FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30))
           FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2024, 5, 1), finished_on: Date.new(2024, 6, 30))
         end
 
-        it 'returns the earliest started_on date' do
+        it "returns the earliest started_on date" do
           expect(registration_store.induction_start_date).to eq(Date.new(2023, 6, 10))
         end
       end
 
-      context 'when the teacher has no induction periods' do
-        it 'returns nil' do
+      context "when the teacher has no induction periods" do
+        it "returns nil" do
           expect(registration_store.induction_start_date).to be_nil
         end
       end
     end
 
-    describe '#previous_appropriate_body_name' do
-      context 'when the teacher has induction periods' do
-        let!(:older_body) { FactoryBot.create(:appropriate_body, name: 'Older Body') }
-        let!(:more_recent_body) { FactoryBot.create(:appropriate_body, name: 'More Recent Body') }
+    describe "#previous_appropriate_body_name" do
+      context "when the teacher has induction periods" do
+        let!(:older_body) { FactoryBot.create(:appropriate_body, name: "Older Body") }
+        let!(:more_recent_body) { FactoryBot.create(:appropriate_body, name: "More Recent Body") }
 
         before do
           FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body: older_body)
           FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2024, 4, 30), appropriate_body: more_recent_body)
         end
 
-        it 'returns the name of the latest appropriate body by started_on' do
-          expect(registration_store.previous_appropriate_body_name).to eq('More Recent Body')
+        it "returns the name of the latest appropriate body by started_on" do
+          expect(registration_store.previous_appropriate_body_name).to eq("More Recent Body")
         end
       end
 
-      context 'when the teacher has no induction periods' do
-        it 'returns nil' do
+      context "when the teacher has no induction periods" do
+        it "returns nil" do
           expect(registration_store.previous_appropriate_body_name).to be_nil
         end
       end
     end
 
-    describe '#previous_training_programme' do
-      context 'when the teacher has ECTAtSchoolPeriods' do
+    describe "#previous_training_programme" do
+      context "when the teacher has ECTAtSchoolPeriods" do
         before do
           school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
           FactoryBot.create(:training_period, :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
@@ -383,50 +383,50 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
           FactoryBot.create(:training_period, :provider_led, :with_school_partnership, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
-        it 'returns the training programme from the latest ECTAtSchoolPeriod by started_on' do
-          expect(registration_store.previous_training_programme).to eq('provider_led')
+        it "returns the training programme from the latest ECTAtSchoolPeriod by started_on" do
+          expect(registration_store.previous_training_programme).to eq("provider_led")
         end
       end
 
-      context 'when the teacher has no ECTAtSchoolPeriods' do
-        it 'returns nil' do
+      context "when the teacher has no ECTAtSchoolPeriods" do
+        it "returns nil" do
           expect(registration_store.previous_training_programme).to be_nil
         end
       end
     end
 
-    describe '#previous_provider_led?' do
-      context 'when the latest ECTAtSchoolPeriod is provider-led' do
+    describe "#previous_provider_led?" do
+      context "when the latest ECTAtSchoolPeriod is provider-led" do
         before do
           provider_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
           FactoryBot.create(:training_period, training_programme: :provider_led, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 6, 1))
         end
 
-        it 'returns true' do
+        it "returns true" do
           expect(registration_store.previous_provider_led?).to be(true)
         end
       end
 
-      context 'when the latest ECTAtSchoolPeriod is school-led' do
+      context "when the latest ECTAtSchoolPeriod is school-led" do
         before do
           school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
           FactoryBot.create(:training_period, :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
         end
 
-        it 'returns false' do
+        it "returns false" do
           expect(registration_store.previous_provider_led?).to be(false)
         end
       end
 
-      context 'when there are no ECTAtSchoolPeriods' do
-        it 'returns nil' do
+      context "when there are no ECTAtSchoolPeriods" do
+        it "returns nil" do
           expect(registration_store.previous_provider_led?).to be_nil
         end
       end
     end
 
-    describe '#previous_lead_provider_name' do
-      let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Confirmed LP') }
+    describe "#previous_lead_provider_name" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
 
@@ -438,13 +438,13 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
                           finished_on: Date.new(2024, 6, 1))
       end
 
-      it 'returns the name of the lead provider from the latest training period' do
-        expect(registration_store.previous_lead_provider_name).to eq('Confirmed LP')
+      it "returns the name of the lead provider from the latest training period" do
+        expect(registration_store.previous_lead_provider_name).to eq("Confirmed LP")
       end
     end
 
-    describe '#previous_delivery_partner_name' do
-      let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: 'DP') }
+    describe "#previous_delivery_partner_name" do
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "DP") }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:) }
 
       before do
@@ -455,37 +455,37 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
                           finished_on: Date.new(2024, 6, 1))
       end
 
-      it 'returns the name of the delivery partner from the latest training period' do
+      it "returns the name of the delivery partner from the latest training period" do
         expect(registration_store.previous_delivery_partner_name).to eq("DP")
       end
     end
 
-    describe '#previous_school_name' do
-      context 'when ECTAtSchoolPeriods exist' do
+    describe "#previous_school_name" do
+      context "when ECTAtSchoolPeriods exist" do
         let(:school_1) { FactoryBot.create(:school) }
         let(:school_2) { FactoryBot.create(:school) }
 
         before do
-          FactoryBot.create(:gias_school, school: school_1, name: 'Old School')
-          FactoryBot.create(:gias_school, school: school_2, name: 'Recent School')
+          FactoryBot.create(:gias_school, school: school_1, name: "Old School")
+          FactoryBot.create(:gias_school, school: school_2, name: "Recent School")
 
           FactoryBot.create(:ect_at_school_period, teacher:, school: school_1, started_on: Date.new(2023, 1, 1), finished_on: Date.new(2023, 6, 30))
           FactoryBot.create(:ect_at_school_period, teacher:, school: school_2, started_on: Date.new(2023, 9, 1), finished_on: nil)
         end
 
-        it 'returns the name of the most recent school by started_on' do
-          expect(registration_store.previous_school_name).to eq('Recent School')
+        it "returns the name of the most recent school by started_on" do
+          expect(registration_store.previous_school_name).to eq("Recent School")
         end
       end
 
-      context 'when no ECTAtSchoolPeriods exist' do
-        it 'returns nil' do
+      context "when no ECTAtSchoolPeriods exist" do
+        it "returns nil" do
           expect(registration_store.previous_school_name).to be_nil
         end
       end
     end
 
-    describe '#lead_providers_within_contract_period' do
+    describe "#lead_providers_within_contract_period" do
       let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
       let!(:lp_in) { FactoryBot.create(:lead_provider) }
       let!(:lp_out) { FactoryBot.create(:lead_provider) }
@@ -495,22 +495,22 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
         store.start_date = "1 March 2025"
       end
 
-      it 'returns lead providers active in the contract period' do
+      it "returns lead providers active in the contract period" do
         expect(registration_store.lead_providers_within_contract_period).to include(lp_in)
         expect(registration_store.lead_providers_within_contract_period).not_to include(lp_out)
       end
 
-      context 'when no contract period matches the start_date' do
+      context "when no contract period matches the start_date" do
         before { store.start_date = nil }
 
-        it 'returns an empty array' do
+        it "returns an empty array" do
           expect(registration_store.lead_providers_within_contract_period).to eq([])
         end
       end
     end
 
-    describe '#lead_provider_has_confirmed_partnership_for_contract_period?' do
-      let(:lead_provider) { FactoryBot.create(:lead_provider, name: 'Confirmed LP') }
+    describe "#lead_provider_has_confirmed_partnership_for_contract_period?" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -520,7 +520,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
 
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      context 'when everything is valid' do
+      context "when everything is valid" do
         let!(:ect_period) do
           FactoryBot.create(
             :ect_at_school_period,
@@ -546,25 +546,25 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
           )
         end
 
-        it 'returns true' do
+        it "returns true" do
           expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be true
         end
       end
 
-      context 'when previous_lead_provider is nil' do
+      context "when previous_lead_provider is nil" do
         # No ect_period or training period created
-        it 'returns false' do
+        it "returns false" do
           expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
         end
       end
 
-      context 'when school is nil' do
-        it 'returns false' do
+      context "when school is nil" do
+        it "returns false" do
           expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
         end
       end
 
-      context 'when contract_start_date is nil' do
+      context "when contract_start_date is nil" do
         before { store.start_date = nil }
 
         let!(:ect_period) do
@@ -581,12 +581,12 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
           )
         end
 
-        it 'returns false' do
+        it "returns false" do
           expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
         end
       end
 
-      context 'when no school partnership exists in the contract period' do
+      context "when no school partnership exists in the contract period" do
         let!(:other_contract_period) do
           FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 12, 31))
         end
@@ -605,24 +605,24 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
           )
         end
 
-        it 'returns false' do
+        it "returns false" do
           expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
         end
       end
 
-      context 'when all inputs are nil' do
+      context "when all inputs are nil" do
         let(:dummy_store) { FactoryBot.build(:session_repository, start_date: nil, trn: nil) }
 
-        it 'returns false' do
+        it "returns false" do
           expect(described_class.new(dummy_store).lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
         end
       end
     end
 
-    describe '#previous_eoi_lead_provider_name' do
+    describe "#previous_eoi_lead_provider_name" do
       let(:school) { FactoryBot.create(:school) }
 
-      context 'when there is a previous training period with an EOI' do
+      context "when there is a previous training period with an EOI" do
         let(:teacher) { FactoryBot.create(:teacher) }
 
         let!(:ect_period) do
@@ -644,18 +644,18 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
           )
         end
 
-        it 'returns the name of the EOI lead provider for the previous training period' do
+        it "returns the name of the EOI lead provider for the previous training period" do
           expect(registration_store.previous_eoi_lead_provider_name).to eq(training_period.expression_of_interest.lead_provider.name)
         end
       end
 
-      context 'when there is no previous training period' do
-        it 'returns nil' do
+      context "when there is no previous training period" do
+        it "returns nil" do
           expect(registration_store.previous_eoi_lead_provider_name).to be_nil
         end
       end
 
-      context 'when the previous training period has no EOI' do
+      context "when the previous training period has no EOI" do
         let(:teacher) { FactoryBot.create(:teacher) }
 
         let!(:ect_period) do
@@ -678,78 +678,78 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
           )
         end
 
-        it 'returns nil' do
+        it "returns nil" do
           expect(registration_store.previous_eoi_lead_provider_name).to be_nil
         end
       end
     end
   end
 
-  describe '#registered?' do
-    context 'when ect_at_school_period_id is present' do
+  describe "#registered?" do
+    context "when ect_at_school_period_id is present" do
       before { registration_store.update!(ect_at_school_period_id: 123) }
 
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store.registered?).to be true
       end
     end
 
-    context 'when ect_at_school_period_id is nil' do
+    context "when ect_at_school_period_id is nil" do
       before { registration_store.update!(ect_at_school_period_id: nil) }
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store.registered?).to be false
       end
     end
   end
 
-  describe '#was_school_led?' do
+  describe "#was_school_led?" do
     let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
 
-    context 'when previous training programme was school-led' do
+    context "when previous training programme was school-led" do
       before do
         school_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
         FactoryBot.create(:training_period, :school_led, ect_at_school_period: school_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
       end
 
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store.was_school_led?).to be true
       end
     end
 
-    context 'when previous training programme was provider-led' do
+    context "when previous training programme was provider-led" do
       before do
         provider_led_ect_at_school_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
         FactoryBot.create(:training_period, :provider_led, :with_school_partnership, ect_at_school_period: provider_led_ect_at_school_period, started_on: Date.new(2023, 10, 1), finished_on: Date.new(2023, 12, 1))
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(registration_store.was_school_led?).to be false
       end
     end
 
-    context 'when there is no previous training programme' do
-      it 'returns false' do
+    context "when there is no previous training programme" do
+      it "returns false" do
         expect(registration_store.was_school_led?).to be false
       end
     end
   end
 
-  describe '#previously_registered?' do
-    context 'when there is a previous registration' do
+  describe "#previously_registered?" do
+    context "when there is a previous registration" do
       before { store.trn = teacher.trn }
 
       let(:teacher) { FactoryBot.create(:teacher) }
 
       let!(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
 
-      it 'returns true' do
+      it "returns true" do
         expect(registration_store.previously_registered?).to be true
       end
     end
 
-    context 'when there is no previous training' do
-      it 'returns false' do
+    context "when there is no previous training" do
+      it "returns false" do
         expect(registration_store.previously_registered?).to be false
       end
     end

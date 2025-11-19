@@ -19,7 +19,7 @@ module Schools
       attr_reader :was_school_led
 
       def persist
-        @was_school_led = ect.training_programme == 'school_led'
+        @was_school_led = ect.training_programme == "school_led"
         ect.update!(training_programme:)
       end
     end

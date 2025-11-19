@@ -6,7 +6,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_delivery_partner_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || 'Their lead provider will confirm this'
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || "Their lead provider will confirm this"
   end
 
   # @param ect [ECTAtSchoolPeriod]

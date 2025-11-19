@@ -8,7 +8,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get index_path
@@ -17,7 +17,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       context "with search query" do
         let!(:matching_delivery_partner) { FactoryBot.create(:delivery_partner, name: "Test Delivery Partner") }
@@ -68,7 +68,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get show_path
@@ -77,7 +77,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "returns http success" do
         get show_path
@@ -162,7 +162,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get new_path
@@ -171,7 +171,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       context "with valid contract period" do
         let!(:lead_provider_1) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
@@ -246,7 +246,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         post create_path, params: { lead_provider_ids: [active_lead_provider_1.id] }
@@ -255,7 +255,7 @@ RSpec.describe "Admin delivery partners", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       context "with valid parameters" do
         let(:lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id] }
@@ -376,8 +376,8 @@ RSpec.describe "Admin delivery partners", type: :request do
             # Verify checkbox 1 is checked and checkbox 2 is not checked
             expect(checkbox_1).to be_present
             expect(checkbox_2).to be_present
-            expect(checkbox_1['checked']).to eq('checked')
-            expect(checkbox_2['checked']).to be_nil
+            expect(checkbox_1["checked"]).to eq("checked")
+            expect(checkbox_2["checked"]).to be_nil
           end
         end
       end

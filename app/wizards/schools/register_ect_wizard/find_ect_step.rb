@@ -5,7 +5,7 @@ module Schools
 
       validates :trn,
                 teacher_reference_number: true,
-                presence: { message: 'Enter the teacher reference number (TRN)' }
+                presence: { message: "Enter the teacher reference number (TRN)" }
       validates :date_of_birth, date_of_birth: true
 
       def self.permitted_params

@@ -88,7 +88,7 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
       allow(Teachers::Details::CurrentInductionPeriodComponent).to receive(:new).and_call_original
     end
 
-    it 'passes mode and teacher to slot component and defaults enable flags to false' do
+    it "passes mode and teacher to slot component and defaults enable flags to false" do
       render_inline(component.with_current_induction_period)
 
       expect(Teachers::Details::CurrentInductionPeriodComponent).to have_received(:new).with(mode:,
@@ -98,7 +98,7 @@ RSpec.describe Teachers::DetailsComponent, type: :component do
                                                                                              enable_release: false)
     end
 
-    it 'sets enable edit, delete and release flags' do
+    it "sets enable edit, delete and release flags" do
       render_inline(component.with_current_induction_period(enable_release: true, enable_edit: true, enable_delete: true))
 
       expect(Teachers::Details::CurrentInductionPeriodComponent).to have_received(:new).with(mode:,

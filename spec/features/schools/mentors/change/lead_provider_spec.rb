@@ -10,7 +10,7 @@ describe "School user can change a mentor's lead provider", :enable_schools_inte
     and_there_is_another_active_lead_provider
   end
 
-  context 'when an active lead provider is selected' do
+  context "when an active lead provider is selected" do
     it "changes the lead provider to an active lead provider" do
       with_a_partnership_with_the_school
 
@@ -36,7 +36,7 @@ describe "School user can change a mentor's lead provider", :enable_schools_inte
     end
   end
 
-  context 'when a lead provider without a partnership is selected' do
+  context "when a lead provider without a partnership is selected" do
     it "creates a new expression of interest" do
       when_i_visit_the_mentor_page
       then_i_can_change_the_assigned_lead_provider

@@ -11,26 +11,26 @@ describe MentorshipPeriods::Finish do
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, **existing_dates) }
   let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect_at_school_period, **existing_dates) }
 
-  describe 'initialization' do
-    it 'assigns the mentorship_period' do
+  describe "initialization" do
+    it "assigns the mentorship_period" do
       expect(subject.mentorship_period).to eql(mentorship_period)
     end
 
-    it 'assigns the finished_on' do
+    it "assigns the finished_on" do
       expect(subject.finished_on).to eql(finished_on)
     end
 
-    it 'assigns the mentor_at_school_period' do
+    it "assigns the mentor_at_school_period" do
       expect(subject.mentor_at_school_period).to eql(mentor_at_school_period)
     end
 
-    it 'assigns the ect_at_school_period' do
+    it "assigns the ect_at_school_period" do
       expect(subject.ect_at_school_period).to eql(ect_at_school_period)
     end
   end
 
-  describe '#finish!' do
-    it 'closes the mentorship_period' do
+  describe "#finish!" do
+    it "closes the mentorship_period" do
       subject.finish!
 
       mentorship_period.reload
@@ -38,7 +38,7 @@ describe MentorshipPeriods::Finish do
       expect(mentorship_period.finished_on).to eql(finished_on)
     end
 
-    it 'records an event for the mentor' do
+    it "records an event for the mentor" do
       allow(Events::Record).to receive(:record_teacher_finishes_mentoring_event!).and_call_original
 
       expect {
@@ -61,7 +61,7 @@ describe MentorshipPeriods::Finish do
       )
     end
 
-    it 'records an event for the ECT' do
+    it "records an event for the ECT" do
       allow(Events::Record).to receive(:record_teacher_finishes_being_mentored_event!).and_call_original
 
       expect {

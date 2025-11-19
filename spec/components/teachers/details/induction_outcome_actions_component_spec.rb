@@ -27,11 +27,11 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
     context "when in admin mode" do
       let(:mode) { :admin }
 
-      it 'displays fail link' do
+      it "displays fail link" do
         expect(page).to have_link("Fail induction", href: "/admin/teachers/#{teacher.id}/record-failed-outcome/new")
       end
 
-      it 'displays pass link' do
+      it "displays pass link" do
         expect(page).to have_link("Pass induction", href: "/admin/teachers/#{teacher.id}/record-passed-outcome/new")
       end
     end
@@ -39,11 +39,11 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
     context "when in appropriate body mode" do
       let(:mode) { :appropriate_body }
 
-      it 'displays fail link' do
+      it "displays fail link" do
         expect(page).to have_link("Fail induction", href: "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
       end
 
-      it 'displays pass link' do
+      it "displays pass link" do
         expect(page).to have_link("Pass induction", href: "/appropriate-body/teachers/#{teacher.id}/record-passed-outcome/new")
       end
     end

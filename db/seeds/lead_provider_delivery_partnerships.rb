@@ -7,7 +7,7 @@ def describe_lead_provider_delivery_partnerships(lead_provider_delivery_partners
       print_seed_info(Colourize.text(year, :yellow), indent: 2)
 
       lpdps.group_by(&:lead_provider).each do |lead_provider, lpdp|
-        print_seed_info(Colourize.text(lead_provider.name + ' is working with:', :cyan), indent: 4)
+        print_seed_info(Colourize.text(lead_provider.name + " is working with:", :cyan), indent: 4)
 
         lpdp.each { print_seed_info(it.delivery_partner.name, indent: 6) }
       end
@@ -16,9 +16,9 @@ end
 
 # These delivery partnerships are used by other seeds, so are created explicitly.
 
-ambition_institute = LeadProvider.find_by!(name: 'Ambition Institute')
-teach_first = LeadProvider.find_by!(name: 'Teach First')
-best_practice_network = LeadProvider.find_by!(name: 'Best Practice Network')
+ambition_institute = LeadProvider.find_by!(name: "Ambition Institute")
+teach_first = LeadProvider.find_by!(name: "Teach First")
+best_practice_network = LeadProvider.find_by!(name: "Best Practice Network")
 capita = LeadProvider.find_by!(name: "Capita")
 
 active_lead_providers = ActiveLeadProvider

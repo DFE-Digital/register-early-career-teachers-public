@@ -14,11 +14,11 @@ module TrainingPeriods
     end
 
     def self.school_led(period:, started_on:)
-      new(period:, started_on:, training_programme: 'school_led')
+      new(period:, started_on:, training_programme: "school_led")
     end
 
     def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil, author: nil)
-      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:, schedule:, author:)
+      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: "provider_led", finished_on:, schedule:, author:)
     end
 
     def call
@@ -50,7 +50,7 @@ module TrainingPeriods
     end
 
     def record_event!
-      return if @training_programme == 'school_led'
+      return if @training_programme == "school_led"
 
       Events::Record.record_teacher_schedule_assigned_to_training_period!(
         training_period: @new_training_period,
@@ -63,7 +63,7 @@ module TrainingPeriods
 
     # TODO: Remove this once a presence validation can be added to TrainingPeriod model
     def schedule
-      return if @training_programme == 'school_led'
+      return if @training_programme == "school_led"
 
       @schedule ||= Schedules::Find.new(period: @period, training_programme: @training_programme, started_on: @started_on).call
 

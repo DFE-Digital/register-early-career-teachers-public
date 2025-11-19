@@ -121,15 +121,15 @@ module Events
 
     def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
       event_type = :induction_period_updated
-      heading = 'Induction period updated by admin' if author.dfe_user?
-      heading = 'Induction period updated by appropriate body' if author.appropriate_body_user?
+      heading = "Induction period updated by admin" if author.dfe_user?
+      heading = "Induction period updated by appropriate body" if author.appropriate_body_user?
 
       new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
     def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, zendesk_ticket_id: nil, happened_at: Time.zone.now)
       event_type = :induction_period_deleted
-      heading = 'Induction period deleted by admin'
+      heading = "Induction period deleted by admin"
 
       new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
@@ -253,7 +253,7 @@ module Events
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
 
-      heading = 'Induction period reopened'
+      heading = "Induction period reopened"
 
       new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
@@ -296,7 +296,7 @@ module Events
 
       event_type = :teacher_starts_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      training_type = (ect_at_school_period.present?) ? "ECT" : "mentor"
       heading = "#{teacher_name} started a new #{training_type} training period"
 
       new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
@@ -313,7 +313,7 @@ module Events
 
       event_type = :teacher_finishes_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (ect_at_school_period.present?) ? 'ECT' : 'mentor'
+      training_type = (ect_at_school_period.present?) ? "ECT" : "mentor"
       heading = "#{teacher_name} finished their #{training_type} training period"
 
       new(event_type:, author:, heading:, training_period:, ect_at_school_period:, mentor_at_school_period:, school:, teacher:, happened_at:).record_event!
@@ -412,7 +412,7 @@ module Events
     def self.record_teacher_training_period_deferred_event!(author:, training_period:, teacher:, lead_provider:, modifications:, happened_at: Time.zone.now)
       event_type = :teacher_defers_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      training_type = (training_period.for_ect?) ? "ECT" : "mentor"
       heading = "#{teacher_name}’s #{training_type} training period was deferred by #{lead_provider.name}"
 
       new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, modifications:, happened_at:).record_event!
@@ -421,7 +421,7 @@ module Events
     def self.record_teacher_training_period_withdrawn_event!(author:, training_period:, teacher:, lead_provider:, modifications:, happened_at: Time.zone.now)
       event_type = :teacher_withdraws_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      training_type = (training_period.for_ect?) ? "ECT" : "mentor"
       heading = "#{teacher_name}’s #{training_type} training period was withdrawn by #{lead_provider.name}"
 
       new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, modifications:, happened_at:).record_event!
@@ -430,7 +430,7 @@ module Events
     def self.record_teacher_training_period_resumed_event!(author:, training_period:, teacher:, lead_provider:, metadata:, happened_at: Time.zone.now)
       event_type = :teacher_resumes_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      training_type = (training_period.for_ect?) ? "ECT" : "mentor"
       heading = "#{teacher_name}’s #{training_type} training period was resumed by #{lead_provider.name}"
 
       new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, metadata:, happened_at:).record_event!
@@ -439,7 +439,7 @@ module Events
     def self.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:, happened_at: Time.zone.now)
       event_type = :teacher_changes_schedule_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (original_training_period.for_ect?) ? 'ECT' : 'mentor'
+      training_type = (original_training_period.for_ect?) ? "ECT" : "mentor"
       heading = "#{teacher_name}’s #{training_type} training changed schedule from #{original_training_period.schedule.description} to #{new_training_period.schedule.description} by #{lead_provider.name}"
       metadata = {
         new_training_period_id: new_training_period.id,
@@ -453,7 +453,7 @@ module Events
     def self.record_teacher_schedule_assigned_to_training_period!(author:, training_period:, teacher:, schedule:, happened_at: Time.zone.now)
       event_type = :teacher_schedule_assigned_to_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = (training_period.for_ect?) ? 'ECT' : 'mentor'
+      training_type = (training_period.for_ect?) ? "ECT" : "mentor"
       heading = "#{teacher_name}’s #{training_type} training period schedule was set to #{schedule.description}"
 
       new(event_type:, author:, heading:, training_period:, teacher:, schedule:, happened_at:).record_event!
@@ -472,16 +472,16 @@ module Events
       happened_at: Time.zone.now
     )
       if ect_at_school_period.present? && mentor_at_school_period.present?
-        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
       end
 
       if ect_at_school_period.nil? && mentor_at_school_period.nil?
-        fail(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+        fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
       end
 
       event_type = :training_period_assigned_to_school_partnership
       teacher_name = Teachers::Name.new(teacher).full_name
-      training_type = ect_at_school_period.present? ? 'ECT' : 'mentor'
+      training_type = ect_at_school_period.present? ? "ECT" : "mentor"
       heading = "#{teacher_name}’s #{training_type} training period was assigned to a school partnership"
 
       new(
@@ -576,7 +576,7 @@ module Events
       previous_school_partnership_id:,
       happened_at: Time.zone.now
     )
-      fail(NotPersistedRecord, 'school_partnership') unless school_partnership&.persisted?
+      fail(NotPersistedRecord, "school_partnership") unless school_partnership&.persisted?
 
       event_type = :school_partnership_reused
       school           = school_partnership.school

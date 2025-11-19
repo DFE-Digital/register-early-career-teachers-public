@@ -43,6 +43,6 @@ private
 
   # @return [Sessions::Users::Builder]
   def user_builder
-    @user_builder ||= Sessions::Users::Builder.new(omniauth_payload: request.env['omniauth.auth'])
+    @user_builder ||= Sessions::Users::Builder.new(omniauth_payload: request.env["omniauth.auth"])
   end
 end

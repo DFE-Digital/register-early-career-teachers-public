@@ -10,55 +10,55 @@ RSpec.describe Schools::Mentors::ChangeNameWizard::EditStep, type: :model do
   end
 
   let(:params) do
-    { "name" => 'Terry Pratchett' }
+    { "name" => "Terry Pratchett" }
   end
 
-  describe 'validations' do
-    context 'when name has not changed' do
+  describe "validations" do
+    context "when name has not changed" do
       before do
-        mentor_at_school_period.teacher.update(corrected_name: 'Terry Pratchett')
+        mentor_at_school_period.teacher.update(corrected_name: "Terry Pratchett")
       end
 
-      it 'is not valid' do
+      it "is not valid" do
         expect(current_step).not_to be_valid
-        expect(current_step.errors[:name]).to include('The name must be different from the current name')
+        expect(current_step.errors[:name]).to include("The name must be different from the current name")
       end
     end
 
-    context 'when name is blank' do
+    context "when name is blank" do
       let(:params) do
-        { "name" => '' }
+        { "name" => "" }
       end
 
-      it 'is not valid' do
+      it "is not valid" do
         expect(current_step).not_to be_valid
-        expect(current_step.errors[:name]).to include('Enter the correct full name')
+        expect(current_step.errors[:name]).to include("Enter the correct full name")
       end
     end
   end
 
-  describe '#next_step' do
+  describe "#next_step" do
     it { expect(current_step.next_step).to eq(:check_answers) }
   end
 
-  describe '#previous_step' do
+  describe "#previous_step" do
     it { expect { current_step.previous_step }.to raise_error(NotImplementedError) }
   end
 
-  describe '#save!' do
-    context 'when the step is not valid' do
+  describe "#save!" do
+    context "when the step is not valid" do
       let(:params) do
-        { "name" => '' }
+        { "name" => "" }
       end
 
-      it 'does not cache the new name' do
+      it "does not cache the new name" do
         expect { current_step.save! }.not_to change(wizard.store, :name)
       end
     end
 
-    context 'when the step is valid' do
-      it 'caches the new name' do
-        expect { current_step.save! }.to change(wizard.store, :name).from(nil).to('Terry Pratchett')
+    context "when the step is valid" do
+      it "caches the new name" do
+        expect { current_step.save! }.to change(wizard.store, :name).from(nil).to("Terry Pratchett")
       end
     end
   end

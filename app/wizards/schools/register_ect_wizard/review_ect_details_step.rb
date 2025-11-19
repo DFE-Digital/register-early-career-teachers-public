@@ -4,7 +4,7 @@ module Schools
       attr_accessor :change_name, :corrected_name
 
       validates :change_name, presence: { message: "Select 'Yes' or 'No' to confirm whether the details are correct" }
-      validates :corrected_name, corrected_name: true, if: -> { change_name == 'yes' }
+      validates :corrected_name, corrected_name: true, if: -> { change_name == "yes" }
 
       def self.permitted_params
         %i[change_name corrected_name]
@@ -21,9 +21,9 @@ module Schools
     private
 
       def persist
-        return super if change_name == 'yes'
+        return super if change_name == "yes"
 
-        ect.update!(corrected_name: nil, change_name: 'no')
+        ect.update!(corrected_name: nil, change_name: "no")
       end
     end
   end

@@ -106,7 +106,7 @@ module SandboxSeedData
     end
 
     def format_statuses(shorthand_statuses)
-      return 'none'.rjust(COL_WIDTHS[:year]) unless shorthand_statuses
+      return "none".rjust(COL_WIDTHS[:year]) unless shorthand_statuses
 
       coloured_statuses = shorthand_statuses.map { |status| Colourize.text(status, STATE_COLOURS[status.to_sym]) }
       # The colourizing characters affect the length so offset the rjust.

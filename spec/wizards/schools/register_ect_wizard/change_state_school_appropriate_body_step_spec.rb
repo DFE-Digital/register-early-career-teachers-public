@@ -1,5 +1,5 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeStateSchoolAppropriateBodyStep, type: :model do
-  subject { described_class.new(wizard:, appropriate_body_id: '123') }
+  subject { described_class.new(wizard:, appropriate_body_id: "123") }
 
   let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_last_chosen, :school_led_last_chosen) }
   let(:wizard) do

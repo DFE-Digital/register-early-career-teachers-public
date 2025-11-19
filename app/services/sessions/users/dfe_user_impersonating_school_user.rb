@@ -24,16 +24,16 @@ module Sessions
 
       def to_h
         {
-          'type' => self.class.name,
-          'email' => email,
-          'school_urn' => school_urn,
-          'last_active_at' => last_active_at,
-          'original_type' => original_type.to_s
+          "type" => self.class.name,
+          "email" => email,
+          "school_urn" => school_urn,
+          "last_active_at" => last_active_at,
+          "original_type" => original_type.to_s
         }
       end
 
       def rebuild_original_session
-        to_h.merge({ 'type' => original_type }).except('school_urn', 'original_type')
+        to_h.merge({ "type" => original_type }).except("school_urn", "original_type")
       end
 
     private

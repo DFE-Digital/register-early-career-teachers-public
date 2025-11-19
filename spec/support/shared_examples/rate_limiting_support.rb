@@ -56,7 +56,7 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
       end
 
       context "dfe_analytics is enabled" do
-        before { stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true") }
+        before { stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true") }
 
         it { expect { perform_request }.to have_sent_analytics_event_types(:web_request) }
 

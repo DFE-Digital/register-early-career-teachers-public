@@ -15,7 +15,7 @@ module DfESignIn
       fail(DfESignInDisabled) unless Rails.application.config.dfe_sign_in_enabled
 
       @connection = Faraday.new(url:, request: { timeout: }) do |faraday|
-        faraday.request(:authorization, 'Bearer', jwt)
+        faraday.request(:authorization, "Bearer", jwt)
         faraday.request(:json)
         faraday.response(:json)
       end
@@ -78,23 +78,23 @@ module DfESignIn
   private
 
     def jwt
-      @jwt ||= JWT.encode({ iss: client_id, aud: audience }, secret, 'HS256')
+      @jwt ||= JWT.encode({ iss: client_id, aud: audience }, secret, "HS256")
     end
 
     def base_url
-      ENV.fetch('DFE_SIGN_IN_API_BASE_URL')
+      ENV.fetch("DFE_SIGN_IN_API_BASE_URL")
     end
 
     def client_id
-      ENV.fetch('DFE_SIGN_IN_CLIENT_ID')
+      ENV.fetch("DFE_SIGN_IN_CLIENT_ID")
     end
 
     def audience
-      ENV.fetch('DFE_SIGN_IN_API_AUDIENCE')
+      ENV.fetch("DFE_SIGN_IN_API_AUDIENCE")
     end
 
     def secret
-      ENV.fetch('DFE_SIGN_IN_API_SECRET')
+      ENV.fetch("DFE_SIGN_IN_API_SECRET")
     end
   end
 end

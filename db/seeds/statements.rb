@@ -28,7 +28,7 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
         offset = coloured_statuses.sum(&:length) - statuses.sum(&:length)
         row << coloured_statuses.join(", ").rjust(year_col_width + offset)
       else
-        row << 'none'.rjust(year_col_width)
+        row << "none".rjust(year_col_width)
       end
     end
 

@@ -34,8 +34,8 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
 
         it "renders a submit button", :aggregate_failures do
           expect(rendered_content).to have_button("Record pass outcome for John Keating")
-          expect(rendered_content).to include('govuk-button')
-          expect(rendered_content).not_to include('govuk-button--warning')
+          expect(rendered_content).to include("govuk-button")
+          expect(rendered_content).not_to include("govuk-button--warning")
         end
 
         it "hides appeal notice" do
@@ -52,7 +52,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
 
         it "renders a warning button", :aggregate_failures do
           expect(rendered_content).to have_button("Record failing outcome for John Keating")
-          expect(rendered_content).to include('govuk-button govuk-button--warning')
+          expect(rendered_content).to include("govuk-button govuk-button--warning")
         end
 
         it "shows appeal notice" do
@@ -74,8 +74,8 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
 
         it "renders a submit button", :aggregate_failures do
           expect(rendered_content).to have_button("Record pass outcome for John Keating")
-          expect(rendered_content).to include('govuk-button')
-          expect(rendered_content).not_to include('govuk-button--warning')
+          expect(rendered_content).to include("govuk-button")
+          expect(rendered_content).not_to include("govuk-button--warning")
         end
 
         it "hides appeal notice" do
@@ -92,7 +92,7 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
 
         it "renders a warning button", :aggregate_failures do
           expect(rendered_content).to have_button("Record failing outcome for John Keating")
-          expect(rendered_content).to include('govuk-button govuk-button--warning')
+          expect(rendered_content).to include("govuk-button govuk-button--warning")
         end
 
         it "hides appeal notice" do

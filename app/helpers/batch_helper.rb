@@ -1,18 +1,18 @@
 module BatchHelper
   # @return [Hash{Symbol => String}]
   BATCH_COLOURS = {
-    draft: 'grey',
-    processed: 'yellow',
-    submitted: 'green',
-    failed: 'red'
+    draft: "grey",
+    processed: "yellow",
+    submitted: "green",
+    failed: "red"
   }.freeze
 
   # @return [Hash{Symbol => String}]
   BATCH_LABELS = {
-    draft: 'Draft',
-    processed: 'Not yet submitted',
-    submitted: 'Submitted',
-    failed: 'Error'
+    draft: "Draft",
+    processed: "Not yet submitted",
+    submitted: "Submitted",
+    failed: "Error"
   }.freeze
 
   def batch_example_action
@@ -46,8 +46,8 @@ module BatchHelper
   # @param batch [PendingInductionSubmissionBatch]
   def batch_type_tag(batch)
     colours = {
-      claim: 'light-blue',
-      action: 'purple'
+      claim: "light-blue",
+      action: "purple"
     }
 
     govuk_tag(text: batch.batch_type.titleize, colour: colours[batch.batch_type.to_sym])
@@ -60,14 +60,14 @@ module BatchHelper
       action: ab_batch_action_path(batch),
     }
 
-    govuk_link_to('View', paths[batch.batch_type.to_sym])
+    govuk_link_to("View", paths[batch.batch_type.to_sym])
   end
 
   # @param batches [Array<PendingInductionSubmissionBatch>]
   def batch_list_table(batches)
     govuk_table(
-      caption: 'Upload history',
-      head: ['Reference', 'File name', 'Status', 'Action'],
+      caption: "Upload history",
+      head: ["Reference", "File name", "Status", "Action"],
       rows: batches.map do |batch|
         [batch.id.to_s, batch.file_name, batch_status_tag(batch), batch_link(batch)]
       end
@@ -78,16 +78,16 @@ module BatchHelper
   def admin_batch_list_table(batches)
     govuk_table(
       head: [
-        'Batch ID',
-        'Appropriate Body',
-        'Type',
-        'Status',
-        'Filename',
-        'Created',
-        'CSV Rows',
-        'Processed',
-        'Errors',
-        'Action'
+        "Batch ID",
+        "Appropriate Body",
+        "Type",
+        "Status",
+        "Filename",
+        "Created",
+        "CSV Rows",
+        "Processed",
+        "Errors",
+        "Action"
       ],
       rows: batches.map do |batch|
         [
@@ -95,12 +95,12 @@ module BatchHelper
           batch.appropriate_body.name,
           batch_type_tag(batch),
           batch_status_tag(batch),
-          batch.file_name || '-',
+          batch.file_name || "-",
           batch.created_at.to_fs(:govuk),
           batch.tally[:uploaded_count].to_s,
           batch.tally[:processed_count].to_s,
           batch.tally[:errored_count].to_s,
-          govuk_link_to('View', admin_appropriate_body_batch_path(batch.appropriate_body, batch))
+          govuk_link_to("View", admin_appropriate_body_batch_path(batch.appropriate_body, batch))
         ]
       end
     )

@@ -14,7 +14,7 @@ describe GIASHelpers do
       end
     end
 
-    describe '.eligible' do
+    describe ".eligible" do
       it "returns eligible schools only" do
         expect(School.eligible).to contain_exactly(open_school,
                                                    eligible_school,
@@ -22,13 +22,13 @@ describe GIASHelpers do
       end
     end
 
-    describe '.cip_only' do
+    describe ".cip_only" do
       it "returns `cip`/`school-led` schools only" do
         expect(School.cip_only).to contain_exactly(cip_only_school)
       end
     end
 
-    describe '.not_cip_only' do
+    describe ".not_cip_only" do
       it "returns not `cip`/`school-led` schools only" do
         expect(School.not_cip_only).to contain_exactly(open_school,
                                                        eligible_school,
@@ -42,7 +42,7 @@ describe GIASHelpers do
 
     it { is_expected.to be_independent }
 
-    context 'when the school is not independent' do
+    context "when the school is not independent" do
       subject(:school) { FactoryBot.create(:school, :eligible) }
 
       it { is_expected.not_to be_independent }
@@ -54,7 +54,7 @@ describe GIASHelpers do
 
     it { is_expected.to be_state_funded }
 
-    context 'when the school is not state funded' do
+    context "when the school is not state funded" do
       subject(:school) { FactoryBot.create(:school, :independent) }
 
       it { is_expected.not_to be_state_funded }
@@ -66,7 +66,7 @@ describe GIASHelpers do
 
     it { is_expected.to be_eligible_for_cip }
 
-    context 'when the school is not eligible for cip' do
+    context "when the school is not eligible for cip" do
       subject(:school) { FactoryBot.create(:school, :ineligible) }
 
       it { is_expected.not_to be_eligible_for_cip }
@@ -78,7 +78,7 @@ describe GIASHelpers do
 
     it { is_expected.to be_eligible_for_fip }
 
-    context 'when the school is not eligible for fip' do
+    context "when the school is not eligible for fip" do
       subject(:school) { FactoryBot.create(:school, :ineligible) }
 
       it { is_expected.not_to be_eligible_for_fip }

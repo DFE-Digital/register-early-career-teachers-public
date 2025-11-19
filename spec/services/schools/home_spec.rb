@@ -36,13 +36,13 @@ RSpec.describe Schools::Home do
                       started_on: 1.year.ago)
   end
 
-  describe '#ects_with_mentors' do
+  describe "#ects_with_mentors" do
     it "returns actively mentored ECTs and their mentors" do
       expect(service.ects_with_mentors).to eq([ect_period])
     end
   end
 
-  describe '#mentors_with_ects' do
+  describe "#mentors_with_ects" do
     it "returns registered mentors" do
       expect(service.mentors_with_ects).to eq([mentor_period])
     end

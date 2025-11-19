@@ -1,7 +1,7 @@
-get '/admin', to: redirect('admin/teachers')
+get "/admin", to: redirect("admin/teachers")
 
 namespace :admin do
-  resource :impersonate, only: %i[create destroy], controller: 'impersonation'
+  resource :impersonate, only: %i[create destroy], controller: "impersonation"
 
   constraints -> { Rails.application.config.enable_blazer } do
     mount Blazer::Engine, at: "blazer"
@@ -11,21 +11,21 @@ namespace :admin do
   mount MissionControl::Jobs::Engine, at: "jobs"
 
   resources :users
-  resources :batches, only: %i[index], path: 'bulk' # all activity
+  resources :batches, only: %i[index], path: "bulk" # all activity
 
   resources :organisations, only: %i[index] do
     collection do
-      resources :appropriate_bodies, only: %i[index show], path: 'appropriate-bodies' do
+      resources :appropriate_bodies, only: %i[index show], path: "appropriate-bodies" do
         scope module: :appropriate_bodies do
           resource :timeline, only: :show
-          resources :current_ects, only: :index, path: 'current-ects'
+          resources :current_ects, only: :index, path: "current-ects"
           resources :batches, only: %i[index show]
         end
       end
 
-      resources :lead_providers, only: %i[index], path: 'lead-providers'
-      resources :delivery_partners, only: %i[index show edit update], path: 'delivery-partners' do
-        resource :delivery_partnerships, only: %i[new create], path: ':year', as: :delivery_partnership, controller: 'delivery_partners/delivery_partnerships'
+      resources :lead_providers, only: %i[index], path: "lead-providers"
+      resources :delivery_partners, only: %i[index show edit update], path: "delivery-partners" do
+        resource :delivery_partnerships, only: %i[new create], path: ":year", as: :delivery_partnership, controller: "delivery_partners/delivery_partnerships"
       end
     end
   end
@@ -42,17 +42,17 @@ namespace :admin do
     scope module: :teachers do
       resource :induction, only: %i[show]
     end
-    resources :induction_periods, only: %i[new create edit update destroy], path: 'induction-periods' do
+    resources :induction_periods, only: %i[new create edit update destroy], path: "induction-periods" do
       member do
-        get :confirm_delete, path: 'confirm-delete'
+        get :confirm_delete, path: "confirm-delete"
       end
     end
 
     scope module: :teachers do
       resource :timeline, only: :show, controller: :timeline
-      resource :record_passed_outcome, only: %i[new create show], path: 'record-passed-outcome', controller: :record_passed_induction
-      resource :record_failed_outcome, only: %i[new create show], path: 'record-failed-outcome', controller: :record_failed_induction
-      resource :reopen_induction, only: :update, path: 'reopen-induction', controller: :reopen_induction do
+      resource :record_passed_outcome, only: %i[new create show], path: "record-passed-outcome", controller: :record_passed_induction
+      resource :record_failed_outcome, only: %i[new create show], path: "record-failed-outcome", controller: :record_failed_induction
+      resource :reopen_induction, only: :update, path: "reopen-induction", controller: :reopen_induction do
         member { get :confirm }
       end
       resources :extensions, except: :show do
@@ -61,16 +61,16 @@ namespace :admin do
     end
   end
 
-  namespace :import_ect, path: 'import-ect' do
-    resource :find_ect, only: %i[new create], path: 'find-ect', as: 'find', controller: :find_ect
-    resources :check_ect, only: %i[edit update], path: 'check-ect', as: 'check'
-    resources :register_ect, only: %i[show], path: 'register-ect', as: 'register'
+  namespace :import_ect, path: "import-ect" do
+    resource :find_ect, only: %i[new create], path: "find-ect", as: "find", controller: :find_ect
+    resources :check_ect, only: %i[edit update], path: "check-ect", as: "check"
+    resources :register_ect, only: %i[show], path: "register-ect", as: "register"
   end
 
   resource :finance, only: :show, controller: :finance do
     scope module: :finance do
       collection do
-        resources :statements, as: 'finance_statements', only: %i[index show] do
+        resources :statements, as: "finance_statements", only: %i[index show] do
           collection { post :choose }
           member { post :authorise_payment }
 

@@ -53,7 +53,7 @@ module AppropriateBodies
       # @return [Boolean]
       def update_trs_induction_status!
         manage_teacher.update_trs_induction_status!(
-          trs_induction_status: 'InProgress',
+          trs_induction_status: "InProgress",
           trs_induction_start_date: pending_induction_submission.trs_induction_start_date,
           trs_induction_completed_date: nil
         )

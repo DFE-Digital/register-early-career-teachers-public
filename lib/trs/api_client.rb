@@ -4,10 +4,10 @@ module TRS
 
     def initialize
       @connection = Faraday.new(url: Rails.application.config.trs_api_base_url) do |faraday|
-        faraday.headers['Authorization'] = "Bearer #{Rails.application.config.trs_api_key}"
-        faraday.headers['Accept'] = 'application/json'
-        faraday.headers['X-Api-Version'] = Rails.application.config.trs_api_version
-        faraday.headers['Content-Type'] = 'application/json'
+        faraday.headers["Authorization"] = "Bearer #{Rails.application.config.trs_api_key}"
+        faraday.headers["Accept"] = "application/json"
+        faraday.headers["X-Api-Version"] = Rails.application.config.trs_api_version
+        faraday.headers["Content-Type"] = "application/json"
         faraday.response :logger if Rails.env.development?
       end
     end
@@ -53,7 +53,7 @@ module TRS
     def begin_induction!(trn:, start_date:, modified_at: Time.zone.now)
       update_induction_status(
         trn:,
-        status: 'InProgress',
+        status: "InProgress",
         start_date: start_date.iso8601,
         modified_at: modified_at.utc.iso8601(3)
       )
@@ -62,7 +62,7 @@ module TRS
     def pass_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
       update_induction_status(
         trn:,
-        status: 'Passed',
+        status: "Passed",
         start_date: start_date.iso8601,
         completed_date: completed_date.iso8601,
         modified_at: modified_at.utc.iso8601(3)
@@ -72,7 +72,7 @@ module TRS
     def fail_induction!(trn:, start_date:, completed_date:, modified_at: Time.zone.now)
       update_induction_status(
         trn:,
-        status: 'Failed',
+        status: "Failed",
         start_date: start_date.iso8601,
         completed_date: completed_date.iso8601,
         modified_at: modified_at.utc.iso8601(3)
@@ -82,7 +82,7 @@ module TRS
     def reset_teacher_induction!(trn:, modified_at: Time.zone.now)
       update_induction_status(
         trn:,
-        status: 'RequiredToComplete',
+        status: "RequiredToComplete",
         start_date: nil,
         completed_date: nil,
         modified_at: modified_at.utc.iso8601(3)
@@ -92,7 +92,7 @@ module TRS
     def reopen_teacher_induction!(trn:, start_date:, modified_at: Time.zone.now)
       update_induction_status(
         trn:,
-        status: 'InProgress',
+        status: "InProgress",
         start_date: start_date.iso8601,
         completed_date: nil,
         modified_at: modified_at.utc.iso8601(3)
@@ -102,12 +102,12 @@ module TRS
   private
 
     def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
-      payload = { 'status' => status,
-                  'startDate' => start_date,
-                  'completedDate' => completed_date,
-                  'modifiedOn' => modified_at }.to_json
+      payload = { "status" => status,
+                  "startDate" => start_date,
+                  "completedDate" => completed_date,
+                  "modifiedOn" => modified_at }.to_json
 
-      response = @connection.put(persons_path(trn, suffix: 'cpd-induction'), payload)
+      response = @connection.put(persons_path(trn, suffix: "cpd-induction"), payload)
 
       Rails.logger.debug("calling TRS API: #{response}")
 
@@ -126,7 +126,7 @@ module TRS
     end
 
     def persons_path(trn, suffix: nil)
-      ['v3', 'persons', trn, suffix].compact.join('/')
+      ["v3", "persons", trn, suffix].compact.join("/")
     end
   end
 end

@@ -16,7 +16,7 @@ RSpec.describe "API Guidance pages" do
   end
 
   describe "GET /api/swagger-api-documentation" do
-    before { get(api_guidance_page_path('swagger-api-documentation')) }
+    before { get(api_guidance_page_path("swagger-api-documentation")) }
 
     it "returns http success" do
       expect(response).to be_successful
@@ -24,7 +24,7 @@ RSpec.describe "API Guidance pages" do
   end
 
   describe "GET /api/sandbox" do
-    before { get(api_guidance_page_path('sandbox')) }
+    before { get(api_guidance_page_path("sandbox")) }
 
     it "returns http success" do
       expect(response).to be_successful
@@ -32,7 +32,7 @@ RSpec.describe "API Guidance pages" do
   end
 
   describe "GET /api/guidance-for-lead-providers" do
-    before { get(api_guidance_page_path('guidance-for-lead-providers')) }
+    before { get(api_guidance_page_path("guidance-for-lead-providers")) }
 
     it "returns http success" do
       expect(response).to be_successful

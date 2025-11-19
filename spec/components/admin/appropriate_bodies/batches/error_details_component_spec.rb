@@ -9,18 +9,18 @@ RSpec.describe Admin::AppropriateBodies::Batches::ErrorDetailsComponent, type: :
     render_inline(component)
   end
 
-  context 'without errors' do
+  context "without errors" do
     let(:errored_count) { 0 }
 
-    it 'does not render content' do
+    it "does not render content" do
       expect(rendered_content).to be_empty
     end
   end
 
-  context 'with errors' do
+  context "with errors" do
     let(:errored_count) { 1 }
 
-    it 'renders content' do
+    it "renders content" do
       expect(rendered_content).not_to be_empty
     end
   end

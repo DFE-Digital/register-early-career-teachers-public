@@ -62,10 +62,10 @@ module ECTAtSchoolPeriods
         )
       end
 
-      context 'when the new lead provider is the same as the old lead provider' do
+      context "when the new lead provider is the same as the old lead provider" do
         let(:lead_provider) { old_lead_provider }
 
-        it 'raises an error' do
+        it "raises an error" do
           expect { change_lead_provider }.to raise_error(Teachers::LeadProviderChanger::LeadProviderNotChangedError)
 
           expect(training_period.finished_on).to be_nil

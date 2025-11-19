@@ -13,7 +13,7 @@ RSpec.describe Migrators::DeliveryPartner do
     end
 
     describe "#migrate!" do
-      it 'creates a record in the ecf2 database' do
+      it "creates a record in the ecf2 database" do
         expect {
           instance.migrate!
         }.to change(::DeliveryPartner, :count).by(Migration::DeliveryPartner.count)

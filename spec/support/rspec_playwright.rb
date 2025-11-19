@@ -1,5 +1,5 @@
-require 'capybara'
-require 'playwright'
+require "capybara"
+require "playwright"
 
 module RSpecPlaywright
   class PlaywrightMajorVersionMismatch < StandardError; end
@@ -21,17 +21,17 @@ module RSpecPlaywright
   end
 
   def self.headless
-    ENV.fetch('HEADLESS', true).then do |value|
-      return true if value.in?([true, '1', 'yes', 'true'])
-      return false if value.in?([false, '0', 'no', 'false'])
+    ENV.fetch("HEADLESS", true).then do |value|
+      return true if value.in?([true, "1", "yes", "true"])
+      return false if value.in?([false, "0", "no", "false"])
 
-      fail(ArgumentError, 'Invalid headless option')
+      fail(ArgumentError, "Invalid headless option")
     end
   end
 
   # rubocop:disable Naming/MethodName
   def self.slowMo
-    ENV.fetch('SLOWMO', 0).to_i
+    ENV.fetch("SLOWMO", 0).to_i
   end
   # rubocop:enable Naming/MethodName
 
@@ -40,7 +40,7 @@ module RSpecPlaywright
                                 .new(Playwright::VERSION)
                                 .segments
                                 .first(2)
-    javascript_playwright_version = File.read('package-lock.json')
+    javascript_playwright_version = File.read("package-lock.json")
                                         .match(%r{"playwright":\ "\^(?<version>.*)"})[:version]
                                         .then { |v| Gem::Version.new(v).segments }
                                         .first(2)

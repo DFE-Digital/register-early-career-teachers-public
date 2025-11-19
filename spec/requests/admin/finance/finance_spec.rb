@@ -6,7 +6,7 @@ RSpec.describe "Admin finance page", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get "/admin/finance"
@@ -14,10 +14,10 @@ RSpec.describe "Admin finance page", type: :request do
       end
     end
 
-    context 'when signed in as a DfE user' do
-      include_context 'sign in as DfE user'
+    context "when signed in as a DfE user" do
+      include_context "sign in as DfE user"
 
-      it 'displays the finance page' do
+      it "displays the finance page" do
         get "/admin/finance"
 
         expect(response.status).to eq(200)

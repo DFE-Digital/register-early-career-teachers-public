@@ -1,4 +1,4 @@
-RSpec.describe 'schools/register_mentor_wizard/programme_choices.html.erb' do
+RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
   include SchoolPartnershipHelpers
 
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -6,7 +6,7 @@ RSpec.describe 'schools/register_mentor_wizard/programme_choices.html.erb' do
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
   let(:school_partnership) do
-    make_partnership_for(school, contract_period, lead_provider_name: 'Naruto Ninja Academy')
+    make_partnership_for(school, contract_period, lead_provider_name: "Naruto Ninja Academy")
   end
 
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
@@ -21,10 +21,10 @@ RSpec.describe 'schools/register_mentor_wizard/programme_choices.html.erb' do
 
   let(:store) do
     FactoryBot.build(:session_repository,
-                     trn: '0000007',
-                     trs_first_name: 'Sasuke',
-                     trs_last_name: 'Uchiha',
-                     change_name: 'no',
+                     trn: "0000007",
+                     trs_first_name: "Sasuke",
+                     trs_last_name: "Uchiha",
+                     change_name: "no",
                      corrected_name: nil,
                      ect_id: ect_at_school_period.id)
   end
@@ -41,36 +41,36 @@ RSpec.describe 'schools/register_mentor_wizard/programme_choices.html.erb' do
   before do
     assign(:wizard, wizard)
     assign(:mentor, mentor)
-    assign(:ect_name, 'Naruto Uzumaki')
+    assign(:ect_name, "Naruto Uzumaki")
   end
 
-  it 'always shows the lead provider row' do
+  it "always shows the lead provider row" do
     render
-    expect(rendered).to have_element(:dt, text: 'Lead provider')
-    expect(rendered).to have_element(:dd, text: 'Naruto Ninja Academy')
+    expect(rendered).to have_element(:dt, text: "Lead provider")
+    expect(rendered).to have_element(:dd, text: "Naruto Ninja Academy")
   end
 
-  context 'when mentor has expression_of_interest?' do
+  context "when mentor has expression_of_interest?" do
     before do
       allow(mentor).to receive(:expression_of_interest?).and_return(true)
       render
     end
 
-    it 'shows the explanatory text' do
+    it "shows the explanatory text" do
       expect(rendered).to have_text(
-        'Naruto Ninja Academy will confirm if they’ll be working with your school and which delivery partner will deliver training events.'
+        "Naruto Ninja Academy will confirm if they’ll be working with your school and which delivery partner will deliver training events."
       )
     end
   end
 
-  context 'when mentor does not have expression_of_interest?' do
+  context "when mentor does not have expression_of_interest?" do
     before do
       allow(mentor).to receive(:expression_of_interest?).and_return(false)
       render
     end
 
-    it 'does not show explanatory text' do
-      expect(rendered).not_to have_text('will confirm if they’ll be working with your school')
+    it "does not show explanatory text" do
+      expect(rendered).not_to have_text("will confirm if they’ll be working with your school")
     end
   end
 end

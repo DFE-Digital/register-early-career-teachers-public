@@ -25,11 +25,11 @@ RSpec.describe TrainingPeriods::Create do
   let(:school) { FactoryBot.create(:school) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
   let(:expression_of_interest) { nil }
-  let(:training_programme) { 'provider_led' }
+  let(:training_programme) { "provider_led" }
   let(:finished_on) { Time.zone.today - 3.weeks }
   let!(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-september") }
 
-  context 'with an ECTAtSchoolPeriod' do
+  context "with an ECTAtSchoolPeriod" do
     let(:period) do
       FactoryBot.create(
         :ect_at_school_period,
@@ -45,7 +45,7 @@ RSpec.describe TrainingPeriods::Create do
       end
     end
 
-    it 'creates a TrainingPeriod associated with the ECTAtSchoolPeriod with the correct schedule' do
+    it "creates a TrainingPeriod associated with the ECTAtSchoolPeriod with the correct schedule" do
       expect { result }.to change(TrainingPeriod, :count).by(1)
 
       training_period = result
@@ -58,7 +58,7 @@ RSpec.describe TrainingPeriods::Create do
       expect(training_period.schedule).to eq(schedule)
     end
 
-    it 'records an event for assigning the schedule to the training period' do
+    it "records an event for assigning the schedule to the training period" do
       allow(Events::Record).to receive(:record_teacher_schedule_assigned_to_training_period!)
       training_period = result
       expect(Events::Record).to have_received(:record_teacher_schedule_assigned_to_training_period!).with(
@@ -70,7 +70,7 @@ RSpec.describe TrainingPeriods::Create do
       )
     end
 
-    context 'when a specific schedule is provided' do
+    context "when a specific schedule is provided" do
       let(:result_with_schedule) do
         described_class.new(
           period:,
@@ -85,14 +85,14 @@ RSpec.describe TrainingPeriods::Create do
 
       let(:other_schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-january") }
 
-      it 'creates a TrainingPeriod with the provided schedule' do
+      it "creates a TrainingPeriod with the provided schedule" do
         training_period = result_with_schedule
         expect(training_period.schedule).to eq(other_schedule)
       end
     end
   end
 
-  context 'with a MentorAtSchoolPeriod' do
+  context "with a MentorAtSchoolPeriod" do
     let(:period) do
       FactoryBot.create(
         :mentor_at_school_period,
@@ -108,7 +108,7 @@ RSpec.describe TrainingPeriods::Create do
       end
     end
 
-    it 'creates a TrainingPeriod associated with the MentorAtSchoolPeriod' do
+    it "creates a TrainingPeriod associated with the MentorAtSchoolPeriod" do
       expect { result }.to change(TrainingPeriod, :count).by(1)
 
       training_period = result
@@ -121,7 +121,7 @@ RSpec.describe TrainingPeriods::Create do
       expect(training_period.schedule).to eq(schedule)
     end
 
-    it 'records an event for assigning the schedule to the training period' do
+    it "records an event for assigning the schedule to the training period" do
       allow(Events::Record).to receive(:record_teacher_schedule_assigned_to_training_period!)
       training_period = result
       expect(Events::Record).to have_received(:record_teacher_schedule_assigned_to_training_period!).with(
@@ -133,7 +133,7 @@ RSpec.describe TrainingPeriods::Create do
       )
     end
 
-    context 'when a specific schedule is provided' do
+    context "when a specific schedule is provided" do
       let(:result_with_schedule) do
         described_class.new(
           period:,
@@ -148,7 +148,7 @@ RSpec.describe TrainingPeriods::Create do
 
       let(:other_schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-january") }
 
-      it 'creates a TrainingPeriod with the provided schedule' do
+      it "creates a TrainingPeriod with the provided schedule" do
         training_period = result_with_schedule
         expect(training_period.schedule).to eq(other_schedule)
       end
@@ -165,10 +165,10 @@ RSpec.describe TrainingPeriods::Create do
     end
   end
 
-  context 'when the schedule cannot be found' do
+  context "when the schedule cannot be found" do
     let(:period) { FactoryBot.create(:ect_at_school_period) }
 
-    it 'raises an error' do
+    it "raises an error" do
       finder = instance_double(Schedules::Find)
       allow(Schedules::Find).to receive(:new).and_return(finder)
       allow(finder).to receive(:call).and_return(nil)
@@ -177,18 +177,18 @@ RSpec.describe TrainingPeriods::Create do
     end
   end
 
-  describe '.school_led' do
+  describe ".school_led" do
     let(:period) { FactoryBot.create(:ect_at_school_period) }
 
-    it 'calls new with the school_led arguments' do
+    it "calls new with the school_led arguments" do
       allow(TrainingPeriods::Create).to receive(:new).and_return(true)
 
       TrainingPeriods::Create.school_led(period:, started_on:)
 
-      expect(TrainingPeriods::Create).to have_received(:new).with(period:, started_on:, training_programme: 'school_led')
+      expect(TrainingPeriods::Create).to have_received(:new).with(period:, started_on:, training_programme: "school_led")
     end
 
-    it 'does not record an event' do
+    it "does not record an event" do
       allow(TrainingPeriods::Create).to receive(:new).and_return(true)
 
       TrainingPeriods::Create.school_led(period:, started_on:)
@@ -197,10 +197,10 @@ RSpec.describe TrainingPeriods::Create do
     end
   end
 
-  describe '.provider_led' do
+  describe ".provider_led" do
     let(:period) { FactoryBot.create(:ect_at_school_period) }
 
-    it 'calls new with the provider_led arguments' do
+    it "calls new with the provider_led arguments" do
       allow(TrainingPeriods::Create).to receive(:new).with(any_args).and_call_original
 
       TrainingPeriods::Create.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on:, schedule:, author:)
@@ -210,7 +210,7 @@ RSpec.describe TrainingPeriods::Create do
         started_on:,
         school_partnership:,
         expression_of_interest:,
-        training_programme: 'provider_led',
+        training_programme: "provider_led",
         finished_on:,
         schedule:,
         author:

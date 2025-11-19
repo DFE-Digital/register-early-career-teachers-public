@@ -111,7 +111,7 @@ module ParityCheck
       return self.match_rate = 0 if ecf_status_code != rect_status_code
 
       total_lines = ecf_body.to_s.lines.size + rect_body.to_s.lines.size
-      diff_lines  = body_diff.count { |line| line.start_with?('+', '-') }
+      diff_lines  = body_diff.count { |line| line.start_with?("+", "-") }
 
       self.match_rate = (100 * (1 - diff_lines.to_f / total_lines)).floor
     end

@@ -12,20 +12,20 @@ RSpec.describe "appropriate_bodies/teachers/extensions/new.html.erb" do
   it "renders a form with a 'FTE terms' field" do
     render
 
-    expect(rendered).to have_css('label', text: 'FTE terms')
+    expect(rendered).to have_css("label", text: "FTE terms")
   end
 
-  context 'when the extension has an error' do
+  context "when the extension has an error" do
     let(:extension) { FactoryBot.build(:induction_extension, number_of_terms: 17) }
 
     before do
       extension.valid?
     end
 
-    it 'shows the error message on the page' do
+    it "shows the error message on the page" do
       render
 
-      expect(rendered).to have_css('.govuk-form-group--error', text: /Number of terms must be between 0.1 and 16/)
+      expect(rendered).to have_css(".govuk-form-group--error", text: /Number of terms must be between 0.1 and 16/)
     end
   end
 end

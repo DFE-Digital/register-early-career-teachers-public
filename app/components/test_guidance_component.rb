@@ -10,16 +10,16 @@ class TestGuidanceComponent < ApplicationComponent
   class TRSFakeAPIInstructions < ApplicationComponent
     def list
       [
-        '7000001 (QTS not awarded)',
-        '7000002 (teacher not found)',
-        '7000003 (prohibited from teaching)',
-        '7000004 (teacher has been deactivated in TRS)',
-        '7000005 (teacher has alerts but is not prohibited)',
-        '7000006 (teacher is exempt from mentor funding)',
-        '7000007 (teacher has passed their induction)',
-        '7000008 (teacher has failed their induction)',
-        '7000009 (teacher is exempt from training)',
-        '7000010 (teacher has failed their induction in Wales)',
+        "7000001 (QTS not awarded)",
+        "7000002 (teacher not found)",
+        "7000003 (prohibited from teaching)",
+        "7000004 (teacher has been deactivated in TRS)",
+        "7000005 (teacher has alerts but is not prohibited)",
+        "7000006 (teacher is exempt from mentor funding)",
+        "7000007 (teacher has passed their induction)",
+        "7000008 (teacher has failed their induction)",
+        "7000009 (teacher is exempt from training)",
+        "7000010 (teacher has failed their induction in Wales)",
       ]
     end
   end
@@ -62,18 +62,18 @@ class TestGuidanceComponent < ApplicationComponent
       CSV.read(file_path, headers: true).map(&:values_at)
     end
 
-    def file_path = Rails.root.join('spec/fixtures/seeds_trs.csv')
+    def file_path = Rails.root.join("spec/fixtures/seeds_trs.csv")
 
     # Once used by RIAB the status changes to "In progress" if active or "Induction paused" once released
     def status_indicator(trs_induction_status, teacher)
-      trs_induction_status = teacher&.induction_periods&.any? ? 'InProgress' : trs_induction_status
+      trs_induction_status = teacher&.induction_periods&.any? ? "InProgress" : trs_induction_status
       induction_status = Teachers::InductionStatus.new(trs_induction_status:, teacher:)
       govuk_tag(**induction_status.status_tag_kwargs)
     end
 
     def populate_button(trn, dob, national_insurance_number)
-      govuk_button_link_to('Select', '#',
-                           class: 'populate-find-ect-form-button',
+      govuk_button_link_to("Select", "#",
+                           class: "populate-find-ect-form-button",
                            secondary: true,
                            data: {
                              trn:,
@@ -94,7 +94,7 @@ class TestGuidanceComponent < ApplicationComponent
 
     # @param [Teacher, nil]
     # @return [String]
-    def active_period_with(teacher, inactive: '-')
+    def active_period_with(teacher, inactive: "-")
       return inactive if teacher.nil?
 
       case

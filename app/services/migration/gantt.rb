@@ -1,7 +1,7 @@
 module Migration
   module Gantt
     def to_png
-      IO.popen('plantuml -p', 'r+') do |pipe|
+      IO.popen("plantuml -p", "r+") do |pipe|
         pipe.puts(build)
         pipe.close_write
         pipe.read
@@ -10,14 +10,14 @@ module Migration
 
     def colour(lead_provider)
       {
-        'Ambition Institute' => 'gold',
-        'Best Practice Network' => 'deeppink',
-        'Capita' => 'cyan',
-        'Education Development Trust' => 'slateblue',
-        'National Institute of Teaching' => 'cadetblue',
-        'Teach First' => 'royalblue',
-        'UCL Institute of Education' => 'lightslategrey'
-      }.fetch(lead_provider, 'bisque')
+        "Ambition Institute" => "gold",
+        "Best Practice Network" => "deeppink",
+        "Capita" => "cyan",
+        "Education Development Trust" => "slateblue",
+        "National Institute of Teaching" => "cadetblue",
+        "Teach First" => "royalblue",
+        "UCL Institute of Education" => "lightslategrey"
+      }.fetch(lead_provider, "bisque")
     end
 
     def academic_year_boundaries

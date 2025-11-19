@@ -1,21 +1,21 @@
-RSpec.describe 'Selecting a different lead provider', :enable_schools_interface do
-  include_context 'test trs api client'
+RSpec.describe "Selecting a different lead provider", :enable_schools_interface do
+  include_context "test trs api client"
   include SchoolPartnershipHelpers
 
-  scenario 'Registering a new mentor' do
+  scenario "Registering a new mentor" do
     given_there_is_a_school_in_the_service
     and_the_school_is_in_a_partnership_with_a_lead_provider
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
     and_i_sign_in_as_that_school_user
     and_i_click_to_assign_a_mentor_to_the_ect
-    and_i_click_continue('link')
+    and_i_click_continue("link")
     and_i_submit_the_find_mentor_form
     and_i_choose_that_the_details_are_correct
     and_i_click_confirm_and_continue
     then_i_should_be_taken_to_the_email_address_page
 
     when_i_enter_the_mentor_email_address
-    and_i_click_continue('button')
+    and_i_click_continue("button")
     then_i_should_be_taken_to_the_review_mentor_eligibility_page
 
     when_i_click_choose_another_provider_link
@@ -37,11 +37,11 @@ RSpec.describe 'Selecting a different lead provider', :enable_schools_interface 
   end
 
   def and_the_back_link_points_to_the_eligibility_lead_provider_page
-    expect(page.get_by_role('link', name: 'Back', exact: true).get_attribute('href')).to end_with('/school/register-mentor/eligibility-lead-provider')
+    expect(page.get_by_role("link", name: "Back", exact: true).get_attribute("href")).to end_with("/school/register-mentor/eligibility-lead-provider")
   end
 
   def and_i_choose_that_the_details_are_correct
-    page.get_by_label('Yes').check
+    page.get_by_label("Yes").check
   end
 
   def given_there_is_a_school_in_the_service
@@ -64,78 +64,78 @@ RSpec.describe 'Selecting a different lead provider', :enable_schools_interface 
   end
 
   def and_i_click_to_assign_a_mentor_to_the_ect
-    page.get_by_role('link', name: 'Assign a mentor for this ECT').click
+    page.get_by_role("link", name: "Assign a mentor for this ECT").click
   end
 
   def and_i_click_continue(link_or_button)
-    page.get_by_role(link_or_button, name: 'Continue').click
+    page.get_by_role(link_or_button, name: "Continue").click
   end
 
   def and_i_submit_the_find_mentor_form
-    page.get_by_label('Teacher reference number (TRN)').fill(trn)
-    page.get_by_label('day').fill('3')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1977')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("Teacher reference number (TRN)").fill(trn)
+    page.get_by_label("day").fill("3")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1977")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_review_mentor_details_page
-    expect(page).to have_path('/school/register-mentor/review-mentor-details')
+    expect(page).to have_path("/school/register-mentor/review-mentor-details")
   end
 
   def and_i_click_confirm_and_continue
-    page.get_by_role('button', name: 'Confirm and continue').click
+    page.get_by_role("button", name: "Confirm and continue").click
   end
 
   def then_i_should_be_taken_to_the_email_address_page
-    expect(page).to have_path('/school/register-mentor/email-address')
+    expect(page).to have_path("/school/register-mentor/email-address")
   end
 
   def when_i_enter_the_mentor_email_address
-    page.get_by_label('email').fill('example@example.com')
+    page.get_by_label("email").fill("example@example.com")
   end
 
   def then_i_should_be_taken_to_the_review_mentor_eligibility_page
-    expect(page).to have_path('/school/register-mentor/review-mentor-eligibility')
+    expect(page).to have_path("/school/register-mentor/review-mentor-eligibility")
   end
 
   def when_i_click_choose_another_provider_link
-    page.get_by_role('link', name: "#{@lead_provider.name} will not be providing mentor training to Kirk Van Houten").click
+    page.get_by_role("link", name: "#{@lead_provider.name} will not be providing mentor training to Kirk Van Houten").click
   end
 
   def then_i_should_be_taken_to_eligibility_lead_provider_page
-    expect(page).to have_path('/school/register-mentor/eligibility-lead-provider')
+    expect(page).to have_path("/school/register-mentor/eligibility-lead-provider")
   end
 
   def when_i_select_a_different_lead_provider
     page.get_by_role(:radio, name: @another_lead_provider.name).check
-    page.get_by_role(:button, name: 'Continue').click
+    page.get_by_role(:button, name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page).to have_path('/school/register-mentor/check-answers')
+    expect(page).to have_path("/school/register-mentor/check-answers")
   end
 
   def and_i_should_see_all_the_mentor_data_on_the_page
-    expect(page.locator('dt', hasText: 'Teacher reference number (TRN)')).to be_visible
-    expect(page.locator('dd', hasText: trn)).to be_visible
-    expect(page.locator('dt', hasText: 'Name')).to be_visible
-    expect(page.locator('dd', hasText: 'Kirk Van Houten')).to be_visible
-    expect(page.locator('dt', hasText: 'Email address')).to be_visible
-    expect(page.locator('dd', hasText: 'example@example.com')).to be_visible
-    expect(page.locator('dt', hasText: 'Lead provider')).to be_visible
-    expect(page.locator('dd', hasText: @another_lead_provider.name)).to be_visible
+    expect(page.locator("dt", hasText: "Teacher reference number (TRN)")).to be_visible
+    expect(page.locator("dd", hasText: trn)).to be_visible
+    expect(page.locator("dt", hasText: "Name")).to be_visible
+    expect(page.locator("dd", hasText: "Kirk Van Houten")).to be_visible
+    expect(page.locator("dt", hasText: "Email address")).to be_visible
+    expect(page.locator("dd", hasText: "example@example.com")).to be_visible
+    expect(page.locator("dt", hasText: "Lead provider")).to be_visible
+    expect(page.locator("dd", hasText: @another_lead_provider.name)).to be_visible
   end
 
   def when_i_click_confirm_details
-    page.get_by_role('button', name: 'Confirm details').click
+    page.get_by_role("button", name: "Confirm details").click
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page).to have_path('/school/register-mentor/confirmation')
+    expect(page).to have_path("/school/register-mentor/confirmation")
   end
 
   def trn
-    '3002586'
+    "3002586"
   end
 end

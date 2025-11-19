@@ -33,7 +33,7 @@ module Auditable
              if: -> { author&.dfe_user? }
 
     normalizes :zendesk_ticket_id,
-               with: ->(ticket) { ticket.delete_prefix('#').strip }
+               with: ->(ticket) { ticket.delete_prefix("#").strip }
   end
 
 private

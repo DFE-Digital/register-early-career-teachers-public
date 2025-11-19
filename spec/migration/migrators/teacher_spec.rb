@@ -28,14 +28,14 @@ RSpec.describe Migrators::Teacher do
     end
 
     def setup_failure_state
-      invalid_trn = '123'
+      invalid_trn = "123"
       teacher_profile = FactoryBot.create(:migration_teacher_profile, trn: invalid_trn)
       ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
       FactoryBot.create(:migration_induction_record, participant_profile: ect)
     end
 
     describe "#migrate!" do
-      it 'creates Teacher records for each ECF TeacherProfile with TRN' do
+      it "creates Teacher records for each ECF TeacherProfile with TRN" do
         teacher_profile = FactoryBot.create(:migration_teacher_profile)
         ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
         FactoryBot.create(:migration_induction_record, participant_profile: ect)
@@ -52,7 +52,7 @@ RSpec.describe Migrators::Teacher do
         expect(teacher.updated_at).to be_within(1.second).of teacher_profile.updated_at
       end
 
-      it 'creates trnless Teacher records for ECF TeacherProfiles without TRN' do
+      it "creates trnless Teacher records for ECF TeacherProfiles without TRN" do
         teacher_profile_without_trn = FactoryBot.create(:migration_teacher_profile, trn: nil)
         ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: teacher_profile_without_trn, user: teacher_profile_without_trn.user)
         FactoryBot.create(:migration_induction_record, participant_profile: ect)
@@ -70,8 +70,8 @@ RSpec.describe Migrators::Teacher do
         expect(teacher.updated_at).to be_within(1.second).of teacher_profile_without_trn.updated_at
       end
 
-      context 'for teachers with TRN' do
-        it 'creates an ECTAtSchoolPeriod records for each school period found in the ECF induction records' do
+      context "for teachers with TRN" do
+        it "creates an ECTAtSchoolPeriod records for each school period found in the ECF induction records" do
           instance.migrate!
 
           Migration::TeacherProfile.where.not(trn: nil).find_each do |teacher_profile|
@@ -86,7 +86,7 @@ RSpec.describe Migrators::Teacher do
           end
         end
 
-        it 'creates a TrainingPeriod record for each partnership period found in the ECF induction records' do
+        it "creates a TrainingPeriod record for each partnership period found in the ECF induction records" do
           instance.migrate!
 
           Migration::TeacherProfile.where.not(trn: nil).find_each do |teacher_profile|
@@ -103,7 +103,7 @@ RSpec.describe Migrators::Teacher do
         end
       end
 
-      context 'for trnless teachers' do
+      context "for trnless teachers" do
         let!(:trnless_teacher_profile) { FactoryBot.create(:migration_teacher_profile, trn: nil) }
         let!(:trnless_ect) { FactoryBot.create(:migration_participant_profile, :ect, teacher_profile: trnless_teacher_profile, user: trnless_teacher_profile.user) }
         let!(:trnless_induction_record) do
@@ -117,7 +117,7 @@ RSpec.describe Migrators::Teacher do
           end
         end
 
-        it 'creates an ECTAtSchoolPeriod record for school period found in the ECF induction records' do
+        it "creates an ECTAtSchoolPeriod record for school period found in the ECF induction records" do
           # Create RECT dependencies
           create_resource(trnless_teacher_profile)
 
@@ -131,7 +131,7 @@ RSpec.describe Migrators::Teacher do
           expect(teacher.ect_at_school_periods.first.school.urn).to eq trnless_induction_record.induction_programme.school_cohort.school.urn.to_i
         end
 
-        it 'creates a TrainingPeriod record for partnership period found in the ECF induction records' do
+        it "creates a TrainingPeriod record for partnership period found in the ECF induction records" do
           # Create RECT dependencies
           create_resource(trnless_teacher_profile)
 

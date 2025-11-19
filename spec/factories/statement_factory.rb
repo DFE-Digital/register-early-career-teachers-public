@@ -25,11 +25,11 @@ FactoryBot.define do
     end
 
     trait :output_fee do
-      fee_type { 'output' }
+      fee_type { "output" }
     end
 
     trait :service_fee do
-      fee_type { 'service' }
+      fee_type { "service" }
     end
   end
 end

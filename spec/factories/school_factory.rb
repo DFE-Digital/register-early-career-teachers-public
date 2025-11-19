@@ -12,12 +12,12 @@ FactoryBot.define do
     end
 
     trait :provider_led_last_chosen do
-      last_chosen_training_programme { 'provider_led' }
+      last_chosen_training_programme { "provider_led" }
       association :last_chosen_lead_provider, factory: :lead_provider
     end
 
     trait :school_led_last_chosen do
-      last_chosen_training_programme { 'school_led' }
+      last_chosen_training_programme { "school_led" }
     end
 
     trait :local_authority_ab_last_chosen do
@@ -61,7 +61,7 @@ FactoryBot.define do
     end
 
     trait :with_administrative_district do
-      gias_school { association :gias_school, administrative_district_name: 'North Northhamptonshire', urn: }
+      gias_school { association :gias_school, administrative_district_name: "North Northhamptonshire", urn: }
     end
 
     trait :with_induction_tutor do
