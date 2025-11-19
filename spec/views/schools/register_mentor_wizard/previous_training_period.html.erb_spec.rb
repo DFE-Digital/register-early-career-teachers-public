@@ -22,10 +22,12 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
   end
 
   let(:mentor) { register_mentor_wizard.mentor }
+  let(:decorated_mentor) { Schools::DecoratedMentor.new(mentor) }
 
   before do
     assign(:wizard, register_mentor_wizard)
     assign(:mentor, mentor)
+    assign(:decorated_mentor, decorated_mentor)
   end
 
   context "when the mentor previously trained under a confirmed partnership" do
@@ -34,13 +36,19 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
     let(:confirmed_delivery_partner) { FactoryBot.create(:delivery_partner, name: "Rise Teaching School Hub") }
 
     let!(:active_lead_provider) do
-      FactoryBot.create(:active_lead_provider, contract_period: current_contract_period, lead_provider: confirmed_lead_provider)
+      FactoryBot.create(
+        :active_lead_provider,
+        contract_period: current_contract_period,
+        lead_provider: confirmed_lead_provider
+      )
     end
 
     let!(:lead_provider_delivery_partnership) do
-      FactoryBot.create(:lead_provider_delivery_partnership,
-                        active_lead_provider:,
-                        delivery_partner: confirmed_delivery_partner)
+      FactoryBot.create(
+        :lead_provider_delivery_partnership,
+        active_lead_provider:,
+        delivery_partner: confirmed_delivery_partner
+      )
     end
 
     let!(:mentor_period) do
@@ -59,15 +67,17 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
         :for_mentor,
         :provider_led,
         mentor_at_school_period: mentor_period,
-        school_partnership: FactoryBot.create(:school_partnership,
-                                              school: current_school,
-                                              lead_provider_delivery_partnership:),
+        school_partnership: FactoryBot.create(
+          :school_partnership,
+          school: current_school,
+          lead_provider_delivery_partnership:
+        ),
         started_on: Date.new(2024, 9, 1),
         finished_on: Date.new(2025, 7, 1)
       )
     end
 
-    it "displays the correct lead provider and delivery partner names" do
+    it "displays the confirmed lead provider and delivery partner names" do
       render
 
       expect(rendered).to have_css("dt", text: "Lead provider")
@@ -80,22 +90,32 @@ RSpec.describe "schools/register_mentor_wizard/previous_training_period_details.
 
   context "when the mentor previously trained under a school-led programme" do
     before do
-      instance_double(
-        TrainingPeriod,
-        lead_provider_name: nil,
-        delivery_partner_name: nil,
-        provider_led_training_programme?: false
-      )
-
-      allow(mentor).to receive(:previous_provider_led?)
-        .and_return(false)
+      allow(mentor).to receive(:previous_training_period).and_return(nil)
+      allow(mentor).to receive_messages(previous_training_period: nil, previous_provider_led?: false)
     end
 
-    it "shows the lead provider but does not display a delivery partner row" do
+    it "shows a Lead provider row but does not display a Delivery partner row" do
       render
 
       expect(rendered).to have_css("dt", text: "Lead provider")
       expect(rendered).not_to have_css("dt", text: "Delivery partner")
+    end
+  end
+
+  context "when the mentor previously trained on a provider-led programme with only an expression of interest (no confirmed partnership)" do
+    before do
+      allow(mentor).to receive(:previous_training_period).and_return(nil)
+      allow(mentor).to receive_messages(previous_training_period: nil, previous_provider_led?: true)
+    end
+
+    it "shows Lead provider and Delivery partner rows with 'Not confirmed'" do
+      render
+
+      expect(rendered).to have_css("dt", text: "Lead provider")
+      expect(rendered).to have_css("dd", text: "Not confirmed")
+
+      expect(rendered).to have_css("dt", text: "Delivery partner")
+      expect(rendered).to have_css("dd", text: "Not confirmed")
     end
   end
 end
