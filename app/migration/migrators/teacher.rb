@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[school_partnership]
+      %i[schedule school_partnership]
     end
 
     def self.reset!
@@ -138,6 +138,7 @@ module Migrators
           training_period.school_partnership = if training_record.training_programme == "provider_led"
                                                  find_school_partnership!(training_record, school)
                                                end
+          training_period.schedule = find_schedule_for(training_record, participant_profile)
           training_period.save!
         rescue ActiveRecord::ActiveRecordError => e
           ::TeacherMigrationFailure.create!(teacher:,
@@ -231,6 +232,21 @@ module Migrators
       end
 
       school_partnership
+    end
+
+    def find_schedule_for(training_period_data, participant_profile)
+      return nil unless training_period_data.training_programme == "provider_led"
+      return nil if training_period_data.schedule_identifier.blank?
+
+      schedule = ::Schedule.find_by(
+        identifier: training_period_data.schedule_identifier,
+        contract_period_year: training_period_data.cohort_year
+      )
+
+      # ECTs cannot be assigned to replacement schedules
+      return nil if schedule&.replacement_schedule? && participant_profile.ect?
+
+      schedule
     end
 
     def preload_caches
