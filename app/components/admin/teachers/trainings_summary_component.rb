@@ -1,0 +1,109 @@
+module Admin
+  module Teachers
+    class TrainingsSummaryComponent < ApplicationComponent
+      attr_reader :training_period
+
+      def initialize(training_period:)
+        @training_period = training_period
+      end
+
+      def call
+        govuk_summary_card(title: card_title) do |card|
+          card.with_summary_list do |list|
+            rows.each do |row|
+              list.with_row do |r|
+                r.with_key(text: row[:key][:text]) if row[:key].present?
+                r.with_value(text: row[:value][:text])
+              end
+            end
+          end
+        end
+      end
+
+    private
+
+      def rows
+        if training_period.provider_led_training_programme?
+          provider_led_rows
+        else
+          # school_led_rows
+        end
+      end
+
+      def provider_led_rows
+        rows = [
+          summary_row('Lead provider', training_period.lead_provider_name),
+        ]
+
+        rows << summary_row('Delivery partner', delivery_partner_text)
+        rows << summary_row('School', training_school_name)
+        rows << summary_row('Contract period', training_period.contract_period.year.to_s)
+        rows << summary_row('Training programme', TRAINING_PROGRAMME[training_period.training_programme])
+        rows << summary_row('Schedule', schedule_text)
+        rows << summary_row('Start date', start_date_text)
+        rows << summary_row('End date', end_date_text)
+        rows
+      end
+
+      def card_title
+        return 'School-led training programme' if training_period.school_led_training_programme?
+        return unless confirmed_partnership?
+
+        provider_led_card_title
+      end
+
+      def provider_led_card_title
+        "#{training_period.lead_provider_name} with #{training_period.delivery_partner_name}"
+      end
+
+      def confirmed_partnership?
+        training_period.school_partnership.present?
+      end
+
+      def delivery_partner_text
+        if confirmed_partnership?
+          training_period.delivery_partner_name
+        else
+          'No delivery partner confirmed'
+        end
+      end
+
+      def schedule_text
+        training_period.schedule&.description || not_available_text
+      end
+
+      def not_available_text
+        'Not available'
+      end
+
+      def training_school_name
+        if training_period.for_ect?
+          training_period.ect_at_school_period&.school&.name
+        elsif training_period.for_mentor?
+          training_period.mentor_at_school_period&.school&.name
+        else
+          not_available_text
+        end
+      end
+
+      def start_date_text
+        format_date(training_period.started_on) || not_available_text
+      end
+
+      def end_date_text
+        training_period.finished_on.present? ? format_date(training_period.finished_on) : 'No end date recorded'
+      end
+
+      def format_date(date)
+        date&.to_fs(:govuk)
+      end
+
+      def summary_row(label, value)
+        {
+          key: { text: label },
+          value: { text: value.presence || not_available_text }
+        }
+      end
+    end
+  end
+end

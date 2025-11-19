@@ -4,3 +4,23 @@
   caption_size: 'm',
   breadcrumbs: @breadcrumbs
 ) %>
+
+<h2 class="govuk-heading-m">Training</h2>
+
+<% if @ect_training_periods.any? %>
+  <h3 class="govuk-heading-s">ECT history</h3>
+  <% @ect_training_periods.each do |training_period| %>
+    <%= render Admin::Teachers::TrainingsSummaryComponent.new(training_period:) %>
+  <% end %>
+<% end %>
+
+<% if @mentor_training_periods.any? %>
+  <h3 class="govuk-heading-s">Mentor history</h3>
+  <% @mentor_training_periods.each do |training_period| %>
+    <%= render Admin::Teachers::TrainingsSummaryComponent.new(training_period:) %>
+  <% end %>
+<% end %>
+
+<% if @ect_training_periods.blank? && @mentor_training_periods.blank? %>
+  <p class="govuk-body">There is no training history recorded for this teacher</p>
+<% end %>
