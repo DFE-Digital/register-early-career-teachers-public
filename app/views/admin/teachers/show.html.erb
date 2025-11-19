@@ -7,3 +7,5 @@
 ) %>
 
 <%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
+
+<%= render Admin::Teachers::OverviewSummaryComponent.new(teacher: @teacher) %>
