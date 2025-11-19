@@ -152,6 +152,24 @@ RSpec.describe Schools::DecoratedMentor do
       end
     end
 
+    context 'when the previous training was provider-led but only an EOI exists' do
+      let(:school) { double('School', name: 'Springfield Primary') }
+      let(:latest_registration_choice) { double('LatestRegistrationChoice', school:) }
+      let(:training_period) { nil }
+      let(:previous_provider_led) { true }
+
+      it 'shows the school name and "Not confirmed" for lead provider and delivery partner' do
+        expect(rows[0][:key][:text]).to eq('School name')
+        expect(rows[0][:value][:text]).to eq('Springfield Primary')
+
+        expect(rows[1][:key][:text]).to eq('Lead provider')
+        expect(rows[1][:value][:text]).to eq('Not confirmed')
+
+        expect(rows[2][:key][:text]).to eq('Delivery partner')
+        expect(rows[2][:value][:text]).to eq('Not confirmed')
+      end
+    end
+
     context 'when values are missing' do
       let(:latest_registration_choice) { nil }
       let(:training_period) { nil }
