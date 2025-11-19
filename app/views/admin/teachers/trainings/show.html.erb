@@ -10,14 +10,14 @@
 <% if @ect_training_periods.any? %>
   <h3 class="govuk-heading-s">ECT history</h3>
   <% @ect_training_periods.each do |training_period| %>
-    <%= render Admin::Teachers::TrainingsSummaryComponent.new(training_period:) %>
+    <%= render Admin::Teachers::TrainingSummaryComponent.new(training_period:) %>
   <% end %>
 <% end %>
 
 <% if @mentor_training_periods.any? %>
   <h3 class="govuk-heading-s">Mentor history</h3>
   <% @mentor_training_periods.each do |training_period| %>
-    <%= render Admin::Teachers::TrainingsSummaryComponent.new(training_period:) %>
+    <%= render Admin::Teachers::TrainingSummaryComponent.new(training_period:) %>
   <% end %>
 <% end %>
 
