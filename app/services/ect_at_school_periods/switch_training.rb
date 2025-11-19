@@ -55,7 +55,8 @@ module ECTAtSchoolPeriods
         end
 
         create_provider_led_training_period_for_ect_at_school_period!
-        create_provider_led_training_period_for_mentor_at_school_period!
+        @new_training_period_for_mentor = create_provider_led_training_period_for_mentor_at_school_period!
+        record_new_training_period_for_mentor_event!
       end
     end
 
@@ -92,8 +93,8 @@ module ECTAtSchoolPeriods
     end
 
     def create_provider_led_training_period_for_mentor_at_school_period!
-      return if previous_provider_led_training_periods_for_mentor
       return if mentor_ineligible_for_funding
+      return if previous_provider_led_training_periods_for_mentor
 
       TrainingPeriods::Create.provider_led(
         period: @mentor_at_school_period,
@@ -102,6 +103,20 @@ module ECTAtSchoolPeriods
         expression_of_interest:,
         author: @author
       ).call
+    end
+
+    def record_new_training_period_for_mentor_event!
+      return unless @new_training_period_for_mentor
+
+      Events::Record.record_teacher_starts_training_period_event!(
+        author: @author,
+        teacher: @mentor_at_school_period.teacher,
+        school: @ect_at_school_period.school,
+        training_period: @new_training_period_for_mentor,
+        mentor_at_school_period: @mentor_at_school_period,
+        ect_at_school_period: nil,
+        happened_at: Time.zone.now
+      )
     end
 
     def mentor_at_school_period
