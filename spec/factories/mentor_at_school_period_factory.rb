@@ -37,5 +37,37 @@ FactoryBot.define do
         record.teacher.update!(mentor_payments_frozen_year:)
       end
     end
+
+    trait :with_training_period do
+      transient do
+        lead_provider { nil }
+        delivery_partner { nil }
+        contract_period { nil }
+      end
+
+      after(:create) do |mentor, evaluator|
+        next unless mentor.provider_led_training_programme?
+
+        selected_lead_provider = evaluator.lead_provider || FactoryBot.create(:lead_provider)
+        selected_delivery_partner = evaluator.delivery_partner || FactoryBot.create(:delivery_partner)
+        selected_contract_period = evaluator.contract_period || FactoryBot.create(:contract_period)
+
+        active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider: selected_lead_provider, contract_period: selected_contract_period)
+
+        lpdp = FactoryBot.create(:lead_provider_delivery_partnership,
+                                 active_lead_provider:,
+                                 delivery_partner: selected_delivery_partner)
+
+        partnership = FactoryBot.create(:school_partnership,
+                                        school: mentor.school,
+                                        lead_provider_delivery_partnership: lpdp)
+
+        FactoryBot.create(:training_period,
+                          mentor_at_school_period: mentor,
+                          school_partnership: partnership,
+                          started_on: mentor.started_on,
+                          finished_on: mentor.finished_on)
+      end
+    end
   end
 end

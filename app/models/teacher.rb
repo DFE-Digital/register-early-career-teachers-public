@@ -14,6 +14,9 @@ class Teacher < ApplicationRecord
   # Associations
   has_many :ect_at_school_periods, inverse_of: :teacher
   has_many :mentor_at_school_periods, inverse_of: :teacher
+  has_many :ect_training_periods, through: :ect_at_school_periods, source: :training_periods
+  has_many :mentor_training_periods, through: :mentor_at_school_periods, source: :training_periods
+
   has_many :induction_extensions, inverse_of: :teacher
   has_many :teacher_id_changes, inverse_of: :teacher
   has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider"
@@ -103,5 +106,19 @@ class Teacher < ApplicationRecord
   # Methods
   def eligible_for_funding?
     Teachers::MentorFundingEligibility.new(trn:).eligible?
+  end
+
+  def training_periods
+    return ect_training_periods if ect_at_school_periods.exists?
+
+    mentor_training_periods if mentor_at_school_periods.exists?
+  end
+
+  def most_recent_provider_led_period
+    training_periods&.provider_led_training_programme&.latest_first&.first
+  end
+
+  def most_recent_schedule
+    most_recent_provider_led_period&.schedule
   end
 end

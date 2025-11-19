@@ -68,7 +68,7 @@ private
   end
 
   def and_there_is_a_contract_period
-    @contract_period = FactoryBot.create(:contract_period, :current)
+    @contract_period = FactoryBot.create(:contract_period, :current, :with_schedules)
   end
 
   def and_there_is_an_active_lead_provider

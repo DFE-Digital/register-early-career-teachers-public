@@ -66,7 +66,8 @@ module Schools
       @training_period = ::TrainingPeriods::Create.provider_led(period: mentor_at_school_period,
                                                                 started_on: mentor_at_school_period.started_on,
                                                                 school_partnership:,
-                                                                expression_of_interest:).call
+                                                                expression_of_interest:,
+                                                                author: @author).call
     end
 
     def ensure_mentor_is_eligible!
