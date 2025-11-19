@@ -1,5 +1,5 @@
 RSpec.describe Migrators::Teacher do
-  it_behaves_like "a migrator", :teacher, [:school_partnership] do
+  it_behaves_like "a migrator", :teacher, [:schedule, :school_partnership] do
     def create_migration_resource
       ect = FactoryBot.create(:migration_participant_profile, :ect)
       FactoryBot.create(:migration_induction_record, participant_profile: ect)
@@ -16,6 +16,7 @@ RSpec.describe Migrators::Teacher do
       ect = migration_resource.participant_profiles.first
       school_cohort = ect.school_cohort
       partnership = school_cohort.school.partnerships.first
+      induction_record = ect.induction_records.first
 
       school = FactoryBot.create(:school, urn: school_cohort.school.urn)
 
@@ -25,6 +26,9 @@ RSpec.describe Migrators::Teacher do
       active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
       lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
       FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: lpdp)
+
+      # Create the schedule that the training period should reference
+      ::Schedule.find_or_create_by!(identifier: induction_record.schedule.schedule_identifier, contract_period_year: school_cohort.cohort.start_year)
     end
 
     def setup_failure_state
@@ -74,9 +78,18 @@ RSpec.describe Migrators::Teacher do
         it "creates an ECTAtSchoolPeriod records for each school period found in the ECF induction records" do
           instance.migrate!
 
-          Migration::TeacherProfile.where.not(trn: nil).find_each do |teacher_profile|
+          [migration_resource1, migration_resource2].each do |teacher_profile|
+            user = teacher_profile.user
             teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+            parser = Teachers::FullNameParser.new(full_name: user.full_name)
 
+            # Verify teacher attributes
+            expect(teacher.trnless).to be false
+            expect(Teachers::Name.new(teacher).full_name).to eq [parser.first_name, parser.last_name].join(" ")
+            expect(teacher.created_at).to be_within(1.second).of teacher_profile.created_at
+            expect(teacher.updated_at).to be_within(1.second).of teacher_profile.updated_at
+
+            # Verify school period
             teacher_profile.participant_profiles.first.induction_records.each do |induction_record|
               expect(teacher.ect_pupil_premium_uplift).to eq(teacher_profile.participant_profiles.first.pupil_premium_uplift)
               expect(teacher.ect_sparsity_uplift).to eq(teacher_profile.participant_profiles.first.sparsity_uplift)
@@ -89,7 +102,7 @@ RSpec.describe Migrators::Teacher do
         it "creates a TrainingPeriod record for each partnership period found in the ECF induction records" do
           instance.migrate!
 
-          Migration::TeacherProfile.where.not(trn: nil).find_each do |teacher_profile|
+          [migration_resource1, migration_resource2].each do |teacher_profile|
             teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
 
             teacher_profile.participant_profiles.first.induction_records.each do |induction_record|
@@ -98,8 +111,38 @@ RSpec.describe Migrators::Teacher do
               expect(training_period.started_on.to_date).to eq induction_record.start_date.to_date
               expect(training_period.school_partnership.school.urn).to eq induction_record.induction_programme.school_cohort.school.urn.to_i
               expect(training_period.school_partnership.lead_provider.name).to eq induction_record.induction_programme.partnership.lead_provider.name
+
+              # Verify schedule is assigned for provider-led training
+              expect(training_period.schedule).to be_present
+              expect(training_period.schedule.identifier).to eq induction_record.schedule.schedule_identifier
+              expect(training_period.schedule.contract_period_year).to eq induction_record.schedule.cohort.start_year
             end
           end
+        end
+
+        it "does not assign replacement schedules to ECTs" do
+          # Create ECT with replacement schedule
+          teacher_profile = FactoryBot.create(:migration_teacher_profile)
+          ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
+          replacement_schedule = FactoryBot.create(:migration_schedule, :replacement, cohort: ect.school_cohort.cohort)
+          ect.update!(schedule: replacement_schedule)
+          induction_record = FactoryBot.create(:migration_induction_record, participant_profile: ect, schedule: replacement_schedule)
+          school = induction_record.induction_programme.school_cohort.school
+          cohort = induction_record.induction_programme.school_cohort.cohort
+          partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
+          induction_programme = induction_record.induction_programme
+          FactoryBot.create(:migration_provider_relationship, lead_provider: partnership.lead_provider, delivery_partner: partnership.delivery_partner, cohort:)
+          induction_programme.update!(partnership:)
+
+          # Create RECT dependencies
+          create_resource(teacher_profile)
+
+          instance.migrate!
+
+          training_period = ::TrainingPeriod.find_by!(ecf_start_induction_record_id: induction_record.id)
+
+          # ECTs should not be assigned replacement schedules
+          expect(training_period.schedule).to be_nil
         end
       end
 
@@ -123,8 +166,18 @@ RSpec.describe Migrators::Teacher do
 
           instance.migrate!
 
-          teacher = ::Teacher.find_by!(api_id: trnless_teacher_profile.user.id)
+          user = trnless_teacher_profile.user
+          teacher = ::Teacher.find_by!(api_id: user.id)
+          parser = Teachers::FullNameParser.new(full_name: user.full_name)
 
+          # Verify teacher attributes
+          expect(teacher.trnless).to be true
+          expect(teacher.trn).to be_nil
+          expect(Teachers::Name.new(teacher).full_name).to eq [parser.first_name, parser.last_name].join(" ")
+          expect(teacher.created_at).to be_within(1.second).of trnless_teacher_profile.created_at
+          expect(teacher.updated_at).to be_within(1.second).of trnless_teacher_profile.updated_at
+
+          # Verify school period
           expect(teacher.ect_pupil_premium_uplift).to eq(trnless_ect.pupil_premium_uplift)
           expect(teacher.ect_sparsity_uplift).to eq(trnless_ect.sparsity_uplift)
           expect(teacher.ect_at_school_periods.first.started_on.to_date).to eq trnless_induction_record.start_date.to_date
@@ -144,6 +197,11 @@ RSpec.describe Migrators::Teacher do
           expect(training_period.started_on.to_date).to eq trnless_induction_record.start_date.to_date
           expect(training_period.school_partnership.school.urn).to eq trnless_induction_record.induction_programme.school_cohort.school.urn.to_i
           expect(training_period.school_partnership.lead_provider.name).to eq trnless_induction_record.induction_programme.partnership.lead_provider.name
+
+          # Verify schedule is assigned for provider-led training
+          expect(training_period.schedule).to be_present
+          expect(training_period.schedule.identifier).to eq trnless_induction_record.schedule.schedule_identifier
+          expect(training_period.schedule.contract_period_year).to eq trnless_induction_record.schedule.cohort.start_year
         end
       end
 
@@ -152,7 +210,7 @@ RSpec.describe Migrators::Teacher do
         let(:mentor_completion_date) { nil }
         let(:mentor) { FactoryBot.create(:migration_participant_profile, :mentor, mentor_completion_date:) }
         let!(:mentor_data) do
-          FactoryBot.create(:migration_induction_record, participant_profile: mentor, start_date:)
+          induction_record = FactoryBot.create(:migration_induction_record, participant_profile: mentor, start_date:)
           school = mentor.school_cohort.school
           cohort = mentor.school_cohort.cohort
           partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
@@ -176,6 +234,9 @@ RSpec.describe Migrators::Teacher do
           active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
           lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
           FactoryBot.create(:school_partnership, school: rect_school, lead_provider_delivery_partnership: lpdp)
+
+          # Create the schedule that the training period should reference
+          ::Schedule.find_or_create_by!(identifier: induction_record.schedule.schedule_identifier, contract_period_year: cohort.start_year)
         end
 
         it "migrates the mentor" do
