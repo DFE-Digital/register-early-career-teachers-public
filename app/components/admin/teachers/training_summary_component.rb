@@ -1,6 +1,6 @@
 module Admin
   module Teachers
-    class TrainingsSummaryComponent < ApplicationComponent
+    class TrainingSummaryComponent < ApplicationComponent
       class UnexpectedTrainingProgrammeError < StandardError; end
       attr_reader :training_period
 
@@ -40,7 +40,7 @@ module Admin
 
         rows << summary_row('Delivery partner', delivery_partner_text)
         rows << summary_row('School', training_school_name)
-        rows << summary_row('Contract period', training_period.contract_period.year.to_s)
+        rows << summary_row('Contract period', contract_period_text)
         rows << summary_row('Training programme', TRAINING_PROGRAMME[training_period.training_programme])
         rows << summary_row('Schedule', schedule_text)
         rows << summary_row('Start date', start_date_text)
@@ -65,7 +65,7 @@ module Admin
       end
 
       def provider_led_card_title
-        "#{training_period.lead_provider_name} with #{training_period.delivery_partner_name}"
+        "#{training_period.lead_provider_name} & #{training_period.delivery_partner_name}"
       end
 
       def confirmed_partnership?
@@ -82,6 +82,10 @@ module Admin
 
       def schedule_text
         training_period.schedule&.description || not_available_text
+      end
+
+      def contract_period_text
+        training_period.contract_period&.year || training_period.expression_of_interest_contract_period&.year || not_available_text
       end
 
       def not_available_text
