@@ -3,7 +3,7 @@ require Rails.root.join('spec/support/mentorship_period_helpers')
 module UnfundedMentorsSeeder
   extend MentorshipPeriodHelpers
 
-  MIN_UNFUNDED_MENTORS_PER_LP = 20
+  MIN_UNFUNDED_MENTORS_PER_LP = 3
 
   class << self
     def seed!
