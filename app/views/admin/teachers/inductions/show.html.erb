@@ -1,12 +1,27 @@
-<%
-  page_data(
-    title: teacher_full_name(@teacher),
-    caption: teacher_trn(@teacher),
-    caption_size: 'm',
-    error: false,
-    backlink_href: admin_teachers_path(page: @page)
-  )
-%>
+<% if Rails.application.config.enable_schools_interface %>
+
+  <%
+    page_data(
+      title: teacher_full_name(@teacher),
+      caption: teacher_trn(@teacher),
+      caption_size: 'm',
+      error: false,
+      breadcrumbs: @breadcrumbs
+    )
+  %>
+<% else %>
+
+  <%
+    page_data(
+      title: teacher_full_name(@teacher),
+      caption: teacher_trn(@teacher),
+      caption_size: 'm',
+      error: false,
+      backlink_href: admin_teachers_path(page: @page)
+    )
+  %>
+
+<% end%>
 
 <%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
 
