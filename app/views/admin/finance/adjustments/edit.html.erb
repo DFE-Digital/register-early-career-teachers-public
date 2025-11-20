@@ -3,7 +3,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <%= form_with model: @adjustment, url: admin_finance_statement_adjustment_path(@statement, @adjustment) do |form| %>
-      <%= render "fields", form: %>
+      <%= render "fields", form: form %>
       <%= form.govuk_submit "Save changes" %>
     <% end %>
 
