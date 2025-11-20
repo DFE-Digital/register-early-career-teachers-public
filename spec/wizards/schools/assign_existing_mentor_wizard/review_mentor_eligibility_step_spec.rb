@@ -44,14 +44,15 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
       )
     end
 
+    let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2023) }
+
     around do |example|
-      travel_to(started_on + 1.day) do
+      travel_to(started_on + 2.days) do
         perform_enqueued_jobs { example.run }
       end
     end
 
     before do
-      contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2023)
       active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
 
       school_partnership = FactoryBot.create(
@@ -80,6 +81,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
         started_on: Date.new(2023, 9, 1),
         training_programme: "provider_led"
       )
+      expect(training_period.schedule.identifier).to eq('ecf-standard-september')
     end
 
     it "records training and mentoring events" do
@@ -92,6 +94,32 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
         "teacher_starts_mentoring",
         "teacher_starts_being_mentored"
       )
+    end
+
+    context 'when the mentee has previously started training with another mentor' do
+      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
+      let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.days.ago, mentor_at_school_period: previous_mentor) }
+
+      before do
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-january")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
+
+        FactoryBot.create(:mentorship_period,
+                          started_on: 2.days.ago,
+                          finished_on: 1.day.ago,
+                          mentee: ect_at_school_period,
+                          mentor: previous_mentor)
+
+        FactoryBot.create(:declaration, training_period: previous_mentor_training_period)
+      end
+
+      it 'assigns a replacement schedule to the mentor training period' do
+        step.save!
+
+        training_period = mentor_at_school_period.training_periods.last
+        expect(training_period.schedule.identifier).to eq('ecf-replacement-september')
+      end
     end
   end
 end
