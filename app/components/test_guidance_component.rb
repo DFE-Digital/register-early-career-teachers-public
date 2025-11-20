@@ -35,13 +35,14 @@ class TestGuidanceComponent < ApplicationComponent
         "Date of birth",
         "Induction status",
         active_period_with_header,
+        "Notes",
         ""
       ]
     end
 
     # @return [Array<Array>]
     def rows
-      teachers.map do |name, trn, dob, ni_number, status, *|
+      teachers.map do |name, trn, dob, ni_number, status, note, *|
         teacher = Teacher.find_by(trn:)
 
         next if exhausted?(teacher)
@@ -52,6 +53,7 @@ class TestGuidanceComponent < ApplicationComponent
           dob,
           status_indicator(status, teacher),
           active_period_with(teacher),
+          note.to_s,
           populate_button(trn, dob, ni_number)
         ]
       end
@@ -62,7 +64,8 @@ class TestGuidanceComponent < ApplicationComponent
       CSV.read(file_path, headers: true).map(&:values_at)
     end
 
-    def file_path = Rails.root.join("spec/fixtures/seeds_trs.csv")
+    # @return [Pathname]
+    def file_path = Rails.application.config.test_guidance_fixtures
 
     # Once used by RIAB the status changes to "In progress" if active or "Induction paused" once released
     def status_indicator(trs_induction_status, teacher)
