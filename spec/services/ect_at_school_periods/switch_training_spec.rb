@@ -417,7 +417,7 @@ module ECTAtSchoolPeriods
               )
             end
 
-            it 'assigns the mentor to the same lead provider' do
+            it "assigns the mentor to the same lead provider" do
               expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }.to change(TrainingPeriod, :count).by(2)
 
               expect(mentor_at_school_period.reload).to be_provider_led_training_programme
@@ -518,7 +518,7 @@ module ECTAtSchoolPeriods
           it "raises an error" do
             expect {
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
-            }.to raise_error(NoMentorError)
+            }.to raise_error(NoMentorAtSchoolPeriodError)
           end
         end
       end
