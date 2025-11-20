@@ -45,7 +45,7 @@ module Admin
 
     def most_recent_email
       period = [latest_ect_period, latest_mentor_period].compact.max_by(&:started_on)
-      period&.email || 'No email recorded'
+      period&.email || "No email recorded"
     end
 
     def current_schools
@@ -63,7 +63,7 @@ module Admin
     end
 
     def api_participant_id
-      teacher.api_id.presence || 'Not available'
+      teacher.api_id.presence || "Not available"
     end
 
   private

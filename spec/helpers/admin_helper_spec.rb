@@ -15,21 +15,21 @@ describe AdminHelper do
     end
   end
 
-  describe '#admin_teacher_navigation_items' do
+  describe "#admin_teacher_navigation_items" do
     let(:teacher) { FactoryBot.build_stubbed(:teacher) }
 
-    it 'marks the matching tab as current' do
+    it "marks the matching tab as current" do
       items = admin_teacher_navigation_items(teacher, :induction)
-      induction = items.find { |item| item[:text] == 'Induction' }
-      timeline = items.find { |item| item[:text] == 'Timeline' }
+      induction = items.find { |item| item[:text] == "Induction" }
+      timeline = items.find { |item| item[:text] == "Timeline" }
 
       expect(induction[:current]).to be(true)
       expect(timeline[:current]).to be(false)
     end
 
-    it 'includes the timeline link' do
+    it "includes the timeline link" do
       items = admin_teacher_navigation_items(teacher, :timeline)
-      timeline = items.find { |item| item[:text] == 'Timeline' }
+      timeline = items.find { |item| item[:text] == "Timeline" }
 
       expect(timeline[:href]).to eq(admin_teacher_timeline_path(teacher))
       expect(timeline[:current]).to be(true)
