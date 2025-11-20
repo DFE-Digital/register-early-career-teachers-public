@@ -21,7 +21,7 @@ data_sources:
     # https://blazer.dokkuapp.com/queries/3-linked-column
     linked_columns:
       appropriate_body_id: "/admin/organisations/appropriate-bodies/{value}"
-      teacher_id: "/admin/teachers/{value}"
+      teacher_id: "/admin/teachers/{value}/induction"
       pending_induction_submission_batch_id: "/admin/bulk/batches/{value}"
       induction_period_id: "/admin/teachers/N/induction-periods/{value}/edit"
       zendesk_ticket_id: "https://becomingateacher.zendesk.com/agent/tickets/{value}"
