@@ -73,8 +73,8 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
         let!(:other_unfunded_mentor) { create_mentorship_period_for(mentee_school_partnership: school_partnership).mentor.teacher }
 
         before do
-          unfunded_mentor.update!(api_updated_at: 3.days.ago)
-          other_unfunded_mentor.update!(api_updated_at: 1.day.ago)
+          unfunded_mentor.update!(api_unfunded_mentor_updated_at: 3.days.ago)
+          other_unfunded_mentor.update!(api_unfunded_mentor_updated_at: 1.day.ago)
         end
 
         it "filters by `updated_since`" do
@@ -99,8 +99,8 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
       let!(:other_unfunded_mentor) { create_mentorship_period_for(mentee_school_partnership: school_partnership).mentor.teacher }
 
       before do
-        unfunded_mentor.update!(api_updated_at: 1.day.ago)
-        other_unfunded_mentor.update!(api_updated_at: 4.days.ago)
+        unfunded_mentor.update!(api_unfunded_mentor_updated_at: 1.day.ago)
+        other_unfunded_mentor.update!(api_unfunded_mentor_updated_at: 4.days.ago)
       end
 
       describe "default order" do
@@ -118,14 +118,14 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
 
       describe "order by updated_at, in ascending order" do
         it "returns unfunded mentors in correct order" do
-          query = described_class.new(lead_provider_id:, sort: { api_updated_at: :asc })
+          query = described_class.new(lead_provider_id:, sort: { api_unfunded_mentor_updated_at: :asc })
           expect(query.unfunded_mentors).to eq([other_unfunded_mentor, unfunded_mentor])
         end
       end
 
       describe "order by updated_at, in descending order" do
         it "returns unfunded mentors in correct order" do
-          query = described_class.new(lead_provider_id:, sort: { api_updated_at: :desc })
+          query = described_class.new(lead_provider_id:, sort: { api_unfunded_mentor_updated_at: :desc })
           expect(query.unfunded_mentors).to eq([unfunded_mentor, other_unfunded_mentor])
         end
       end

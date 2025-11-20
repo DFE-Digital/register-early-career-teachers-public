@@ -30,9 +30,13 @@ module API
     end
 
     def transform_sort_attribute(attribute)
-      return "api_updated_at" if attribute == "updated_at"
+      return attribute unless attribute == "updated_at"
 
-      attribute
+      updated_at_attribute
+    end
+
+    def updated_at_attribute
+      "api_updated_at"
     end
   end
 end

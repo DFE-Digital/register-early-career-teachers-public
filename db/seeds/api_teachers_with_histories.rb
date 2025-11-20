@@ -57,7 +57,8 @@ def create_teacher(attrs:)
     it.update!(
       created_at: random_date,
       updated_at: random_date,
-      api_updated_at: random_date
+      api_updated_at: random_date,
+      api_unfunded_mentor_updated_at: random_date
     )
   end
 end
