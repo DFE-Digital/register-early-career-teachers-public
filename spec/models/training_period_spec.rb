@@ -9,7 +9,7 @@ describe TrainingPeriod do
       when :school_partnership_id
         active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
         lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-        school = target.is_a?(School) ? target : FactoryBot.create(:school)
+        school = instance.trainee.school
         FactoryBot.create(:school_partnership, id: new_value, school:, lead_provider_delivery_partnership:)
       when :expression_of_interest_id
         FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period, id: new_value)
@@ -17,8 +17,8 @@ describe TrainingPeriod do
     end
 
     context "when target is school" do
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **period_boundaries) }
-      let(:school_partnership) { FactoryBot.create(:school_partnership, school: target || FactoryBot.create(:school)) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school: target || FactoryBot.create(:school), **period_boundaries) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, school: ect_at_school_period.school) }
       let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:, **period_boundaries) }
       let!(:target) { FactoryBot.create(:school) }
 
@@ -56,7 +56,8 @@ describe TrainingPeriod do
         when :school_partnership_id
           active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
           lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-          FactoryBot.create(:school_partnership, id: new_value, lead_provider_delivery_partnership:)
+          school = instance.trainee.school
+          FactoryBot.create(:school_partnership, id: new_value, lead_provider_delivery_partnership:, school:)
         when :schedule_id
           FactoryBot.create(:schedule, id: new_value)
         when :ect_at_school_period_id
@@ -208,7 +209,7 @@ describe TrainingPeriod do
       let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
       context "when provider-led" do
-        subject { FactoryBot.build(:training_period, :provider_led, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
+        subject { FactoryBot.build(:training_period, :provider_led, :with_no_school_partnership, ect_at_school_period:, expression_of_interest: nil, **dates) }
 
         context "when neither the expression of interest or school partnership is present" do
           it "has a base error stating either expression of interest or school partnership required" do
@@ -237,7 +238,7 @@ describe TrainingPeriod do
       end
 
       context "when school-led" do
-        subject { FactoryBot.build(:training_period, :school_led, expression_of_interest: nil, school_partnership: nil, ect_at_school_period:, **dates) }
+        subject { FactoryBot.build(:training_period, :school_led, :with_no_school_partnership, expression_of_interest: nil, ect_at_school_period:, **dates) }
 
         it "allows nil expression of interest and training period" do
           expect(subject).to(be_valid)
@@ -459,7 +460,7 @@ describe TrainingPeriod do
               :for_ect,
               :ongoing,
               :provider_led,
-              school_partnership: nil,
+              :with_no_school_partnership,
               expression_of_interest:,
               ect_at_school_period:,
               schedule:,
@@ -477,7 +478,7 @@ describe TrainingPeriod do
               :for_ect,
               :ongoing,
               :provider_led,
-              school_partnership: nil,
+              :with_no_school_partnership,
               expression_of_interest: mismatched_expression_of_interest,
               ect_at_school_period:,
               schedule:,
@@ -526,6 +527,46 @@ describe TrainingPeriod do
         training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule))
         training_period.valid?
         expect(training_period.errors[:schedule]).to be_empty
+      end
+    end
+
+    describe "school consistency" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
+      let(:training_period) { FactoryBot.build(:training_period, ect_at_school_period:, school_partnership:, expression_of_interest:) }
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school: ect_at_school_period.school) }
+      let!(:expression_of_interest) { nil }
+
+      context "when the school partnership's school matches the trainee's school" do
+        it { expect(training_period).to be_valid }
+      end
+
+      context "when the school partnership is not set" do
+        let!(:school_partnership) { nil }
+        let!(:expression_of_interest) { FactoryBot.create(:active_lead_provider) }
+
+        it { expect(training_period).to be_valid }
+      end
+
+      context "when the school partnership's school does not match the trainee's school" do
+        let(:school_partnership) { FactoryBot.create(:school_partnership) }
+
+        it "adds an error to school_partnership" do
+          training_period.valid?
+          expect(training_period.errors[:school_partnership]).to include("School partnership's school must match the trainee's school")
+        end
+
+        it "sends a message to Sentry" do
+          expect(Sentry).to receive(:capture_message).with(
+            "[Data integrity] Attempt to assign school partnership to a different school from the school period",
+            level: :error,
+            extra: {
+              teacher_id: training_period.trainee.teacher.id,
+              school_partnership_id: school_partnership.id,
+              trainee_school_id: training_period.trainee.school_id
+            }
+          )
+          training_period.valid?
+        end
       end
     end
   end

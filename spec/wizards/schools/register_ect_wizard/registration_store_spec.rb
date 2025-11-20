@@ -433,7 +433,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       before do
         FactoryBot.create(:training_period,
                           ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:),
+                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: ect_period.school),
                           started_on: Date.new(2024, 1, 1),
                           finished_on: Date.new(2024, 6, 1))
       end
@@ -450,7 +450,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       before do
         FactoryBot.create(:training_period,
                           ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:),
+                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: ect_period.school),
                           started_on: Date.new(2024, 1, 1),
                           finished_on: Date.new(2024, 6, 1))
       end

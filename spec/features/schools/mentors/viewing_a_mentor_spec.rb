@@ -160,11 +160,10 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
   def given_an_eligible_mentor_with_eoi_training
     build_school_and_mentor
     lp_dp_and_partnership
-    FactoryBot.create(:training_period, :provider_led, :for_mentor,
+    FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_no_school_partnership,
                       mentor_at_school_period: @mentor,
                       started_on: Time.zone.today.beginning_of_month,
                       finished_on: nil,
-                      school_partnership: nil,
                       expression_of_interest: @active_lp)
   end
 

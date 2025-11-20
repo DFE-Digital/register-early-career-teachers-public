@@ -2,7 +2,7 @@ describe MentorAtSchoolPeriods::LatestRegistrationChoices do
   subject { MentorAtSchoolPeriods::LatestRegistrationChoices.new(trn: teacher.trn) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, school: mentor_at_school_period.school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, school_partnership:, started_on: mentor_at_school_period.started_on, mentor_at_school_period:) }
 
@@ -36,8 +36,8 @@ describe MentorAtSchoolPeriods::LatestRegistrationChoices do
         :training_period,
         :for_mentor,
         :ongoing,
+        :with_no_school_partnership,
         mentor_at_school_period:,
-        school_partnership: nil,
         expression_of_interest:,
         training_programme: "provider_led"
       )
