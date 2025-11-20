@@ -27,6 +27,7 @@ module Schools
             started_on:,
             school_partnership: earliest_matching_school_partnership,
             expression_of_interest:,
+            mentee: wizard.context.ect_at_school_period,
             author: wizard.author
           ).call
 
