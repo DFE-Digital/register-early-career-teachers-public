@@ -57,7 +57,7 @@ module Schedules
     end
 
     def identifier
-      identifier_type = replacement_schedule? ? 'replacement' : 'standard'
+      identifier_type = replacement_schedule? ? "replacement" : "standard"
 
       "ecf-#{identifier_type}-#{schedule_month}"
     end

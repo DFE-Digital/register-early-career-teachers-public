@@ -175,7 +175,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     end
   end
 
-  describe '#register!' do
+  describe "#register!" do
     let(:teacher) { Teacher.last }
     let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
 
@@ -190,7 +190,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
       expect(mentor_at_school_period.email).to eq("dusty@rhodes.com")
     end
 
-    context 'when there is an associated mentee on provider-led training who has previously been trained' do
+    context "when there is an associated mentee on provider-led training who has previously been trained" do
       let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago) }
       let!(:mentee_training_period) do
         FactoryBot.create(
@@ -226,7 +226,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
         end
       end
 
-      it 'passes the mentee details to allow a replacement schedule to be assigned when appropriate' do
+      it "passes the mentee details to allow a replacement schedule to be assigned when appropriate" do
         expect(TrainingPeriods::Create).to receive(:provider_led)
           .with(hash_including(mentee:))
           .and_call_original
@@ -234,7 +234,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
         registration_store.register!(author:)
 
         new_training_period = teacher.training_periods.last
-        expect(new_training_period.schedule.identifier).to eq('ecf-replacement-january')
+        expect(new_training_period.schedule.identifier).to eq("ecf-replacement-january")
       end
     end
   end
