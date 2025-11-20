@@ -20,7 +20,7 @@ module TrainingPeriods
     end
 
     def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil, author: nil, mentee: nil)
-      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: 'provider_led', finished_on:, schedule:, author:, mentee:)
+      new(period:, started_on:, school_partnership:, expression_of_interest:, training_programme: "provider_led", finished_on:, schedule:, author:, mentee:)
     end
 
     def call

@@ -1,6 +1,6 @@
-RSpec.shared_examples 'no replacement schedule assigned' do
-  it 'does not assign a replacement schedule' do
-    expect(service.identifier).not_to include('replacement')
+RSpec.shared_examples "no replacement schedule assigned" do
+  it "does not assign a replacement schedule" do
+    expect(service.identifier).not_to include("replacement")
     expect(service.identifier).not_to be_nil
   end
 end
@@ -245,7 +245,7 @@ RSpec.describe Schedules::Find do
       let(:previous_start_date) { Date.new(year, 7, 1) }
 
       let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
-      let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: 'ecf-standard-september') }
+      let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-september") }
 
       before do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
@@ -262,45 +262,45 @@ RSpec.describe Schedules::Find do
         end
       end
 
-      context 'when the mentee has not previously received training' do
-        it_behaves_like 'no replacement schedule assigned'
+      context "when the mentee has not previously received training" do
+        it_behaves_like "no replacement schedule assigned"
       end
 
-      context 'when the mentee has previously received school-led training' do
+      context "when the mentee has previously received school-led training" do
         let!(:mentee_training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
 
-        it_behaves_like 'no replacement schedule assigned'
+        it_behaves_like "no replacement schedule assigned"
       end
 
-      context 'when the mentee has previously received provider-led training' do
+      context "when the mentee has previously received provider-led training" do
         let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
         let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
         let!(:mentorship_period) { FactoryBot.create(:mentorship_period, started_on: previous_start_date, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
 
-        context 'when the previous mentor has a training period' do
+        context "when the previous mentor has a training period" do
           let!(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: previous_start_date, mentor_at_school_period: previous_mentor) }
 
-          context 'when the previous mentor has not started training' do
-            it_behaves_like 'no replacement schedule assigned'
+          context "when the previous mentor has not started training" do
+            it_behaves_like "no replacement schedule assigned"
           end
 
-          context 'when the previous mentor is the same as the current mentor' do
+          context "when the previous mentor is the same as the current mentor" do
             let!(:previous_mentor) { mentor_at_school_period }
 
-            it_behaves_like 'no replacement schedule assigned'
+            it_behaves_like "no replacement schedule assigned"
           end
 
-          context 'when the previous mentor has started training' do
+          context "when the previous mentor has started training" do
             let!(:declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
 
-            it 'assigns a replacement schedule' do
-              expect(service.identifier).to include('replacement')
+            it "assigns a replacement schedule" do
+              expect(service.identifier).to include("replacement")
             end
 
-            context 'when the mentor is ineligible for funding' do
+            context "when the mentor is ineligible for funding" do
               let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
 
-              it_behaves_like 'no replacement schedule assigned'
+              it_behaves_like "no replacement schedule assigned"
             end
           end
         end

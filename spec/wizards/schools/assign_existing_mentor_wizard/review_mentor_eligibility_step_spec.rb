@@ -81,7 +81,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
         started_on: Date.new(2023, 9, 1),
         training_programme: "provider_led"
       )
-      expect(training_period.schedule.identifier).to eq('ecf-standard-september')
+      expect(training_period.schedule.identifier).to eq("ecf-standard-september")
     end
 
     it "records training and mentoring events" do
@@ -96,7 +96,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
       )
     end
 
-    context 'when the mentee has previously started training with another mentor' do
+    context "when the mentee has previously started training with another mentor" do
       let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
       let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.days.ago, mentor_at_school_period: previous_mentor) }
 
@@ -114,11 +114,11 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
         FactoryBot.create(:declaration, training_period: previous_mentor_training_period)
       end
 
-      it 'assigns a replacement schedule to the mentor training period' do
+      it "assigns a replacement schedule to the mentor training period" do
         step.save!
 
         training_period = mentor_at_school_period.training_periods.last
-        expect(training_period.schedule.identifier).to eq('ecf-replacement-september')
+        expect(training_period.schedule.identifier).to eq("ecf-replacement-september")
       end
     end
   end
