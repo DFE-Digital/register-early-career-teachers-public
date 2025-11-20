@@ -6,12 +6,12 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
 
   let!(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:created_at) { Time.utc(2023, 7, 1, 12, 0, 0) }
-  let(:api_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
+  let(:api_unfunded_mentor_updated_at) { Time.utc(2023, 7, 2, 12, 0, 0) }
   let(:unfunded_mentor_teacher) do
     FactoryBot.create(
       :teacher,
       created_at:,
-      api_updated_at:
+      api_unfunded_mentor_updated_at:
     )
   end
 
@@ -42,7 +42,7 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
       expect(attributes["created_at"]).to be_present
       expect(attributes["created_at"]).to eq(created_at.utc.rfc3339)
       expect(attributes["updated_at"]).to be_present
-      expect(attributes["updated_at"]).to eq(api_updated_at.utc.rfc3339)
+      expect(attributes["updated_at"]).to eq(api_unfunded_mentor_updated_at.utc.rfc3339)
     end
   end
 end

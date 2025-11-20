@@ -50,7 +50,22 @@ module UnfundedMentorsSeeder
         mentee_school_partnership = mentee_partnerships_cycle.next
         mentor_school_partnership = mentor_partnerships_cycle.next
 
+        random_date = rand(1..100).days.ago
+
+        mentee = FactoryBot.create(:teacher,
+                                   :with_realistic_name,
+                                   created_at: random_date,
+                                   updated_at: random_date,
+                                   api_unfunded_mentor_updated_at: random_date)
+        mentor = FactoryBot.create(:teacher,
+                                   :with_realistic_name,
+                                   created_at: random_date,
+                                   updated_at: random_date,
+                                   api_unfunded_mentor_updated_at: random_date)
+
         mentorship_period = create_mentorship_period_for(
+          mentee:,
+          mentor:,
           mentee_school_partnership:,
           mentor_school_partnership:
         )

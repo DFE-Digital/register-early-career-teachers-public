@@ -222,6 +222,32 @@ describe MentorAtSchoolPeriod do
       let(:target) { instance.teacher }
 
       it_behaves_like "a declarative touch model", when_changing: %i[email], timestamp_attribute: :api_updated_at
+      it_behaves_like "a declarative touch model", when_changing: %i[email], timestamp_attribute: :api_unfunded_mentor_updated_at, conditional_method: :latest_mentor_at_school_period?
+    end
+
+    describe "#latest_mentor_at_school_period?", :with_touches do
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: 6.months.ago) }
+      let!(:previous_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 1.year.ago, finished_on: 6.months.ago) }
+      let(:email_change) { "test1@anyexampleemail.com" }
+
+      context "when updating the email for the latest mentor period" do
+        it "touches `api_unfunded_mentor_updated_at`" do
+          expect {
+            latest_mentor_at_school_period.update!(email: email_change)
+            teacher.reload
+          }.to change(teacher, :api_unfunded_mentor_updated_at)
+        end
+      end
+
+      context "when updating the email for a previous mentor period" do
+        it "does not touch `api_unfunded_mentor_updated_at`" do
+          expect {
+            previous_mentor_at_school_period.update!(email: email_change)
+            teacher.reload
+          }.not_to change(teacher, :api_unfunded_mentor_updated_at)
+        end
+      end
     end
   end
 
