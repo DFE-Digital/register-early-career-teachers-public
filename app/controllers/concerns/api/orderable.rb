@@ -30,9 +30,13 @@ module API
     end
 
     def transform_sort_attribute(attribute)
-      return "api_updated_at" if attribute == "updated_at"
+      return attribute unless attribute == "updated_at"
 
-      attribute
+      if /UnfundedMentors/.match?(self.class.name.demodulize)
+        "api_unfunded_mentor_updated_at"
+      else
+        "api_updated_at"
+      end
     end
   end
 end
