@@ -30,7 +30,7 @@ describe ECTAtSchoolPeriods::CurrentTraining do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
 
     context "when there is a lead provider via school partnership" do
-      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, school: ect_at_school_period.school) }
 
       before { FactoryBot.create(:training_period, :ongoing, school_partnership:, ect_at_school_period:) }
 
@@ -50,7 +50,7 @@ describe ECTAtSchoolPeriods::CurrentTraining do
     end
 
     context "when there are both lead provider via school partnership and expression of interest" do
-      let(:school_partnership) { FactoryBot.create(:school_partnership) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, school: ect_at_school_period.school) }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: school_partnership.contract_period) }
 
       before { FactoryBot.create(:training_period, :ongoing, expression_of_interest: active_lead_provider, school_partnership:, ect_at_school_period:) }

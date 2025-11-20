@@ -115,8 +115,8 @@ FactoryBot.define do
         FactoryBot.create(
           :training_period,
           :for_ect,
+          :with_no_school_partnership,
           ect_at_school_period: ect,
-          school_partnership: nil,
           expression_of_interest: active_lead_provider,
           started_on: ect.started_on + 1.week,
           finished_on: ect.started_on + 1.month

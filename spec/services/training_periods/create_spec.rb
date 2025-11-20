@@ -35,7 +35,8 @@ RSpec.describe TrainingPeriods::Create do
         :ect_at_school_period,
         teacher:,
         started_on: started_on - 2.weeks,
-        finished_on: started_on + 2.weeks
+        finished_on: started_on + 2.weeks,
+        school:
       )
     end
 
@@ -98,7 +99,8 @@ RSpec.describe TrainingPeriods::Create do
         :mentor_at_school_period,
         teacher:,
         started_on: started_on - 1.month,
-        finished_on: started_on + 1.month
+        finished_on: started_on + 1.month,
+        school:
       )
     end
 

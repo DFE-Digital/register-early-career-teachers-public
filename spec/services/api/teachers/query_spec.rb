@@ -256,8 +256,8 @@ RSpec.describe API::Teachers::Query, :with_metadata do
       describe "by `training_status` when a teacher has multiple training periods" do
         let(:teacher) { FactoryBot.create(:teacher) }
         let(:school_partnership) { FactoryBot.create(:school_partnership) }
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: school_partnership.school) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school: school_partnership.school) }
         let!(:deferred_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:, ect_at_school_period:) }
         let!(:withdrawn_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :withdrawn, school_partnership:, mentor_at_school_period:) }
 

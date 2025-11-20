@@ -35,10 +35,9 @@ RSpec.describe "schools/mentors/show.html.erb" do
   context "when mentor is eligible via EOI (awaiting confirmation)" do
     before do
       FactoryBot.create(
-        :training_period, :provider_led, :for_mentor,
+        :training_period, :provider_led, :for_mentor, :with_no_school_partnership,
         mentor_at_school_period: mentor_period,
         started_on: start_date, finished_on: nil,
-        school_partnership: nil,
         expression_of_interest: active_lead_provider
       )
       render_view

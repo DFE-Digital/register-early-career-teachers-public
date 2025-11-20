@@ -69,7 +69,7 @@ describe Schools::TrainingProgramme do
         let!(:training_period) do
           FactoryBot.create(:training_period,
                             :for_mentor,
-                            school_partnership: nil,
+                            :with_no_school_partnership,
                             expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
                             mentor_at_school_period:,
                             started_on: mentor_at_school_period.started_on)

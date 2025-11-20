@@ -7,6 +7,23 @@ FactoryBot.define do
       period_end_date { started_on || ect_at_school_period&.finished_on || mentor_at_school_period&.finished_on || period_start_date + 1.year }
     end
 
+    before(:create) do |training_period|
+      school_partnership = training_period.school_partnership
+
+      # Ensure the associated `ect_at_school_period` and `mentor_at_school_period` have the same school
+      # when a `school_partnership` is provided.
+      if school_partnership&.school
+        different_schools = [
+          school_partnership&.school,
+          training_period.ect_at_school_period&.school,
+          training_period.mentor_at_school_period&.school
+        ].compact.uniq.length > 1
+
+        training_period.ect_at_school_period&.update!(school: school_partnership.school) if different_schools
+        training_period.mentor_at_school_period&.update!(school: school_partnership.school) if different_schools
+      end
+    end
+
     for_ect
     with_school_partnership
     with_schedule
@@ -41,7 +58,7 @@ FactoryBot.define do
         teacher_period { ect_at_school_period.presence || mentor_at_school_period }
       end
 
-      school_partnership { association :school_partnership, school: teacher_period.school }
+      school_partnership { association :school_partnership, school: teacher_period&.school || FactoryBot.create(:school) }
     end
 
     trait :with_schedule do
@@ -80,13 +97,13 @@ FactoryBot.define do
     end
 
     trait :for_ect do
-      association :ect_at_school_period
       mentor_at_school_period { nil }
+      association :ect_at_school_period
     end
 
     trait :for_mentor do
-      association :mentor_at_school_period
       ect_at_school_period { nil }
+      association :mentor_at_school_period
     end
 
     trait :active do
