@@ -43,10 +43,41 @@ module Admin
         teacher.teacher_migration_failures.any?
     end
 
+    def most_recent_email
+      period = [latest_ect_period, latest_mentor_period].compact.max_by(&:started_on)
+      period&.email || "No email recorded"
+    end
+
+    def current_schools
+      @current_schools ||= begin
+        ect_schools = teacher.ect_at_school_periods.ongoing.includes(school: :gias_school).map(&:school)
+        mentor_schools = teacher.mentor_at_school_periods.ongoing.includes(school: :gias_school).map(&:school)
+        (ect_schools + mentor_schools).compact.uniq(&:id)
+      end
+    end
+
+    def induction_status
+      return unless ect?
+
+      ::Teachers::InductionStatus.new(trs_induction_status: teacher.trs_induction_status, teacher:).induction_status
+    end
+
+    def api_participant_id
+      teacher.api_id.presence || "Not available"
+    end
+
   private
 
     def teacher
       __getobj__
+    end
+
+    def latest_ect_period
+      teacher.ect_at_school_periods.latest_first.first
+    end
+
+    def latest_mentor_period
+      teacher.mentor_at_school_periods.latest_first.first
     end
   end
 end

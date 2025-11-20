@@ -38,7 +38,7 @@ namespace :admin do
     end
   end
 
-  resources :teachers, only: %i[index] do
+  resources :teachers, only: %i[show index] do
     scope module: :teachers do
       resource :induction, only: %i[show]
     end
