@@ -5,6 +5,8 @@
   breadcrumbs: @breadcrumbs
 ) %>
 
+<%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
+
 <h2 class="govuk-heading-m">Training</h2>
 
 <% if @ect_training_periods.any? %>
