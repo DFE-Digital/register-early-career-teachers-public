@@ -84,6 +84,7 @@ private
                                       delivery_partner:,
                                       core_materials:,
                                       cohort_year: induction_record.schedule.cohort.start_year,
+                                      schedule_identifier: induction_record.schedule.schedule_identifier,
                                       start_date: induction_record.start_date,
                                       end_date:,
                                       start_source_id: induction_record.id,

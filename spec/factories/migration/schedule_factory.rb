@@ -12,11 +12,18 @@ FactoryBot.define do
         ecf-reduced-september
         ecf-reduced-january
         ecf-reduced-april
-        ecf-replacement-september
-        ecf-replacement-january
-        ecf-replacement-april
       ].sample
     end
     name { Faker::Lorem.words(number: 2) }
+
+    trait :replacement do
+      schedule_identifier do
+        %w[
+          ecf-replacement-september
+          ecf-replacement-january
+          ecf-replacement-april
+        ].sample
+      end
+    end
   end
 end
