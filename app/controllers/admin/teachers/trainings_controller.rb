@@ -5,6 +5,7 @@ module Admin
 
       def show
         @teacher = TeacherPresenter.new(Teacher.find(params[:teacher_id]))
+        @navigation_items = helpers.admin_teacher_navigation_items(@teacher, :training)
         @breadcrumbs = teacher_breadcrumbs
         @ect_training_periods = @teacher.ect_training_periods.order(started_on: :desc)
         @mentor_training_periods = @teacher.mentor_training_periods.order(started_on: :desc)
