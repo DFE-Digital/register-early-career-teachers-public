@@ -24,7 +24,7 @@ RSpec.describe Migrators::MentorshipPeriod do
     end
 
     describe "#migrate!" do
-      it 'creates a MentorshipPeriod record for each mentorship period found in the ECF induction records' do
+      it "creates a MentorshipPeriod record for each mentorship period found in the ECF induction records" do
         instance.migrate!
 
         Migration::ParticipantProfile.ect.find_each do |participant_profile|

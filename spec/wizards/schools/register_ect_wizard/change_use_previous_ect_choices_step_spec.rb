@@ -4,7 +4,7 @@ RSpec.describe Schools::RegisterECTWizard::ChangeUsePreviousECTChoicesStep, type
   let(:lead_provider_id) { FactoryBot.create(:lead_provider).id }
   let(:use_previous_ect_choices) { false }
   let(:new_use_previous_ect_choices) { false }
-  let(:training_programme) { 'school_led' }
+  let(:training_programme) { "school_led" }
   let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_last_chosen, :school_led_last_chosen) }
   let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:, training_programme:, lead_provider_id:) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :change_use_previous_ect_choices, store:, school:) }
@@ -18,22 +18,22 @@ RSpec.describe Schools::RegisterECTWizard::ChangeUsePreviousECTChoicesStep, type
   describe "#next_step" do
     before { subject.send(:persist) }
 
-    context 'when using school choices' do
+    context "when using school choices" do
       let(:new_use_previous_ect_choices) { true }
 
       it { expect(subject.next_step).to eq(:check_answers) }
     end
 
-    context 'when not using school choices' do
+    context "when not using school choices" do
       let(:new_use_previous_ect_choices) { false }
 
-      context 'when the school is independent' do
+      context "when the school is independent" do
         let(:school) { FactoryBot.create(:school, :independent, :teaching_school_hub_ab_last_chosen, :school_led_last_chosen) }
 
         it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_independent_school_appropriate_body) }
       end
 
-      context 'when the school is state funded' do
+      context "when the school is state funded" do
         let(:school) { FactoryBot.create(:school, :state_funded, :teaching_school_hub_ab_last_chosen, :school_led_last_chosen) }
 
         it { expect(subject.next_step).to eq(:no_previous_ect_choices_change_state_school_appropriate_body) }

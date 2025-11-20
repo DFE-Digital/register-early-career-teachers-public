@@ -1,7 +1,7 @@
 RSpec.describe InductionPeriods::UpdateInductionPeriod do
   subject(:service) { described_class.new(author:, induction_period:, params:) }
 
-  let(:user) { FactoryBot.create(:user, email: 'user@education.gov.uk') }
+  let(:user) { FactoryBot.create(:user, email: "user@education.gov.uk") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }

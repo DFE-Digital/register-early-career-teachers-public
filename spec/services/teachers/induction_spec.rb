@@ -16,7 +16,7 @@ RSpec.describe Teachers::Induction do
   end
 
   describe "#current_induction_period" do
-    context 'with ongoing period' do
+    context "with ongoing period" do
       before do
         induction_period_unfinished
         induction_period_finished_one_year_ago
@@ -27,7 +27,7 @@ RSpec.describe Teachers::Induction do
       end
     end
 
-    context 'without ongoing period' do
+    context "without ongoing period" do
       before { induction_period_finished_one_year_ago }
 
       it { expect(service.current_induction_period).to be_nil }

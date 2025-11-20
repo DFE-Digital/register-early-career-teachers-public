@@ -2,7 +2,7 @@ module API
   class GuidanceController < ApplicationController
     include ReleaseNotes
 
-    layout 'api_guidance'
+    layout "api_guidance"
 
     def show
       @latest_release_note = release_notes.first
@@ -14,7 +14,7 @@ module API
       if template_exists?(template)
         render template
       else
-        render 'errors/not_found', status: :not_found
+        render "errors/not_found", status: :not_found
       end
     end
   end

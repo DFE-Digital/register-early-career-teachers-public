@@ -1,5 +1,5 @@
-RSpec.describe 'AppropriateBodies::InductionPeriodsController', type: :request do
-  include_context 'sign in as non-DfE user'
+RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request do
+  include_context "sign in as non-DfE user"
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
@@ -41,7 +41,7 @@ RSpec.describe 'AppropriateBodies::InductionPeriodsController', type: :request d
         expect(induction_period.started_on).to eq(started_on)
         expect(induction_period.induction_programme).to eq(induction_programme)
 
-        expect(induction_period.training_programme).to eq('provider_led')
+        expect(induction_period.training_programme).to eq("provider_led")
         expect(induction_period.appropriate_body).to eq(appropriate_body)
       end
 

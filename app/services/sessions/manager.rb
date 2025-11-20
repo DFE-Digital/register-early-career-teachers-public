@@ -18,11 +18,11 @@ module Sessions
     end
 
     # @see Sessions::Users::Builder#session_user
-    def begin_session!(session_user, id_token: '')
+    def begin_session!(session_user, id_token: "")
       check_authorisation!(session_user)
       @current_user = nil
-      session['user_session'] = session_user.to_h
-      cookies['id_token'] = encrypt_token(id_token)
+      session["user_session"] = session_user.to_h
+      cookies["id_token"] = encrypt_token(id_token)
     end
 
     # @see Sessions::User
@@ -41,20 +41,20 @@ module Sessions
     def switch_role!
       new_role = current_user.dfe_sign_in_roles.find { |role| role != current_user.last_active_role }
 
-      session['user_session']['last_active_role'] = new_role # replace the last active role
-      session['user_session']['type'] = "Sessions::Users::#{new_role}" # update the user type in the session
+      session["user_session"]["last_active_role"] = new_role # replace the last active role
+      session["user_session"]["type"] = "Sessions::Users::#{new_role}" # update the user type in the session
 
       if current_user.dfe_sign_in_organisation_id
         appropriate_body = AppropriateBody.find_by(dfe_sign_in_organisation_id: current_user.dfe_sign_in_organisation_id)
         gias_school = GIAS::School.find_by(name: appropriate_body.name)
 
-        session['user_session']['school_urn'] ||= gias_school.urn
+        session["user_session"]["school_urn"] ||= gias_school.urn
 
       elsif current_user.school_urn
         gias_school = GIAS::School.find_by(urn: current_user.school_urn)
         appropriate_body = AppropriateBody.find_by(name: gias_school.name)
 
-        session['user_session']['dfe_sign_in_organisation_id'] ||= appropriate_body.dfe_sign_in_organisation_id
+        session["user_session"]["dfe_sign_in_organisation_id"] ||= appropriate_body.dfe_sign_in_organisation_id
       end
 
       @current_user = load_from_session
@@ -62,7 +62,7 @@ module Sessions
 
     def end_session!
       session.destroy
-      cookies.delete('id_token')
+      cookies.delete("id_token")
     end
 
     def requested_path=(path)
@@ -92,7 +92,7 @@ module Sessions
 
     # @return [Sessions::Users]
     def load_from_session
-      Sessions::User.from_session(session['user_session']).tap do |session_user|
+      Sessions::User.from_session(session["user_session"]).tap do |session_user|
         return (nil) if session_user.nil?
         return (nil) if session_user.expired?
 
@@ -104,7 +104,7 @@ module Sessions
     end
 
     def record_new_activity(session_user)
-      session['user_session']['last_active_at'] = session_user.record_new_activity(Time.current)
+      session["user_session"]["last_active_at"] = session_user.record_new_activity(Time.current)
     end
   end
 end

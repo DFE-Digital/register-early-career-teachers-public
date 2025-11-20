@@ -1,7 +1,7 @@
 module Admin
   module AppropriateBodies
     class CurrentECTsController < AdminController
-      layout 'full', only: 'index'
+      layout "full", only: "index"
 
       def index
         @appropriate_body = AppropriateBody.find(params[:appropriate_body_id])

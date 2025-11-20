@@ -71,7 +71,7 @@ RSpec.describe Schools::AssignMentorForm, type: :model do
       end
       let(:author) { FactoryBot.create(:school_user, school_urn: ect.school.urn) }
 
-      it 'adds a new mentorship for the ect and the mentor starting today' do
+      it "adds a new mentorship for the ect and the mentor starting today" do
         expect(ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor).to be_nil
 
         expect(subject.save(author:)).to be_truthy

@@ -10,7 +10,7 @@ RSpec.describe BeginECTInductionJob, type: :job do
     allow(TRS::APIClient).to receive(:new).and_return(api_client)
   end
 
-  describe '#perform' do
+  describe "#perform" do
     context "when the API call is successful" do
       before do
         allow(api_client).to receive(:begin_induction!)

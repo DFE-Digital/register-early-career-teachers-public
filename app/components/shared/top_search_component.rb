@@ -4,9 +4,9 @@ module Shared
 
     def initialize(
       query_param: :q,
-      label_text: 'Search by name or teacher reference number (TRN)',
+      label_text: "Search by name or teacher reference number (TRN)",
       hint_text: nil,
-      submit_text: 'Search',
+      submit_text: "Search",
       url: nil
     )
       @query_param = query_param

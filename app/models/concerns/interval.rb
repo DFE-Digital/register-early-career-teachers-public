@@ -9,8 +9,8 @@ module Interval
     # Scopes
     scope :ongoing, -> { where(finished_on: nil) }
     scope :finished, -> { where.not(finished_on: nil) }
-    scope :earliest_first, -> { order(started_on: 'asc') }
-    scope :latest_first, -> { order(started_on: 'desc') }
+    scope :earliest_first, -> { order(started_on: "asc") }
+    scope :latest_first, -> { order(started_on: "desc") }
     scope :started_before, ->(date) { where(started_on: ...date) }
     scope :started_after, ->(date) { where("started_on > ?", date) }
     scope :started_on_or_before, ->(date) { where(started_on: ..date) }

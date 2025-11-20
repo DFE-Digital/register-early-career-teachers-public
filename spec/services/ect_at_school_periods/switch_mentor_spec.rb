@@ -165,13 +165,13 @@ module ECTAtSchoolPeriods
               .to eq(ect_training_period.lead_provider)
           end
 
-          it 'assigns the correct schedule to the new training period' do
+          it "assigns the correct schedule to the new training period" do
             travel_to(Date.new(2025, 9, 1)) do
               switch_mentor
 
               new_training_period = TrainingPeriod.last
 
-              expect(new_training_period.schedule.identifier).to eq('ecf-standard-september')
+              expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
               expect(new_training_period.schedule.contract_period_year).to eq(2025)
             end
           end

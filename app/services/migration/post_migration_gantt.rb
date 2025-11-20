@@ -75,13 +75,13 @@ module Migration
             chunk << %([#{tp_identifier}] starts on #{tp.started_on} and ends on #{tp.finished_on || Time.zone.today})
 
             case tp.training_programme
-            when 'provider_led'
+            when "provider_led"
               chunk << if (lead_provider = tp.lead_provider)
                          %([#{tp_identifier}] is colored in #{colour(lead_provider.name)})
                        else
                          %([#{tp_identifier}] is colored in bisque)
                        end
-            when 'school_led'
+            when "school_led"
               chunk << %([#{tp_identifier}] starts on #{tp.started_on} and ends on #{tp.finished_on || Time.zone.today})
               chunk << %([#{tp_identifier}] is colored in yellow)
             end

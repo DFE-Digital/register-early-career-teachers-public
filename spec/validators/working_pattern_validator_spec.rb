@@ -10,7 +10,7 @@ RSpec.describe WorkingPatternValidator, type: :model do
     end
   end
 
-  context 'when working_pattern is valid' do
+  context "when working_pattern is valid" do
     %w[part_time full_time].each do |valid_value|
       let(:working_pattern) { valid_value }
 
@@ -20,20 +20,20 @@ RSpec.describe WorkingPatternValidator, type: :model do
     end
   end
 
-  context 'when working_pattern is invalid' do
-    context 'is invalid when working_pattern is nil' do
+  context "when working_pattern is invalid" do
+    context "is invalid when working_pattern is nil" do
       let(:working_pattern) { nil }
 
-      it 'adds an error' do
+      it "adds an error" do
         expect(subject).not_to be_valid
         expect(subject.errors[:working_pattern]).to include("Select if the ECT's working pattern is full or part time")
       end
     end
 
-    context 'is invalid when working_pattern is an unrecognized value' do
-      let(:working_pattern) { 'Invalid-value' }
+    context "is invalid when working_pattern is an unrecognized value" do
+      let(:working_pattern) { "Invalid-value" }
 
-      it 'adds an error' do
+      it "adds an error" do
         expect(subject).not_to be_valid
         expect(subject.errors[:working_pattern]).to include("'Invalid-value' is not a valid working pattern")
       end

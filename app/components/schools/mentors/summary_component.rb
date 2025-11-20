@@ -26,11 +26,11 @@ module Schools
       end
 
       def trn_row
-        { key: { text: 'TRN' }, value: { text: trn } }
+        { key: { text: "TRN" }, value: { text: trn } }
       end
 
       def assigned_ects_row
-        { key: { text: 'Assigned ECTs' }, value: { text: assigned_ects_summary } }
+        { key: { text: "Assigned ECTs" }, value: { text: assigned_ects_summary } }
       end
 
       def trn

@@ -1,5 +1,5 @@
-RSpec.describe 'Admin::InductionPeriodsController', type: :request do
-  include_context 'sign in as DfE user'
+RSpec.describe "Admin::InductionPeriodsController", type: :request do
+  include_context "sign in as DfE user"
 
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -17,7 +17,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -33,7 +33,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         post admin_teacher_induction_periods_path(teacher), params: valid_params
 
         expect(response).to redirect_to(admin_teacher_induction_path(teacher))
-        expect(flash[:alert]).to eq('Induction period created successfully')
+        expect(flash[:alert]).to eq("Induction period created successfully")
       end
 
       it "records an 'admin creates induction period' event" do
@@ -64,7 +64,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         period = InductionPeriod.last
         expect(period.started_on).to eq(started_on.to_date)
         expect(period.finished_on).to eq(finished_on.to_date)
-        expect(period.induction_programme).to eq('fip')
+        expect(period.induction_programme).to eq("fip")
       end
     end
 
@@ -80,7 +80,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -119,7 +119,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           induction_period: {
             started_on: 4.months.ago,
             finished_on: 1.month.ago,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -156,7 +156,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: nil,
             number_of_terms: 2
           }
@@ -193,7 +193,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -230,7 +230,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -275,7 +275,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -293,8 +293,8 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
         period = InductionPeriod.last
         expect(period.started_on).to eq(started_on.to_date)
         expect(period.finished_on).to eq(finished_on.to_date)
-        expect(period.induction_programme).to eq('fip')
-        expect(period.training_programme).to eq('provider_led')
+        expect(period.induction_programme).to eq("fip")
+        expect(period.training_programme).to eq("provider_led")
       end
     end
 
@@ -318,7 +318,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
             "finished_on(3i)" => finished_on.day,
             "finished_on(2i)" => finished_on.month,
             "finished_on(1i)" => finished_on.year,
-            induction_programme: 'fip',
+            induction_programme: "fip",
             appropriate_body_id: appropriate_body.id,
             number_of_terms: 2
           }
@@ -388,7 +388,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           expect(induction_period.finished_on).to eq(valid_params[:induction_period][:finished_on].to_date)
           expect(induction_period.number_of_terms).to eq(valid_params[:induction_period][:number_of_terms])
           expect(induction_period.induction_programme).to eq(valid_params[:induction_period][:induction_programme])
-          expect(induction_period.training_programme).to eq('provider_led')
+          expect(induction_period.training_programme).to eq("provider_led")
           expect(induction_period.appropriate_body).to eq(appropriate_body)
         end
 
@@ -549,7 +549,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
           expect(induction_period.finished_on).to eq(params[:induction_period][:finished_on].to_date)
           expect(induction_period.number_of_terms).to eq(params[:induction_period][:number_of_terms])
           expect(induction_period.induction_programme).to eq(params[:induction_period][:induction_programme])
-          expect(induction_period.training_programme).to eq('provider_led')
+          expect(induction_period.training_programme).to eq("provider_led")
         end
 
         it "notifies TRS of the updated dates" do
@@ -600,7 +600,7 @@ RSpec.describe 'Admin::InductionPeriodsController', type: :request do
 
           induction_period.reload
           expect(induction_period.induction_programme).to eq("cip")
-          expect(induction_period.training_programme).to eq('provider_led')
+          expect(induction_period.training_programme).to eq("provider_led")
         end
       end
     end

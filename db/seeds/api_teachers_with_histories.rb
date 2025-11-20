@@ -10,7 +10,7 @@ def describe_period_duration(period)
 end
 
 def describe_training_period(tp)
-  prefix = (tp.started_on.future?) ? 'will be' : 'was'
+  prefix = (tp.started_on.future?) ? "will be" : "was"
 
   case
   when tp.provider_led_training_programme? && tp.school_partnership.present?

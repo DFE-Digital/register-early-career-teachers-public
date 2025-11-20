@@ -6,7 +6,7 @@ module API::Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, fee_type: 'output', sort: { payment_date: :asc })
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, updated_since: :ignore, fee_type: "output", sort: { payment_date: :asc })
       @scope = Statement.distinct
 
       where_lead_provider_is(lead_provider_id)

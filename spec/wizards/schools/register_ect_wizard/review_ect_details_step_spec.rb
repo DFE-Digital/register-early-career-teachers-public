@@ -7,35 +7,35 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
   let(:store) { FactoryBot.build(:session_repository, change_name:, corrected_name:, trn: teacher.trn) }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, store:) }
 
-  describe '#initialize' do
+  describe "#initialize" do
     subject { described_class.new(wizard:, **params) }
 
-    context 'when the change_name is provided' do
-      let(:change_name) { 'no' }
+    context "when the change_name is provided" do
+      let(:change_name) { "no" }
       let(:params) { { change_name: } }
 
-      it 'populate the instance from it' do
+      it "populate the instance from it" do
         expect(subject.change_name).to eq(change_name)
         expect(subject.corrected_name).to be_nil
       end
     end
 
-    context 'when no attributes are provided' do
+    context "when no attributes are provided" do
       let(:params) { {} }
 
-      it 'populate it from the wizard store' do
-        expect(subject.change_name).to eq('yes')
-        expect(subject.corrected_name).to eq('Jane Smith')
+      it "populate it from the wizard store" do
+        expect(subject.change_name).to eq("yes")
+        expect(subject.corrected_name).to eq("Jane Smith")
       end
     end
   end
 
-  describe 'validations' do
+  describe "validations" do
     context 'when change_name is "yes" and a corrected_name is present' do
       let(:change_name) { "yes" }
       let(:corrected_name) { "John Doe" }
 
-      it 'is valid with a corrected_name' do
+      it "is valid with a corrected_name" do
         expect(subject).to be_valid
       end
     end
@@ -44,7 +44,7 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
       let(:change_name) { "yes" }
       let(:corrected_name) { nil }
 
-      it 'is not valid without a corrected_name' do
+      it "is not valid without a corrected_name" do
         expect(subject).not_to be_valid
         expect(subject.errors[:corrected_name]).to include("Enter the correct full name")
       end
@@ -54,73 +54,73 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
       let(:change_name) { "no" }
       let(:corrected_name) { nil }
 
-      it 'is valid without a corrected_name' do
+      it "is valid without a corrected_name" do
         expect(subject).to be_valid
       end
     end
   end
 
-  describe '#next_step' do
-    context 'when the teacher has been registered before' do
+  describe "#next_step" do
+    context "when the teacher has been registered before" do
       let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
 
-      it 'returns the previous ect details page' do
+      it "returns the previous ect details page" do
         expect(subject.next_step).to eq(:registered_before)
       end
     end
 
-    context 'when the teacher has never been registered before' do
-      it 'returns the email address page' do
+    context "when the teacher has never been registered before" do
+      it "returns the email address page" do
         expect(subject.next_step).to eq(:email_address)
       end
     end
   end
 
-  describe '#previous_step' do
-    it 'returns :find_ect' do
+  describe "#previous_step" do
+    it "returns :find_ect" do
       expect(subject.previous_step).to eq(:find_ect)
     end
   end
 
-  describe '#save!' do
+  describe "#save!" do
     subject { wizard.current_step }
 
     let(:step_params) do
       ActionController::Parameters.new(
         "review_ect_details" => {
-          "change_name" => 'yes',
+          "change_name" => "yes",
           "corrected_name" => "John Smith",
         }
       )
     end
     let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :review_ect_details, step_params:) }
 
-    context 'when the step is not valid' do
+    context "when the step is not valid" do
       before do
         allow(subject).to receive(:valid?).and_return(false)
       end
 
-      it 'does not update any data in the wizard ect' do
+      it "does not update any data in the wizard ect" do
         expect { subject.save! }.not_to change(subject.ect, :corrected_name)
       end
     end
 
-    context 'when the step is valid' do
+    context "when the step is valid" do
       before do
         allow(subject).to receive(:valid?).and_return(true)
       end
 
-      it 'updates the wizard ect corrected name' do
+      it "updates the wizard ect corrected name" do
         expect { subject.save! }
           .to change(subject.ect, :corrected_name)
-                .from(nil).to('John Smith')
+                .from(nil).to("John Smith")
                 .and change(subject.ect, :change_name)
-                       .from(nil).to('yes')
+                       .from(nil).to("yes")
       end
     end
 
     context 'when change_name is "no"' do
-      before { subject.ect.update!(corrected_name: 'Old Name', change_name: 'yes') }
+      before { subject.ect.update!(corrected_name: "Old Name", change_name: "yes") }
 
       let(:step_params) do
         ActionController::Parameters.new(
@@ -131,10 +131,10 @@ describe Schools::RegisterECTWizard::ReviewECTDetailsStep, type: :model do
         )
       end
 
-      it 'clears corrected_name and sets change_name to no' do
+      it "clears corrected_name and sets change_name to no" do
         expect { subject.save! }
           .to change(subject.ect, :corrected_name).to(nil)
-          .and change(subject.ect, :change_name).to('no')
+          .and change(subject.ect, :change_name).to("no")
       end
     end
   end

@@ -1,7 +1,7 @@
-RSpec.describe 'Registering an ECT', :enable_schools_interface do
-  include_context 'test trs api client'
+RSpec.describe "Registering an ECT", :enable_schools_interface do
+  include_context "test trs api client"
 
-  scenario 'Teacher with trn has already registered as an ECT at a school' do
+  scenario "Teacher with trn has already registered as an ECT at a school" do
     given_i_am_logged_in_as_a_school_user
     and_an_ect_has_already_registered_at_my_school
     and_i_am_on_the_find_ect_step_page
@@ -22,38 +22,38 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface do
   end
 
   def and_an_ect_has_already_registered_at_my_school
-    teacher = FactoryBot.create(:teacher, trn: '9876543')
+    teacher = FactoryBot.create(:teacher, trn: "9876543")
     FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:)
   end
 
   def when_i_click_continue
-    page.get_by_role('link', name: 'Continue').click
+    page.get_by_role("link", name: "Continue").click
   end
 
   def and_i_am_on_the_find_ect_step_page
-    path = '/school/register-ect/find-ect'
+    path = "/school/register-ect/find-ect"
     page.goto path
     expect(page).to have_path(path)
   end
 
   def when_i_submit_the_details_of_the_ect_already_registered
-    page.get_by_label('trn').fill('9876543')
-    page.get_by_label('day').fill('3')
-    page.get_by_label('month').fill('2')
-    page.get_by_label('year').fill('1977')
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill("9876543")
+    page.get_by_label("day").fill("3")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1977")
+    page.get_by_role("button", name: "Continue").click
   end
 
   def then_i_should_be_taken_to_the_ect_already_registered_error_page
-    expect(page).to have_path('/school/register-ect/already-active-at-school')
+    expect(page).to have_path("/school/register-ect/already-active-at-school")
   end
 
   def when_i_click_try_again
-    page.get_by_role('link', name: 'Register another ECT').click
+    page.get_by_role("link", name: "Register another ECT").click
   end
 
   def then_i_should_be_taken_to_the_find_ect_step_page
-    path = '/school/register-ect/find-ect'
+    path = "/school/register-ect/find-ect"
     expect(page).to have_path(path)
   end
 end

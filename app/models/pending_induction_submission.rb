@@ -108,8 +108,8 @@ class PendingInductionSubmission < ApplicationRecord
            on: %i[release_ect record_outcome]
 
   # Instance methods
-  def exempt? = trs_induction_status.eql?('Exempt')
-  def passed? = trs_induction_status.eql?('Passed')
+  def exempt? = trs_induction_status.eql?("Exempt")
+  def passed? = trs_induction_status.eql?("Passed")
   def failed? = %w[Failed FailedInWales].include?(trs_induction_status)
   def no_qts? = trs_qts_awarded_on.blank?
   def prohibited_from_teaching? = trs_prohibited_from_teaching

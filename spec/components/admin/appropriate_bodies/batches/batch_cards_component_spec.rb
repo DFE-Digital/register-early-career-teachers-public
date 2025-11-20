@@ -11,9 +11,9 @@ RSpec.describe Admin::AppropriateBodies::Batches::BatchCardsComponent, type: :co
     render_inline(component)
   end
 
-  it 'renders content' do
-    expect(rendered_content).to have_text('50.0%')
-    expect(rendered_content).to have_text('error rate')
-    expect(rendered_content).to have_text('rows completed')
+  it "renders content" do
+    expect(rendered_content).to have_text("50.0%")
+    expect(rendered_content).to have_text("error rate")
+    expect(rendered_content).to have_text("rows completed")
   end
 end

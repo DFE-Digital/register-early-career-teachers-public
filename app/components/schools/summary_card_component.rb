@@ -7,8 +7,8 @@ module Schools
     DATA_SOURCES = %i[school lead_provider appropriate_body].freeze
 
     NO_INFORMATION_REPORTED = {
-      lead_provider: [{ value: { text: 'Your lead provider has not reported any information to us yet.' } }],
-      appropriate_body: [{ value: { text: 'Your appropriate body has not reported any information to us yet.' } }]
+      lead_provider: [{ value: { text: "Your lead provider has not reported any information to us yet." } }],
+      appropriate_body: [{ value: { text: "Your appropriate body has not reported any information to us yet." } }]
     }.freeze
 
     def initialize(title:, ect_at_school_period:, training_period:, data_source:)
@@ -50,10 +50,10 @@ module Schools
 
     def school_rows
       [
-        { key: { text: 'Appropriate body' }, value: { text: @ect_at_school_period.school_reported_appropriate_body_name } },
-        { key: { text: 'Training programme' }, value: { text: training_programme_name(@training_period.training_programme) } }
+        { key: { text: "Appropriate body" }, value: { text: @ect_at_school_period.school_reported_appropriate_body_name } },
+        { key: { text: "Training programme" }, value: { text: training_programme_name(@training_period.training_programme) } }
       ].tap do |rows|
-        rows << { key: { text: 'Lead provider' }, value: { text: @training_period.lead_provider_name } } if @training_period&.provider_led_training_programme?
+        rows << { key: { text: "Lead provider" }, value: { text: @training_period.lead_provider_name } } if @training_period&.provider_led_training_programme?
       end
     end
 
@@ -61,8 +61,8 @@ module Schools
       return NO_INFORMATION_REPORTED[:lead_provider] unless @training_period&.provider_led_training_programme?
 
       [
-        { key: { text: 'Lead provider' }, value: { text: @training_period.lead_provider_name || 'Not available' } },
-        { key: { text: 'Delivery partner' }, value: { text: @training_period.delivery_partner_name || 'Not available' } }
+        { key: { text: "Lead provider" }, value: { text: @training_period.lead_provider_name || "Not available" } },
+        { key: { text: "Delivery partner" }, value: { text: @training_period.delivery_partner_name || "Not available" } }
       ]
     end
 
@@ -70,9 +70,9 @@ module Schools
       return NO_INFORMATION_REPORTED[:appropriate_body] unless @ect_at_school_period.teacher.induction_periods.any?
 
       [
-        { key: { text: 'Appropriate body' }, value: { text: teacher_induction_ab_name(@ect_at_school_period.teacher) } },
-        { key: { text: 'Training programme' }, value: { text: teacher_induction_programme(@ect_at_school_period.teacher) } },
-        { key: { text: 'Induction start date' }, value: { text: teacher_induction_start_date(@ect_at_school_period.teacher) } }
+        { key: { text: "Appropriate body" }, value: { text: teacher_induction_ab_name(@ect_at_school_period.teacher) } },
+        { key: { text: "Training programme" }, value: { text: teacher_induction_programme(@ect_at_school_period.teacher) } },
+        { key: { text: "Induction start date" }, value: { text: teacher_induction_start_date(@ect_at_school_period.teacher) } }
       ]
     end
   end

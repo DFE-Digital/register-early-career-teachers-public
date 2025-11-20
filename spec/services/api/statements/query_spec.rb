@@ -212,7 +212,7 @@ RSpec.describe API::Statements::Query do
           expect(query.statements).to contain_exactly(statement1, statement2)
         end
 
-        it 'raises an error when searching by an invalid fee type' do
+        it "raises an error when searching by an invalid fee type" do
           expect { described_class.new(fee_type: "something_else") }.to raise_error(described_class::InvalidFeeTypeError)
         end
       end

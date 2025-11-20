@@ -12,8 +12,8 @@ class School < ApplicationRecord
 
   # Associations
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
-  belongs_to :last_chosen_appropriate_body, class_name: 'AppropriateBody'
-  belongs_to :last_chosen_lead_provider, class_name: 'LeadProvider'
+  belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBody"
+  belongs_to :last_chosen_lead_provider, class_name: "LeadProvider"
 
   has_many :ect_at_school_periods, inverse_of: :school
   has_many :ect_teachers, -> { distinct }, through: :ect_at_school_periods, source: :teacher
@@ -34,17 +34,17 @@ class School < ApplicationRecord
   # Validations
   validates :last_chosen_lead_provider_id,
             presence: {
-              message: 'Must contain the id of a lead provider',
+              message: "Must contain the id of a lead provider",
               if: -> { provider_led_training_programme_chosen? }
             },
             absence: {
-              message: 'Must be nil',
+              message: "Must be nil",
               unless: -> { provider_led_training_programme_chosen? }
             }
 
   validates :last_chosen_training_programme,
             presence: {
-              message: 'Must be provider-led',
+              message: "Must be provider-led",
               if: -> { last_chosen_lead_provider_id }
             }
 
@@ -113,14 +113,14 @@ class School < ApplicationRecord
   def last_chosen_appropriate_body_for_independent_school
     return unless last_chosen_appropriate_body&.local_authority?
 
-    errors.add(:last_chosen_appropriate_body_id, 'Must be national or teaching school hub')
+    errors.add(:last_chosen_appropriate_body_id, "Must be national or teaching school hub")
   end
 
   def last_chosen_appropriate_body_for_state_funded_school
     return if last_chosen_appropriate_body.blank?
     return if last_chosen_appropriate_body.teaching_school_hub?
 
-    errors.add(:last_chosen_appropriate_body_id, 'Must be teaching school hub')
+    errors.add(:last_chosen_appropriate_body_id, "Must be teaching school hub")
   end
 
   def last_programme_choices

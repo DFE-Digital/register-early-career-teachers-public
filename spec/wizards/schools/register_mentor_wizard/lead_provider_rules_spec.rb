@@ -3,8 +3,8 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
 
   let(:registration_store) { instance_double(Schools::RegisterMentorWizard::RegistrationStore) }
 
-  describe '#show_row_in_check_your_answers?' do
-    it 'returns true when provider-led, mentoring at new school only and funding available' do
+  describe "#show_row_in_check_your_answers?" do
+    it "returns true when provider-led, mentoring at new school only and funding available" do
       allow(registration_store).to receive_messages(
         provider_led_ect?: true,
         mentoring_at_new_school_only?: true,
@@ -14,7 +14,7 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       expect(rules.show_row_in_check_your_answers?).to be true
     end
 
-    it 'returns true when ect lead provider is invalid' do
+    it "returns true when ect lead provider is invalid" do
       allow(registration_store).to receive_messages(
         provider_led_ect?: true,
         mentoring_at_new_school_only?: false,
@@ -24,7 +24,7 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       expect(rules.show_row_in_check_your_answers?).to be true
     end
 
-    it 'returns false when not provider-led, mentoring at new school only, funding not available and ect lead provider valid' do
+    it "returns false when not provider-led, mentoring at new school only, funding not available and ect lead provider valid" do
       allow(registration_store).to receive_messages(
         provider_led_ect?: false,
         mentoring_at_new_school_only?: false,
@@ -35,8 +35,8 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
     end
   end
 
-  describe '#needs_selection_for_new_registration?' do
-    it 'returns true when mentor not registered and ect lead provider invalid' do
+  describe "#needs_selection_for_new_registration?" do
+    it "returns true when mentor not registered and ect lead provider invalid" do
       allow(registration_store).to receive_messages(
         previously_registered_as_mentor?: false,
         ect_lead_provider_invalid?: true
@@ -44,7 +44,7 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       expect(rules.needs_selection_for_new_registration?).to be true
     end
 
-    it 'returns false when mentor registered and ect lead provider valid' do
+    it "returns false when mentor registered and ect lead provider valid" do
       allow(registration_store).to receive_messages(
         previously_registered_as_mentor?: true,
         ect_lead_provider_invalid?: false
@@ -53,9 +53,9 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
     end
   end
 
-  describe '#previous_step_from_lead_provider' do
-    context 'when ect lead provider invalid and mentor not previously registered' do
-      it 'returns :email_address' do
+  describe "#previous_step_from_lead_provider" do
+    context "when ect lead provider invalid and mentor not previously registered" do
+      it "returns :email_address" do
         allow(registration_store).to receive_messages(
           ect_lead_provider_invalid?: true,
           previously_registered_as_mentor?: false
@@ -64,8 +64,8 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       end
     end
 
-    context 'when ect lead provider invalid and mentor previously registered' do
-      it 'returns :previous_training_period_details' do
+    context "when ect lead provider invalid and mentor previously registered" do
+      it "returns :previous_training_period_details" do
         allow(registration_store).to receive_messages(
           ect_lead_provider_invalid?: true,
           previously_registered_as_mentor?: true
@@ -74,8 +74,8 @@ RSpec.describe Schools::RegisterMentorWizard::LeadProviderRules do
       end
     end
 
-    context 'when ect lead provider valid and mentor not registered' do
-      it 'returns :programme_choices' do
+    context "when ect lead provider valid and mentor not registered" do
+      it "returns :programme_choices" do
         allow(registration_store).to receive_messages(
           ect_lead_provider_invalid?: false,
           previously_registered_as_mentor?: false

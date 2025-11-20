@@ -1,4 +1,4 @@
-require 'timeout'
+require "timeout"
 
 return unless Rails.application.config.enable_request_specs_timeout
 

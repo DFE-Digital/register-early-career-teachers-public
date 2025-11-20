@@ -2,7 +2,7 @@ RSpec.shared_examples "a state school appropriate body view" do |current_step:, 
   let(:ect) { wizard.ect }
   let(:title) { "Which appropriate body will be supporting #{ect.full_name}'s induction?" }
   let(:appropriate_body_name) { nil }
-  let(:store) { FactoryBot.build(:session_repository, appropriate_body_name:, trs_first_name: 'John', trs_last_name: 'Smith') }
+  let(:store) { FactoryBot.build(:session_repository, appropriate_body_name:, trs_first_name: "John", trs_last_name: "Smith") }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, store:) }
 
   before do
@@ -23,24 +23,24 @@ RSpec.shared_examples "a state school appropriate body view" do |current_step:, 
     end
 
     it "prefixes the page with 'Error:'" do
-      expect(view.content_for(:page_title)).to start_with('Error:')
+      expect(view.content_for(:page_title)).to start_with("Error:")
     end
 
-    it 'renders an error summary' do
-      expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
+    it "renders an error summary" do
+      expect(view.content_for(:error_summary)).to have_css(".govuk-error-summary")
     end
   end
 
   it "includes a back button that targets #{back_step_name} page" do
     render
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: send(back_path))
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: send(back_path))
   end
 
   it "includes a continue button that posts to the #{continue_step_name} page" do
     render
 
-    expect(rendered).to have_button('Continue')
+    expect(rendered).to have_button("Continue")
     expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
   end
 end

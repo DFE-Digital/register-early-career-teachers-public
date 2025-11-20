@@ -1,6 +1,6 @@
 module AppropriateBodies
   class Search
-    ISTIP = 'Independent Schools Teacher Induction Panel (ISTIP)'
+    ISTIP = "Independent Schools Teacher Induction Panel (ISTIP)"
 
     def initialize(query_string = nil)
       @scope = AppropriateBody
@@ -23,7 +23,7 @@ module AppropriateBodies
                 @scope.where("name ILIKE ?", "%#{@query_string}%")
               end
 
-      query.order(name: 'asc')
+      query.order(name: "asc")
     end
   end
 end

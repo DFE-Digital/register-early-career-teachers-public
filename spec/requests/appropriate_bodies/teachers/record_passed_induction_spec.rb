@@ -1,4 +1,4 @@
-RSpec.describe 'Appropriate body recording a passed induction outcome for a teacher' do
+RSpec.describe "Appropriate body recording a passed induction outcome for a teacher" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -8,26 +8,26 @@ RSpec.describe 'Appropriate body recording a passed induction outcome for a teac
                       appropriate_body:)
   end
 
-  describe 'GET /appropriate-body/teachers/:teacher_id/record-passed-outcome/new' do
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+  describe "GET /appropriate-body/teachers/:teacher_id/record-passed-outcome/new" do
+    context "when not signed in" do
+      it "redirects to the root page" do
         get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome/new")
 
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-      it 'renders' do
+      it "renders" do
         get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome/new")
 
         expect(response).to be_successful
-        expect(response.body).to include('Record passed outcome')
+        expect(response.body).to include("Record passed outcome")
       end
 
-      it 'returns not found for an invalid teacher' do
+      it "returns not found for an invalid teacher" do
         get("/appropriate-body/teachers/invalid-trn/record-passed-outcome/new")
 
         expect(response).to have_http_status(:not_found)
@@ -35,7 +35,7 @@ RSpec.describe 'Appropriate body recording a passed induction outcome for a teac
     end
   end
 
-  describe 'POST /appropriate-body/teachers/:teacher_id/record-passed-outcome' do
+  describe "POST /appropriate-body/teachers/:teacher_id/record-passed-outcome" do
     let(:params) do
       {
         appropriate_bodies_record_pass: {
@@ -45,25 +45,25 @@ RSpec.describe 'Appropriate body recording a passed induction outcome for a teac
       }
     end
 
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+    context "when not signed in" do
+      it "redirects to the root page" do
         post("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome", params:)
 
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       before do
         sign_in_as(:appropriate_body_user, appropriate_body:)
 
         post("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome", params:)
       end
 
-      context 'with valid params' do
-        it 'passes the induction and redirects' do
+      context "with valid params" do
+        it "passes the induction and redirects" do
           expect(induction_period.reload).to have_attributes(
-            outcome: 'pass',
+            outcome: "pass",
             finished_on: Date.current,
             number_of_terms: 3
           )
@@ -72,7 +72,7 @@ RSpec.describe 'Appropriate body recording a passed induction outcome for a teac
         end
       end
 
-      context 'with missing params' do
+      context "with missing params" do
         let(:params) do
           {
             appropriate_bodies_record_pass: {
@@ -82,14 +82,14 @@ RSpec.describe 'Appropriate body recording a passed induction outcome for a teac
           }
         end
 
-        it 'renders errors' do
-          expect(response.body).to include('There is a problem')
-          expect(response.body).to include('Enter a finish date')
-          expect(response.body).to include('Enter a number of terms')
+        it "renders errors" do
+          expect(response.body).to include("There is a problem")
+          expect(response.body).to include("Enter a finish date")
+          expect(response.body).to include("Enter a number of terms")
         end
       end
 
-      context 'with invalid params' do
+      context "with invalid params" do
         let(:params) do
           {
             appropriate_bodies_record_pass: {
@@ -99,28 +99,28 @@ RSpec.describe 'Appropriate body recording a passed induction outcome for a teac
           }
         end
 
-        it 'renders errors' do
-          expect(response.body).to include('There is a problem')
-          expect(response.body).to include('The end date must be later than the start date')
-          expect(response.body).to include('Number of terms must be between 0 and 16')
+        it "renders errors" do
+          expect(response.body).to include("There is a problem")
+          expect(response.body).to include("The end date must be later than the start date")
+          expect(response.body).to include("Number of terms must be between 0 and 16")
         end
       end
     end
   end
 
-  describe 'GET /appropriate-body/teachers/:teacher_id/record-passed-outcome' do
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+  describe "GET /appropriate-body/teachers/:teacher_id/record-passed-outcome" do
+    context "when not signed in" do
+      it "redirects to the root page" do
         get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
 
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-      it 'renders the show page for a valid teacher' do
+      it "renders the show page for a valid teacher" do
         get("/appropriate-body/teachers/#{teacher.id}/record-passed-outcome")
 
         expect(response).to be_successful

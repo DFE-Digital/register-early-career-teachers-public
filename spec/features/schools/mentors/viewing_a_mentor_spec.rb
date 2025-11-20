@@ -122,11 +122,11 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
   end
 
   def given_i_click_the_back_link
-    page.locator('a.govuk-back-link').first.click
+    page.locator("a.govuk-back-link").first.click
   end
 
   def when_i_click_the_back_link
-    page.locator('a.govuk-back-link').first.click
+    page.locator("a.govuk-back-link").first.click
   end
 
   def then_i_am_on_the_mentors_index_page
@@ -219,13 +219,13 @@ RSpec.describe "Viewing a mentor", :enable_schools_interface do
 
   def and_i_see_lead_provider(name)
     row = page.locator('.govuk-summary-list__row:has(dt.govuk-summary-list__key:has-text("Lead provider"))')
-    expect(row.locator('dd.govuk-summary-list__value')).to be_visible
+    expect(row.locator("dd.govuk-summary-list__value")).to be_visible
     expect(row.locator(%(dd.govuk-summary-list__value:has-text("#{name}")))).to be_visible
   end
 
   def and_i_see_delivery_partner(text_or_name)
     row = page.locator('.govuk-summary-list__row:has(dt.govuk-summary-list__key:has-text("Delivery partner"))')
-    expect(row.locator('dd.govuk-summary-list__value')).to be_visible
+    expect(row.locator("dd.govuk-summary-list__value")).to be_visible
     expect(row.locator(%(dd.govuk-summary-list__value:has-text("#{text_or_name}")))).to be_visible
   end
 

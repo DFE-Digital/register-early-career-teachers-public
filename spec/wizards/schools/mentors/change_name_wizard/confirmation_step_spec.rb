@@ -6,11 +6,11 @@ RSpec.describe Schools::Mentors::ChangeNameWizard::ConfirmationStep, type: :mode
                      current_step: :confirmation)
   end
 
-  describe '#next_step' do
+  describe "#next_step" do
     it { expect { current_step.next_step }.to raise_error(NotImplementedError) }
   end
 
-  describe '#previous_step' do
+  describe "#previous_step" do
     it { expect { current_step.previous_step }.to raise_error(NotImplementedError) }
   end
 end

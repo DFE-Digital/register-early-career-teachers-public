@@ -21,29 +21,29 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
     )
   end
 
-  describe '#update!' do
-    context 'when adding new partnerships' do
+  describe "#update!" do
+    context "when adding new partnerships" do
       let(:new_active_lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id] }
 
-      it 'creates new lead provider delivery partnerships' do
+      it "creates new lead provider delivery partnerships" do
         expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
         partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
         expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(active_lead_provider_1.id, active_lead_provider_2.id)
       end
 
-      it 'records partnership added events' do
+      it "records partnership added events" do
         expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).twice
 
         service.update!
       end
 
-      it 'returns true on success' do
+      it "returns true on success" do
         expect(service.update!).to be true
       end
     end
 
-    context 'when working with existing partnerships' do
+    context "when working with existing partnerships" do
       let!(:existing_partnership_1) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
@@ -52,10 +52,10 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         )
       end
 
-      context 'when keeping existing and adding new partnerships' do
+      context "when keeping existing and adding new partnerships" do
         let(:new_active_lead_provider_ids) { [active_lead_provider_1.id, active_lead_provider_2.id, active_lead_provider_3.id] }
 
-        it 'keeps existing partnerships and adds new ones' do
+        it "keeps existing partnerships and adds new ones" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(2)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
@@ -67,10 +67,10 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         end
       end
 
-      context 'when replacing existing partnerships with new ones' do
+      context "when replacing existing partnerships with new ones" do
         let(:new_active_lead_provider_ids) { [active_lead_provider_2.id, active_lead_provider_3.id] }
 
-        it 'removes existing partnerships and adds new ones' do
+        it "removes existing partnerships and adds new ones" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(1) # -1 + 2 = 1
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
@@ -80,7 +80,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
           )
         end
 
-        it 'records both removed and added events' do
+        it "records both removed and added events" do
           expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).once
           expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).twice
 
@@ -89,7 +89,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
       end
     end
 
-    context 'when removing existing partnerships' do
+    context "when removing existing partnerships" do
       let!(:existing_partnership_1) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
@@ -106,44 +106,44 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
         )
       end
 
-      context 'when unchecking some partnerships' do
+      context "when unchecking some partnerships" do
         let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
 
-        it 'removes unchecked partnerships' do
+        it "removes unchecked partnerships" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(-1)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships.map(&:active_lead_provider_id)).to contain_exactly(active_lead_provider_1.id)
         end
 
-        it 'records partnership removed events' do
+        it "records partnership removed events" do
           expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).once
 
           service.update!
         end
       end
 
-      context 'when unchecking all partnerships' do
+      context "when unchecking all partnerships" do
         let(:new_active_lead_provider_ids) { [] }
 
-        it 'removes all partnerships' do
+        it "removes all partnerships" do
           expect { service.update! }.to change(LeadProviderDeliveryPartnership, :count).by(-2)
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
           expect(partnerships).to be_empty
         end
 
-        it 'records partnership removed events for all removed partnerships' do
+        it "records partnership removed events for all removed partnerships" do
           expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).twice
 
           service.update!
         end
       end
 
-      context 'when adding and removing partnerships in the same operation' do
+      context "when adding and removing partnerships in the same operation" do
         let(:new_active_lead_provider_ids) { [active_lead_provider_2.id, active_lead_provider_3.id] }
 
-        it 'removes unchecked partnerships and adds new ones' do
+        it "removes unchecked partnerships and adds new ones" do
           expect { service.update! }.not_to change(LeadProviderDeliveryPartnership, :count) # -1 + 1 = 0
 
           partnerships = delivery_partner.lead_provider_delivery_partnerships.reload
@@ -153,7 +153,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
           )
         end
 
-        it 'records both added and removed events' do
+        it "records both added and removed events" do
           expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_removed_event!).once
           expect(Events::Record).to receive(:record_lead_provider_delivery_partnership_added_event!).once
 
@@ -162,7 +162,7 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
       end
     end
 
-    context 'when no new partnerships to add' do
+    context "when no new partnerships to add" do
       let!(:existing_partnership_1) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
@@ -173,33 +173,33 @@ RSpec.describe DeliveryPartners::UpdateLeadProviderPairings do
 
       let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
 
-      it 'does not change partnerships' do
+      it "does not change partnerships" do
         expect { service.update! }.not_to change(LeadProviderDeliveryPartnership, :count)
       end
 
-      it 'does not record any events' do
+      it "does not record any events" do
         expect(Events::Record).not_to receive(:record_lead_provider_delivery_partnership_added_event!)
 
         service.update!
       end
 
-      it 'returns true' do
+      it "returns true" do
         expect(service.update!).to be true
       end
     end
 
-    context 'when there is a database error' do
+    context "when there is a database error" do
       let(:new_active_lead_provider_ids) { [active_lead_provider_1.id] }
 
       before do
         allow(LeadProviderDeliveryPartnership).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new(LeadProviderDeliveryPartnership.new))
       end
 
-      it 'returns false on error' do
+      it "returns false on error" do
         expect(service.update!).to be false
       end
 
-      it 'logs the error' do
+      it "logs the error" do
         expect(Rails.logger).to receive(:error).with(/Failed to update lead provider pairings/)
         service.update!
       end

@@ -1,5 +1,5 @@
-RSpec.describe 'Searching for a mentor', :enable_schools_interface do
-  include_context 'test trs api client'
+RSpec.describe "Searching for a mentor", :enable_schools_interface do
+  include_context "test trs api client"
 
   before do
     given_there_is_a_school_with_teachers
@@ -7,14 +7,14 @@ RSpec.describe 'Searching for a mentor', :enable_schools_interface do
     and_i_am_on_the_mentor_list_page
   end
 
-  scenario 'shows matching teachers when searching by name' do
+  scenario "shows matching teachers when searching by name" do
     when_i_search_for_a_teacher
 
     then_i_should_see_the_matching_teacher
     and_i_should_not_see_the_non_matching_teacher
   end
 
-  scenario 'shows matching teachers when searching by TRN' do
+  scenario "shows matching teachers when searching by TRN" do
     when_i_search_for_a_teacher_by_trn
 
     then_i_should_see_the_matching_teacher
@@ -29,10 +29,10 @@ RSpec.describe 'Searching for a mentor', :enable_schools_interface do
   def given_there_is_a_school_with_teachers
     @school = FactoryBot.create(:school)
 
-    @matching_teacher = FactoryBot.create(:teacher, trs_first_name: 'Jimmy', trs_last_name: 'Searchable')
+    @matching_teacher = FactoryBot.create(:teacher, trs_first_name: "Jimmy", trs_last_name: "Searchable")
     FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: @matching_teacher, school: @school)
 
-    @non_matching_teacher = FactoryBot.create(:teacher, trs_first_name: 'Bob', trs_last_name: 'Invisible')
+    @non_matching_teacher = FactoryBot.create(:teacher, trs_first_name: "Bob", trs_last_name: "Invisible")
     FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: @non_matching_teacher, school: @school)
   end
 
@@ -41,19 +41,19 @@ RSpec.describe 'Searching for a mentor', :enable_schools_interface do
   end
 
   def and_i_am_on_the_mentor_list_page
-    page.goto('/school/home/mentors')
+    page.goto("/school/home/mentors")
   end
 
   def when_i_search_for_a_teacher
-    page.get_by_label('Search by name or teacher reference number (TRN)').fill(@matching_teacher.trs_first_name)
-    page.get_by_role('button', name: 'Search').click
+    page.get_by_label("Search by name or teacher reference number (TRN)").fill(@matching_teacher.trs_first_name)
+    page.get_by_role("button", name: "Search").click
   end
 
   def then_i_should_see_the_matching_teacher
-    expect(page.get_by_text('Jimmy Searchable')).to be_visible
+    expect(page.get_by_text("Jimmy Searchable")).to be_visible
   end
 
   def and_i_should_not_see_the_non_matching_teacher
-    expect(page.get_by_text('Bob Invisible')).not_to be_visible
+    expect(page.get_by_text("Bob Invisible")).not_to be_visible
   end
 end

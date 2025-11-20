@@ -23,10 +23,10 @@ private
   def admin_rows
     [
       {
-        key: { text: 'Administrator' }, value: { text: Current.administrator.name }
+        key: { text: "Administrator" }, value: { text: Current.administrator.name }
       },
       {
-        key: { text: 'Role' }, value: { text: Current.role }
+        key: { text: "Role" }, value: { text: Current.role }
       }
     ]
   end

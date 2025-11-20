@@ -7,7 +7,7 @@ describe Schools::TeacherEmail do
   let(:finished_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period) }
   let(:ongoing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
 
-  let(:trn) { '123456' }
+  let(:trn) { "123456" }
 
   describe "#is_currently_used?" do
     context "when the email is in use by an ongoing ECT" do
@@ -62,7 +62,7 @@ describe Schools::TeacherEmail do
     end
 
     context "when the email has never been used before" do
-      let(:email) { 'never_been_used@example.com' }
+      let(:email) { "never_been_used@example.com" }
 
       it "returns false" do
         expect(subject.is_currently_used?).to be false

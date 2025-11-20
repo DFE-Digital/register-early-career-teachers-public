@@ -4,7 +4,7 @@ describe Builders::Teacher do
   let(:trn) { "1234567" }
   let(:full_name) { "Chester Thompson" }
 
-  describe '#build' do
+  describe "#build" do
     it "creates a new Teacher record" do
       expect {
         subject.build

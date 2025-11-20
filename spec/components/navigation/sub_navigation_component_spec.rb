@@ -20,7 +20,7 @@ class TestSubNavigationStructureTwoLevels < Navigation::Structures::BaseSubNavig
         nodes: [
           Node.new(
             name: "This is the Sub Nav 2.1 page",
-            href: '/sub-nav-2.1',
+            href: "/sub-nav-2.1",
             prefix: "/sub-nav-2.1"
           ),
         ]
@@ -34,7 +34,7 @@ class TestSubNavigationStructureOneLevel < Navigation::Structures::BaseSubNaviga
     [
       Node.new(
         name: "This is the Sub Nav 1 page",
-        href: '/sub-nav-1',
+        href: "/sub-nav-1",
         prefix: "/sub-nav-1"
       )
     ]

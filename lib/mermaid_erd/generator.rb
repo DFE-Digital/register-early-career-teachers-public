@@ -7,7 +7,7 @@ module MermaidErd
       @config_path = config_path
       @output_path = output_path
       @exclusions = begin
-        YAML.load_file(config_path).fetch('exclude', [])
+        YAML.load_file(config_path).fetch("exclude", [])
       rescue Errno::ENOENT
         raise "Missing config file at #{config_path}"
       rescue Psych::SyntaxError => e
@@ -16,11 +16,11 @@ module MermaidErd
     end
 
     def generate
-      raise '[⚠] Mermaid ERD generation is only allowed in development and test environments' unless Rails.env.development? || Rails.env.test?
+      raise "[⚠] Mermaid ERD generation is only allowed in development and test environments" unless Rails.env.development? || Rails.env.test?
 
       Rails.application.eager_load!
       models = load_models
-      lines = ['```mermaid', 'erDiagram']
+      lines = ["```mermaid", "erDiagram"]
 
       models.each do |model|
         next unless model.table_exists?
@@ -44,7 +44,7 @@ module MermaidErd
         end
       end
 
-      lines << '```'
+      lines << "```"
       FileUtils.mkdir_p(@output_path.dirname)
       File.write(@output_path, lines.join("\n"))
     end
@@ -52,7 +52,7 @@ module MermaidErd
   private
 
     def sanitize(name)
-      name.gsub('::', '_')
+      name.gsub("::", "_")
     end
 
     def excluded?(model_name)
@@ -61,7 +61,7 @@ module MermaidErd
 
     def load_models
       ActiveRecord::Base.descendants.reject do |model|
-        model.abstract_class? || excluded?(model.name) || model.name.start_with?('HABTM_')
+        model.abstract_class? || excluded?(model.name) || model.name.start_with?("HABTM_")
       end
     end
   end

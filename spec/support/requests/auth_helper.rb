@@ -90,7 +90,7 @@ private
 
   def sign_in_with_dfe_persona(user:)
     Rails.logger.debug("Signing in with persona as dfe user")
-    post('/auth/persona/callback', params: { email: user.email, name: user.name, dfe_staff: true })
+    post("/auth/persona/callback", params: { email: user.email, name: user.name, dfe_staff: true })
 
     Sessions::Users::DfEPersona.new(email: user.email)
   end

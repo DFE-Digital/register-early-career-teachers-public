@@ -6,7 +6,7 @@ RSpec.describe "Admin teachers index", type: :request do
     end
 
     context "with an authenticated non-DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
         get "/admin/teachers"
@@ -15,7 +15,7 @@ RSpec.describe "Admin teachers index", type: :request do
     end
 
     context "with an authenticated DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       context "with search query" do
         it "filters teachers by name" do
@@ -27,14 +27,14 @@ RSpec.describe "Admin teachers index", type: :request do
             :ongoing,
             teacher:,
             started_on: 1.month.ago.to_date,
-            induction_programme: 'fip'
+            induction_programme: "fip"
           )
           FactoryBot.create(
             :induction_period,
             :ongoing,
             teacher: other_teacher,
             started_on: 1.month.ago.to_date,
-            induction_programme: 'fip'
+            induction_programme: "fip"
           )
 
           get "/admin/teachers", params: { q: "John Smith" }
@@ -53,14 +53,14 @@ RSpec.describe "Admin teachers index", type: :request do
             :ongoing,
             teacher:,
             started_on: 1.month.ago.to_date,
-            induction_programme: 'fip'
+            induction_programme: "fip"
           )
           FactoryBot.create(
             :induction_period,
             :ongoing,
             teacher: other_teacher,
             started_on: 1.month.ago.to_date,
-            induction_programme: 'fip'
+            induction_programme: "fip"
           )
 
           get "/admin/teachers", params: { q: "1234567" }

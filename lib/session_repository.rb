@@ -26,7 +26,7 @@ private
 
   def method_missing(name, *args)
     string_name = name.to_s
-    if string_name.end_with?('=')
+    if string_name.end_with?("=")
       self[string_name[0..-2]] = args.first
     else
       self[string_name]

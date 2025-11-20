@@ -83,7 +83,7 @@ module Schools
 
     def school_led_ect_at_school_period_ids
       @school_led_ect_at_school_period_ids ||= school.ect_at_school_periods.joins(:training_periods)
-        .where(training_periods: { training_programme: 'school_led' })
+        .where(training_periods: { training_programme: "school_led" })
         .where(training_periods: { expression_of_interest_id: nil, school_partnership_id: nil })
         .distinct
         .ids

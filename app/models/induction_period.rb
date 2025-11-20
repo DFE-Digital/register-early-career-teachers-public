@@ -97,7 +97,7 @@ private
   end
 
   def teacher_distinct_period
-    overlap_validation(name: 'induction')
+    overlap_validation(name: "induction")
   end
 
   def touch_teacher?

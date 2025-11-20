@@ -8,12 +8,12 @@ private
   end
 
   def commit_sha
-    ENV.fetch('COMMIT_SHA', 'UNKNOWN')
+    ENV.fetch("COMMIT_SHA", "UNKNOWN")
   end
 
   def database
-    'connected' if ActiveRecord::Base.connection.execute('select 1 as ok').tuple(0)['ok'] == 1
+    "connected" if ActiveRecord::Base.connection.execute("select 1 as ok").tuple(0)["ok"] == 1
   rescue PG::ConnectionBad
-    'not connected'
+    "not connected"
   end
 end

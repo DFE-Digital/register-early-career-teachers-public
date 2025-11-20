@@ -35,11 +35,11 @@ module Schools
       end
 
       def mentoring_at_new_school_only?
-        store.mentoring_at_new_school_only == 'yes'
+        store.mentoring_at_new_school_only == "yes"
       end
 
       def same_programme_choices?
-        store.use_same_programme_choices == 'yes'
+        store.use_same_programme_choices == "yes"
       end
 
       def persist

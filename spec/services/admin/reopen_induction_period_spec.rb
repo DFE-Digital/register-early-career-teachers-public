@@ -3,9 +3,9 @@ RSpec.describe Admin::ReopenInductionPeriod do
     described_class.new(author:, induction_period:, note:, zendesk_ticket_id:)
   end
 
-  let(:author) { FactoryBot.create(:dfe_user, email: 'dfe_user@education.gov.uk') }
+  let(:author) { FactoryBot.create(:dfe_user, email: "dfe_user@education.gov.uk") }
   let(:note) { "Original outcome recorded in error" }
-  let(:zendesk_ticket_id) { '#123456' }
+  let(:zendesk_ticket_id) { "#123456" }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:outcome) { "pass" }
@@ -43,7 +43,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
         .with(
           author:,
           body: note,
-          zendesk_ticket_id: '123456',
+          zendesk_ticket_id: "123456",
           induction_period:,
           modifications:,
           teacher:,
@@ -59,7 +59,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
     end
 
     context "when the ticket omits the hashtag prefix" do
-      let(:zendesk_ticket_id) { '123456' }
+      let(:zendesk_ticket_id) { "123456" }
 
       it "removes the outcome" do
         expect { service.reopen_induction_period! }

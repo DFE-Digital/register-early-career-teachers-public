@@ -18,38 +18,38 @@ describe ECTAtSchoolPeriod do
   describe "associations" do
     it { is_expected.to belong_to(:school).inverse_of(:ect_at_school_periods) }
     it { is_expected.to belong_to(:teacher).inverse_of(:ect_at_school_periods) }
-    it { is_expected.to belong_to(:school_reported_appropriate_body).class_name('AppropriateBody').optional }
+    it { is_expected.to belong_to(:school_reported_appropriate_body).class_name("AppropriateBody").optional }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentee) }
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:mentors).through(:mentorship_periods).source(:mentor) }
     it { is_expected.to have_many(:events) }
 
-    describe '.current_or_next_training_period' do
+    describe ".current_or_next_training_period" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
 
-      it { is_expected.to have_one(:current_or_next_training_period).class_name('TrainingPeriod') }
+      it { is_expected.to have_one(:current_or_next_training_period).class_name("TrainingPeriod") }
 
-      context 'when there is a current period' do
+      context "when there is a current period" do
         let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
-        it 'returns the current training_period' do
+        it "returns the current training_period" do
           expect(ect_at_school_period.current_or_next_training_period).to eql(training_period)
         end
       end
 
-      context 'when there is a current period and a future period' do
+      context "when there is a current period and a future period" do
         let!(:training_period) { FactoryBot.create(:training_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, ect_at_school_period:) }
         let!(:future_training_period) { FactoryBot.create(:training_period, started_on: 2.weeks.from_now, finished_on: nil, ect_at_school_period:) }
 
-        it 'returns the current ect_at_school_period' do
+        it "returns the current ect_at_school_period" do
           expect(ect_at_school_period.current_or_next_training_period).to eql(training_period)
         end
       end
 
-      context 'when there is no current period' do
+      context "when there is no current period" do
         let!(:training_period) { FactoryBot.create(:training_period, :finished, ect_at_school_period:) }
 
-        it 'returns nil' do
+        it "returns nil" do
           expect(ect_at_school_period.current_or_next_training_period).to be_nil
         end
       end
@@ -99,7 +99,7 @@ describe ECTAtSchoolPeriod do
       end
     end
 
-    describe '.current_or_next_mentorship_period' do
+    describe ".current_or_next_mentorship_period" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: nil) }
       let(:mentorship_started_on) { 3.weeks.ago }
@@ -115,15 +115,15 @@ describe ECTAtSchoolPeriod do
         )
       end
 
-      it { is_expected.to have_one(:current_or_next_mentorship_period).class_name('MentorshipPeriod') }
+      it { is_expected.to have_one(:current_or_next_mentorship_period).class_name("MentorshipPeriod") }
 
-      context 'when there is a current period' do
-        it 'returns the current mentorship_period' do
+      context "when there is a current period" do
+        it "returns the current mentorship_period" do
           expect(ect_at_school_period.current_or_next_mentorship_period).to eql(mentorship_period)
         end
       end
 
-      context 'when there is a current period and a future period' do
+      context "when there is a current period and a future period" do
         let(:mentorship_finished_on) { 1.week.from_now }
 
         let!(:future_mentorship_period) do
@@ -137,21 +137,21 @@ describe ECTAtSchoolPeriod do
           )
         end
 
-        it 'returns the current mentorship_period' do
+        it "returns the current mentorship_period" do
           expect(ect_at_school_period.current_or_next_mentorship_period).to eql(mentorship_period)
         end
       end
 
-      context 'when there is no current period' do
+      context "when there is no current period" do
         let(:mentorship_finished_on) { 1.week.ago }
 
-        it 'returns nil' do
+        it "returns nil" do
           expect(ect_at_school_period.current_or_next_mentorship_period).to be_nil
         end
       end
     end
 
-    describe '.latest_mentorship_period' do
+    describe ".latest_mentorship_period" do
       subject { ect_at_school_period.latest_mentorship_period }
 
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
@@ -210,7 +210,7 @@ describe ECTAtSchoolPeriod do
 
             it do
               expect(subject.errors.messages[:school_reported_appropriate_body_id])
-                .to contain_exactly('Must be national or teaching school hub')
+                .to contain_exactly("Must be national or teaching school hub")
             end
           end
         end
@@ -225,7 +225,7 @@ describe ECTAtSchoolPeriod do
 
             it do
               expect(subject.errors.messages[:school_reported_appropriate_body_id])
-                .to contain_exactly('Must be teaching school hub')
+                .to contain_exactly("Must be teaching school hub")
             end
           end
 
@@ -242,7 +242,7 @@ describe ECTAtSchoolPeriod do
 
             it do
               expect(subject.errors.messages[:school_reported_appropriate_body_id])
-                .to contain_exactly('Must be teaching school hub')
+                .to contain_exactly("Must be teaching school hub")
             end
           end
         end
@@ -299,12 +299,12 @@ describe ECTAtSchoolPeriod do
       it { is_expected.not_to allow_value("invalid_email").for(:email) }
     end
 
-    describe 'overlapping periods' do
-      let(:started_on_message) { 'Start date cannot overlap another Teacher ECT period' }
-      let(:finished_on_message) { 'End date cannot overlap another Teacher ECT period' }
+    describe "overlapping periods" do
+      let(:started_on_message) { "Start date cannot overlap another Teacher ECT period" }
+      let(:finished_on_message) { "End date cannot overlap another Teacher ECT period" }
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      describe '#teacher_distinct_period' do
+      describe "#teacher_distinct_period" do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             before do
@@ -349,13 +349,13 @@ describe ECTAtSchoolPeriod do
   describe "scopes" do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
-    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2023-01-01', finished_on: '2023-06-01') }
+    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-01-01", finished_on: "2023-06-01") }
     let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
     let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
+    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
 
-    describe '.for_school' do
-      it 'returns only ect periods for the specified school' do
+    describe ".for_school" do
+      it "returns only ect periods for the specified school" do
         expect(described_class.for_school(period_1.school_id)).to match_array([period_1, period_3, teacher_2_period])
       end
     end
@@ -422,11 +422,11 @@ describe ECTAtSchoolPeriod do
   describe "#siblings" do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
-    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: '2022-12-01', finished_on: '2023-06-01') }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: '2024-01-01') }
+    let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2022-12-01", finished_on: "2023-06-01") }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2024-01-01") }
     let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: '2023-02-01', finished_on: '2023-07-01') }
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: '2022-01-01', finished_on: period_1.started_on) }
+    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2022-01-01", finished_on: period_1.started_on) }
 
     it "returns ect periods only for the specified instance's teacher excluding the instance" do
       expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])

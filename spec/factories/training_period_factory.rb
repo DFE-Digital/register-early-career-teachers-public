@@ -26,14 +26,14 @@ FactoryBot.define do
     end
 
     trait(:school_led) do
-      training_programme { 'school_led' }
+      training_programme { "school_led" }
       school_partnership { nil }
       expression_of_interest { nil }
       schedule { nil }
     end
 
     trait(:provider_led) do
-      training_programme { 'provider_led' }
+      training_programme { "provider_led" }
     end
 
     trait :with_school_partnership do

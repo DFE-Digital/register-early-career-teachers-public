@@ -1,4 +1,4 @@
-RSpec.describe 'Appropriate body releasing an ECT' do
+RSpec.describe "Appropriate body releasing an ECT" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -8,22 +8,22 @@ RSpec.describe 'Appropriate body releasing an ECT' do
                       appropriate_body:)
   end
 
-  describe 'GET /appropriate-body/teachers/:id/release/new' do
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+  describe "GET /appropriate-body/teachers/:id/release/new" do
+    context "when not signed in" do
+      it "redirects to the root page" do
         get("/appropriate-body/teachers/#{teacher.id}/release/new")
 
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       before do
         sign_in_as(:appropriate_body_user, appropriate_body:)
       end
 
-      context 'and a teacher actively training' do
-        it 'renders' do
+      context "and a teacher actively training" do
+        it "renders" do
           get("/appropriate-body/teachers/#{teacher.id}/release/new")
 
           expect(response).to be_successful
@@ -32,7 +32,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
     end
   end
 
-  describe 'POST /appropriate-body/teachers/:id/release' do
+  describe "POST /appropriate-body/teachers/:id/release" do
     let(:params) do
       {
         appropriate_bodies_record_release: {
@@ -42,15 +42,15 @@ RSpec.describe 'Appropriate body releasing an ECT' do
       }
     end
 
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+    context "when not signed in" do
+      it "redirects to the root page" do
         post("/appropriate-body/teachers/#{teacher.id}/release", params:)
 
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       before do
         sign_in_as(:appropriate_body_user, appropriate_body:)
 
@@ -58,7 +58,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
       end
 
       context "with valid params" do
-        it 'releases the induction and redirects' do
+        it "releases the induction and redirects" do
           expect(induction_period.reload).to have_attributes(
             outcome: nil,
             finished_on: Date.current,
@@ -68,7 +68,7 @@ RSpec.describe 'Appropriate body releasing an ECT' do
           expect(response).to redirect_to("/appropriate-body/teachers/#{teacher.id}/release")
         end
 
-        context 'with missing params' do
+        context "with missing params" do
           let(:params) do
             {
               appropriate_bodies_record_release: {
@@ -78,14 +78,14 @@ RSpec.describe 'Appropriate body releasing an ECT' do
             }
           end
 
-          it 'renders errors' do
-            expect(response.body).to include('There is a problem')
-            expect(response.body).to include('Enter a finish date')
-            expect(response.body).to include('Enter a number of terms')
+          it "renders errors" do
+            expect(response.body).to include("There is a problem")
+            expect(response.body).to include("Enter a finish date")
+            expect(response.body).to include("Enter a number of terms")
           end
         end
 
-        context 'with invalid params' do
+        context "with invalid params" do
           let(:params) do
             {
               appropriate_bodies_record_release: {
@@ -95,10 +95,10 @@ RSpec.describe 'Appropriate body releasing an ECT' do
             }
           end
 
-          it 'renders errors' do
-            expect(response.body).to include('There is a problem')
-            expect(response.body).to include('The end date must be later than the start date')
-            expect(response.body).to include('Number of terms must be between 0 and 16')
+          it "renders errors" do
+            expect(response.body).to include("There is a problem")
+            expect(response.body).to include("The end date must be later than the start date")
+            expect(response.body).to include("Number of terms must be between 0 and 16")
           end
         end
       end

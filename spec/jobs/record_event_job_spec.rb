@@ -1,5 +1,5 @@
 RSpec.describe(RecordEventJob) do
-  describe '#perform' do
+  describe "#perform" do
     Event::EVENT_TYPES.each do |event_type|
       it "creates an Event #{event_type} record" do
         event_attributes = FactoryBot.attributes_for(:event)

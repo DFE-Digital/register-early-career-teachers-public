@@ -13,7 +13,7 @@ RSpec.describe Migrators::LeadProvider do
     end
 
     describe "#migrate!" do
-      it 'creates a record in the ecf2 database' do
+      it "creates a record in the ecf2 database" do
         expect {
           instance.migrate!
         }.to change(::LeadProvider, :count).by(Migration::LeadProvider.count)

@@ -8,8 +8,8 @@ RSpec.describe API::Guidance::ReleaseNotes::TagsComponent, type: :component do
 
     let(:tags) { %w[bug-fix new-feature] }
 
-    describe '#initialize' do
-      it 'sets it to the injected object if provided' do
+    describe "#initialize" do
+      it "sets it to the injected object if provided" do
         expect(component.tags).to eq(tags)
       end
     end

@@ -2,7 +2,7 @@ module Admin
   class AppropriateBodiesController < AdminController
     include Pagy::Backend
 
-    layout 'full'
+    layout "full"
 
     def index
       @breadcrumbs = {

@@ -7,7 +7,7 @@ module Schools
                 inclusion: { in: %w[yes no],
                              message: "Select 'Yes' or 'No' to confirm whether the details are correct" }
 
-      validates :corrected_name, corrected_name: true, if: -> { change_name == 'no' }
+      validates :corrected_name, corrected_name: true, if: -> { change_name == "no" }
 
       def self.permitted_params
         %i[change_name corrected_name]

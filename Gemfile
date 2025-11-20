@@ -36,8 +36,8 @@ gem "solid_queue"
 
 # DfE Sign-In
 gem "omniauth"
-gem 'omniauth_openid_connect'
-gem 'omniauth-rails_csrf_protection'
+gem "omniauth_openid_connect"
+gem "omniauth-rails_csrf_protection"
 
 # OTP Sign-in
 gem "base32"
@@ -48,11 +48,11 @@ gem "rubyzip"
 gem "savon"
 
 # Render smart quotes
-gem 'rubypants'
+gem "rubypants"
 
 # Batch progress bar
-gem 'hotwire-rails'
-gem 'turbo-rails'
+gem "hotwire-rails"
+gem "turbo-rails"
 
 # JSON Serializer
 gem "blueprinter"
@@ -64,10 +64,10 @@ gem "with_advisory_lock"
 gem "diffy"
 
 group :development do
-  gem 'better_errors'
-  gem 'binding_of_caller'
+  gem "better_errors"
+  gem "binding_of_caller"
   gem "pg_query"
-  gem 'prosopite'
+  gem "prosopite"
 end
 
 group :test do
@@ -82,11 +82,11 @@ end
 group :development, :test do
   gem "brakeman"
   gem "debug", platforms: %i[mri windows]
-  gem 'herb'
-  gem 'rswag-specs'
-  gem 'rubocop-factory_bot', require: false
-  gem 'rubocop-govuk', require: false
-  gem 'rubocop-performance', require: false
+  gem "herb"
+  gem "rswag-specs"
+  gem "rubocop-factory_bot", require: false
+  gem "rubocop-govuk", require: false
+  gem "rubocop-performance", require: false
 end
 
 group :development, :test, :review, :staging, :sandbox do

@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordReleaseJob, type: :job do
     described_class.perform_now(pending_induction_submission.id, author_email, author_name)
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
   let(:pending_induction_submission_batch) do
     FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
@@ -19,8 +19,8 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordReleaseJob, type: :job do
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:author_email) { 'barry@not-a-clue.co.uk' }
-  let(:author_name) { 'Barry Cryer' }
+  let(:author_email) { "barry@not-a-clue.co.uk" }
+  let(:author_name) { "Barry Cryer" }
   let(:teacher) { Teacher.find_by(trn: pending_induction_submission.trn) }
   let(:induction_period) { teacher.induction_periods.first }
 
@@ -29,7 +29,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordReleaseJob, type: :job do
     FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
   end
 
-  it 'closes the induction', :aggregate_failures do
+  it "closes the induction", :aggregate_failures do
     perform_record_release_job
     perform_enqueued_jobs
 
@@ -39,7 +39,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordReleaseJob, type: :job do
     expect(induction_period.outcome).to be_nil
   end
 
-  it 'creates a closed induction event by the author' do
+  it "creates a closed induction event by the author" do
     allow(Events::Record).to receive(:record_induction_period_closed_event!).and_call_original
 
     perform_record_release_job

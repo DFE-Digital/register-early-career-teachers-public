@@ -5,18 +5,18 @@ class ECTAtSchoolPeriod < ApplicationRecord
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
-  belongs_to :school_reported_appropriate_body, class_name: 'AppropriateBody'
+  belongs_to :school_reported_appropriate_body, class_name: "AppropriateBody"
 
   has_many :mentorship_periods, inverse_of: :mentee
   has_many :mentors, through: :mentorship_periods, source: :mentor
   has_many :training_periods, inverse_of: :ect_at_school_period
   has_many :mentor_at_school_periods, through: :teacher
   has_many :events
-  has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: 'TrainingPeriod'
+  has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"
   has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
   has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
-  has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: 'MentorshipPeriod'
-  has_one :latest_mentorship_period, -> { latest_first }, class_name: 'MentorshipPeriod'
+  has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: "MentorshipPeriod"
+  has_one :latest_mentorship_period, -> { latest_first }, class_name: "MentorshipPeriod"
 
   touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
 
@@ -85,16 +85,16 @@ private
   def appropriate_body_for_independent_school
     return if school_reported_appropriate_body&.national? || school_reported_appropriate_body&.teaching_school_hub?
 
-    errors.add(:school_reported_appropriate_body_id, 'Must be national or teaching school hub')
+    errors.add(:school_reported_appropriate_body_id, "Must be national or teaching school hub")
   end
 
   def appropriate_body_for_state_funded_school
     return if school_reported_appropriate_body&.teaching_school_hub?
 
-    errors.add(:school_reported_appropriate_body_id, 'Must be teaching school hub')
+    errors.add(:school_reported_appropriate_body_id, "Must be teaching school hub")
   end
 
   def teacher_distinct_period
-    overlap_validation(name: 'Teacher ECT')
+    overlap_validation(name: "Teacher ECT")
   end
 end

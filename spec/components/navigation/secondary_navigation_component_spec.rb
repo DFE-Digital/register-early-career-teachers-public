@@ -85,7 +85,7 @@ RSpec.describe Navigation::SecondaryNavigationComponent, type: :component do
 
     it "uses labelled_by instead of aria-label" do
       expect(rendered_content).to have_css('nav[aria-labelledby="page-title"]')
-      expect(rendered_content).not_to have_css('nav[aria-label]')
+      expect(rendered_content).not_to have_css("nav[aria-label]")
     end
 
     it "applies custom classes" do

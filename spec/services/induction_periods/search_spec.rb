@@ -3,8 +3,8 @@ describe InductionPeriods::Search do
 
   let(:conditions) { {} }
 
-  context 'when no conditions provided' do
-    it 'returns all InductionPeriods ordered by started_on' do
+  context "when no conditions provided" do
+    it "returns all InductionPeriods ordered by started_on" do
       expect(result.to_sql).to eq(
         %(SELECT "induction_periods".* FROM "induction_periods" ORDER BY "induction_periods"."started_on" ASC)
       )
@@ -14,15 +14,15 @@ describe InductionPeriods::Search do
   context "with trn condition" do
     let(:conditions) { { trn: "1234567" } }
 
-    it 'filters InductionPeriods by teacher trn' do
+    it "filters InductionPeriods by teacher trn" do
       expect(result.to_sql).to include(%(WHERE "teachers"."trn" = '1234567'))
     end
   end
 
-  context 'with no order param' do
+  context "with no order param" do
     subject(:result) { described_class.new.induction_periods }
 
-    it 'defaults to ordering by created_at' do
+    it "defaults to ordering by created_at" do
       expect(result.to_sql).to eq(
         %(SELECT "induction_periods".* FROM "induction_periods" ORDER BY "induction_periods"."created_at" ASC)
       )
