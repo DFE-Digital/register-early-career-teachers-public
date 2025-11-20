@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/DFE-Digital/dfe-analytics.git
-  revision: 66887ceeb047568ad4d8a1df7ef1670d13d59a19
-  tag: v1.15.9
+  revision: 23ae21ef25f5bd1ce081631fbada4cd3b2667cf7
+  tag: v1.15.10
   specs:
-    dfe-analytics (1.15.9)
+    dfe-analytics (1.15.10)
       google-cloud-bigquery (~> 1.38)
       httparty (~> 0.21)
       multi_xml (~> 0.6.0)
@@ -212,8 +212,8 @@ GEM
       logger
     faraday-follow_redirects (0.4.0)
       faraday (>= 1, < 3)
-    faraday-net_http (3.4.1)
-      net-http (>= 0.5.0)
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
     ffi (1.17.0)
     fiber-annotation (0.2.0)
     fiber-local (1.1.0)
@@ -224,7 +224,7 @@ GEM
       raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
-    google-apis-bigquery_v2 (0.95.0)
+    google-apis-bigquery_v2 (0.96.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-core (1.0.2)
       addressable (~> 2.8, >= 2.8.7)
@@ -234,7 +234,7 @@ GEM
       mini_mime (~> 1.1)
       representable (~> 3.0)
       retriable (~> 3.1)
-    google-cloud-bigquery (1.59.0)
+    google-cloud-bigquery (1.61.0)
       bigdecimal (~> 3.0)
       concurrent-ruby (~> 1.0)
       google-apis-bigquery_v2 (~> 0.71)
@@ -277,7 +277,7 @@ GEM
     google-protobuf (4.31.1-x86_64-linux-musl)
       bigdecimal
       rake (>= 13)
-    googleauth (1.15.0)
+    googleauth (1.15.1)
       faraday (>= 1.0, < 3.a)
       google-cloud-env (~> 2.2)
       google-logging-utils (~> 0.1)
@@ -446,8 +446,8 @@ GEM
       listen (~> 3.0)
       nanoc-cli (~> 4.11, >= 4.11.14)
       nanoc-core (~> 4.11, >= 4.11.14)
-    net-http (0.6.0)
-      uri
+    net-http (0.8.0)
+      uri (>= 0.11.1)
     net-imap (0.5.12)
       date
       net-protocol
