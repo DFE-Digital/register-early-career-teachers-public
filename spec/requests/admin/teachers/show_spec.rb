@@ -27,6 +27,28 @@ RSpec.describe "Admin::Teachers#show", type: :request do
         expect(response).to have_http_status(:success)
       end
 
+      context "when the schools interface flag is enabled" do
+        before do
+          allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+        end
+
+        it "renders the teacher navigation" do
+          get admin_teacher_induction_path(teacher)
+          expect(response.body).to include("x-govuk-secondary-navigation")
+        end
+      end
+
+      context "when the schools interface flag is disabled" do
+        before do
+          allow(Rails.application.config).to receive(:enable_schools_interface).and_return(false)
+        end
+
+        it "does not render the teacher navigation" do
+          get admin_teacher_induction_path(teacher)
+          expect(response.body).not_to include("x-govuk-secondary-navigation")
+        end
+      end
+
       context "when teacher has migration failures" do
         before do
           MigrationFailure.create!(parent_type: "Teacher", parent_id: teacher.id, failure_message: "foo", item: { foo: :bar }, data_migration_id: 1)
@@ -42,6 +64,39 @@ RSpec.describe "Admin::Teachers#show", type: :request do
         it "includes page parameter in backlink" do
           get admin_teacher_induction_path(teacher, page: 2)
           expect(response.body).to include(admin_teachers_path(page: 2))
+        end
+      end
+    end
+  end
+
+  describe "GET /admin/teachers/:id" do
+    context "with an authenticated DfE user" do
+      include_context "sign in as DfE user"
+
+      it "returns http success" do
+        get admin_teacher_path(teacher)
+        expect(response).to have_http_status(:success)
+      end
+
+      context "when the schools interface flag is enabled" do
+        before do
+          allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+        end
+
+        it "renders the teacher navigation" do
+          get admin_teacher_path(teacher)
+          expect(response.body).to include("x-govuk-secondary-navigation")
+        end
+      end
+
+      context "when the schools interface flag is disabled" do
+        before do
+          allow(Rails.application.config).to receive(:enable_schools_interface).and_return(false)
+        end
+
+        it "does not render the teacher navigation" do
+          get admin_teacher_path(teacher)
+          expect(response.body).not_to include("x-govuk-secondary-navigation")
         end
       end
     end

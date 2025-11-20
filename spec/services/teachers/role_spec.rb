@@ -83,6 +83,14 @@ RSpec.describe Teachers::Role do
           expect(role_service.roles).to eq([])
         end
       end
+
+      context "when teacher has induction periods but no ECT or mentor periods" do
+        before { FactoryBot.create(:induction_period, teacher:) }
+
+        it "returns ECT (Inactive)" do
+          expect(role_service.roles).to eq(["ECT (Inactive)"])
+        end
+      end
     end
 
     context "when school is specified" do
@@ -186,6 +194,14 @@ RSpec.describe Teachers::Role do
         end
 
         it "returns empty array" do
+          expect(role_service.roles).to eq([])
+        end
+      end
+
+      context "when teacher only has induction periods" do
+        before { FactoryBot.create(:induction_period, teacher:) }
+
+        it "returns empty array for the specified school" do
           expect(role_service.roles).to eq([])
         end
       end
