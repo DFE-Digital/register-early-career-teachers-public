@@ -1,33 +1,33 @@
-Name,TRN,Date of birth,NI number,Status
-Chloe Nolan,3002586,1977-02-03,OA647867D,RequiredToComplete
-Delilah Frost,3002585,1966-01-02,MA251209B,RequiredToComplete
-Theo Willis,3002584,1955-11-24,RE937588C,RequiredToComplete
-Marvin Fuller,3002583,1977-09-24,PG050037C,RequiredToComplete
-Daisy Dudley,3002576,1999-03-04,GE377928A,RequiredToComplete
-Jonas Bloggs,3002577,2000-12-02,BT524135A,RequiredToComplete
-Cynthia Parks,3002578,1977-09-10,CB196295D,RequiredToComplete
-Taylor Hawkins,3002579,2001-08-01,WJ584009B,RequiredToComplete
-Muhammed Ali (no mentor funding),3002580,1955-03-04,BJ833983C,RequiredToComplete
-Robson Scottie (no mentor funding),3002582,1980-05-11,WX999679C,RequiredToComplete
-Rebecca Jones (ineligible),1209937,1993-10-12,J698546XA,Passed
-Joseph Waller (ineligible),1062313,1988-05-30,1A7T689J2,Passed
-Jacqueline Bartlett (ineligible),2057184,1976-08-31,82063AJE7,Exempt
-George James (ineligible),2136110,1968-07-29,BN19500R8,Exempt
-Carol Burns (ineligible),1058354,1991-04-02,27313BJL9,Failed
-Nicola Borschmann (ineligible),2467487,1975-02-02,532B10J1A,Failed
-John Smith (ineligible),1247646,1986-06-19,6J8B903G8,FailedInWales
-Jim Laney (ineligible),3002065,1990-01-01,OA046772B,FailedInWales
-George Orwell (prohibited),2632412,1984-02-16,,InProgress
-Neils Clarke-Dolan (prohibited),2908239,1978-08-12,,Passed
-Dona Msa (no QTS),3003943,1964-02-02,AB722128C,None
-Claire Cool (no QTS),3012235,1993-01-03,BB123456C,None
-Linda Belcher (no QTS),3012238,1980-12-01,QQ123456C,None
-James Rocket (no QTS),3012239,1976-11-26,AA223456C,None
-Buffy Summers (no QTS),3012240,1987-09-09,AA333456C,None
-Ash Ketchum (no QTS),3012241,2000-01-25,QQ553456C,None
-Jigglypuff Jewels (no QTS),3012242,1993-01-05,QQ773456C,None
-Clefairy Cuddles (no QTS),3012243,1993-01-09,QQ993456C,None
-Bulbasaur Brown (no QTS),3012244,1992-01-19,QQ893456C,None
-Squirtle Samuels (no QTS),3012245,1992-03-19,QQ123445C,None
-Ditto Debbie (no QTS),3012246,1970-04-28,QQ783445C,None
-Butterfree Barnaby (no QTS),3012247,2002-06-18,QQ799445C,None
+Name,TRN,Date of birth,NI number,Status,Notes
+Chloe Nolan,3002586,1977-02-03,OA647867D,RequiredToComplete,
+Delilah Frost,3002585,1966-01-02,MA251209B,RequiredToComplete,
+Theo Willis,3002584,1955-11-24,RE937588C,RequiredToComplete,
+Marvin Fuller,3002583,1977-09-24,PG050037C,RequiredToComplete,
+Daisy Dudley,3002576,1999-03-04,GE377928A,RequiredToComplete,
+Jonas Bloggs,3002577,2000-12-02,BT524135A,RequiredToComplete,
+Cynthia Parks,3002578,1977-09-10,CB196295D,RequiredToComplete,
+Taylor Hawkins,3002579,2001-08-01,WJ584009B,RequiredToComplete,
+Muhammed Ali,3002580,1955-03-04,BJ833983C,RequiredToComplete,no mentor funding
+Robson Scottie,3002582,1980-05-11,WX999679C,RequiredToComplete,no mentor funding
+Rebecca Jones,1209937,1993-10-12,J698546XA,Passed,ineligible
+Joseph Waller,1062313,1988-05-30,1A7T689J2,Passed,ineligible
+Jacqueline Bartlett,2057184,1976-08-31,82063AJE7,Exempt,ineligible
+George James,2136110,1968-07-29,BN19500R8,Exempt,ineligible
+Carol Burns,1058354,1991-04-02,27313BJL9,Failed,ineligible
+Nicola Borschmann,2467487,1975-02-02,532B10J1A,Failed,ineligible
+John Smith,1247646,1986-06-19,6J8B903G8,FailedInWales,ineligible
+Jim Laney,3002065,1990-01-01,OA046772B,FailedInWales,ineligible
+George Orwell,2632412,1984-02-16,,InProgress,prohibited
+Neils Clarke-Dolan,2908239,1978-08-12,,Passed,prohibited
+Dona Msa,3003943,1964-02-02,AB722128C,None,no QTS
+Claire Cool,3012235,1993-01-03,BB123456C,None,no QTS
+Linda Belcher,3012238,1980-12-01,QQ123456C,None,no QTS
+James Rocket,3012239,1976-11-26,AA223456C,None,no QTS
+Buffy Summers,3012240,1987-09-09,AA333456C,None,no QTS
+Ash Ketchum,3012241,2000-01-25,QQ553456C,None,no QTS
+Jigglypuff Jewels,3012242,1993-01-05,QQ773456C,None,no QTS
+Clefairy Cuddles,3012243,1993-01-09,QQ993456C,None,no QTS
+Bulbasaur Brown,3012244,1992-01-19,QQ893456C,None,no QTS
+Squirtle Samuels,3012245,1992-03-19,QQ123445C,None,no QTS
+Ditto Debbie,3012246,1970-04-28,QQ783445C,None,no QTS
+Butterfree Barnaby,3012247,2002-06-18,QQ799445C,None,no QTS
