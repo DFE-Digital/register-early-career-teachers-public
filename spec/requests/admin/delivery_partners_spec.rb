@@ -212,8 +212,8 @@ RSpec.describe "Admin delivery partners", type: :request do
 
           it "excludes already assigned lead providers from checkboxes" do
             get new_path
-            expect(response.body).not_to include("value=\"#{active_lead_provider_1.id}\"")
-            expect(response.body).to include("value=\"#{active_lead_provider_2.id}\"")
+            expect(response.body).not_to include(%(value="#{active_lead_provider_1.id}"))
+            expect(response.body).to include(%(value="#{active_lead_provider_2.id}"))
           end
         end
       end
@@ -348,8 +348,8 @@ RSpec.describe "Admin delivery partners", type: :request do
 
             # Check that existing partnerships are shown as checked
             expect(response.body).to include("checked")
-            expect(response.body).to include("value=\"#{active_lead_provider_1.id}\"")
-            expect(response.body).to include("value=\"#{active_lead_provider_2.id}\"")
+            expect(response.body).to include(%(value="#{active_lead_provider_1.id}"))
+            expect(response.body).to include(%(value="#{active_lead_provider_2.id}"))
           end
 
           it "persists checkbox state after form submission and reopening" do

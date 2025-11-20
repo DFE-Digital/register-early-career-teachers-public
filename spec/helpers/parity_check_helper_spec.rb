@@ -54,7 +54,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
 
     before { allow(run).to receive(:request_group_names).and_return(%i[participant-declarations users]) }
 
-    it { is_expected.to eq(%(<ul class=\"govuk-list\"><li>Participant declarations</li><li>Users</li></ul>)) }
+    it { is_expected.to eq(%(<ul class="govuk-list"><li>Participant declarations</li><li>Users</li></ul>)) }
   end
 
   describe "#id_count_in_words" do
@@ -92,7 +92,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
       context "when match rate is #{match_rate}%" do
         subject { helper.match_rate_tag(match_rate) }
 
-        it { is_expected.to eq(%(<strong class=\"govuk-tag govuk-tag--#{colour}\">#{match_rate}%</strong>)) }
+        it { is_expected.to eq(%(<strong class="govuk-tag govuk-tag--#{colour}">#{match_rate}%</strong>)) }
       end
     end
   end
@@ -108,7 +108,7 @@ RSpec.describe ParityCheckHelper, type: :helper do
       context "when status code is #{status_code}%" do
         subject { helper.status_code_tag(status_code) }
 
-        it { is_expected.to eq(%(<strong class=\"govuk-tag govuk-tag--#{colour}\">#{status_code}</strong>)) }
+        it { is_expected.to eq(%(<strong class="govuk-tag govuk-tag--#{colour}">#{status_code}</strong>)) }
       end
     end
   end

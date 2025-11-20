@@ -9,7 +9,7 @@ RSpec::Matchers.define :have_error do |attribute, message, context|
 
   failure_message do |actual|
     actual.errors.map { |error|
-      "expected error on :#{attribute} with message \"#{message}\", but got :#{error.attribute} with message \"#{error.message}\""
+      %(expected error on :#{attribute} with message "#{message}", but got :#{error.attribute} with message "#{error.message}")
     }.join(" and ")
   end
 end
