@@ -138,6 +138,13 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
       context "when the lead provider id is valid" do
         let(:lead_provider_id) { other_lead_provider.id }
 
+        # Force the new schedule to be assigned to ecf-standard-january
+        around do |example|
+          travel_to(Date.new(2025, 11, 1)) do
+            example.run
+          end
+        end
+
         it "updates the lead provider only after confirmation" do
           post(path_for_step("edit"), params:)
 
@@ -153,6 +160,47 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           expect(training.lead_provider_via_school_partnership_or_eoi)
             .to eq(other_lead_provider)
           expect(response).to redirect_to(path_for_step("confirmation"))
+        end
+
+        context "when the previous school partnership was not confirmed" do
+          it "assigns a new schedule" do
+            post(path_for_step("edit"), params:)
+
+            follow_redirect!
+
+            post(path_for_step("check-answers"))
+
+            new_training_period = current_training_for(ect_at_school_period.reload).current_or_next_training_period
+            expect(new_training_period.schedule.identifier).not_to eq(training_period.schedule.identifier)
+          end
+        end
+
+        context "when the previous school partnership was confirmed" do
+          let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: other_lead_provider) }
+          let(:other_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider) }
+          let(:other_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: other_lead_provider_delivery_partnership, school:) }
+          let!(:training_period) do
+            FactoryBot.create(
+              :training_period,
+              :ongoing,
+              :for_ect,
+              :provider_led,
+              ect_at_school_period:,
+              started_on: ect_at_school_period.started_on,
+              school_partnership: other_school_partnership
+            )
+          end
+
+          it "assigns the previous schedule" do
+            post(path_for_step("edit"), params:)
+
+            follow_redirect!
+
+            post(path_for_step("check-answers"))
+
+            new_training_period = current_training_for(ect_at_school_period.reload).current_or_next_training_period
+            expect(new_training_period.schedule.identifier).to eq(training_period.schedule.identifier)
+          end
         end
 
         it "creates an event only after confirmation" do
