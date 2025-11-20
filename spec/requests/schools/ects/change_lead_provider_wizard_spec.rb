@@ -162,7 +162,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
 
-        context 'when the previous school partnership was not confirmed' do
+        context "when the previous school partnership was not confirmed" do
           it "assigns a new schedule" do
             post(path_for_step("edit"), params:)
 
@@ -175,7 +175,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           end
         end
 
-        context 'when the previous school partnership was confirmed' do
+        context "when the previous school partnership was confirmed" do
           let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider: other_lead_provider) }
           let(:other_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: other_active_lead_provider) }
           let(:other_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: other_lead_provider_delivery_partnership, school:) }
