@@ -37,14 +37,14 @@ module HaveSummaryListRow
       if @rows.present? && @matching_row.blank?
         <<~TXT.squish
           Found #{@rows.size} #{'summary list row'.pluralize(@rows.size)} with
-          keys: #{@rows.map { "\"#{it.text}\"" }.join(', ')}.
+          keys: #{@rows.map { %("#{it.text}") }.join(', ')}.
         TXT
       end
     end
 
     def sibling_failure_message
       if @matching_row.present?
-        "Found matching summary list row, but its value is \"#{@sibling.text}\"."
+        %(Found matching summary list row, but its value is "#{@sibling.text}".)
       end
     end
   end

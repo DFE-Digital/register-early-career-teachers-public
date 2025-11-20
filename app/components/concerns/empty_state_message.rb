@@ -10,7 +10,7 @@ private
   end
 
   def message_with_query(base_message)
-    "#{base_message} matching \"#{highlighted_query}\".".html_safe
+    %(#{base_message} matching "#{highlighted_query}".).html_safe
   end
 
   def highlighted_query

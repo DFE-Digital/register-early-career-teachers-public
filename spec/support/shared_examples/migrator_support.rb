@@ -154,8 +154,8 @@ RSpec.shared_examples "a migrator" do |model, dependencies, multiple_workers: tr
 
     it "logs out as it runs" do
       allow(Rails.logger).to receive(:info)
-      expect(Rails.logger).to receive(:info).with("Migration started: [{model: \"#{model_name}\", worker: 0, processed_count: 0, total_count: 2}]")
-      expect(Rails.logger).to receive(:info).with("Migration completed: [{model: \"#{model_name}\", worker: 0, processed_count: 2, total_count: 2}]")
+      expect(Rails.logger).to receive(:info).with(%(Migration started: [{model: "#{model_name}", worker: 0, processed_count: 0, total_count: 2}]))
+      expect(Rails.logger).to receive(:info).with(%(Migration completed: [{model: "#{model_name}", worker: 0, processed_count: 2, total_count: 2}]))
       migrate!
     end
 
@@ -215,8 +215,8 @@ RSpec.shared_examples "a migrator" do |model, dependencies, multiple_workers: tr
 
         it "logs out as it runs" do
           allow(Rails.logger).to receive(:info)
-          expect(Rails.logger).to receive(:info).with("Migration started: [{model: \"#{model_name}\", worker: 0, processed_count: 0, total_count: 1}]")
-          expect(Rails.logger).to receive(:info).with("Migration completed: [{model: \"#{model_name}\", worker: 0, processed_count: 1, total_count: 1}]")
+          expect(Rails.logger).to receive(:info).with(%(Migration started: [{model: "#{model_name}", worker: 0, processed_count: 0, total_count: 1}]))
+          expect(Rails.logger).to receive(:info).with(%(Migration completed: [{model: "#{model_name}", worker: 0, processed_count: 1, total_count: 1}]))
           migrate!
         end
 
