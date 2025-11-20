@@ -84,11 +84,11 @@ RSpec.describe Teachers::Role do
         end
       end
 
-      context 'when teacher has induction periods but no ECT or mentor periods' do
+      context "when teacher has induction periods but no ECT or mentor periods" do
         before { FactoryBot.create(:induction_period, teacher:) }
 
-        it 'returns ECT (Inactive)' do
-          expect(role_service.roles).to eq(['ECT (Inactive)'])
+        it "returns ECT (Inactive)" do
+          expect(role_service.roles).to eq(["ECT (Inactive)"])
         end
       end
     end
@@ -198,10 +198,10 @@ RSpec.describe Teachers::Role do
         end
       end
 
-      context 'when teacher only has induction periods' do
+      context "when teacher only has induction periods" do
         before { FactoryBot.create(:induction_period, teacher:) }
 
-        it 'returns empty array for the specified school' do
+        it "returns empty array for the specified school" do
           expect(role_service.roles).to eq([])
         end
       end

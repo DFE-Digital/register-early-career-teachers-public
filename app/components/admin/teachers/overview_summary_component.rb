@@ -40,42 +40,42 @@ module Admin
         safe_join([
           teacher_full_name(teacher),
           tag.br,
-          tag.span("Name from TRS: #{teacher_full_name_in_trs(teacher)}", class: 'govuk-hint')
+          tag.span("Name from TRS: #{teacher_full_name_in_trs(teacher)}", class: "govuk-hint")
         ])
       end
 
       def name_row
-        { key: 'Name', value: name_value }
+        { key: "Name", value: name_value }
       end
 
       def trn_row
-        { key: 'TRN', value: teacher.trn }
+        { key: "TRN", value: teacher.trn }
       end
 
       def role_row
-        { key: 'Role', value: teacher.roles.presence || 'Not available' }
+        { key: "Role", value: teacher.roles.presence || "Not available" }
       end
 
       def latest_email_row
-        { key: 'Most recent email address', value: teacher.most_recent_email }
+        { key: "Most recent email address", value: teacher.most_recent_email }
       end
 
       def current_school_row
-        { key: 'Current school', value: current_school_value }
+        { key: "Current school", value: current_school_value }
       end
 
       def induction_status_row
         return unless teacher.induction_status
 
-        { key: 'Induction status', value: teacher.induction_status }
+        { key: "Induction status", value: teacher.induction_status }
       end
 
       def api_participant_id_row
-        { key: 'API participant ID', value: content_tag(:code, teacher.api_participant_id, class: 'app-code') }
+        { key: "API participant ID", value: content_tag(:code, teacher.api_participant_id, class: "app-code") }
       end
 
       def current_school_value
-        return 'Not currently registered at a school' if schools.empty?
+        return "Not currently registered at a school" if schools.empty?
 
         safe_join(schools.map { |school| school_link(school) }, tag.br)
       end
