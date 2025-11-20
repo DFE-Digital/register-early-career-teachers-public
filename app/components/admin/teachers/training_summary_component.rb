@@ -35,28 +35,28 @@ module Admin
 
       def provider_led_rows
         [
-          summary_row('Lead provider', training_period.lead_provider_name),
-          summary_row('Delivery partner', delivery_partner_text),
-          summary_row('School', training_school_name),
-          summary_row('Contract period', contract_period_text),
-          summary_row('Training programme', TRAINING_PROGRAMME[training_period.training_programme]),
-          summary_row('Schedule', schedule_text),
-          summary_row('Start date', start_date_text),
-          summary_row('End date', end_date_text)
+          summary_row("Lead provider", training_period.lead_provider_name),
+          summary_row("Delivery partner", delivery_partner_text),
+          summary_row("School", training_school_name),
+          summary_row("Contract period", contract_period_text),
+          summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme]),
+          summary_row("Schedule", schedule_text),
+          summary_row("Start date", start_date_text),
+          summary_row("End date", end_date_text)
         ]
       end
 
       def school_led_rows
         [
-          summary_row('School', training_school_name),
-          summary_row('Training programme', TRAINING_PROGRAMME[training_period.training_programme]),
-          summary_row('Start date', start_date_text),
-          summary_row('End date', end_date_text)
+          summary_row("School", training_school_name),
+          summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme]),
+          summary_row("Start date", start_date_text),
+          summary_row("End date", end_date_text)
         ]
       end
 
       def card_title
-        return 'School-led training programme' if training_period.school_led_training_programme?
+        return "School-led training programme" if training_period.school_led_training_programme?
         return unless confirmed_partnership?
 
         provider_led_card_title
@@ -74,7 +74,7 @@ module Admin
         if confirmed_partnership?
           training_period.delivery_partner_name
         else
-          'No delivery partner confirmed'
+          "No delivery partner confirmed"
         end
       end
 
@@ -87,7 +87,7 @@ module Admin
       end
 
       def not_available_text
-        'Not available'
+        "Not available"
       end
 
       def training_school_name
@@ -105,7 +105,7 @@ module Admin
       end
 
       def end_date_text
-        training_period.finished_on.present? ? format_date(training_period.finished_on) : 'No end date recorded'
+        training_period.finished_on.present? ? format_date(training_period.finished_on) : "No end date recorded"
       end
 
       def format_date(date)
