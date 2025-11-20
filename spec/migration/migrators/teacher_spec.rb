@@ -270,29 +270,16 @@ RSpec.describe Migrators::Teacher do
           end
         end
 
-        context "when the mentor completion is on or after 1/1/2024" do
-          let(:mentor_completion_date) { Date.new(2024, 1, 1) }
-          let(:start_date) { mentor_completion_date - 1.year }
-
-          it "sets the training period end date to the completion date" do
-            instance.migrate!
-
-            teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
-            training_period = teacher.mentor_at_school_periods.ongoing.first.training_periods.first
-            expect(training_period.finished_on.to_date).to eq mentor_completion_date
-          end
-        end
-
-        context "when the mentor completion is between 1/9/2021 and 1/1/2024" do
+        context "when the mentor completion is on or after 1/9/2021" do
           let(:mentor_completion_date) { Date.new(2022, 10, 1) }
           let(:start_date) { mentor_completion_date - 1.year }
 
-          it "does not set the training period end date" do
+          it "sets the training period end date to the 31st August following the completion date" do
             instance.migrate!
 
             teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
             training_period = teacher.mentor_at_school_periods.ongoing.first.training_periods.first
-            expect(training_period.finished_on).to be_blank
+            expect(training_period.finished_on.to_date).to eq Date.new(2023, 8, 31)
           end
         end
       end
