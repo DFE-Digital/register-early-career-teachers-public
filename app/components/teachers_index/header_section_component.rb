@@ -17,7 +17,7 @@ module TeachersIndex
 
     def heading_text
       if current_count.zero? && query.present?
-        "No #{status} inductions for \"#{query}\""
+        %(No #{status} inductions for "#{query}")
       else
         pluralize(current_count, "#{status} induction")
       end
