@@ -67,7 +67,6 @@ module ECTAtSchoolPeriods
       end
 
       context "when the ECT is undergoing provider-led training" do
-        # THIS
         let!(:ect_training_period) do
           FactoryBot.create(
             :training_period,
