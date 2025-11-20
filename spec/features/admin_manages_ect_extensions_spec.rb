@@ -9,7 +9,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
   end
 
   scenario "Admin can see extension links on ECT page" do
-    expect(page.get_by_text("Sarah Connor")).to be_visible
+    expect(page.get_by_role("heading", name: "Sarah Connor")).to be_visible
     expect(page.get_by_text("Induction summary")).to be_visible
     expect(page.locator(".govuk-summary-list__key:has-text('Extensions')")).to be_visible
     expect(page.get_by_role("link", name: "Add extensions")).to be_visible
@@ -29,7 +29,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
 
     expect(page).to have_url(admin_teacher_induction_path(teacher))
     expect(page.get_by_text("Extension was successfully added.")).to be_visible
-    expect(page.get_by_text("Sarah Connor")).to be_visible
+    expect(page.get_by_role("heading", name: "Sarah Connor")).to be_visible
     page.get_by_role("link", name: "View extensions").click
     expect(page).to have_url(admin_teacher_extensions_path(teacher))
     expect(page.get_by_role("heading", name: "Extensions")).to be_visible
@@ -57,7 +57,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
 
       expect(page).to have_url(admin_teacher_induction_path(teacher))
       expect(page.get_by_text("Extension was successfully updated.")).to be_visible
-      expect(page.get_by_text("Sarah Connor")).to be_visible
+      expect(page.get_by_role("heading", name: "Sarah Connor")).to be_visible
       page.get_by_role("link", name: "View extensions").click
       expect(page).to have_url(admin_teacher_extensions_path(teacher))
       expect(page.get_by_role("heading", name: "Extensions")).to be_visible
@@ -76,7 +76,7 @@ RSpec.feature "Admin manages ECT extensions", type: :feature do
 
       expect(page).to have_url(admin_teacher_induction_path(teacher))
       expect(page.get_by_text("Extension was successfully deleted.")).to be_visible
-      expect(page.get_by_text("Sarah Connor")).to be_visible
+      expect(page.get_by_role("heading", name: "Sarah Connor")).to be_visible
       page.get_by_role("link", name: "Add extensions").click
       expect(page).to have_url(admin_teacher_extensions_path(teacher))
       expect(page.get_by_role("heading", name: "Extensions")).to be_visible
