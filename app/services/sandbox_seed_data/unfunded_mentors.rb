@@ -1,4 +1,4 @@
-require Rails.root.join('spec/support/mentorship_period_helpers')
+require Rails.root.join("spec/support/mentorship_period_helpers")
 
 module SandboxSeedData
   class UnfundedMentors < Base
