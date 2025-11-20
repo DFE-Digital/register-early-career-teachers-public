@@ -1,4 +1,4 @@
-RSpec.describe SandboxSeedData::UnfundedMentors do
+RSpec.describe SandboxSeedData::UnfundedMentors, :with_metadata do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
@@ -14,7 +14,13 @@ RSpec.describe SandboxSeedData::UnfundedMentors do
   describe "#plant" do
     subject(:plant) { instance.plant }
 
-    it { expect { plant }.to change(Teacher, :count).by(20) }
+    it "creates the correct quantity of unfunded mentors per Lead provider" do
+      plant
+
+      school_partnerships.each do |sp|
+        expect(API::Teachers::UnfundedMentors::Query.new(lead_provider_id: sp.lead_provider.id).unfunded_mentors.size).to eq(2)
+      end
+    end
 
     it "logs the creation of unfunded mentors" do
       plant
