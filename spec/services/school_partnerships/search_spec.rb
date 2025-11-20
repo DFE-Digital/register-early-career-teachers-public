@@ -124,7 +124,7 @@ describe SchoolPartnerships::Search do
     end
   end
 
-  describe '#exists?' do
+  describe "#exists?" do
     subject { SchoolPartnerships::Search.new(**query_params) }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -138,12 +138,12 @@ describe SchoolPartnerships::Search do
 
     let(:query_params) { { lead_provider:, school:, contract_period: } }
 
-    it 'returns true when a school partnership matches lead provider, delivery partner API ID and school for the given registration period' do
+    it "returns true when a school partnership matches lead provider, delivery partner API ID and school for the given registration period" do
       expect(SchoolPartnerships::Search.new(lead_provider:, school:, contract_period:)).to exist
     end
 
-    describe 'registration periods' do
-      context 'when contract_period differs' do
+    describe "registration periods" do
+      context "when contract_period differs" do
         subject { SchoolPartnerships::Search.new(**query_params.merge(contract_period: other_contract_period)) }
 
         let(:other_contract_period) { FactoryBot.create(:contract_period, year: 2028) }
@@ -151,15 +151,15 @@ describe SchoolPartnerships::Search do
         it { is_expected.not_to(exist) }
       end
 
-      context 'when contract_period omitted' do
+      context "when contract_period omitted" do
         subject { SchoolPartnerships::Search.new(**query_params.except(:contract_period_years)) }
 
         it { is_expected.to(exist) }
       end
     end
 
-    describe 'lead providers' do
-      context 'when lead_provider differs' do
+    describe "lead providers" do
+      context "when lead_provider differs" do
         subject { SchoolPartnerships::Search.new(**query_params.merge(lead_provider: other_lead_provider)) }
 
         let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
@@ -167,15 +167,15 @@ describe SchoolPartnerships::Search do
         it { is_expected.not_to(exist) }
       end
 
-      context 'when lead_provider omitted' do
+      context "when lead_provider omitted" do
         subject { SchoolPartnerships::Search.new(**query_params.except(:lead_provider_id)) }
 
         it { is_expected.to(exist) }
       end
     end
 
-    describe 'schools' do
-      context 'when school differs' do
+    describe "schools" do
+      context "when school differs" do
         subject { SchoolPartnerships::Search.new(**query_params.merge(school: other_school)) }
 
         let(:other_school) { FactoryBot.create(:school) }
@@ -183,7 +183,7 @@ describe SchoolPartnerships::Search do
         it { is_expected.not_to(exist) }
       end
 
-      context 'when school omitted' do
+      context "when school omitted" do
         subject { SchoolPartnerships::Search.new(**query_params.except(:school)) }
 
         it { is_expected.to(exist) }

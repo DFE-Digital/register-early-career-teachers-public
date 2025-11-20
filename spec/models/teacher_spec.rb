@@ -140,33 +140,33 @@ describe Teacher do
       end
     end
 
-    describe '.current_or_next_ect_at_school_period' do
+    describe ".current_or_next_ect_at_school_period" do
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      it { is_expected.to have_one(:current_or_next_ect_at_school_period).class_name('ECTAtSchoolPeriod') }
+      it { is_expected.to have_one(:current_or_next_ect_at_school_period).class_name("ECTAtSchoolPeriod") }
 
-      context 'when there is a current period' do
+      context "when there is a current period" do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
         let!(:finished_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 10.years.ago, finished_on: 8.years.ago, teacher:) }
 
-        it 'returns the current ect_at_school_period' do
+        it "returns the current ect_at_school_period" do
           expect(teacher.current_or_next_ect_at_school_period).to eql(ect_at_school_period)
         end
       end
 
-      context 'when there is a current period and a future period' do
+      context "when there is a current period and a future period" do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, teacher:) }
         let!(:future_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.weeks.from_now, finished_on: nil, teacher:) }
 
-        it 'returns the current ect_at_school_period' do
+        it "returns the current ect_at_school_period" do
           expect(teacher.current_or_next_ect_at_school_period).to eql(ect_at_school_period)
         end
       end
 
-      context 'when there is no current period' do
+      context "when there is no current period" do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :finished, teacher:) }
 
-        it 'returns nil' do
+        it "returns nil" do
           expect(teacher.current_or_next_ect_at_school_period).to be_nil
         end
       end
@@ -248,25 +248,25 @@ describe Teacher do
     describe ".most_recent_provider_led_period" do
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      context 'when there are no training periods' do
-        it 'returns nil' do
+      context "when there are no training periods" do
+        it "returns nil" do
           expect(teacher.most_recent_provider_led_period).to be_nil
         end
       end
 
-      context 'when there are training periods for an ECT' do
+      context "when there are training periods for an ECT" do
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
 
-        context 'when there are no provider-led training periods' do
-          it 'returns nil' do
+        context "when there are no provider-led training periods" do
+          it "returns nil" do
             FactoryBot.create(:training_period, :for_ect, :school_led, ect_at_school_period:)
 
             expect(teacher.most_recent_provider_led_period).to be_nil
           end
         end
 
-        context 'when there are provider-led training periods' do
-          it 'returns the most recently started provider-led training period' do
+        context "when there are provider-led training periods" do
+          it "returns the most recently started provider-led training period" do
             FactoryBot.create(:training_period, :for_ect, :provider_led, started_on: 1.year.ago, ect_at_school_period:)
             newer_provider_led_period = FactoryBot.create(:training_period, :for_ect, :provider_led, started_on: 3.months.ago, ect_at_school_period:)
 
@@ -274,8 +274,8 @@ describe Teacher do
           end
         end
 
-        context 'when there are both provider-led and school-led training periods' do
-          it 'returns the most recently started provider-led training period' do
+        context "when there are both provider-led and school-led training periods" do
+          it "returns the most recently started provider-led training period" do
             older_provider_led_period = FactoryBot.create(:training_period, :for_ect, :provider_led, started_on: 1.year.ago, ect_at_school_period:)
             FactoryBot.create(:training_period, :for_ect, :school_led, started_on: 3.months.ago, ect_at_school_period:)
 
@@ -284,10 +284,10 @@ describe Teacher do
         end
       end
 
-      context 'when there are training periods for a mentor' do
+      context "when there are training periods for a mentor" do
         let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
-        it 'returns the most recently started provider-led training period' do
+        it "returns the most recently started provider-led training period" do
           FactoryBot.create(:training_period, :for_mentor, :provider_led, started_on: 1.year.ago, mentor_at_school_period:)
           newer_provider_led_period = FactoryBot.create(:training_period, :for_mentor, :provider_led, started_on: 3.months.ago, mentor_at_school_period:)
 
@@ -299,25 +299,25 @@ describe Teacher do
     describe ".most_recent_schedule" do
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      context 'when there are no training periods' do
-        it 'returns nil' do
+      context "when there are no training periods" do
+        it "returns nil" do
           expect(teacher.most_recent_provider_led_period).to be_nil
         end
       end
 
-      context 'when there are ECT training periods' do
+      context "when there are ECT training periods" do
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
 
-        context 'when there are no provider-led training periods' do
-          it 'returns nil' do
+        context "when there are no provider-led training periods" do
+          it "returns nil" do
             FactoryBot.create(:training_period, :for_ect, :school_led, ect_at_school_period:)
 
             expect(teacher.most_recent_schedule).to be_nil
           end
         end
 
-        context 'when there are provider-led training periods' do
-          it 'returns the schedule associated with the most recently started provider-led training period' do
+        context "when there are provider-led training periods" do
+          it "returns the schedule associated with the most recently started provider-led training period" do
             FactoryBot.create(:training_period, :for_ect, :provider_led, started_on: 1.year.ago, ect_at_school_period:)
             newer_provider_led_period = FactoryBot.create(:training_period, :for_ect, :provider_led, started_on: 3.months.ago, ect_at_school_period:)
 
@@ -326,8 +326,8 @@ describe Teacher do
           end
         end
 
-        context 'when there are both provider-led and school-led training periods' do
-          it 'returns the schedule associated with the most recently started provider-led training period' do
+        context "when there are both provider-led and school-led training periods" do
+          it "returns the schedule associated with the most recently started provider-led training period" do
             older_provider_led_period = FactoryBot.create(:training_period, :for_ect, :provider_led, started_on: 1.year.ago, ect_at_school_period:)
             FactoryBot.create(:training_period, :for_ect, :school_led, started_on: 3.months.ago, ect_at_school_period:)
 
@@ -337,10 +337,10 @@ describe Teacher do
         end
       end
 
-      context 'when there are mentor training periods' do
+      context "when there are mentor training periods" do
         let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
 
-        it 'returns the schedule associated with the most recently started provider-led training period' do
+        it "returns the schedule associated with the most recently started provider-led training period" do
           FactoryBot.create(:training_period, :for_mentor, :provider_led, started_on: 1.year.ago, mentor_at_school_period:)
           newer_provider_led_period = FactoryBot.create(:training_period, :for_mentor, :provider_led, started_on: 3.months.ago, mentor_at_school_period:)
 
@@ -354,17 +354,17 @@ describe Teacher do
   describe "validations" do
     subject { FactoryBot.build(:teacher, trn:) }
 
-    let(:trn) { '1234567' }
+    let(:trn) { "1234567" }
 
-    it { is_expected.to validate_length_of(:trs_induction_status).with_message('TRS induction status must be shorter than 18 characters') }
+    it { is_expected.to validate_length_of(:trs_induction_status).with_message("TRS induction status must be shorter than 18 characters") }
 
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another teacher") }
     it { is_expected.to validate_uniqueness_of(:api_ect_training_record_id).case_insensitive.with_message("API ect training record id already exists for another teacher").allow_nil }
     it { is_expected.to validate_uniqueness_of(:api_mentor_training_record_id).case_insensitive.with_message("API mentor training record id already exists for another teacher").allow_nil }
 
     describe "trn" do
-      it { is_expected.to validate_presence_of(:trn).with_message('Enter the teacher reference number (TRN)') }
-      it { is_expected.to validate_uniqueness_of(:trn).with_message('TRN already exists').case_insensitive }
+      it { is_expected.to validate_presence_of(:trn).with_message("Enter the teacher reference number (TRN)") }
+      it { is_expected.to validate_uniqueness_of(:trn).with_message("TRN already exists").case_insensitive }
 
       context "when the string contains 7 numeric digits" do
         %w[0000001 9999999].each do |value|
@@ -378,23 +378,23 @@ describe Teacher do
         end
       end
 
-      describe 'allowing some legacy (ECF1) teachers to have no TRN' do
-        context 'when not trnless (default)' do
-          it { is_expected.to validate_presence_of(:trn).with_message('Enter the teacher reference number (TRN)') }
+      describe "allowing some legacy (ECF1) teachers to have no TRN" do
+        context "when not trnless (default)" do
+          it { is_expected.to validate_presence_of(:trn).with_message("Enter the teacher reference number (TRN)") }
           it { is_expected.not_to allow_value(nil).for(:trn) }
           it { is_expected.to allow_value(trn).for(:trn) }
         end
 
-        context 'when trnless' do
+        context "when trnless" do
           subject { FactoryBot.build(:teacher, trnless: true) }
 
-          it { is_expected.to validate_absence_of(:trn).with_message('TRN not allowed when trnless is true') }
+          it { is_expected.to validate_absence_of(:trn).with_message("TRN not allowed when trnless is true") }
           it { is_expected.to allow_value(nil).for(:trn) }
           it { is_expected.not_to allow_value(trn).for(:trn) }
         end
 
-        describe 'checking at the database level' do
-          it 'prevents a row from being inserted when trn is missing and trnless is false' do
+        describe "checking at the database level" do
+          it "prevents a row from being inserted when trn is missing and trnless is false" do
             expected_error = /new row for relation "teachers" violates check constraint "check_trn_presence"/
 
             expect { FactoryBot.build(:teacher, trn: nil, trnless: false).save!(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, expected_error)
@@ -403,25 +403,25 @@ describe Teacher do
       end
     end
 
-    describe 'mentor ineligibility' do
-      context 'when both the ineligibility date and reason are present' do
+    describe "mentor ineligibility" do
+      context "when both the ineligibility date and reason are present" do
         subject { FactoryBot.build(:teacher) }
 
         it { is_expected.to be_valid }
       end
 
-      context 'when both the ineligibility date and reason are blank' do
+      context "when both the ineligibility date and reason are blank" do
         subject { FactoryBot.build(:teacher, :ineligible_for_mentor_funding) }
 
         it { is_expected.to be_valid }
       end
 
-      context 'when the ineligibility date is present but the reason is missing' do
-        subject { FactoryBot.build(:teacher, mentor_became_ineligible_for_funding_reason: 'started_not_completed') }
+      context "when the ineligibility date is present but the reason is missing" do
+        subject { FactoryBot.build(:teacher, mentor_became_ineligible_for_funding_reason: "started_not_completed") }
 
         it { is_expected.to be_invalid }
 
-        it 'has validation errors on the ineligibility date field' do
+        it "has validation errors on the ineligibility date field" do
           subject.valid?
 
           expected_message = /Enter the date when the mentor became ineligible for funding/
@@ -429,12 +429,12 @@ describe Teacher do
         end
       end
 
-      context 'when the ineligibility reason is present but the date is missing' do
+      context "when the ineligibility reason is present but the date is missing" do
         subject { FactoryBot.build(:teacher, mentor_became_ineligible_for_funding_on: 3.days.ago) }
 
         it { is_expected.to be_invalid }
 
-        it 'has validation errors on the ineligibility date field' do
+        it "has validation errors on the ineligibility date field" do
           subject.valid?
 
           expected_message = /Choose the reason why the mentor became ineligible for funding/
@@ -465,82 +465,82 @@ describe Teacher do
     end
   end
 
-  describe 'scopes' do
-    describe '.search' do
+  describe "scopes" do
+    describe ".search" do
       it "searches the 'search' column using a tsquery" do
-        expect(Teacher.search('Joey').to_sql).to end_with(%{WHERE (teachers.search @@ to_tsquery('unaccented', 'Joey:*'))})
+        expect(Teacher.search("Joey").to_sql).to end_with(%{WHERE (teachers.search @@ to_tsquery('unaccented', 'Joey:*'))})
       end
 
-      describe 'basic matching' do
+      describe "basic matching" do
         let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Malcolm", trs_last_name: "Wilkerson", corrected_name: nil) }
         let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
 
         it "returns only the expected result" do
-          results = Teacher.search('Malcolm')
+          results = Teacher.search("Malcolm")
 
           expect(results).to include(target)
           expect(results).not_to include(other)
         end
       end
 
-      describe 'matching with accents' do
+      describe "matching with accents" do
         let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Stëvìê", trs_last_name: "Kènårbän", corrected_name: nil) }
 
-        it 'matches when names have accents but search terms do not' do
-          results = Teacher.search('Stevie Kenarban')
+        it "matches when names have accents but search terms do not" do
+          results = Teacher.search("Stevie Kenarban")
 
           expect(results).to include(target)
         end
 
-        it 'matches when names and search terms both have accents ' do
-          results = Teacher.search('Stëvìê Kènårbän')
+        it "matches when names and search terms both have accents " do
+          results = Teacher.search("Stëvìê Kènårbän")
 
           expect(results).to include(target)
         end
       end
 
-      describe 'matching a prefix' do
+      describe "matching a prefix" do
         let!(:target) { FactoryBot.create(:teacher, trs_first_name: "Dewey", trs_last_name: "Wilkerson", corrected_name: nil) }
         let!(:other) { FactoryBot.create(:teacher, trs_first_name: "Reese", trs_last_name: "Wilkerson", corrected_name: nil) }
 
-        it 'matches on the start of a word' do
-          results = Teacher.search('Dew')
+        it "matches on the start of a word" do
+          results = Teacher.search("Dew")
 
           expect(results).to include(target)
         end
 
-        it 'matches on multiple starts of words' do
-          results = Teacher.search('Dew Wil')
+        it "matches on multiple starts of words" do
+          results = Teacher.search("Dew Wil")
 
           expect(results).to include(target)
         end
 
-        it 'only on multiple starts when all match part of the name' do
-          results = Teacher.search('Dew Wil')
+        it "only on multiple starts when all match part of the name" do
+          results = Teacher.search("Dew Wil")
 
           expect(results).not_to include(other)
         end
       end
     end
 
-    describe '.ordered_by_trs_data_last_refreshed_at_nulls_first' do
-      it 'constructs the query so results are ascending but nulls are placed before the rows with values' do
+    describe ".ordered_by_trs_data_last_refreshed_at_nulls_first" do
+      it "constructs the query so results are ascending but nulls are placed before the rows with values" do
         expected_clause = %(ORDER BY "teachers"."trs_data_last_refreshed_at" ASC NULLS FIRST)
 
         expect(Teacher.ordered_by_trs_data_last_refreshed_at_nulls_first.to_sql).to end_with(expected_clause)
       end
     end
 
-    describe '.deactivated_in_trs' do
-      it 'only includes records where trs_deactivated = TRUE' do
+    describe ".deactivated_in_trs" do
+      it "only includes records where trs_deactivated = TRUE" do
         expected_clause = %("teachers"."trs_deactivated" = TRUE)
 
         expect(Teacher.deactivated_in_trs.to_sql).to end_with(expected_clause)
       end
     end
 
-    describe '.active_in_trs' do
-      it 'only includes records where trs_deactivated = FALSE' do
+    describe ".active_in_trs" do
+      it "only includes records where trs_deactivated = FALSE" do
         expected_clause = %("teachers"."trs_deactivated" = FALSE)
 
         expect(Teacher.active_in_trs.to_sql).to end_with(expected_clause)

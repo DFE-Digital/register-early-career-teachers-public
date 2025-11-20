@@ -22,7 +22,7 @@ describe Schools::TrainingProgramme do
           FactoryBot.create(:mentor_at_school_period,
                             :ongoing,
                             school:,
-                            started_on: '2021-01-01')
+                            started_on: "2021-01-01")
         end
         let!(:training_period) do
           FactoryBot.create(:training_period,
@@ -40,13 +40,13 @@ describe Schools::TrainingProgramme do
           FactoryBot.create(:mentor_at_school_period,
                             :ongoing,
                             school:,
-                            started_on: '2021-01-01')
+                            started_on: "2021-01-01")
         end
         let(:ect_at_school_period) do
           FactoryBot.create(:ect_at_school_period,
                             :ongoing,
                             school:,
-                            started_on: '2021-01-01')
+                            started_on: "2021-01-01")
         end
         let!(:mentorship_period) do
           FactoryBot.create(:mentorship_period,
@@ -64,7 +64,7 @@ describe Schools::TrainingProgramme do
           FactoryBot.create(:mentor_at_school_period,
                             :ongoing,
                             school:,
-                            started_on: '2021-01-01')
+                            started_on: "2021-01-01")
         end
         let!(:training_period) do
           FactoryBot.create(:training_period,
@@ -84,7 +84,7 @@ describe Schools::TrainingProgramme do
             FactoryBot.create(:ect_at_school_period,
                               :ongoing,
                               school:,
-                              started_on: '2021-01-01')
+                              started_on: "2021-01-01")
           end
           let!(:training_period) do
             FactoryBot.create(:training_period,
@@ -103,14 +103,14 @@ describe Schools::TrainingProgramme do
             FactoryBot.create(:ect_at_school_period,
                               :ongoing,
                               school:,
-                              started_on: '2021-01-01')
+                              started_on: "2021-01-01")
           end
           let!(:training_period) do
             FactoryBot.create(:training_period,
                               :school_led,
                               ect_at_school_period:,
-                              started_on: '2022-01-01',
-                              finished_on: '2022-06-01')
+                              started_on: "2022-01-01",
+                              finished_on: "2022-06-01")
           end
 
           it { is_expected.to eq("school_led") }
@@ -121,29 +121,29 @@ describe Schools::TrainingProgramme do
             FactoryBot.create(:ect_at_school_period,
                               :ongoing,
                               school:,
-                              started_on: '2021-01-01')
+                              started_on: "2021-01-01")
           end
           let!(:training_period_1) do
             FactoryBot.create(:training_period,
                               :provider_led,
                               ect_at_school_period: ect_at_school_period_1,
                               school_partnership:,
-                              started_on: '2022-01-01',
-                              finished_on: '2022-06-01')
+                              started_on: "2022-01-01",
+                              finished_on: "2022-06-01")
           end
 
           let(:ect_at_school_period_2) do
             FactoryBot.create(:ect_at_school_period,
                               :ongoing,
                               school:,
-                              started_on: '2021-01-01')
+                              started_on: "2021-01-01")
           end
           let!(:training_period) do
             FactoryBot.create(:training_period,
                               :school_led,
                               ect_at_school_period: ect_at_school_period_2,
-                              started_on: '2022-01-01',
-                              finished_on: '2022-06-01')
+                              started_on: "2022-01-01",
+                              finished_on: "2022-06-01")
           end
 
           it { is_expected.to eq("provider_led") }
@@ -155,7 +155,7 @@ describe Schools::TrainingProgramme do
           FactoryBot.create(:ect_at_school_period,
                             :ongoing,
                             school:,
-                            started_on: '2021-01-01')
+                            started_on: "2021-01-01")
         end
         let!(:training_period) do
           FactoryBot.create(:training_period,

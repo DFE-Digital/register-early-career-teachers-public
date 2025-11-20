@@ -1,9 +1,9 @@
-RSpec.describe 'Registering an ECT', :enable_schools_interface, :js do
-  include_context 'test trs api client'
+RSpec.describe "Registering an ECT", :enable_schools_interface, :js do
+  include_context "test trs api client"
 
-  let(:trn) { '3002586' }
+  let(:trn) { "3002586" }
 
-  scenario 'Teacher with email in use' do
+  scenario "Teacher with email in use" do
     given_there_is_a_school_in_the_service
     and_an_ongoing_ect_is_assigned_to_the_school
     and_i_sign_in_as_that_school_user
@@ -11,7 +11,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface, :js do
 
     when_i_start_adding_an_ect
     and_i_click_the_continue_link
-    and_i_submit_the_find_ect_form(trn:, dob_day: '3', dob_month: '2', dob_year: '1977')
+    and_i_submit_the_find_ect_form(trn:, dob_day: "3", dob_month: "2", dob_year: "1977")
     and_i_select_the_ect_details_are_correct
     and_i_click_confirm_and_continue
     and_i_click_continue
@@ -28,7 +28,7 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface, :js do
   end
 
   def and_i_click_the_continue_link
-    page.get_by_role('link', name: 'Continue').click
+    page.get_by_role("link", name: "Continue").click
   end
 
   def given_there_is_a_school_in_the_service
@@ -45,25 +45,25 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface, :js do
   end
 
   def and_i_am_on_the_schools_landing_page
-    path = '/school/home/ects'
+    path = "/school/home/ects"
     page.goto path
     expect(page).to have_path(path)
   end
 
   def when_i_start_adding_an_ect
-    page.get_by_role('link', name: 'Register an ECT starting at your school').click
+    page.get_by_role("link", name: "Register an ECT starting at your school").click
   end
 
   def and_i_click_continue
-    page.get_by_role('button', name: "Continue").click
+    page.get_by_role("button", name: "Continue").click
   end
 
   def and_i_submit_the_find_ect_form(trn:, dob_day:, dob_month:, dob_year:)
-    page.get_by_label('trn').fill(trn)
-    page.get_by_label('day').fill(dob_day)
-    page.get_by_label('month').fill(dob_month)
-    page.get_by_label('year').fill(dob_year)
-    page.get_by_role('button', name: 'Continue').click
+    page.get_by_label("trn").fill(trn)
+    page.get_by_label("day").fill(dob_day)
+    page.get_by_label("month").fill(dob_month)
+    page.get_by_label("year").fill(dob_year)
+    page.get_by_role("button", name: "Continue").click
   end
 
   def and_i_select_the_ect_details_are_correct
@@ -71,31 +71,31 @@ RSpec.describe 'Registering an ECT', :enable_schools_interface, :js do
   end
 
   def and_i_click_confirm_and_continue
-    page.get_by_role('button', name: 'Confirm and continue').click
+    page.get_by_role("button", name: "Confirm and continue").click
   end
 
   def then_i_should_be_taken_to_the_email_address_page
-    expect(page).to have_path('/school/register-ect/email-address')
+    expect(page).to have_path("/school/register-ect/email-address")
   end
 
   def and_i_enter_an_email_address_already_in_use_by_an_ongoing_teacher
-    page.get_by_label('email').fill(@ect.email)
+    page.get_by_label("email").fill(@ect.email)
   end
 
   def when_i_enter_an_email_address_of_a_teacher_from_their_finished_school_periods
     finished_ect = FactoryBot.create(:ect_at_school_period)
-    page.get_by_label('email').fill(finished_ect.email)
+    page.get_by_label("email").fill(finished_ect.email)
   end
 
   def then_i_should_be_taken_to_the_cant_use_email_page
-    expect(page).to have_path('/school/register-ect/cant-use-email')
+    expect(page).to have_path("/school/register-ect/cant-use-email")
   end
 
   def when_i_click_try_another_email
-    page.get_by_role('link', name: 'Try another email').click
+    page.get_by_role("link", name: "Try another email").click
   end
 
   def then_i_should_be_taken_to_the_ect_start_date_page
-    expect(page).to have_path('/school/register-ect/start-date')
+    expect(page).to have_path("/school/register-ect/start-date")
   end
 end

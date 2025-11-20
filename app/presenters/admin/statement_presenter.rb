@@ -9,7 +9,7 @@ module Admin
     end
 
     def status_tag_kwargs
-      colour = { 'open' => 'blue', 'payable' => 'yellow', 'paid' => 'green' }.fetch(statement.status)
+      colour = { "open" => "blue", "payable" => "yellow", "paid" => "green" }.fetch(statement.status)
 
       text = if statement.output_fee? && statement.paid?
                "Authorised for payment"

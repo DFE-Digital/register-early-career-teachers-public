@@ -33,7 +33,7 @@ module Sessions
       # @return [String]
       def organisation_name
         if has_multiple_roles?
-          school.name + ' (school)'
+          school.name + " (school)"
         else
           school.name
         end
@@ -43,7 +43,7 @@ module Sessions
 
       # @return [String]
       def sign_out_path
-        '/auth/dfe_sign_in/logout'
+        "/auth/dfe_sign_in/logout"
       end
 
       # @return [Hash] session data

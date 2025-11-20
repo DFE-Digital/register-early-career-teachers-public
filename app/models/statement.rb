@@ -13,7 +13,7 @@ class Statement < ApplicationRecord
   def self.maximum_year = Date.current.year + 5
 
   validates :fee_type,
-            presence: { message: 'Enter a fee type' },
+            presence: { message: "Enter a fee type" },
             inclusion: { in: VALID_FEE_TYPES, message: "Fee type must be output or service" }
   validates :month, numericality: { in: 1..12, only_integer: true, message: "Month must be a number between 1 and 12" }
   validates :year, numericality: { greater_than_or_equal_to: 2020, is_less_than_or_equal_to: :maximum_year, only_integer: true, message: "Year must be on or after 2020 and on or before #{maximum_year}" }
@@ -24,7 +24,7 @@ class Statement < ApplicationRecord
   scope :with_status, ->(*status) { where(status:) }
   scope :with_statement_date, ->(year:, month:) { where(year:, month:) }
 
-  enum :fee_type, { service: "service", output: "output" }, suffix: 'fee'
+  enum :fee_type, { service: "service", output: "output" }, suffix: "fee"
 
   state_machine :status, initial: :open do
     state :open

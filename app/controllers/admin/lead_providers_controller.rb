@@ -1,6 +1,6 @@
 module Admin
   class LeadProvidersController < AdminController
-    layout 'full'
+    layout "full"
 
     def index
       @breadcrumbs = {

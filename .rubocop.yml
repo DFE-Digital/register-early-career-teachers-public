@@ -35,7 +35,26 @@ RSpec/SpecFilePathFormat:
     ECTs: ects
 
 Style/StringLiterals:
-  EnforcedStyle: single_quotes
+  EnforcedStyle: double_quotes
+  Exclude:
+    # Leave historical migrations untouched, new ones must use double quotes.
+    - "db/migrate/20240926161243_add_tsvector_column_to_teachers_for_searching.rb"
+    - "db/migrate/20241003132805_add_outcome_field_to_pending_induction_submission.rb"
+    - "db/migrate/20241120163657_add_outcome_to_induction_period.rb"
+    - "db/migrate/20241211115427_create_events.rb"
+    - "db/migrate/20250114194121_add_trs_fields_to_teacher.rb"
+    - "db/migrate/20250115105233_add_system_to_event_author_types.rb"
+    - "db/migrate/20250130172854_add_unknown_and_pre_september_2021_induction_programmes.rb"
+    - "db/migrate/20250214124432_remove_unqiue_index_from_appropriate_body_name.rb"
+    - "db/migrate/20250227215422_add_programme_choices_to_schools.rb"
+    - "db/migrate/20250719173448_add_training_programme_to_training_periods.rb"
+    - "db/migrate/20250815142537_remove_training_programme_from_ect_at_school_periods.rb"
+    - "db/migrate/20250319234928_add_type_to_appropriate_bodies.rb"
+    - "db/migrate/20250324152652_create_pending_induction_submission_batches.rb"
+    - "db/migrate/20250623163105_add_fee_types_and_replace_output_fee.rb"
+    - "db/migrate/20250909132658_create_schedules.rb"
+    - "db/migrate/20250909211344_create_milestones.rb"
+    - "db/migrate/20250925063550_add_role_to_users.rb"
 
 Style/EmptyMethod:
   EnforcedStyle: expanded

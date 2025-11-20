@@ -1,5 +1,5 @@
 RSpec.describe "schools/register_ect_wizard/induction_failed.html.erb" do
-  let(:ect) { double('ECT', full_name: "John Doe's") }
+  let(:ect) { double("ECT", full_name: "John Doe's") }
 
   before do
     assign(:ect, ect)
@@ -15,6 +15,6 @@ RSpec.describe "schools/register_ect_wizard/induction_failed.html.erb" do
   end
 
   it "includes a link to register another ECT" do
-    expect(rendered).to have_link('Register another ECT', href: schools_register_ect_wizard_find_ect_path)
+    expect(rendered).to have_link("Register another ECT", href: schools_register_ect_wizard_find_ect_path)
   end
 end

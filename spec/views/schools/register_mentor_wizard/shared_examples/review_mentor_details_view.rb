@@ -28,29 +28,29 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
     assign(:mentor, mentor)
   end
 
-  context 'page title' do
+  context "page title" do
     before { render }
 
-    it { expect(sanitize(view.content_for(:page_title))).to eql('Check mentor details') }
+    it { expect(sanitize(view.content_for(:page_title))).to eql("Check mentor details") }
   end
 
   it "prefixes the page with 'Error:' when any step data is invalid" do
-    store.change_name = 'no'
-    store.corrected_name = 'a' * 100
+    store.change_name = "no"
+    store.corrected_name = "a" * 100
     wizard.valid_step?
 
     render
 
-    expect(view.content_for(:page_title)).to start_with('Error:')
+    expect(view.content_for(:page_title)).to start_with("Error:")
   end
 
   it "includes a back button that targets #{back_step_name} page" do
     render
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: send(back_path))
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: send(back_path))
   end
 
-  it 'displays Name and TRN' do
+  it "displays Name and TRN" do
     render
 
     expect(rendered).to have_element(:dt, text: "Name")
@@ -60,7 +60,7 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
   end
 
   context "when the TRN and DoB match a TRS record" do
-    it 'displays the Date of Birth' do
+    it "displays the Date of Birth" do
       render
 
       expect(rendered).to have_element(:dt, text: "Date of birth")
@@ -74,7 +74,7 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
       store.date_of_birth = "1950-01'02"
     end
 
-    it 'displays the National insurance number' do
+    it "displays the National insurance number" do
       render
 
       expect(rendered).to have_element(:dt, text: "National insurance number")
@@ -86,13 +86,13 @@ RSpec.shared_examples "a review mentor details step view" do |current_step:,
   it "includes a Confirm and continue button that posts to the #{continue_step_name} page" do
     render
 
-    expect(rendered).to have_button('Confirm and continue')
+    expect(rendered).to have_button("Confirm and continue")
     expect(rendered).to have_selector("form[action='#{send(confirm_and_continue_path)}']")
   end
 
   it "includes a 'check details' link that targets #{check_details_step_name} page" do
     render
 
-    expect(rendered).to have_link('check details', href: send(check_details_path))
+    expect(rendered).to have_link("check details", href: send(check_details_path))
   end
 end

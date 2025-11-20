@@ -23,22 +23,22 @@ RSpec.describe "appropriate_bodies/teachers/record_released_induction/new.html.e
     render
   end
 
-  it 'renders a form with the expected fields' do
-    expect(rendered).to have_css('form')
+  it "renders a form with the expected fields" do
+    expect(rendered).to have_css("form")
   end
 
-  it 'has a date field for the leaving date' do
-    expect(rendered).to have_css('legend', text: "When did they move from #{appropriate_body.name}?")
-    expect(rendered).to have_css('form label', text: 'Day')
-    expect(rendered).to have_css('form label', text: 'Month')
-    expect(rendered).to have_css('form label', text: 'Year')
+  it "has a date field for the leaving date" do
+    expect(rendered).to have_css("legend", text: "When did they move from #{appropriate_body.name}?")
+    expect(rendered).to have_css("form label", text: "Day")
+    expect(rendered).to have_css("form label", text: "Month")
+    expect(rendered).to have_css("form label", text: "Year")
   end
 
-  it 'has a date field for the extension length' do
-    expect(rendered).to have_css('label', text: 'How many terms of induction did they spend with you?')
+  it "has a date field for the extension length" do
+    expect(rendered).to have_css("label", text: "How many terms of induction did they spend with you?")
   end
 
-  it 'has a submit button' do
-    expect(rendered).to have_css('button.govuk-button')
+  it "has a submit button" do
+    expect(rendered).to have_css("button.govuk-button")
   end
 end

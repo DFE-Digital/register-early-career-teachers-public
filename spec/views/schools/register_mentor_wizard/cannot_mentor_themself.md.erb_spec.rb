@@ -8,15 +8,15 @@ RSpec.describe "schools/register_mentor_wizard/cannot_mentor_themself.md.erb" do
     render
   end
 
-  context 'page title' do
-    it { expect(sanitize(view.content_for(:page_title))).to eql('You cannot assign an ECT as their own mentor') }
+  context "page title" do
+    it { expect(sanitize(view.content_for(:page_title))).to eql("You cannot assign an ECT as their own mentor") }
   end
 
-  it 'includes a back button that links to find-mentor page of the journey' do
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: back_path)
+  it "includes a back button that links to find-mentor page of the journey" do
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: back_path)
   end
 
-  it 'includes a button to assign a different mentor to the ECT' do
-    expect(rendered).to have_link('Assign a different mentor', href: back_path)
+  it "includes a button to assign a different mentor to the ECT" do
+    expect(rendered).to have_link("Assign a different mentor", href: back_path)
   end
 end

@@ -33,9 +33,9 @@ module Schools
       private
 
         def mentor_id_is_selectable
-          return errors.add(:mentor_at_school_period_id, 'Select a mentor from the list provided') if mentor_at_school_period_id.blank?
+          return errors.add(:mentor_at_school_period_id, "Select a mentor from the list provided") if mentor_at_school_period_id.blank?
 
-          errors.add(:mentor_at_school_period_id, 'Select a mentor from the list provided') unless mentors_for_select.exists?(id: mentor_at_school_period_id)
+          errors.add(:mentor_at_school_period_id, "Select a mentor from the list provided") unless mentors_for_select.exists?(id: mentor_at_school_period_id)
         end
 
         def pre_populate_attributes

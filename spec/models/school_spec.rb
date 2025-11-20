@@ -58,8 +58,8 @@ describe School do
     end
   end
 
-  describe 'associations' do
-    it { is_expected.to belong_to(:gias_school).class_name('GIAS::School').with_foreign_key(:urn).inverse_of(:school) }
+  describe "associations" do
+    it { is_expected.to belong_to(:gias_school).class_name("GIAS::School").with_foreign_key(:urn).inverse_of(:school) }
     it { is_expected.to have_many(:ect_at_school_periods).inverse_of(:school) }
     it { is_expected.to have_many(:ect_teachers).through(:ect_at_school_periods).source(:teacher) }
     it { is_expected.to have_many(:events) }
@@ -70,7 +70,7 @@ describe School do
     it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod") }
   end
 
-  describe 'delegation' do
+  describe "delegation" do
     subject { FactoryBot.build(:school) }
 
     %i[
@@ -102,7 +102,7 @@ describe School do
     end
   end
 
-  describe 'validations' do
+  describe "validations" do
     subject { FactoryBot.create(:school) }
 
     it { is_expected.to validate_presence_of(:urn) }
@@ -115,7 +115,7 @@ describe School do
       context "when last_chosen_training_programme is 'school_led'" do
         subject { FactoryBot.build(:school, :school_led_last_chosen) }
 
-        it { is_expected.to validate_absence_of(:last_chosen_lead_provider_id).with_message('Must be nil') }
+        it { is_expected.to validate_absence_of(:last_chosen_lead_provider_id).with_message("Must be nil") }
       end
     end
 
@@ -163,7 +163,7 @@ describe School do
 
           it do
             expect(subject.errors.messages[:last_chosen_appropriate_body_id])
-              .to contain_exactly('Must be national or teaching school hub')
+              .to contain_exactly("Must be national or teaching school hub")
           end
         end
       end
@@ -182,7 +182,7 @@ describe School do
 
           it do
             expect(subject.errors.messages[:last_chosen_appropriate_body_id])
-              .to contain_exactly('Must be teaching school hub')
+              .to contain_exactly("Must be teaching school hub")
           end
         end
 
@@ -199,7 +199,7 @@ describe School do
 
           it do
             expect(subject.errors.messages[:last_chosen_appropriate_body_id])
-              .to contain_exactly('Must be teaching school hub')
+              .to contain_exactly("Must be teaching school hub")
           end
         end
       end

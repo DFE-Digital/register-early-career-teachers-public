@@ -11,11 +11,11 @@ RSpec.describe "Admin recording a failed induction" do
   context "with a ticket and reason" do
     it "fails the induction period and adds context to the timeline" do
       given_i_am_on_the_teacher_induction_page
-      when_i_click_link('Fail induction')
+      when_i_click_link("Fail induction")
       then_i_should_be_on_the_record_outcome_page
 
       when_i_enter_the_finish_date
-      and_i_enter_a_terms_value_of('3.5')
+      and_i_enter_a_terms_value_of("3.5")
 
       when_i_add_a_zendesk_ticket_id("#123456")
       and_i_add_a_note("This is a test reason for failing the induction")
@@ -35,11 +35,11 @@ RSpec.describe "Admin recording a failed induction" do
   context "without a ticket and reason" do
     it "raises a validation error" do
       given_i_am_on_the_teacher_induction_page
-      when_i_click_link('Fail induction')
+      when_i_click_link("Fail induction")
       then_i_should_be_on_the_record_outcome_page
 
       when_i_enter_the_finish_date
-      and_i_enter_a_terms_value_of('3.5')
+      and_i_enter_a_terms_value_of("3.5")
 
       and_i_click_submit
 
@@ -54,7 +54,7 @@ private
   end
 
   def when_i_click_link(text)
-    page.get_by_role('link', name: text).click
+    page.get_by_role("link", name: text).click
   end
 
   def then_i_should_be_on_the_record_outcome_page
@@ -62,9 +62,9 @@ private
   end
 
   def when_i_enter_the_finish_date
-    page.get_by_label('Day', exact: true).fill(today.day.to_s)
-    page.get_by_label('Month', exact: true).fill(today.month.to_s)
-    page.get_by_label('Year', exact: true).fill(today.year.to_s)
+    page.get_by_label("Day", exact: true).fill(today.day.to_s)
+    page.get_by_label("Month", exact: true).fill(today.month.to_s)
+    page.get_by_label("Year", exact: true).fill(today.year.to_s)
   end
 
   def and_i_enter_a_terms_value_of(number_of_terms)
@@ -72,7 +72,7 @@ private
   end
 
   def and_i_click_submit
-    page.get_by_role('button', name: "Record failing outcome for John Keating").click
+    page.get_by_role("button", name: "Record failing outcome for John Keating").click
   end
 
   def then_there_is_an_error_message
@@ -81,13 +81,13 @@ private
 
   def then_i_should_be_on_the_success_page
     expect(page).to have_path("/admin/teachers/#{teacher.id}/record-failed-outcome")
-    expect(page.locator('.govuk-panel__title')).to have_text("Outcome recorded")
-    expect(page.locator('.govuk-panel__body')).to have_text("John Keating has failed their induction")
+    expect(page.locator(".govuk-panel__title")).to have_text("Outcome recorded")
+    expect(page.locator(".govuk-panel__body")).to have_text("John Keating has failed their induction")
   end
 
   def and_the_induction_is_failed
     induction_period.reload
-    expect(induction_period.outcome).to eql('fail')
+    expect(induction_period.outcome).to eql("fail")
     expect(induction_period.number_of_terms).to eq(3.5)
     expect(induction_period.finished_on).to eql(today)
   end
@@ -125,8 +125,8 @@ private
       .locator(".app-timeline__description")
     link = description.get_by_role("link", name: "Zendesk ticket (opens in new tab)")
     expect(link).to be_visible
-    expect(link).to have_attribute('href', url)
-    expect(link).to have_attribute('target', '_blank')
+    expect(link).to have_attribute("href", url)
+    expect(link).to have_attribute("target", "_blank")
   end
 
   alias_method :and_i_can_see_the_zendesk_link, :then_i_can_see_the_zendesk_link

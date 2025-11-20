@@ -30,9 +30,9 @@ rp2023 = ContractPeriod.find_by(year: 2023)
 rp2024 = ContractPeriod.find_by(year: 2024)
 rp2025 = ContractPeriod.find_by(year: 2025)
 
-ambition_institute = LeadProvider.find_by!(name: 'Ambition Institute')
-teach_first = LeadProvider.find_by!(name: 'Teach First')
-capita = LeadProvider.find_by!(name: 'Capita')
+ambition_institute = LeadProvider.find_by!(name: "Ambition Institute")
+teach_first = LeadProvider.find_by!(name: "Teach First")
+capita = LeadProvider.find_by!(name: "Capita")
 
 artisan = DeliveryPartner.find_by!(name: "Artisan Education Group")
 grain = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")

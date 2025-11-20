@@ -34,7 +34,7 @@ namespace :extensions do
         teacher:,
         induction_extension:,
         modifications: [
-          { 'number_of_terms' => [0.0, induction_extension.number_of_terms] }
+          { "number_of_terms" => [0.0, induction_extension.number_of_terms] }
         ],
         happened_at: induction_extension.created_at
       )

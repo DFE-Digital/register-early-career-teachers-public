@@ -55,11 +55,11 @@ module Schools
   private
 
     def training_programme
-      (lead_provider.present?) ? 'provider_led' : 'school_led'
+      (lead_provider.present?) ? "provider_led" : "school_led"
     end
 
     def create_training_period!
-      return if training_programme == 'school_led'
+      return if training_programme == "school_led"
 
       ensure_mentor_is_eligible!
 

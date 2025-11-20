@@ -5,7 +5,7 @@ RSpec.describe "Parity check", type: :request do
 
   describe "GET /migration/parity-checks/new" do
     context "when signed in as a DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "renders the parity checks page" do
         get new_migration_parity_check_path
@@ -24,7 +24,7 @@ RSpec.describe "Parity check", type: :request do
     end
 
     context "when not signed in as a DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "renders the unauthorized page" do
         get new_migration_parity_check_path
@@ -41,7 +41,7 @@ RSpec.describe "Parity check", type: :request do
     let(:mode) { "sequential" }
 
     context "when signed in as a DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "calls the runner and redirects if valid" do
         params = { parity_check_runner: { endpoint_ids:, mode: } }
@@ -71,7 +71,7 @@ RSpec.describe "Parity check", type: :request do
     end
 
     context "when not signed in as a DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "renders the unauthorized page" do
         post migration_parity_checks_path, params: { parity_check_runner: { endpoint_ids: } }
@@ -83,7 +83,7 @@ RSpec.describe "Parity check", type: :request do
 
   describe "GET /migration/parity-checks/completed" do
     context "when signed in as a DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "renders the completed parity checks page" do
         get completed_migration_parity_checks_path
@@ -102,7 +102,7 @@ RSpec.describe "Parity check", type: :request do
     end
 
     context "when not signed in as a DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "renders the unauthorized page" do
         get completed_migration_parity_checks_path
@@ -116,7 +116,7 @@ RSpec.describe "Parity check", type: :request do
     let(:run) { FactoryBot.create(:parity_check_run, :completed) }
 
     context "when signed in as a DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "renders the parity check run page" do
         get migration_parity_check_path(run)
@@ -151,7 +151,7 @@ RSpec.describe "Parity check", type: :request do
     end
 
     context "when not signed in as a DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "renders the unauthorized page" do
         get migration_parity_check_path(run)
@@ -166,7 +166,7 @@ RSpec.describe "Parity check", type: :request do
     let(:request) { FactoryBot.create(:parity_check_request, :completed, run:) }
 
     context "when signed in as a DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "renders the parity check request page" do
         get migration_parity_check_request_path(run, request)
@@ -208,7 +208,7 @@ RSpec.describe "Parity check", type: :request do
     end
 
     context "when not signed in as a DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "renders the unauthorized page" do
         get migration_parity_check_request_path(run, request)
@@ -224,7 +224,7 @@ RSpec.describe "Parity check", type: :request do
     let(:parity_check_response) { FactoryBot.create(:parity_check_response, :different, request:) }
 
     context "when signed in as a DfE user" do
-      include_context 'sign in as DfE user'
+      include_context "sign in as DfE user"
 
       it "renders the parity check response page" do
         get migration_parity_check_response_path(run, parity_check_response)
@@ -275,7 +275,7 @@ RSpec.describe "Parity check", type: :request do
     end
 
     context "when not signed in as a DfE user" do
-      include_context 'sign in as non-DfE user'
+      include_context "sign in as non-DfE user"
 
       it "renders the unauthorized page" do
         get migration_parity_check_response_path(run, request)

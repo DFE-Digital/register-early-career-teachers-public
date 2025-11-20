@@ -3,11 +3,11 @@ def describe_schedule_and_milestones(schedule:, year:, milestones:)
     .map { |m| m[:declaration_type] }
     .map do |dt|
       case dt
-      when 'started'
+      when "started"
         Colourize.text(shorten(dt), :green)
       when /retained/
         Colourize.text(shorten(dt), :yellow)
-      when 'completed'
+      when "completed"
         Colourize.text(shorten(dt), :red)
       when /extended/
         Colourize.text(shorten(dt), :cyan)
@@ -29,7 +29,7 @@ def shorten(declaration_type)
 end
 
 def build(identifier:, contract_period_year:, start_date:)
-  _, type, = identifier.split('-')
+  _, type, = identifier.split("-")
 
   {
     identifier:,
@@ -39,7 +39,7 @@ def build(identifier:, contract_period_year:, start_date:)
 end
 
 def declaration_types(type)
-  (type == 'extended') ? started_to_extended_3 : started_to_completed
+  (type == "extended") ? started_to_extended_3 : started_to_completed
 end
 
 def started_to_extended_3

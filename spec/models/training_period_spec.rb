@@ -129,7 +129,7 @@ describe TrainingPeriod do
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:delivery_partner).through(:lead_provider_delivery_partnership) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
-    it { is_expected.to belong_to(:expression_of_interest).class_name('ActiveLeadProvider') }
+    it { is_expected.to belong_to(:expression_of_interest).class_name("ActiveLeadProvider") }
     it { is_expected.to have_one(:expression_of_interest_lead_provider).through(:expression_of_interest).source(:lead_provider) }
     it { is_expected.to have_one(:expression_of_interest_contract_period).through(:expression_of_interest).source(:contract_period) }
     it { is_expected.to belong_to(:schedule) }
@@ -199,7 +199,7 @@ describe TrainingPeriod do
       end
     end
 
-    describe 'presence of expression of interest or school partnership' do
+    describe "presence of expression of interest or school partnership" do
       let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
       let(:school) { ect_at_school_period.school }
@@ -207,49 +207,49 @@ describe TrainingPeriod do
       let(:school_partnership) { make_partnership_for(school, contract_period) }
       let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
-      context 'when provider-led' do
+      context "when provider-led" do
         subject { FactoryBot.build(:training_period, :provider_led, ect_at_school_period:, expression_of_interest: nil, school_partnership: nil, **dates) }
 
-        context 'when neither the expression of interest or school partnership is present' do
-          it 'has a base error stating either expression of interest or school partnership required' do
+        context "when neither the expression of interest or school partnership is present" do
+          it "has a base error stating either expression of interest or school partnership required" do
             subject.valid?
-            expect(subject.errors.messages[:base]).to include('Either expression of interest or school partnership required')
+            expect(subject.errors.messages[:base]).to include("Either expression of interest or school partnership required")
           end
         end
 
-        context 'when just the expression of interest is present' do
+        context "when just the expression of interest is present" do
           subject { FactoryBot.create(:training_period, :with_only_expression_of_interest, ect_at_school_period:, **dates) }
 
           it { is_expected.to(be_valid) }
         end
 
-        context 'when just the school partnership is present' do
+        context "when just the school partnership is present" do
           subject { FactoryBot.create(:training_period, school_partnership:, ect_at_school_period:, **dates) }
 
           it { is_expected.to(be_valid) }
         end
 
-        context 'when both the expression of interest and school partnership are present' do
+        context "when both the expression of interest and school partnership are present" do
           subject { FactoryBot.create(:training_period, expression_of_interest:, school_partnership:, ect_at_school_period:, **dates) }
 
           it { is_expected.to(be_valid) }
         end
       end
 
-      context 'when school-led' do
+      context "when school-led" do
         subject { FactoryBot.build(:training_period, :school_led, expression_of_interest: nil, school_partnership: nil, ect_at_school_period:, **dates) }
 
-        it 'allows nil expression of interest and training period' do
+        it "allows nil expression of interest and training period" do
           expect(subject).to(be_valid)
         end
       end
     end
 
-    describe 'overlapping periods' do
-      let(:started_on_message) { 'Start date cannot overlap another Trainee period' }
-      let(:finished_on_message) { 'End date cannot overlap another Trainee period' }
+    describe "overlapping periods" do
+      let(:started_on_message) { "Start date cannot overlap another Trainee period" }
+      let(:finished_on_message) { "End date cannot overlap another Trainee period" }
 
-      context 'with mentee' do
+      context "with mentee" do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             let(:ect_at_school_period) do
@@ -293,7 +293,7 @@ describe TrainingPeriod do
         end
       end
 
-      context 'with mentor' do
+      context "with mentor" do
         PeriodHelpers::PeriodExamples.period_examples.each_with_index do |test, index|
           context test.description do
             let(:mentor_at_school_period) do
@@ -338,25 +338,25 @@ describe TrainingPeriod do
       end
     end
 
-    describe 'only allows provider-led mentor training' do
-      context 'for mentor training' do
+    describe "only allows provider-led mentor training" do
+      context "for mentor training" do
         subject { FactoryBot.build(:training_period, :for_mentor) }
 
-        it { is_expected.to allow_value('provider_led').for(:training_programme) }
-        it { is_expected.not_to allow_value('school_led').for(:training_programme).with_message('Mentor training periods can only be provider-led') }
+        it { is_expected.to allow_value("provider_led").for(:training_programme) }
+        it { is_expected.not_to allow_value("school_led").for(:training_programme).with_message("Mentor training periods can only be provider-led") }
       end
     end
 
-    describe 'allows provider-led and school-led ECT training' do
-      context 'for ECT training' do
+    describe "allows provider-led and school-led ECT training" do
+      context "for ECT training" do
         subject { FactoryBot.build(:training_period, :for_ect) }
 
-        it { is_expected.to allow_value('school_led').for(:training_programme) }
-        it { is_expected.to allow_value('provider_led').for(:training_programme) }
+        it { is_expected.to allow_value("school_led").for(:training_programme) }
+        it { is_expected.to allow_value("provider_led").for(:training_programme) }
       end
     end
 
-    describe 'absence of expression of interest and school partnership for school-led training' do
+    describe "absence of expression of interest and school partnership for school-led training" do
       let(:dates) { { started_on: 3.years.ago.to_date, finished_on: nil } }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **dates) }
       let(:school) { ect_at_school_period.school }
@@ -364,59 +364,59 @@ describe TrainingPeriod do
       let(:school_partnership) { make_partnership_for(school, contract_period) }
       let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
-      context 'when school-led' do
-        context 'when both expression of interest and school partnership are absent' do
+      context "when school-led" do
+        context "when both expression of interest and school partnership are absent" do
           subject { FactoryBot.build(:training_period, :school_led, ect_at_school_period:, **dates) }
 
           it { is_expected.to be_valid }
         end
 
-        context 'when expression of interest is present' do
+        context "when expression of interest is present" do
           subject do
             FactoryBot.build(:training_period, :school_led, expression_of_interest:,
                                                             ect_at_school_period:, **dates)
           end
 
-          it 'has an error on expression_of_interest' do
+          it "has an error on expression_of_interest" do
             subject.valid?
-            expect(subject.errors.messages[:expression_of_interest]).to include('Expression of interest must be absent for school-led training programmes')
+            expect(subject.errors.messages[:expression_of_interest]).to include("Expression of interest must be absent for school-led training programmes")
           end
         end
 
-        context 'when school partnership is present' do
+        context "when school partnership is present" do
           subject do
             FactoryBot.build(:training_period, :school_led, school_partnership:,
                                                             ect_at_school_period:, **dates)
           end
 
-          it 'has an error on school_partnership' do
+          it "has an error on school_partnership" do
             subject.valid?
-            expect(subject.errors.messages[:school_partnership]).to include('School partnership must be absent for school-led training programmes')
+            expect(subject.errors.messages[:school_partnership]).to include("School partnership must be absent for school-led training programmes")
           end
         end
 
-        context 'when both expression of interest and school partnership are present' do
+        context "when both expression of interest and school partnership are present" do
           subject do
             FactoryBot.build(:training_period, :school_led, school_partnership:, expression_of_interest:,
                                                             ect_at_school_period:, **dates)
           end
 
-          it 'has errors on both expression_of_interest and school_partnership' do
+          it "has errors on both expression_of_interest and school_partnership" do
             subject.valid?
-            expect(subject.errors.messages[:expression_of_interest]).to include('Expression of interest must be absent for school-led training programmes')
-            expect(subject.errors.messages[:school_partnership]).to include('School partnership must be absent for school-led training programmes')
+            expect(subject.errors.messages[:expression_of_interest]).to include("Expression of interest must be absent for school-led training programmes")
+            expect(subject.errors.messages[:school_partnership]).to include("School partnership must be absent for school-led training programmes")
           end
         end
       end
 
-      context 'when provider-led' do
-        context 'when both expression of interest and school partnership are present' do
+      context "when provider-led" do
+        context "when both expression of interest and school partnership are present" do
           subject do
             FactoryBot.build(:training_period, :provider_led, school_partnership:, expression_of_interest:,
                                                               ect_at_school_period:, **dates)
           end
 
-          it 'does not validate absence of expression_of_interest and school_partnership' do
+          it "does not validate absence of expression_of_interest and school_partnership" do
             expect(subject).to be_valid
           end
         end
@@ -543,7 +543,7 @@ describe TrainingPeriod do
       end
     end
 
-    describe '.at_school' do
+    describe ".at_school" do
       let(:school) { FactoryBot.create(:school) }
       let(:contract_period) { FactoryBot.create(:contract_period) }
       let(:partnership) { make_partnership_for(school, contract_period) }
@@ -584,11 +584,11 @@ describe TrainingPeriod do
         )
       end
 
-      it 'returns training periods for ECTs and Mentors at the school' do
+      it "returns training periods for ECTs and Mentors at the school" do
         expect(TrainingPeriod.at_school(school.id)).to include(ect_training_period, mentor_training_period)
       end
 
-      it 'does not return training periods for ECTs and Mentors at other schools' do
+      it "does not return training periods for ECTs and Mentors at other schools" do
         expect(TrainingPeriod.at_school(school.id)).not_to include(other_training_period)
       end
     end
@@ -597,16 +597,16 @@ describe TrainingPeriod do
   describe "#siblings" do
     subject { training_period_1.siblings }
 
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: '2021-01-01') }
-    let!(:training_period_1) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-01-01', finished_on: '2022-06-01') }
-    let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: '2022-06-01', finished_on: '2023-01-01') }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01") }
+    let!(:training_period_1) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: "2022-01-01", finished_on: "2022-06-01") }
+    let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: "2022-06-01", finished_on: "2023-01-01") }
 
     let!(:unrelated_ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, started_on: '2021-01-01')
+      FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01")
     end
 
     let!(:unrelated_training_period) do
-      FactoryBot.create(:training_period, ect_at_school_period: unrelated_ect_at_school_period, started_on: '2022-06-01', finished_on: '2023-01-01')
+      FactoryBot.create(:training_period, ect_at_school_period: unrelated_ect_at_school_period, started_on: "2022-06-01", finished_on: "2023-01-01")
     end
 
     it "only returns records that belong to the same trainee" do

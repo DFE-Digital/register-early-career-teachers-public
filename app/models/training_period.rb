@@ -37,7 +37,7 @@ class TrainingPeriod < ApplicationRecord
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider
 
-  belongs_to :expression_of_interest, class_name: 'ActiveLeadProvider'
+  belongs_to :expression_of_interest, class_name: "ActiveLeadProvider"
   has_one :expression_of_interest_lead_provider, through: :expression_of_interest, source: :lead_provider
   has_one :expression_of_interest_contract_period, through: :expression_of_interest, source: :contract_period
 
@@ -127,7 +127,7 @@ private
   end
 
   def trainee_distinct_period
-    overlap_validation(name: 'Trainee')
+    overlap_validation(name: "Trainee")
   end
 
   def enveloped_by_trainee_at_school_period
@@ -148,25 +148,25 @@ private
   def at_least_expression_of_interest_or_school_partnership_present
     return if expression_of_interest.present? || school_partnership.present?
 
-    errors.add(:base, 'Either expression of interest or school partnership required')
+    errors.add(:base, "Either expression of interest or school partnership required")
   end
 
   def only_provider_led_mentor_training
     if mentor_at_school_period.present? && school_led_training_programme?
-      errors.add(:training_programme, 'Mentor training periods can only be provider-led')
+      errors.add(:training_programme, "Mentor training periods can only be provider-led")
     end
   end
 
   def expression_of_interest_absent_for_school_led
     return if expression_of_interest.blank?
 
-    errors.add(:expression_of_interest, 'Expression of interest must be absent for school-led training programmes')
+    errors.add(:expression_of_interest, "Expression of interest must be absent for school-led training programmes")
   end
 
   def school_partnership_absent_for_school_led
     return if school_partnership.blank?
 
-    errors.add(:school_partnership, 'School partnership must be absent for school-led training programmes')
+    errors.add(:school_partnership, "School partnership must be absent for school-led training programmes")
   end
 
   def withdrawn_deferred_are_mutually_exclusive
@@ -188,7 +188,7 @@ private
   def schedule_absent_for_school_led
     return if schedule.blank?
 
-    errors.add(:schedule, 'Schedule must be absent for school-led training programmes')
+    errors.add(:schedule, "Schedule must be absent for school-led training programmes")
   end
 
   def schedule_applicable_for_trainee

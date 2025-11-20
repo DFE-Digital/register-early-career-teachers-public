@@ -1,7 +1,7 @@
 module Admin
   module ImportECT
     class FindECTController < AdminController
-      layout 'full'
+      layout "full"
 
       def new
         @pending_induction_submission = PendingInductionSubmission.new

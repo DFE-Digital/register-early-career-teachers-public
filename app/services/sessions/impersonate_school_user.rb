@@ -9,9 +9,9 @@ module Sessions
       current_class_name = self.class.name
 
       to_h.merge({
-        'type' => new_class_name,
-        'original_type' => current_class_name,
-        'school_urn' => urn
+        "type" => new_class_name,
+        "original_type" => current_class_name,
+        "school_urn" => urn
       })
     end
 

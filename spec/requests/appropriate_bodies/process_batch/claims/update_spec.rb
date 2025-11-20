@@ -1,4 +1,4 @@
-RSpec.describe 'Appropriate Body bulk claims confirmation', type: :request do
+RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
   include ActiveJob::TestHelper
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -10,19 +10,19 @@ RSpec.describe 'Appropriate Body bulk claims confirmation', type: :request do
                       file_name:)
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
-  describe 'PATCH /appropriate-body/bulk/claims/:batch_id' do
-    context 'with only valid claims' do
-      include_context '2 valid claims'
+  describe "PATCH /appropriate-body/bulk/claims/:batch_id" do
+    context "with only valid claims" do
+      include_context "2 valid claims"
 
-      it 'enqueues a job' do
+      it "enqueues a job" do
         expect {
           put ab_batch_claim_path(batch)
         }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ClaimJob).with(batch, user.email, user.name).exactly(1).times
       end
 
-      it 'records an upload completed event' do
+      it "records an upload completed event" do
         allow(Events::Record).to receive(:record_bulk_upload_completed_event!).and_call_original
 
         put ab_batch_claim_path(batch)
@@ -34,7 +34,7 @@ RSpec.describe 'Appropriate Body bulk claims confirmation', type: :request do
 
         perform_enqueued_jobs
 
-        expect(Event.last.event_type).to eq('bulk_upload_completed')
+        expect(Event.last.event_type).to eq("bulk_upload_completed")
         expect(Event.last.pending_induction_submission_batch.id).to eq(batch.id)
       end
 
@@ -42,10 +42,10 @@ RSpec.describe 'Appropriate Body bulk claims confirmation', type: :request do
         put ab_batch_claim_path(batch)
         expect(response).to redirect_to(ab_batch_claim_path(batch))
         follow_redirect!
-        expect(response.body).to include('ECTs successfully claimed')
+        expect(response.body).to include("ECTs successfully claimed")
       end
 
-      it 'prevents duplicates' do
+      it "prevents duplicates" do
         expect {
           put ab_batch_claim_path(batch)
         }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ClaimJob).with(batch, user.email, user.name)

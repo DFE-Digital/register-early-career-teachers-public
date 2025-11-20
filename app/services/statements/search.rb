@@ -6,7 +6,7 @@ module Statements
 
     attr_reader :scope
 
-    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, fee_type: 'output', statement_date: :ignore, order: :payment_date)
+    def initialize(lead_provider_id: :ignore, contract_period_years: :ignore, fee_type: "output", statement_date: :ignore, order: :payment_date)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
       where_lead_provider_is(lead_provider_id)

@@ -1,17 +1,17 @@
 RSpec.describe Events::Record do
   include ActiveJob::TestHelper
 
-  let(:user) { FactoryBot.create(:user, name: 'Christopher Biggins', email: 'christopher.biggins@education.gov.uk') }
-  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Rhys', trs_last_name: 'Ifans') }
+  let(:user) { FactoryBot.create(:user, name: "Christopher Biggins", email: "christopher.biggins@education.gov.uk") }
+  let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Rhys", trs_last_name: "Ifans") }
   let(:induction_period) { FactoryBot.create(:induction_period) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Burns Slant Drilling Co.") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
-  let(:another_dfe_user) { FactoryBot.create(:user, name: 'Ian Richardson', email: 'er@education.gov.uk') }
+  let(:another_dfe_user) { FactoryBot.create(:user, name: "Ian Richardson", email: "er@education.gov.uk") }
 
-  let(:heading) { 'Something happened' }
+  let(:heading) { "Something happened" }
   let(:event_type) { :induction_period_opened }
-  let(:body) { 'A very important event' }
+  let(:body) { "A very important event" }
   let(:happened_at) { 2.minutes.ago }
 
   before { allow(RecordEventJob).to receive(:perform_later).and_call_original }
@@ -20,18 +20,18 @@ RSpec.describe Events::Record do
     perform_enqueued_jobs { example.run }
   end
 
-  describe '#initialize' do
-    context 'when the user is not supported' do
+  describe "#initialize" do
+    context "when the user is not supported" do
       let(:non_session_user) { FactoryBot.build(:user) }
 
-      it 'fails when author object does not respond with necessary params' do
+      it "fails when author object does not respond with necessary params" do
         expect {
           Events::Record.new(author: non_session_user, event_type:, heading:, body:, happened_at:).record_event!
         }.to raise_error(Events::InvalidAuthor)
       end
     end
 
-    it 'assigns and saves attributes correctly' do
+    it "assigns and saves attributes correctly" do
       ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.weeks.ago)
       mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.weeks.ago)
 
@@ -80,7 +80,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '#record_event!' do
+  describe "#record_event!" do
     {
       induction_period: FactoryBot.build(:induction_period),
       teacher: FactoryBot.build(:teacher),
@@ -101,15 +101,15 @@ RSpec.describe Events::Record do
 
         let(:attributes_with_unsaved_school) { { attribute => object } }
 
-        it 'fails with a NotPersistedRecordError' do
+        it "fails with a NotPersistedRecordError" do
           expect { subject.record_event! }.to raise_error(Events::NotPersistedRecord, attribute.to_s)
         end
       end
     end
   end
 
-  describe '.record_induction_period_opened_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_induction_period_opened_event!" do
+    it "queues a RecordEventJob with the correct values" do
       raw_modifications = induction_period.changes
 
       freeze_time do
@@ -119,7 +119,7 @@ RSpec.describe Events::Record do
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans was claimed by Burns Slant Drilling Co.',
+          heading: "Rhys Ifans was claimed by Burns Slant Drilling Co.",
           event_type: :induction_period_opened,
           happened_at: induction_period.started_on,
           modifications: anything,
@@ -129,15 +129,15 @@ RSpec.describe Events::Record do
       end
     end
 
-    it 'fails when induction period is missing' do
+    it "fails when induction period is missing" do
       expect {
         Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil, modifications: {})
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
-  describe '.record_induction_period_closed_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_induction_period_closed_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period:)
 
@@ -145,7 +145,7 @@ RSpec.describe Events::Record do
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans was released by Burns Slant Drilling Co.',
+          heading: "Rhys Ifans was released by Burns Slant Drilling Co.",
           event_type: :induction_period_closed,
           happened_at: induction_period.finished_on,
           **author_params
@@ -153,68 +153,68 @@ RSpec.describe Events::Record do
       end
     end
 
-    it 'fails when induction period is missing' do
+    it "fails when induction period is missing" do
       expect {
         Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
-  describe '.record_teacher_passes_induction_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_teacher_passes_induction_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, induction_period:, body: 'Correcting an error')
+        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, induction_period:, body: "Correcting an error")
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans passed induction by admin',
+          heading: "Rhys Ifans passed induction by admin",
           event_type: :teacher_passes_induction,
           happened_at: induction_period.finished_on,
-          body: 'Correcting an error',
+          body: "Correcting an error",
           **author_params
         )
       end
     end
 
-    it 'fails when induction period is missing' do
+    it "fails when induction period is missing" do
       expect {
         Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
-  describe '.record_teacher_fails_induction_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_teacher_fails_induction_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:, zendesk_ticket_id: '#123456')
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:, zendesk_ticket_id: "#123456")
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans failed induction by admin',
+          heading: "Rhys Ifans failed induction by admin",
           event_type: :teacher_fails_induction,
           happened_at: induction_period.finished_on,
-          zendesk_ticket_id: '#123456',
+          zendesk_ticket_id: "#123456",
           **author_params
         )
       end
     end
 
-    it 'fails when induction period is missing' do
+    it "fails when induction period is missing" do
       expect {
         Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
-  describe '.record_induction_period_deleted_event!' do
-    let(:raw_modifications) { { 'id' => 1, 'teacher_id' => teacher.id, 'appropriate_body_id' => appropriate_body.id } }
+  describe ".record_induction_period_deleted_event!" do
+    let(:raw_modifications) { { "id" => 1, "teacher_id" => teacher.id, "appropriate_body_id" => appropriate_body.id } }
 
-    context 'when induction status was reset on TRS' do
-      it 'queues a RecordEventJob with the correct values including body' do
+    context "when induction status was reset on TRS" do
+      it "queues a RecordEventJob with the correct values including body" do
         freeze_time do
           Events::Record.record_induction_period_deleted_event!(
             author:,
@@ -227,7 +227,7 @@ RSpec.describe Events::Record do
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
             appropriate_body:,
-            heading: 'Induction period deleted by admin',
+            heading: "Induction period deleted by admin",
             event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
             body: "Induction status was reset to 'Required to Complete' in TRS.",
@@ -239,8 +239,8 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when induction status was not reset on TRS' do
-      it 'queues a RecordEventJob with the correct values without body' do
+    context "when induction status was not reset on TRS" do
+      it "queues a RecordEventJob with the correct values without body" do
         freeze_time do
           Events::Record.record_induction_period_deleted_event!(
             author:,
@@ -252,7 +252,7 @@ RSpec.describe Events::Record do
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
             appropriate_body:,
-            heading: 'Induction period deleted by admin',
+            heading: "Induction period deleted by admin",
             event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
             modifications: anything,
@@ -264,10 +264,10 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_induction_extension_created_event!' do
+  describe ".record_induction_extension_created_event!" do
     let(:induction_extension) { FactoryBot.build(:induction_extension) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       raw_modifications = induction_extension.changes
       induction_extension.save!
 
@@ -289,10 +289,10 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_induction_extension_updated_event!' do
+  describe ".record_induction_extension_updated_event!" do
     let(:induction_extension) { FactoryBot.create(:induction_extension) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       induction_extension.assign_attributes(number_of_terms: 3.2)
       raw_modifications = induction_extension.changes
 
@@ -314,12 +314,12 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_induction_period_updated_event!' do
+  describe ".record_induction_period_updated_event!" do
     let(:three_weeks_ago) { 3.weeks.ago.to_date }
     let(:two_weeks_ago) { 2.weeks.ago.to_date }
     let(:induction_period) { FactoryBot.create(:induction_period, :ongoing, started_on: three_weeks_ago) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       induction_period.assign_attributes(started_on: two_weeks_ago)
       raw_modifications = induction_period.changes
 
@@ -330,7 +330,7 @@ RSpec.describe Events::Record do
           induction_period:,
           teacher:,
           appropriate_body:,
-          heading: 'Induction period updated by admin',
+          heading: "Induction period updated by admin",
           event_type: :induction_period_updated,
           happened_at: Time.zone.now,
           modifications: ["Started on changed from '#{3.weeks.ago.to_date.to_formatted_s(:govuk_short)}' to '#{2.weeks.ago.to_date.to_formatted_s(:govuk_short)}'"],
@@ -341,11 +341,11 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.teacher_name_changed_in_trs_event!' do
-    let(:old_name) { 'Wilfred Bramble' }
-    let(:new_name) { 'Willy Brambs' }
+  describe ".teacher_name_changed_in_trs_event!" do
+    let(:old_name) { "Wilfred Bramble" }
+    let(:new_name) { "Willy Brambs" }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_name:, new_name:)
 
@@ -361,11 +361,11 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.teacher_induction_status_changed_in_trs_event!' do
-    let(:old_induction_status) { 'InProgress' }
-    let(:new_induction_status) { 'Exempt' }
+  describe ".teacher_induction_status_changed_in_trs_event!" do
+    let(:old_induction_status) { "InProgress" }
+    let(:new_induction_status) { "Exempt" }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
 
@@ -381,12 +381,12 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_trs_induction_start_date_updated_event!' do
+  describe ".record_teacher_trs_induction_start_date_updated_event!" do
     let(:old_date) { Date.new(2020, 1, 1) }
     let(:new_date) { Date.new(2021, 1, 1) }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:)
 
@@ -403,8 +403,8 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.teacher_imported_from_trs_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".teacher_imported_from_trs_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body:)
 
@@ -420,9 +420,9 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.teacher_trs_attributes_updated_event!' do
-    it 'queues a RecordEventJob with the correct values' do
-      teacher.assign_attributes(trs_first_name: 'Otto', trs_last_name: 'Hightower')
+  describe ".teacher_trs_attributes_updated_event!" do
+    it "queues a RecordEventJob with the correct values" do
+      teacher.assign_attributes(trs_first_name: "Otto", trs_last_name: "Hightower")
       modifications = teacher.changes
       freeze_time do
         Events::Record.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:)
@@ -446,8 +446,8 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_trs_deactivated_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_teacher_trs_deactivated_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_trs_deactivated_event!(author:, teacher:)
 
@@ -463,12 +463,12 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe 'record_teacher_induction_status_reset_event!' do
+  describe "record_teacher_induction_status_reset_event!" do
     let(:event_type) { :teacher_induction_status_reset }
     let(:happened_at) { Time.zone.now }
 
-    context 'when induction status was reset on TRS' do
-      it 'records an event with the correct values including body' do
+    context "when induction status was reset on TRS" do
+      it "records an event with the correct values including body" do
         freeze_time do
           event = Events::Record.new(
             author:,
@@ -491,8 +491,8 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when induction status was not reset on TRS' do
-      it 'records an event with the correct values without body' do
+    context "when induction status was not reset on TRS" do
+      it "records an event with the correct values without body" do
         freeze_time do
           event = Events::Record.new(
             author:,
@@ -517,15 +517,15 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_induction_status_reset_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_teacher_induction_status_reset_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_induction_status_reset_event!(author:, teacher:, appropriate_body:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           appropriate_body:,
-          heading: 'Rhys Ifans was unclaimed',
+          heading: "Rhys Ifans was unclaimed",
           event_type: :teacher_induction_status_reset,
           happened_at: Time.zone.now,
           **author_params
@@ -534,10 +534,10 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_induction_period_reopened_event!' do
+  describe ".record_induction_period_reopened_event!" do
     let(:induction_period) { FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         induction_period.outcome = nil
         induction_period.finished_on = nil
@@ -558,7 +558,7 @@ RSpec.describe Events::Record do
           teacher:,
           induction_period:,
           appropriate_body:,
-          heading: 'Induction period reopened',
+          heading: "Induction period reopened",
           event_type: :induction_period_reopened,
           happened_at: Time.zone.now,
           modifications: anything,
@@ -571,7 +571,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_registered_as_mentor_event!' do
+  describe ".record_teacher_registered_as_mentor_event!" do
     let(:school) { FactoryBot.create(:school) }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
     let(:training_period) do
@@ -587,7 +587,7 @@ RSpec.describe Events::Record do
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_registered_as_mentor_event!(author:, teacher:, mentor_at_school_period:, school:, training_period:, lead_provider:)
 
@@ -606,12 +606,12 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_registered_as_ect_event!' do
+  describe ".record_teacher_registered_as_ect_event!" do
     let(:school) { FactoryBot.create(:school) }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
     let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_registered_as_ect_event!(author:, teacher:, ect_at_school_period:, school:, training_period:)
 
@@ -630,13 +630,13 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_left_school_as_ect!' do
+  describe ".record_teacher_left_school_as_ect!" do
     let(:finished_on) { Date.new(2025, 7, 20) }
     let(:school) { FactoryBot.create(:school) }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: Date.new(2024, 9, 10), finished_on:) }
     let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on:) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_left_school_as_ect!(author:, teacher:, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
 
@@ -654,16 +654,16 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_starts_training_period_event' do
+  describe ".record_teacher_starts_training_period_event" do
     let(:started_on) { Date.new(2023, 7, 20) }
     let(:started_on_param) { { started_on: } }
     let(:school) { FactoryBot.create(:school) }
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, **started_on_param) }
       let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, **started_on_param) }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: started_on)
 
@@ -681,11 +681,11 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when mentor training' do
+    context "when mentor training" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, **started_on_param) }
       let(:training_period) { FactoryBot.create(:training_period, mentor_at_school_period:, ect_at_school_period: nil, **started_on_param) }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
 
@@ -703,34 +703,34 @@ RSpec.describe Events::Record do
       end
     end
 
-    describe 'errors' do
+    describe "errors" do
       let(:training_period) { FactoryBot.build(:training_period) }
 
-      it 'fails when both mentor_at_school_period and ect_at_school_period are passed in' do
+      it "fails when both mentor_at_school_period and ect_at_school_period are passed in" do
         expect {
-          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
-        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+          Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: "a", ect_at_school_period: "b", school:, training_period:, happened_at: started_on)
+        }.to raise_error(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
       end
 
-      it 'fails when neither mentor_at_school_period or ect_at_school_period are passed in' do
+      it "fails when neither mentor_at_school_period or ect_at_school_period are passed in" do
         expect {
           Events::Record.record_teacher_starts_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
-        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+        }.to raise_error(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
       end
     end
   end
 
-  describe '.record_teacher_finishes_training_period_event' do
+  describe ".record_teacher_finishes_training_period_event" do
     let(:started_on) { Date.new(2023, 7, 20) }
     let(:finished_on) { Date.new(2025, 7, 20) }
     let(:date_params) { { started_on:, finished_on: } }
     let(:school) { FactoryBot.create(:school) }
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, **date_params) }
       let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, **date_params) }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period:, school:, training_period:, happened_at: finished_on)
 
@@ -748,11 +748,11 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when mentor training' do
+    context "when mentor training" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, **date_params) }
       let(:training_period) { FactoryBot.create(:training_period, mentor_at_school_period:, ect_at_school_period: nil, **date_params) }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period:, ect_at_school_period: nil, school:, training_period:, happened_at: finished_on)
 
@@ -770,32 +770,32 @@ RSpec.describe Events::Record do
       end
     end
 
-    describe 'errors' do
+    describe "errors" do
       let(:training_period) { FactoryBot.build(:training_period) }
 
-      it 'fails when both mentor_at_school_period and ect_at_school_period are passed in' do
+      it "fails when both mentor_at_school_period and ect_at_school_period are passed in" do
         expect {
-          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: 'a', ect_at_school_period: 'b', school:, training_period:, happened_at: started_on)
-        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period permitted, not both')
+          Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: "a", ect_at_school_period: "b", school:, training_period:, happened_at: started_on)
+        }.to raise_error(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
       end
 
-      it 'fails when neither the mentor_at_school_period or ect_at_school_period are passed in' do
+      it "fails when neither the mentor_at_school_period or ect_at_school_period are passed in" do
         expect {
           Events::Record.record_teacher_finishes_training_period_event!(author:, teacher:, mentor_at_school_period: nil, ect_at_school_period: nil, school:, training_period:, happened_at: started_on)
-        }.to raise_error(ArgumentError, 'either ect_at_school_period or mentor_at_school_period is required')
+        }.to raise_error(ArgumentError, "either ect_at_school_period or mentor_at_school_period is required")
       end
     end
   end
 
-  describe '.record_teacher_starts_mentoring_event!' do
+  describe ".record_teacher_starts_mentoring_event!" do
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:school) { FactoryBot.create(:school) }
-    let(:mentee) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
+    let(:mentee) { FactoryBot.create(:teacher, trs_first_name: "Steffan", trs_last_name: "Rhodri") }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentee, school:, **started_on_param) }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, **started_on_param) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.days.ago.to_date) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_starts_mentoring_event!(author:, mentee:, mentor: teacher, mentorship_period:, mentor_at_school_period:, school:)
 
@@ -814,15 +814,15 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_starts_being_mentored_event!' do
+  describe ".record_teacher_starts_being_mentored_event!" do
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:school) { FactoryBot.create(:school) }
-    let(:mentor) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
+    let(:mentor) { FactoryBot.create(:teacher, trs_first_name: "Steffan", trs_last_name: "Rhodri") }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, **started_on_param) }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor, school:, **started_on_param) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.days.ago.to_date) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_starts_being_mentored_event!(author:, mentee: teacher, mentor:, mentorship_period:, ect_at_school_period:, school:)
 
@@ -841,17 +841,17 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_finishes_mentoring_event!' do
+  describe ".record_teacher_finishes_mentoring_event!" do
     let(:finished_on) { 1.month.ago.to_date }
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:finished_on_param) { { finished_on: } }
     let(:school) { FactoryBot.create(:school) }
-    let(:mentee) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
+    let(:mentee) { FactoryBot.create(:teacher, trs_first_name: "Steffan", trs_last_name: "Rhodri") }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentee, school:, **started_on_param) }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, **started_on_param, **finished_on_param) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.months.ago.to_date) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_finishes_mentoring_event!(author:, mentee:, mentor: teacher, mentorship_period:, mentor_at_school_period:, school:, happened_at: finished_on)
 
@@ -870,17 +870,17 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_finishes_being_mentored_event!' do
+  describe ".record_teacher_finishes_being_mentored_event!" do
     let(:finished_on) { 1.month.ago.to_date }
     let(:started_on_param) { { started_on: 2.years.ago.to_date } }
     let(:finished_on_param) { { finished_on: } }
     let(:school) { FactoryBot.create(:school) }
-    let(:mentor) { FactoryBot.create(:teacher, trs_first_name: 'Steffan', trs_last_name: 'Rhodri') }
+    let(:mentor) { FactoryBot.create(:teacher, trs_first_name: "Steffan", trs_last_name: "Rhodri") }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, **started_on_param) }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor, school:, **started_on_param) }
     let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period, started_on: 2.months.ago.to_date) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_finishes_being_mentored_event!(author:, mentee: teacher, mentor:, mentorship_period:, ect_at_school_period:, school:, happened_at: finished_on)
 
@@ -1022,12 +1022,12 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_left_school_as_mentor!' do
+  describe ".record_teacher_left_school_as_mentor!" do
     let(:finished_on) { 1.month.ago.to_date }
     let(:school) { FactoryBot.create(:school) }
     let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:, started_on: 2.years.ago.to_date) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_teacher_left_school_as_mentor!(
           author:,
@@ -1050,13 +1050,13 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_training_period_withdrawn_event' do
+  describe ".record_teacher_training_period_withdrawn_event" do
     let(:teacher) { training_period.trainee.teacher }
     let(:lead_provider) { training_period.lead_provider }
     let(:reason) { "left_teaching_profession" }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
     let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:author_params) { { author_name: lead_provider.name, author_type: "lead_provider_api" } }
     let(:modifications) do
       {
         "withdrawal_reason" => [nil, reason],
@@ -1066,11 +1066,11 @@ RSpec.describe Events::Record do
       }
     end
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
       let(:course_identifier) { "ecf-induction" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_training_period_withdrawn_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
@@ -1089,11 +1089,11 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when Mentor training' do
+    context "when Mentor training" do
       let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing) }
       let(:course_identifier) { "ecf-mentor" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_training_period_withdrawn_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
@@ -1113,12 +1113,12 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_training_period_deferred_event' do
+  describe ".record_teacher_training_period_deferred_event" do
     let(:lead_provider) { training_period.lead_provider }
     let(:reason) { "career_break" }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
     let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:author_params) { { author_name: lead_provider.name, author_type: "lead_provider_api" } }
     let(:modifications) do
       {
         "deferral_reason" => [nil, reason],
@@ -1128,12 +1128,12 @@ RSpec.describe Events::Record do
       }
     end
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:course_identifier) { "ecf-induction" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_training_period_deferred_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
@@ -1152,12 +1152,12 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when Mentor training' do
+    context "when Mentor training" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:course_identifier) { "ecf-mentor" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_training_period_deferred_event!(author:, training_period:, teacher:, lead_provider:, modifications:)
 
@@ -1177,19 +1177,19 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_training_period_resumed_event' do
+  describe ".record_teacher_training_period_resumed_event" do
     let(:lead_provider) { training_period.lead_provider }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
     let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:author_params) { { author_name: lead_provider.name, author_type: "lead_provider_api" } }
     let(:metadata) {  { new_training_period_id: training_period.id } }
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:course_identifier) { "ecf-induction" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_training_period_resumed_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
 
@@ -1207,12 +1207,12 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when Mentor training' do
+    context "when Mentor training" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:course_identifier) { "ecf-mentor" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_training_period_resumed_event!(author:, training_period:, teacher:, lead_provider:, metadata:)
 
@@ -1231,11 +1231,11 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_schedule_changed_event!' do
+  describe ".record_teacher_schedule_changed_event!" do
     let(:lead_provider) { original_training_period.lead_provider }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }
     let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:author_params) { { author_name: lead_provider.name, author_type: "lead_provider_api" } }
     let(:metadata) do
       {
         new_training_period_id: new_training_period.id,
@@ -1244,13 +1244,13 @@ RSpec.describe Events::Record do
       }
     end
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
       let(:original_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:new_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
       let(:course_identifier) { "ecf-induction" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:)
 
@@ -1269,13 +1269,13 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when Mentor training' do
+    context "when Mentor training" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
       let(:original_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:new_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
       let(:course_identifier) { "ecf-mentor" }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:)
 
@@ -1295,10 +1295,10 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_bulk_upload_started_event!' do
+  describe ".record_bulk_upload_started_event!" do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_bulk_upload_started_event!(author:, batch:)
 
@@ -1314,16 +1314,16 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_bulk_upload_completed_event!' do
+  describe ".record_bulk_upload_completed_event!" do
     let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
 
-    include_context 'test trs api client'
+    include_context "test trs api client"
 
     before do
       AppropriateBodies::ProcessBatch::ClaimJob.perform_now(batch, author.email, author.name)
     end
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_bulk_upload_completed_event!(author:, batch:)
 
@@ -1339,10 +1339,10 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_lead_provider_api_token_created_event!' do
+  describe ".record_lead_provider_api_token_created_event!" do
     let(:api_token) { FactoryBot.create(:api_token) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_lead_provider_api_token_created_event!(author:, api_token:)
 
@@ -1358,10 +1358,10 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_lead_provider_api_token_revoked_event!' do
+  describe ".record_lead_provider_api_token_revoked_event!" do
     let(:api_token) { FactoryBot.create(:api_token) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_lead_provider_api_token_revoked_event!(author:, api_token:)
 
@@ -1377,11 +1377,11 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_statement_adjustment_added_event!' do
+  describe ".record_statement_adjustment_added_event!" do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_statement_adjustment_added_event!(author:, statement_adjustment:)
         metadata = {
@@ -1406,13 +1406,13 @@ RSpec.describe Events::Record do
 
   context "when the event author is a lead provider" do
     let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-    let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+    let(:author_params) { { author_name: lead_provider.name, author_type: "lead_provider_api" } }
 
-    describe '.record_school_partnership_created_event!' do
+    describe ".record_school_partnership_created_event!" do
       let(:school_partnership) { FactoryBot.create(:school_partnership) }
       let(:lead_provider) { school_partnership.lead_provider }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_school_partnership_created_event!(author:, school_partnership:)
           metadata = {
@@ -1434,13 +1434,13 @@ RSpec.describe Events::Record do
       end
     end
 
-    describe '.record_school_partnership_updated_event!' do
+    describe ".record_school_partnership_updated_event!" do
       let(:school_partnership) { FactoryBot.create(:school_partnership) }
       let(:lead_provider) { school_partnership.lead_provider }
       let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
-      let(:author_params) { { author_name: lead_provider.name, author_type: 'lead_provider_api' } }
+      let(:author_params) { { author_name: lead_provider.name, author_type: "lead_provider_api" } }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           previous_delivery_partner = school_partnership.delivery_partner
           school_partnership.update!(lead_provider_delivery_partnership: FactoryBot.create(:lead_provider_delivery_partnership))
@@ -1466,13 +1466,13 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_school_partnership_reused_event!' do
+  describe ".record_school_partnership_reused_event!" do
     let(:school_partnership) { FactoryBot.create(:school_partnership) }
     let(:previous_school_partnership) { FactoryBot.create(:school_partnership, school: school_partnership.school) }
 
     before { allow(RecordEventJob).to receive(:perform_later) }
 
-    it 'queues RecordEventJob with correct payload' do
+    it "queues RecordEventJob with correct payload" do
       freeze_time do
         Events::Record.record_school_partnership_reused_event!(
           author:, school_partnership:,
@@ -1500,21 +1500,21 @@ RSpec.describe Events::Record do
       end
     end
 
-    it 'raises NotPersistedRecord if school_partnership is unsaved' do
+    it "raises NotPersistedRecord if school_partnership is unsaved" do
       expect {
         Events::Record.record_school_partnership_reused_event!(
           author:, school_partnership: FactoryBot.build(:school_partnership),
           previous_school_partnership_id: previous_school_partnership.id
         )
-      }.to raise_error(Events::NotPersistedRecord, 'school_partnership')
+      }.to raise_error(Events::NotPersistedRecord, "school_partnership")
     end
   end
 
-  describe '.record_statement_adjustment_updated_event!' do
+  describe ".record_statement_adjustment_updated_event!" do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_statement_adjustment_updated_event!(author:, statement_adjustment:)
         metadata = {
@@ -1537,11 +1537,11 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_statement_adjustment_deleted_event!' do
+  describe ".record_statement_adjustment_deleted_event!" do
     let(:statement) { FactoryBot.create(:statement) }
     let(:statement_adjustment) { FactoryBot.create(:statement_adjustment, statement:) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_statement_adjustment_deleted_event!(author:, statement_adjustment:)
         metadata = {
@@ -1563,10 +1563,10 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_statement_authorised_for_payment_event!' do
+  describe ".record_statement_authorised_for_payment_event!" do
     let(:statement) { FactoryBot.create(:statement) }
 
-    it 'queues a RecordEventJob with the correct values' do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         statement.update!(marked_as_paid_at: Time.zone.now)
 
@@ -1592,7 +1592,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '#record_lead_provider_delivery_partnership_added_event!' do
+  describe "#record_lead_provider_delivery_partnership_added_event!" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
@@ -1601,7 +1601,7 @@ RSpec.describe Events::Record do
       FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:)
     end
 
-    it 'records the event with correct attributes' do
+    it "records the event with correct attributes" do
       event_record_double = instance_double(Events::Record)
       allow(Events::Record).to receive(:new).and_return(event_record_double)
       expect(event_record_double).to receive(:record_event!)
@@ -1615,7 +1615,7 @@ RSpec.describe Events::Record do
       )
     end
 
-    it 'creates an event with the correct heading' do
+    it "creates an event with the correct heading" do
       event_record = Events::Record.new(
         author:,
         event_type: :lead_provider_delivery_partnership_added,
@@ -1649,9 +1649,9 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '#record_teacher_schedule_assigned_to_training_period!' do
+  describe "#record_teacher_schedule_assigned_to_training_period!" do
     let(:school) { FactoryBot.create(:school) }
-    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Ichigo', trs_last_name: 'Kurosaki') }
+    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Ichigo", trs_last_name: "Kurosaki") }
     let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025) }
 
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -1660,7 +1660,7 @@ RSpec.describe Events::Record do
     let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
     let(:started_on) { Date.new(2025, 9, 1) }
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:ect_at_school_period) do
         FactoryBot.create(
           :ect_at_school_period,
@@ -1672,7 +1672,7 @@ RSpec.describe Events::Record do
 
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:, started_on:, school_partnership:) }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         travel_to(started_on) do
           Events::Record.record_teacher_schedule_assigned_to_training_period!(
             author:,
@@ -1694,7 +1694,7 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when Mentor training' do
+    context "when Mentor training" do
       let(:mentor_at_school_period) do
         FactoryBot.create(
           :mentor_at_school_period,
@@ -1706,7 +1706,7 @@ RSpec.describe Events::Record do
 
       let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:, school_partnership:) }
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         travel_to(started_on) do
           Events::Record.record_teacher_schedule_assigned_to_training_period!(
             author:,
@@ -1729,14 +1729,14 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_training_period_assigned_to_school_partnership_event!' do
+  describe ".record_training_period_assigned_to_school_partnership_event!" do
     let(:school) { FactoryBot.create(:school) }
-    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: 'Ichigo', trs_last_name: 'Kurosaki') }
+    let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Ichigo", trs_last_name: "Kurosaki") }
     let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
     let(:lead_provider) { school_partnership.lead_provider }
     let(:delivery_partner) { school_partnership.delivery_partner }
 
-    context 'when ECT training' do
+    context "when ECT training" do
       let(:ect_at_school_period) do
         FactoryBot.create(
           :ect_at_school_period,
@@ -1757,7 +1757,7 @@ RSpec.describe Events::Record do
         )
       end
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_training_period_assigned_to_school_partnership_event!(
             author:,
@@ -1788,7 +1788,7 @@ RSpec.describe Events::Record do
       end
     end
 
-    context 'when mentor training' do
+    context "when mentor training" do
       let(:mentor_at_school_period) do
         FactoryBot.create(
           :mentor_at_school_period,
@@ -1810,7 +1810,7 @@ RSpec.describe Events::Record do
         )
       end
 
-      it 'queues a RecordEventJob with the correct values' do
+      it "queues a RecordEventJob with the correct values" do
         freeze_time do
           Events::Record.record_training_period_assigned_to_school_partnership_event!(
             author:,
@@ -1842,8 +1842,8 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_dfe_user_created_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_dfe_user_created_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         Events::Record.record_dfe_user_created_event!(author:, user: another_dfe_user, modifications: another_dfe_user.changes)
 
@@ -1862,8 +1862,8 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_dfe_user_updated_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_dfe_user_updated_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         another_dfe_user.name = "Ian William Richardson"
         Events::Record.record_dfe_user_updated_event!(author:, user: another_dfe_user, modifications: another_dfe_user.changes)
@@ -1883,8 +1883,8 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe '.record_teacher_set_funding_eligibility_event!' do
-    it 'queues a RecordEventJob with the correct values' do
+  describe ".record_teacher_set_funding_eligibility_event!" do
+    it "queues a RecordEventJob with the correct values" do
       freeze_time do
         teacher.mentor_first_became_eligible_for_training_at = Time.zone.now
         raw_modifications = teacher.changes

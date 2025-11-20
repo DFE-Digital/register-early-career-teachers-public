@@ -31,8 +31,8 @@ module Admin
         # @return [Array<String>]
         def head
           case
-          when claim? then ['TRN', 'Name', 'Induction period start date', 'Induction programme']
-          when action? then ['TRN', 'Name', 'Induction period end date', 'Number of terms', 'Outcome']
+          when claim? then ["TRN", "Name", "Induction period start date", "Induction programme"]
+          when action? then ["TRN", "Name", "Induction period end date", "Number of terms", "Outcome"]
           else
             raise StandardError, "Unknown #{batch.class}#batch_type for #{id}"
           end
@@ -46,8 +46,8 @@ module Admin
         # @param induction_period [InductionPeriod]
         # @return [String]
         def induction_outcome_tag(induction_period)
-          colours = { release: 'yellow', pass: 'green', fail: 'red' }
-          outcome = induction_period.outcome || 'release'
+          colours = { release: "yellow", pass: "green", fail: "red" }
+          outcome = induction_period.outcome || "release"
           govuk_tag(text: outcome.titleize, colour: colours[outcome.to_sym])
         end
 

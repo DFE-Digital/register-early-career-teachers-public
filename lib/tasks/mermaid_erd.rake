@@ -1,15 +1,15 @@
 namespace :erd do
-  desc 'Generate Mermaid entity relationship diagram'
+  desc "Generate Mermaid entity relationship diagram"
   task generate: :environment do
     unless Rails.env.development? || Rails.env.test?
-      puts '[⚠] Mermaid ERD generation is only allowed in development and test environments'
+      puts "[⚠] Mermaid ERD generation is only allowed in development and test environments"
       next
     end
 
-    require Rails.root.join('lib/mermaid_erd/generator')
+    require Rails.root.join("lib/mermaid_erd/generator")
 
-    config_path = Rails.root.join('config/mermaid_erd.yml')
-    output_path = Rails.root.join('documentation/domain-model.md')
+    config_path = Rails.root.join("config/mermaid_erd.yml")
+    output_path = Rails.root.join("documentation/domain-model.md")
 
     MermaidErd::Generator.new(
       config_path:,

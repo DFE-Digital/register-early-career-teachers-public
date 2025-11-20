@@ -84,12 +84,12 @@ module Schools
 
     def create_training_period!
       @training_period = case training_programme
-                         when 'school_led'
+                         when "school_led"
                            ::TrainingPeriods::Create.school_led(
                              period: ect_at_school_period,
                              started_on: ect_at_school_period.started_on
                            ).call
-                         when 'provider_led'
+                         when "provider_led"
                            ::TrainingPeriods::Create.provider_led(
                              period: ect_at_school_period,
                              started_on: ect_at_school_period.started_on,

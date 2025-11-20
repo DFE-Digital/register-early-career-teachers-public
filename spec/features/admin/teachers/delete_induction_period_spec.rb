@@ -56,7 +56,7 @@ RSpec.describe "Admin deleting an induction" do
       end
     end
 
-    context 'with an invalid ticket' do
+    context "with an invalid ticket" do
       it "shows an error message" do
         given_i_am_on_the_teacher_induction_page
         then_i_should_see_the_delete_link
@@ -127,7 +127,7 @@ private
   end
 
   def then_i_should_see_the_delete_link
-    expect(page.locator('.govuk-summary-card').get_by_role('link', name: 'Delete')).to be_visible
+    expect(page.locator(".govuk-summary-card").get_by_role("link", name: "Delete")).to be_visible
   end
 
   def then_i_should_see_the_delete_link_for(period)
@@ -135,7 +135,7 @@ private
   end
 
   def when_i_click_delete_link
-    page.locator('.govuk-summary-card').get_by_role('link', name: 'Delete').click
+    page.locator(".govuk-summary-card").get_by_role("link", name: "Delete").click
   end
 
   def when_i_click_delete_link_for(period)
@@ -143,8 +143,8 @@ private
   end
 
   def then_i_should_see_the_delete_confirmation_page
-    expect(page.get_by_text('Are you sure you want to delete this induction period?')).to be_visible
-    expect(page.get_by_role('button', name: 'Delete induction period')).to be_visible
+    expect(page.get_by_text("Are you sure you want to delete this induction period?")).to be_visible
+    expect(page.get_by_role("button", name: "Delete induction period")).to be_visible
   end
 
   def when_i_do_not_add_any_extra_information = nil
@@ -168,12 +168,12 @@ private
 
   def and_i_confirm_deletion
     perform_enqueued_jobs do
-      page.get_by_role('button', name: 'Delete induction period').click
+      page.get_by_role("button", name: "Delete induction period").click
     end
   end
 
   def then_i_should_be_on_the_success_page
-    expect(page.get_by_text('Induction period deleted successfully')).to be_visible
+    expect(page.get_by_text("Induction period deleted successfully")).to be_visible
   end
 
   def and_the_induction_period_should_be_deleted(period)
@@ -181,15 +181,15 @@ private
   end
 
   def and_an_event_should_have_been_recorded
-    event = Event.where(event_type: 'induction_period_deleted').last
-    expect(event.event_type).to eq('induction_period_deleted')
-    expect(event.author_type).to eq('dfe_staff_user')
-    expect(event.heading).to eq('Induction period deleted by admin')
+    event = Event.where(event_type: "induction_period_deleted").last
+    expect(event.event_type).to eq("induction_period_deleted")
+    expect(event.author_type).to eq("dfe_staff_user")
+    expect(event.heading).to eq("Induction period deleted by admin")
     expect(event.teacher).to eq(teacher)
   end
 
   def and_trs_status_should_be_reset
-    expect(page).not_to have_selector('.govuk-summary-card')
+    expect(page).not_to have_selector(".govuk-summary-card")
   end
 
   def and_trs_status_should_not_be_reset
@@ -213,8 +213,8 @@ private
       .locator(".app-timeline__description")
     link = description.get_by_role("link", name: "Zendesk ticket (opens in new tab)")
     expect(link).to be_visible
-    expect(link).to have_attribute('href', url)
-    expect(link).to have_attribute('target', '_blank')
+    expect(link).to have_attribute("href", url)
+    expect(link).to have_attribute("target", "_blank")
   end
 
   alias_method :and_i_can_see_the_zendesk_link, :then_i_can_see_the_zendesk_link

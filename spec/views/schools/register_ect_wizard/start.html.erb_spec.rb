@@ -11,7 +11,7 @@ RSpec.describe "schools/register_ect_wizard/start.html.erb" do
     expect(view.content_for(:backlink_or_breadcrumb)).to include(schools_ects_home_path)
   end
 
-  it 'includes a continue button' do
-    expect(rendered).to have_link('Continue', href: schools_register_ect_wizard_find_ect_path)
+  it "includes a continue button" do
+    expect(rendered).to have_link("Continue", href: schools_register_ect_wizard_find_ect_path)
   end
 end

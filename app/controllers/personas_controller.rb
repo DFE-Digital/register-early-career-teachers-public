@@ -1,5 +1,5 @@
 class PersonasController < ApplicationController
-  layout 'full'
+  layout "full"
 
   def index
     persona_data = Struct.new(:name, :email, :school_name, :school_type, :image, :alt, :appropriate_body_name, :dfe_staff, :type, :role) do
@@ -16,7 +16,7 @@ class PersonasController < ApplicationController
       end
     end
 
-    @personas = YAML.load_file(Rails.root.join('config/personas.yml'))
+    @personas = YAML.load_file(Rails.root.join("config/personas.yml"))
                     .map { |p| persona_data.new(**p.symbolize_keys) }
   end
 end

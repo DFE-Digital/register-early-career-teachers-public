@@ -1,5 +1,5 @@
 RSpec.describe Schools::RegisterECTWizard::ChangeEmailAddressStep, type: :model do
-  subject { described_class.new(email: 'Jane Doe') }
+  subject { described_class.new(email: "Jane Doe") }
 
   describe "inheritance" do
     it "inherits from EmailAddressStep" do

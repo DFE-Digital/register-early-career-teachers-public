@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
     described_class.perform_now(pending_induction_submission.id, author_email, author_name)
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
   let(:pending_induction_submission_batch) do
     FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:)
@@ -15,16 +15,16 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
     FactoryBot.create(:pending_induction_submission,
                       pending_induction_submission_batch:,
                       started_on: 1.week.ago.to_date,
-                      training_programme: 'provider_led')
+                      training_programme: "provider_led")
   end
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:author_email) { 'barry@not-a-clue.co.uk' }
-  let(:author_name) { 'Barry Cryer' }
+  let(:author_email) { "barry@not-a-clue.co.uk" }
+  let(:author_name) { "Barry Cryer" }
   let(:teacher) { Teacher.find_by(trn: pending_induction_submission.trn) }
   let(:induction_period) { teacher.induction_periods.first }
 
-  it 'records the teacher' do
+  it "records the teacher" do
     expect {
       perform_register_ect_job
       perform_enqueued_jobs
@@ -35,7 +35,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
     expect(teacher.trs_last_name).to eq(pending_induction_submission.trs_last_name)
   end
 
-  it 'opens an induction', :aggregate_failures do
+  it "opens an induction", :aggregate_failures do
     expect {
       perform_register_ect_job
       perform_enqueued_jobs
@@ -48,7 +48,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
     expect(induction_period.outcome).to be_nil
   end
 
-  it 'creates an induction opened event by the author' do
+  it "creates an induction opened event by the author" do
     allow(Events::Record).to receive(:record_induction_period_opened_event!).and_call_original
 
     perform_register_ect_job
@@ -63,25 +63,25 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
     )
   end
 
-  context 'when the teacher was previously registered' do
+  context "when the teacher was previously registered" do
     before do
       FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
     end
 
-    it 'opens a new induction' do
+    it "opens a new induction" do
       expect {
         perform_register_ect_job
         perform_enqueued_jobs
       }.to change(InductionPeriod, :count).by(1)
     end
 
-    context 'and has an ongoing induction' do
+    context "and has an ongoing induction" do
       before do
         FactoryBot.create(:induction_period, :ongoing,
                           teacher: Teacher.find_by(trn: pending_induction_submission.trn))
       end
 
-      it 'does not create a concurrent induction' do
+      it "does not create a concurrent induction" do
         expect {
           perform_register_ect_job
           perform_enqueued_jobs

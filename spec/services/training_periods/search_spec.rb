@@ -3,33 +3,33 @@ describe TrainingPeriods::Search do
 
   let(:conditions) { {} }
 
-  context 'when no conditions provided' do
-    it 'returns all TrainingPeriods ordered by started_on' do
+  context "when no conditions provided" do
+    it "returns all TrainingPeriods ordered by started_on" do
       expect(result.to_sql).to eq(
         %(SELECT "training_periods".* FROM "training_periods" ORDER BY "training_periods"."started_on" ASC)
       )
     end
   end
 
-  context 'with ect_id condition' do
+  context "with ect_id condition" do
     let(:conditions) { { ect_id: 123 } }
 
-    it 'filters TrainingPeriods by ect_at_school_period_id' do
+    it "filters TrainingPeriods by ect_at_school_period_id" do
       expect(result.to_sql).to include(%(WHERE "training_periods"."ect_at_school_period_id" = 123))
     end
   end
 
-  context 'with no order param' do
+  context "with no order param" do
     let(:result) { described_class.new.training_periods }
 
-    it 'defaults to ordering by created_at' do
+    it "defaults to ordering by created_at" do
       expect(result.to_sql).to eq(
         %(SELECT "training_periods".* FROM "training_periods" ORDER BY "training_periods"."created_at" ASC)
       )
     end
   end
 
-  describe '#linkable_to_school_partnership' do
+  describe "#linkable_to_school_partnership" do
     subject(:result) do
       described_class.new.linkable_to_school_partnership(
         school:,
@@ -116,7 +116,7 @@ describe TrainingPeriods::Search do
                         finished_on: Date.new(2025, 6, 30))
     end
 
-    it 'returns only training periods linked to an EOI at the school (no school partnership, matching lead_provider + contract period)' do
+    it "returns only training periods linked to an EOI at the school (no school partnership, matching lead_provider + contract period)" do
       expect(result).to contain_exactly(linkable_tp)
     end
   end

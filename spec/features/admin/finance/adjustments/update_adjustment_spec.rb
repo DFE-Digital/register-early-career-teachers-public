@@ -78,12 +78,12 @@ RSpec.describe "Update adjustment for statement" do
   end
 
   def then_i_see_adjustments_section
-    expect(page.locator('#adjustments.govuk-summary-card h2').text_content).to eq("Additional adjustments")
+    expect(page.locator("#adjustments.govuk-summary-card h2").text_content).to eq("Additional adjustments")
   end
 
   def when_i_click_change_adjustment_link
     # second adjustment
-    page.locator('#adjustments.govuk-summary-card .govuk-summary-list .govuk-summary-list__row:nth-child(2)').get_by_role('link', name: "Change adjustment").click
+    page.locator("#adjustments.govuk-summary-card .govuk-summary-list .govuk-summary-list__row:nth-child(2)").get_by_role("link", name: "Change adjustment").click
   end
 
   def and_adjustment_should_have_been_updated
@@ -111,7 +111,7 @@ RSpec.describe "Update adjustment for statement" do
 
   def and_i_click_button(name)
     perform_enqueued_jobs do
-      page.get_by_role('button', name:).click
+      page.get_by_role("button", name:).click
     end
   end
 

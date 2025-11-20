@@ -10,7 +10,7 @@ module Schools
 
       def call
         safe_join([
-          tag.h2('Mentor details', class: 'govuk-heading-m'),
+          tag.h2("Mentor details", class: "govuk-heading-m"),
           govuk_summary_list(rows:)
         ])
       end
@@ -27,7 +27,7 @@ module Schools
 
       def name_row
         {
-          key: { text: 'Name' },
+          key: { text: "Name" },
           value: { text: teacher_full_name(@teacher) },
           actions: [{
             text: "Change",
@@ -39,7 +39,7 @@ module Schools
 
       def email_row
         {
-          key: { text: 'Email address' },
+          key: { text: "Email address" },
           value: { text: @mentor.email },
           actions: [{
             text: "Change",
@@ -52,7 +52,7 @@ module Schools
 
       def assigned_ects_row
         {
-          key: { text: 'Assigned ECTs' },
+          key: { text: "Assigned ECTs" },
           value: {
             text: assigned_ects_value
           }
@@ -60,7 +60,7 @@ module Schools
       end
 
       def assigned_ects_value
-        return 'No ECTs assigned' if assigned_ects.empty?
+        return "No ECTs assigned" if assigned_ects.empty?
 
         safe_join(assigned_ects.map do |ect|
           govuk_link_to(

@@ -5,8 +5,8 @@ RSpec.shared_examples "a training programme view" do |current_step:, back_path:,
   let(:store) do
     FactoryBot.build(:session_repository,
                      training_programme:,
-                     trs_first_name: 'John',
-                     trs_last_name: 'Smith')
+                     trs_first_name: "John",
+                     trs_last_name: "Smith")
   end
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step:, school:, store:) }
 
@@ -28,24 +28,24 @@ RSpec.shared_examples "a training programme view" do |current_step:, back_path:,
     end
 
     it "prefixes the page with 'Error:'" do
-      expect(view.content_for(:page_title)).to start_with('Error:')
+      expect(view.content_for(:page_title)).to start_with("Error:")
     end
 
-    it 'renders an error summary' do
-      expect(view.content_for(:error_summary)).to have_css('.govuk-error-summary')
+    it "renders an error summary" do
+      expect(view.content_for(:error_summary)).to have_css(".govuk-error-summary")
     end
   end
 
   it "includes a back button that targets #{back_step_name} page" do
     render
 
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link('Back', href: send(back_path))
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: send(back_path))
   end
 
   it "includes a continue button that posts to the #{continue_step_name} page" do
     render
 
-    expect(rendered).to have_button('Continue')
+    expect(rendered).to have_button("Continue")
     expect(rendered).to have_selector("form[action='#{send(continue_path)}']")
   end
 end

@@ -22,7 +22,7 @@ RSpec.describe API::Errors::Response do
       expect(result[1][:detail]).to eql("Error 2")
     end
 
-    context 'when `params` is not an Array' do
+    context "when `params` is not an Array" do
       let(:messages) { "Error 1" }
 
       it "returns formatted errors" do

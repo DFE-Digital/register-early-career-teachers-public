@@ -21,7 +21,7 @@ class SchoolPartnership < ApplicationRecord
             presence: true,
             uniqueness: {
               scope: :lead_provider_delivery_partnership_id,
-              message: 'School and lead provider delivery partnership combination must be unique'
+              message: "School and lead provider delivery partnership combination must be unique"
             }
 
   # Scopes
@@ -37,6 +37,6 @@ class SchoolPartnership < ApplicationRecord
   }
   scope :latest_by_contract_year, -> {
     joins(lead_provider_delivery_partnership: :active_lead_provider)
-      .order('active_lead_providers.contract_period_year DESC, school_partnerships.created_at DESC')
+      .order("active_lead_providers.contract_period_year DESC, school_partnerships.created_at DESC")
   }
 end

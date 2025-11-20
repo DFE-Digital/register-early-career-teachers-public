@@ -1,4 +1,4 @@
-RSpec.describe 'Appropriate Body bulk actions upload', type: :request do
+RSpec.describe "Appropriate Body bulk actions upload", type: :request do
   include ActionDispatch::TestProcess
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
@@ -6,17 +6,17 @@ RSpec.describe 'Appropriate Body bulk actions upload', type: :request do
   let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
   let(:csv_file) do
-    fixture_file_upload('spec/fixtures/valid_complete_action.csv', 'text/csv')
+    fixture_file_upload("spec/fixtures/valid_complete_action.csv", "text/csv")
   end
 
   let(:batch) do
     PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body).last
   end
 
-  include_context 'test trs api client'
+  include_context "test trs api client"
 
-  describe 'POST /appropriate-body/bulk/actions' do
-    it 'enqueues a job' do
+  describe "POST /appropriate-body/bulk/actions" do
+    it "enqueues a job" do
       expect {
         post ab_batch_actions_path, params: {
           pending_induction_submission_batch: { csv_file: }
@@ -24,7 +24,7 @@ RSpec.describe 'Appropriate Body bulk actions upload', type: :request do
       }.to have_enqueued_job(AppropriateBodies::ProcessBatch::ActionJob)
     end
 
-    it 'records an upload started event' do
+    it "records an upload started event" do
       allow(Events::Record).to receive(:record_bulk_upload_started_event!).and_call_original
 
       post ab_batch_actions_path, params: {
@@ -38,11 +38,11 @@ RSpec.describe 'Appropriate Body bulk actions upload', type: :request do
 
       perform_enqueued_jobs
 
-      expect(Event.last.event_type).to eq('bulk_upload_started')
+      expect(Event.last.event_type).to eq("bulk_upload_started")
       expect(Event.last.pending_induction_submission_batch.id).to eq(batch.id)
     end
 
-    it 'redirects' do
+    it "redirects" do
       post ab_batch_actions_path, params: {
         pending_induction_submission_batch: { csv_file: }
       }
@@ -52,31 +52,31 @@ RSpec.describe 'Appropriate Body bulk actions upload', type: :request do
       expect(response.body).to include("We're processing your CSV file, it could take up to 5 minutes.")
     end
 
-    context 'with an unsupported file type' do
+    context "with an unsupported file type" do
       let(:csv_file) do
-        fixture_file_upload('spec/fixtures/invalid_not_a_csv_file.txt', 'text/plain')
+        fixture_file_upload("spec/fixtures/invalid_not_a_csv_file.txt", "text/plain")
       end
 
-      it 'shows error message' do
+      it "shows error message" do
         post ab_batch_actions_path, params: {
           pending_induction_submission_batch: { csv_file: }
         }
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to include('The selected file must be a CSV')
+        expect(response.body).to include("The selected file must be a CSV")
       end
     end
 
-    context 'with a malformed CSV' do
+    context "with a malformed CSV" do
       let(:csv_file) do
-        fixture_file_upload('spec/fixtures/malformed_action.csv', 'text/csv')
+        fixture_file_upload("spec/fixtures/malformed_action.csv", "text/csv")
       end
 
-      it 'shows error message' do
+      it "shows error message" do
         post ab_batch_actions_path, params: {
           pending_induction_submission_batch: { csv_file: }
         }
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to include('The selected file is malformed')
+        expect(response.body).to include("The selected file is malformed")
       end
     end
   end

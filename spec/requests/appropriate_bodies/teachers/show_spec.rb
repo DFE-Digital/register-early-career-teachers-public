@@ -3,19 +3,19 @@ RSpec.describe "Appropriate Body teacher show page", type: :request do
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
 
-  describe 'GET /appropriate-body/teachers/:id' do
-    context 'when not signed in' do
-      it 'redirects to the root page' do
+  describe "GET /appropriate-body/teachers/:id" do
+    context "when not signed in" do
+      it "redirects to the root page" do
         get("/appropriate-body/teachers/#{teacher.id}")
 
         expect(response).to redirect_to(root_url)
       end
     end
 
-    context 'when signed in as an appropriate body user' do
+    context "when signed in as an appropriate body user" do
       let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-      it 'displays the teacher details' do
+      it "displays the teacher details" do
         get("/appropriate-body/teachers/#{teacher.id}")
 
         expect(response).to be_successful
@@ -23,14 +23,14 @@ RSpec.describe "Appropriate Body teacher show page", type: :request do
         expect(response.body).to include(teacher.trs_last_name)
       end
 
-      context 'when the teacher does not exist' do
-        it 'returns a 404 error' do
+      context "when the teacher does not exist" do
+        it "returns a 404 error" do
           get("/appropriate-body/teachers/999999999")
           expect(response).to have_http_status(:not_found)
         end
       end
 
-      context 'when the teacher is not associated with the appropriate body' do
+      context "when the teacher is not associated with the appropriate body" do
         let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
         let(:other_teacher) { FactoryBot.create(:teacher) }
 
@@ -45,7 +45,7 @@ RSpec.describe "Appropriate Body teacher show page", type: :request do
                             outcome: nil)
         end
 
-        it 'returns a 404 error' do
+        it "returns a 404 error" do
           get("/appropriate-body/teachers/#{other_teacher.id}")
           expect(response).to have_http_status(:not_found)
         end

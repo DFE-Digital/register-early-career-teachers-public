@@ -1,16 +1,16 @@
 RSpec.describe AppropriateBodies::RecordFail do
   it "defines expected induction params" do
     expect(described_class.induction_params).to eq({
-      'appropriate_bodies_record_fail' => %i[finished_on number_of_terms]
+      "appropriate_bodies_record_fail" => %i[finished_on number_of_terms]
     })
   end
 
-  it_behaves_like 'it closes an induction' do
+  it_behaves_like "it closes an induction" do
     it "closes with fail outcome" do
       service_call
 
       expect(induction_period.reload).to have_attributes(
-        outcome: 'fail',
+        outcome: "fail",
         finished_on: 1.day.ago.to_date,
         number_of_terms: 6
       )
@@ -48,9 +48,9 @@ RSpec.describe AppropriateBodies::RecordFail do
         service_call
 
         expect(induction_period.reload).to have_attributes(
-          outcome: 'fail',
-          induction_programme: 'fip',
-          training_programme: 'provider_led'
+          outcome: "fail",
+          induction_programme: "fip",
+          training_programme: "provider_led"
         )
       end
     end
@@ -66,8 +66,8 @@ RSpec.describe AppropriateBodies::RecordFail do
         service_call
 
         expect(induction_period.reload).to have_attributes(
-          outcome: 'fail',
-          induction_programme: 'pre_september_2021',
+          outcome: "fail",
+          induction_programme: "pre_september_2021",
           training_programme: nil
         )
       end

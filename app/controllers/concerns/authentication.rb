@@ -22,7 +22,7 @@ module Authentication
 private
 
   def authenticate
-    Current.session = session['user_session']
+    Current.session = session["user_session"]
     Current.user = current_user
 
     return if authenticated?

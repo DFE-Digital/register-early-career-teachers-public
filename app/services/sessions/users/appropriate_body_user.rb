@@ -35,7 +35,7 @@ module Sessions
       # @return [String]
       def organisation_name
         if has_multiple_roles?
-          appropriate_body.name + ' (appropriate body)'
+          appropriate_body.name + " (appropriate body)"
         else
           appropriate_body.name
         end
@@ -43,7 +43,7 @@ module Sessions
 
       # @return [String]
       def sign_out_path
-        '/auth/dfe_sign_in/logout'
+        "/auth/dfe_sign_in/logout"
       end
 
       # @return [Hash] session data

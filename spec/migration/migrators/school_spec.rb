@@ -2,14 +2,14 @@ describe Migrators::School do
   def create_ecf_school
     FactoryBot.create(:ecf_migration_school,
                       school_status_code: 1,
-                      administrative_district_name: 'AD1',
-                      administrative_district_code: '9999',
+                      administrative_district_name: "AD1",
+                      administrative_district_code: "9999",
                       school_type_code: 1,
-                      name: 'School one',
-                      school_phase_name: 'Phase one',
+                      name: "School one",
+                      school_phase_name: "Phase one",
                       section_41_approved: false,
-                      school_status_name: 'Open',
-                      school_type_name: 'Academy converter').tap do |ecf_school|
+                      school_status_name: "Open",
+                      school_type_name: "Academy converter").tap do |ecf_school|
       FactoryBot.create(:ecf_migration_school_local_authority, school: ecf_school)
       FactoryBot.create(:migration_induction_coordinator_profile, schools: [ecf_school])
     end
@@ -18,15 +18,15 @@ describe Migrators::School do
   def create_gias_school(ecf_school)
     FactoryBot.create(:gias_school, :with_school,
                       urn: ecf_school.urn,
-                      administrative_district_name: 'AD1',
-                      funding_eligibility: 'eligible_for_fip',
+                      administrative_district_name: "AD1",
+                      funding_eligibility: "eligible_for_fip",
                       induction_eligibility: true,
                       in_england: true,
-                      name: 'School one',
-                      phase_name: 'Phase one',
+                      name: "School one",
+                      phase_name: "Phase one",
                       section_41_approved: false,
-                      status: 'open',
-                      type_name: 'Academy converter',
+                      status: "open",
+                      type_name: "Academy converter",
                       ukprn: ecf_school.ukprn)
   end
 
@@ -48,7 +48,7 @@ describe Migrators::School do
         let(:rect_school) { School.find_by_urn(ecf_school.urn) }
 
         before do
-          ecf_school.update!(school_status_code: 2, school_type_code: 10, school_status_name: 'closed', school_type_name: 'Community school')
+          ecf_school.update!(school_status_code: 2, school_type_code: 10, school_status_name: "closed", school_type_name: "Community school")
         end
 
         it "migrates it to RECT" do
@@ -63,7 +63,7 @@ describe Migrators::School do
         let(:rect_school) { School.find_by_urn(ecf_school.urn) }
 
         before do
-          ecf_school.update!(school_status_code: 1, school_type_code: 10, school_status_name: 'open', school_type_name: 'Community school')
+          ecf_school.update!(school_status_code: 1, school_type_code: 10, school_status_name: "open", school_type_name: "Community school")
         end
 
         it "migrates it to RECT" do
@@ -73,7 +73,7 @@ describe Migrators::School do
       end
 
       context "when the school has no partnerships or induction records" do
-        let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_status_name: 'open', school_type_code: 10) }
+        let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_status_name: "open", school_type_code: 10) }
 
         before do
           described_class.new(worker: 0).migrate!
@@ -91,29 +91,29 @@ describe Migrators::School do
       let!(:ecf_school) do
         FactoryBot.create(:ecf_migration_school,
                           school_status_code: 1,
-                          administrative_district_name: 'AD1',
-                          administrative_district_code: '9999',
+                          administrative_district_name: "AD1",
+                          administrative_district_code: "9999",
                           school_type_code: 1,
-                          name: 'School one',
-                          school_phase_name: 'Phase one',
+                          name: "School one",
+                          school_phase_name: "Phase one",
                           section_41_approved: false,
-                          school_status_name: 'Open',
-                          school_type_name: 'Type one',
+                          school_status_name: "Open",
+                          school_type_name: "Type one",
                           ukprn: "12345")
       end
 
       let!(:gias_school) do
         FactoryBot.create(:gias_school, :with_school,
                           urn: ecf_school.urn,
-                          administrative_district_name: 'AAD1',
-                          funding_eligibility: 'eligible_for_cip',
+                          administrative_district_name: "AAD1",
+                          funding_eligibility: "eligible_for_cip",
                           induction_eligibility: true,
                           in_england: true,
-                          name: 'Another School one',
-                          phase_name: 'Another Phase one',
+                          name: "Another School one",
+                          phase_name: "Another Phase one",
                           section_41_approved: true,
-                          status: 'proposed_to_close',
-                          type_name: 'Academy converter',
+                          status: "proposed_to_close",
+                          type_name: "Academy converter",
                           ukprn: 54_321)
       end
 

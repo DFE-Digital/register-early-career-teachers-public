@@ -5,11 +5,11 @@ RSpec.describe Sessions::Users::DfEPersona do
   let(:email) { user.email }
   let(:last_active_at) { 4.minutes.ago }
 
-  it_behaves_like 'a session user' do
+  it_behaves_like "a session user" do
     let(:user_props) { { email: } }
   end
 
-  context 'when personas are disabled' do
+  context "when personas are disabled" do
     before { allow(Rails.application.config).to receive(:enable_personas).and_return(false) }
 
     it do
@@ -17,7 +17,7 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  context 'when there is no user with the given email' do
+  context "when there is no user with the given email" do
     let(:email) { Faker::Internet.email }
 
     it do
@@ -34,22 +34,22 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe 'delegation' do
+  describe "delegation" do
     it { is_expected.to delegate_method(:role).to(:user) }
     it { is_expected.to delegate_method(:admin?).to(:user) }
     it { is_expected.to delegate_method(:super_admin?).to(:user) }
     it { is_expected.to delegate_method(:finance?).to(:user) }
   end
 
-  describe '#provider' do
+  describe "#provider" do
     it { expect(dfe_persona.provider).to be(:persona) }
   end
 
-  describe '#user_type' do
+  describe "#user_type" do
     it { expect(dfe_persona.user_type).to be(:dfe_staff_user) }
   end
 
-  describe 'user type methods' do
+  describe "user type methods" do
     it { expect(dfe_persona).to be_dfe_user }
     it { expect(dfe_persona).not_to be_appropriate_body_user }
     it { expect(dfe_persona).not_to be_dfe_sign_in_authorisable }
@@ -57,8 +57,8 @@ RSpec.describe Sessions::Users::DfEPersona do
     it { expect(dfe_persona).not_to be_dfe_user_impersonating_school_user }
   end
 
-  describe '#event_author_params' do
-    it 'returns a hash with the attributes needed to record an event' do
+  describe "#event_author_params" do
+    it "returns a hash with the attributes needed to record an event" do
       expect(dfe_persona.event_author_params).to eql({
         author_email: user.email,
         author_id: user.id,
@@ -68,38 +68,38 @@ RSpec.describe Sessions::Users::DfEPersona do
     end
   end
 
-  describe '#name' do
-    it 'returns the full name from the user record' do
+  describe "#name" do
+    it "returns the full name from the user record" do
       expect(dfe_persona.name).to eql(user.name)
     end
   end
 
-  describe '#has_authorised_role?' do
+  describe "#has_authorised_role?" do
     it { expect(dfe_persona).to have_authorised_role }
   end
 
-  describe '#organisation_name' do
-    it 'returns Department for Education' do
-      expect(dfe_persona.organisation_name).to eq('Department for Education')
+  describe "#organisation_name" do
+    it "returns Department for Education" do
+      expect(dfe_persona.organisation_name).to eq("Department for Education")
     end
   end
 
-  describe '#school_user?' do
+  describe "#school_user?" do
     it { expect(dfe_persona).not_to be_school_user }
   end
 
-  describe '#to_h' do
-    it 'returns attributes for session storage' do
+  describe "#to_h" do
+    it "returns attributes for session storage" do
       expect(dfe_persona.to_h).to eql({
-        'type' => 'Sessions::Users::DfEPersona',
-        'email' => email,
-        'last_active_at' => last_active_at
+        "type" => "Sessions::Users::DfEPersona",
+        "email" => email,
+        "last_active_at" => last_active_at
       })
     end
   end
 
-  describe '#user' do
-    it 'returns the User instance associated to this session user' do
+  describe "#user" do
+    it "returns the User instance associated to this session user" do
       expect(dfe_persona.user).to eq(user)
     end
   end

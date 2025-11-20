@@ -31,7 +31,7 @@ RSpec.describe API::Request do
 
     context "dfe_analytics is enabled" do
       before do
-        stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true")
+        stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true")
       end
 
       context "when authorization header is missing" do
@@ -137,7 +137,7 @@ RSpec.describe API::Request do
 
     context "dfe_analytics is enabled" do
       before do
-        stub_const('ENV', 'DFE_ANALYTICS_ENABLED' => "true")
+        stub_const("ENV", "DFE_ANALYTICS_ENABLED" => "true")
       end
 
       it "sends a throttled web_request event with user if available" do

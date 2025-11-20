@@ -3,99 +3,99 @@ RSpec.describe TRS::Teacher do
 
   let(:data) do
     {
-      'trn' => '1234567',
-      'firstName' => 'John',
-      'middleName' => 'A.',
-      'lastName' => 'Doe',
-      'dateOfBirth' => '1980-01-01',
-      'nationalInsuranceNumber' => 'AB123456C',
-      'emailAddress' => 'john.doe@example.com',
-      'eyts' => { 'awarded' => '2024-09-18', 'certificateUrl' => 'eyts_certificate_url', 'statusDescription' => 'eyts_status' },
-      'alerts' => [
+      "trn" => "1234567",
+      "firstName" => "John",
+      "middleName" => "A.",
+      "lastName" => "Doe",
+      "dateOfBirth" => "1980-01-01",
+      "nationalInsuranceNumber" => "AB123456C",
+      "emailAddress" => "john.doe@example.com",
+      "eyts" => { "awarded" => "2024-09-18", "certificateUrl" => "eyts_certificate_url", "statusDescription" => "eyts_status" },
+      "alerts" => [
         {
-          'alertId' => '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-          'alertType' => {
-            'alertTypeId' => '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-            'alertCategory' => {
-              'alertCategoryId' => '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-              'name' => 'Category Name'
+          "alertId" => "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "alertType" => {
+            "alertTypeId" => "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "alertCategory" => {
+              "alertCategoryId" => "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "name" => "Category Name"
             },
-            'name' => 'Type Name'
+            "name" => "Type Name"
           },
-          'startDate' => '2024-09-18',
-          'endDate' => '2024-09-18'
+          "startDate" => "2024-09-18",
+          "endDate" => "2024-09-18"
         }
       ],
-      'induction' => {
-        'startDate' => '2024-09-18',
-        'completedDate' => '2024-09-18',
-        'status' => 'InProgress',
-        'statusDescription' => 'Induction Status Description',
-        'certificateUrl' => 'induction_certificate_url'
+      "induction" => {
+        "startDate" => "2024-09-18",
+        "completedDate" => "2024-09-18",
+        "status" => "InProgress",
+        "statusDescription" => "Induction Status Description",
+        "certificateUrl" => "induction_certificate_url"
       },
-      'pendingNameChange' => true,
-      'pendingDateOfBirthChange' => true,
-      'qts' => { 'awarded' => '2024-09-18', 'certificateUrl' => 'qts_certificate_url', 'statusDescription' => 'qts_status' },
-      'initialTeacherTraining' => [
+      "pendingNameChange" => true,
+      "pendingDateOfBirthChange" => true,
+      "qts" => { "awarded" => "2024-09-18", "certificateUrl" => "qts_certificate_url", "statusDescription" => "qts_status" },
+      "initialTeacherTraining" => [
         {
-          'qualification' => { 'name' => 'Qualification Name' },
-          'ageRange' => { 'description' => 'Age Range Description' },
-          'provider' => { 'name' => 'Provider Name', 'ukprn' => 'Provider UKPRN' },
-          'subjects' => [{ 'code' => 'Subject Code', 'name' => 'Subject Name' }],
-          'startDate' => '2024-09-18',
-          'endDate' => '2024-09-18',
-          'programmeType' => 'Apprenticeship',
-          'programmeTypeDescription' => 'Programme Type Description',
-          'result' => 'Pass'
+          "qualification" => { "name" => "Qualification Name" },
+          "ageRange" => { "description" => "Age Range Description" },
+          "provider" => { "name" => "Provider Name", "ukprn" => "Provider UKPRN" },
+          "subjects" => [{ "code" => "Subject Code", "name" => "Subject Name" }],
+          "startDate" => "2024-09-18",
+          "endDate" => "2024-09-18",
+          "programmeType" => "Apprenticeship",
+          "programmeTypeDescription" => "Programme Type Description",
+          "result" => "Pass"
         }
       ],
-      'npqQualifications' => [
+      "npqQualifications" => [
         {
-          'type' => { 'code' => 'NPQEL', 'name' => 'NPQEL Name' },
-          'awarded' => '2024-09-18',
-          'certificateUrl' => 'npq_certificate_url'
+          "type" => { "code" => "NPQEL", "name" => "NPQEL Name" },
+          "awarded" => "2024-09-18",
+          "certificateUrl" => "npq_certificate_url"
         }
       ],
-      'mandatoryQualifications' => [
+      "mandatoryQualifications" => [
         {
-          'awarded' => '2024-09-18',
-          'specialism' => 'Specialism'
+          "awarded" => "2024-09-18",
+          "specialism" => "Specialism"
         }
       ],
-      'higherEducationQualifications' => [
+      "higherEducationQualifications" => [
         {
-          'subjects' => [{ 'code' => 'HE Subject Code', 'name' => 'HE Subject Name' }],
-          'name' => 'HE Qualification Name',
-          'awarded' => '2024-09-18'
+          "subjects" => [{ "code" => "HE Subject Code", "name" => "HE Subject Name" }],
+          "name" => "HE Qualification Name",
+          "awarded" => "2024-09-18"
         }
       ],
-      'previousNames' => [
+      "previousNames" => [
         {
-          'firstName' => 'Previous First Name',
-          'middleName' => 'Previous Middle Name',
-          'lastName' => 'Previous Last Name'
+          "firstName" => "Previous First Name",
+          "middleName" => "Previous Middle Name",
+          "lastName" => "Previous Last Name"
         }
       ],
-      'allowIdSignInWithProhibitions' => true
+      "allowIdSignInWithProhibitions" => true
     }
   end
 
-  describe '#to_h' do
-    it 'returns a hash of attributes' do
+  describe "#to_h" do
+    it "returns a hash of attributes" do
       expect(service.to_h).to eq({
-        trs_date_of_birth: '1980-01-01',
-        trs_first_name: 'John',
-        trs_last_name: 'Doe',
-        trs_email_address: 'john.doe@example.com',
+        trs_date_of_birth: "1980-01-01",
+        trs_first_name: "John",
+        trs_last_name: "Doe",
+        trs_email_address: "john.doe@example.com",
         trs_alerts: %w[3fa85f64-5717-4562-b3fc-2c963f66afa6],
-        trs_induction_start_date: '2024-09-18',
-        trs_induction_status: 'InProgress',
-        trs_induction_completed_date: '2024-09-18',
-        trs_induction_status_description: 'Induction Status Description',
+        trs_induction_start_date: "2024-09-18",
+        trs_induction_status: "InProgress",
+        trs_induction_completed_date: "2024-09-18",
+        trs_induction_status_description: "Induction Status Description",
         trs_initial_teacher_training_end_date: "2024-09-18",
         trs_initial_teacher_training_provider_name: "Provider Name",
-        trs_qts_awarded_on: '2024-09-18',
-        trs_qts_status_description: 'qts_status',
+        trs_qts_awarded_on: "2024-09-18",
+        trs_qts_status_description: "qts_status",
         trs_prohibited_from_teaching: false,
       })
     end
@@ -109,7 +109,7 @@ RSpec.describe TRS::Teacher do
     end
 
     context "when the teacher is exempt" do
-      let(:data) { { 'induction' => { 'status' => 'Exempt' } } }
+      let(:data) { { "induction" => { "status" => "Exempt" } } }
 
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
@@ -117,7 +117,7 @@ RSpec.describe TRS::Teacher do
     end
 
     context "when the teacher has passed their induction" do
-      let(:data) { { 'induction' => { 'status' => 'Passed' } } }
+      let(:data) { { "induction" => { "status" => "Passed" } } }
 
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
@@ -125,7 +125,7 @@ RSpec.describe TRS::Teacher do
     end
 
     context "when the teacher has failed their induction" do
-      let(:data) { { 'induction' => { 'status' => 'Failed' } } }
+      let(:data) { { "induction" => { "status" => "Failed" } } }
 
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
@@ -133,7 +133,7 @@ RSpec.describe TRS::Teacher do
     end
 
     context "when the teacher has failed their induction (in Wales)" do
-      let(:data) { { 'induction' => { 'status' => 'FailedInWales' } } }
+      let(:data) { { "induction" => { "status" => "FailedInWales" } } }
 
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
@@ -141,7 +141,7 @@ RSpec.describe TRS::Teacher do
     end
 
     context "when the teacher has not been awarded QTS" do
-      let(:data) { { 'qts' => { 'awarded' => nil } } }
+      let(:data) { { "qts" => { "awarded" => nil } } }
 
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::QTSNotAwarded)
@@ -151,10 +151,10 @@ RSpec.describe TRS::Teacher do
     context "when the teacher is prohibited from teaching" do
       let(:data) do
         {
-          'qts' => { 'awarded' => '2024-09-18' },
-          'alerts' => [
+          "qts" => { "awarded" => "2024-09-18" },
+          "alerts" => [
             {
-              'alertType' => { 'alertCategory' => { 'alertCategoryId' => 'b2b19019-b165-47a3-8745-3297ff152581' } },
+              "alertType" => { "alertCategory" => { "alertCategoryId" => "b2b19019-b165-47a3-8745-3297ff152581" } },
             }
           ],
         }
@@ -166,13 +166,13 @@ RSpec.describe TRS::Teacher do
     end
   end
 
-  describe '#prohibited_from_teaching?' do
-    context 'when teacher has a prohibition alert' do
+  describe "#prohibited_from_teaching?" do
+    context "when teacher has a prohibition alert" do
       let(:data) do
         {
-          'alerts' => [
+          "alerts" => [
             {
-              'alertType' => { 'alertCategory' => { 'alertCategoryId' => 'b2b19019-b165-47a3-8745-3297ff152581' } },
+              "alertType" => { "alertCategory" => { "alertCategoryId" => "b2b19019-b165-47a3-8745-3297ff152581" } },
             }
           ]
         }
@@ -181,8 +181,8 @@ RSpec.describe TRS::Teacher do
       it { is_expected.to be_prohibited_from_teaching }
     end
 
-    context 'when teacher has no alerts' do
-      let(:data) { { 'alerts' => [] } }
+    context "when teacher has no alerts" do
+      let(:data) { { "alerts" => [] } }
 
       it { is_expected.not_to be_prohibited_from_teaching }
     end
@@ -190,9 +190,9 @@ RSpec.describe TRS::Teacher do
     context "when teacher has different type of alert" do
       let(:data) do
         {
-          'alerts' => [
+          "alerts" => [
             {
-              'alertType' => { 'alertCategory' => { 'alertCategoryId' => 'different_category' } },
+              "alertType" => { "alertCategory" => { "alertCategoryId" => "different_category" } },
             }
           ]
         }

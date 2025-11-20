@@ -1,6 +1,6 @@
 module AppropriateBodies
   class PendingInductionSubmissionBatchController < AppropriateBodiesController
-    layout 'full'
+    layout "full"
 
     before_action :find_batch, only: %i[show edit]
 

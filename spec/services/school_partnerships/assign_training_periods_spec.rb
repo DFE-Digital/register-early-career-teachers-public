@@ -1,7 +1,7 @@
 RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
   include ActiveJob::TestHelper
 
-  describe '#call' do
+  describe "#call" do
     subject(:service) do
       described_class.new(
         school_partnership:,
@@ -86,7 +86,7 @@ RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
                         finished_on: Date.new(2025, 6, 30))
     end
 
-    it 'links only eligible training periods to the given school partnership' do
+    it "links only eligible training periods to the given school partnership" do
       expect {
         service.call
       }.to change { linkable_tp.reload.school_partnership }
@@ -94,27 +94,27 @@ RSpec.describe SchoolPartnerships::AssignTrainingPeriods do
         .to(school_partnership)
     end
 
-    it 'does not link already linked training periods' do
+    it "does not link already linked training periods" do
       expect { service.call }.not_to(change { already_linked_tp.reload.school_partnership })
     end
 
-    it 'does not link tp with different lead providers' do
+    it "does not link tp with different lead providers" do
       expect { service.call }.not_to(change { wrong_provider_tp.reload.school_partnership })
     end
 
-    it 'does not link tp with different contract periods' do
+    it "does not link tp with different contract periods" do
       expect { service.call }.not_to(change { wrong_year_tp.reload.school_partnership })
     end
 
-    it 'records a training_period_assigned_to_school_partnership event for each newly linked training period' do
+    it "records a training_period_assigned_to_school_partnership event for each newly linked training period" do
       perform_enqueued_jobs do
         expect {
           service.call
-        }.to change { Event.where(event_type: 'training_period_assigned_to_school_partnership').count }.by(1)
+        }.to change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
       end
 
       expect(Event.last).to have_attributes(
-        event_type: 'training_period_assigned_to_school_partnership',
+        event_type: "training_period_assigned_to_school_partnership",
         school_partnership:,
         training_period: linkable_tp,
         lead_provider:,

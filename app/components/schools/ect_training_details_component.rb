@@ -2,9 +2,9 @@ module Schools
   class ECTTrainingDetailsComponent < ApplicationComponent
     include ProgrammeHelper
 
-    NOT_AVAILABLE = 'Not available'
-    YET_TO_BE_REPORTED = 'Yet to be reported by the lead provider'
-    DELIVERY_PARTNER_CHANGE_HINT = 'To change the delivery partner, you must contact the lead provider'
+    NOT_AVAILABLE = "Not available"
+    YET_TO_BE_REPORTED = "Yet to be reported by the lead provider"
+    DELIVERY_PARTNER_CHANGE_HINT = "To change the delivery partner, you must contact the lead provider"
 
     attr_reader :ect_at_school_period, :training_period
 
@@ -17,7 +17,7 @@ module Schools
 
     def call
       safe_join([
-        tag.h2('Training details', class: 'govuk-heading-m'),
+        tag.h2("Training details", class: "govuk-heading-m"),
         govuk_summary_list(rows:)
       ])
     end
@@ -37,7 +37,7 @@ module Schools
 
     def training_programme_row
       {
-        key: { text: 'Training programme' },
+        key: { text: "Training programme" },
         value: { text: training_programme_display_name },
         actions: [{
           text: "Change",
@@ -50,7 +50,7 @@ module Schools
 
     def lead_provider_row
       {
-        key: { text: 'Lead provider' },
+        key: { text: "Lead provider" },
         value: { text: lead_provider_display_text },
         actions: [{
           text: "Change",
@@ -63,7 +63,7 @@ module Schools
 
     def delivery_partner_row
       {
-        key: { text: 'Delivery partner' },
+        key: { text: "Delivery partner" },
         value: { text: delivery_partner_display_text }
       }
     end
@@ -89,7 +89,7 @@ module Schools
       safe_join([
         provider_name,
         tag.br,
-        tag.span(status_text, class: 'govuk-hint')
+        tag.span(status_text, class: "govuk-hint")
       ])
     end
 
@@ -116,7 +116,7 @@ module Schools
     end
 
     def training_programme_display_name
-      TRAINING_PROGRAMME.fetch(training_period.training_programme, 'Unknown')
+      TRAINING_PROGRAMME.fetch(training_period.training_programme, "Unknown")
     end
   end
 end
