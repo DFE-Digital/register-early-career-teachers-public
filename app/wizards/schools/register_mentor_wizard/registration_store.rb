@@ -60,7 +60,8 @@ module Schools
                                     author:,
                                     started_on:,
                                     finish_existing_at_school_periods:,
-                                    lead_provider:)
+                                    lead_provider:,
+                                    mentee: ect)
                 .register!
                 .tap { self.registered = true }
       end
