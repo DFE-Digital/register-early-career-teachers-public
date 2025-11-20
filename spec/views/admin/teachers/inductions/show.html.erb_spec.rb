@@ -17,8 +17,33 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
     render
   end
 
-  it "includes a back link to admin teachers list" do
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: admin_teachers_path)
+  context "when the schools interface flag is disabled" do
+    before do
+      allow(Rails.application.config).to receive(:enable_schools_interface).and_return(false)
+      assign(:teacher, Admin::TeacherPresenter.new(teacher))
+      render
+    end
+
+    it "includes a back link to admin teachers list" do
+      expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: admin_teachers_path)
+    end
+  end
+
+  context "when the schools interface flag is enabled" do
+    before do
+      allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+      assign(:teacher, Admin::TeacherPresenter.new(teacher))
+      assign(:breadcrumbs, {
+        "Teachers" => admin_teachers_path,
+        "Floella Benjamin" => admin_teacher_path(teacher),
+        "Induction" => nil
+      })
+      render
+    end
+
+    it "includes a breadcrumb to admin teachers list" do
+      expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Teachers", href: admin_teachers_path)
+    end
   end
 
   it "displays teacher information" do
