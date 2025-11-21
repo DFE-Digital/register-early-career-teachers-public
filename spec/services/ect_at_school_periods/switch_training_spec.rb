@@ -379,6 +379,8 @@ module ECTAtSchoolPeriods
               new_training_period = mentor_at_school_period.training_periods.last
               expect(new_training_period.school_partnership).to be_nil
               expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+              expect(new_training_period.started_on).to eq(Date.current)
+              expect(new_training_period.schedule.contract_period.year).to eq(Date.current.year)
             end
 
             it "records a `new_training_period_for_mentor` event" do
@@ -426,13 +428,19 @@ module ECTAtSchoolPeriods
               new_training_period = mentor_at_school_period.training_periods.last
               expect(new_training_period.school_partnership).to eq(school_partnership)
               expect(new_training_period.expression_of_interest).to be_nil
+              expect(new_training_period.started_on).to eq(Date.current)
+              expect(new_training_period.schedule.contract_period.year).to eq(Date.current.year)
             end
           end
 
           context "assigning the schedule based on the current date" do
+            let!(:contract_period) do
+              FactoryBot.create(:contract_period, :with_schedules, year: 2025)
+            end
+
             context "when the switch happens between November and February" do
               around do |example|
-                travel_to(Date.new(contract_period.year, 11, 15)) do
+                travel_to(Date.new(2025, 11, 15)) do
                   example.run
                 end
               end
@@ -442,12 +450,13 @@ module ECTAtSchoolPeriods
 
                 new_training_period = mentor_at_school_period.training_periods.last
                 expect(new_training_period.schedule.identifier).to eq("ecf-standard-january")
+                expect(new_training_period.schedule.contract_period.year).to eq(2025)
               end
             end
 
             context "when the switch happens between June and October" do
               around do |example|
-                travel_to(Date.new(contract_period.year, 9, 15)) do
+                travel_to(Date.new(2025, 9, 15)) do
                   example.run
                 end
               end
@@ -457,12 +466,13 @@ module ECTAtSchoolPeriods
 
                 new_training_period = mentor_at_school_period.training_periods.last
                 expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
+                expect(new_training_period.schedule.contract_period.year).to eq(2025)
               end
             end
 
             context "when the switch happens between March and June" do
               around do |example|
-                travel_to(Date.new(contract_period.year + 1, 5, 15)) do
+                travel_to(Date.new(2026, 5, 15)) do
                   example.run
                 end
               end
@@ -472,6 +482,7 @@ module ECTAtSchoolPeriods
 
                 new_training_period = mentor_at_school_period.training_periods.last
                 expect(new_training_period.schedule.identifier).to eq("ecf-standard-april")
+                expect(new_training_period.schedule.contract_period.year).to eq(2025)
               end
             end
           end
