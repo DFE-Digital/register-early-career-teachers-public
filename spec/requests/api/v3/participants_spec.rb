@@ -10,8 +10,8 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
     teacher = FactoryBot.create(:teacher)
 
-    ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil, teacher:)
-    mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: 3.years.ago, finished_on: nil, teacher:)
+    ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil, teacher:, school: school_partnership.school)
+    mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: 3.years.ago, finished_on: nil, teacher:, school: school_partnership.school)
 
     training_periods = [
       FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:),

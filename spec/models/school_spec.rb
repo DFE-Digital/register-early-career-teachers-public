@@ -275,8 +275,8 @@ describe School do
         FactoryBot.create(
           :training_period,
           :for_ect,
+          :with_no_school_partnership,
           ect_at_school_period:,
-          school_partnership: nil,
           expression_of_interest: active_lead_provider,
           started_on: ect_at_school_period.started_on + 1.week
         )
@@ -291,8 +291,8 @@ describe School do
         FactoryBot.create(
           :training_period,
           :for_mentor,
+          :with_no_school_partnership,
           mentor_at_school_period:,
-          school_partnership: nil,
           expression_of_interest: active_lead_provider,
           started_on: mentor_at_school_period.started_on + 1.week
         )
@@ -344,8 +344,8 @@ describe School do
         FactoryBot.create(
           :training_period,
           :for_mentor,
+          :with_no_school_partnership,
           mentor_at_school_period:,
-          school_partnership: nil,
           expression_of_interest: active_lead_provider,
           started_on: mentor_at_school_period.started_on + 1.week
         )

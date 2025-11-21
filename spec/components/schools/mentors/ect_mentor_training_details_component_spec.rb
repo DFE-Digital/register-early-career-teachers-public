@@ -16,11 +16,10 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
     context "when registered via EOI (awaiting confirmation)" do
       before do
         FactoryBot.create(
-          :training_period, :provider_led, :for_mentor,
+          :training_period, :provider_led, :for_mentor, :with_no_school_partnership,
           mentor_at_school_period: mentor,
           started_on: mentor_start_date,
           finished_on: nil,
-          school_partnership: nil,
           expression_of_interest: active_lead_provider
         )
       end

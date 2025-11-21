@@ -130,8 +130,8 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         FactoryBot.create(:training_period,
                           :for_mentor,
                           :ongoing,
+                          :with_no_school_partnership,
                           expression_of_interest: old_active_lead_provider,
-                          school_partnership: nil,
                           schedule:,
                           mentor_at_school_period:,
                           started_on:)
