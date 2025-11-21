@@ -7,7 +7,9 @@ module ECTAtSchoolPeriods
     end
 
     let(:mentor_at_school_period) do
-      FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on)
+      FactoryBot.create(:mentor_at_school_period, :ongoing,
+                        started_on: ect_at_school_period.started_on,
+                        school: ect_at_school_period.school)
     end
 
     let!(:mentorship_period) do
