@@ -31,7 +31,7 @@ RSpec.describe API::Teachers::Resume, type: :model do
             let!(:other_training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: 2.weeks.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
+            it { is_expected.to have_error(:teacher_api_id, "This participant cannot be resumed because they are already active with another provider.") }
           end
 
           context "when there is another active/ongoing training period that finishes in the future for the school period at a different lead provider" do
@@ -40,7 +40,7 @@ RSpec.describe API::Teachers::Resume, type: :model do
             let!(:other_training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: 2.weeks.ago, finished_on: 3.months.from_now) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
+            it { is_expected.to have_error(:teacher_api_id, "This participant cannot be resumed because they are already active with another provider.") }
 
             context "when resuming after the other active/ongoing training period has finished" do
               before { travel_to 3.months.from_now }
@@ -53,7 +53,20 @@ RSpec.describe API::Teachers::Resume, type: :model do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: 2.months.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
+            it { is_expected.to have_error(:teacher_api_id, "The participant is no longer at the school. Please contact the induction tutor to resolve.") }
+          end
+
+          context "when the school period finishes today" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: Date.current) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "The participant is no longer at the school. Please contact the induction tutor to resolve.") }
+          end
+
+          context "when the school period finishes tomorrow" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: Date.tomorrow) }
+
+            it { is_expected.to be_valid }
           end
 
           context "guarded error messages" do
