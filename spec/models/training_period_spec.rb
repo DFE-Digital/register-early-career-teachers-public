@@ -507,6 +507,32 @@ describe TrainingPeriod do
       end
     end
 
+    describe "schedule presence for provider-led training" do
+      it "requires schedule for provider-led training periods" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        school_partnership = FactoryBot.create(:school_partnership, school: ect_at_school_period.school)
+        training_period = FactoryBot.build(:training_period, :for_ect, :provider_led, ect_at_school_period:, school_partnership:, schedule: nil)
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to include("Schedule is required for provider-led training periods")
+      end
+
+      it "does not require schedule for school-led training periods" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        training_period = FactoryBot.build(:training_period, :for_ect, :school_led, ect_at_school_period:, schedule: nil)
+        training_period.valid?
+        expect(training_period.errors[:schedule]).not_to include("Schedule is required for provider-led training periods")
+      end
+
+      it "is valid when provider-led training period has a schedule" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        school_partnership = FactoryBot.create(:school_partnership, school: ect_at_school_period.school)
+        schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
+        training_period = FactoryBot.build(:training_period, :for_ect, :provider_led, ect_at_school_period:, school_partnership:, schedule:)
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to be_empty
+      end
+    end
+
     describe "schedule applicable for trainee" do
       it "adds an error when an ECT is assigned to a replacement schedule" do
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
