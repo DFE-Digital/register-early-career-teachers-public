@@ -1,5 +1,7 @@
 # rubocop:disable RSpec/InstanceVariable
 RSpec.describe Teachers::SchoolTransfers::History do
+  include SchoolTransferHelpers
+
   describe "#transfers" do
     let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -8,7 +10,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider1) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 1.week.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago)
         add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
         add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
         add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :school_led)
@@ -30,7 +32,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider2) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 1.week.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago)
         add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
         add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
         @training_period3 = add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: lead_provider2)
@@ -69,7 +71,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider2) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 1.week.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago)
         add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
         add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
         @training_period3 = add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: lead_provider2)
@@ -102,9 +104,9 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider2) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 2.years.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        school_period2 = create_school_period(from: 2.years.ago)
+        school_period2 = create_school_period(teacher, from: 2.years.ago)
         @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
         add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider2)
       end
@@ -144,9 +146,9 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider3) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 2.years.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        school_period2 = create_school_period(from: 2.years.ago)
+        school_period2 = create_school_period(teacher, from: 2.years.ago)
         @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider2)
         add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider3)
       end
@@ -200,9 +202,9 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider1) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 2.years.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        school_period2 = create_school_period(from: 2.years.ago)
+        school_period2 = create_school_period(teacher, from: 2.years.ago)
         @training_period2 = add_training_period(school_period2, from: 2.years.ago, programme_type: :school_led)
       end
 
@@ -229,9 +231,9 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider1) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 2.years.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :school_led)
-        school_period2 = create_school_period(from: 2.years.ago)
+        school_period2 = create_school_period(teacher, from: 2.years.ago)
         @training_period2 = add_training_period(school_period2, from: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
       end
 
@@ -258,9 +260,9 @@ RSpec.describe Teachers::SchoolTransfers::History do
       let(:lead_provider1) { FactoryBot.create(:lead_provider) }
 
       before do
-        school_period1 = create_school_period(from: 3.years.ago, to: 2.years.ago)
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :school_led)
-        school_period2 = create_school_period(from: 2.years.ago)
+        school_period2 = create_school_period(teacher, from: 2.years.ago)
         add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :school_led)
         add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
       end
@@ -277,64 +279,6 @@ RSpec.describe Teachers::SchoolTransfers::History do
   end
 
 private
-
-  def create_school_period(from:, to: nil)
-    FactoryBot.create(
-      :ect_at_school_period,
-      started_on: from,
-      finished_on: to,
-      teacher:
-    )
-  end
-
-  def add_training_period(school_period, programme_type:, from:, to: nil, with: nil)
-    case programme_type
-    when :provider_led
-      FactoryBot.create(
-        :training_period,
-        :provider_led,
-        started_on: from,
-        finished_on: to,
-        ect_at_school_period: school_period,
-        school_partnership: school_partnership_between(
-          lead_provider: with,
-          school: school_period.school
-        )
-      )
-    when :school_led
-      FactoryBot.create(
-        :training_period,
-        :school_led,
-        started_on: from,
-        finished_on: to,
-        ect_at_school_period: school_period
-      )
-    end
-  end
-
-  def school_partnership_between(lead_provider:, school:)
-    existing_school_partnership = SchoolPartnership
-      .includes(:active_lead_provider)
-      .joins(:active_lead_provider)
-      .find_by(active_lead_provider: { lead_provider: }, school:)
-
-    unless existing_school_partnership
-      lead_provider_delivery_partnership = FactoryBot.create(
-        :lead_provider_delivery_partnership,
-        active_lead_provider: FactoryBot.create(
-          :active_lead_provider,
-          lead_provider:
-        )
-      )
-      school_partnership = FactoryBot.create(
-        :school_partnership,
-        lead_provider_delivery_partnership:,
-        school:
-      )
-    end
-
-    existing_school_partnership.presence || school_partnership
-  end
 
   def record_completed_induction(teacher, school_period)
     FactoryBot.create(
