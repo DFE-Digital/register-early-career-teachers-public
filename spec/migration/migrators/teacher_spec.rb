@@ -120,7 +120,7 @@ RSpec.describe Migrators::Teacher do
           end
         end
 
-        it "does not assign replacement schedules to ECTs" do
+        it "does not create training periods for ECTs with replacement schedules" do
           # Create ECT with replacement schedule
           teacher_profile = FactoryBot.create(:migration_teacher_profile)
           ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user)
@@ -139,10 +139,16 @@ RSpec.describe Migrators::Teacher do
 
           instance.migrate!
 
-          training_period = ::TrainingPeriod.find_by!(ecf_start_induction_record_id: induction_record.id)
+          # ECTs with replacement schedules should not have training periods created
+          # (the migration should fail validation and log a failure instead)
+          training_period = ::TrainingPeriod.find_by(ecf_start_induction_record_id: induction_record.id)
+          expect(training_period).to be_nil
 
-          # ECTs should not be assigned replacement schedules
-          expect(training_period.schedule).to be_nil
+          # Verify a migration failure was logged
+          teacher = ::Teacher.find_by(trn: teacher_profile.trn)
+          failure = ::TeacherMigrationFailure.find_by(teacher:, model: :training_period, migration_item_id: induction_record.id)
+          expect(failure).to be_present
+          expect(failure.message).to include("Schedule is required for provider-led training periods")
         end
       end
 
