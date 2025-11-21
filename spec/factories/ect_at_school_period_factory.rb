@@ -21,7 +21,7 @@ FactoryBot.define do
       end
     end
 
-    independent_school
+    association :school
 
     started_on { start_date }
     finished_on { end_date }
