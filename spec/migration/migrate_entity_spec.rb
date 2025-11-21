@@ -93,7 +93,8 @@ RSpec.describe MigrateEntity do
                     change(DeliveryPartner, :count).by(1).and \
                       change(ActiveLeadProvider, :count).by(1).and \
                         change(LeadProvider, :count).by(1).and \
-                          change(ContractPeriod, :count).by(1)
+                          change(ContractPeriod, :count).by(1).and \
+                            change(Schedule, :count).by(2)
     end
 
     it "migrates the correct values" do
@@ -103,7 +104,12 @@ RSpec.describe MigrateEntity do
       expect(Teachers::Name.new(teacher).full_name).to eq [parser.first_name, parser.last_name].join(" ")
 
       expect(teacher.ect_at_school_periods.first.mentors.first.teacher).to eq Teacher.find_by(trn: mentor_profile.teacher_profile.trn)
-      expect(teacher.ect_at_school_periods.first.training_periods.first.lead_provider.name).to eq lead_provider.name
+
+      training_period = teacher.ect_at_school_periods.first.training_periods.first
+      expect(training_period.lead_provider.name).to eq lead_provider.name
+      expect(training_period.schedule).to be_present
+      expect(training_period.schedule.identifier).to eq ect_induction_record.schedule.schedule_identifier
+      expect(training_period.schedule.contract_period_year).to eq cohort.start_year
     end
   end
 end
