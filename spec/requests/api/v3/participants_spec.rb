@@ -55,14 +55,45 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
   end
 
   describe "#change_schedule" do
-    let(:path) { change_schedule_api_v3_participant_path(123) }
+    let(:path) { change_schedule_api_v3_participant_path(resource.api_id) }
+    let(:service) { API::Teachers::ChangeSchedule }
+    let(:resource_type) { Teacher }
+    let(:resource) { create_resource(active_lead_provider:) }
+    let(:schedule_identifier) { FactoryBot.create(:schedule, contract_period:).identifier }
+    let(:contract_period) { FactoryBot.create(:contract_period) }
+    let(:contract_period_year) { contract_period.year.to_s }
+    let(:course_identifier) { "ecf-induction" }
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        teacher_api_id: resource.api_id,
+        schedule_identifier:,
+        contract_period_year:,
+        teacher_type: :ect,
+      }
+    end
+    let(:params) do
+      {
+        data: {
+          type: "participant-change-schedule",
+          attributes: {
+            schedule_identifier:,
+            contract_period_year:,
+            course_identifier:,
+          }
+        }
+      }
+    end
+
+    before do
+      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+      lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+      school = resource.ect_at_school_periods.last.training_periods.last.school_partnership.school
+      FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
+    end
 
     it_behaves_like "a token authenticated endpoint", :put
-
-    it "returns method not allowed" do
-      authenticated_api_put path
-      expect(response).to be_method_not_allowed
-    end
+    it_behaves_like "an API update endpoint"
   end
 
   describe "#defer" do
