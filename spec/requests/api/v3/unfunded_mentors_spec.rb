@@ -25,8 +25,8 @@ RSpec.describe "Unfunded mentors API", :with_metadata, type: :request do
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "an index endpoint"
     it_behaves_like "a paginated endpoint"
-    it_behaves_like "a filter by updated_since endpoint"
-    it_behaves_like "a sortable endpoint"
+    it_behaves_like "a filter by updated_since endpoint", updated_at_column: :api_unfunded_mentor_updated_at
+    it_behaves_like "a sortable endpoint", updated_at_column: :api_unfunded_mentor_updated_at
   end
 
   describe "#show" do

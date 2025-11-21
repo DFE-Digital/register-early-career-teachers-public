@@ -157,6 +157,7 @@ erDiagram
     datetime mentor_first_became_eligible_for_training_at
     boolean trnless
     datetime api_updated_at
+    datetime api_unfunded_mentor_updated_at
   }
   PendingInductionSubmission {
     integer id

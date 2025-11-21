@@ -16,7 +16,8 @@ class MentorAtSchoolPeriod < ApplicationRecord
   has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
   has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
 
-  touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
+  touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at, if: :touch_teacher?
+  touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_unfunded_mentor_updated_at, if: :touch_teacher?
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
@@ -69,5 +70,9 @@ private
 
   def teacher_school_distinct_period
     overlap_validation(name: "Teacher School Mentor")
+  end
+
+  def touch_teacher?
+    teacher.latest_mentor_at_school_period == self
   end
 end

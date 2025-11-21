@@ -1,16 +1,22 @@
-RSpec.shared_examples "a sortable endpoint" do |additional_sorts = []|
+RSpec.shared_examples "a sortable endpoint" do |additional_sorts = [], updated_at_column: :api_updated_at|
   let!(:resources) do
     [
-      travel_to(2.days.ago) { create_resource(active_lead_provider:) }.tap { it.update!(updated_at: 1.day.ago, api_updated_at: 2.hours.ago) },
-      create_resource(active_lead_provider:).tap { it.update!(updated_at: 1.minute.ago, api_updated_at: 3.hours.ago) },
-      travel_to(5.days.ago) { create_resource(active_lead_provider:) }.tap { it.update!(updated_at: 5.days.ago, api_updated_at: 1.day.ago) },
+      travel_to(2.days.ago) { create_resource(active_lead_provider:) }.tap { it.update!("#{updated_at_column}": 2.hours.ago) },
+      create_resource(active_lead_provider:).tap { it.update!("#{updated_at_column}": 3.hours.ago) },
+      travel_to(5.days.ago) { create_resource(active_lead_provider:) }.tap { it.update!("#{updated_at_column}": 1.day.ago) },
     ]
   end
 
   def transform_sort_attribute(sort_attribute)
-    return "api_updated_at" if sort_attribute == "updated_at"
-
-    sort_attribute
+    if sort_attribute == "updated_at"
+      if /unfunded-mentors/.match?(path)
+        "api_unfunded_mentor_updated_at"
+      else
+        "api_updated_at"
+      end
+    else
+      sort_attribute
+    end
   end
 
   sorts = %i[created_at updated_at]
