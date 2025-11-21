@@ -1,3 +1,16 @@
+RSpec.shared_examples "no replacement schedule assigned" do
+  it "does not assign a replacement schedule" do
+    expect(service.identifier).not_to include("replacement")
+    expect(service.identifier).not_to be_nil
+  end
+end
+
+RSpec.shared_examples "replacement schedule assigned" do
+  it "assigns a replacement schedule" do
+    expect(service.identifier).to include("replacement")
+  end
+end
+
 RSpec.describe Schedules::Find do
   include ActiveJob::TestHelper
 
@@ -13,6 +26,7 @@ RSpec.describe Schedules::Find do
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, :with_training_period, teacher:, school:) }
+  let(:mentee) {}
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -22,7 +36,7 @@ RSpec.describe Schedules::Find do
 
   describe "#call" do
     subject(:service) do
-      described_class.new(period:, training_programme:, started_on:).call
+      described_class.new(period:, training_programme:, started_on:, period_type_key:, mentee:).call
     end
 
     %i[mentor_at_school_period ect_at_school_period].each do |period_type|
@@ -32,6 +46,8 @@ RSpec.describe Schedules::Find do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-reduced-september")
       end
+
+      let(:period_type_key) { period_type }
 
       context "when the period is a #{period_type.to_s.humanize}" do
         let(:period) { send(period_type) }
@@ -220,6 +236,114 @@ RSpec.describe Schedules::Find do
                 end
               end
             end
+          end
+        end
+      end
+    end
+
+    context "replacement schedule for mentor" do
+      let(:period_type_key) { :mentor_at_school_period }
+      let(:period) { mentor_at_school_period }
+
+      let(:started_on) { provider_led_start_date }
+      let(:registered_on) { Date.new(year, 6, 15) }
+      let(:provider_led_start_date) { Date.new(year, 12, 1) }
+      let(:previous_start_date) { Date.new(year, 7, 1) }
+
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
+      let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-september") }
+
+      before do
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-january")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
+      end
+
+      around do |example|
+        travel_to(provider_led_start_date) do
+          example.run
+        end
+      end
+
+      context "when the mentee has not previously received training" do
+        it_behaves_like "no replacement schedule assigned"
+      end
+
+      context "when the mentee has previously received school-led training" do
+        let!(:mentee_training_period) { FactoryBot.create(:training_period, :school_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+
+        it_behaves_like "no replacement schedule assigned"
+      end
+
+      context "when the mentee has previously received provider-led training" do
+        context "when there is one previous mentor with a training period" do
+          let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
+          let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
+          let!(:mentorship_period) { FactoryBot.create(:mentorship_period, started_on: previous_start_date, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
+          let!(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: previous_start_date, mentor_at_school_period: previous_mentor) }
+
+          context "when the previous mentor has not started training" do
+            it_behaves_like "no replacement schedule assigned"
+          end
+
+          context "when the previous mentor is the same as the current mentor" do
+            let!(:previous_mentor) { mentor_at_school_period }
+
+            it_behaves_like "no replacement schedule assigned"
+          end
+
+          context "when the previous mentor has started training" do
+            let!(:declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
+
+            it_behaves_like "replacement schedule assigned"
+
+            context "when the mentor is ineligible for funding" do
+              let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+
+              it_behaves_like "no replacement schedule assigned"
+            end
+          end
+        end
+
+        context "when there are multiple previous mentors with training periods" do
+          let(:first_date) { Date.new(year, 7, 1) }
+          let(:second_date) { Date.new(year, 7, 15) }
+
+          let(:first_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: first_date, finished_on: second_date) }
+          let(:second_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: first_date, finished_on: 1.day.ago) }
+          let!(:first_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: first_date, mentor_at_school_period: first_mentor) }
+          let!(:second_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: second_date, mentor_at_school_period: second_mentor) }
+
+          before do
+            FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: first_date, ect_at_school_period: mentee)
+            FactoryBot.create(:mentorship_period, started_on: first_date, finished_on: second_date - 1.day, mentee:, mentor: first_mentor)
+            FactoryBot.create(:mentorship_period, started_on: second_date, finished_on: 1.day.ago, mentee:, mentor: second_mentor)
+          end
+
+          context "when none of the previous mentors have started training" do
+            it_behaves_like "no replacement schedule assigned"
+          end
+
+          context "when the earliest previous mentor has started training" do
+            let!(:declaration) { FactoryBot.create(:declaration, training_period: first_mentor_training_period) }
+
+            it_behaves_like "replacement schedule assigned"
+          end
+
+          context "when the latest previous mentor has started training" do
+            let!(:declaration) { FactoryBot.create(:declaration, training_period: second_mentor_training_period) }
+
+            it_behaves_like "replacement schedule assigned"
+          end
+
+          context "when the new mentor is ineligible for funding" do
+            let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
+            let!(:declaration) { FactoryBot.create(:declaration, training_period: second_mentor_training_period) }
+
+            it_behaves_like "no replacement schedule assigned"
           end
         end
       end

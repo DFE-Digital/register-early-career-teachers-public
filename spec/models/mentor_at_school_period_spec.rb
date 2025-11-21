@@ -11,6 +11,7 @@ describe MentorAtSchoolPeriod do
     it { is_expected.to belong_to(:teacher).inverse_of(:mentor_at_school_periods) }
     it { is_expected.to have_many(:mentorship_periods).inverse_of(:mentor) }
     it { is_expected.to have_many(:training_periods) }
+    it { is_expected.to have_many(:declarations).through(:training_periods) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:currently_assigned_ects).through(:mentorship_periods).source(:mentee) }
   end
