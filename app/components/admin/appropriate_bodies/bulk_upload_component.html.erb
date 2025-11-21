@@ -4,20 +4,24 @@
 
 <%=
   govuk_tabs do |tabs|
-    tabs.with_tab(label: "Errors") do %>
-      <% if error_details.render? %>
-        <%= error_details %>
-      <% else %>
-        <h3 class='govuk-heading-m'>No errors</h3>
-      <% end %>
-    <% end if error_details?
+    if error_details
+      tabs.with_tab(label: "Errors") do
+        if error_details.render?
+          error_details
+        else
+          tag.h3("No errors", class: "govuk-heading-m")
+        end
+      end
+    end
 
-    tabs.with_tab(label: "Submitted inductions") do %>
-      <% if induction_details.render? %>
-        <%= induction_details %>
-      <% else %>
-        <h3 class='govuk-heading-m'>No inductions</h3>
-      <% end %>
-    <% end if induction_details?
+    if induction_details
+      tabs.with_tab(label: "Submitted inductions") do
+        if induction_details.render?
+          induction_details
+        else
+          tag.h3("No inductions", class: "govuk-heading-m")
+        end
+      end
+    end
   end
 %>
