@@ -50,7 +50,7 @@ RSpec.describe API::Teachers::Resume, type: :model do
           end
 
           context "when at school period is finished" do
-            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: 2.months.ago) }
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", :ongoing, started_on: 2.months.ago, finished_on: 1.month.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "The '#/teacher_api_id' is already active.") }
