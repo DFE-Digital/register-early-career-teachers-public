@@ -71,6 +71,7 @@ class TrainingPeriod < ApplicationRecord
   validate :at_least_expression_of_interest_or_school_partnership_present, if: :provider_led_training_programme?
   validate :expression_of_interest_absent_for_school_led, if: :school_led_training_programme?
   validate :school_partnership_absent_for_school_led, if: :school_led_training_programme?
+  validate :school_consistency
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
   validate :only_provider_led_mentor_training
@@ -196,5 +197,15 @@ private
     return unless for_ect?
 
     errors.add(:schedule, "Only mentors can be assigned to replacement schedules") if schedule.replacement_schedule?
+  end
+
+  def school_consistency
+    return if trainee.blank?
+    return if school_partnership.blank?
+    return if school_partnership.school == trainee.school
+
+    extra = { teacher_id: trainee.teacher.id, school_partnership_id: school_partnership.id, trainee_school_id: trainee.school_id }
+    Sentry.capture_message("[Data integrity] Attempt to assign school partnership to a different school from the school period", level: :error, extra:)
+    errors.add(:school_partnership, "School partnership's school must match the trainee's school")
   end
 end

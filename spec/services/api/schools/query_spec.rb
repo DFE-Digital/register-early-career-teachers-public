@@ -254,9 +254,9 @@ RSpec.describe API::Schools::Query, :with_metadata do
 
       let!(:contract_period) { FactoryBot.create(:contract_period) }
 
-      let(:school1) { FactoryBot.create(:school, :eligible, created_at: 1.day.ago) }
-      let(:school2) { FactoryBot.create(:school, :eligible, created_at: 2.days.ago) }
-      let(:school3) { FactoryBot.create(:school, :eligible, created_at: Time.zone.now) }
+      let(:school1) { travel_to(1.day.ago) { FactoryBot.create(:school, :eligible) } }
+      let(:school2) { travel_to(2.days.ago) { FactoryBot.create(:school, :eligible) } }
+      let(:school3) { FactoryBot.create(:school, :eligible) }
 
       let(:sort) { nil }
 

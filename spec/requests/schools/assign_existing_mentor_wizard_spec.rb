@@ -12,7 +12,7 @@ RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
 
   before do
     contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2023)
-    school_partnership = FactoryBot.create(:school_partnership)
+    school_partnership = FactoryBot.create(:school_partnership, school:)
     school_partnership.lead_provider_delivery_partnership.active_lead_provider.update!(contract_period:)
 
     FactoryBot.create(:training_period,
