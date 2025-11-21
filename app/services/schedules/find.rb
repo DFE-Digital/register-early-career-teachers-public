@@ -62,14 +62,15 @@ module Schedules
       "ecf-#{identifier_type}-#{schedule_month}"
     end
 
-    def last_mentor_for_mentee
-      mentee.mentors.where.not(teacher_id: teacher.id)&.latest_first
+    def mentorship_periods_for_mentee_with_different_mentor
+      MentorAtSchoolPeriod
+        .joins(:mentorship_periods)
+        .merge(MentorshipPeriod.for_mentee(mentee.id))
+        .where.not(id: period.id)
     end
 
     def previous_mentor_started_training?
-      return false unless last_mentor_for_mentee.exists?
-
-      last_mentor_for_mentee.first.declarations.exists?
+      mentorship_periods_for_mentee_with_different_mentor.joins(:declarations).exists?
     end
 
     def replacement_schedule?
