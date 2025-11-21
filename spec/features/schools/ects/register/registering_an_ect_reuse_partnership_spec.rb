@@ -3,28 +3,13 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
   scenario "reuses a previous partnership (provider-led)" do
     given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
-    and_i_am_on_the_schools_ects_index_page
-    and_i_start_adding_an_ect
-    and_i_click_continue
-    and_i_submit_the_find_ect_form
-    and_i_choose_that_the_details_are_correct
-    and_i_click_confirm_and_continue
-    then_i_am_on_the_email_address_page
 
-    and_i_enter_the_ect_email_address
-    and_i_click_continue
-    then_i_am_on_the_start_date_page
+    complete_initial_registration_flow_up_to_working_pattern
 
-    and_i_enter_a_valid_start_date
-    and_i_click_continue
-    then_i_am_on_the_working_pattern_page
-
-    and_i_select_full_time
-    and_i_click_continue
     then_i_am_on_the_use_previous_choices_page
-
     and_i_choose_to_reuse_previous_choices
     and_i_click_continue
+
     then_i_am_on_the_check_answers_page
     and_i_see_previous_programme_choices_summary
 
@@ -34,9 +19,55 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
   scenario "can't reuse—pairing not active this year" do
     given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
+
+    complete_initial_registration_flow_up_to_working_pattern
+
+    then_i_am_on_the_use_previous_choices_page
+    and_i_choose_not_to_reuse_previous_choices
+    and_i_click_continue
+
+    then_i_am_on_the_appropriate_body_page
+    and_i_select_an_appropriate_body
+    and_i_click_continue
+
+    then_i_am_on_the_training_programme_page
+    and_i_select_school_led
+    and_i_click_continue
+
+    then_i_am_on_the_check_answers_page
+    and_i_see_core_details_without_reuse
+    and_i_do_not_see_previous_programme_choices_summary
+
+    and_i_click_confirm_details
+    then_i_am_on_the_confirmation_page
+  end
+
+  scenario "reuse not available – no previous choices row shown" do
+    given_i_am_logged_in_as_a_state_funded_school_user_without_reusable_choices
+
+    complete_initial_registration_flow_up_to_working_pattern
+
+    then_i_am_on_the_appropriate_body_page
+    and_i_select_an_appropriate_body
+    and_i_click_continue
+
+    then_i_am_on_the_training_programme_page
+    and_i_select_school_led
+    and_i_click_continue
+
+    then_i_am_on_the_check_answers_page
+    and_i_see_core_details_without_reuse
+    and_i_do_not_see_previous_programme_choices_summary
+
+    and_i_click_confirm_details
+    then_i_am_on_the_confirmation_page
+  end
+
+  def complete_initial_registration_flow_up_to_working_pattern
     and_i_am_on_the_schools_ects_index_page
     and_i_start_adding_an_ect
     and_i_click_continue
+
     and_i_submit_the_find_ect_form
     and_i_choose_that_the_details_are_correct
     and_i_click_confirm_and_continue
@@ -52,23 +83,6 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
     and_i_select_full_time
     and_i_click_continue
-    then_i_am_on_the_use_previous_choices_page
-
-    and_i_choose_not_to_reuse_previous_choices
-    and_i_click_continue
-    then_i_am_on_the_appropriate_body_page
-
-    and_i_select_an_appropriate_body
-    and_i_click_continue
-    then_i_am_on_the_training_programme_page
-
-    and_i_select_school_led
-    and_i_click_continue
-    then_i_am_on_the_check_answers_page
-    and_i_see_core_details_without_reuse
-
-    and_i_click_confirm_details
-    then_i_am_on_the_confirmation_page
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
@@ -78,14 +92,30 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     @contract_period_current  = FactoryBot.create(:contract_period, :with_schedules, year: current_year)
     @contract_period_previous = FactoryBot.create(:contract_period, :with_schedules, year: previous_year)
 
-    @lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
+    @lead_provider    = FactoryBot.create(:lead_provider, name: "Orange Institute")
     @delivery_partner = FactoryBot.create(:delivery_partner, name: "Jaskolski College Delivery Partner 1")
 
-    alp_prev = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period_year: previous_year)
-    alp_curr = FactoryBot.create(:active_lead_provider, lead_provider: @lead_provider, contract_period_year: current_year)
+    alp_prev = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @lead_provider,
+      contract_period_year: previous_year
+    )
+    alp_curr = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @lead_provider,
+      contract_period_year: current_year
+    )
 
-    @lpdp_prev = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: alp_prev, delivery_partner: @delivery_partner)
-    @lpdp_curr = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: alp_curr, delivery_partner: @delivery_partner)
+    @lpdp_prev = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: alp_prev,
+      delivery_partner: @delivery_partner
+    )
+    @lpdp_curr = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: alp_curr,
+      delivery_partner: @delivery_partner
+    )
 
     @school = FactoryBot.create(
       :school,
@@ -102,6 +132,12 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     FactoryBot.create(:appropriate_body, name: "Umber Teaching Hub")
 
     sign_in_as_school_user(school: @school)
+  end
+
+  def given_i_am_logged_in_as_a_state_funded_school_user_without_reusable_choices
+    given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
+
+    SchoolPartnership.where(school: @school).delete_all
   end
 
   def and_i_am_on_the_schools_ects_index_page
@@ -126,6 +162,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     page.get_by_label("month").fill("2")
     page.get_by_label("year").fill("1977")
     page.get_by_role("button", name: "Continue").click
+
     expect(page).to have_path("/school/register-ect/review-ect-details")
     expect(page.get_by_text("9876543")).to be_visible
     expect(page.get_by_text("Kirk Van Houten")).to be_visible
@@ -208,11 +245,16 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
   end
 
   def and_i_see_previous_programme_choices_summary
+    expect(page.get_by_text("Choices used by your school previously", exact: true)).to be_visible
     expect(page.get_by_text("Provider-led")).to be_visible
     expect(page.get_by_text("Orange Institute")).to be_visible
     if page.get_by_text(@ab_name).count.positive?
       expect(page.get_by_text(@ab_name)).to be_visible
     end
+  end
+
+  def and_i_do_not_see_previous_programme_choices_summary
+    expect(page.get_by_text("Choices used by your school previously").count).to eq(0)
   end
 
   def and_i_see_core_details_without_reuse
