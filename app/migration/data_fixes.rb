@@ -48,8 +48,9 @@ module DataFixes
     corrected_date
   end
 
-  def corrected_end_date(induction_record:, last_created:)
-    return induction_record.updated_at if last_created && induction_record.leaving? && induction_record.flipped_dates?
+  def corrected_end_date(induction_record, induction_records)
+    return induction_record.updated_at if last_and_leaving_and_flipping_dates?(induction_record, induction_records)
+    return induction_records.min_by(&:created_at).updated_at if two_induction_records_and_last_completed?(induction_records)
 
     induction_record.end_date
   end
