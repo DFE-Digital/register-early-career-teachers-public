@@ -76,5 +76,17 @@ describe MentorshipPeriodExtractor do
         expect(period.end_date).to eq induction_record_2.updated_at
       end
     end
+
+    context "when two induction records and last created induction record is 'completed'" do
+      before do
+        induction_record_2.update!(induction_status: :completed)
+      end
+
+      it "adjusts the last mentorship period end date to be the updated_at of the first IR" do
+        period = service.mentorship_periods.last
+
+        expect(period.end_date).to eq induction_record_1.updated_at
+      end
+    end
   end
 end
