@@ -54,4 +54,24 @@ module DataFixes
 
     induction_record.end_date
   end
+
+private
+
+  def last_created_induction_record(induction_records) = induction_records.max_by(&:created_at)
+
+  def last_created_induction_record?(induction_record, induction_records)
+    induction_record.id == last_created_induction_record(induction_records).id
+  end
+
+  def last_and_leaving_and_flipping_dates?(induction_record, induction_records)
+    last_created_induction_record?(induction_record, induction_records) &&
+      induction_record.leaving? &&
+      induction_record.flipped_dates?
+  end
+
+  def two_induction_records?(induction_records) = induction_records.count == 2
+
+  def two_induction_records_and_last_completed?(induction_records)
+    two_induction_records?(induction_records) && last_created_induction_record(induction_records).completed?
+  end
 end
