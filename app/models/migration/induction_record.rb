@@ -14,6 +14,7 @@ module Migration
     has_one :delivery_partner, through: :partnership
     has_one :lead_provider, through: :partnership
 
+    def completed? = induction_status == "completed"
     def flipped_dates? = end_date.present? && end_date < start_date
 
     def leaving? = induction_status == "leaving"
