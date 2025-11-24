@@ -21,16 +21,18 @@ RUN apk add --update --no-cache tzdata && \
 
 # build-base: dependencies for bundle
 # postgresql-dev: postgres driver and libraries
-RUN apk add --no-cache build-base yaml-dev nodejs npm postgresql16-dev
+RUN apk add --no-cache build-base linux-headers yaml-dev nodejs npm postgresql16-dev
 
 # Install gems defined in Gemfile
 COPY .ruby-version Gemfile Gemfile.lock ./
+
+ARG BUNDLE_WITHOUT='development test nanoc'
 
 # Install gems and remove gem cache
 RUN bundler -v && \
     bundle config set no-cache 'true' && \
     bundle config set no-binstubs 'true' && \
-    bundle config set without 'development test nanoc' && \
+    bundle config set without ${BUNDLE_WITHOUT} && \
     bundle install --retry=5 --jobs=4 && \
     rm -rf /usr/local/bundle/cache
 

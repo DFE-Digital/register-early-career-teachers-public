@@ -219,6 +219,8 @@ GEM
     fiber-local (1.1.0)
       fiber-storage
     fiber-storage (1.0.1)
+    foreman (0.90.0)
+      thor (~> 1.4)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -854,6 +856,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   faraday
+  foreman
   govuk-components
   govuk_design_system_formbuilder
   govuk_markdown

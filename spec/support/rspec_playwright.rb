@@ -8,10 +8,31 @@ module RSpecPlaywright
   PLAYWRIGHT_CLI_EXECUTABLE_PATH = "./node_modules/.bin/playwright"
 
   def self.start_browser
+    if ENV.key? 'PLAYWRIGHT_URL'
+      start_remote_browser
+    else
+      start_local_browser
+    end
+  end
+
+  def self.start_local_browser
     Playwright.create(playwright_cli_executable_path: PLAYWRIGHT_CLI_EXECUTABLE_PATH)
               .playwright
               .chromium
               .launch(headless:, slowMo:)
+  end
+
+  def self.start_remote_browser
+    local_ip = Socket.ip_address_list.find { it.ipv4? && !it.ipv4_loopback? }.ip_address
+    local_port = 3001
+    local_url = "http://#{local_ip}:#{local_port}"
+
+    Capybara.server_host = local_ip
+    Capybara.server_port = local_port
+    Capybara.app_host = local_url
+    WebMock.disable_net_connect!(allow_localhost: true, allow: local_url)
+
+    Playwright.connect_to_browser_server(ENV.fetch('PLAYWRIGHT_URL')).browser
   end
 
   def self.close_browser
