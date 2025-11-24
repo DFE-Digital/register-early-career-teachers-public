@@ -48,7 +48,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Status do
     instance_double(Schools::RegisterECTWizard::RegistrationStore::Queries,
                     previous_training_period:,
                     previous_lead_provider:,
-                    lead_provider_partnership_for_contract_period: lead_provider_partnership_scope)
+                    lead_provider_partnerships_for_contract_period: lead_provider_partnership_scope)
   end
   let(:previous_training_period) { nil }
   let(:previous_lead_provider) { nil }

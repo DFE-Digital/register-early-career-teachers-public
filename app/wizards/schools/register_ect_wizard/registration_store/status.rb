@@ -54,7 +54,7 @@ module Schools
         end
 
         def lead_provider_has_confirmed_partnership_for_contract_period?(school)
-          queries.lead_provider_partnership_for_contract_period(school:).exists?
+          queries.lead_provider_partnerships_for_contract_period(school:).exists?
         end
 
       private
