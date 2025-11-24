@@ -13,6 +13,7 @@ module API::Teachers
     }, allow_blank: true
     validate :not_already_withdrawn
     validate :training_period_has_started
+    validate :training_for_at_least_one_day
 
     def withdraw
       return false unless valid?
@@ -39,7 +40,15 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period&.started_on&.future?
 
-      errors.add(:teacher_api_id, "You cannot withdraw '#/teacher_api_id'. This is because they've not started their training.")
+      errors.add(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.")
+    end
+
+    def training_for_at_least_one_day
+      return if errors[:teacher_api_id].any?
+      return unless training_period&.started_on&.today?
+      return if training_period.predecessors.any? { it.lead_provider.id == lead_provider_id }
+
+      errors.add(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.")
     end
   end
 end

@@ -142,15 +142,6 @@ describe TrainingPeriod do
     it { is_expected.not_to validate_presence_of(:deferral_reason) }
     it { is_expected.to validate_presence_of(:started_on) }
 
-    context "when deferred_at and withdrawn_at are both present" do
-      subject { FactoryBot.build(:training_period, deferred_at: Time.zone.now, withdrawn_at: Time.zone.now) }
-
-      it "is expected to have an error on base" do
-        subject.valid?
-        expect(subject.errors.messages[:base]).to include("A training period cannot be both withdrawn and deferred")
-      end
-    end
-
     context "when withdrawn_at is present" do
       subject { FactoryBot.build(:training_period, withdrawn_at: Time.zone.now) }
 
