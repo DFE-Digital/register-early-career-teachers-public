@@ -6,12 +6,7 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
     let(:params) { { lead_provider_id: lead_provider.id } }
 
-    before do
-      school_period1 = create_school_period(teacher, from: 2.years.ago, to: 1.year.ago)
-      add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :school_led)
-      school_period2 = create_school_period(teacher, from: 1.year.ago)
-      add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider)
-    end
+    before { build_new_school_transfer(teacher:, lead_provider:) }
   end
 
   describe "preloading relationships" do
@@ -24,22 +19,20 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
       it { expect(result.ect_at_school_periods.last.earliest_training_period.association(:active_lead_provider)).to be_loaded }
       it { expect(result.ect_at_school_periods.last.earliest_training_period.active_lead_provider.association(:lead_provider)).to be_loaded }
       it { expect(result.ect_at_school_periods.last.association(:latest_training_period)).to be_loaded }
+      it { expect(result.ect_at_school_periods.last.latest_training_period.association(:school_partnership)).to be_loaded }
+      it { expect(result.ect_at_school_periods.last.latest_training_period.school_partnership.association(:school)).to be_loaded }
+      it { expect(result.ect_at_school_periods.last.latest_training_period.association(:active_lead_provider)).to be_loaded }
+      it { expect(result.ect_at_school_periods.last.latest_training_period.active_lead_provider.association(:lead_provider)).to be_loaded }
     end
 
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:query) { described_class.new(lead_provider_id: lead_provider.id) }
+
+    before { build_new_school_transfer(teacher:, lead_provider:) }
+
     describe "#school_transfers" do
-      subject(:result) do
-        described_class.new(lead_provider_id: lead_provider.id).school_transfers.first
-      end
-
-      let(:teacher) { FactoryBot.create(:teacher) }
-      let(:lead_provider) { FactoryBot.create(:lead_provider) }
-
-      before do
-        school_period1 = create_school_period(teacher, from: 2.years.ago, to: 1.year.ago)
-        add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :school_led)
-        school_period2 = create_school_period(teacher, from: 1.year.ago)
-        add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider)
-      end
+      subject(:result) { query.school_transfers.first }
 
       include_context "preloaded associations"
     end
@@ -91,13 +84,13 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
         context "when the lead provider has participants with transfers" do
           let(:lead_provider_id) { lead_provider.id }
 
-          it { is_expected.to contain_exactly(teacher1, teacher2, teacher5) }
+          it { is_expected.to contain_exactly(teacher2, teacher5) }
         end
 
         context "when the other lead provider has participants with transfers" do
           let(:lead_provider_id) { other_lead_provider.id }
 
-          it { is_expected.to contain_exactly(teacher3) }
+          it { is_expected.to contain_exactly(teacher3, teacher5) }
         end
 
         context "when there are no participants with transfers" do
