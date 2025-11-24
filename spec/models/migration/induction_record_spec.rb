@@ -7,6 +7,24 @@ describe Migration::InductionRecord, type: :model do
     it { is_expected.to have_one(:lead_provider).through(:partnership) }
   end
 
+  describe "#completed?" do
+    subject { record.completed? }
+
+    let(:record) { FactoryBot.build(:migration_induction_record, induction_status:) }
+
+    context 'when induction_status is "completed"' do
+      let(:induction_status) { "completed" }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when induction_status not "completed"' do
+      let(:induction_status) { "active" }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "#leaving?" do
     subject { record.leaving? }
 

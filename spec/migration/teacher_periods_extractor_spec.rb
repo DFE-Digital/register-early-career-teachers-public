@@ -101,14 +101,11 @@ describe TeacherPeriodsExtractor do
     end
 
     context "when the last created induction record is 'leaving' and with flipped dates" do
-      let(:induction_record_2) do
-        FactoryBot.create(:migration_induction_record,
-                          participant_profile:,
-                          induction_programme: induction_programme_2,
-                          induction_status: :leaving,
-                          updated_at: 1.month.ago,
-                          start_date: 1.month.ago,
-                          end_date: 2.months.ago)
+      before do
+        induction_record_2.update!(induction_status: :leaving,
+                                   updated_at: 1.month.ago,
+                                   start_date: 1.month.ago,
+                                   end_date: 2.months.ago)
       end
 
       it "adjusts the last school period end date to be the updated_at" do
@@ -122,6 +119,25 @@ describe TeacherPeriodsExtractor do
         training_period = periods[1].training_periods[0]
 
         expect(training_period.end_date).to eq induction_record_2.updated_at
+      end
+    end
+
+    context "when the participant has two induction records and last created induction record is 'completed'" do
+      before do
+        induction_record_2.update!(induction_status: :completed)
+      end
+
+      it "adjusts the last school period end date to be the updated_at of the first induction record" do
+        periods = service.teacher_periods
+
+        expect(periods[1].end_date).to eq induction_record_1.updated_at
+      end
+
+      it "adjusts the last school period last training period end date to be the updated_at of the first IR" do
+        periods = service.teacher_periods
+        training_period = periods[1].training_periods[0]
+
+        expect(training_period.end_date).to eq induction_record_1.updated_at
       end
     end
   end
