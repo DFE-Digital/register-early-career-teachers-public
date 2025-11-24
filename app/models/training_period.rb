@@ -80,6 +80,7 @@ class TrainingPeriod < ApplicationRecord
   validates :withdrawal_reason, presence: true, if: -> { withdrawn_at.present? }
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
+  validates :schedule, presence: { message: "Schedule is required for provider-led training periods" }, if: :provider_led_training_programme?
   validate :schedule_contract_period_matches, if: :provider_led_training_programme?
   validate :schedule_absent_for_school_led, if: :school_led_training_programme?
   validate :schedule_applicable_for_trainee

@@ -66,6 +66,11 @@ class MigrateEntity
         school_partnership(ecf_partnership:)
       end
 
+      # migrate schedules for all induction records
+      fetch_schedules(participant_profile:).each do |ecf_schedule|
+        Migrators::Schedule.new.migrate_one!(ecf_schedule)
+      end
+
       next unless participant_profile.ect?
 
       fetch_mentors(participant_profile:).each do |ecf_mentor|
@@ -89,6 +94,10 @@ private
 
   def fetch_partnerships(participant_profile:)
     Migration::Partnership.where(id: participant_profile.induction_records.joins(induction_programme: :partnership).select(:partnership_id))
+  end
+
+  def fetch_schedules(participant_profile:)
+    Migration::Schedule.where(id: participant_profile.induction_records.select(:schedule_id))
   end
 
   def fetch_mentors(participant_profile:)
