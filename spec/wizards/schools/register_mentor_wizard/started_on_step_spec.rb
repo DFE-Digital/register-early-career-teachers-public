@@ -14,6 +14,7 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
       mentoring_at_new_school_only: mentoring_only,
       became_ineligible_for_funding?: ineligible,
       provider_led_ect?: provider_led,
+      previous_school_mentor_at_school_periods: [],
       previous_training_period:
     )
   end
@@ -23,6 +24,42 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   let(:provider_led) { true }
   let(:started_on) { { "day" => "10", "month" => "9", "year" => "2025" } }
   let(:previous_training_period) { FactoryBot.build(:training_period) }
+
+  describe "validations" do
+    context "when start date is in the future" do
+      let(:started_on) { Date.new(2025, 5, 2) }
+
+      around do |example|
+        travel_to(Date.new(2025, 1, 1)) { example.run }
+      end
+
+      before do
+        allow(registration_store).to receive(:currently_mentor_at_another_school?).and_return(currently_mentor_at_another_school)
+      end
+
+      context "and the mentor is not currently mentoring at another school" do
+        let(:currently_mentor_at_another_school) { false }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "and the mentor is currently mentoring at another school" do
+        let(:currently_mentor_at_another_school) { true }
+        let(:latest_valid_started_on) { 4.months.from_now.to_date }
+
+        it "is valid up to 4 months from today" do
+          subject.started_on = latest_valid_started_on
+          expect(subject).to be_valid
+        end
+
+        it "is invalid over 4 months from today" do
+          subject.started_on = latest_valid_started_on + 1.day
+          expect(subject).not_to be_valid
+          expect(subject.errors[:started_on]).to include("Start date must be before 2 May 2025")
+        end
+      end
+    end
+  end
 
   describe "#next_step" do
     context "when mentor is ineligible for funding" do
