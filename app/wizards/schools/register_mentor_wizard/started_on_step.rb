@@ -5,6 +5,7 @@ module Schools
 
       validates :started_on, mentor_start_date: true
       validate :started_on_cannot_be_before_previous_started_and_finished_dates, if: :started_on
+      validate :started_on_within_4_months, if: :currently_mentor_at_another_school?
 
       def self.permitted_params
         %i[started_on]
@@ -30,6 +31,8 @@ module Schools
 
     private
 
+      delegate :currently_mentor_at_another_school?, to: :mentor
+
       def persist
         mentor.update!(started_on: started_on_formatted)
       end
@@ -46,6 +49,17 @@ module Schools
 
         if started_on_as_date.before?(date.next_day)
           errors.add(:started_on, "#{mentor.full_name} was registered as a mentor at their last school starting on the #{date.to_fs(:govuk)}. Enter a later date.")
+        end
+      end
+
+      def started_on_within_4_months
+        earliest_invalid_started_on = (4.months + 1.day).from_now.to_date
+
+        if started_on_as_date >= earliest_invalid_started_on
+          errors.add(
+            :started_on,
+            "Start date must be before #{earliest_invalid_started_on.to_formatted_s(:govuk)}"
+          )
         end
       end
 
