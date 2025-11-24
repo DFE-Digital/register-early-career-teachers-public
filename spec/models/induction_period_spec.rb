@@ -4,6 +4,16 @@ RSpec.describe InductionPeriod do
 
   it_behaves_like "an induction period"
 
+  describe "enums" do
+    it "uses the outcome enum" do
+      expect(subject).to define_enum_for(:outcome)
+                          .with_values({ fail: "fail", pass: "pass" })
+                          .validating(allowing_nil: true)
+                          .with_suffix
+                          .backed_by_column_of_type(:enum)
+    end
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:appropriate_body) }
     it { is_expected.to belong_to(:teacher) }
@@ -64,13 +74,17 @@ RSpec.describe InductionPeriod do
       end
     end
 
-    describe "declarative touch" do
-      let(:instance) { FactoryBot.create(:induction_period) }
+    describe "declarative updates" do
+      let(:instance) { FactoryBot.create(:induction_period, :pass) }
 
       context "target teacher" do
         let(:target) { instance.teacher }
 
         it_behaves_like "a declarative touch model", when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at, conditional_method: :touch_teacher?
+
+        it_behaves_like "a declarative metadata model",
+                        on_event: %i[create destroy update],
+                        when_changing: %i[outcome]
       end
 
       describe "#touch_teacher?" do
