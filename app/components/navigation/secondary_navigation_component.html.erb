@@ -1,4 +1,4 @@
-<nav class="<%= navigation_classes %>" <%= tag.attributes(navigation_attributes) %>>
+<%= tag.nav(class: navigation_classes, **navigation_attributes) do %>
   <ul class="x-govuk-secondary-navigation__list">
     <% items.each do |item| %>
       <li class="<%= item_classes(item) %>">
@@ -6,4 +6,4 @@
       </li>
     <% end %>
   </ul>
-</nav>
+<% end %>
