@@ -2,7 +2,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { Date.new(2023, 9, 1) }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :local_authority_ab, teacher:, school:, started_on:, finished_on: nil) }
   let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on:) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: nil) }
 
