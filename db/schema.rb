@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_20_115336) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -414,6 +414,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_20_115336) do
     t.uuid "api_mentor_id"
     t.integer "latest_ect_contract_period_year"
     t.integer "latest_mentor_contract_period_year"
+    t.boolean "involved_in_school_transfer"
     t.index ["latest_ect_training_period_id"], name: "idx_on_latest_ect_training_period_id_2d0632b258"
     t.index ["latest_mentor_training_period_id"], name: "idx_on_latest_mentor_training_period_id_862127afaf"
     t.index ["lead_provider_id", "teacher_id"], name: "idx_on_lead_provider_id_teacher_id_74c7a13188", where: "((latest_ect_training_period_id IS NOT NULL) OR (latest_mentor_training_period_id IS NOT NULL))"
