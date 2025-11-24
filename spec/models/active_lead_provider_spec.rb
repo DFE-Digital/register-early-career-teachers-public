@@ -46,7 +46,7 @@ describe ActiveLeadProvider do
       let!(:available_alp_1) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let!(:available_alp_2) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let!(:assigned_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
-      let!(:different_year_alp) { FactoryBot.create(:active_lead_provider) }
+      let!(:different_year_alp) { FactoryBot.create(:active_lead_provider, :for_year, year: contract_period.year + 1) }
 
       # Create an existing partnership for one of the ALPs
       let!(:existing_partnership) do
