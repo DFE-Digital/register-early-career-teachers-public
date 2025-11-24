@@ -28,6 +28,8 @@ module Metadata::Handlers
         latest_ect_contract_period = latest_ect_training_period&.contract_period
         latest_mentor_contract_period = latest_mentor_training_period&.contract_period
         api_mentor_id = latest_ect_training_period&.trainee&.latest_mentorship_period&.mentor&.teacher&.api_id
+        involved_in_school_transfer = school_transfers_for(teacher.ect_at_school_periods, lead_provider_id).any? ||
+          school_transfers_for(teacher.mentor_at_school_periods, lead_provider_id).any?
 
         changes = {
           teacher_id: teacher.id,
@@ -36,7 +38,8 @@ module Metadata::Handlers
           latest_mentor_training_period_id: latest_mentor_training_period&.id,
           latest_ect_contract_period_year: latest_ect_contract_period&.year,
           latest_mentor_contract_period_year: latest_mentor_contract_period&.year,
-          api_mentor_id:
+          api_mentor_id:,
+          involved_in_school_transfer:
         }
 
         hash[metadata] = changes if changes?(metadata, changes)
@@ -67,6 +70,10 @@ module Metadata::Handlers
       .select("DISTINCT ON (lead_provider_id) training_periods.*")
       .order("lead_provider_id, training_periods.started_on DESC")
       .index_by { it.lead_provider&.id }
+    end
+
+    def school_transfers_for(school_periods, lead_provider_id)
+      ::Teachers::SchoolTransfers::History.transfers_for(school_periods:, lead_provider_id:)
     end
   end
 end
