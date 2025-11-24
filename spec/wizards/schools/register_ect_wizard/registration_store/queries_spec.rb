@@ -96,12 +96,15 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
                         school:,
                         lead_provider:)
     end
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period,
+                        teacher:,
+                        school:)
+    end
     let!(:training_period) do
       FactoryBot.create(:training_period,
                         :for_ect,
-                        ect_at_school_period: FactoryBot.create(:ect_at_school_period,
-                                                                teacher:,
-                                                                school:),
+                        ect_at_school_period:,
                         school_partnership:)
     end
 
