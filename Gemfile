@@ -71,6 +71,7 @@ gem "zendesk_api", "~> 3.1", ">= 3.1.1"
 group :development do
   gem "better_errors"
   gem "binding_of_caller"
+  gem "foreman", "~> 0.90.0"
   gem "pg_query"
   gem "prosopite"
 end

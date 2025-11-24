@@ -4,6 +4,20 @@
 
 The quickest way to get up and running with the ECF2 application is to use a [Codespace](https://github.com/features/codespaces). Just click 'Code', 'Create codespace on main' and wait for a minute while everything's installed for you. Once it's done you should be able to type `bin/dev` in your terminal window and the app will run.
 
+## Running in Docker Compose
+
+If you use Docker, you can run everything using Compose. First run:
+
+1. Prepare env vars: `cp .env.example .env`
+2. Start everything: `docker compose up -d`
+3. Set up databases: `docker compose run --rm web bin/rails db:prepare`
+
+Subsequent boots only require `docker compose up -d`. Browse to `http://localhost:3000` to use the app. Edit files locally as normal. Prefix Rails commands to run them in a container, e.g. `docker compose run --rm web bin/rails c`.
+
+> Dockerfile is configured without the write permissions that Bundler needs to install gems. If you change gems, first run `docker compose run --rm web bundle lock` to update Gemfile.lock, then `docker compose up -d --build` to rebuild and restart with the updated bundle.
+
+For ops tools (`make`, `az`, etc), use the `ops` service, e.g.: `docker compose run --rm ops az login`
+
 ## Running it on your computer
 
 ### Prerequisites
