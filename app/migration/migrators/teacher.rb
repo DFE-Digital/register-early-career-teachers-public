@@ -89,7 +89,6 @@ module Migrators
         # |    |-training_period_3
         #
         teacher_periods = ::TeacherPeriodsExtractor.new(induction_records: sanitizer.induction_records).teacher_periods
-
         teacher_periods = add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile) if participant_profile.mentor?
 
         result = create_teacher_periods(teacher, teacher_periods, participant_profile)

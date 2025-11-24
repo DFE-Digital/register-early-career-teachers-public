@@ -2,11 +2,10 @@ class TeacherPeriodsExtractor
   include Enumerable
   include DataFixes
 
-  attr_reader :induction_records, :last_created_induction_record
+  attr_reader :induction_records
 
   def initialize(induction_records:)
     @induction_records = induction_records
-    @last_created_induction_record = induction_records.max_by(&:created_at)
   end
 
   def each(&block)
@@ -30,7 +29,7 @@ private
 
     induction_records.each_with_object([]).with_index do |(induction_record, periods), idx|
       record_school = induction_record.induction_programme.school_cohort.school
-      end_date = corrected_end_date(induction_record:, last_created: last_created_induction_record?(induction_record))
+      end_date = corrected_end_date(induction_record, induction_records)
 
       if current_school != record_school
         # start at a new school
@@ -52,7 +51,7 @@ private
       elsif training_changed?(current_training, induction_record)
         # school hasn't changed but training has
         # TODO: close current training?
-        current_training = extract_training_data_from(induction_record:, end_date:)
+        current_training = extract_training_data_from(induction_record:, candidate_end_date: end_date)
         current_period.training_periods << current_training
       else
         # nothing has changed regarding periods other than end_date
@@ -90,8 +89,6 @@ private
                                       start_source_id: induction_record.id,
                                       end_source_id: induction_record.id)
   end
-
-  def last_created_induction_record?(induction_record) = induction_record.id == last_created_induction_record.id
 
   def mapped_training_programme(ecf_training)
     Mappers::TrainingProgrammeMapper.new(ecf_training).mapped_value
