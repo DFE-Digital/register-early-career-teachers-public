@@ -13,9 +13,14 @@ on:
         required: false
         default: "22.14.0"
 
+permissions:
+  contents: read
+
 jobs:
   ruby_linting:
     name: "Lint ruby"
+    permissions:
+      contents: read
     env:
       GOVUK_NOTIFY_API_KEY: Test
     runs-on: ubuntu-latest
@@ -37,6 +42,8 @@ jobs:
 
   js_linting:
     name: "Lint JS"
+    permissions:
+      contents: read
     env:
       GOVUK_NOTIFY_API_KEY: Test
     runs-on: ubuntu-latest
@@ -62,6 +69,8 @@ jobs:
 
   scss_linting:
     name: "Lint SCSS"
+    permissions:
+      contents: read
     env:
       GOVUK_NOTIFY_API_KEY: Test
     runs-on: ubuntu-latest
@@ -86,6 +95,8 @@ jobs:
 
   html_linting:
     name: Herb
+    permissions:
+      contents: read
     env:
       GOVUK_NOTIFY_API_KEY: Test
     runs-on: ubuntu-latest
@@ -108,6 +119,8 @@ jobs:
 
   terraform_linting:
     name: Lint Terraform
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
 
     steps:
