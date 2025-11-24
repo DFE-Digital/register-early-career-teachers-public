@@ -26,7 +26,7 @@ module Schools
           @contract_start_date ||= ContractPeriod.containing_date(registration_store.start_date&.to_date)
         end
 
-        def lead_provider_partnership_for_contract_period(school:)
+        def lead_provider_partnerships_for_contract_period(school:)
           contract_period = contract_start_date
 
           return SchoolPartnership.none unless previous_lead_provider && contract_period && school
