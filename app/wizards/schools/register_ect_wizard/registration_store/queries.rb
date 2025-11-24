@@ -27,7 +27,6 @@ module Schools
         end
 
         def lead_provider_partnership_for_contract_period(school:)
-          previous_lead_provider = self.previous_lead_provider
           contract_period = contract_start_date
 
           return SchoolPartnership.none unless previous_lead_provider && contract_period && school
