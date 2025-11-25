@@ -35,7 +35,7 @@ module Admin
 
       def provider_led_rows
         [
-          summary_row("Lead provider", training_period.lead_provider_name),
+          summary_row("Lead provider", lead_provider_text),
           summary_row("Delivery partner", delivery_partner_text),
           summary_row("School", training_school_name),
           summary_row("Contract period", contract_period_text),
@@ -57,13 +57,26 @@ module Admin
 
       def card_title
         return "School-led training programme" if training_period.school_led_training_programme?
-        return unless confirmed_partnership?
+        return provider_led_card_title if confirmed_partnership?
 
-        provider_led_card_title
+        training_period.expression_of_interest_lead_provider&.name
       end
 
       def provider_led_card_title
         "#{training_period.lead_provider_name} & #{training_period.delivery_partner_name}"
+      end
+
+      def lead_provider_text
+        return training_period.lead_provider_name if confirmed_partnership?
+
+        name = training_period.expression_of_interest_lead_provider&.name
+        return "Not available" if name.blank?
+
+        helpers.safe_join([
+          name,
+          helpers.tag.br,
+          helpers.tag.span("Awaiting confirmation by #{name}", class: "govuk-hint")
+        ])
       end
 
       def confirmed_partnership?

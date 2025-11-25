@@ -57,8 +57,18 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       before { rendered }
 
-      it "omits the title and shows the placeholder delivery partner text" do
-        expect(rendered_content).not_to have_css(".govuk-summary-card__title", text: /&/)
+      it "uses the expression of interest lead provider as the title" do
+        expect(rendered_content).to have_css(".govuk-summary-card__title", text: training_period.expression_of_interest_lead_provider.name)
+      end
+
+      it "shows the lead provider with awaiting confirmation hint text" do
+        expect(rendered_content).to have_css("dt", text: "Lead provider")
+        expect(rendered_content).to have_css("dd", text: training_period.expression_of_interest_lead_provider.name)
+        expect(rendered_content).to have_css("dd .govuk-hint", text: "Awaiting confirmation by #{training_period.expression_of_interest_lead_provider.name}")
+      end
+
+      it "shows the placeholder delivery partner text" do
+        expect(rendered_content).to have_css("dt", text: "Delivery partner")
         expect(rendered_content).to have_css("dd", text: "No delivery partner confirmed")
       end
 
@@ -80,6 +90,25 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       it "does not show the training programme row" do
         expect(rendered_content).not_to have_css("dt", text: "Training programme")
+      end
+
+      context "expression of interest" do
+        let(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_only_expression_of_interest) }
+
+        it "uses the expression of interest lead provider as the title" do
+          expect(rendered_content).to have_css(".govuk-summary-card__title", text: training_period.expression_of_interest_lead_provider.name)
+        end
+
+        it "shows the lead provider with awaiting confirmation hint text" do
+          expect(rendered_content).to have_css("dt", text: "Lead provider")
+          expect(rendered_content).to have_css("dd", text: training_period.expression_of_interest_lead_provider.name)
+          expect(rendered_content).to have_css("dd .govuk-hint", text: "Awaiting confirmation by #{training_period.expression_of_interest_lead_provider.name}")
+        end
+
+        it "shows the placeholder delivery partner text" do
+          expect(rendered_content).to have_css("dt", text: "Delivery partner")
+          expect(rendered_content).to have_css("dd", text: "No delivery partner confirmed")
+        end
       end
     end
   end
