@@ -80,7 +80,6 @@ RSpec.describe BatchHelper, type: :helper do
     describe "#batch_action_summary" do
       it do
         expect(batch_action_summary(batch)).to have_text("0 ECTs with a passed induction")
-        expect(batch_action_summary(batch)).to have_text("0 ECTs with a failed induction")
         expect(batch_action_summary(batch)).to have_text("0 ECTs with a released outcome")
       end
     end

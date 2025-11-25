@@ -94,10 +94,10 @@ RSpec.describe "Process batch events" do
     # Processed
     expect(page.get_by_text("CSV file summary")).to be_visible
     expect(page.get_by_text("Your CSV named 'valid_complete_action.csv' has 2 ECT records")).to be_visible
-    expect(page.get_by_text("1 ECT with a passed induction")).to be_visible
-    expect(page.get_by_text("1 ECT with a failed induction")).to be_visible
+    expect(page.get_by_text("2 ECTs with a passed induction")).to be_visible
     expect(page.get_by_text("0 ECTs with a released outcome")).to be_visible
     page.get_by_role("button", name: "Record outcomes").click
+
 
     expect(PendingInductionSubmissionBatch.last).to be_completing
     expect(perform_enqueued_jobs).to be(2)
@@ -121,14 +121,12 @@ RSpec.describe "Process batch events" do
 
     expect(AnalyticsBatchJob).to have_been_enqueued.once
       .with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
-    expect(AppropriateBodies::ProcessBatch::RecordPassJob).to have_been_enqueued.once
-    expect(AppropriateBodies::ProcessBatch::RecordFailJob).to have_been_enqueued.once
     expect(perform_enqueued_jobs).to be(3)
     expect(RecordEventJob).to have_been_enqueued.twice
-    expect(PassECTInductionJob).to have_been_enqueued
-    expect(FailECTInductionJob).to have_been_enqueued
+    expect(PassECTInductionJob).to have_been_enqueued.exactly(2).times
 
     expect(perform_enqueued_jobs).to be(4)
+
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
       "The Appropriate Body completed a bulk claim",
@@ -145,7 +143,7 @@ RSpec.describe "Process batch events" do
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action",
       /passed induction/,
-      /failed induction/
+      /passed induction/,
     )
 
     # Mimic PurgePendingInductionSubmissionsJob
@@ -154,8 +152,7 @@ RSpec.describe "Process batch events" do
     page.reload
     # Completed
     expect(page.get_by_text("You uploaded 2 ECT records including:")).to be_visible
-    expect(page.get_by_text("1 ECT with a passed induction")).to be_visible
-    expect(page.get_by_text("1 ECT with a failed induction")).to be_visible
+    expect(page.get_by_text("2 ECTs with a passed induction")).to be_visible
     expect(page.get_by_text("0 ECTs with a released outcome")).to be_visible
     page.get_by_role("link", name: "Go back to your overview").click
     expect(page.get_by_text("valid_complete_action.csv")).to be_visible
