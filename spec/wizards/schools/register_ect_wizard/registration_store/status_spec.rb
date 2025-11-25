@@ -41,10 +41,14 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Status do
     )
   end
 
+  let(:lead_provider_partnership_scope) { instance_double(SchoolPartnerships::Search, exists?: lead_provider_partnership_exists) }
+  let(:lead_provider_partnership_exists) { false }
+
   let(:queries) do
     instance_double(Schools::RegisterECTWizard::RegistrationStore::Queries,
                     previous_training_period:,
-                    previous_lead_provider:)
+                    previous_lead_provider:,
+                    lead_provider_partnerships_for_contract_period: lead_provider_partnership_scope)
   end
   let(:previous_training_period) { nil }
   let(:previous_lead_provider) { nil }
@@ -263,56 +267,17 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Status do
   describe "#lead_provider_has_confirmed_partnership_for_contract_period?" do
     let(:school) { instance_double(School) }
 
-    context "when previous lead provider, contract period and school are present" do
-      let(:previous_lead_provider) { instance_double(LeadProvider) }
-      let(:contract_start_date) { Date.new(2024, 9, 1) }
-      let(:search_instance) { instance_double(SchoolPartnerships::Search, exists?: search_result) }
+    context "when the partnership exists" do
+      let(:lead_provider_partnership_exists) { true }
 
-      before do
-        allow(SchoolPartnerships::Search)
-          .to receive(:new)
-          .with(school:, lead_provider: previous_lead_provider, contract_period: contract_start_date)
-          .and_return(search_instance)
-      end
-
-      context "and the partnership exists" do
-        let(:search_result) { true }
-
-        it "returns true" do
-          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(true)
-        end
-      end
-
-      context "and the partnership does not exist" do
-        let(:search_result) { false }
-
-        it "returns false" do
-          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(false)
-        end
+      it "returns true" do
+        expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(true)
       end
     end
 
-    context "when prerequisites are missing" do
-      it "returns false when previous lead provider is nil" do
+    context "when the partnership does not exist" do
+      it "returns false" do
         expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(false)
-      end
-
-      context "when contract period is nil" do
-        let(:contract_start_date) { nil }
-        let(:previous_lead_provider) { instance_double(LeadProvider) }
-
-        it "returns false" do
-          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be(false)
-        end
-      end
-
-      context "when school is nil" do
-        let(:previous_lead_provider) { instance_double(LeadProvider) }
-        let(:contract_start_date) { Date.new(2024, 9, 1) }
-
-        it "returns false" do
-          expect(status.lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be(false)
-        end
       end
     end
   end

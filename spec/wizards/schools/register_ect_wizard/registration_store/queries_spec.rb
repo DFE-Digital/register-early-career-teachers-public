@@ -84,6 +84,39 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
   end
 
+  describe "#lead_provider_partnerships_for_contract_period" do
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+    let(:start_date) { (contract_period.started_on + 1.day) }
+    let(:school) { FactoryBot.create(:school) }
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:school_partnership) do
+      FactoryBot.create(:school_partnership,
+                        :for_year,
+                        year: contract_period.year,
+                        school:,
+                        lead_provider:)
+    end
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period,
+                        teacher:,
+                        school:)
+    end
+    let!(:training_period) do
+      FactoryBot.create(:training_period,
+                        :for_ect,
+                        ect_at_school_period:,
+                        school_partnership:)
+    end
+
+    it "returns partnerships scoped by previous lead provider, contract period and school" do
+      expect(queries.lead_provider_partnerships_for_contract_period(school:)).to include(school_partnership)
+    end
+
+    it "returns an empty scope when prerequisites are missing" do
+      expect(queries.lead_provider_partnerships_for_contract_period(school: nil)).to be_empty
+    end
+  end
+
   describe "previous registration queries" do
     let!(:previous_ect_period) do
       FactoryBot.create(:ect_at_school_period,
