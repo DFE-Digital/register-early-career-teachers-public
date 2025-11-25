@@ -79,7 +79,7 @@ module Admin
       end
 
       def schedule_text
-        training_period.schedule&.description
+        training_period.schedule&.identifier
       end
 
       def contract_period_text

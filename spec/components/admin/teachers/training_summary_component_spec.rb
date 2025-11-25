@@ -38,7 +38,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       it "shows the schedule row" do
         expect(rendered_content).to have_css("dt", text: "Schedule")
-        expect(rendered_content).to have_css("dd", text: training_period.schedule.description)
+        expect(rendered_content).to have_css("dd", text: training_period.schedule.identifier)
       end
 
       it "shows the start date row" do
