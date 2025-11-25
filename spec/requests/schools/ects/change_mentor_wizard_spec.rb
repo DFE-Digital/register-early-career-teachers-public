@@ -168,6 +168,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
             .to eq(other_mentor_at_school_period)
           expect(other_mentor_at_school_period.training_periods)
             .to be_empty
+          expect(mentorship_period.reload.finished_on).to eq(Date.current)
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
 
@@ -231,6 +232,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
               .to eq(other_mentor_at_school_period)
             expect(other_mentor_at_school_period.training_periods)
               .to contain_exactly(other_mentor_training_period)
+            expect(mentorship_period.reload.finished_on).to eq(Date.current)
             expect(response).to redirect_to(path_for_step("confirmation"))
           end
 
@@ -271,6 +273,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
               .to eq(other_mentor_at_school_period)
             expect(other_mentor_at_school_period.training_periods)
               .to be_empty
+            expect(mentorship_period.reload.finished_on).to eq(Date.current)
             expect(response).to redirect_to(path_for_step("confirmation"))
           end
 
@@ -318,6 +321,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
                 .to contain_exactly(new_training_period)
               expect(new_training_period.lead_provider)
                 .to eq(ect_training_period.lead_provider)
+              expect(mentorship_period.reload.finished_on).to eq(Date.current)
               expect(response).to redirect_to(path_for_step("confirmation"))
             end
 
@@ -374,6 +378,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
                 .to eq(other_mentor_at_school_period)
               expect(other_mentor_at_school_period.training_periods)
                 .to contain_exactly(new_training_period)
+              expect(mentorship_period.reload.finished_on).to eq(Date.current)
               expect(new_training_period.expression_of_interest_lead_provider)
                 .to eq(other_lead_provider)
               expect(response).to redirect_to(path_for_step("confirmation"))
