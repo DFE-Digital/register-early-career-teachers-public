@@ -14,7 +14,10 @@ module Teachers::SchoolTransfers
       @joining_school = joining_school
     end
 
-    attr_reader :leaving_training_period, :joining_training_period
+    attr_reader :leaving_training_period,
+                :joining_training_period,
+                :leaving_school,
+                :joining_school
 
     def type
       return :unknown unless joining_training_period
