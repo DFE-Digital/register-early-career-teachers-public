@@ -28,6 +28,18 @@ RSpec.describe Teachers::SchoolTransfers::Transfer do
     it { is_expected.to eq(joining_training_period) }
   end
 
+  describe "#leaving_school" do
+    subject { transfer.leaving_school }
+
+    it { is_expected.to eq(leaving_school) }
+  end
+
+  describe "#joining_school" do
+    subject { transfer.joining_school }
+
+    it { is_expected.to eq(joining_school) }
+  end
+
   describe "#type" do
     subject(:type) { transfer.type }
 
