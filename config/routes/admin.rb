@@ -41,6 +41,7 @@ namespace :admin do
   resources :teachers, only: %i[show index] do
     scope module: :teachers do
       resource :induction, only: %i[show]
+      resource :school, only: %i[show]
     end
     resources :induction_periods, only: %i[new create edit update destroy], path: "induction-periods" do
       member do

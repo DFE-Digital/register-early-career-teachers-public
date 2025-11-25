@@ -1,0 +1,29 @@
+<% page_data(
+  title: teacher_full_name(@teacher),
+  caption: teacher_trn(@teacher),
+  caption_size: 'm',
+  error: false,
+  breadcrumbs: @breadcrumbs
+) %>
+
+<%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
+
+<h2 class="govuk-heading-m">School</h2>
+
+<% if @ect_at_school_periods.any? %>
+  <h3 class="govuk-heading-s">ECT history</h3>
+  <% @ect_at_school_periods.each do |school_period| %>
+    <%= render Admin::Teachers::SchoolSummaryComponent.new(school_period:) %>
+  <% end %>
+<% end %>
+
+<% if @mentor_at_school_periods.any? %>
+  <h3 class="govuk-heading-s">Mentor history</h3>
+  <% @mentor_at_school_periods.each do |school_period| %>
+    <%= render Admin::Teachers::SchoolSummaryComponent.new(school_period:) %>
+  <% end %>
+<% end %>
+
+<% if @ect_at_school_periods.blank? && @mentor_at_school_periods.blank? %>
+  <p class="govuk-body">There is no school history recorded for this teacher.</p>
+<% end %>
