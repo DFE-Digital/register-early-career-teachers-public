@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:appropriate_body) do
-    sequence(:name) { |n| "#{Faker::Company.name} Appropriate Body #{n}" }
+    sequence(:name) { |n| "Appropriate Body #{n}" }
 
     dfe_sign_in_organisation_id { SecureRandom.uuid }
     teaching_school_hub
