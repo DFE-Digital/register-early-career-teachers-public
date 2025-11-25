@@ -64,7 +64,7 @@ module API::Teachers::UnfundedMentors
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      @scope = scope.where(api_updated_at: updated_since..)
+      @scope = scope.where(api_unfunded_mentor_updated_at: updated_since..)
     end
 
     def set_sort_by(sort)
