@@ -33,7 +33,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::ActionJob, type: :job do
           perform_action_job
         }.to have_broadcasted_to(
           "batch_progress_stream_#{pending_induction_submission_batch.id}"
-        ).from_channel(pending_induction_submission_batch).exactly(11).times
+        ).from_channel(pending_induction_submission_batch).exactly(10).times
       end
     end
 
