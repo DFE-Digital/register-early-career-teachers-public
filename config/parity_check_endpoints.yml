@@ -416,3 +416,20 @@ put:
       exclude:
         - teacher_reference_number_validated
         - overall_induction_start_date
+
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":active_teacher_api_id_for_participant_action"
+      body: change_schedule_different_schedule_and_cohort_participant_body
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":active_teacher_api_id_for_participant_action"
+      body: change_schedule_different_cohort_participant_body
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":active_teacher_api_id_for_participant_action"
+      body: change_schedule_different_schedule_participant_body
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":active_teacher_api_id_for_participant_action"
+      body: change_schedule_error_state_participant_body

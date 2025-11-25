@@ -501,6 +501,139 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       end
     end
 
+    context "when fetching `change_schedule_different_schedule_and_cohort_participant_body`" do
+      let(:identifier) { :change_schedule_different_schedule_and_cohort_participant_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      let(:contract_period_2022) { FactoryBot.create(:contract_period, year: 2022) }
+      let(:active_lead_provider_2022) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2022) }
+
+      before do
+        # Create 2022 contract period with partnership
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2022)
+
+        # Deferred participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
+        # Withdrawn participant for current lead provider
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:)
+        # Participants for different lead providers should not be used
+        FactoryBot.create(:training_period, :for_ect, :ongoing)
+
+        allow(Schedule).to receive(:identifiers).and_return({ "ecf-extended-january" => "ecf-extended-january", "ecf-replacement-september" => "ecf-replacement-september" })
+      end
+
+      it "returns a participant change schedule body with different schedule and cohort" do
+        expect(Teacher)
+          .to receive(:find_by)
+          .with(api_id: teacher.api_id)
+          .and_call_original
+
+        expect(fetch).to eq({
+          data: {
+            type: "participant-change-schedule",
+            attributes: {
+              course_identifier: "ecf-induction",
+              schedule_identifier: "ecf-extended-january",
+              cohort: 2022,
+            }
+          },
+        })
+      end
+    end
+
+    context "when fetching `change_schedule_different_cohort_participant_body`" do
+      let(:identifier) { :change_schedule_different_cohort_participant_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      let(:contract_period_2022) { FactoryBot.create(:contract_period, year: 2022) }
+      let(:active_lead_provider_2022) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2022) }
+
+      before do
+        # Create 2022 contract period with partnership
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2022)
+      end
+
+      it "returns a participant change schedule body with different cohort only" do
+        expect(Teacher)
+          .to receive(:find_by)
+          .with(api_id: teacher.api_id)
+          .and_call_original
+
+        expect(fetch).to eq({
+          data: {
+            type: "participant-change-schedule",
+            attributes: {
+              course_identifier: "ecf-induction",
+              schedule_identifier: training_period.schedule.identifier,
+              cohort: 2022,
+            }
+          },
+        })
+      end
+    end
+
+    context "when fetching `change_schedule_different_schedule_participant_body`" do
+      let(:identifier) { :change_schedule_different_schedule_participant_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      before do
+        allow(Schedule).to receive(:identifiers).and_return({ "ecf-extended-january" => "ecf-extended-january", "ecf-replacement-september" => "ecf-replacement-september" })
+      end
+
+      it "returns a participant change schedule body with different schedule only" do
+        expect(Teacher)
+          .to receive(:find_by)
+          .with(api_id: teacher.api_id)
+          .and_call_original
+
+        expect(fetch).to eq({
+          data: {
+            type: "participant-change-schedule",
+            attributes: {
+              course_identifier: "ecf-induction",
+              schedule_identifier: "ecf-extended-january",
+              cohort: training_period.contract_period.year,
+            }
+          },
+        })
+      end
+    end
+
+    context "when fetching `change_schedule_error_state_participant_body`" do
+      let(:identifier) { :change_schedule_error_state_participant_body }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      it "returns a participant change schedule body with wrong course identifier" do
+        expect(Teacher)
+          .to receive(:find_by)
+          .with(api_id: teacher.api_id)
+          .and_call_original
+
+        expect(fetch).to eq({
+          data: {
+            type: "participant-change-schedule",
+            attributes: {
+              course_identifier: "ecf-mentor",
+              schedule_identifier: training_period.schedule.identifier,
+              cohort: training_period.contract_period.year,
+            }
+          },
+        })
+      end
+    end
+
     context "when fetching `unfunded_mentor_teacher_api_id`" do
       let(:identifier) { :unfunded_mentor_teacher_api_id }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
