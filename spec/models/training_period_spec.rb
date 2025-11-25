@@ -660,9 +660,9 @@ describe TrainingPeriod do
       end
     end
 
-    describe '.for_mentor_trn' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
-      let(:other_teacher) { FactoryBot.create(:teacher, trn: '7654321') }
+    describe ".for_mentor_trn" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
+      let(:other_teacher) { FactoryBot.create(:teacher, trn: "7654321") }
 
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
       let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: other_teacher) }
@@ -687,21 +687,21 @@ describe TrainingPeriod do
         )
       end
 
-      it 'returns training periods for mentors with the given TRN' do
+      it "returns training periods for mentors with the given TRN" do
         result = TrainingPeriod.for_mentor_trn(teacher.trn)
 
         expect(result).to include(training_period_for_teacher)
       end
 
-      it 'does not return training periods for mentors with a different TRN' do
+      it "does not return training periods for mentors with a different TRN" do
         result = TrainingPeriod.for_mentor_trn(teacher.trn)
 
         expect(result).not_to include(training_period_for_other_teacher)
       end
     end
 
-    describe '.latest_for_mentor_trn' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+    describe ".latest_for_mentor_trn" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
 
       # First mentor period (older)
       let(:mentor_at_school_period_1) do
@@ -743,15 +743,15 @@ describe TrainingPeriod do
         )
       end
 
-      it 'returns the latest training period for the mentor TRN' do
+      it "returns the latest training period for the mentor TRN" do
         result = TrainingPeriod.latest_for_mentor_trn(teacher.trn)
 
         expect(result).to eq(newer_period)
       end
     end
 
-    describe '.latest_confirmed_for_mentor_trn' do
-      let(:teacher) { FactoryBot.create(:teacher, trn: '1234567') }
+    describe ".latest_confirmed_for_mentor_trn" do
+      let(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
 
       let(:mentor_at_school_period_1) do
@@ -793,24 +793,24 @@ describe TrainingPeriod do
           mentor_at_school_period: mentor_at_school_period_2,
           school_partnership: nil,
           expression_of_interest: FactoryBot.create(:active_lead_provider, contract_period:),
-          training_programme: 'provider_led',
+          training_programme: "provider_led",
           started_on: mentor_at_school_period_2.started_on,
           finished_on: mentor_at_school_period_2.finished_on
         )
       end
 
-      it 'returns the latest confirmed training period (ignoring EOI-only periods)' do
+      it "returns the latest confirmed training period (ignoring EOI-only periods)" do
         result = TrainingPeriod.latest_confirmed_for_mentor_trn(teacher.trn)
 
         expect(result).to eq(older_confirmed)
       end
 
-      context 'when there are no confirmed training periods' do
+      context "when there are no confirmed training periods" do
         before do
           older_confirmed.destroy!
         end
 
-        it 'returns nil' do
+        it "returns nil" do
           result = TrainingPeriod.latest_confirmed_for_mentor_trn(teacher.trn)
 
           expect(result).to be_nil
@@ -818,7 +818,7 @@ describe TrainingPeriod do
       end
     end
 
-    describe '.confirmed' do
+    describe ".confirmed" do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
 
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
@@ -851,7 +851,7 @@ describe TrainingPeriod do
         )
       end
 
-      it 'returns only training periods with a school partnership' do
+      it "returns only training periods with a school partnership" do
         result = TrainingPeriod.confirmed
 
         expect(result).to include(confirmed_training_period)
@@ -859,8 +859,8 @@ describe TrainingPeriod do
       end
     end
 
-    describe '.including_school_partnership' do
-      it 'eager loads the school_partnership association' do
+    describe ".including_school_partnership" do
+      it "eager loads the school_partnership association" do
         relation = TrainingPeriod.including_school_partnership
 
         expect(relation.includes_values).to include(:school_partnership)
