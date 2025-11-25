@@ -77,6 +77,10 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         expect(rendered_content).to have_css("dt", text: "School")
         expect(rendered_content).to have_css("dd", text: training_period.mentor_at_school_period.school.name)
       end
+
+      it "does not show the training programme row" do
+        expect(rendered_content).not_to have_css("dt", text: "Training programme")
+      end
     end
   end
 
