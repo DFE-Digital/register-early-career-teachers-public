@@ -8,9 +8,7 @@ class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
     end
     field(:trn, name: :teacher_reference_number)
     field :created_at
-
-    # TODO: use `api_unfunded_mentor_updated_at` once we have added it
-    field(:api_updated_at, name: :updated_at)
+    field(:api_unfunded_mentor_updated_at, name: :updated_at)
   end
 
   identifier :api_id, name: :id

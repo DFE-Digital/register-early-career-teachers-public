@@ -39,6 +39,10 @@ module API
       def to_json(obj)
         API::Teachers::UnfundedMentorSerializer.render(obj, root: "data")
       end
+
+      def updated_at_attribute
+        "api_unfunded_mentor_updated_at"
+      end
     end
   end
 end
