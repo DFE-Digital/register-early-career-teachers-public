@@ -1,22 +1,22 @@
 module Schools
   class DecoratedMentor < SimpleDelegator
-    NOT_CONFIRMED = 'Not confirmed'
+    NOT_CONFIRMED = "Not confirmed"
 
     def previous_registration_summary_rows
       rows = [
         {
-          key: { text: 'School name' },
+          key: { text: "School name" },
           value: { text: previous_school_name },
         },
         {
-          key: { text: 'Lead provider' },
+          key: { text: "Lead provider" },
           value: { text: previous_lead_provider_name },
         },
       ]
 
       if previous_provider_led?
         rows << {
-          key: { text: 'Delivery partner' },
+          key: { text: "Delivery partner" },
           value: { text: previous_delivery_partner_name },
         }
       end
