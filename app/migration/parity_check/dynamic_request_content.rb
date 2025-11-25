@@ -233,17 +233,97 @@ module ParityCheck
       end
     end
 
+    def participant_change_schedule_payload(course_identifier:, schedule_identifier:, cohort:)
+      {
+        data: {
+          type: "participant-change-schedule",
+          attributes: {
+            course_identifier:,
+            schedule_identifier:,
+            cohort:,
+          }
+        }
+      }
+    end
+
+    def change_schedule_different_schedule_and_cohort_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      contract_period = random_contract_period(excluding_contract_period_year: training_period.contract_period.year)
+      return unless contract_period
+
+      schedule_identifier = random_schedule_identifier(training_period.schedule)
+      return unless schedule_identifier
+
+      participant_change_schedule_payload(
+        course_identifier: course_identifier_for(participant),
+        schedule_identifier:,
+        cohort: contract_period.year
+      )
+    end
+
+    def change_schedule_different_cohort_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      contract_period = random_contract_period(excluding_contract_period_year: training_period.contract_period.year)
+      return unless contract_period
+
+      participant_change_schedule_payload(
+        course_identifier: course_identifier_for(participant),
+        schedule_identifier: training_period.schedule.identifier,
+        cohort: contract_period.year
+      )
+    end
+
+    def change_schedule_different_schedule_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      schedule_identifier = random_schedule_identifier(training_period.schedule)
+      return unless schedule_identifier
+
+      participant_change_schedule_payload(
+        course_identifier: course_identifier_for(participant),
+        schedule_identifier:,
+        cohort: training_period.contract_period.year
+      )
+    end
+
+    def change_schedule_error_state_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      course_identifier = participant.api_ect_training_record_id.present? ? "ecf-mentor" : "ecf-induction"
+
+      participant_change_schedule_payload(
+        course_identifier:,
+        schedule_identifier: training_period.schedule.identifier,
+        cohort: training_period.contract_period.year
+      )
+    end
+
     # Helpers
 
     def random_school_partnership
       SchoolPartnership.find_by(api_id: partnership_id)
     end
 
-    def random_contract_period
+    def random_contract_period(excluding_contract_period_year: nil)
       lead_provider
         .lead_provider_delivery_partnerships
         .joins(:contract_period)
         .where(contract_period: { enabled: true })
+        .where.not(contract_period: { year: excluding_contract_period_year })
         .order("RANDOM()")
         .first
         &.contract_period
@@ -263,6 +343,25 @@ module ParityCheck
         .uniq
 
       School.where.not(id: existing_school_ids).eligible.not_cip_only.order("RANDOM()").first
+    end
+
+    def latest_training_period(participant)
+      metadata = participant.lead_provider_metadata.find_by(lead_provider_id: lead_provider.id)
+      return unless metadata
+
+      if participant.api_ect_training_record_id.present?
+        metadata.latest_ect_training_period
+      else
+        metadata.latest_mentor_training_period
+      end
+    end
+
+    def random_schedule_identifier(excluding_schedule)
+      if excluding_schedule.replacement_schedule?
+        Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS.excluding(excluding_schedule.identifier).sample
+      else
+        Schedule.identifiers.values.excluding(Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS).excluding(excluding_schedule.identifier).sample
+      end
     end
   end
 end
