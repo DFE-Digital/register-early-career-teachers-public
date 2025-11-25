@@ -21,13 +21,13 @@
 #
 #     **bold** and _italic_ text
 
-- title: Updated validation rules for participant action endpoints
-  date: 2025-11-XX
+- title: Participant action endpoints added to the Register ECTs API with updated validation rules
+  date: 2025-11-28 (PROVISIONAL)
   tags:
     - sandbox-release
     - breaking-changes
   body: |
-    We have updated the validation logic and participant status behaviour for the following endpoints:
+    We have updated the validation logic and participant status behaviour for the following existing endpoints on the Register ECTs API:
 
     - `POST /participants/{id}/withdraw`
     - `POST /participants/{id}/defer`
@@ -35,22 +35,43 @@
 
     ## What’s changed from the existing ‘Manage training for early career teachers’ API?
 
-    ### Withdraw endpoint
-    - when a participant is withdrawn, the system will now also update `participant_status` to `left` if it is not already set to this
-    - a withdraw action is only permitted when the participant’s `participant_status` is `active`. Participants in a `joining` state cannot be withdrawn
-    - if the participant never started training, please contact DfE to request deletion of the participant record
+    ## Withdraw endpoint
 
-    ### Defer endpoint
-    - when a participant is deferred, the system will also update `participant_status` to `left` if it is not already
-    - a defer action is only allowed when the participant’s `participant_status` is `active`. Participants in a `joining` state cannot be deferred
-    - if the participant never started training, please contact DfE to request deletion of the participant record
+    You can withdraw a participant as long as:
+    - their `participant_status` is not `joining`
+    - they have not already been withdrawn or deferred
 
-    ### Resume endpoint
-    - a resume action is only permitted when both the participant’s `participant_status` and training status support a valid resume transition
-    - the system will now reject resume attempts that conflict with the participant’s current status or any disallowed training state transitions
+    When a participant is withdrawn, the service will also set `participant_status` to `left` if it is not already set to this.
+
+    If the participant never started training, please contact DfE to request deletion of the participant record instead of withdrawing them.
+
+    ---
+
+    ## Defer endpoint
+
+    You can defer a participant as long as:
+    - their `participant_status` is not `joining`
+    - they have not already been withdrawn or deferred
+
+    When a participant is deferred, the service will also set `participant_status` to `left` if it is not already set to this.
+
+    ---
+
+    ## Resume endpoint
+
+    You can resume a participant only when their current status allows it. A participant cannot be resumed in the following situations:
+    - their old school has reported they are leaving
+    - their new school has reported they are joining with a different lead provider
+    - the school has changed them to school-led training
+    - the school has changed them to a different lead provider for training
+
+    If the new school reports they are joining with the same lead provider, their `participant_status` will move back to `joining` or `active`, and resuming will then be permitted.
+
+    ---
 
     ## Why we've made these changes
-    They ensure that `participant status` and `training status` remain consistent when lead providers carry out withdraw, defer, or resume actions.
+
+    They ensure that participant status and training status stay consistent when lead providers carry out withdraw, defer or resume actions.
 
 - title: GET participants endpoints added to sandbox   
   date: 2025-11-07
