@@ -30,6 +30,10 @@ module Schools
           latest_registration_choice.training_period
         end
 
+        def previous_confirmed_training_period
+          latest_registration_choice.confirmed_training_period
+        end
+
         def lead_providers_within_contract_period
           return [] unless contract_period
 

@@ -43,6 +43,10 @@ module Schools
           queries.mentor_at_school_periods.exists?
         end
 
+        def previous_provider_led?
+          queries.previous_training_period&.provider_led_training_programme?
+        end
+
         def currently_mentor_at_another_school?
           queries.previous_school_mentor_at_school_periods.exists?
         end
