@@ -9,7 +9,8 @@ RSpec.describe "Statements endpoint", openapi_spec: "v3/swagger.yaml", type: :re
                   {
                     url: "/api/v3/statements",
                     tag: "Statements",
-                    resource_description: "statements as part of which the DfE will make output payments for participants",
+                    resource_description: "Retrieve multiple financial statement details",
+                    response_description: "A list of financial statements details",
                     response_schema_ref: "#/components/schemas/StatementsResponse",
                     filter_schema_ref: "#/components/schemas/StatementsFilter",
                   }
@@ -18,7 +19,8 @@ RSpec.describe "Statements endpoint", openapi_spec: "v3/swagger.yaml", type: :re
                   {
                     url: "/api/v3/statements/{id}",
                     tag: "Statements",
-                    resource_description: "financial statement",
+                    resource_description: "Retrieve a single financial statement details",
+                    response_description: "A single financial statement details",
                     response_schema_ref: "#/components/schemas/StatementResponse",
                   } do
     let(:resource) { statement }

@@ -10,7 +10,8 @@ RSpec.describe "Partnerships endpoint", openapi_spec: "v3/swagger.yaml", type: :
                   {
                     url: "/api/v3/partnerships",
                     tag: "Partnerships",
-                    resource_description: "partnerships",
+                    resource_description: "Retrieve multiple partnerships",
+                    response_description: "A list of partnerships",
                     response_schema_ref: "#/components/schemas/PartnershipsResponse",
                     filter_schema_ref: "#/components/schemas/PartnershipsFilter",
                     sorting_schema_ref: "#/components/schemas/SortingTimestamps",
@@ -20,7 +21,8 @@ RSpec.describe "Partnerships endpoint", openapi_spec: "v3/swagger.yaml", type: :
                   {
                     url: "/api/v3/partnerships/{id}",
                     tag: "Partnerships",
-                    resource_description: "partnership",
+                    resource_description: "Retrieve a single partnership",
+                    response_description: "A single partnership",
                     response_schema_ref: "#/components/schemas/PartnershipResponse",
                   }
 
@@ -28,7 +30,8 @@ RSpec.describe "Partnerships endpoint", openapi_spec: "v3/swagger.yaml", type: :
                   {
                     url: "/api/v3/partnerships",
                     tag: "Partnerships",
-                    resource_description: "partnership",
+                    resource_description: "Create a partnership with a school and delivery partner",
+                    response_description: "The created partnership",
                     request_schema_ref: "#/components/schemas/PartnershipCreateRequest",
                     response_schema_ref: "#/components/schemas/PartnershipResponse",
                   } do
@@ -62,7 +65,8 @@ RSpec.describe "Partnerships endpoint", openapi_spec: "v3/swagger.yaml", type: :
                   {
                     url: "/api/v3/partnerships/{id}",
                     tag: "Partnerships",
-                    resource_description: "partnership",
+                    resource_description: "Update the delivery partner for an existing partnership in a cohort",
+                    response_description: "The updated partnership",
                     request_schema_ref: "#/components/schemas/PartnershipUpdateRequest",
                     response_schema_ref: "#/components/schemas/PartnershipResponse",
                   } do

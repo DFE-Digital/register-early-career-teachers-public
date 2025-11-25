@@ -1,7 +1,7 @@
-RSpec.shared_context "an API update endpoint documentation", :exceptions_app do |options = {}|
-  path options[:url] do
-    put "Update a #{options[:resource_description]}" do
-      tags options[:tag]
+RSpec.shared_context "an API update endpoint documentation", :exceptions_app do |params = {}|
+  path params[:url] do
+    put params[:resource_description] do
+      tags params[:tag]
       consumes "application/json"
       produces "application/json"
       security [api_key: []]
@@ -18,13 +18,13 @@ RSpec.shared_context "an API update endpoint documentation", :exceptions_app do 
                 style: :deepObject,
                 required: false,
                 schema: {
-                  "$ref": options[:request_schema_ref],
+                  "$ref": params[:request_schema_ref],
                 }
 
       let(:id) { resource.api_id }
 
-      response "200", "The updated #{options[:resource_description]}" do
-        schema({ "$ref": options[:response_schema_ref] })
+      response "200", params[:response_description] do
+        schema({ "$ref": params[:response_schema_ref] })
 
         after { override_response_content!(it) }
 
