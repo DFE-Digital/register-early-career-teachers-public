@@ -55,5 +55,4 @@ shared:
     - errored_count
     - claimed_count
     - released_count
-    - failed_count
     - passed_count
