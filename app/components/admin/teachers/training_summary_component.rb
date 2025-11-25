@@ -39,11 +39,11 @@ module Admin
           summary_row("Delivery partner", delivery_partner_text),
           summary_row("School", training_school_name),
           summary_row("Contract period", contract_period_text),
-          summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme]),
+          training_programme_row,
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
           summary_row("End date", end_date_text)
-        ]
+        ].compact
       end
 
       def school_led_rows
@@ -106,6 +106,12 @@ module Admin
 
       def end_date_text
         training_period.finished_on.present? ? format_date(training_period.finished_on) : "No end date recorded"
+      end
+
+      def training_programme_row
+        return if training_period.for_mentor?
+
+        summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
       end
 
       def format_date(date)
