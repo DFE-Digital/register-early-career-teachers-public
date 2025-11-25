@@ -39,7 +39,8 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants",
                     tag: "Participants",
-                    resource_description: "participants",
+                    resource_description: "Retrieve multiple participants",
+                    response_description: "A list of participants",
                     response_schema_ref: "#/components/schemas/ParticipantsResponse",
                     filter_schema_ref: "#/components/schemas/ParticipantsFilter",
                     sorting_schema_ref: "#/components/schemas/SortingTimestamps",
@@ -57,7 +58,8 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}",
                     tag: "Participants",
-                    resource_description: "participant",
+                    resource_description: "Retrieve a single participant",
+                    response_description: "A single participant",
                     response_schema_ref: "#/components/schemas/ParticipantResponse",
                   } do
                     let(:response_example) do
@@ -73,7 +75,8 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/withdraw",
                     tag: "Participants",
-                    resource_description: "participant",
+                    resource_description: "Notify that a participant has withdrawn from their course",
+                    response_description: "The participant being withdrawn",
                     request_schema_ref: "#/components/schemas/ParticipantWithdrawRequest",
                     response_schema_ref: "#/components/schemas/ParticipantResponse",
                   } do
@@ -113,7 +116,8 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/defer",
                     tag: "Participants",
-                    resource_description: "participant",
+                    resource_description: "Notify that a participant is taking a break from their course",
+                    response_description: "The participant being deferred",
                     request_schema_ref: "#/components/schemas/ParticipantDeferRequest",
                     response_schema_ref: "#/components/schemas/ParticipantResponse",
                   } do
@@ -153,7 +157,8 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/resume",
                     tag: "Participants",
-                    resource_description: "participant",
+                    resource_description: "Notify that a participant is resuming their course",
+                    response_description: "The participant being resumed",
                     request_schema_ref: "#/components/schemas/ParticipantResumeRequest",
                     response_schema_ref: "#/components/schemas/ParticipantResponse",
                   } do
@@ -202,7 +207,8 @@ describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml
                   {
                     url: "/api/v3/participants/{id}/change-schedule",
                     tag: "Participants",
-                    resource_description: "participant",
+                    resource_description: "Notify that a participant is changing training schedule",
+                    response_description: "The participant changing schedule",
                     request_schema_ref: "#/components/schemas/ParticipantChangeScheduleRequest",
                     response_schema_ref: "#/components/schemas/ParticipantResponse",
                   } do
