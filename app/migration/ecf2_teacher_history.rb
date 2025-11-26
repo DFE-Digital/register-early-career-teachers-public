@@ -32,6 +32,6 @@ class ECF2TeacherHistory
     @mentor_at_school_period_rows = mentor_at_school_period_rows
   end
 
-  def persist!
+  def save_all!
   end
 end
