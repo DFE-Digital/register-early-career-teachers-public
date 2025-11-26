@@ -5,6 +5,37 @@ RSpec.describe Teachers::SchoolTransfers::History do
   describe "#transfers" do
     let(:teacher) { FactoryBot.create(:teacher) }
 
+    context "when there are no transfers" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+
+      before do
+        school_period1 = create_school_period(teacher, from: 2.years.ago)
+        add_training_period(school_period1, from: 2.years.ago, programme_type: :provider_led, with: lead_provider)
+      end
+
+      it "returns no transfers" do
+        history = described_class.new(
+          school_periods: teacher.ect_at_school_periods,
+          lead_provider_id: lead_provider.id
+        )
+
+        expect(history.transfers).to be_empty
+      end
+    end
+
+    context "when the teacher has no training periods" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+
+      it "returns no transfers" do
+        history = described_class.new(
+          school_periods: teacher.ect_at_school_periods,
+          lead_provider_id: lead_provider.id
+        )
+
+        expect(history.transfers).to be_empty
+      end
+    end
+
     context "when a teacher leaves school-led training at one school and has " \
             "not yet started training at another school" do
       let(:lead_provider1) { FactoryBot.create(:lead_provider) }
@@ -19,7 +50,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers).to be_empty
@@ -41,7 +72,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers).to be_empty
@@ -50,7 +81,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns an unknown transfer for lead provider #2" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider2
+          lead_provider_id: lead_provider2.id
         )
 
         expect(history.transfers.size).to eq(1)
@@ -81,7 +112,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers).to be_empty
@@ -90,7 +121,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #2" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider2
+          lead_provider_id: lead_provider2.id
         )
 
         expect(history.transfers).to be_empty
@@ -114,7 +145,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns a new_school transfer for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers.size).to eq(1)
@@ -131,7 +162,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #2" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider2
+          lead_provider_id: lead_provider2.id
         )
 
         expect(history.transfers).to be_empty
@@ -156,7 +187,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns a new_provider transfer for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers.size).to eq(1)
@@ -173,7 +204,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns a new_provider transfer for lead provider #2" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider2
+          lead_provider_id: lead_provider2.id
         )
 
         expect(history.transfers.size).to eq(1)
@@ -190,7 +221,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #3" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider3
+          lead_provider_id: lead_provider3.id
         )
 
         expect(history.transfers).to be_empty
@@ -211,7 +242,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns a new_provider transfer for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers.size).to eq(1)
@@ -240,7 +271,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns a new_provider transfer for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers.size).to eq(1)
@@ -270,7 +301,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #1" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
-          lead_provider: lead_provider1
+          lead_provider_id: lead_provider1.id
         )
 
         expect(history.transfers).to be_empty
