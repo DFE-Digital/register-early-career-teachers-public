@@ -77,7 +77,18 @@ module API::Teachers::SchoolTransfers
     def where_updated_since(updated_since)
       return if ignore?(filter: updated_since)
 
-      @scope = scope.where(api_updated_at: updated_since..)
+      @scope = scope
+          .left_joins(
+            ect_at_school_periods: %i[earliest_training_period latest_training_period],
+            mentor_at_school_periods: %i[earliest_training_period latest_training_period]
+          )
+          .where(
+            "(training_periods.id IS NOT NULL AND training_periods.api_transfer_updated_at >= :updated_since) OR
+            (latest_training_periods_ect_at_school_periods.id IS NOT NULL AND latest_training_periods_ect_at_school_periods.api_transfer_updated_at >= :updated_since) OR
+            (earliest_training_periods_mentor_at_school_periods.id IS NOT NULL AND earliest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since) OR
+            (latest_training_periods_mentor_at_school_periods.id IS NOT NULL AND latest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since)",
+            updated_since:
+          )
     end
 
     def set_sort_by(sort)
