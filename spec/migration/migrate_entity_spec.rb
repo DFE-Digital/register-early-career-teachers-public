@@ -61,12 +61,14 @@ RSpec.describe MigrateEntity do
   end
 
   describe "#teacher" do
-    let(:ect_profile) { FactoryBot.create(:migration_participant_profile, :ect) }
+    let(:ect_schedule) { FactoryBot.create(:migration_schedule, cohort:, schedule_identifier: "ecf-standard-september") }
+    let(:mentor_schedule) { FactoryBot.create(:migration_schedule, cohort:, schedule_identifier: "ecf-standard-january") }
+    let(:ect_profile) { FactoryBot.create(:migration_participant_profile, :ect, school_cohort:, schedule: ect_schedule) }
     let(:trn) { ect_profile.teacher_profile.trn }
-    let(:school_cohort) { ect_profile.school_cohort }
-    let(:cohort) { school_cohort.cohort }
+    let(:school_cohort) { FactoryBot.create(:migration_school_cohort, cohort:) }
+    let(:cohort) { FactoryBot.create(:migration_cohort) }
     let(:ecf_school) { school_cohort.school }
-    let(:mentor_profile) { FactoryBot.create(:migration_participant_profile, :mentor, school_cohort:) }
+    let(:mentor_profile) { FactoryBot.create(:migration_participant_profile, :mentor, school_cohort:, schedule: mentor_schedule) }
     let!(:ect_induction_record) { FactoryBot.create(:migration_induction_record, participant_profile: ect_profile, mentor_profile:) }
     let!(:mentor_induction_record) { FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile) }
     let(:lead_provider) { FactoryBot.create(:migration_lead_provider) }
