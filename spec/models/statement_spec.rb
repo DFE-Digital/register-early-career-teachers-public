@@ -2,6 +2,8 @@ describe Statement do
   describe "associations" do
     it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to have_many(:adjustments) }
+    it { is_expected.to have_many(:billable_declarations).class_name("Declaration").inverse_of(:billable_statement) }
+    it { is_expected.to have_many(:refundable_declarations).class_name("Declaration").inverse_of(:refundable_statement) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
   end

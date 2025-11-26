@@ -303,11 +303,27 @@ erDiagram
   Declaration {
     integer id
     integer training_period_id
-    string declaration_type
     datetime created_at
     datetime updated_at
+    integer voided_by_user_id
+    integer mentorship_period_id
+    integer billable_statement_id
+    integer refundable_statement_id
+    datetime voided_at
+    uuid api_id
+    datetime date
+    enum evidence_type
+    enum status
+    enum ineligibility_reason
+    enum declaration_type
+    boolean sparsity_uplift
+    boolean pupil_premium_uplift
   }
   Declaration }o--|| TrainingPeriod : belongs_to
+  Declaration }o--|| User : belongs_to
+  Declaration }o--|| MentorshipPeriod : belongs_to
+  Declaration }o--|| Statement : belongs_to
+  Declaration }o--|| Statement : belongs_to
   ContractPeriod {
     integer year
     datetime created_at
