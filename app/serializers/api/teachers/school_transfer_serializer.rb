@@ -39,21 +39,28 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 
-    # TODO: use transfer updated at once implemented
-    field(:api_updated_at, name: :updated_at)
+    field(:updated_at) do |teacher, options|
+      combined_transfers(teacher:, options:).max_by(&:api_updated_at).api_updated_at
+    end
 
     association :transfers, blueprint: TransferSerializer do |teacher, options|
-      ect_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
-        school_periods: teacher.ect_at_school_periods,
-        lead_provider_id: options[:lead_provider_id]
-      )
-      mentor_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
-        school_periods: teacher.mentor_at_school_periods,
-        lead_provider_id: options[:lead_provider_id]
-      )
-      (ect_transfers + mentor_transfers)
-        .sort_by { it.leaving_training_period.started_on }
-        .map { [it, teacher] }
+      combined_transfers(teacher:, options:).map { |transfer| [transfer, teacher] }
+    end
+
+    def self.combined_transfers(teacher:, options:)
+      @all_transfers ||= {}
+      @all_transfers[teacher] ||= begin
+        ect_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
+          school_periods: teacher.ect_at_school_periods,
+          lead_provider_id: options[:lead_provider_id]
+        )
+        mentor_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
+          school_periods: teacher.mentor_at_school_periods,
+          lead_provider_id: options[:lead_provider_id]
+        )
+
+        (ect_transfers + mentor_transfers).sort_by { |it| it.leaving_training_period.started_on }
+      end
     end
   end
 

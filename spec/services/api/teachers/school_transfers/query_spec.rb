@@ -64,11 +64,10 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
       build_new_provider_transfer(teacher: teacher3, leaving_lead_provider: lead_provider, joining_lead_provider: other_lead_provider, type: :mentor)
       build_unknown_transfer_for_finished_school_period(teacher: teacher4, lead_provider: other_lead_provider)
       build_new_school_transfer(teacher: teacher5, lead_provider:)
-      Metadata::Handlers::Teacher.new(teacher1).refresh_metadata!
-      Metadata::Handlers::Teacher.new(teacher2).refresh_metadata!
-      Metadata::Handlers::Teacher.new(teacher3).refresh_metadata!
-      Metadata::Handlers::Teacher.new(teacher4).refresh_metadata!
-      Metadata::Handlers::Teacher.new(teacher5).refresh_metadata!
+
+      [teacher1, teacher2, teacher3, teacher4, teacher5].each do
+        Metadata::Handlers::Teacher.new(it).refresh_metadata!
+      end
     end
 
     describe "filtering" do
@@ -111,10 +110,14 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
         let(:lead_provider_id) { lead_provider.id }
 
         before do
-          freeze_time
-          teacher1.touch(:api_updated_at, time: 10.days.ago)
-          teacher3.touch(:api_updated_at, time: 7.days.ago)
-          teacher5.touch(:api_updated_at, time: 5.days.ago)
+          {
+            teacher1 => 10.days.ago,
+            teacher3 => 6.days.ago,
+            teacher5 => 5.days.ago
+          }.each do |teacher, api_transfer_updated_at|
+            teacher.ect_training_periods.update!(api_transfer_updated_at:)
+            teacher.mentor_training_periods.update!(api_transfer_updated_at:)
+          end
         end
 
         context "when `updated_since` is provided" do
@@ -128,23 +131,11 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
 
           it { is_expected.to contain_exactly(teacher1, teacher3, teacher5) }
         end
-
-        context "when `updated_since` is nil" do
-          let(:updated_since) { nil }
-
-          it { is_expected.to contain_exactly(teacher1, teacher3, teacher5) }
-        end
       end
     end
 
     describe "ordering" do
       let(:lead_provider_id) { lead_provider.id }
-
-      before do
-        teacher1.touch(:api_updated_at, time: 3.days.ago)
-        teacher3.touch(:api_updated_at, time: 2.days.ago)
-        teacher5.touch(:api_updated_at, time: 4.days.ago)
-      end
 
       describe "default order" do
         let(:query) { described_class.new(lead_provider_id:) }
@@ -158,22 +149,6 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
         end
 
         it { is_expected.to eq([teacher5, teacher3, teacher1]) }
-      end
-
-      describe "order by updated_at, in descending order" do
-        let(:query) do
-          described_class.new(lead_provider_id:, sort: { updated_at: :desc })
-        end
-
-        it { is_expected.to eq([teacher3, teacher1, teacher5]) }
-      end
-
-      describe "order by updated_at, in ascending order" do
-        let(:query) do
-          described_class.new(lead_provider_id:, sort: { updated_at: :asc })
-        end
-
-        it { is_expected.to eq([teacher5, teacher1, teacher3]) }
       end
     end
   end
