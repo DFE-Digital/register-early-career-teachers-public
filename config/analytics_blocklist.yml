@@ -440,6 +440,14 @@
   - created_at
   - updated_at
   - api_updated_at
+  :statement_line_items:
+  - id
+  - statement_id
+  - declaration_id
+  - status
+  - ecf_id
+  - created_at
+  - updated_at
   :api_tokens:
   - id
   - lead_provider_id

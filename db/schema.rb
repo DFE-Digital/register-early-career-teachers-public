@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_26_144215) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -38,6 +38,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
   create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
   create_enum "request_method_types", ["get", "post", "put"]
   create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
+  create_enum "statement_line_item_statuses", ["eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
   create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other"]
@@ -723,6 +724,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
     t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
   end
 
+  create_table "statement_line_items", force: :cascade do |t|
+    t.bigint "statement_id", null: false
+    t.bigint "declaration_id", null: false
+    t.enum "status", default: "eligible", null: false, enum_type: "statement_line_item_statuses"
+    t.uuid "ecf_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["declaration_id", "statement_id", "status"], name: "idx_on_declaration_id_statement_id_status_231632627c", unique: true
+    t.index ["declaration_id"], name: "index_statement_line_items_on_declaration_id"
+    t.index ["ecf_id"], name: "index_statement_line_items_on_ecf_id", unique: true
+    t.index ["statement_id"], name: "index_statement_line_items_on_statement_id"
+  end
+
   create_table "statements", force: :cascade do |t|
     t.bigint "active_lead_provider_id", null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
@@ -912,6 +926,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
+  add_foreign_key "statement_line_items", "declarations"
+  add_foreign_key "statement_line_items", "statements"
   add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"

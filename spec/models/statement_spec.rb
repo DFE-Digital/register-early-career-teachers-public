@@ -2,6 +2,7 @@ describe Statement do
   describe "associations" do
     it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to have_many(:adjustments) }
+    it { is_expected.to have_many(:line_items) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
   end

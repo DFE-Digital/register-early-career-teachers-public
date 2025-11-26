@@ -14,6 +14,7 @@ class Declaration < ApplicationRecord
        validate: { message: "Choose a valid declaration type" }
 
   belongs_to :training_period
+  has_many :statement_line_items, class_name: "Statement::LineItem"
 
   validates :training_period, presence: { message: "Choose a training period" }
 end

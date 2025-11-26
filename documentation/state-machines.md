@@ -25,3 +25,39 @@ stateDiagram-v2
   open --> payable : mark_as_payable
   payable --> paid : mark_as_paid
 ```
+
+## Statement::LineItem
+
+A line item attached to a statement has more complexity and therefore supports a wider range of states and transitions.
+
+A statement line item has the following possible states:
+
+- `eligible` is the initial state of a line item – it is valid and can progress toward payment.
+- `payable` once it has been confirmed for payment.
+- `paid` when the line item has been paid.
+- `voided` when the line item as been cancelled before being paid.
+- `ineligible` when the line item does not qualify for payment.
+- `awaiting_clawback` when the payment has been issued but is later flagged for recovery.
+- `clawed_back` once the amount has successfully been reclaimed.
+
+There are seven transitions a line item can go through:
+
+- `mark_as_payable` transitions a line item from `eligible` to `payable`. This happens on a daily job that picks up statements when the `deadline_date` has passed.
+- `mark_as_paid` transitions a line item from `payable` to `paid`. This happens when a finance user marks a statement as paid in the finance dashboard.
+- `mark_as_voided` transitions a line item from `eligible`, `ineligible` or `payable` to `voided`. This happens when a lead provider voids an unpaid declaration.
+- `mark_as_awaiting_clawback` transitions a line item from `paid` to `awaiting_clawback`. This happens when a lead provider voids a paid declaration.
+- `mark_as_clawed_back` transitions a line item from `awaiting_clawback` to `clawed_back`. This happens when a statement is marked aws paid in the finance dashboard.
+- `mark_as_ineligible` transitions a line item from `eligible` to `ineligible`. This happens when a newly submitted declaration is superseeded.
+
+```mermaid
+stateDiagram-v2
+  [*] --> eligible
+  eligible --> payable : mark_as_payable
+  payable --> paid : mark_as_paid
+  paid --> awaiting_clawback : mark_as_awaiting_clawback
+  awaiting_clawback --> clawed_back : mark_as_clawed_back
+  eligible --> ineligible : mark_as_ineligible
+  eligible --> voided : mark_as_voided
+  payable --> voided : mark_as_voided
+  ineligible --> voided : mark_as_voided
+```
