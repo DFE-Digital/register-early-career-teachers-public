@@ -43,10 +43,10 @@ RSpec.describe "admin/schools/partnerships/show.html.erb", type: :view do
     expect(rendered).to have_css("a", text: "Partnerships")
   end
 
-  it "displays placeholder content" do
+  it "displays empty state when no partnerships exist" do
     render
 
-    expect(rendered).to have_css("p", text: "Partnership information will be available here in the future.")
+    expect(rendered).to have_css("p", text: "No partnerships recorded for this school.")
   end
 
   it "marks partnerships as current in navigation" do
