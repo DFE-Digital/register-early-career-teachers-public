@@ -77,7 +77,7 @@ The following table explains the key participant fields.
 The API uses two different status fields to describe a participant’s journey in the participant endpoints: 
 
 * `training_status`, set by providers through the API. It determines what actions providers can take, such as updating data or submitting declarations
-* `participant_status`, set by schools. It reflects the participant’s position in the school (for example, whether they’re joining, leaving, or withdrawn) 
+* `participant_status`, set by schools. It reflects the participant’s position in the school (for example, whether they’re joining or leaving) 
 
 Together, these statuses give both providers and schools a shared view of a participant’s training progress. 
 
