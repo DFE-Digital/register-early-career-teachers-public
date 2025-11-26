@@ -7,7 +7,7 @@
     "esbuild": "^0.27.0",
     "govuk-frontend": "5.13.0",
     "sass": "^1.94.2",
-    "swagger-ui-dist": "^5.30.2"
+    "swagger-ui-dist": "^5.30.3"
   },
   "devDependencies": {
     "playwright": "^1.56.0",
