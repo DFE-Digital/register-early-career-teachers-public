@@ -389,6 +389,16 @@
   - id
   - training_period_id
   - declaration_type
+  - date
+  - voided_at
+  - voided_by_user_id
+  - mentorship_period_id
+  - api_id
+  - evidence_type
+  - status
+  - ineligibility_reason
+  - sparsity_uplift
+  - pupil_premium_uplift
   - created_at
   - updated_at
   :data_migrations:
@@ -440,6 +450,22 @@
   - created_at
   - updated_at
   - api_updated_at
+  :statement_payment_items:
+  - id
+  - statement_id
+  - declaration_id
+  - status
+  - ecf_id
+  - created_at
+  - updated_at
+  :statement_clawback_items:
+  - id
+  - statement_id
+  - declaration_id
+  - status
+  - ecf_id
+  - created_at
+  - updated_at
   :api_tokens:
   - id
   - lead_provider_id

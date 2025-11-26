@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_26_153633) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -22,22 +22,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
+  create_enum "declaration_statuses", ["submitted", "eligible", "payable", "paid", "voided", "ineligible", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
+  create_enum "evidence_types", ["training-event-attended", "self-study-material-completed", "materials-engaged-with-offline", "75-percent-engagement-met", "75-percent-engagement-met-reduced-induction", "one-term-induction", "other"]
   create_enum "fee_types", ["output", "service"]
   create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "induction_programme_choice", ["not_yet_known", "provider_led", "school_led"]
+  create_enum "ineligibility_reasons", ["duplicate"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
   create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
   create_enum "request_method_types", ["get", "post", "put"]
   create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
+  create_enum "statement_clawback_item_statuses", ["awaiting_clawback", "clawed_back"]
+  create_enum "statement_payment_item_statuses", ["eligible", "payable", "paid", "voided", "ineligible"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
   create_enum "training_programme", ["provider_led", "school_led"]
   create_enum "withdrawal_reasons", ["left_teaching_profession", "moved_school", "mentor_no_longer_being_mentor", "switched_to_school_led", "other"]
@@ -156,10 +161,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
 
   create_table "declarations", force: :cascade do |t|
     t.bigint "training_period_id"
-    t.string "declaration_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "voided_by_user_id"
+    t.bigint "mentorship_period_id"
+    t.datetime "voided_at"
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "date", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.enum "evidence_type", enum_type: "evidence_types"
+    t.enum "status", default: "submitted", null: false, enum_type: "declaration_statuses"
+    t.enum "ineligibility_reason", enum_type: "ineligibility_reasons"
+    t.enum "declaration_type", default: "started", null: false, enum_type: "declaration_types"
+    t.boolean "sparsity_uplift", default: false, null: false
+    t.boolean "pupil_premium_uplift", default: false, null: false
+    t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
+    t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
     t.index ["training_period_id"], name: "index_declarations_on_training_period_id"
+    t.index ["voided_by_user_id"], name: "index_declarations_on_voided_by_user_id"
   end
 
   create_table "delivery_partners", force: :cascade do |t|
@@ -723,6 +741,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
     t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
   end
 
+  create_table "statement_clawback_items", force: :cascade do |t|
+    t.bigint "statement_id", null: false
+    t.bigint "declaration_id", null: false
+    t.enum "status", default: "awaiting_clawback", null: false, enum_type: "statement_clawback_item_statuses"
+    t.uuid "ecf_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["declaration_id"], name: "index_statement_clawback_items_on_declaration_id", unique: true
+    t.index ["ecf_id"], name: "index_statement_clawback_items_on_ecf_id", unique: true
+    t.index ["statement_id"], name: "index_statement_clawback_items_on_statement_id"
+  end
+
+  create_table "statement_payment_items", force: :cascade do |t|
+    t.bigint "statement_id", null: false
+    t.bigint "declaration_id", null: false
+    t.enum "status", default: "eligible", null: false, enum_type: "statement_payment_item_statuses"
+    t.uuid "ecf_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["declaration_id"], name: "index_statement_payment_items_on_declaration_id", unique: true
+    t.index ["ecf_id"], name: "index_statement_payment_items_on_ecf_id", unique: true
+    t.index ["statement_id"], name: "index_statement_payment_items_on_statement_id"
+  end
+
   create_table "statements", force: :cascade do |t|
     t.bigint "active_lead_provider_id", null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
@@ -849,6 +891,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "declarations", "users", column: "voided_by_user_id"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"
   add_foreign_key "ect_at_school_periods", "teachers"
@@ -912,6 +955,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
+  add_foreign_key "statement_clawback_items", "declarations"
+  add_foreign_key "statement_clawback_items", "statements"
+  add_foreign_key "statement_payment_items", "declarations"
+  add_foreign_key "statement_payment_items", "statements"
   add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"

@@ -637,7 +637,8 @@ john_withers_training_period = FactoryBot.create(:training_period,
                                                  school_partnership: teach_first_grain_partnership_2022,
                                                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
-FactoryBot.create(:declaration, training_period: john_withers_training_period)
+john_withers_declaration_date = john_withers_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
+FactoryBot.create(:declaration, declaration_type: :started, date: john_withers_declaration_date, training_period: john_withers_training_period)
 
 print_seed_info("Ichigo Kurosaki (Mentor)", indent: 2, colour: MENTOR_COLOUR)
 

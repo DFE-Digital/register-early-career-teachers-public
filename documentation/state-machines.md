@@ -25,3 +25,74 @@ stateDiagram-v2
   open --> payable : mark_as_payable
   payable --> paid : mark_as_paid
 ```
+
+## Statement::PaymentItem
+
+A statement payment item has the following possible payment states:
+
+- `eligible` is the initial state of an item that will progress towards payment.
+- `payable` once it has been confirmed for payment.
+- `paid` when the item has been paid.
+- `voided` when the item as been cancelled before being paid.
+- `ineligible` when the item does not qualify for payment.
+
+There are four transitions a payment item can go through:
+
+- `mark_as_payable` transitions an item from `eligible` to `payable`. This happens on a daily job that picks up statements when the `deadline_date` has passed.
+- `mark_as_paid` transitions an item from `payable` to `paid`. This happens when a finance user marks a statement as paid in the finance dashboard.
+- `mark_as_voided` transitions an item from `eligible`, `ineligible` or `payable` to `voided`. This happens when a lead provider voids an unpaid declaration.
+- `mark_as_ineligible` transitions an item from `eligible` to `ineligible`. This happens when a newly submitted declaration is superseeded.
+
+```mermaid
+stateDiagram-v2
+  [*] --> eligible
+  eligible --> payable : mark_as_payable
+  payable --> paid : mark_as_paid
+  eligible --> ineligible : mark_as_ineligible
+  eligible --> voided : mark_as_voided
+  payable --> voided : mark_as_voided
+  ineligible --> voided : mark_as_voided
+```
+
+## Statement::ClawbackItem
+
+A statement clawback item has the following possible payment states:
+
+- `awaiting_clawback` is the initial state of an item that will progress towards a clawback.
+- `clawed_back` once the amount has successfully been reclaimed.
+
+There is only one transition a clawback item can go through:
+
+- `mark_as_clawed_back` transitions an item from `awaiting_clawback` to `clawed_back`. This happens when a statement is marked aws paid in the finance dashboard.
+
+```mermaid
+stateDiagram-v2
+  [*] --> awaiting_clawback
+  awaiting_clawback --> clawed_back : mark_as_clawed_back
+```
+
+## Declaration
+
+A declaration supports the same states as a `Statement::LineItem` but also has a `submitted` state in addition:
+
+- `submitted` is the initial state of a declaration; if the participant is not eligible for funding and there are no duplicate declarations then the declaration remains in this state.
+
+A declaration has the same transitions as a `Statement::LineItem` but also supports:
+
+- `mark_as_eligible` transitions a line item from `submitted` to `eligible`. This happens on submitting a declaration if there are no duplicates and the participant is eligible for funding.
+- `mark_as_ineligible` transitions a line item from `submitted` to `ineligible`. This happens when there is a duplicate declaration for the participant.
+
+```mermaid
+stateDiagram-v2
+  [*] --> submitted
+  submitted --> eligible : mark_as_eligible
+  submitted --> ineligible: mark_as_ineligible
+  eligible --> payable : mark_as_payable
+  payable --> paid : mark_as_paid
+  paid --> awaiting_clawback : mark_as_awaiting_clawback
+  awaiting_clawback --> clawed_back : mark_as_clawed_back
+  eligible --> ineligible : mark_as_ineligible
+  eligible --> voided : mark_as_voided
+  payable --> voided : mark_as_voided
+  ineligible --> voided : mark_as_voided
+```
