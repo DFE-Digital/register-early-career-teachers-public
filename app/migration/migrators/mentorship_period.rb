@@ -30,23 +30,10 @@ module Migrators
 
     def migrate_one!(participant_profile)
       teacher = find_teacher_by_trn!(participant_profile.teacher_profile.trn)
-
-      success = true
       induction_records = InductionRecordSanitizer.new(participant_profile:)
 
-      if induction_records.valid?
-        mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
-        success = Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).build
-      else
-        ::TeacherMigrationFailure.create!(teacher:,
-                                          model: :mentorship_period,
-                                          message: induction_records.error,
-                                          migration_item_id: participant_profile.id,
-                                          migration_item_type: participant_profile.class.name)
-        success = false
-      end
-
-      success
+      mentorship_period_data = MentorshipPeriodExtractor.new(induction_records:)
+      Builders::MentorshipPeriods.new(teacher:, mentorship_period_data:).build
     end
 
   private

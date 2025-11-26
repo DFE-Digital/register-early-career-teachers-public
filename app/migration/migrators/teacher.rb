@@ -76,31 +76,21 @@ module Migrators
     end
 
     def migrate_profile_periods(teacher, participant_profile)
-      result = true
       sanitizer = ::InductionRecordSanitizer.new(participant_profile:)
 
-      if sanitizer.valid?
-        # TeacherPeriodsExtractor creates nested periods for a teacher with school periods at the top
-        # |-school_period_1
-        # |    |-training_period_1
-        # |    |-training_period_2
-        # |
-        # |-school_period_2
-        # |    |-training_period_3
-        #
-        teacher_periods = ::TeacherPeriodsExtractor.new(induction_records: sanitizer.induction_records).teacher_periods
-        teacher_periods = add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile) if participant_profile.mentor?
+      # TeacherPeriodsExtractor creates nested periods for a teacher with school periods at the top
+      # |-school_period_1
+      # |    |-training_period_1
+      # |    |-training_period_2
+      # |
+      # |-school_period_2
+      # |    |-training_period_3
+      #
+      teacher_periods = ::TeacherPeriodsExtractor.new(induction_records: sanitizer.induction_records).teacher_periods
+      teacher_periods = add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile) if participant_profile.mentor?
 
-        result = create_teacher_periods(teacher, teacher_periods, participant_profile)
-        set_teacher_profile_values!(teacher, participant_profile)
-      else
-        ::TeacherMigrationFailure.create!(teacher:,
-                                          model: participant_profile.ect? ? :ect_at_school_period : :mentor_at_school_period,
-                                          message: sanitizer.error,
-                                          migration_item_id: participant_profile.id,
-                                          migration_item_type: participant_profile.class.name)
-        result = false
-      end
+      result = create_teacher_periods(teacher, teacher_periods, participant_profile)
+      set_teacher_profile_values!(teacher, participant_profile)
 
       result
     end
