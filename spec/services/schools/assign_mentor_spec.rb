@@ -26,6 +26,18 @@ RSpec.describe Schools::AssignMentor do
         context 'current mentorship starts in the future' do
           let(:mentorship_period_started_on) { new_mentor_started_on + 1.day }
 
+          it 'deletes any events associated with the old mentorship period' do
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+            FactoryBot.create(:event)
+
+            expect(Event.all.count).to eq(3)
+            service.assign!
+
+            expect(Event.where(mentorship_period: current_mentorship)).to be_empty
+            expect(Event.all.count).to eq(1)
+          end
+
           it 'deletes the old mentorship period' do
             service.assign!
 
@@ -44,6 +56,18 @@ RSpec.describe Schools::AssignMentor do
 
         context 'current mentorship starts today' do
           let(:mentorship_period_started_on) { new_mentor_started_on }
+
+          it 'deletes any events associated with the old mentorship period' do
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+            FactoryBot.create(:event)
+
+            expect(Event.all.count).to eq(3)
+            service.assign!
+
+            expect(Event.where(mentorship_period: current_mentorship)).to be_empty
+            expect(Event.all.count).to eq(1)
+          end
 
           it 'deletes the old mentorship period' do
             service.assign!
@@ -66,6 +90,17 @@ RSpec.describe Schools::AssignMentor do
           let(:mentor_started_on) { new_mentor_started_on - 1.day }
           let(:mentorship_period_started_on) { mentor_started_on }
 
+          it 'does not delete any events associated with the old mentorship period' do
+            allow(Event).to receive(:delete_all).and_call_original
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+
+            service.assign!
+
+            expect(Event).not_to have_received(:delete_all)
+            expect(Event.where(mentorship_period: current_mentorship).count).to eq(2)
+          end
+
           it 'finishes the current mentorship period' do
             expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(new_mentor_started_on)
           end
@@ -80,6 +115,13 @@ RSpec.describe Schools::AssignMentor do
       end
 
       context 'when there is no mentorship period' do
+        it 'does not delete any events' do
+          allow(Event).to receive(:delete_all).and_call_original
+          service.assign!
+
+          expect(Event).not_to have_received(:delete_all)
+        end
+
         it "creates a new mentorship period starting on the new mentor's start date" do
           expect { service.assign! }.to change(MentorshipPeriod, :count).from(0).to(1)
           expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
@@ -96,6 +138,17 @@ RSpec.describe Schools::AssignMentor do
         context 'current mentorship starts in the future' do
           let(:mentorship_period_started_on) { new_mentor_started_on + 1.day }
 
+          it 'does not delete any events associated with the old mentorship period' do
+            allow(Event).to receive(:delete_all).and_call_original
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+
+            service.assign!
+
+            expect(Event).not_to have_received(:delete_all)
+            expect(Event.where(mentorship_period: current_mentorship).count).to eq(2)
+          end
+
           it 'ends current mentorship of the ect' do
             expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Date.current)
           end
@@ -142,6 +195,13 @@ RSpec.describe Schools::AssignMentor do
       end
 
       context 'when there is no mentorship period' do
+        it 'does not delete any events' do
+          allow(Event).to receive(:delete_all).and_call_original
+          service.assign!
+
+          expect(Event).not_to have_received(:delete_all)
+        end
+
         it "creates a new mentorship period starting on the new mentor's start date" do
           expect { service.assign! }.to change(MentorshipPeriod, :count).from(0).to(1)
           expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
