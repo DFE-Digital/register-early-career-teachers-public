@@ -21,7 +21,7 @@
 #
 #     **bold** and _italic_ text
 
-- title: Participant action endpoints added to the Register ECTs API with updated validation rules
+- title: Defer, withdraw, and resume endpoints endpoints added to the Register ECTs API with updated validation rules
   date: 2025-11-28 (PROVISIONAL)
   tags:
     - sandbox-release
@@ -38,8 +38,11 @@
     ## Withdraw endpoint
 
     You can withdraw a participant as long as:
-    - their `participant_status` is not `joining`
-    - they have not already been withdrawn or deferred
+    - their `participant_status` isn't `joining`
+    - they've been training for at least one day
+    - they've not already been withdrawn or deferred (unchanged from the 'Manage training for ECTs' API)
+
+    You will be presented with a validation error if you try to do any of these things.
 
     When a participant is withdrawn, the service will also set `participant_status` to `left` if it is not already set to this.
 
@@ -50,8 +53,11 @@
     ## Defer endpoint
 
     You can defer a participant as long as:
-    - their `participant_status` is not `joining`
-    - they have not already been withdrawn or deferred
+    - their `participant_status` isn't `joining`
+    - they've been training for at least one day
+    - they've not already been withdrawn or deferred (unchanged from the 'Manage training for ECTs' API)
+
+    You will be presented with a validation error if you try to do any of these things.
 
     When a participant is deferred, the service will also set `participant_status` to `left` if it is not already set to this.
 
@@ -59,11 +65,13 @@
 
     ## Resume endpoint
 
-    You can resume a participant only when their current status allows it. A participant cannot be resumed in the following situations:
+    You can resume a participant as long as:
     - their old school has reported they are leaving
     - their new school has reported they are joining with a different lead provider
     - the school has changed them to school-led training
     - the school has changed them to a different lead provider for training
+
+    You will be presented with a validation error if you try to do any of these things.
 
     If the new school reports they are joining with the same lead provider, their `participant_status` will move back to `joining` or `active`, and resuming will then be permitted.
 
