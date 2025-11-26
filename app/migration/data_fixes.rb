@@ -21,8 +21,8 @@ module DataFixes
   #   1. If mentor has a completion date < 1/9/2021, keep end date NULL for at_school period
   #   but set the training period end date to the next 31 August that follows their started date
   #
-  #   2. If mentor has a completion date > 1/1/2024, keep end date NULL for at_school period but set the
-  #   training period end date to match the mentor completion date
+  #   2. If mentor has a completion date >= 1/9/2021, keep end date NULL for at_school period but set the
+  #   training period end date to the next 31 August that follows their completion date
   #
   # For all other ECTs and mentors with one induction record and no end date, keep end date NULL.
   #
@@ -30,22 +30,17 @@ module DataFixes
     participant_profile = induction_record.participant_profile
     return candidate_end_date if participant_profile.ect? || candidate_end_date.present?
 
-    corrected_date = nil
+    mentor_completion_date = participant_profile.mentor_completion_date
+    return if mentor_completion_date.blank?
 
-    # logic only initially for mentors with 1 induction record that has a blank end_date
-    if participant_profile.mentor? && participant_profile.mentor_completion_date.present?
-      if participant_profile.mentor_completion_date < SERVICE_START_DATE
-        # set to the 31st August following the induction record start
-        date = induction_record.start_date
-        year = date.year
-        year += 1 if date.month > 8
-        corrected_date = Date.new(year, 8, 31)
-      elsif participant_profile.mentor_completion_date >= Date.new(2024, 1, 1)
-        corrected_date = participant_profile.mentor_completion_date
-      end
+    if mentor_completion_date < SERVICE_START_DATE
+      # set to the 31st August following the induction record start
+      the_31st_august_following(induction_record.start_date)
+    else
+      # completion on or after 1st Sept 2021
+      # set to the 31st August following the completion date
+      the_31st_august_following(mentor_completion_date)
     end
-
-    corrected_date
   end
 
   def corrected_end_date(induction_record, induction_records)
@@ -73,5 +68,10 @@ private
 
   def two_induction_records_and_last_completed?(induction_records)
     two_induction_records?(induction_records) && last_created_induction_record(induction_records).completed?
+  end
+
+  def the_31st_august_following(date)
+    year = date.month > 8 ? date.year + 1 : date.year
+    Date.new(year, 8, 31)
   end
 end
