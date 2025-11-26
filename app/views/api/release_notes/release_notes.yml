@@ -66,10 +66,10 @@
     ## Resume endpoint
 
     You can resume a participant as long as:
-    - their old school has reported they are leaving
-    - their new school has reported they are joining with a different lead provider
-    - the school has changed them to school-led training
-    - the school has changed them to a different lead provider for training
+    - their old school has not reported that they are leaving
+    - their new school has not reported that they are joining with a different lead provider
+    - the school has not changed them to school-led training
+    - the school has not changed them to a different lead provider for training
 
     You will be presented with a validation error if you try to do any of these things.
 
