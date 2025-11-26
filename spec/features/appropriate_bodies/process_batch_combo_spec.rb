@@ -98,7 +98,6 @@ RSpec.describe "Process batch events" do
     expect(page.get_by_text("0 ECTs with a released outcome")).to be_visible
     page.get_by_role("button", name: "Record outcomes").click
 
-
     expect(PendingInductionSubmissionBatch.last).to be_completing
     expect(perform_enqueued_jobs).to be(2)
     expect(PendingInductionSubmissionBatch.last).to be_completed
@@ -143,7 +142,7 @@ RSpec.describe "Process batch events" do
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action",
       /passed induction/,
-      /passed induction/,
+      /passed induction/
     )
 
     # Mimic PurgePendingInductionSubmissionsJob
