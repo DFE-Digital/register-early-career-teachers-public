@@ -389,7 +389,19 @@
   :declarations:
   - id
   - training_period_id
+  - billable_statement_id
+  - refundable_statement_id
   - declaration_type
+  - date
+  - voided_at
+  - voided_by_user_id
+  - mentorship_period_id
+  - api_id
+  - evidence_type
+  - status
+  - ineligibility_reason
+  - sparsity_uplift
+  - pupil_premium_uplift
   - created_at
   - updated_at
   :data_migrations:
