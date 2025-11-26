@@ -285,6 +285,126 @@ RSpec.describe Migrators::Teacher do
       end
     end
 
+    describe "#calculate_api_updated_at" do
+      it "uses induction_record updated_at when it is the most recent" do
+        user = FactoryBot.create(:migration_user)
+        user.update_column(:updated_at, 1.week.ago)
+
+        teacher_profile = FactoryBot.create(:migration_teacher_profile, user:)
+        ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user:)
+        ect.update_column(:updated_at, 1.week.ago)
+        ect.participant_identity.update_column(:updated_at, 1.week.ago)
+
+        # Create induction record with the most recent updated_at
+        most_recent_time = 1.hour.ago
+        induction_record = FactoryBot.create(:migration_induction_record, participant_profile: ect)
+        induction_record.update_column(:updated_at, most_recent_time)
+
+        # Setup RECT dependencies
+        school = induction_record.induction_programme.school_cohort.school
+        cohort = induction_record.induction_programme.school_cohort.cohort
+        partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
+        induction_programme = ect.school_cohort.default_induction_programme
+        FactoryBot.create(:migration_provider_relationship, lead_provider: partnership.lead_provider, delivery_partner: partnership.delivery_partner, cohort:)
+        induction_programme.update!(partnership:)
+        create_resource(teacher_profile)
+
+        instance.migrate!
+
+        teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+        expect(teacher.api_updated_at).to be_within(1.second).of(most_recent_time)
+      end
+
+      it "uses participant_profile updated_at when it is the most recent" do
+        user = FactoryBot.create(:migration_user)
+        user.update_column(:updated_at, 1.week.ago)
+
+        teacher_profile = FactoryBot.create(:migration_teacher_profile, user:)
+
+        # Create participant_profile with the most recent updated_at
+        most_recent_time = 30.minutes.ago
+        ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user:)
+        ect.update_column(:updated_at, most_recent_time)
+        ect.participant_identity.update_column(:updated_at, 1.week.ago)
+
+        induction_record = FactoryBot.create(:migration_induction_record, participant_profile: ect)
+        induction_record.update_column(:updated_at, 1.week.ago)
+
+        # Setup RECT dependencies
+        school = induction_record.induction_programme.school_cohort.school
+        cohort = induction_record.induction_programme.school_cohort.cohort
+        partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
+        induction_programme = ect.school_cohort.default_induction_programme
+        FactoryBot.create(:migration_provider_relationship, lead_provider: partnership.lead_provider, delivery_partner: partnership.delivery_partner, cohort:)
+        induction_programme.update!(partnership:)
+        create_resource(teacher_profile)
+
+        instance.migrate!
+
+        teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+        expect(teacher.api_updated_at).to be_within(1.second).of(most_recent_time)
+      end
+
+      it "uses user updated_at when it is the most recent" do
+        # Create user with the most recent updated_at
+        most_recent_time = 10.minutes.ago
+        user = FactoryBot.create(:migration_user)
+        user.update_column(:updated_at, most_recent_time)
+
+        teacher_profile = FactoryBot.create(:migration_teacher_profile, user:)
+        ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user:)
+        ect.update_column(:updated_at, 1.week.ago)
+        ect.participant_identity.update_column(:updated_at, 1.week.ago)
+
+        induction_record = FactoryBot.create(:migration_induction_record, participant_profile: ect)
+        induction_record.update_column(:updated_at, 1.week.ago)
+
+        # Setup RECT dependencies
+        school = induction_record.induction_programme.school_cohort.school
+        cohort = induction_record.induction_programme.school_cohort.cohort
+        partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
+        induction_programme = ect.school_cohort.default_induction_programme
+        FactoryBot.create(:migration_provider_relationship, lead_provider: partnership.lead_provider, delivery_partner: partnership.delivery_partner, cohort:)
+        induction_programme.update!(partnership:)
+        create_resource(teacher_profile)
+
+        instance.migrate!
+
+        teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+        expect(teacher.api_updated_at).to be_within(1.second).of(most_recent_time)
+      end
+
+      it "uses participant_identity updated_at when it is the most recent" do
+        user = FactoryBot.create(:migration_user)
+        user.update_column(:updated_at, 1.week.ago)
+
+        teacher_profile = FactoryBot.create(:migration_teacher_profile, user:)
+        ect = FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user:)
+        ect.update_column(:updated_at, 1.week.ago)
+
+        induction_record = FactoryBot.create(:migration_induction_record, participant_profile: ect)
+        induction_record.update_column(:updated_at, 1.week.ago)
+
+        # Update participant_identity (created by factory) to have the most recent updated_at
+        most_recent_time = 15.minutes.ago
+        ect.participant_identity.update_column(:updated_at, most_recent_time)
+
+        # Setup RECT dependencies
+        school = induction_record.induction_programme.school_cohort.school
+        cohort = induction_record.induction_programme.school_cohort.cohort
+        partnership = FactoryBot.create(:migration_partnership, school:, cohort:)
+        induction_programme = ect.school_cohort.default_induction_programme
+        FactoryBot.create(:migration_provider_relationship, lead_provider: partnership.lead_provider, delivery_partner: partnership.delivery_partner, cohort:)
+        induction_programme.update!(partnership:)
+        create_resource(teacher_profile)
+
+        instance.migrate!
+
+        teacher = ::Teacher.find_by!(trn: teacher_profile.trn)
+        expect(teacher.api_updated_at).to be_within(1.second).of(most_recent_time)
+      end
+    end
+
     describe ".teachers" do
       it "includes teacher profiles with and without TRN" do
         teacher_profile_with_nil_trn = FactoryBot.create(:migration_teacher_profile, trn: nil)

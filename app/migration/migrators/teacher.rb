@@ -70,6 +70,7 @@ module Migrators
 
       teacher.created_at = user.created_at
       teacher.updated_at = user.updated_at
+      teacher.api_updated_at = calculate_api_updated_at(teacher_profile)
       teacher.save!
 
       teacher
@@ -190,6 +191,22 @@ module Migrators
 
     def name_does_not_match?(teacher, full_name)
       [teacher.trs_first_name, teacher.trs_last_name].join(" ") != full_name
+    end
+
+    # Calculates the api_updated_at timestamp using ECF's ParticipantSerializer logic:
+    # The max of participant_profiles.updated_at, user.updated_at,
+    # participant_identities.updated_at, and induction_records.updated_at
+    def calculate_api_updated_at(teacher_profile)
+      user = teacher_profile.user
+      participant_profiles = teacher_profile.participant_profiles.includes(:induction_records)
+      participant_identities = user.participant_identities
+
+      [
+        participant_profiles.map(&:updated_at),
+        user.updated_at,
+        participant_identities.map(&:updated_at),
+        participant_profiles.flat_map(&:induction_records).map(&:updated_at)
+      ].flatten.compact.max
     end
 
     def find_school_by_urn!(urn)
