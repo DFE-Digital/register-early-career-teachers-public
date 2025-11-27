@@ -1,0 +1,30 @@
+<% page_data(
+  title: "Tell us if #{@wizard.teacher_full_name} has left or is leaving your school permanently",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: schools_ect_path(@wizard.ect_at_school_period)
+) %>
+
+<p class="govuk-body">
+  You do not need to tell us if <%= @wizard.teacher_full_name %> is leaving but expected to return, for example, 
+  if they’re taking parental leave.
+</p>
+
+<%= form_with model: @wizard.current_step, url: @wizard.current_step_path do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+  <%= form.govuk_date_field :leaving_on,
+    legend: {
+      text: "When did or when will #{@wizard.teacher_full_name} be leaving your school?"
+    },
+    hint: { text: "For example, 31 3 2025" } %>
+
+  <%= form.govuk_submit "Continue" %>
+
+  <p class="govuk-body">
+    <%= govuk_link_to(
+          "Cancel and go back to #{@wizard.teacher_full_name}’s details",
+          schools_ect_path(@wizard.ect_at_school_period),
+          no_visited_state: true
+        ) %>
+  </p>
+<% end %>
