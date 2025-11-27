@@ -34,6 +34,10 @@ constraints -> { Rails.application.config.enable_schools_interface } do
       namespace :change_lead_provider_wizard, path: "change-lead-provider" do
         concerns :wizardable, wizard: Schools::ECTs::ChangeLeadProviderWizard
       end
+
+      namespace :teacher_leaving_wizard, path: "report-teacher-leaving" do
+        concerns :wizardable, wizard: Schools::ECTs::TeacherLeavingWizard
+      end
     end
 
     scope module: :mentors, path: "/mentors/:mentor_id", as: :mentors do
