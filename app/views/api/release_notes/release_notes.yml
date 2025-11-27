@@ -22,7 +22,7 @@
 #     **bold** and _italic_ text
 
 - title: Defer, withdraw, and resume endpoints endpoints added to the Register ECTs API with updated validation rules
-  date: 2025-11-28 (PROVISIONAL)
+  date: 2025-11-27
   tags:
     - sandbox-release
     - breaking-changes
