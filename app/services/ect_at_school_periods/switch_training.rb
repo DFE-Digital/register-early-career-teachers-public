@@ -128,7 +128,7 @@ module ECTAtSchoolPeriods
     end
 
     def previous_provider_led_training_periods_for_mentor?
-      @mentor_at_school_period.training_periods.any? { :provider_led_training_programme? }
+      @mentor_at_school_period.training_periods.any?(&:provider_led_training_programme?)
     end
 
     def mentor_ineligible_for_funding?
