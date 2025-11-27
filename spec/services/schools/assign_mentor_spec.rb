@@ -11,22 +11,22 @@ RSpec.describe Schools::AssignMentor do
   let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: new_mentor_started_on, school: mentee.school) }
   let(:author) { FactoryBot.create(:school_user, school_urn: mentee.school.urn) }
 
-  describe '#assign!' do
-    context 'when the new mentor is moving schools' do
+  describe "#assign!" do
+    context "when the new mentor is moving schools" do
       let(:previous_school) { FactoryBot.create(:school) }
 
       before do
         FactoryBot.create(:mentor_at_school_period, :ongoing, school: previous_school, teacher: new_mentor.teacher)
       end
 
-      context 'when there is a mentorship period' do
+      context "when there is a mentorship period" do
         let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on) }
         let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: mentorship_period_started_on) }
 
-        context 'current mentorship starts in the future' do
+        context "current mentorship starts in the future" do
           let(:mentorship_period_started_on) { new_mentor_started_on + 1.day }
 
-          it 'deletes any events associated with the old mentorship period' do
+          it "deletes any events associated with the old mentorship period" do
             FactoryBot.create(:event, mentorship_period: current_mentorship)
             FactoryBot.create(:event, mentorship_period: current_mentorship)
             FactoryBot.create(:event)
@@ -38,7 +38,7 @@ RSpec.describe Schools::AssignMentor do
             expect(Event.all.count).to eq(1)
           end
 
-          it 'deletes the old mentorship period' do
+          it "deletes the old mentorship period" do
             service.assign!
 
             expect { current_mentorship.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -54,10 +54,10 @@ RSpec.describe Schools::AssignMentor do
           end
         end
 
-        context 'current mentorship starts today' do
+        context "current mentorship starts today" do
           let(:mentorship_period_started_on) { new_mentor_started_on }
 
-          it 'deletes any events associated with the old mentorship period' do
+          it "deletes any events associated with the old mentorship period" do
             FactoryBot.create(:event, mentorship_period: current_mentorship)
             FactoryBot.create(:event, mentorship_period: current_mentorship)
             FactoryBot.create(:event)
@@ -69,7 +69,7 @@ RSpec.describe Schools::AssignMentor do
             expect(Event.all.count).to eq(1)
           end
 
-          it 'deletes the old mentorship period' do
+          it "deletes the old mentorship period" do
             service.assign!
 
             expect { current_mentorship.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -85,12 +85,12 @@ RSpec.describe Schools::AssignMentor do
           end
         end
 
-        context 'current mentorship has started' do
+        context "current mentorship has started" do
           let(:mentee_started_on) { new_mentor_started_on - 1.day }
           let(:mentor_started_on) { new_mentor_started_on - 1.day }
           let(:mentorship_period_started_on) { mentor_started_on }
 
-          it 'does not delete any events associated with the old mentorship period' do
+          it "does not delete any events associated with the old mentorship period" do
             allow(Event).to receive(:delete_all).and_call_original
             FactoryBot.create(:event, mentorship_period: current_mentorship)
             FactoryBot.create(:event, mentorship_period: current_mentorship)
@@ -101,7 +101,7 @@ RSpec.describe Schools::AssignMentor do
             expect(Event.where(mentorship_period: current_mentorship).count).to eq(2)
           end
 
-          it 'finishes the current mentorship period' do
+          it "finishes the current mentorship period" do
             expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(new_mentor_started_on)
           end
 
@@ -114,8 +114,8 @@ RSpec.describe Schools::AssignMentor do
         end
       end
 
-      context 'when there is no mentorship period' do
-        it 'does not delete any events' do
+      context "when there is no mentorship period" do
+        it "does not delete any events" do
           allow(Event).to receive(:delete_all).and_call_original
           service.assign!
 
@@ -130,15 +130,15 @@ RSpec.describe Schools::AssignMentor do
       end
     end
 
-    context 'when the new mentor is not moving schools' do
-      context 'when there is a mentorship period' do
+    context "when the new mentor is not moving schools" do
+      context "when there is a mentorship period" do
         let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on) }
         let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: mentorship_period_started_on) }
 
-        context 'current mentorship starts in the future' do
+        context "current mentorship starts in the future" do
           let(:mentorship_period_started_on) { new_mentor_started_on + 1.day }
 
-          it 'does not delete any events associated with the old mentorship period' do
+          it "does not delete any events associated with the old mentorship period" do
             allow(Event).to receive(:delete_all).and_call_original
             FactoryBot.create(:event, mentorship_period: current_mentorship)
             FactoryBot.create(:event, mentorship_period: current_mentorship)
@@ -149,11 +149,11 @@ RSpec.describe Schools::AssignMentor do
             expect(Event.where(mentorship_period: current_mentorship).count).to eq(2)
           end
 
-          it 'ends current mentorship of the ect' do
+          it "ends current mentorship of the ect" do
             expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Date.current)
           end
 
-          it 'adds a new mentorship for the ect with the new mentor starting today' do
+          it "adds a new mentorship for the ect with the new mentor starting today" do
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_mentor).to eq(current_mentor)
             expect { service.assign! }.to change(MentorshipPeriod, :count).from(1).to(2)
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
@@ -161,14 +161,14 @@ RSpec.describe Schools::AssignMentor do
           end
         end
 
-        context 'current mentorship starts today' do
+        context "current mentorship starts today" do
           let(:mentorship_period_started_on) { new_mentor_started_on }
 
-          it 'ends current mentorship of the ect' do
+          it "ends current mentorship of the ect" do
             expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Date.current)
           end
 
-          it 'adds a new mentorship for the ect with the new mentor starting today' do
+          it "adds a new mentorship for the ect with the new mentor starting today" do
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_mentor).to eq(current_mentor)
             expect { service.assign! }.to change(MentorshipPeriod, :count).from(1).to(2)
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
@@ -176,16 +176,16 @@ RSpec.describe Schools::AssignMentor do
           end
         end
 
-        context 'current mentorship has started' do
+        context "current mentorship has started" do
           let(:mentee_started_on) { new_mentor_started_on - 1.day }
           let(:mentor_started_on) { new_mentor_started_on - 1.day }
           let(:mentorship_period_started_on) { mentor_started_on }
 
-          it 'finishes the current mentorship period' do
+          it "finishes the current mentorship period" do
             expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Date.current)
           end
 
-          it 'adds a new mentorship for the ect with the new mentor starting today' do
+          it "adds a new mentorship for the ect with the new mentor starting today" do
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_mentor).to eq(current_mentor)
             expect { service.assign! }.to change(MentorshipPeriod, :count).from(1).to(2)
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
@@ -194,8 +194,8 @@ RSpec.describe Schools::AssignMentor do
         end
       end
 
-      context 'when there is no mentorship period' do
-        it 'does not delete any events' do
+      context "when there is no mentorship period" do
+        it "does not delete any events" do
           allow(Event).to receive(:delete_all).and_call_original
           service.assign!
 
@@ -210,8 +210,8 @@ RSpec.describe Schools::AssignMentor do
       end
     end
 
-    describe 'future dates' do
-      context 'when the mentee (ECT) start date is in the future' do
+    describe "future dates" do
+      context "when the mentee (ECT) start date is in the future" do
         let(:mentee_started_on) { 3.weeks.from_now.to_date }
 
         it "sets the start date to the mentee start date" do
@@ -342,64 +342,64 @@ RSpec.describe Schools::AssignMentor do
     end
   end
 
-  describe '#mentor_moving_schools?' do
-    context 'when there are no previous mentor at school periods for this teacher' do
+  describe "#mentor_moving_schools?" do
+    context "when there are no previous mentor at school periods for this teacher" do
       before do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on)
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(service.send(:mentor_moving_schools?)).to be false
       end
     end
 
-    context 'when there are mentor at school periods for other teachers which finish in the future' do
+    context "when there are mentor at school periods for other teachers which finish in the future" do
       before do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, finished_on: 1.month.from_now)
       end
 
-      it 'returns false' do
+      it "returns false" do
         expect(service.send(:mentor_moving_schools?)).to be false
       end
     end
 
-    context 'when the new mentor teacher has an ongoing mentor at school period at another school' do
+    context "when the new mentor teacher has an ongoing mentor at school period at another school" do
       before do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, teacher: new_mentor.teacher)
       end
 
-      it 'returns true' do
+      it "returns true" do
         expect(service.send(:mentor_moving_schools?)).to be true
       end
     end
 
-    context 'when the new mentor teacher has an ongoing mentor at school period at several other schools' do
+    context "when the new mentor teacher has an ongoing mentor at school period at several other schools" do
       before do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, teacher: new_mentor.teacher)
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, teacher: new_mentor.teacher)
       end
 
-      it 'returns true' do
+      it "returns true" do
         expect(service.send(:mentor_moving_schools?)).to be true
       end
     end
 
-    context 'when the new mentor teacher has an ongoing mentor at school period at another school which finishes in the future' do
+    context "when the new mentor teacher has an ongoing mentor at school period at another school which finishes in the future" do
       before do
         FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, finished_on: 1.month.from_now, teacher: new_mentor.teacher)
       end
 
-      it 'returns true' do
+      it "returns true" do
         expect(service.send(:mentor_moving_schools?)).to be true
       end
     end
 
-    context 'when the new mentor teacher has an ongoing mentor at school period at another school which finish in the past' do
+    context "when the new mentor teacher has an ongoing mentor at school period at another school which finish in the past" do
       before do
         FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: 1.month.ago, teacher: new_mentor.teacher)
       end
 
-      it 'returns true' do
+      it "returns true" do
         expect(service.send(:mentor_moving_schools?)).to be true
       end
     end
