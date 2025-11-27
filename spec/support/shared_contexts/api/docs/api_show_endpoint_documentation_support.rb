@@ -1,6 +1,6 @@
 RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |params = {}|
   path params[:url] do
-    get "Retrieve a single #{params[:resource_description]}" do
+    get params[:resource_description] do
       tags params[:tag]
       consumes "application/json"
       produces "application/json"
@@ -23,7 +23,7 @@ RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |p
                   style: "deepObject"
       end
 
-      response "200", "A single #{params[:resource_description]}" do
+      response "200", params[:response_description] do
         let(:id) { resource.api_id }
 
         schema({ "$ref": params[:response_schema_ref] })

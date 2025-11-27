@@ -24,7 +24,8 @@ describe "Unfunded mentors endpoint", :with_metadata, openapi_spec: "v3/swagger.
                   {
                     url: "/api/v3/unfunded-mentors",
                     tag: "Unfunded mentors",
-                    resource_description: "unfunded mentors",
+                    resource_description: "Retrieve multiple unfunded mentors",
+                    response_description: "A list of unfunded mentors",
                     response_schema_ref: "#/components/schemas/UnfundedMentorsResponse",
                     filter_schema_ref: "#/components/schemas/UnfundedMentorsFilter",
                     sorting_schema_ref: "#/components/schemas/SortingTimestamps",
@@ -34,7 +35,8 @@ describe "Unfunded mentors endpoint", :with_metadata, openapi_spec: "v3/swagger.
                   {
                     url: "/api/v3/unfunded-mentors/{id}",
                     tag: "Unfunded mentors",
-                    resource_description: "unfunded mentor",
+                    resource_description: "Retrieve a single unfunded mentor",
+                    response_description: "A single unfunded mentor",
                     response_schema_ref: "#/components/schemas/UnfundedMentorResponse",
                   } do
   end
