@@ -1,18 +1,28 @@
 RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
   let(:use_previous_ect_choices) { nil }
-  let(:store) { FactoryBot.build(:session_repository, working_pattern: "Full time", use_previous_ect_choices:, training_programme: "provider_led") }
+
+  let(:store) do
+    FactoryBot.build(
+      :session_repository,
+      working_pattern: "Full time",
+      use_previous_ect_choices:,
+      training_programme: "provider_led"
+    )
+  end
 
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard, current_step: :check_answers, store:)
+    FactoryBot.build(
+      :register_ect_wizard,
+      current_step: :check_answers,
+      store:
+    )
   end
 
   let(:school) { wizard.school }
-  let(:decorated_school) { Schools::DecoratedSchool.new(wizard.school) }
 
   before do
     assign(:ect, wizard.ect)
     assign(:school, school)
-    assign(:decorated_school, decorated_school)
     assign(:wizard, wizard)
   end
 
@@ -41,10 +51,10 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
   describe "programme details section" do
     describe "previous programme choices row" do
-      context "when the decorator says the row should be shown" do
+      context "when the current step says the row should be shown" do
         before do
-          allow(decorated_school).to receive(:show_previous_programme_choices_row?)
-            .with(wizard)
+          allow(wizard.current_step)
+            .to receive(:show_previous_programme_choices_row?)
             .and_return(true)
         end
 
@@ -54,10 +64,10 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
         end
       end
 
-      context "when the decorator says the row should not be shown" do
+      context "when the current step says the row should not be shown" do
         before do
-          allow(decorated_school).to receive(:show_previous_programme_choices_row?)
-            .with(wizard)
+          allow(wizard.current_step)
+            .to receive(:show_previous_programme_choices_row?)
             .and_return(false)
         end
 
@@ -72,22 +82,30 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
       let(:use_previous_ect_choices) { true }
 
       before do
-        allow(decorated_school).to receive(:show_previous_programme_choices_row?)
-          .with(wizard)
+        allow(wizard.current_step)
+          .to receive(:show_previous_programme_choices_row?)
           .and_return(true)
       end
 
       it "hides change links for appropriate body and lead provider" do
         render
-        expect(rendered).not_to have_link("Change", href: schools_register_ect_wizard_change_state_school_appropriate_body_path)
-        expect(rendered).not_to have_link("Change", href: schools_register_ect_wizard_change_lead_provider_path)
+        expect(rendered).not_to have_link(
+          "Change",
+          href: schools_register_ect_wizard_change_state_school_appropriate_body_path
+        )
+        expect(rendered).not_to have_link(
+          "Change",
+          href: schools_register_ect_wizard_change_lead_provider_path
+        )
       end
 
       context "when ECT has a provider-led programme and a confirmed partnership" do
         before do
           allow(wizard.ect).to receive(:provider_led?).and_return(true)
-          allow(wizard.ect).to receive(:lead_provider_has_confirmed_partnership_for_contract_period?)
+          allow(wizard.ect)
+            .to receive(:lead_provider_has_confirmed_partnership_for_contract_period?)
             .with(school).and_return(true)
+
           allow(wizard.ect).to receive_messages(
             lead_provider_name: "Confirmed LP",
             delivery_partner_name: "Confirmed DP"
@@ -96,7 +114,10 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
         it "hides the change link for training programme" do
           render
-          expect(rendered).not_to have_link("Change", href: schools_register_ect_wizard_change_training_programme_path)
+          expect(rendered).not_to have_link(
+            "Change",
+            href: schools_register_ect_wizard_change_training_programme_path
+          )
         end
 
         it "renders the delivery partner name from confirmed previous choices" do
@@ -111,15 +132,21 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
       let(:use_previous_ect_choices) { false }
 
       before do
-        allow(decorated_school).to receive(:show_previous_programme_choices_row?)
-          .with(wizard)
+        allow(wizard.current_step)
+          .to receive(:show_previous_programme_choices_row?)
           .and_return(true)
       end
 
       it "shows change links for appropriate body and lead provider" do
         render
-        expect(rendered).to have_link("Change", href: schools_register_ect_wizard_change_state_school_appropriate_body_path)
-        expect(rendered).to have_link("Change", href: schools_register_ect_wizard_change_lead_provider_path)
+        expect(rendered).to have_link(
+          "Change",
+          href: schools_register_ect_wizard_change_state_school_appropriate_body_path
+        )
+        expect(rendered).to have_link(
+          "Change",
+          href: schools_register_ect_wizard_change_lead_provider_path
+        )
       end
 
       context "when ECT has a provider-led programme" do
@@ -129,15 +156,19 @@ RSpec.describe "schools/register_ect_wizard/check_answers.html.erb" do
 
         it "shows change link for training programme" do
           render
-          expect(rendered).to have_link("Change", href: schools_register_ect_wizard_change_training_programme_path)
+          expect(rendered).to have_link(
+            "Change",
+            href: schools_register_ect_wizard_change_training_programme_path
+          )
         end
       end
     end
 
     context "when the previous programme choices row is not shown at all" do
       before do
-        allow(decorated_school).to receive(:show_previous_programme_choices_row?)
-          .with(wizard).and_return(false)
+        allow(wizard.current_step)
+          .to receive(:show_previous_programme_choices_row?)
+          .and_return(false)
 
         allow(wizard.ect).to receive(:use_previous_ect_choices).and_return(false)
       end
