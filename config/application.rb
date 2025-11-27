@@ -44,6 +44,8 @@ module RegisterEarlyCareerTeachers
     config.active_record.encryption.key_derivation_salt = ENV["ENCRYPTION_DERIVATION_SALT"]
 
     # Custom config
+
+    config.test_guidance_fixtures = Rails.root.join("spec/fixtures/seeds_trs.csv")
     config.enable_test_guidance = ActiveModel::Type::Boolean.new.cast(ENV.fetch("TEST_GUIDANCE", false))
     config.enable_fake_trs_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_FAKE_TRS_API", false))
     config.enable_personas = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONAS", false))
