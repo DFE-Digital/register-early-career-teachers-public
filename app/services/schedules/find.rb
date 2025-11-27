@@ -1,11 +1,13 @@
 module Schedules
   class Find
-    attr_accessor :period, :training_programme, :started_on
+    attr_accessor :period, :training_programme, :started_on, :period_type_key, :mentee
 
-    def initialize(period:, training_programme:, started_on:)
+    def initialize(period:, training_programme:, started_on:, period_type_key:, mentee:)
       @period = period
       @training_programme = training_programme
       @started_on = started_on
+      @period_type_key = period_type_key
+      @mentee = mentee
     end
 
     def call
@@ -54,9 +56,29 @@ module Schedules
       end
     end
 
-    # TODO: in due course, we will assign non-standard identifiers
     def identifier
-      "ecf-standard-#{schedule_month}"
+      identifier_type = replacement_schedule? ? "replacement" : "standard"
+
+      "ecf-#{identifier_type}-#{schedule_month}"
+    end
+
+    def mentorship_periods_for_mentee_with_different_mentor
+      MentorAtSchoolPeriod
+        .joins(:mentorship_periods)
+        .merge(MentorshipPeriod.for_mentee(mentee.id))
+        .where.not(id: period.id)
+    end
+
+    def previous_mentor_started_training?
+      mentorship_periods_for_mentee_with_different_mentor.joins(:declarations).exists?
+    end
+
+    def replacement_schedule?
+      return false unless period_type_key == :mentor_at_school_period
+      return false unless mentee && mentee.provider_led_training_programme?
+      return false if teacher.mentor_became_ineligible_for_funding_on.present?
+
+      previous_mentor_started_training?
     end
   end
 end

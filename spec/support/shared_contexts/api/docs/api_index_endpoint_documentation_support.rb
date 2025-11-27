@@ -1,6 +1,6 @@
 RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |params = {}|
   path params[:url] do
-    get "Retrieve multiple #{params[:resource_description]}" do
+    get params[:resource_description] do
       tags params[:tag]
       consumes "application/json"
       produces "application/json"
@@ -33,7 +33,7 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
                   }
       end
 
-      response "200", "A list of #{params[:resource_description]}" do
+      response "200", params[:response_description] do
         schema({ "$ref": params[:response_schema_ref] })
 
         after { override_response_content!(it) }

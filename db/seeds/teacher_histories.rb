@@ -137,6 +137,7 @@ cp_2025 = ContractPeriod.find_by(year: 2025)
 
 ambition_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambition_institute)
 ambition_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambition_institute)
+ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: ambition_institute)
 teach_first_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: teach_first)
 teach_first_grain_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: teach_first)
 
@@ -154,6 +155,11 @@ ambition_artisan_partnership_2023 = find_school_partnership(
   lead_provider: ambition_institute,
   delivery_partner: artisan_education_group,
   contract_period: ContractPeriod.find_by!(year: 2023)
+)
+ambition_artisan_partnership_2025 = find_school_partnership(
+  lead_provider: ambition_institute,
+  delivery_partner: artisan_education_group,
+  contract_period: ContractPeriod.find_by!(year: 2025)
 )
 teach_first_grain_partnership_2021 = find_school_partnership(
   contract_period: ContractPeriod.find_by!(year: 2021),
@@ -622,14 +628,16 @@ john_withers_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_peri
                                                           started_on: Date.new(2022, 9, 1),
                                                           finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
 
-FactoryBot.create(:training_period,
-                  :for_mentor,
-                  :with_schedule,
-                  mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
-                  started_on: Date.new(2022, 9, 1),
-                  finished_on: nil,
-                  school_partnership: teach_first_grain_partnership_2022,
-                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+john_withers_training_period = FactoryBot.create(:training_period,
+                                                 :for_mentor,
+                                                 :with_schedule,
+                                                 mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
+                                                 started_on: Date.new(2022, 9, 1),
+                                                 finished_on: nil,
+                                                 school_partnership: teach_first_grain_partnership_2022,
+                                                 training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+FactoryBot.create(:declaration, training_period: john_withers_training_period)
 
 print_seed_info("Ichigo Kurosaki (Mentor)", indent: 2, colour: MENTOR_COLOUR)
 
@@ -792,6 +800,42 @@ FactoryBot.create(:training_period,
                   school_partnership: teach_first_grain_partnership_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
+print_seed_info("Joan Sims (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
+joan_sims = Teacher.find_by!(trs_first_name: "Joan", trs_last_name: "Sims")
+joan_sims_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
+                                                        teacher: joan_sims,
+                                                        school: abbey_grove_school,
+                                                        email: "joan.sims@st-trinians.org.uk",
+                                                        started_on: Date.new(2025, 9, 1),
+                                                        finished_on: nil,
+                                                        school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
+FactoryBot.create(:training_period,
+                  :for_ect,
+                  :with_schedule,
+                  ect_at_school_period: joan_sims_ect_at_abbey_grove_school,
+                  started_on: Date.new(2025, 9, 1),
+                  finished_on: nil,
+                  school_partnership: ambition_artisan_partnership_2025,
+                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+print_seed_info("Hattie Jacques (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
+hattie_jacques = Teacher.find_by!(trs_first_name: "Hattie", trs_last_name: "Jacques")
+hattie_jacques_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
+                                                             teacher: hattie_jacques,
+                                                             school: abbey_grove_school,
+                                                             email: "hattie.jacques@st-trinians.org.uk",
+                                                             started_on: Date.new(2025, 9, 5),
+                                                             finished_on: nil,
+                                                             school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
+FactoryBot.create(:training_period,
+                  :for_ect,
+                  :with_schedule,
+                  ect_at_school_period: hattie_jacques_ect_at_abbey_grove_school,
+                  started_on: Date.new(2025, 9, 5),
+                  finished_on: nil,
+                  school_partnership: ambition_artisan_partnership_2025,
+                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
 print_seed_info("Adding mentorships:")
 
 FactoryBot.create(:mentorship_period,
@@ -816,4 +860,16 @@ FactoryBot.create(:mentorship_period,
                   mentor: helen_mirren_mentoring_at_brookfield_school,
                   mentee: stephen_fry_ect_at_brookfield_school,
                   started_on: Date.new(2021, 9, 1),
+                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+
+FactoryBot.create(:mentorship_period,
+                  mentor: john_withers_mentoring_at_abbey_grove,
+                  mentee: joan_sims_ect_at_abbey_grove_school,
+                  started_on: Date.new(2025, 9, 15),
+                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+
+FactoryBot.create(:mentorship_period,
+                  mentor: john_withers_mentoring_at_abbey_grove,
+                  mentee: hattie_jacques_ect_at_abbey_grove_school,
+                  started_on: Date.new(2025, 9, 25),
                   finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
