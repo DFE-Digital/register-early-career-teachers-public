@@ -216,10 +216,10 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
       expect(mentor_at_school_period.email).to eq("dusty@rhodes.com")
     end
 
-    context 'when the start date is specified by the wizard' do
+    context "when the start date is specified by the wizard" do
       let(:started_at_new_school) { Date.current - 1.month }
 
-      it 'creates a mentor_at_school_period with the given start date' do
+      it "creates a mentor_at_school_period with the given start date" do
         store.started_on = started_at_new_school
         registration_store.register!(author:)
 
