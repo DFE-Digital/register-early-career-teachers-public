@@ -48,6 +48,45 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       end
     end
 
+    context "when start date is in the future" do
+      let(:start_date) { Date.new(2025, 5, 2) }
+
+      around do |example|
+        travel_to(Date.new(2025, 1, 1)) { example.run }
+      end
+
+      it { is_expected.to be_valid }
+
+      context "and the ECT has a previous registration" do
+        let(:teacher) { FactoryBot.create(:teacher) }
+
+        before do
+          store.trn = teacher.trn
+          FactoryBot.create(:ect_at_school_period, previous_period, teacher:, school: FactoryBot.create(:school))
+        end
+
+        context "and the previous registration is finished" do
+          let(:previous_period) { :finished }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "and the previous registration is ongoing" do
+          let(:previous_period) { :ongoing }
+
+          it "is valid up to 4 months from today" do
+            subject.start_date = start_date - 1.day
+            expect(subject).to be_valid
+          end
+
+          it "is invalid over 4 months from today" do
+            expect(subject).not_to be_valid
+            expect(subject.errors[:start_date]).to include("Start date must be before 2 May 2025")
+          end
+        end
+      end
+    end
+
     describe "start date must be after previous ECTAtSchoolPeriod started_on date" do
       let(:previous_school) do
         FactoryBot.create(:school, :independent).tap do |school|
