@@ -1,0 +1,26 @@
+<% page_data(
+    title: "Confirm that #{@wizard.teacher_full_name} has left your school permanently",
+    backlink_href: @wizard.previous_step_path
+) %>
+
+<p class="govuk-body">
+  You’ve told us that <%= @wizard.teacher_full_name %> 
+  left your school on <%= @wizard.current_step.leaving_date.to_fs(:govuk) %>.
+</p>
+
+<p class="govuk-body">
+  You will not be able to view or edit <%= @wizard.teacher_full_name %>’s details.
+</p>
+
+<%= govuk_button_to(
+      "Confirm and continue",
+      @wizard.current_step_path
+    ) %>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Cancel and go back to #{@wizard.teacher_full_name}’s details",
+        schools_ect_path(@wizard.ect_at_school_period),
+        no_visited_state: true
+      ) %>
+</p>
