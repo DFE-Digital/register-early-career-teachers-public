@@ -25,7 +25,7 @@
   date: 2025-11-27
   tags:
     - sandbox-release
-    - breaking-changes
+    - breaking-change
   body: |
     We have updated the validation logic and participant status behaviour for the following existing endpoints on the Register ECTs API:
 
