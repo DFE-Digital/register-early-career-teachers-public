@@ -57,8 +57,10 @@ private
         # nothing has changed regarding periods other than end_date
         current_period.end_date = end_date
         current_period.end_source_id = induction_record.id
-        current_training.end_date = end_date
-        current_training.end_source_id = induction_record.id
+        unless two_irs_at_a_school_and_only_last_deferred_or_withdrawn?(induction_records)
+          current_training.end_date = end_date
+          current_training.end_source_id = induction_record.id
+        end
       end
     end
   end
@@ -71,11 +73,7 @@ private
     core_materials = induction_programme.core_induction_programme&.name
     school_urn = induction_programme.school_cohort.school.urn
 
-    end_date = if induction_records.count == 1
-                 corrected_training_period_end_date(induction_record:, candidate_end_date:)
-               else
-                 candidate_end_date
-               end
+    end_date = corrected_training_period_end_date(induction_record:, induction_records:, candidate_end_date:)
 
     Migration::TrainingPeriodData.new(training_programme:,
                                       school_urn:,
