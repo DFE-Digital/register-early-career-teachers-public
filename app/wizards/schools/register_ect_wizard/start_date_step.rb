@@ -5,6 +5,7 @@ module Schools
 
       validates :start_date, ect_start_date: true
       validate :start_date_not_before_previous_school
+      validate :start_date_within_4_months, if: :currently_ect_at_another_school?
 
       def self.permitted_params
         %i[start_date]
@@ -30,6 +31,23 @@ module Schools
 
         if start_date_as_date < previous_period.started_on
           add_start_date_too_early_error(previous_period)
+        end
+      end
+
+      def currently_ect_at_another_school?
+        ect.previously_registered? && ect.previous_ect_at_school_period.ongoing?
+      end
+
+      def start_date_within_4_months
+        return if skip_start_date_validation?
+
+        earliest_invalid_start_date = (4.months + 1.day).from_now.to_date
+
+        if start_date_as_date >= earliest_invalid_start_date
+          errors.add(
+            :start_date,
+            "Start date must be before #{earliest_invalid_start_date.to_formatted_s(:govuk)}"
+          )
         end
       end
 

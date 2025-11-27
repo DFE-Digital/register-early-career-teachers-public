@@ -121,6 +121,11 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
     it "returns mentor periods from other schools that are ongoing or recently finished" do
       expect(queries.previous_school_mentor_at_school_periods).to contain_exactly(ongoing_other_school, finished_recently)
     end
+
+    it "does not return mentor periods for other mentors" do
+      registration_store.trn = "1234567"
+      expect(queries.previous_school_mentor_at_school_periods).to be_empty
+    end
   end
 
   describe "#contract_period" do
