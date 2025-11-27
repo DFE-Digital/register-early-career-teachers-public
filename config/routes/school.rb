@@ -75,5 +75,11 @@ constraints -> { Rails.application.config.enable_schools_interface } do
     end
 
     get "/home/induction-tutor", to: "induction_tutor#show", as: :induction_tutor
+    
+    namespace :induction do
+      namespace :confirm_existing_induction_tutor_wizard, path: "confirm-existing-induction-tutor" do
+        concerns :wizardable, wizard: Schools::Induction::ConfirmExistingInductionTutorWizard
+      end
+    end
   end
 end

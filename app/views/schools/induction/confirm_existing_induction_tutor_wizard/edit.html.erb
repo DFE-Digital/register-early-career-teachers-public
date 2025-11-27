@@ -1,0 +1,12 @@
+<% page_data(
+    title: "Confirm induction tutor details",
+    error: @wizard.school.errors.present?
+) %>
+
+<p class="govuk-body">TODO</p>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_submit 'Continue' %>
+<% end %>
