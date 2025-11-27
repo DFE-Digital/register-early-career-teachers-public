@@ -1,8 +1,10 @@
 module Teachers::SchoolTransfers
   class History
-    def initialize(school_periods:, lead_provider:)
+    def self.transfers_for(...) = new(...).transfers
+
+    def initialize(school_periods:, lead_provider_id:)
       @school_periods = school_periods.earliest_first
-      @lead_provider = lead_provider
+      @lead_provider_id = lead_provider_id
     end
 
     def transfers
@@ -10,7 +12,7 @@ module Teachers::SchoolTransfers
         next unless school_period.complete?
 
         leaving_training_period = school_period.latest_training_period
-        next unless leaving_training_period.complete?
+        next unless leaving_training_period&.complete?
 
         next_school_period = @school_periods[index + 1]
         next unless different_school?(school_period, next_school_period)
@@ -40,8 +42,8 @@ module Teachers::SchoolTransfers
     end
 
     def relevant_to_lead_provider?(leaving_training_period, joining_training_period)
-      leaving_training_period.lead_provider == @lead_provider ||
-        joining_training_period&.lead_provider == @lead_provider
+      leaving_training_period.lead_provider&.id == @lead_provider_id ||
+        joining_training_period&.lead_provider&.id == @lead_provider_id
     end
   end
 end
