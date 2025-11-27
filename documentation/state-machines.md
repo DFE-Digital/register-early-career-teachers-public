@@ -61,3 +61,29 @@ stateDiagram-v2
   payable --> voided : mark_as_voided
   ineligible --> voided : mark_as_voided
 ```
+
+## Declaration
+
+A declaration supports the same states as a `Statement::LineItem` but also has a `submitted` state in addition:
+
+- `submitted` is the initial state of a declaration; if the participant is not eligible for funding and there are no duplicate declarations then the declaration remains in this state.
+
+A declaration has the same transitions as a `Statement::LineItem` but also supports:
+
+- `mark_as_eligible` transitions a line item from `submitted` to `eligible`. This happens on submitting a declaration if there are no duplicates and the participant is eligible for funding.
+- `mark_as_ineligible` transitions a line item from `submitted` to `ineligible`. This happens when there is a duplicate declaration for the participant.
+
+```mermaid
+stateDiagram-v2
+  [*] --> submitted
+  submitted --> eligible : mark_as_eligible
+  submitted --> ineligible: mark_as_ineligible
+  eligible --> payable : mark_as_payable
+  payable --> paid : mark_as_paid
+  paid --> awaiting_clawback : mark_as_awaiting_clawback
+  awaiting_clawback --> clawed_back : mark_as_clawed_back
+  eligible --> ineligible : mark_as_ineligible
+  eligible --> voided : mark_as_voided
+  payable --> voided : mark_as_voided
+  ineligible --> voided : mark_as_voided
+```

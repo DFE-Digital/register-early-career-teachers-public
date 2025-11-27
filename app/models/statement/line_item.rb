@@ -1,4 +1,7 @@
 class Statement::LineItem < ApplicationRecord
+  BILLABLE_STATUS = %w[eligible payable paid].freeze
+  REFUNDABLE_STATUS = %w[awaiting_clawback clawed_back].freeze
+
   belongs_to :statement
   belongs_to :declaration
 
@@ -16,6 +19,14 @@ class Statement::LineItem < ApplicationRecord
   validates :declaration_id, presence: { message: "Declaration must be specified" }
   validates :status, uniqueness: { scope: %i[declaration_id], message: "Status must be unique per declaration" }
   validates :ecf_id, uniqueness: { case_sensitive: false, message: "ECF ID must be unique" }, allow_nil: true
+
+  def billable?
+    status.in?(BILLABLE_STATUS)
+  end
+
+  def refundable?
+    status.in?(REFUNDABLE_STATUS)
+  end
 
   state_machine :status, initial: :eligible do
     state :eligible

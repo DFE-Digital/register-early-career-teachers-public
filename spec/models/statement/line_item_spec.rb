@@ -7,6 +7,8 @@ describe Statement::LineItem do
   describe "validations" do
     subject { FactoryBot.create(:statement_line_item) }
 
+    it { is_expected.to be_valid }
+
     it { is_expected.to validate_presence_of(:statement_id).with_message("Statement must be specified") }
     it { is_expected.to validate_presence_of(:declaration_id).with_message("Declaration must be specified") }
     it { is_expected.to validate_uniqueness_of(:status).scoped_to(:declaration_id).ignoring_case_sensitivity.with_message("Status must be unique per declaration") }
@@ -29,6 +31,42 @@ describe Statement::LineItem do
         .validating(allowing_nil: false)
         .backed_by_column_of_type(:enum)
         .with_suffix
+    end
+  end
+
+  describe "#billable?" do
+    let(:all_states) { described_class.state_machines[:status].states.to_a.map(&:value) }
+
+    it "returns true for billable statuses" do
+      described_class::BILLABLE_STATUS.each do |status|
+        line_item = FactoryBot.build(:statement_line_item, status:)
+        expect(line_item).to be_billable
+      end
+    end
+
+    it "returns false for non-billable statuses" do
+      (all_states - described_class::BILLABLE_STATUS).each do |status|
+        line_item = FactoryBot.build(:statement_line_item, status:)
+        expect(line_item).not_to be_billable
+      end
+    end
+  end
+
+  describe "#refundable?" do
+    let(:all_states) { described_class.state_machines[:status].states.to_a.map(&:value) }
+
+    it "returns true for refundable statuses" do
+      described_class::REFUNDABLE_STATUS.each do |status|
+        line_item = FactoryBot.build(:statement_line_item, status:)
+        expect(line_item).to be_refundable
+      end
+    end
+
+    it "returns false for non-refundable statuses" do
+      (all_states - described_class::REFUNDABLE_STATUS).each do |status|
+        line_item = FactoryBot.build(:statement_line_item, status:)
+        expect(line_item).not_to be_refundable
+      end
     end
   end
 
