@@ -48,8 +48,6 @@
 
     If the participant never started training, please contact DfE to request deletion of the participant record instead of withdrawing them.
 
-    ---
-
     ## Defer endpoint
 
     You can defer a participant as long as:
@@ -60,8 +58,6 @@
     You will be presented with a validation error if you try to do any of these things.
 
     When a participant is deferred, the service will also set `participant_status` to `left` if it is not already set to this.
-
-    ---
 
     ## Resume endpoint
 
@@ -74,8 +70,6 @@
     You will be presented with a validation error if you try to do any of these things.
 
     If the new school reports they are joining with the same lead provider, their `participant_status` will move back to `joining` or `active`, and resuming will then be permitted.
-
-    ---
 
     ## Why we've made these changes
 
