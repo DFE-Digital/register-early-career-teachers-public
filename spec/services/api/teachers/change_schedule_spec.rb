@@ -83,13 +83,22 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
           end
 
-          context "when there are future training periods" do
+          context "when there are future training periods (for the same teacher)" do
             before do
               FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period)
             end
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.") }
+          end
+
+          context "when there are future training periods (for a different teacher)" do
+            before do
+              at_school_period = FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 3.years.ago, finished_on: nil)
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period)
+            end
+
+            it { is_expected.to be_valid }
           end
 
           context "guarded error messages" do
@@ -117,17 +126,47 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           context "when valid" do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+            let(:service) { instance_double(Teachers::ChangeSchedule) }
 
-            it "changes the schedule via change schedule service" do
-              change_schedule_service = instance_double(Teachers::ChangeSchedule)
-
+            before do
               author = an_instance_of(Events::LeadProviderAPIAuthor)
-              allow(Teachers::ChangeSchedule).to receive(:new).with(lead_provider:, teacher:, training_period:, schedule:, school_partnership:, author:).and_return(change_schedule_service)
-              allow(change_schedule_service).to receive(:change_schedule)
+              allow(Teachers::ChangeSchedule).to receive(:new).with(lead_provider:, teacher:, training_period:, schedule:, school_partnership:, author:).and_return(service)
+              allow(service).to receive(:change_schedule)
+            end
 
-              instance.change_schedule
+            context "when the contract period year is not changing" do
+              it "changes the schedule via change schedule service" do
+                instance.change_schedule
 
-              expect(change_schedule_service).to have_received(:change_schedule).once
+                expect(service).to have_received(:change_schedule).once
+              end
+            end
+
+            context "when the contract period year is changing" do
+              let(:contract_period) { FactoryBot.create(:contract_period, year: training_period.contract_period.year + 1) }
+              let(:school_partnership) do
+                active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+                school = training_period.school_partnership.school
+                lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+                FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
+              end
+
+              it "changes the schedule via change schedule service" do
+                instance.change_schedule
+
+                expect(service).to have_received(:change_schedule).once
+              end
+            end
+
+            context "when the contract_period_year is not specified" do
+              let(:contract_period_year) { nil }
+              let(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year: training_period.contract_period.year) }
+
+              it "uses to their current contract period year" do
+                instance.change_schedule
+
+                expect(service).to have_received(:change_schedule).once
+              end
             end
           end
         end

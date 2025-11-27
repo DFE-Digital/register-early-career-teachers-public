@@ -39,7 +39,7 @@ module API::Teachers
     end
 
     def schedule
-      @schedule ||= Schedule.find_by(contract_period_year:, identifier: schedule_identifier) if contract_period && schedule_identifier
+      @schedule ||= Schedule.find_by(contract_period_year: contract_period.year, identifier: schedule_identifier) if contract_period && schedule_identifier
     end
 
     def schedule_exists
@@ -110,11 +110,13 @@ module API::Teachers
     def future_training_periods
       if training_period.for_mentor?
         TrainingPeriod
-          .where.not(mentor_at_school_period_id: nil)
+          .joins(:mentor_at_school_period)
+          .where(mentor_at_school_period: { teacher: })
           .started_after(training_period.started_on)
       else
         TrainingPeriod
-          .where.not(ect_at_school_period_id: nil)
+          .joins(:ect_at_school_period)
+          .where(ect_at_school_period: { teacher: })
           .started_after(training_period.started_on)
       end
     end
