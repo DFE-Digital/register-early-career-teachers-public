@@ -165,14 +165,42 @@ module ECTAtSchoolPeriods
               .to eq(ect_training_period.lead_provider)
           end
 
-          it "assigns the correct schedule to the new training period" do
-            travel_to(Date.new(2025, 9, 1)) do
-              switch_mentor
+          context "schedule assignment" do
+            before do
+              FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-january")
+              FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
+              FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
+              FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-january")
+              FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
+              FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
+            end
 
-              new_training_period = TrainingPeriod.last
+            let!(:mentorship_period) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee: ect_at_school_period, mentor: previous_mentor) }
+            let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
+            let(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.weeks.ago, mentor_at_school_period: previous_mentor) }
 
-              expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
-              expect(new_training_period.schedule.contract_period_year).to eq(2025)
+            context "when the previous mentor had not started training" do
+              it "assigns a standard schedule to the new training period" do
+                switch_mentor
+
+                schedule = TrainingPeriod.last.schedule
+
+                expect(schedule.identifier).to include("ecf-standard")
+                expect(schedule.contract_period_year).to eq(2025)
+              end
+            end
+
+            context "when the previous mentor has started training" do
+              let!(:declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
+
+              it "assigns the mentor on a replacement schedule" do
+                switch_mentor
+
+                schedule = TrainingPeriod.last.schedule
+
+                expect(schedule.identifier).to include("ecf-replacement")
+                expect(schedule.contract_period_year).to eq(2025)
+              end
             end
           end
 

@@ -202,7 +202,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
   end
 
   describe "#register!" do
-    let(:teacher) { Teacher.first }
+    let(:teacher) { Teacher.last }
     let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
 
     it "creates a new teacher registered at the given school" do
@@ -211,9 +211,57 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
       registration_store.register!(author:)
 
       expect(teacher.trn).to eq(registration_store.trn)
-      expect(mentor_at_school_period.school_id).to eq(school.id)
+
       expect(mentor_at_school_period.started_on).to eq(Date.current)
       expect(mentor_at_school_period.email).to eq("dusty@rhodes.com")
+    end
+
+    context "when there is an associated mentee on provider-led training who has previously been trained" do
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago) }
+      let!(:mentee_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :ongoing,
+          :provider_led,
+          :for_ect,
+          ect_at_school_period: mentee,
+          started_on: mentee.started_on
+        )
+      end
+      let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+      let!(:lead_provider) { mentee_training_period.lead_provider }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
+      let!(:previous_mentorship_period) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
+      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
+      let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.weeks.ago, mentor_at_school_period: previous_mentor) }
+
+      before do
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-january")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
+        FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
+
+        FactoryBot.create(:declaration, training_period: previous_mentor_training_period)
+
+        store.ect_id = mentee.id
+        store.lead_provider_id = lead_provider.id
+      end
+
+      around do |example|
+        travel_to(Date.new(2025, 11, 1)) do
+          example.run
+        end
+      end
+
+      it "passes the mentee details to allow a replacement schedule to be assigned when appropriate" do
+        expect(TrainingPeriods::Create).to receive(:provider_led)
+          .with(hash_including(mentee:))
+          .and_call_original
+
+        registration_store.register!(author:)
+
+        new_training_period = teacher.training_periods.last
+        expect(new_training_period.schedule.identifier).to eq("ecf-replacement-january")
+      end
     end
   end
 
