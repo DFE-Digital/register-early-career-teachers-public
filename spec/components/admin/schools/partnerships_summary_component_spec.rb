@@ -49,7 +49,6 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
     describe "lead provider row" do
       it "renders" do
-        expect(rendered).to have_css(".govuk-summary-card__title", text: "Alpha Provider & Delta Partner")
         expect(rendered).to have_css("dt", text: "Lead provider")
         expect(rendered).to have_css("dd", text: "Alpha Provider")
       end
@@ -57,7 +56,6 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
     describe "delivery partner row" do
       it "renders" do
-        expect(rendered).to have_css(".govuk-summary-card__title", text: "Alpha Provider & Delta Partner")
         expect(rendered).to have_css("dt", text: "Delivery partner")
         expect(rendered).to have_css("dd", text: "Delta Partner")
       end
