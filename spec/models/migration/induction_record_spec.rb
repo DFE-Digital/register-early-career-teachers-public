@@ -25,6 +25,24 @@ describe Migration::InductionRecord, type: :model do
     end
   end
 
+  describe "#deferred?" do
+    subject { record.deferred? }
+
+    let(:record) { FactoryBot.build(:migration_induction_record, training_status:) }
+
+    context 'when induction_status is "deferred"' do
+      let(:training_status) { "deferred" }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when training_status not "deferred"' do
+      let(:training_status) { "active" }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "#leaving?" do
     subject { record.leaving? }
 
@@ -69,6 +87,24 @@ describe Migration::InductionRecord, type: :model do
 
     context "when end_date is nil" do
       let(:end_date) { nil }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#withdrawn?" do
+    subject { record.withdrawn? }
+
+    let(:record) { FactoryBot.build(:migration_induction_record, training_status:) }
+
+    context 'when induction_status is "withdrawn"' do
+      let(:training_status) { "withdrawn" }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when training_status not "withdrawn"' do
+      let(:training_status) { "active" }
 
       it { is_expected.to be false }
     end
