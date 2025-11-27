@@ -29,18 +29,19 @@
   body: |
     We have updated the validation logic and participant status behaviour for the following existing endpoints on the Register ECTs API:
 
-    - `POST /participants/{id}/withdraw`
-    - `POST /participants/{id}/defer`
-    - `POST /participants/{id}/resume`
+    * `POST /participants/{id}/withdraw`
+    * `POST /participants/{id}/defer`
+    * `POST /participants/{id}/resume`
 
     ## What’s changed from the existing ‘Manage training for early career teachers’ API?
 
     ## Withdraw endpoint
 
     You can withdraw a participant as long as:
-    - their `participant_status` isn't `joining`
-    - they've been training for at least one day
-    - they've not already been withdrawn or deferred (unchanged from the 'Manage training for ECTs' API)
+
+    * their `participant_status` isn't `joining`
+    * they've been training for at least one day
+    * they've not already been withdrawn or deferred (unchanged from the 'Manage training for ECTs' API)
 
     You will be presented with a validation error if you try to do any of these things.
 
@@ -51,9 +52,10 @@
     ## Defer endpoint
 
     You can defer a participant as long as:
-    - their `participant_status` isn't `joining`
-    - they've been training for at least one day
-    - they've not already been withdrawn or deferred (unchanged from the 'Manage training for ECTs' API)
+
+    * their `participant_status` isn't `joining`
+    * they've been training for at least one day
+    * they've not already been withdrawn or deferred (unchanged from the 'Manage training for ECTs' API)
 
     You will be presented with a validation error if you try to do any of these things.
 
@@ -62,10 +64,11 @@
     ## Resume endpoint
 
     You can resume a participant as long as:
-    - their old school has not reported that they are leaving
-    - their new school has not reported that they are joining with a different lead provider
-    - the school has not changed them to school-led training
-    - the school has not changed them to a different lead provider for training
+    
+    * their old school has not reported that they are leaving
+    * their new school has not reported that they are joining with a different lead provider
+    * the school has not changed them to school-led training
+    * the school has not changed them to a different lead provider for training
 
     You will be presented with a validation error if you try to do any of these things.
 
