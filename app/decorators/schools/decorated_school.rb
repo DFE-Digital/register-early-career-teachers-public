@@ -24,19 +24,7 @@ module Schools
       latest_registration_choices&.lead_provider&.name
     end
 
-    def show_previous_programme_choices_row?(wizard)
-      last_programme_choices? &&
-        reuse_previous_choices_step_allowed?(wizard) &&
-        wizard.ect.use_previous_ect_choices
-    end
-
   private
-
-    def reuse_previous_choices_step_allowed?(wizard)
-      Schools::RegisterECTWizard::UsePreviousECTChoicesStep
-        .new(wizard:)
-        .allowed?
-    end
 
     def lacks_partnership_with?(lead_provider:, contract_period:)
       !has_partnership_with?(lead_provider:, contract_period:)

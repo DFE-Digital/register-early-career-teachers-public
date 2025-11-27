@@ -1,5 +1,6 @@
 RSpec.describe "Registering an ECT - reuse previous partnership", :enable_schools_interface do
   include_context "test trs api client"
+  include ReusablePartnershipHelpers
 
   scenario "reuses a previous partnership (provider-led)" do
     given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
@@ -26,7 +27,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     and_i_choose_to_reuse_previous_choices
     and_i_click_continue
     then_i_am_on_the_check_answers_page
-    and_i_see_previous_programme_choices_summary
+    and_i_see_previous_programme_choices_summary_when_reusing
 
     and_i_click_confirm_details
     then_i_am_on_the_confirmation_page
@@ -60,68 +61,43 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
     and_i_select_an_appropriate_body
     and_i_click_continue
-    then_i_am_on_the_training_programme_page
+    then_i_am_on_the_training_programmme_page
 
     and_i_select_school_led
     and_i_click_continue
     then_i_am_on_the_check_answers_page
-    and_i_see_core_details_without_reuse
+    and_i_see_check_answers_when_not_reusing_previous_choices
 
     and_i_click_confirm_details
     then_i_am_on_the_confirmation_page
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
-    current_year  = Time.zone.today.year
-    previous_year = current_year - 1
+    context = build_school_with_reusable_provider_led_partnership
 
-    @contract_period_current  = FactoryBot.create(:contract_period, :with_schedules, year: current_year)
-    @contract_period_previous = FactoryBot.create(:contract_period, :with_schedules, year: previous_year)
+    @current_school               = context.school
+    @current_contract_period      = context.current_contract_period
+    @previous_school_partnership  = context.previous_school_partnership
+    @last_chosen_lead_provider    = context.last_chosen_lead_provider
+    @previous_year_delivery_partner = context.previous_year_delivery_partner
 
-    @lead_provider    = FactoryBot.create(:lead_provider, name: "Orange Institute")
-    @delivery_partner = FactoryBot.create(:delivery_partner, name: "Jaskolski College Delivery Partner 1")
-
-    alp_prev = FactoryBot.create(
-      :active_lead_provider,
-      lead_provider: @lead_provider,
-      contract_period_year: previous_year
-    )
-    alp_curr = FactoryBot.create(
-      :active_lead_provider,
-      lead_provider: @lead_provider,
-      contract_period_year: current_year
-    )
-
-    @lpdp_prev = FactoryBot.create(
-      :lead_provider_delivery_partnership,
-      active_lead_provider: alp_prev,
-      delivery_partner: @delivery_partner
-    )
-
-    @lpdp_curr = LeadProviderDeliveryPartnership.find_or_create_by!(
-      active_lead_provider: alp_curr,
-      delivery_partner: @delivery_partner
-    )
-
-    @school = FactoryBot.create(
-      :school,
-      :state_funded,
-      :provider_led_last_chosen,
-      :teaching_school_hub_ab_last_chosen,
-      last_chosen_lead_provider: @lead_provider
-    )
-
-    FactoryBot.create(
-      :school_partnership,
-      school: @school,
-      lead_provider_delivery_partnership: @lpdp_prev
-    )
-
-    @ab_name = "Golden Leaf Teaching Hub"
-    FactoryBot.create(:appropriate_body, name: @ab_name)
+    @appropriate_body_name = "Golden Leaf Teaching Hub"
+    FactoryBot.create(:appropriate_body, name: @appropriate_body_name)
     FactoryBot.create(:appropriate_body, name: "Umber Teaching Hub")
 
-    sign_in_as_school_user(school: @school)
+    stub_reuse_finder_to_return(@previous_school_partnership)
+
+    sign_in_as_school_user(school: @current_school)
+  end
+
+  def stub_reuse_finder_to_return(previous_partnership)
+    reuse_finder = instance_double(SchoolPartnerships::FindPreviousReusable)
+
+    allow(SchoolPartnerships::FindPreviousReusable).to receive(:new)
+      .and_return(reuse_finder)
+
+    allow(reuse_finder).to receive(:call)
+      .and_return(previous_partnership)
   end
 
   def and_i_am_on_the_schools_ects_index_page
@@ -182,7 +158,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
   end
 
   def and_i_enter_a_valid_start_date
-    @entered_start_date = @contract_period_current.started_on + 1.month
+    @entered_start_date = @current_contract_period.started_on + 1.month
     page.get_by_label("day").fill(@entered_start_date.day.to_s)
     page.get_by_label("month").fill(@entered_start_date.month.to_s)
     page.get_by_label("year").fill(@entered_start_date.year.to_s)
@@ -213,10 +189,12 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
   end
 
   def and_i_select_an_appropriate_body
-    page.get_by_role("combobox", name: "Enter appropriate body name").first.select_option(value: @ab_name)
+    page.get_by_role("combobox", name: "Enter appropriate body name")
+        .first
+        .select_option(value: @appropriate_body_name)
   end
 
-  def then_i_am_on_the_training_programme_page
+  def then_i_am_on_the_training_programmme_page
     expect(page).to have_path("/school/register-ect/training-programme")
   end
 
@@ -228,19 +206,24 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     expect(page).to have_path("/school/register-ect/check-answers")
   end
 
-  def and_i_see_previous_programme_choices_summary
+  def and_i_see_previous_programme_choices_summary_when_reusing
+    expect(page.get_by_text("Choices used by your school previously").first).to be_visible
     expect(page.get_by_text("Provider-led")).to be_visible
-    expect(page.get_by_text("Orange Institute")).to be_visible
-    if page.get_by_text(@ab_name).count.positive?
-      expect(page.get_by_text(@ab_name)).to be_visible
+    expect(page.get_by_text(@last_chosen_lead_provider.name)).to be_visible
+
+    if page.get_by_text(@appropriate_body_name).count.positive?
+      expect(page.get_by_text(@appropriate_body_name)).to be_visible
     end
   end
 
-  def and_i_see_core_details_without_reuse
+  def and_i_see_check_answers_when_not_reusing_previous_choices
+    expect(page.get_by_text("Choices used by your school previously").first).to be_visible
     expect(page.get_by_text("9876543")).to be_visible
     expect(page.get_by_text("Kirk Van Houten")).to be_visible
     expect(page.get_by_text("example@example.com")).to be_visible
     expect(page.get_by_text(@entered_start_date.strftime("%B %Y"))).to be_visible
+    expect(page.get_by_text("School-led")).to be_visible
+    expect(page.get_by_text(@appropriate_body_name)).to be_visible
   end
 
   def and_i_click_confirm_details
