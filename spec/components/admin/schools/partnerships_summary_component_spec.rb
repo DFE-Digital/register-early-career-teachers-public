@@ -4,12 +4,14 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   let(:school) { FactoryBot.create(:school) }
+  let(:current_year) { Time.zone.today.year }
+  let(:previous_year) { current_year - 1 }
 
   context "with multiple partnerships" do
     let!(:partnership_2024) do
       FactoryBot.create(:school_partnership, :for_year,
                         school:,
-                        year: 2024,
+                        year: current_year,
                         lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider"),
                         delivery_partner: FactoryBot.create(:delivery_partner, name: "Delta Partner"))
     end
@@ -17,21 +19,21 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     let!(:partnership_2023) do
       FactoryBot.create(:school_partnership, :for_year,
                         school:,
-                        year: 2023,
+                        year: previous_year,
                         lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider"),
                         delivery_partner: FactoryBot.create(:delivery_partner, name: "Gamma Partner"))
     end
 
     describe "contract period headings" do
       it "shows headings for each contract period" do
-        expect(rendered).to have_css("h3", text: "2024 partnerships")
-        expect(rendered).to have_css("h3", text: "2023 partnerships")
+        expect(rendered).to have_css("h3", text: "#{current_year} partnerships")
+        expect(rendered).to have_css("h3", text: "#{previous_year} partnerships")
       end
 
       it "orders contract period headings with most recent first" do
         body = rendered.to_html
-        newer = body.index("2024 partnerships")
-        older = body.index("2023 partnerships")
+        newer = body.index("#{current_year} partnerships")
+        older = body.index("#{previous_year} partnerships")
         expect(newer).not_to be_nil
         expect(older).not_to be_nil
         expect(newer).to be < older
@@ -66,7 +68,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     let!(:partnership_with_teachers) do
       FactoryBot.create(:school_partnership, :for_year,
                         school:,
-                        year: 2024,
+                        year: current_year,
                         lead_provider: FactoryBot.create(:lead_provider, name: "Alpha Provider"),
                         delivery_partner: FactoryBot.create(:delivery_partner, name: "Delta Partner"))
     end
@@ -74,7 +76,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     let!(:partnership_without_teachers) do
       FactoryBot.create(:school_partnership, :for_year,
                         school:,
-                        year: 2023,
+                        year: previous_year,
                         lead_provider: FactoryBot.create(:lead_provider, name: "Beta Provider"),
                         delivery_partner: FactoryBot.create(:delivery_partner, name: "Gamma Partner"))
     end
