@@ -43,7 +43,8 @@ module ECTAtSchoolPeriods
         started_on: earliest_possible_start_date,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:,
-        author:
+        author:,
+        mentee: ect_at_school_period
       ).call
     end
 

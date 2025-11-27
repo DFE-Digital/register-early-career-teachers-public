@@ -15,7 +15,8 @@ module Schools
                 :mentor_at_school_period,
                 :lead_provider,
                 :training_period,
-                :finish_existing_at_school_periods
+                :finish_existing_at_school_periods,
+                :mentee
 
     def initialize(trs_first_name:,
                    trs_last_name:,
@@ -26,7 +27,8 @@ module Schools
                    author:,
                    finish_existing_at_school_periods: false,
                    started_on: nil,
-                   lead_provider: nil)
+                   lead_provider: nil,
+                   mentee: nil)
       @author = author
       @trs_first_name = trs_first_name
       @trs_last_name = trs_last_name
@@ -37,6 +39,7 @@ module Schools
       @trn = trn
       @lead_provider = lead_provider
       @finish_existing_at_school_periods = finish_existing_at_school_periods
+      @mentee = mentee
     end
 
     def register!
@@ -67,6 +70,7 @@ module Schools
                                                                 started_on: mentor_at_school_period.started_on,
                                                                 school_partnership:,
                                                                 expression_of_interest:,
+                                                                mentee:,
                                                                 author: @author).call
     end
 
