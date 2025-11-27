@@ -63,6 +63,23 @@ def create_teacher(attrs:)
   end
 end
 
+def random_schedule(contract_period:, trainee_type:, excluding_schedule_identifier: nil)
+  if trainee_type == :mentor
+    Schedule
+      .where(contract_period:)
+      .where.not(identifier: excluding_schedule_identifier)
+      .order("RANDOM()")
+      .first
+  else
+    Schedule
+      .excluding_replacement_schedules
+      .where(contract_period:)
+      .where.not(identifier: excluding_schedule_identifier)
+      .order("RANDOM()")
+      .first
+  end
+end
+
 # Create extra participants for API review app testing
 # - 5x participants for each lead provider and contract period
 print_seed_info("Adding extra participants for API testing:")
@@ -106,18 +123,7 @@ ActiveLeadProvider.find_each do |active_lead_provider|
         finished_on: nil
       ).tap { |sp| send(:"describe_#{trainee_type}_at_school_period", sp) }
 
-      schedule = if trainee_type == :mentor
-                   Schedule
-                    .where(contract_period:)
-                    .order("RANDOM()")
-                    .first
-                 else
-                   Schedule
-                    .excluding_replacement_schedules
-                    .where(contract_period:)
-                    .order("RANDOM()")
-                    .first
-                 end
+      schedule = random_schedule(contract_period:, trainee_type:)
 
       FactoryBot.create(
         :training_period,
@@ -126,6 +132,80 @@ ActiveLeadProvider.find_each do |active_lead_provider|
         :with_schedule,
         "#{trainee_type}_at_school_period": at_school_period,
         started_on: at_school_period.started_on,
+        finished_on: at_school_period.finished_on,
+        schedule:,
+        school_partnership:
+      ).tap { |tp| describe_training_period(tp) }
+    end
+  end
+end
+
+print_seed_info("Add teachers with changed schedule:")
+contract_period = ContractPeriod.find_by(year: 2022)
+variations = [
+  { change_contract_period: false, change_schedule: true },
+  { change_contract_period: true, change_schedule: false },
+  { change_contract_period: true, change_schedule: true },
+]
+ActiveLeadProvider.where(contract_period:).find_each do |active_lead_provider|
+  %i[ect mentor].each do |trainee_type|
+    variations.each do |variation|
+      teacher = create_teacher(attrs: {})
+      full_name = "#{teacher.trs_first_name} #{teacher.trs_last_name}"
+      print_seed_info("#{full_name} (#{trainee_type.upcase}) - #{variation.keep_if { |_k, v| v }.keys.join(', ')}", indent: 2, colour: (trainee_type == :ect ? :magenta : :yellow))
+
+      started_on = Date.new(contract_period.year, 9, 1) + rand(1..100).days
+      at_school_period = FactoryBot.create(
+        :"#{trainee_type}_at_school_period",
+        teacher:,
+        started_on:,
+        finished_on: nil
+      ).tap { |sp| send(:"describe_#{trainee_type}_at_school_period", sp) }
+
+      school_partnership = random_school_partnership(active_lead_provider:)
+      schedule = random_schedule(contract_period:, trainee_type:)
+      finished_on = at_school_period.started_on + rand(1..100).days
+
+      # Old training period
+      FactoryBot.create(
+        :training_period,
+        :"for_#{trainee_type}",
+        :provider_led,
+        :with_schedule,
+        "#{trainee_type}_at_school_period": at_school_period,
+        started_on: at_school_period.started_on,
+        finished_on:,
+        schedule:,
+        school_partnership:
+      ).tap { |tp| describe_training_period(tp) }
+
+      # With new contract_period
+      if variation[:change_contract_period]
+        school_partnership = SchoolPartnership
+          .includes(:lead_provider, :contract_period)
+          .joins(:lead_provider)
+          .where(
+            school: school_partnership.school,
+            lead_providers: { id: active_lead_provider.lead_provider.id }
+          )
+          .order("RANDOM()")
+          .first!
+        schedule = Schedule.find_by!(contract_period: school_partnership.contract_period, identifier: schedule.identifier)
+      end
+
+      # With new schedule
+      if variation[:change_schedule]
+        schedule = random_schedule(contract_period: school_partnership.contract_period, trainee_type:, excluding_schedule_identifier: schedule.identifier)
+      end
+
+      # New training period
+      FactoryBot.create(
+        :training_period,
+        :"for_#{trainee_type}",
+        :provider_led,
+        :with_schedule,
+        "#{trainee_type}_at_school_period": at_school_period,
+        started_on: finished_on,
         finished_on: at_school_period.finished_on,
         schedule:,
         school_partnership:
