@@ -19,6 +19,7 @@ module DataFixes
   def corrected_training_period_end_date(induction_record:, induction_records:, candidate_end_date:)
     participant_profile = induction_record.participant_profile
 
+    return first_created_induction_record(induction_records).end_date if two_irs_at_a_school_and_only_last_deferred_or_withdrawn?(induction_records)
     return candidate_end_date if induction_records.count > 1
     return candidate_end_date if participant_profile.ect?
     return candidate_end_date if candidate_end_date.present?
@@ -32,6 +33,18 @@ module DataFixes
     return first_created_induction_record(induction_records).updated_at if two_induction_records_and_last_completed?(induction_records)
 
     induction_record.end_date
+  end
+
+  def two_irs_at_a_school_and_only_last_deferred_or_withdrawn?(induction_records)
+    return false unless two_induction_records?(induction_records)
+
+    first_induction_record = first_created_induction_record(induction_records)
+    second_induction_record = last_created_induction_record(induction_records)
+
+    return false if first_induction_record.deferred?
+    return false if first_induction_record.withdrawn?
+
+    second_induction_record.deferred? || second_induction_record.withdrawn?
   end
 
 private

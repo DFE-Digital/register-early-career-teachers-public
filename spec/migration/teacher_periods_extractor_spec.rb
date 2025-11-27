@@ -140,5 +140,19 @@ describe TeacherPeriodsExtractor do
         expect(training_period.end_date).to eq induction_record_1.updated_at
       end
     end
+
+    context "when the participant has two induction records at the same school and LP and only last created induction record is 'withdrawn' or 'deferred'" do
+      before do
+        induction_record_1.update!(end_date: Time.current)
+        induction_record_2.update!(training_status: :deferred, induction_programme: induction_programme_1)
+      end
+
+      it "adjusts the last training period end date to be the end date of the first induction record" do
+        periods = service.teacher_periods
+        training_period = periods[0].training_periods[0]
+
+        expect(training_period.end_date).to eq induction_record_1.end_date
+      end
+    end
   end
 end

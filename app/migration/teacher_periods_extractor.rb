@@ -57,8 +57,10 @@ private
         # nothing has changed regarding periods other than end_date
         current_period.end_date = end_date
         current_period.end_source_id = induction_record.id
-        current_training.end_date = end_date
-        current_training.end_source_id = induction_record.id
+        unless two_irs_at_a_school_and_only_last_deferred_or_withdrawn?(induction_records)
+          current_training.end_date = end_date
+          current_training.end_source_id = induction_record.id
+        end
       end
     end
   end
