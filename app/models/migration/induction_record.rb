@@ -15,8 +15,11 @@ module Migration
     has_one :lead_provider, through: :partnership
 
     def completed? = induction_status == "completed"
+    def deferred? = training_status == "deferred"
     def flipped_dates? = end_date.present? && end_date < start_date
 
     def leaving? = induction_status == "leaving"
+
+    def withdrawn? = training_status == "withdrawn"
   end
 end
