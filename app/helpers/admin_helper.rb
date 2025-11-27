@@ -41,7 +41,7 @@ module AdminHelper
       { text: "Induction", href: admin_teacher_induction_path(teacher), current: current_tab == :induction },
       { text: "Overview", href: admin_teacher_path(teacher), current: current_tab == :overview },
       { text: "School", href: admin_teacher_school_path(teacher), current: current_tab == :school },
-      { text: "Training", href: admin_teacher_path(teacher), current: current_tab == :training },
+      { text: "Training", href: admin_teacher_training_path(teacher), current: current_tab == :training },
       { text: "Declarations", href: admin_teacher_path(teacher), current: current_tab == :declarations },
       { text: "Timeline", href: admin_teacher_timeline_path(teacher), current: current_tab == :timeline }
     ]
