@@ -1,5 +1,5 @@
 module Schools
-  module Induction
+  module ConfirmExistingInductionTutorWizard
     class Step < ApplicationWizardStep
       def self.permitted_params = []
 
