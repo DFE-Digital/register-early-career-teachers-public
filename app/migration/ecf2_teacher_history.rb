@@ -1,32 +1,42 @@
 class ECF2TeacherHistory
   class InvalidPeriodType < StandardError; end
 
+  TeacherRow = Struct.new(
+    :trn,
+    :trnless,
+    :trs_first_name,
+    :trs_last_name,
+    :corrected_name,
+
+    :api_id,
+    :api_ect_training_record_id,
+    :api_mentor_training_record_id,
+    :api_updated_at,
+
+    :ect_pupil_premium_uplift,
+    :ect_sparsity_uplift,
+    :ect_first_became_eligible_for_training_at,
+    :ect_payments_frozen_year,
+
+    :mentor_became_ineligible_for_funding_on,
+    :mentor_became_ineligible_for_funding_reason,
+    :mentor_first_became_eligible_for_training_at,
+    :mentor_payments_frozen_year
+  )
+
   ECTAtSchoolPeriodRow = Struct.new(:started_on, :finished_on, :mentorship_period_rows, :training_period_rows)
   MentorAtSchoolPeriodRow = Struct.new(:started_on, :finished_on, :mentorship_period_rows)
   TrainingPeriodRow = Struct.new(:started_on, :finished_on)
   MentorshipPeriodRow = Struct.new(:started_on, :finished_on)
 
-  attr_reader :trn,
-              :trs_first_name,
-              :trs_last_name,
-              :corrected_name,
+  attr_reader :teacher_row,
               :ect_at_school_period_rows,
               :mentor_at_school_period_rows,
               :training_period_rows,
               :mentorship_period_rows
 
-  def initialize(
-    trn:,
-    trs_first_name:,
-    trs_last_name:,
-    corrected_name:,
-    ect_at_school_period_rows: [],
-    mentor_at_school_period_rows: []
-  )
-    @trn = trn
-    @trs_first_name = trs_first_name
-    @trs_last_name = trs_last_name
-    @corrected_name = corrected_name
+  def initialize(teacher_row:, ect_at_school_period_rows: [], mentor_at_school_period_rows: [])
+    @teacher_row = teacher_row
 
     @ect_at_school_period_rows = ect_at_school_period_rows
     @mentor_at_school_period_rows = mentor_at_school_period_rows
