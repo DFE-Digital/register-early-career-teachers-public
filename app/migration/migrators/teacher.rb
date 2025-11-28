@@ -45,6 +45,17 @@ module Migrators
       teacher
     end
 
+    # FIXME: eventually replaces #migrate_one, placeholder for now
+    def migrate_one_record!(teacher_profile)
+      user = teacher_profile.user
+
+      ecf1_teacher_history = ECF1TeacherHistory.build(user:, teacher_profile:, induction_records:)
+
+      ecf2_teacher_history = TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2!
+
+      ecf2_teacher_history.save_all!
+    end
+
   private
 
     def migrate_teacher!(teacher_profile)
