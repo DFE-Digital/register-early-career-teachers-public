@@ -1,7 +1,10 @@
 module Schools
   module ConfirmExistingInductionTutorWizard
     class Wizard < ApplicationWizard
-      attr_accessor :store, :school, :school_id, :author
+      attr_accessor :store, :school, :school_id, 
+      :induction_tutor_email, :induction_tutor_name, 
+      :are_these_details_correct,
+      :author
 
       steps do
         [{
@@ -28,10 +31,6 @@ module Schools
 
       delegate :save!, to: :current_step
       delegate :reset, to: :store
-
-      # def route_name
-      #   "school_induction_confirm_existing_induction_tutor_wizard"
-      # end
     end
   end
 end

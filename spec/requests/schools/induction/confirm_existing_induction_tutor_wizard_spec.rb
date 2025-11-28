@@ -74,7 +74,7 @@ describe "Schools::Induction::ConfirmExistingInductionTutorWizardController", :e
         end
       end
 
-      context 'when the current details are confirmed' do
+      context "when the current details are confirmed" do
         it "does not update anything" do
           expect { post(path_for_step("edit"), params:) }
             .not_to change(school, :induction_tutor_email)
