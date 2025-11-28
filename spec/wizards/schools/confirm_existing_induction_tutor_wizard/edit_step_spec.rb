@@ -62,7 +62,7 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
     end
 
     context "when the user needs to change the details" do
-      let(:are_these_details_correct) { false } 
+      let(:are_these_details_correct) { false }
 
       context "when induction_tutor_email is blank" do
         let(:induction_tutor_email) { nil }
@@ -97,7 +97,7 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
 
       context "when the name has changed" do
         let(:induction_tutor_name) { "New Name" }
-  
+
         it "is valid" do
           expect(current_step).to be_valid
           expect(current_step.errors).to be_empty
@@ -115,13 +115,12 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
     end
 
     context "when the user has confirmed the existing details are correct" do
-      let(:are_these_details_correct) { true } 
+      let(:are_these_details_correct) { true }
 
       it "is valid" do
         expect(current_step).to be_valid
         expect(current_step.errors).to be_empty
       end
-
     end
   end
 end
