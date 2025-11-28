@@ -9,6 +9,7 @@ module Migration
     has_many :induction_records
     has_many :school_mentors # only ParticipantProfile::Mentor
     has_many :participant_declarations
+    has_many :participant_profile_states
 
     scope :ect, -> { where(type: "ParticipantProfile::ECT") }
     scope :mentor, -> { where(type: "ParticipantProfile::Mentor") }
