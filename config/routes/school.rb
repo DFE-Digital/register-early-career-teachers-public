@@ -66,9 +66,9 @@ constraints -> { Rails.application.config.enable_schools_interface } do
       concerns :wizardable, wizard: Schools::AssignExistingMentorWizard
     end
 
-    namespace :induction do
+    scope module: :induction, path: :induction do
       namespace :confirm_existing_induction_tutor_wizard, path: "confirm-existing-induction-tutor" do
-        concerns :wizardable, wizard: Schools::Induction::ConfirmExistingInductionTutorWizard
+        concerns :wizardable, wizard: Schools::ConfirmExistingInductionTutorWizard
       end
     end
   end
