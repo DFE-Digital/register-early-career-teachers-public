@@ -92,6 +92,24 @@ describe Migration::InductionRecord, type: :model do
     end
   end
 
+  describe "#traning_active?" do
+    subject { record.training_active? }
+
+    let(:record) { FactoryBot.build(:migration_induction_record, training_status:) }
+
+    context 'when induction_status is "deferred"' do
+      let(:training_status) { "active" }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when training_status not "active"' do
+      let(:training_status) { "deferred" }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "#withdrawn?" do
     subject { record.withdrawn? }
 
