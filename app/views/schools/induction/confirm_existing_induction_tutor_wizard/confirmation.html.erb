@@ -1,16 +1,16 @@
 <%
   page_data(
-    title: "Yo've confirmed #{@wizard.induction}’s name",
+    title: "You've confirmed #{@wizard.induction_tutor_name} will continue as your school's induction tutor",
     header: false
   )
 %>
 
-<%= govuk_panel(title_text: "You have changed the ECT’s name to #{@wizard.teacher_full_name}") %>
+<%= govuk_panel(title_text: "You've confirmed #{@wizard.induction_tutor_name} will continue as your school's induction tutor") %>
 
 <h2 class="govuk-heading-m">What happens next</h2>
 
-<p class="govuk-body">The ECT can update their name in their teacher record using the Access your teaching qualifications service.</p>
+<p class="govuk-body">TODO</p>
 
 <p class="govuk-body">
-  <%= govuk_link_to "Back to #{@wizard.teacher_full_name}’s details", schools_ect_path(@ect_at_school_period) %>
+  <%= govuk_link_to "Continue", schools_ects_home_path %>
 </p>
