@@ -329,6 +329,36 @@ RSpec.describe Metadata::Handlers::Teacher do
           )
         end
       end
+
+      describe "#involved_in_school_transfer" do
+        subject(:metadata) do
+          Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole
+        end
+
+        context "when Teacher has some school transfers" do
+          before do
+            allow(Teachers::SchoolTransfers::History)
+              .to receive(:transfers_for)
+              .and_return(double(any?: true))
+
+            refresh_metadata
+          end
+
+          it { is_expected.to be_involved_in_school_transfer }
+        end
+
+        context "when Teacher has no school transfers" do
+          before do
+            allow(Teachers::SchoolTransfers::History)
+              .to receive(:transfers_for)
+              .and_return(double(any?: false))
+
+            refresh_metadata
+          end
+
+          it { is_expected.not_to be_involved_in_school_transfer }
+        end
+      end
     end
   end
 end

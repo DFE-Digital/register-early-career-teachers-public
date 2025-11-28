@@ -7,12 +7,21 @@ class InductionPeriod < ApplicationRecord
   include SharedInductionPeriodValidation
   include SharedNumberOfTermsValidation
 
+  enum :outcome,
+       { fail: "fail", pass: "pass" },
+       validate: { message: "Outcome must be either pass or fail", allow_nil: true },
+       suffix: true
+
   # Associations
   belongs_to :appropriate_body
   belongs_to :teacher
   has_many :events
 
   touch -> { teacher }, when_changing: %i[started_on finished_on], timestamp_attribute: :api_updated_at, if: :touch_teacher?
+
+  refresh_metadata -> { teacher },
+                   on_event: %i[create destroy update],
+                   when_changing: %i[outcome]
 
   # Validations
   validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
@@ -33,13 +42,6 @@ class InductionPeriod < ApplicationRecord
             },
             unless: ->(ip) {
               ip.induction_programme.in?(%w[unknown pre_september_2021])
-            }
-
-  validates :outcome,
-            inclusion: {
-              in: ::INDUCTION_OUTCOMES.keys.map(&:to_s),
-              message: "Outcome must be either pass or fail",
-              allow_nil: true
             }
 
   validate :start_date_after_qts_date
