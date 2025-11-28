@@ -1,15 +1,24 @@
 <%
   page_data(
-    title: "You've confirmed #{@wizard.induction_tutor_name} will continue as your school's induction tutor",
+    title: "You've confirmed #{@wizard.school.induction_tutor_name} will continue as your school's induction tutor",
     header: false
   )
 %>
 
-<%= govuk_panel(title_text: "You've confirmed #{@wizard.induction_tutor_name} will continue as your school's induction tutor") %>
+<% if @wizard.store.are_these_details_correct %>
+  <%= govuk_panel(title_text: "You've confirmed #{@wizard.school.induction_tutor_name} will continue as your school's induction tutor") %>
+<% else %>
+  <%= govuk_panel(title_text: "You've changed your school's induction tutor to #{@wizard.school.induction_tutor_name}") %>
+<% end %>
 
 <h2 class="govuk-heading-m">What happens next</h2>
 
-<p class="govuk-body">TODO</p>
+<% if @wizard.store.are_these_details_correct %>
+  <p class="govuk-body">You do not need to do anything else.</p>
+<% else %>
+  <p class="govuk-body">We'll send an email to <%= @wizard.school.induction_tutor_name %> at <%= @wizard.school.induction_tutor_email %> to let them know.</p>
+  <p class="govuk-body">We'll also let your school's appropriate body and lead providers know about the change. sadads will be their main contact for early career training and induction at your school.</p>
+<% end %>
 
 <p class="govuk-body">
   <%= govuk_link_to "Continue", schools_ects_home_path %>
