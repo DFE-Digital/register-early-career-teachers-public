@@ -11,9 +11,9 @@ This guidance explains: 
 
 Schools can make the following updates: 
 
-* participant names or contact details 
-* start date corrections 
-* record a mentor replacement 
+* participant names or email address
+* report someone is leaving the school
+* assign a new mentor 
 * change the type of induction (either provider or school-led) an ECT is doing  
 * move participants to a different lead provider 
 
@@ -23,7 +23,7 @@ When an update is received:  
 
 * participant records are refreshed in the API 
 * providers will be able to check for changes by querying the `participant_id_changes` filter on a participant's record 
-* they should then update their records and check the participant’s current `eligible_for_funding` value before submitting declarations 
+* they should then update their records before submitting declarations 
 * corresponding funding and declaration logic is applied automatically  
 * the `updated_since` filter will include the record for subsequent `GET /participants` queries 
 
@@ -34,7 +34,7 @@ Lead providers can use the API to notify DfE when a participant has: 
 * deferred training 
 * resumed training 
 * withdrawn from training 
-* changed training schedule 
+* changed training schedule or cohort
 
 These updates keep participant records aligned between systems and ensure correct funding calculations. 
 
@@ -76,7 +76,20 @@ Where this occurs, providers should: 
 
 1. Void the existing declarations (where `declaration_date` does not align with the new schedule). 
 2. Change the participant’s training schedule. 
-3. Resubmit backdated declarations (where `declaration_date` aligns with the new schedule). 
+3. Resubmit backdated declarations (where `declaration_date` aligns with the new schedule).
+
+### Change schedules or cohorts for a participant even if they have billable declarations 
+
+Providers can change an ECT or mentor’s schedule or cohort even if billable declarations exist. 
+
+However, providers cannot make these changes if: 
+
+* the ECT has an `induction_end_date` (meaning induction is complete), or
+* the mentor has a completed declaration showing they’ve finished training 
+
+In both cases, validation errors will block the update. 
+
+ECTs and mentors also cannot be moved back into a closed cohort unless they originally came from that cohort. A validation error will prevent this as well. 
 
 ## How to assign a replacement mentor 
 
@@ -96,8 +109,8 @@ A replacement mentor’s schedule, and any associated declaration submissions,
 
 ## Recording completions 
 
-We populate the `induction_end_date` on an ECT’s profile as soon as they complete their induction.  
+We populate the `induction_end_date` on an ECT’s profile within 24 hours of them completing their induction.  
 
 Similarly, once providers submit a completed declaration for a mentor, the `mentor_funding_end_date` is populated. 
 
-Providers should backdate declarations for participants who’ve completed their induction or mentor training and remove them from their active training lists, but they do not need to withdraw them. 
+Providers should backdate declarations for participants who’ve completed their induction or mentor training, but they do not need to withdraw them. 
