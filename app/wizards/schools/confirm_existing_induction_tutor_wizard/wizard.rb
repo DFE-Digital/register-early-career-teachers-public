@@ -1,10 +1,10 @@
 module Schools
   module ConfirmExistingInductionTutorWizard
     class Wizard < ApplicationWizard
-      attr_accessor :store, :school, :school_id, 
-      :induction_tutor_email, :induction_tutor_name, 
-      :are_these_details_correct,
-      :author
+      attr_accessor :store, :school, :school_id,
+                    :induction_tutor_email, :induction_tutor_name,
+                    :are_these_details_correct,
+                    :author
 
       steps do
         [{

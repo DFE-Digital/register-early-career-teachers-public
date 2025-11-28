@@ -1,6 +1,8 @@
 module Schools
   module ConfirmExistingInductionTutorWizard
-    class EditStep < Step
+    class EditStep < ApplicationWizardStep
+      delegate :school, :author, :valid_step?, to: :wizard
+
       attribute :induction_tutor_email, :string
       attribute :induction_tutor_name, :string
       attribute :are_these_details_correct, :boolean
@@ -34,6 +36,7 @@ module Schools
       def save!
         store.induction_tutor_email = induction_tutor_email if valid_step?
         store.induction_tutor_name = induction_tutor_name if valid_step?
+        store.are_these_details_correct = are_these_details_correct if valid_step?
       end
 
     private
