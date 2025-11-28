@@ -6,13 +6,13 @@ module Schools
       attribute :are_these_details_correct, :boolean
 
       validates :induction_tutor_email,
-                presence: { message: "Enter an email address" }
+                presence: { message: "Email cannot be blank" }
 
       validates :induction_tutor_name,
-                presence: { message: "Enter a name" }
+                presence: { message: "Name cannot be blank" }
 
       validates :are_these_details_correct,
-                inclusion: { in: [true, false], message: "Select yes if these details are correct" }
+                inclusion: { in: [true, false], message: "Select 'Yes' if these details are correct" }
 
       validate :details_must_be_changed_unless_confirmed
 
@@ -39,8 +39,8 @@ module Schools
     private
 
       def pre_populate_attributes
-        # self.induction_tutor_email = store.induction_tutor_email.presence || school.induction_tutor_email
-        # self.induction_tutor_name = store.induction_tutor_name.presence || school.induction_tutor_name
+        self.induction_tutor_email = store.induction_tutor_email.presence || school.induction_tutor_email
+        self.induction_tutor_name = store.induction_tutor_name.presence || school.induction_tutor_name
       end
 
       def details_must_be_changed_unless_confirmed

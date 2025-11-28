@@ -47,7 +47,6 @@ module Schools
     end
 
     def initialize_wizard
-      
       redirect_to(root_path) unless @school
 
       @wizard = WIZARD_CLASS.new(
