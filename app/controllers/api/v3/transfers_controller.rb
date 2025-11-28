@@ -55,10 +55,6 @@ module API
           **serializer_options
         )
       end
-
-      def updated_at_attribute
-        "api_updated_at"
-      end
     end
   end
 end
