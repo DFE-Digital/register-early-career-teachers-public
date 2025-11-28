@@ -23,5 +23,9 @@ FactoryBot.define do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
       end
     end
+
+    trait :with_payments_frozen do
+      payments_frozen_at { Time.zone.now }
+    end
   end
 end
