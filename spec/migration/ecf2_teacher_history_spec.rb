@@ -62,4 +62,74 @@ describe ECF2TeacherHistory do
       end
     end
   end
+
+  describe "#save_all!" do
+    let(:contract_period) { FactoryBot.create(:contract_period) }
+
+    it { is_expected.to respond_to(:save_all!) }
+
+    describe "saving a teacher" do
+      let(:api_id) { SecureRandom.uuid }
+      let(:api_ect_training_record_id) { SecureRandom.uuid }
+      let(:api_mentor_training_record_id) { SecureRandom.uuid }
+      let(:ect_pupil_premium_uplift) { true }
+      let(:ect_sparsity_uplift) { true }
+      let(:ect_first_became_eligible_for_training_at) { 3.years.ago.round(2) }
+      let(:ect_payments_frozen_year) { contract_period.year }
+      let(:mentor_became_ineligible_for_funding_on) { 2.years.ago.to_date }
+      let(:mentor_became_ineligible_for_funding_reason) { "completed_declaration_received" }
+      let(:mentor_first_became_eligible_for_training_at) { 2.years.ago.round(2) }
+      let(:mentor_payments_frozen_year) { contract_period.year }
+
+      let(:teacher_row) do
+        ECF2TeacherHistory::TeacherRow.new(
+          trn:,
+          trs_first_name:,
+          trs_last_name:,
+          corrected_name:,
+
+          api_id:,
+          api_ect_training_record_id:,
+          api_mentor_training_record_id:,
+
+          ect_pupil_premium_uplift:,
+          ect_sparsity_uplift:,
+          ect_first_became_eligible_for_training_at:,
+          ect_payments_frozen_year:,
+
+          mentor_became_ineligible_for_funding_on:,
+          mentor_became_ineligible_for_funding_reason:,
+          mentor_first_became_eligible_for_training_at:,
+          mentor_payments_frozen_year:
+        )
+      end
+
+      it "saves a row with the right values" do
+        teacher = subject.save_all!
+
+        expect(teacher).to be_persisted
+
+        aggregate_failures do
+          expect(teacher.trn).to eql(trn)
+          expect(teacher.trs_first_name).to eql(trs_first_name)
+          expect(teacher.trs_last_name).to eql(trs_last_name)
+          expect(teacher.corrected_name).to eql(corrected_name)
+
+          expect(teacher.api_id).to eql(api_id)
+          expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
+          expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
+
+          expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
+          expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
+          expect(teacher.ect_first_became_eligible_for_training_at).to eql(ect_first_became_eligible_for_training_at)
+          expect(teacher.ect_payments_frozen_year).to eql(ect_payments_frozen_year)
+
+          expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)
+          expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
+          expect(teacher.mentor_first_became_eligible_for_training_at).to eql(mentor_first_became_eligible_for_training_at)
+          expect(teacher.mentor_payments_frozen_year).to eql(mentor_payments_frozen_year)
+        end
+      end
+    end
+  end
 end
