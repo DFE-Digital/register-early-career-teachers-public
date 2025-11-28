@@ -1,4 +1,4 @@
-RSpec.describe "Participant transfers API", :with_metadata, type: :request do
+RSpec.describe "Participant transfers API", type: :request do
   include SchoolTransferHelpers
 
   let(:serializer) { API::Teachers::SchoolTransferSerializer }
@@ -13,7 +13,7 @@ RSpec.describe "Participant transfers API", :with_metadata, type: :request do
       teacher:,
       lead_provider: active_lead_provider.lead_provider
     )
-    teacher
+    teacher.tap { Metadata::Handlers::Teacher.new(it).refresh_metadata! }
   end
 
   describe "#index" do
