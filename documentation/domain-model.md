@@ -346,6 +346,7 @@ erDiagram
     uuid api_mentor_id
     integer latest_ect_contract_period_year
     integer latest_mentor_contract_period_year
+    boolean involved_in_school_transfer
   }
   Metadata_TeacherLeadProvider }o--|| Teacher : belongs_to
   Metadata_TeacherLeadProvider }o--|| LeadProvider : belongs_to
