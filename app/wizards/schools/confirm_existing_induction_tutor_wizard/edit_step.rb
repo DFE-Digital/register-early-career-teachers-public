@@ -8,10 +8,10 @@ module Schools
       attribute :are_these_details_correct, :boolean
 
       validates :induction_tutor_email,
-                presence: { message: "Email cannot be blank" }
+                presence: { message: "Email cannot be blank" }, unless: :are_these_details_correct
 
       validates :induction_tutor_name,
-                presence: { message: "Name cannot be blank" }
+                presence: { message: "Name cannot be blank" }, unless: :are_these_details_correct
 
       validates :are_these_details_correct,
                 inclusion: { in: [true, false], message: "Select 'Yes' if these details are correct" }
@@ -19,7 +19,6 @@ module Schools
       validate :details_must_be_changed_unless_confirmed
 
       def self.permitted_params = %i[
-        school_id
         induction_tutor_name
         induction_tutor_email
         are_these_details_correct
