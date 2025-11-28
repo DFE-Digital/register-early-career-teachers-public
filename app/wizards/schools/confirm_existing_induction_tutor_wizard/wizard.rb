@@ -20,11 +20,6 @@ module Schools
         Array(steps).first[step_name].present?
       end
 
-      # @return [Hash]
-      def default_path_arguments
-        { school_id: school.id }
-      end
-
       def school
         @school ||= School.find(school_id)
       end
