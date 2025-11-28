@@ -540,7 +540,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:change_to_identifier) { "ecf-extended-january" }
 
       before do
-        # Create 2022 contract period with partnership
+        # Create partnership for the contract period we are changing to
         FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: change_to_active_lead_provider)
 
         # Deferred participant for current lead provider
@@ -585,7 +585,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:change_to_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: change_to_contract_period) }
 
       before do
-        # Create 2022 contract period with partnership
+        # Create partnership for the contract period we are changing to
         FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: change_to_active_lead_provider)
       end
 
