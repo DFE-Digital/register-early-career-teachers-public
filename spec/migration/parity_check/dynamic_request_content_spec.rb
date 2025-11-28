@@ -503,24 +503,28 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
     context "when fetching `teacher_api_id_for_change_schedule_action`" do
       let(:identifier) { :teacher_api_id_for_change_schedule_action }
-      let(:ecf_induction_record1) { FactoryBot.create(:migration_induction_record) }
-      let(:ecf_participant_profile1) { ecf_induction_record1.participant_profile }
-      let(:ecf_induction_record2) { FactoryBot.create(:migration_induction_record) }
-      let(:ecf_participant_profile2) { ecf_induction_record2.participant_profile }
-      let!(:ecf_induction_record3) { FactoryBot.create(:migration_induction_record) }
 
       let(:ecf_cpd_lead_provider) { FactoryBot.create(:migration_cpd_lead_provider) }
       let(:ecf_lead_provider) { FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id, cpd_lead_provider: ecf_cpd_lead_provider) }
       let!(:ecf_partnership) { FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider) }
 
-      let!(:ecf_participant_declaration) { FactoryBot.create(:migration_participant_declaration, cpd_lead_provider: ecf_cpd_lead_provider, participant_profile: ecf_participant_profile1) }
+      let(:ecf_induction_record) { FactoryBot.create(:migration_induction_record) }
+      let(:teacher_id) { ecf_induction_record.preferred_identity.external_identifier }
 
       before do
-        ecf_induction_record1.induction_programme.update!(partnership: ecf_partnership)
-        ecf_induction_record2.induction_programme.update!(partnership: ecf_partnership)
+        # Make sure the migration participant belongs to the lead provider
+        ecf_induction_record.induction_programme.update!(partnership: ecf_partnership)
+
+        # Participant that belongs to lead provider with applicable declaration should not be used
+        ecf_induction_record_with_declarations = FactoryBot.create(:migration_induction_record)
+        ecf_induction_record_with_declarations.induction_programme.update!(partnership: ecf_partnership)
+        FactoryBot.create(:migration_participant_declaration, cpd_lead_provider: ecf_cpd_lead_provider, participant_profile: ecf_induction_record_with_declarations.participant_profile)
+
+        # Participant without declarations for different lead provider should not be used
+        FactoryBot.create(:migration_induction_record)
       end
 
-      it { is_expected.to eq(ecf_induction_record2.preferred_identity.external_identifier) }
+      it { is_expected.to eq(teacher_id) }
     end
 
     context "when fetching `change_schedule_different_schedule_and_cohort_participant_body`" do
