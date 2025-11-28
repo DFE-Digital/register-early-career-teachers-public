@@ -20,6 +20,7 @@ module Migration
 
     def leaving? = induction_status == "leaving"
 
+    def training_active? = training_status == "active"
     def withdrawn? = training_status == "withdrawn"
   end
 end
