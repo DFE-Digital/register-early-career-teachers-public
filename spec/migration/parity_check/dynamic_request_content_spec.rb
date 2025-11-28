@@ -534,12 +534,14 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
       let(:teacher) { training_period.trainee.teacher }
 
-      let(:contract_period_2022) { FactoryBot.create(:contract_period, year: 2022) }
-      let(:active_lead_provider_2022) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2022) }
+      let(:change_to_year) { active_lead_provider.contract_period_year + 1 }
+      let(:change_to_contract_period) { FactoryBot.create(:contract_period, year: change_to_year) }
+      let(:change_to_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: change_to_contract_period) }
+      let(:change_to_identifier) { "ecf-extended-january" }
 
       before do
         # Create 2022 contract period with partnership
-        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2022)
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: change_to_active_lead_provider)
 
         # Deferred participant for current lead provider
         FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:)
@@ -548,7 +550,8 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         # Participants for different lead providers should not be used
         FactoryBot.create(:training_period, :for_ect, :ongoing)
 
-        allow(Schedule).to receive(:identifiers).and_return({ "ecf-extended-january" => "ecf-extended-january", "ecf-replacement-september" => "ecf-replacement-september" })
+        # Mock the identifiers so it returns only the change_to_identifier, 'ecf-replacement-september' should not be returned as its for mentors
+        allow(Schedule).to receive(:identifiers).and_return({ change_to_identifier => change_to_identifier, "ecf-replacement-september" => "ecf-replacement-september" })
       end
 
       it "returns a participant change schedule body with different schedule and cohort" do
@@ -562,8 +565,8 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
             type: "participant-change-schedule",
             attributes: {
               course_identifier: "ecf-induction",
-              schedule_identifier: "ecf-extended-january",
-              cohort: 2022,
+              schedule_identifier: change_to_identifier,
+              cohort: change_to_year,
             }
           },
         })
@@ -577,12 +580,13 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
       let(:teacher) { training_period.trainee.teacher }
 
-      let(:contract_period_2022) { FactoryBot.create(:contract_period, year: 2022) }
-      let(:active_lead_provider_2022) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: contract_period_2022) }
+      let(:change_to_year) { active_lead_provider.contract_period_year + 1 }
+      let(:change_to_contract_period) { FactoryBot.create(:contract_period, year: change_to_year) }
+      let(:change_to_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: change_to_contract_period) }
 
       before do
         # Create 2022 contract period with partnership
-        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider_2022)
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: change_to_active_lead_provider)
       end
 
       it "returns a participant change schedule body with different cohort only" do
@@ -597,7 +601,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
             attributes: {
               course_identifier: "ecf-induction",
               schedule_identifier: training_period.schedule.identifier,
-              cohort: 2022,
+              cohort: change_to_year,
             }
           },
         })
