@@ -7,7 +7,7 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
       step_params: ActionController::Parameters.new(edit: params),
       author:,
       store:,
-      school:
+      school_id: school.id
     )
   end
 
@@ -50,75 +50,78 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
   end
 
   describe "validations" do
-    context "when induction_tutor_email is blank" do
-      let(:induction_tutor_email) { nil }
-
-      it "is invalid" do
-        expect(current_step).not_to be_valid
-        expect(current_step.errors.messages_for(:induction_tutor_email)).to contain_exactly(
-          "Enter an email address"
-        )
-      end
-    end
-
-    context "when induction_tutor_name is blank" do
-      let(:induction_tutor_name) { nil }
-
-      it "is invalid" do
-        expect(current_step).not_to be_valid
-        expect(current_step.errors.messages_for(:induction_tutor_name)).to contain_exactly(
-          "Enter a name"
-        )
-      end
-    end
-
     context "when are_these_details_correct is not selected" do
       let(:are_these_details_correct) { nil }
 
       it "is invalid" do
         expect(current_step).not_to be_valid
         expect(current_step.errors.messages_for(:are_these_details_correct)).to contain_exactly(
-          "Select yes if these details are correct"
+          "Select 'Yes' if these details are correct"
         )
       end
     end
 
-    context "when both attributes are present and the user has confirmed they are correct" do
+    context "when the user needs to change the details" do
+      let(:are_these_details_correct) { false } 
+
+      context "when induction_tutor_email is blank" do
+        let(:induction_tutor_email) { nil }
+
+        it "is invalid" do
+          expect(current_step).not_to be_valid
+          expect(current_step.errors.messages_for(:induction_tutor_email)).to contain_exactly(
+            "Email cannot be blank"
+          )
+        end
+      end
+
+      context "when induction_tutor_name is blank" do
+        let(:induction_tutor_name) { nil }
+
+        it "is invalid" do
+          expect(current_step).not_to be_valid
+          expect(current_step.errors.messages_for(:induction_tutor_name)).to contain_exactly(
+            "Name cannot be blank"
+          )
+        end
+      end
+
+      context "when the email has changed" do
+        let(:induction_tutor_email) { Faker::Internet.email }
+
+        it "is valid" do
+          expect(current_step).to be_valid
+          expect(current_step.errors).to be_empty
+        end
+      end
+
+      context "when the name has changed" do
+        let(:induction_tutor_name) { "New Name" }
+  
+        it "is valid" do
+          expect(current_step).to be_valid
+          expect(current_step.errors).to be_empty
+        end
+      end
+
+      context "when both attributes are unchanged" do
+        it "is not valid" do
+          expect(current_step).not_to be_valid
+          expect(current_step.errors.messages_for(:base)).to contain_exactly(
+            "You must change the induction tutor details or confirm they are correct"
+          )
+        end
+      end
+    end
+
+    context "when the user has confirmed the existing details are correct" do
+      let(:are_these_details_correct) { true } 
+
       it "is valid" do
         expect(current_step).to be_valid
         expect(current_step.errors).to be_empty
       end
-    end
 
-    context "when both attributes are unchanged but the user said the details are not correct" do
-      let(:are_these_details_correct) { false }
-
-      it "is not valid" do
-        expect(current_step).not_to be_valid
-        expect(current_step.errors.messages_for(:base)).to contain_exactly(
-          "You must change the induction tutor details or confirm they are correct"
-        )
-      end
-    end
-
-    context "when the email has changed and the user said the details are not correct" do
-      let(:are_these_details_correct) { false }
-      let(:induction_tutor_email) { Faker::Internet.email }
-
-      it "is valid" do
-        expect(current_step).to be_valid
-        expect(current_step.errors).to be_empty
-      end
-    end
-
-    context "when the name has changed and the user said the details are not correct" do
-      let(:are_these_details_correct) { false }
-      let(:induction_tutor_name) { "New Name" }
-
-      it "is valid" do
-        expect(current_step).to be_valid
-        expect(current_step.errors).to be_empty
-      end
     end
   end
 end
