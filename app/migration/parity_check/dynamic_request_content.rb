@@ -265,7 +265,7 @@ module ParityCheck
       contract_period = random_contract_period(excluding_contract_period_year: training_period.contract_period.year)
       return unless contract_period
 
-      schedule_identifier = random_schedule_identifier(training_period.schedule)
+      schedule_identifier = random_schedule_identifier(excluding_schedule: training_period.schedule)
       return unless schedule_identifier
 
       participant_change_schedule_payload(
@@ -297,7 +297,7 @@ module ParityCheck
       training_period = latest_training_period(participant)
       return unless training_period
 
-      schedule_identifier = random_schedule_identifier(training_period.schedule)
+      schedule_identifier = random_schedule_identifier(excluding_schedule: training_period.schedule)
       return unless schedule_identifier
 
       participant_change_schedule_payload(
@@ -366,7 +366,7 @@ module ParityCheck
       end
     end
 
-    def random_schedule_identifier(excluding_schedule)
+    def random_schedule_identifier(excluding_schedule:)
       if excluding_schedule.replacement_schedule?
         Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS.excluding(excluding_schedule.identifier).sample
       else
