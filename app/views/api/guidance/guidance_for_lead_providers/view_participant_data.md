@@ -29,8 +29,7 @@ This should mean participants will not ‘disappear’ in the `GET /participants
 
 Providers can use this data to check whether participants: 
 
-* have a valid teacher reference number (TRN) and qualified teacher status (QTS) 
-* are eligible for funding 
+* have started their induction (`overall_induction_start_date`), and are therefore eligible for funding 
 * have transferred to or from a school they’re partnered with 
 * have (if they’re ECTs) an assigned unfunded mentor 
 * have (if they’re ECTs) completed induction, according to the Database of Qualified Teachers 
@@ -45,7 +44,7 @@ Providers will continue to see participants if they’ve ever had a confirmed pa
 * their lead provider or delivery partner changes
 * their induction programme type (ECF-based or school-based) changes 
 
-This ensures historical and funding continuity for their records. 
+This ensures providers can keep accurate records.
 
 ## Retrieve multiple participants 
 
@@ -77,7 +76,7 @@ The following table explains the key participant fields.
 The API uses two different status fields to describe a participant’s journey in the participant endpoints: 
 
 * `training_status`, set by providers through the API. It determines what actions providers can take, such as updating data or submitting declarations
-* `participant_status`, set by schools. It reflects the participant’s position in the school (for example, whether they’re joining or leaving) 
+* `participant_status`, shows a participant’s position in the school. It moves to `left` whenever the school or lead provider indicates the participant is no longer training with the current lead provider, even if they remain at the school 
 
 Together, these statuses give both providers and schools a shared view of a participant’s training progress. 
 
@@ -86,23 +85,23 @@ The following table explains what the training status fields mean.
 | `training_status` | Definition | Notes | 
 | ------------ | ------------- | ------------- | 
 | `active` | Participant is currently in training | Update participant data and submit declarations | 
-| `deferred` | Participant has paused training | Providers must notify DfE when the participant restarts | 
+| `deferred` | Participant has paused training | Cannot update participant data. Can only submit backdated declarations if `declaration_date` is before `deferral_date`. Providers must notify us when the participant resumes | 
 | `withdrawn` | Participant has left training | Cannot update participant data. Can only submit backdated declarations if `declaration_date` is before `withdrawal_date` | 
 
 The following table explains what the participant status fields mean. 
 
 | `participant_status` | Definition | 
 | ------------ | ------------- | 
-| `joining` | ECT is due to join the school. Will update to `active` the day after the school’s reported start date for the ECT. Also applies to mentors in transfer cases where a joining date exists | 
-| `active` | Participant is currently training at the school | 
+| `joining` | ECT is due to join the school. Will update to `active` on the same day as the school’s reported start date for the ECT. Also applies to mentors in transfer cases where a joining date exists | 
+| `active` | Participant is currently at the school | 
 | `leaving` | Participant is due to leave the school. Will update to left after the leaving date passes | 
 | `left` | Participant has left a school, been reassigned to a different lead provider, had their programme type changed to `school-led`, or been withdrawn or deferred by a lead provider | 
  
-### Example of how the 2 participant statuses can differ 
+### Example of how statuses for participants can differ 
 
 A provider records a participant as `training_status = active` because they're still completing training. 
 
-At the same time, the school records the participant as `participant_status = leaving`, with a leaving date set for the end of term. 
+At the same time, the API records the participant as `participant_status = leaving`, with a leaving date set for the end of term. 
 
 In this case, the participant is still active in training, but their school has flagged that they're due to leave soon. Once the leaving date passes, the `participant_status` will update to `left`, while the provider will need to update the training record if the participant transfers or withdraws. 
 
