@@ -2,7 +2,7 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
   let(:school) { FactoryBot.create(:school) }
   let(:params) { {} }
   let(:induction_tutor_name) { "New Induction Tutor Name" }
-  let(:induction_tutor_email) { "new.name@gmail.com"}
+  let(:induction_tutor_email) { "new.name@gmail.com" }
 
   describe "GET #new" do
     context "when not signed in" do
