@@ -7,12 +7,32 @@ describe ECF2TeacherHistory do
   let(:corrected_name) { "Colin Abel Jeavons" }
   let(:teacher_row) { ECF2TeacherHistory::TeacherRow.new(trn:, trs_first_name:, trs_last_name:, corrected_name:) }
 
+  let!(:school_a) { FactoryBot.create(:school, urn: 111_111) }
+  let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
+  let(:school_a_data) { ECF2TeacherHistory::SchoolData.new(urn: 111_111, name: "School A") }
+  let(:school_b_data) { ECF2TeacherHistory::SchoolData.new(urn: 222_222, name: "School B") }
+  let(:mentor_data) { ECF2TeacherHistory::MentorData.new(trn: "1234567", urn: "123456", started_on: 1.week.ago, finished_on: 1.day.ago) }
+
   let(:mentorship_period_rows) do
-    [ECF2TeacherHistory::MentorshipPeriodRow.new(started_on: 1.month.ago.to_date, finished_on: 1.week.ago.to_date)]
+    [
+      ECF2TeacherHistory::MentorshipPeriodRow.new(
+        started_on: 1.month.ago.to_date,
+        finished_on: 1.week.ago.to_date,
+        ecf_start_induction_record_id: SecureRandom.uuid,
+        ecf_end_induction_record_id: SecureRandom.uuid,
+        mentor_data:
+      )
+    ]
   end
 
   let(:training_period_rows) do
-    [ECF2TeacherHistory::TrainingPeriodRow.new(started_on: 1.month.ago.to_date, finished_on: 1.week.ago.to_date)]
+    [
+      ECF2TeacherHistory::TrainingPeriodRow.new(
+        started_on: 1.month.ago.to_date,
+        finished_on: 1.week.ago.to_date,
+        training_programme: :provider_led
+      ),
+    ]
   end
 
   let(:ect_at_school_period_rows) do
@@ -20,6 +40,8 @@ describe ECF2TeacherHistory do
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
+        school: school_a_data,
+        email: "a@example.org",
         mentorship_period_rows:,
         training_period_rows:
       )
@@ -31,6 +53,8 @@ describe ECF2TeacherHistory do
       ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
+        school: school_a_data,
+        email: "a@example.org",
         training_period_rows:
       )
     ]
@@ -91,7 +115,7 @@ describe ECF2TeacherHistory do
           ect_pupil_premium_uplift:,
           ect_sparsity_uplift:,
           ect_first_became_eligible_for_training_at:,
-          ect_payments_frozen_year:,
+          ect_payments_frozen_year:
         )
       end
 
@@ -122,11 +146,6 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher has ECT at school periods" do
-        let!(:school_a) { FactoryBot.create(:school, urn: 111_111) }
-        let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
-        let(:school_a_data) { ECF2TeacherHistory::SchoolData.new(urn: 111_111, name: "School A") }
-        let(:school_b_data) { ECF2TeacherHistory::SchoolData.new(urn: 222_222, name: "School B") }
-
         let(:other_arguments) { { ect_at_school_period_rows: } }
         let(:teacher) { subject.save_all_ect_data! }
 
@@ -144,7 +163,6 @@ describe ECF2TeacherHistory do
             name: appropriate_body_b.name
           )
         end
-
 
         context "when training periods are present" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
@@ -164,7 +182,7 @@ describe ECF2TeacherHistory do
               lead_provider:,
               delivery_partner:,
               contract_period:,
-              schedule:,
+              schedule:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -280,7 +298,7 @@ describe ECF2TeacherHistory do
               trn: existing_mentor_at_school_period.teacher.trn,
               urn: existing_mentor_at_school_period.school.urn,
               started_on: existing_mentor_at_school_period.started_on,
-              finished_on: existing_mentor_at_school_period.finished_on,
+              finished_on: existing_mentor_at_school_period.finished_on
             )
           end
 
@@ -402,11 +420,6 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher has mentor at school periods" do
-        let!(:school_a) { FactoryBot.create(:school, urn: 111_111) }
-        let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
-        let(:school_a_data) { ECF2TeacherHistory::SchoolData.new(urn: 111_111, name: "School A") }
-        let(:school_b_data) { ECF2TeacherHistory::SchoolData.new(urn: 222_222, name: "School B") }
-
         let(:other_arguments) { { mentor_at_school_period_rows: } }
         let(:teacher) { subject.save_all_mentor_data! }
 
@@ -443,7 +456,7 @@ describe ECF2TeacherHistory do
               lead_provider:,
               delivery_partner:,
               contract_period:,
-              schedule:,
+              schedule:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -452,23 +465,23 @@ describe ECF2TeacherHistory do
             )
           end
 
-           let(:first_mentor_at_school_period_row) do
-             ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
-               started_on: 1.year.ago.to_date,
-               finished_on: 1.month.ago.to_date,
-               school: school_a_data,
-               email: "a@example.org",
-               training_period_rows: [first_training_period_row],
-             )
-           end
+          let(:first_mentor_at_school_period_row) do
+            ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
+              started_on: 1.year.ago.to_date,
+              finished_on: 1.month.ago.to_date,
+              school: school_a_data,
+              email: "a@example.org",
+              training_period_rows: [first_training_period_row]
+            )
+          end
 
-           let(:mentor_at_school_period_rows) do
-             [first_mentor_at_school_period_row]
-           end
+          let(:mentor_at_school_period_rows) do
+            [first_mentor_at_school_period_row]
+          end
 
-           it "saves the right number of ECT at school periods" do
-             expect(teacher.mentor_at_school_periods.count).to be(1)
-           end
+          it "saves the right number of ECT at school periods" do
+            expect(teacher.mentor_at_school_periods.count).to be(1)
+          end
 
           it "saves the right number of training periods" do
             expect(teacher.mentor_at_school_periods.first.training_periods.count).to be(1)
