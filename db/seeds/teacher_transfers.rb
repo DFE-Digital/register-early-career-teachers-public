@@ -9,14 +9,14 @@ module TeacherTransfersSeeder
     def seed!
       print_seed_info("Creating teacher transfer scenarios for all Lead providers")
 
-      lead_providers.each do |lead_provider1|
-        print_seed_info("Processing Lead provider: #{lead_provider1.name}")
+      lead_providers.each do |from_lead_provider|
+        print_seed_info("Processing Lead provider: #{from_lead_provider.name}")
 
-        excluded_providers = [lead_provider1]
+        excluded_providers = [from_lead_provider]
         MIN_SET_OF_TRANSFERS_SCENARIOS_PER_LP.times do
-          lead_provider2 = select_different_lead_provider(excluding_lead_providers: excluded_providers)
-          create_set_of_transfers_scenarios(lead_provider1, lead_provider2)
-          excluded_providers << lead_provider2
+          to_lead_provider = select_different_lead_provider(excluding_lead_providers: excluded_providers)
+          create_set_of_transfers_scenarios(from_lead_provider, to_lead_provider)
+          excluded_providers << to_lead_provider
         end
       end
 
@@ -35,59 +35,59 @@ module TeacherTransfersSeeder
       (lead_providers - excluding_lead_providers).sample
     end
 
-    def create_set_of_transfers_scenarios(lead_provider1, lead_provider2)
+    def create_set_of_transfers_scenarios(from_lead_provider, to_lead_provider)
       print_seed_info("Creating 5 teachers with transfer scenarios:", indent: 2)
 
-      create_incomplete_transfer_scenario(lead_provider1, lead_provider2)
-      create_same_lp_transfer_scenario(lead_provider1, lead_provider2)
-      create_different_lp_transfer_scenario(lead_provider1, lead_provider2)
-      create_provider_to_school_led_scenario(lead_provider1)
-      create_school_led_to_provider_scenario(lead_provider1)
+      create_incomplete_transfer_scenario(from_lead_provider, to_lead_provider)
+      create_same_lp_transfer_scenario(from_lead_provider, to_lead_provider)
+      create_different_lp_transfer_scenario(from_lead_provider, to_lead_provider)
+      create_provider_to_school_led_scenario(from_lead_provider)
+      create_school_led_to_provider_scenario(from_lead_provider)
 
       print_seed_info("=" * 80)
     end
 
     # Scenario 1: provider led -> unknown (incomplete transfer)
-    def create_incomplete_transfer_scenario(lead_provider1, lead_provider2)
+    def create_incomplete_transfer_scenario(from_lead_provider, to_lead_provider)
       teacher = FactoryBot.create(:teacher, :with_realistic_name)
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago)
-      add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-      add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
-      add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: lead_provider2)
+      add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
+      add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: from_lead_provider)
+      add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: to_lead_provider)
 
       print_seed_info("1. Provider Led -> Unknown (incomplete): #{Teachers::Name.new(teacher).full_name}", indent: 4)
     end
 
     # Scenario 2: provider led -> provider led (same LP)
-    def create_same_lp_transfer_scenario(lead_provider1, lead_provider2)
+    def create_same_lp_transfer_scenario(from_lead_provider, to_lead_provider)
       teacher = FactoryBot.create(:teacher, :with_realistic_name)
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
-      add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
+      add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
       school_period2 = create_school_period(teacher, from: 2.years.ago)
-      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
-      add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider2)
+      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: from_lead_provider)
+      add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: to_lead_provider)
 
       print_seed_info("2. Provider Led -> Provider Led (same LP): #{Teachers::Name.new(teacher).full_name}", indent: 4)
     end
 
     # Scenario 3: provider led -> provider led (different LP)
-    def create_different_lp_transfer_scenario(lead_provider1, lead_provider2)
+    def create_different_lp_transfer_scenario(from_lead_provider, to_lead_provider)
       teacher = FactoryBot.create(:teacher, :with_realistic_name)
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
-      @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
+      @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
       school_period2 = create_school_period(teacher, from: 2.years.ago)
-      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider2)
-      lead_provider3 = select_different_lead_provider(excluding_lead_providers: [lead_provider1, lead_provider2])
-      add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider3)
+      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: to_lead_provider)
+      different_lead_provider = select_different_lead_provider(excluding_lead_providers: [from_lead_provider, to_lead_provider])
+      add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: different_lead_provider)
 
       print_seed_info("3. Provider Led -> Provider Led (different LP): #{Teachers::Name.new(teacher).full_name}", indent: 4)
     end
 
     # Scenario 4: provider led -> school led
-    def create_provider_to_school_led_scenario(lead_provider1)
+    def create_provider_to_school_led_scenario(from_lead_provider)
       teacher = FactoryBot.create(:teacher, :with_realistic_name)
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
-      add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
+      add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
       school_period2 = create_school_period(teacher, from: 2.years.ago)
       add_training_period(school_period2, from: 2.years.ago, programme_type: :school_led)
 
@@ -95,12 +95,12 @@ module TeacherTransfersSeeder
     end
 
     # Scenario 5: school led -> provider led
-    def create_school_led_to_provider_scenario(lead_provider1)
+    def create_school_led_to_provider_scenario(from_lead_provider)
       teacher = FactoryBot.create(:teacher, :with_realistic_name)
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :school_led)
       school_period2 = create_school_period(teacher, from: 2.years.ago)
-      add_training_period(school_period2, from: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
+      add_training_period(school_period2, from: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
 
       print_seed_info("5. School Led -> Provider Led: #{Teachers::Name.new(teacher).full_name}", indent: 4)
     end
