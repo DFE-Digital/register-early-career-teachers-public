@@ -318,6 +318,7 @@ erDiagram
     daterange range
     datetime payments_frozen_at
     boolean mentor_funding_enabled
+    boolean detailed_evidence_types_enabled
   }
   AppropriateBody {
     integer id
