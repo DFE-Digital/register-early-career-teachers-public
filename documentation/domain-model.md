@@ -316,6 +316,7 @@ erDiagram
     date finished_on
     boolean enabled
     daterange range
+    datetime payments_frozen_at
   }
   AppropriateBody {
     integer id
