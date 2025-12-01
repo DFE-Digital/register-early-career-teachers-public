@@ -7,13 +7,15 @@ module API::TrainingPeriods
     end
 
     def status
-      if training_period.withdrawn_at
-        :withdrawn
-      elsif training_period.deferred_at
-        :deferred
-      else
-        :active
-      end
+      return :active unless training_period.withdrawn_at || training_period.deferred_at
+
+      {
+        withdrawn: training_period.withdrawn_at,
+        deferred: training_period.deferred_at
+      }
+      .compact
+      .max_by(&:last)
+      .first
     end
 
     def active?

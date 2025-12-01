@@ -11,6 +11,8 @@ module Teachers
     end
 
     def withdraw
+      rollback_redundant_training_period!
+
       ActiveRecord::Base.transaction do
         training_period.withdrawn_at = Time.zone.now
         training_period.withdrawal_reason = reason.underscore
@@ -24,6 +26,20 @@ module Teachers
     end
 
   private
+
+    def rollback_redundant_training_period!
+      return unless training_period.started_on.today? && previous_training_period_for_lead_provider
+
+      training_period.destroy!
+      @training_period = previous_training_period_for_lead_provider
+    end
+
+    def previous_training_period_for_lead_provider
+      @previous_training_period_for_lead_provider ||= training_period
+        .predecessors
+        .latest_first
+        .find { it.lead_provider == lead_provider }
+    end
 
     def record_withdraw_event!
       return unless training_period.saved_changes?
