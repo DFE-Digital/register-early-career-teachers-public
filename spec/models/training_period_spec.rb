@@ -13,6 +13,10 @@ describe TrainingPeriod do
         FactoryBot.create(:school_partnership, id: new_value, school:, lead_provider_delivery_partnership:)
       when :expression_of_interest_id
         FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period, id: new_value)
+      when :withdrawn_at
+        instance.withdrawal_reason = :other
+      when :deferred_at
+        instance.deferral_reason = :other
       end
     end
 
@@ -33,14 +37,14 @@ describe TrainingPeriod do
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, **period_boundaries) }
         let(:instance) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on) }
 
-        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on school_partnership_id]
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on withdrawn_at deferred_at school_partnership_id]
       end
 
       context "Mentor training period" do
         let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, **period_boundaries) }
         let(:instance) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_at_school_period.started_on, finished_on: mentor_at_school_period.finished_on) }
 
-        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on school_partnership_id]
+        it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[started_on finished_on withdrawn_at deferred_at school_partnership_id]
       end
     end
   end
