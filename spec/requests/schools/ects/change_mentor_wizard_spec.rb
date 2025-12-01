@@ -1,4 +1,4 @@
-describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interface do
+describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interface, :schedules do
   let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -8,7 +8,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
       :ongoing,
       teacher:,
       school:,
-      started_on: contract_period.started_on + 2.months
+      started_on: mid_year - 1.month
     )
   end
   let(:mentor_teacher) { FactoryBot.create(:teacher) }
@@ -18,7 +18,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
       :ongoing,
       teacher: mentor_teacher,
       school:,
-      started_on: ect_at_school_period.started_on - 1.month
+      started_on: mid_year - 2.months
     )
   end
   let!(:mentorship_period) do

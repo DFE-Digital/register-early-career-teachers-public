@@ -1,5 +1,5 @@
 module ECTAtSchoolPeriods
-  describe SwitchMentor do
+  describe SwitchMentor, :schedules do
     subject(:switch_mentor) do
       SwitchMentor.switch(
         ect_at_school_period,
@@ -186,7 +186,7 @@ module ECTAtSchoolPeriods
                 schedule = TrainingPeriod.last.schedule
 
                 expect(schedule.identifier).to include("ecf-standard")
-                expect(schedule.contract_period_year).to eq(2025)
+                expect(schedule.contract_period_year).to eq(Date.current.year)
               end
             end
 
@@ -199,7 +199,7 @@ module ECTAtSchoolPeriods
                 schedule = TrainingPeriod.last.schedule
 
                 expect(schedule.identifier).to include("ecf-replacement")
-                expect(schedule.contract_period_year).to eq(2025)
+                expect(schedule.contract_period_year).to eq(Date.current.year)
               end
             end
           end

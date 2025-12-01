@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterMentor do
+RSpec.describe Schools::RegisterMentor, :schedules do
   subject(:service) do
     described_class.new(trs_first_name:,
                         trs_last_name:,
@@ -19,18 +19,12 @@ RSpec.describe Schools::RegisterMentor do
   let(:trn) { "3002586" }
   let(:school) { FactoryBot.create(:school) }
   let(:email) { "randy@tegridyfarms.com" }
-  let(:started_on) { Date.new(2024, 9, 17) }
+  let(:started_on) { mid_year - 1.day }
   let(:teacher) { subject.teacher }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
   let(:finish_existing_at_school_periods) { false }
-
-  around do |example|
-    travel_to(started_on + 1.day) do
-      example.run
-    end
-  end
 
   describe "#register!" do
     context "when no ActiveLeadProvider exists for the registration period" do
@@ -121,7 +115,7 @@ RSpec.describe Schools::RegisterMentor do
           training_period = TrainingPeriod.find_by!(started_on:)
 
           expect(training_period.schedule.identifier).to eql("ecf-standard-september")
-          expect(training_period.schedule.contract_period_year).to be(2024)
+          expect(training_period.schedule.contract_period_year).to be(Date.current.year)
         end
       end
 
@@ -145,7 +139,7 @@ RSpec.describe Schools::RegisterMentor do
           training_period = TrainingPeriod.find_by!(started_on:)
 
           expect(training_period.schedule.identifier).to eql("ecf-standard-september")
-          expect(training_period.schedule.contract_period_year).to be(2024)
+          expect(training_period.schedule.contract_period_year).to be(Date.current.year)
         end
       end
 

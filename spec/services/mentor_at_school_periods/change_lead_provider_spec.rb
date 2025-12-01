@@ -1,11 +1,11 @@
-RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
+RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, :schedules, type: :service do
   subject { described_class.call(mentor_at_school_period, new_lead_provider: lead_provider, old_lead_provider:, author:) }
 
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { mentor_at_school_period.school }
 
-  let(:started_on) { 3.months.ago.to_date }
+  let(:started_on) { mid_year - 1.month }
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
 
   let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
@@ -97,13 +97,11 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         end
 
         it "assigns the correct schedule for the new training period" do
-          travel_to Date.new(2025, 9, 1) do
-            subject
+          subject
 
-            new_training_period = mentor_at_school_period.training_periods.ongoing.first
-            expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
-            expect(new_training_period.schedule.contract_period_year).to eq(2025)
-          end
+          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
+          expect(new_training_period.schedule.contract_period_year).to eq(2025)
         end
       end
 

@@ -1,4 +1,4 @@
-describe "School user can change ECTs training programme", :enable_schools_interface do
+describe "School user can change ECTs training programme", :enable_schools_interface, :schedules do
   it "changes the training programme from provider-led to school-led" do
     given_there_is_a_school
     and_there_is_an_ect
