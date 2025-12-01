@@ -25,6 +25,7 @@ class ContractPeriod < ApplicationRecord
   validate :no_overlaps
   validates :started_on, presence: { message: "Enter a start date" }
   validates :finished_on, presence: { message: "Enter an end date" }
+  validates :mentor_funding_enabled, inclusion: { in: [true, false] }
 
   def self.containing_date(date)
     find_by(*date_in_range(date))

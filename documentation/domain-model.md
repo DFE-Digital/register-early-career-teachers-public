@@ -317,6 +317,7 @@ erDiagram
     boolean enabled
     daterange range
     datetime payments_frozen_at
+    boolean mentor_funding_enabled
   }
   AppropriateBody {
     integer id
