@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_27_221958) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -137,6 +137,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_24_115259) do
     t.date "finished_on"
     t.boolean "enabled", default: false
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.datetime "payments_frozen_at"
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
   end
 

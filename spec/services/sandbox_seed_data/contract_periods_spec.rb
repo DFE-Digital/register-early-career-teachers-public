@@ -12,11 +12,12 @@ RSpec.describe SandboxSeedData::ContractPeriods do
     it "creates contract_periods with correct attributes" do
       instance.plant
 
-      described_class::DATA.each do |year, enabled|
-        expect(ContractPeriod.find_by!(year:)).to have_attributes(
-          enabled:,
-          started_on: Date.new(year, 6, 1),
-          finished_on: Date.new(year + 1, 5, 31)
+      described_class::DATA.each do |data|
+        expect(ContractPeriod.find_by!(year: data[:year])).to have_attributes(
+          enabled: data[:enabled],
+          started_on: Date.new(data[:year], 6, 1),
+          finished_on: Date.new(data[:year] + 1, 5, 31),
+          payments_frozen_at: data[:payments_frozen_at]
         )
       end
     end
@@ -33,7 +34,7 @@ RSpec.describe SandboxSeedData::ContractPeriods do
       expect(logger).to have_received("formatter=").with(Rails.logger.formatter)
 
       expect(logger).to have_received(:info).with(/Planting contract_periods/).once
-      expect(logger).to have_received(:info).with(/#{described_class::DATA.keys.sample}/).at_least(:once)
+      expect(logger).to have_received(:info).with(/#{described_class::DATA.map(&:keys).sample}/).at_least(:once)
     end
 
     context "when in the production environment" do

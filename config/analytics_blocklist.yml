@@ -412,6 +412,7 @@
   - finished_on
   - enabled
   - range
+  - payments_frozen_at
   :active_lead_providers:
   - id
   - lead_provider_id
