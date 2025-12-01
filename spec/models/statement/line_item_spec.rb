@@ -171,12 +171,6 @@ describe Statement::LineItem do
       it { expect { line_item.mark_as_voided! }.to change(line_item, :status).from("payable").to("voided") }
     end
 
-    context "when transitioning from paid to awaiting_clawback" do
-      let(:line_item) { FactoryBot.create(:statement_line_item, status: :paid) }
-
-      it { expect { line_item.mark_as_awaiting_clawback! }.to change(line_item, :status).from("paid").to("awaiting_clawback") }
-    end
-
     context "when transitioning from awaiting_clawback to clawed_back" do
       let(:billable_line_item) { FactoryBot.create(:statement_line_item, :billable) }
       let(:line_item) { FactoryBot.create(:statement_line_item, status: :awaiting_clawback, declaration: billable_line_item.declaration) }

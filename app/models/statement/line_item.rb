@@ -56,10 +56,6 @@ class Statement::LineItem < ApplicationRecord
       transition %i[eligible ineligible payable] => :voided
     end
 
-    event :mark_as_awaiting_clawback do
-      transition [:paid] => :awaiting_clawback
-    end
-
     event :mark_as_clawed_back do
       transition [:awaiting_clawback] => :clawed_back
     end
