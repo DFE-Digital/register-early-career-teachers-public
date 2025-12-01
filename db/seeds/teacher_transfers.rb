@@ -1,4 +1,4 @@
-require Rails.root.join("spec/support/school_transfer_helpers")
+require Rails.root.join("db/seeds/support/school_transfer_helpers")
 
 module TeacherTransfersSeeder
   extend SchoolTransferHelpers
