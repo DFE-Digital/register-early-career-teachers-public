@@ -70,6 +70,7 @@ describe School do
 
   describe "associations" do
     it { is_expected.to belong_to(:gias_school).class_name("GIAS::School").with_foreign_key(:urn).inverse_of(:school) }
+    it { is_expected.to belong_to(:induction_tutor_last_nominated_in_year).class_name("ContractPeriod").optional(true) }
     it { is_expected.to have_many(:ect_at_school_periods).inverse_of(:school) }
     it { is_expected.to have_many(:ect_teachers).through(:ect_at_school_periods).source(:teacher) }
     it { is_expected.to have_many(:events) }
