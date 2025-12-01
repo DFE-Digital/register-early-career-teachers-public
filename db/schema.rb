@@ -140,6 +140,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_28_105319) do
     t.datetime "payments_frozen_at"
     t.boolean "mentor_funding_enabled", default: false, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "data_migrations", force: :cascade do |t|
@@ -193,6 +194,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_28_105319) do
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "events", force: :cascade do |t|
@@ -313,6 +315,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_28_105319) do
     t.enum "training_programme", enum_type: "training_programme"
     t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
@@ -351,6 +354,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_28_105319) do
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
     t.index ["teacher_id"], name: "index_mentor_at_school_periods_on_teacher_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "mentorship_periods", force: :cascade do |t|
@@ -368,6 +372,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_28_105319) do
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
     t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
     t.index ["mentor_at_school_period_id"], name: "index_mentorship_periods_on_mentor_at_school_period_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "metadata_delivery_partners_lead_providers", force: :cascade do |t|
@@ -836,6 +841,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_28_105319) do
     t.index ["schedule_id"], name: "index_training_periods_on_schedule_id"
     t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
     t.index ["school_partnership_id"], name: "index_training_periods_on_school_partnership_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "users", force: :cascade do |t|
