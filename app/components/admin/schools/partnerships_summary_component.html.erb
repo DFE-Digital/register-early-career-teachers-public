@@ -1,0 +1,33 @@
+<% if school_partnerships.any? %>
+  <% contract_years.each do |year| %>
+    <h3 class="govuk-heading-m"><%= "#{year} partnerships" %></h3>
+
+    <% school_partnerships_by_year[year].each do |school_partnership| %>
+      <%= govuk_summary_card(title: school_partnership_title(school_partnership)) do |card| %>
+        <%= card.with_summary_list do |list| %>
+          <% list.with_row do |row| %>
+            <% row.with_key(text: "Lead provider") %>
+            <% row.with_value(text: school_partnership.lead_provider.name) %>
+          <% end %>
+
+          <% list.with_row do |row| %>
+            <% row.with_key(text: "Delivery partner") %>
+            <% row.with_value(text: school_partnership.delivery_partner.name) %>
+          <% end %>
+
+          <% list.with_row do |row| %>
+            <% row.with_key(text: "ECTs") %>
+            <% row.with_value { teacher_values(teacher_links(school_partnership, role: :ect)) } %>
+          <% end %>
+
+          <% list.with_row do |row| %>
+            <% row.with_key(text: "Mentors") %>
+            <% row.with_value { teacher_values(teacher_links(school_partnership, role: :mentor)) } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% else %>
+  <p class="govuk-body">No partnerships recorded for this school.</p>
+<% end %>
