@@ -92,7 +92,7 @@ RSpec.describe Schools::RegisterECT do
         context "when a Teacher record with the same TRN exists and has multiple ect records at different schools" do
           let(:school_one) { FactoryBot.create(:school) }
           let(:school_two) { FactoryBot.create(:school) }
-          let(:started_on) { Date.current + 1.month }
+          let(:started_on) { Date.current + 1.day }
           let!(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: started_on.year) }
           let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
 
