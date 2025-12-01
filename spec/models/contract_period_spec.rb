@@ -15,6 +15,8 @@ describe ContractPeriod do
 
     it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
     it { is_expected.to validate_presence_of(:finished_on).with_message("Enter an end date") }
+    it { is_expected.to allow_values(true, false).for(:mentor_funding_enabled) }
+    it { is_expected.not_to allow_values(nil, "").for(:mentor_funding_enabled) }
 
     describe "#no_overlaps" do
       before { FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 2, 2)) }
