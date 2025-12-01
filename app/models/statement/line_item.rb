@@ -19,12 +19,19 @@ class Statement::LineItem < ApplicationRecord
   validates :declaration_id, presence: { message: "Declaration must be specified" }
   validates :status, uniqueness: { scope: %i[declaration_id], message: "Status must be unique per declaration" }
   validates :ecf_id, uniqueness: { case_sensitive: false, message: "ECF ID must be unique" }, allow_nil: true
+  validate :at_most_two_per_declaration
+  validate :single_billable_per_declaration
+  validate :single_refundable_per_declaration
+  validate :refundable_only_if_billable
 
-  def billable?
+  scope :refundable_status, -> { where(status: REFUNDABLE_STATUS) }
+  scope :billable_status, -> { where(status: BILLABLE_STATUS) }
+
+  def billable_status?
     status.in?(BILLABLE_STATUS)
   end
 
-  def refundable?
+  def refundable_status?
     status.in?(REFUNDABLE_STATUS)
   end
 
@@ -60,5 +67,41 @@ class Statement::LineItem < ApplicationRecord
     event :mark_as_ineligible do
       transition [:eligible] => :ineligible
     end
+  end
+
+private
+
+  def at_most_two_per_declaration
+    return unless declaration
+    return unless declaration.statement_line_items.excluding(self).count >= 2
+
+    errors.add(:declaration_id, "A declaration can have at most two statement line items")
+  end
+
+  def single_billable_per_declaration
+    return unless declaration
+    return unless billable_status? && declaration.statement_line_items.billable_status.excluding(self).exists?
+
+    errors.add(:declaration_id, "A declaration can have at most one billable statement line item")
+  end
+
+  def single_refundable_per_declaration
+    return unless declaration
+    return unless refundable_status? && declaration.statement_line_items.refundable_status.excluding(self).exists?
+
+    errors.add(:declaration_id, "A declaration can have at most one refundable statement line item")
+  end
+
+  def uniqueness_per_declaration
+    return unless declaration
+
+    errors.add(:declaration_id, "A declaration can have at most one refundable statement line item")
+  end
+
+  def refundable_only_if_billable
+    return unless declaration
+    return unless refundable_status? && !declaration.statement_line_items.billable_status.exists?
+
+    errors.add(:declaration_id, "A refundable statement line item requires an associated billable statement line item")
   end
 end

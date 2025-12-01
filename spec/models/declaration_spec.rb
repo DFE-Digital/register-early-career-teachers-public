@@ -4,6 +4,48 @@ describe Declaration do
     it { is_expected.to belong_to(:voided_by_user).class_name("User").optional }
     it { is_expected.to belong_to(:mentorship_period).optional }
     it { is_expected.to have_many(:statement_line_items).class_name("Statement::LineItem") }
+    it { is_expected.to have_one(:billable_statement_line_item).class_name("Statement::LineItem").with_foreign_key("declaration_id") }
+    it { is_expected.to have_one(:refundable_statement_line_item).class_name("Statement::LineItem").with_foreign_key("declaration_id") }
+    it { is_expected.to have_one(:voided_statement_line_item).class_name("Statement::LineItem").with_foreign_key("declaration_id") }
+    it { is_expected.to have_one(:ineligible_statement_line_item).class_name("Statement::LineItem").with_foreign_key("declaration_id") }
+
+    describe "#billable_statement_line_item" do
+      it "returns the associated billable statement line item" do
+        declaration = FactoryBot.create(:declaration)
+        billable_line_item = FactoryBot.create(:statement_line_item, :billable, declaration:)
+        FactoryBot.create(:statement_line_item, :refundable, declaration:)
+
+        expect(declaration.billable_statement_line_item).to eq(billable_line_item)
+      end
+    end
+
+    describe "#refundable_statement_line_item" do
+      it "returns the associated refundable statement line item" do
+        declaration = FactoryBot.create(:declaration)
+        FactoryBot.create(:statement_line_item, :billable, declaration:)
+        refundable_line_item = FactoryBot.create(:statement_line_item, :refundable, declaration:)
+
+        expect(declaration.refundable_statement_line_item).to eq(refundable_line_item)
+      end
+    end
+
+    describe "#voided_statement_line_item" do
+      it "returns the associated voided statement line item" do
+        declaration = FactoryBot.create(:declaration)
+        voided_line_item = FactoryBot.create(:statement_line_item, :voided, declaration:)
+
+        expect(declaration.voided_statement_line_item).to eq(voided_line_item)
+      end
+    end
+
+    describe "#ineligible_statement_line_item" do
+      it "returns the associated ineligible statement line item" do
+        declaration = FactoryBot.create(:declaration)
+        ineligible_line_item = FactoryBot.create(:statement_line_item, :ineligible, declaration:)
+
+        expect(declaration.ineligible_statement_line_item).to eq(ineligible_line_item)
+      end
+    end
   end
 
   describe "delegations" do
@@ -47,39 +89,6 @@ describe Declaration do
       subject { FactoryBot.build(:declaration, :ineligible) }
 
       it { is_expected.to validate_presence_of(:ineligibility_reason).with_message("Ineligibility reason must be set when the declaration is ineligible") }
-    end
-
-    context "when a declaration has more than two statement line items" do
-      subject(:declaration) { FactoryBot.build(:declaration) }
-
-      before { declaration.statement_line_items = FactoryBot.build_list(:statement_line_item, 3, declaration:) }
-
-      it "is not valid" do
-        expect(declaration).not_to be_valid
-        expect(declaration.errors[:base]).to include("A declaration can have at most two statement line items")
-      end
-    end
-
-    context "when a declaration has more than one billable statement line item" do
-      subject(:declaration) { FactoryBot.build(:declaration) }
-
-      before { declaration.statement_line_items = FactoryBot.build_list(:statement_line_item, 2, :billable, declaration:) }
-
-      it "is not valid" do
-        expect(declaration).not_to be_valid
-        expect(declaration.errors[:base]).to include("A declaration can have only a single billable statement line item")
-      end
-    end
-
-    context "when a declaration has more than one refundable statement line item" do
-      subject(:declaration) { FactoryBot.build(:declaration) }
-
-      before { declaration.statement_line_items = FactoryBot.build_list(:statement_line_item, 2, :refundable, declaration:) }
-
-      it "is not valid" do
-        expect(declaration).not_to be_valid
-        expect(declaration.errors[:base]).to include("A declaration can have only a single refundable statement line item")
-      end
     end
 
     describe "declaration date relative to milestone dates" do

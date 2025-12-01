@@ -3,6 +3,10 @@ class Declaration < ApplicationRecord
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
   has_many :statement_line_items, class_name: "Statement::LineItem"
+  has_one :billable_statement_line_item, -> { billable_status }, class_name: "Statement::LineItem", foreign_key: :declaration_id
+  has_one :refundable_statement_line_item, -> { refundable_status }, class_name: "Statement::LineItem", foreign_key: :declaration_id
+  has_one :voided_statement_line_item, -> { voided_status }, class_name: "Statement::LineItem", foreign_key: :declaration_id
+  has_one :ineligible_statement_line_item, -> { ineligible_status }, class_name: "Statement::LineItem", foreign_key: :declaration_id
 
   enum :status, {
     submitted: "submitted",
@@ -54,9 +58,6 @@ class Declaration < ApplicationRecord
   validates :ineligibility_reason, presence: { message: "Ineligibility reason must be set when the declaration is ineligible" }, if: :ineligible?
   validates :ineligibility_reason, absence: { message: "Ineligibility reason must not be set unless the declaration is ineligible" }, unless: :ineligible?
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
-  validate :at_most_two_statement_line_items
-  validate :single_billable_statement_line_item
-  validate :single_refundable_statement_line_item
   validate :date_within_milestone
   validate :mentorship_period_belongs_to_teacher
 
@@ -96,24 +97,6 @@ private
 
   def clear_ineligibility_reason
     self.ineligibility_reason = nil
-  end
-
-  def at_most_two_statement_line_items
-    return unless statement_line_items.size > 2
-
-    errors.add(:base, "A declaration can have at most two statement line items")
-  end
-
-  def single_billable_statement_line_item
-    return unless statement_line_items.count(&:billable?) > 1
-
-    errors.add(:base, "A declaration can have only a single billable statement line item")
-  end
-
-  def single_refundable_statement_line_item
-    return unless statement_line_items.count(&:refundable?) > 1
-
-    errors.add(:base, "A declaration can have only a single refundable statement line item")
   end
 
   def date_within_milestone
