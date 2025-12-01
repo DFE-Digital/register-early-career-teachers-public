@@ -32,7 +32,7 @@ module Admin
       end
 
       def school_partnership_title(school_partnership)
-        "#{school_partnership.lead_provider.name} & #{school_partnership.delivery_partner.name}"
+        "#{school_partnership.lead_provider.name} and #{school_partnership.delivery_partner.name}"
       end
 
       def teacher_links(school_partnership, role:)

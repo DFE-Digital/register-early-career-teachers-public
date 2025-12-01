@@ -41,9 +41,9 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     end
 
     describe "card titles" do
-      it "renders the lead provider & delivery partner names" do
-        expect(rendered).to have_css(".govuk-summary-card__title", text: "Alpha Provider & Delta Partner")
-        expect(rendered).to have_css(".govuk-summary-card__title", text: "Beta Provider & Gamma Partner")
+      it "renders the lead provider and delivery partner names" do
+        expect(rendered).to have_css(".govuk-summary-card__title", text: "Alpha Provider and Delta Partner")
+        expect(rendered).to have_css(".govuk-summary-card__title", text: "Beta Provider and Gamma Partner")
       end
     end
 
@@ -152,7 +152,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
       it "shows fallbacks when no teachers are linked" do
         partnership_card = rendered.css(".govuk-summary-card").find do |card|
-          card.text.include?("Beta Provider & Gamma Partner")
+          card.text.include?("Beta Provider and Gamma Partner")
         end
         expect(partnership_card).to have_css(".govuk-summary-list__row", text: /ECTs.*None assigned/)
         expect(partnership_card).to have_css(".govuk-summary-list__row", text: /Mentors.*None assigned/)
