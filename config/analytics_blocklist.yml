@@ -392,7 +392,7 @@
   - date
   - voided_at
   - voided_by_user_id
-  - mentor_teacher_id
+  - mentorship_period_id
   - api_id
   - evidence_type
   - status

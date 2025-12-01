@@ -10,7 +10,7 @@ class AddAttributesToDeclarations < ActiveRecord::Migration[8.0]
 
     change_table :declarations, bulk: true do |t|
       t.references :voided_by_user, null: true, foreign_key: { to_table: :users }
-      t.references :mentor_teacher, null: true, foreign_key: { to_table: :teachers }
+      t.references :mentorship_period, null: true
 
       t.datetime :voided_at
       t.uuid :api_id, default: -> { "gen_random_uuid()" }, null: false

@@ -1,7 +1,7 @@
 class Declaration < ApplicationRecord
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
-  belongs_to :mentor_teacher, class_name: "Teacher", optional: true
+  belongs_to :mentorship_period, optional: true
   has_many :statement_line_items, class_name: "Statement::LineItem"
 
   enum :status, {
@@ -53,12 +53,12 @@ class Declaration < ApplicationRecord
   validates :ineligibility_reason, inclusion: { in: Declaration.ineligibility_reasons.keys, message: "Choose a valid ineligibility reason" }, allow_nil: true
   validates :ineligibility_reason, presence: { message: "Ineligibility reason must be set when the declaration is ineligible" }, if: :ineligible?
   validates :ineligibility_reason, absence: { message: "Ineligibility reason must not be set unless the declaration is ineligible" }, unless: :ineligible?
-  validates :mentor_teacher, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
+  validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
   validate :at_most_two_statement_line_items
   validate :single_billable_statement_line_item
   validate :single_refundable_statement_line_item
   validate :date_within_milestone
-  validate :mentorship_period_exists_for_mentor_teacher
+  validate :mentorship_period_belongs_to_teacher
 
   state_machine :status, initial: :submitted do
     before_transition from: :ineligible, do: :clear_ineligibility_reason
@@ -132,11 +132,11 @@ private
     training_period&.schedule&.milestones&.find_by(declaration_type:)
   end
 
-  def mentorship_period_exists_for_mentor_teacher
-    return unless mentor_teacher && training_period
+  def mentorship_period_belongs_to_teacher
+    return unless mentorship_period && training_period
 
-    unless training_period.trainee.mentorship_periods.exists? { it.mentor.teacher_id == mentor_teacher.id }
-      errors.add(:mentor_teacher, "Mentor teacher must have a mentorship period in the declaration's training period")
+    unless mentorship_period.in?(training_period.trainee.mentorship_periods)
+      errors.add(:mentorship_period, "Mentorship period must belong to the trainee")
     end
   end
 end

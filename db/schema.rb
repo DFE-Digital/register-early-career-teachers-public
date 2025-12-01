@@ -163,7 +163,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_26_153633) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "voided_by_user_id"
-    t.bigint "mentor_teacher_id"
+    t.bigint "mentorship_period_id"
     t.datetime "voided_at"
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "date", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -174,7 +174,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_26_153633) do
     t.boolean "sparsity_uplift", default: false, null: false
     t.boolean "pupil_premium_uplift", default: false, null: false
     t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
-    t.index ["mentor_teacher_id"], name: "index_declarations_on_mentor_teacher_id"
+    t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
     t.index ["training_period_id"], name: "index_declarations_on_training_period_id"
     t.index ["voided_by_user_id"], name: "index_declarations_on_voided_by_user_id"
   end
@@ -879,7 +879,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_26_153633) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
-  add_foreign_key "declarations", "teachers", column: "mentor_teacher_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"

@@ -2,7 +2,7 @@ describe Declaration do
   describe "associations" do
     it { is_expected.to belong_to(:training_period) }
     it { is_expected.to belong_to(:voided_by_user).class_name("User").optional }
-    it { is_expected.to belong_to(:mentor_teacher).class_name("Teacher").optional }
+    it { is_expected.to belong_to(:mentorship_period).optional }
     it { is_expected.to have_many(:statement_line_items).class_name("Statement::LineItem") }
   end
 
@@ -25,7 +25,7 @@ describe Declaration do
     it { is_expected.not_to validate_presence_of(:voided_by_user) }
     it { is_expected.not_to validate_presence_of(:voided_at) }
     it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
-    it { is_expected.not_to validate_absence_of(:mentor_teacher) }
+    it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
     context "when the declaration is for a mentor" do
       subject { FactoryBot.build(:declaration, training_period:) }
@@ -33,7 +33,7 @@ describe Declaration do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: nil) }
       let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
 
-      it { is_expected.to validate_absence_of(:mentor_teacher).with_message("Mentor teacher can only be assigned to declarations for ECTs") }
+      it { is_expected.to validate_absence_of(:mentorship_period).with_message("Mentorship period must belong to the trainee") }
     end
 
     context "when voided by a user" do
@@ -115,25 +115,26 @@ describe Declaration do
       end
     end
 
-    describe "mentor_teacher" do
-      subject(:declaration) { FactoryBot.build(:declaration, mentor_teacher:, training_period:) }
+    describe "mentorship_period" do
+      subject(:declaration) { FactoryBot.build(:declaration, mentorship_period:, training_period:) }
 
-      let(:mentor_teacher) { FactoryBot.create(:teacher) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.month.ago, finished_on: nil) }
-      let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
+      let(:started_on) { 1.month.ago }
+      let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on:, finished_on: nil) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on:, finished_on: nil) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on:, finished_on: nil) }
 
-      context "when the mentor_teacher does not have a mentorship period in the declaration's training period" do
+      context "when the mentorship_period does not belong to the trainee" do
+        let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on:, finished_on: nil) }
+        let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee:, started_on:, finished_on: nil) }
+
         it "is not valid" do
           expect(declaration).not_to be_valid
-          expect(declaration.errors[:mentor_teacher]).to include("Mentor teacher must have a mentorship period in the declaration's training period")
+          expect(declaration.errors[:mentorship_period]).to include("Mentorship period must belong to the trainee")
         end
       end
 
-      context "when the mentor_teacher has a mentorship period in the declaration's training period" do
-        before do
-          mentor = FactoryBot.create(:mentor_at_school_period, teacher: mentor_teacher, started_on: training_period.started_on, finished_on: nil)
-          FactoryBot.create(:mentorship_period, mentor:, mentee: training_period.trainee, started_on: mentor.started_on, finished_on: nil)
-        end
+      context "when the mentorship_period does belong to the trainee" do
+        let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: training_period.trainee, finished_on: nil) }
 
         it { is_expected.to be_valid }
       end

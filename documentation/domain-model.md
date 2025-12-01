@@ -306,7 +306,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     integer voided_by_user_id
-    integer mentor_teacher_id
+    integer mentorship_period_id
     datetime voided_at
     uuid api_id
     datetime date
@@ -319,7 +319,7 @@ erDiagram
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| User : belongs_to
-  Declaration }o--|| Teacher : belongs_to
+  Declaration }o--|| MentorshipPeriod : belongs_to
   ContractPeriod {
     integer year
     datetime created_at
