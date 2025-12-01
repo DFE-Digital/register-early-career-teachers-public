@@ -1,4 +1,4 @@
-RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
+RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep, :schedules do
   include ActiveJob::TestHelper
 
   subject(:step) { described_class.new(wizard:, lead_provider_id:) }
@@ -6,7 +6,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:lead_provider_id) { lead_provider.id }
   let(:school) { FactoryBot.create(:school) }
-  let(:started_on) { Date.new(2023, 9, 1) }
+  let(:started_on) { mid_year - 2.days }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
   let(:user) { FactoryBot.create(:user) }
@@ -55,7 +55,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
 
   describe "#save" do
     let(:store) { OpenStruct.new(lead_provider_id: nil) }
-    let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2023) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
     let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
 
     let(:wizard) do
@@ -69,9 +69,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
     end
 
     around do |example|
-      travel_to(started_on + 1.day) do
-        perform_enqueued_jobs { example.run }
-      end
+      perform_enqueued_jobs { example.run }
     end
 
     it "persists the selected lead_provider_id to the store" do
@@ -90,7 +88,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
 
       training_period = mentor_at_school_period.training_periods.last
       expect(training_period).to have_attributes(
-        started_on: Date.new(2023, 9, 1),
+        started_on:,
         training_programme: "provider_led"
       )
     end

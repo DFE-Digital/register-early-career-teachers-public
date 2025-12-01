@@ -1,11 +1,11 @@
-RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep do
+RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep, :schedules do
   include ActiveJob::TestHelper
 
   subject(:step) { described_class.new(wizard:) }
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:school) { FactoryBot.create(:school) }
-  let(:started_on) { Date.new(2023, 9, 1) }
+  let(:started_on) { mid_year - 2.days }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
   let(:user) { FactoryBot.create(:user) }
@@ -44,12 +44,10 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
       )
     end
 
-    let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2023) }
+    let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
 
     around do |example|
-      travel_to(started_on + 2.days) do
-        perform_enqueued_jobs { example.run }
-      end
+      perform_enqueued_jobs { example.run }
     end
 
     before do
@@ -78,7 +76,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
 
       training_period = mentor_at_school_period.training_periods.last
       expect(training_period).to have_attributes(
-        started_on: Date.new(2023, 9, 1),
+        started_on:,
         training_programme: "provider_led"
       )
       expect(training_period.schedule.identifier).to eq("ecf-standard-september")
