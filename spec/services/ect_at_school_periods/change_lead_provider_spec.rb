@@ -36,6 +36,13 @@ module ECTAtSchoolPeriods
       )
     end
 
+    # If these tests are ran at the end of the year they will fail as
+    # we only create schedules for the current year.
+    around do |example|
+      mid_year = Date.new(Date.current.year, 6, 30)
+      travel_to(mid_year) { example.run }
+    end
+
     context "when there is an existing school partnership" do
       let(:lead_provider_delivery_partnership) do
         FactoryBot.create(
