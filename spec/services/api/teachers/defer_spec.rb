@@ -62,7 +62,20 @@ RSpec.describe API::Teachers::Defer, type: :model do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 3.months.from_now) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot defer '#/teacher_api_id'. This is because they've not started their training.") }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot defer #/teacher_api_id. This is because they have not been training with you for at least one day.") }
+          end
+
+          context "when training started today" do
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, started_on: Time.zone.today) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot defer #/teacher_api_id. This is because they have not been training with you for at least one day.") }
+
+            context "when an earlier training period exists for the lead provider" do
+              let!(:previous_training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", "#{trainee_type}_at_school_period": at_school_period, school_partnership: training_period.school_partnership, started_on: 3.days.ago, finished_on: 1.day.ago) }
+
+              it { is_expected.to be_valid }
+            end
           end
 
           context "guarded error messages" do

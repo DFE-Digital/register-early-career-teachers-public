@@ -61,7 +61,7 @@ class TrainingPeriod < ApplicationRecord
         ]
 
   refresh_metadata -> { school_partnership&.school }, on_event: %i[create destroy update], when_changing: %i[school_partnership_id expression_of_interest_id]
-  refresh_metadata -> { trainee&.teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on school_partnership_id]
+  refresh_metadata -> { trainee&.teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on withdrawn_at deferred_at school_partnership_id]
 
   # Validations
   validates :started_on,
@@ -75,7 +75,6 @@ class TrainingPeriod < ApplicationRecord
   validate :trainee_distinct_period
   validate :enveloped_by_trainee_at_school_period
   validate :only_provider_led_mentor_training
-  validate :withdrawn_deferred_are_mutually_exclusive
   validates :withdrawn_at, presence: true, if: -> { withdrawal_reason.present? }
   validates :withdrawal_reason, presence: true, if: -> { withdrawn_at.present? }
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
@@ -188,12 +187,6 @@ private
     return if school_partnership.blank?
 
     errors.add(:school_partnership, "School partnership must be absent for school-led training programmes")
-  end
-
-  def withdrawn_deferred_are_mutually_exclusive
-    return unless withdrawn_at.present? && deferred_at.present?
-
-    errors.add(:base, "A training period cannot be both withdrawn and deferred")
   end
 
   def schedule_contract_period_matches
