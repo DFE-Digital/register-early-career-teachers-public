@@ -12,6 +12,6 @@ class CreateStatementLineItems < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :statement_line_items, %i[declaration_id statement_id status], unique: true
+    add_index :statement_line_items, %i[declaration_id status], unique: true
   end
 end

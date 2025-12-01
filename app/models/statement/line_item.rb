@@ -14,7 +14,7 @@ class Statement::LineItem < ApplicationRecord
 
   validates :statement_id, presence: { message: "Statement must be specified" }
   validates :declaration_id, presence: { message: "Declaration must be specified" }
-  validates :status, uniqueness: { scope: %i[declaration_id statement_id], message: "Status must be unique per declaration and statement" }
+  validates :status, uniqueness: { scope: %i[declaration_id], message: "Status must be unique per declaration" }
   validates :ecf_id, uniqueness: { case_sensitive: false, message: "ECF ID must be unique" }, allow_nil: true
 
   state_machine :status, initial: :eligible do

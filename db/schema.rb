@@ -731,7 +731,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_26_144215) do
     t.uuid "ecf_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["declaration_id", "statement_id", "status"], name: "idx_on_declaration_id_statement_id_status_231632627c", unique: true
+    t.index ["declaration_id", "status"], name: "index_statement_line_items_on_declaration_id_and_status", unique: true
     t.index ["declaration_id"], name: "index_statement_line_items_on_declaration_id"
     t.index ["ecf_id"], name: "index_statement_line_items_on_ecf_id", unique: true
     t.index ["statement_id"], name: "index_statement_line_items_on_statement_id"

@@ -9,7 +9,7 @@ describe Statement::LineItem do
 
     it { is_expected.to validate_presence_of(:statement_id).with_message("Statement must be specified") }
     it { is_expected.to validate_presence_of(:declaration_id).with_message("Declaration must be specified") }
-    it { is_expected.to validate_uniqueness_of(:status).scoped_to(:declaration_id, :statement_id).ignoring_case_sensitivity.with_message("Status must be unique per declaration and statement") }
+    it { is_expected.to validate_uniqueness_of(:status).scoped_to(:declaration_id).ignoring_case_sensitivity.with_message("Status must be unique per declaration") }
     it { is_expected.to validate_uniqueness_of(:ecf_id).case_insensitive.with_message("ECF ID must be unique").allow_nil }
     it { is_expected.to validate_inclusion_of(:status).in_array(described_class.statuses.keys).with_message("Choose a valid status") }
   end
