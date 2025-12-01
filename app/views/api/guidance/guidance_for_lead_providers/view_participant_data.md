@@ -119,10 +119,3 @@ Providers can track this in the `participant_id_changes` nested structure, which
 * `from_participant_id`
 * `to_participant_id`
 * `changed_at` (ISO timestamp) 
-
-## Why the uplift fields in mentor records always show as `false` 
-
-For mentors, the `sparsity_uplift` and `pupil_premium_uplift` fields always return a `false` attribute in the response. This is because these uplifts do not apply to mentors. 
- 
-
- 
