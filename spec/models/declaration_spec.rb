@@ -3,8 +3,8 @@ describe Declaration do
     it { is_expected.to belong_to(:training_period) }
     it { is_expected.to belong_to(:voided_by_user).class_name("User").optional }
     it { is_expected.to belong_to(:mentorship_period).optional }
-    it { is_expected.to belong_to(:billable_statement).optional }
-    it { is_expected.to belong_to(:refundable_statement).optional }
+    it { is_expected.to belong_to(:payment_statement).optional }
+    it { is_expected.to belong_to(:clawback_statement).optional }
   end
 
   describe "delegations" do
@@ -19,7 +19,8 @@ describe Declaration do
     it { is_expected.to validate_presence_of(:date).with_message("Date must be specified") }
     it { is_expected.to validate_absence_of(:ineligibility_reason).with_message("Ineligibility reason must not be set unless the declaration is ineligible") }
     it { is_expected.to validate_inclusion_of(:declaration_type).in_array(described_class.declaration_types.keys).with_message("Choose a valid declaration type") }
-    it { is_expected.to validate_inclusion_of(:status).in_array(described_class.statuses.keys).with_message("Choose a valid status") }
+    it { is_expected.to validate_inclusion_of(:payment_status).in_array(described_class.payment_statuses.keys).with_message("Choose a valid payment status") }
+    it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }
     it { is_expected.to validate_inclusion_of(:evidence_type).in_array(described_class.evidence_types.keys).with_message("Choose a valid evidence type").allow_nil }
     it { is_expected.to validate_inclusion_of(:ineligibility_reason).in_array(described_class.ineligibility_reasons.keys).with_message("Choose a valid ineligibility reason").allow_nil }
     it { is_expected.to validate_uniqueness_of(:api_id).with_message("API id already exists for another declaration").case_insensitive }
@@ -28,16 +29,16 @@ describe Declaration do
     it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
-    context "when billable" do
+    context "when payment" do
       subject { FactoryBot.build(:declaration, :paid) }
 
-      it { is_expected.to validate_presence_of(:billable_statement).with_message("Billable statement must be associated for declarations with a billable status") }
+      it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
     end
 
-    context "when refundable" do
+    context "when clawback" do
       subject { FactoryBot.build(:declaration, :awaiting_clawback) }
 
-      it { is_expected.to validate_presence_of(:refundable_statement).with_message("Refundable statement must be associated for declarations with a refundable status") }
+      it { is_expected.to validate_presence_of(:clawback_statement).with_message("Clawback statement must be associated for declarations with a clawback status") }
     end
 
     context "when the declaration is for a mentor" do
@@ -122,21 +123,31 @@ describe Declaration do
   end
 
   describe "enums" do
-    it "has a status enum" do
-      expect(subject).to define_enum_for(:status)
+    it "has a payment_status enum" do
+      expect(subject).to define_enum_for(:payment_status)
         .with_values({
-          submitted: "submitted",
+          not_started: "not_started",
           eligible: "eligible",
           payable: "payable",
           paid: "paid",
           voided: "voided",
           ineligible: "ineligible",
+        })
+        .validating(allowing_nil: false)
+        .backed_by_column_of_type(:enum)
+        .with_prefix
+    end
+
+    it "has a clawback_status enum" do
+      expect(subject).to define_enum_for(:clawback_status)
+        .with_values({
+          not_started: "not_started",
           awaiting_clawback: "awaiting_clawback",
           clawed_back: "clawed_back"
         })
         .validating(allowing_nil: false)
         .backed_by_column_of_type(:enum)
-        .with_suffix
+        .with_prefix
     end
 
     it "has a declaration_type enum" do
@@ -181,102 +192,86 @@ describe Declaration do
     end
   end
 
-  describe "state transitions" do
-    context "when transitioning from submitted to eligible" do
-      let(:declaration) { FactoryBot.create(:declaration).tap { it.billable_statement = FactoryBot.create(:statement, :open) } }
+  describe "payment_status transitions" do
+    context "when transitioning from not_started to eligible" do
+      let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open) } }
 
-      it { expect { declaration.mark_as_eligible! }.to change(declaration, :status).from("submitted").to("eligible") }
+      it { expect { declaration.mark_as_eligible! }.to change(declaration, :payment_status).from("not_started").to("eligible") }
     end
 
     context "when transitioning from eligible to payable" do
       let(:declaration) { FactoryBot.create(:declaration, :eligible) }
 
-      it { expect { declaration.mark_as_payable! }.to change(declaration, :status).from("eligible").to("payable") }
+      it { expect { declaration.mark_as_payable! }.to change(declaration, :payment_status).from("eligible").to("payable") }
     end
 
     context "when transitioning from payable to paid" do
       let(:declaration) { FactoryBot.create(:declaration, :payable) }
 
-      it { expect { declaration.mark_as_paid! }.to change(declaration, :status).from("payable").to("paid") }
+      it { expect { declaration.mark_as_paid! }.to change(declaration, :payment_status).from("payable").to("paid") }
     end
 
     context "when transitioning from eligible to voided" do
       let(:declaration) { FactoryBot.create(:declaration, :eligible) }
 
-      it { expect { declaration.mark_as_voided! }.to change(declaration, :status).from("eligible").to("voided") }
+      it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("eligible").to("voided") }
     end
 
     context "when transitioning from ineligible to voided" do
       let(:declaration) { FactoryBot.create(:declaration, :ineligible) }
 
-      it { expect { declaration.mark_as_voided! }.to change(declaration, :status).from("ineligible").to("voided") }
+      it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("ineligible").to("voided") }
       it { expect { declaration.mark_as_voided! }.to change(declaration, :ineligibility_reason).to(nil) }
     end
 
     context "when transitioning from payable to voided" do
       let(:declaration) { FactoryBot.create(:declaration, :payable) }
 
-      it { expect { declaration.mark_as_voided! }.to change(declaration, :status).from("payable").to("voided") }
+      it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("payable").to("voided") }
     end
 
-    context "when transitioning from paid to awaiting_clawback" do
-      let(:declaration) { FactoryBot.create(:declaration, :paid).tap { it.refundable_statement = FactoryBot.create(:statement, :payable) } }
-
-      it { expect { declaration.mark_as_awaiting_clawback! }.to change(declaration, :status).from("paid").to("awaiting_clawback") }
-    end
-
-    context "when transitioning from awaiting_clawback to clawed_back" do
-      let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
-
-      it { expect { declaration.mark_as_clawed_back! }.to change(declaration, :status).from("awaiting_clawback").to("clawed_back") }
-    end
-
-    context "when transitioning from submitted to ineligible" do
+    context "when transitioning from not_started to ineligible" do
       let(:reason) { described_class.ineligibility_reasons.keys.sample }
-      let(:declaration) { FactoryBot.create(:declaration).tap { it.ineligibility_reason = reason } }
+      let(:declaration) do
+        FactoryBot.create(:declaration).tap do
+          it.ineligibility_reason = reason
+          it.payment_statement = FactoryBot.create(:statement, :open)
+        end
+      end
 
-      it { expect { declaration.mark_as_ineligible!(reason:) }.to change(declaration, :status).from("submitted").to("ineligible") }
+      it { expect { declaration.mark_as_ineligible! }.to change(declaration, :payment_status).from("not_started").to("ineligible") }
     end
 
     context "when transitioning to an invalid state" do
       let(:declaration) { FactoryBot.create(:declaration, :paid) }
 
-      it { expect { declaration.mark_as_payable! }.to raise_error(StateMachines::InvalidTransition) }
+      it { expect { declaration.mark_as_paid! }.to raise_error(StateMachines::InvalidTransition) }
     end
   end
 
-  describe "#billable_status?/#refundable_status?" do
-    let(:submitted_declaration) { FactoryBot.build(:declaration, status: :submitted) }
-    let(:eligible_declaration) { FactoryBot.build(:declaration, status: :eligible) }
-    let(:payable_declaration) { FactoryBot.build(:declaration, status: :payable) }
-    let(:paid_declaration) { FactoryBot.build(:declaration, status: :paid) }
-    let(:voided_declaration) { FactoryBot.build(:declaration, status: :voided) }
-    let(:ineligible_declaration) { FactoryBot.build(:declaration, status: :ineligible) }
-    let(:awaiting_clawback_declaration) { FactoryBot.build(:declaration, status: :awaiting_clawback) }
-    let(:clawed_back_declaration) { FactoryBot.build(:declaration, status: :clawed_back) }
+  describe "clawback_status transitions" do
+    context "when transitioning from not_started to awaiting_clawback" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid).tap { it.clawback_statement = FactoryBot.create(:statement, :payable) } }
 
-    it { expect(submitted_declaration).not_to be_billable_status }
-    it { expect(submitted_declaration).not_to be_refundable_status }
+      it { expect { declaration.mark_as_awaiting_clawback! }.to change(declaration, :clawback_status).from("not_started").to("awaiting_clawback") }
+    end
 
-    it { expect(eligible_declaration).to be_billable_status }
-    it { expect(eligible_declaration).not_to be_refundable_status }
+    context "when transitioning from not_started to awaiting_clawback, when the declaration is not paid" do
+      let(:declaration) { FactoryBot.create(:declaration, :payable).tap { it.clawback_statement = FactoryBot.create(:statement, :payable) } }
 
-    it { expect(payable_declaration).to be_billable_status }
-    it { expect(payable_declaration).not_to be_refundable_status }
+      it { expect { declaration.mark_as_awaiting_clawback! }.to raise_error(StateMachines::InvalidTransition) }
+    end
 
-    it { expect(paid_declaration).to be_billable_status }
-    it { expect(paid_declaration).not_to be_refundable_status }
+    context "when transitioning from awaiting_clawback to clawed_back" do
+      let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
 
-    it { expect(voided_declaration).not_to be_billable_status }
-    it { expect(voided_declaration).not_to be_refundable_status }
+      it { expect { declaration.mark_as_clawed_back! }.to change(declaration, :clawback_status).from("awaiting_clawback").to("clawed_back") }
+    end
 
-    it { expect(ineligible_declaration).not_to be_billable_status }
-    it { expect(ineligible_declaration).not_to be_refundable_status }
+    context "when transitioning to an invalid state" do
+      let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
 
-    it { expect(awaiting_clawback_declaration).not_to be_billable_status }
-    it { expect(awaiting_clawback_declaration).to be_refundable_status }
-
-    it { expect(clawed_back_declaration).not_to be_billable_status }
-    it { expect(clawed_back_declaration).to be_refundable_status }
+      it { expect { declaration.mark_as_clawed_back! }.to raise_error(StateMachines::InvalidTransition) }
+    end
   end
 end

@@ -2,22 +2,23 @@ class Declaration < ApplicationRecord
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
-  belongs_to :billable_statement, optional: true, class_name: "Statement"
-  belongs_to :refundable_statement, optional: true, class_name: "Statement"
+  belongs_to :payment_statement, optional: true, class_name: "Statement"
+  belongs_to :clawback_statement, optional: true, class_name: "Statement"
 
-  BILLABLE_STATUS = %w[eligible payable paid].freeze
-  REFUNDABLE_STATUS = %w[awaiting_clawback clawed_back].freeze
-
-  enum :status, {
-    submitted: "submitted",
+  enum :payment_status, {
+    not_started: "not_started",
     eligible: "eligible",
     payable: "payable",
     paid: "paid",
     voided: "voided",
     ineligible: "ineligible",
+  }, validate: { message: "Choose a valid payment status" }, prefix: true
+
+  enum :clawback_status, {
+    not_started: "not_started",
     awaiting_clawback: "awaiting_clawback",
     clawed_back: "clawed_back"
-  }, validate: { message: "Choose a valid status" }, suffix: true
+  }, validate: { message: "Choose a valid clawback status" }, prefix: true
 
   enum :declaration_type, {
     started: "started",
@@ -58,25 +59,16 @@ class Declaration < ApplicationRecord
   validates :ineligibility_reason, presence: { message: "Ineligibility reason must be set when the declaration is ineligible" }, if: :ineligible?
   validates :ineligibility_reason, absence: { message: "Ineligibility reason must not be set unless the declaration is ineligible" }, unless: :ineligible?
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
-  validates :billable_statement, presence: { message: "Billable statement must be associated for declarations with a billable status" }, if: :billable_status?
-  validates :refundable_statement, presence: { message: "Refundable statement must be associated for declarations with a refundable status" }, if: :refundable_status?
+  validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_not_started?
+  validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_not_started?
   validate :date_within_milestone
   validate :mentorship_period_belongs_to_teacher
 
-  def billable_status?
-    status.in?(BILLABLE_STATUS)
-  end
-
-  def refundable_status?
-    status.in?(REFUNDABLE_STATUS)
-  end
-
-  state_machine :status, initial: :submitted do
+  state_machine :payment_status, initial: :not_started do
     before_transition from: :ineligible, do: :clear_ineligibility_reason
-    before_transition to: :voided, do: :clear_billable_statement
 
     event :mark_as_eligible do
-      transition %i[submitted] => :eligible
+      transition %i[not_started] => :eligible
     end
 
     event :mark_as_payable do
@@ -88,19 +80,21 @@ class Declaration < ApplicationRecord
     end
 
     event :mark_as_ineligible do
-      transition %i[submitted] => :ineligible
+      transition %i[not_started] => :ineligible
     end
 
+    event :mark_as_voided do
+      transition %i[not_started eligible payable ineligible] => :voided
+    end
+  end
+
+  state_machine :clawback_status, initial: :not_started do
     event :mark_as_awaiting_clawback do
-      transition %i[paid] => :awaiting_clawback
+      transition %i[not_started] => :awaiting_clawback, if: :payment_status_paid?
     end
 
     event :mark_as_clawed_back do
       transition %i[awaiting_clawback] => :clawed_back
-    end
-
-    event :mark_as_voided do
-      transition %i[submitted eligible payable ineligible] => :voided
     end
   end
 
@@ -108,10 +102,6 @@ private
 
   def clear_ineligibility_reason
     self.ineligibility_reason = nil
-  end
-
-  def clear_billable_statement
-    self.billable_statement = nil
   end
 
   def date_within_milestone
