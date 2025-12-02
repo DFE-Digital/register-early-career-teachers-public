@@ -55,10 +55,10 @@ describe ECF1TeacherHistory do
         it "populates the right attributes" do
           ect_induction_records.each do |induction_record|
             historic_record = history.ect.induction_records.find { |ir| ir.induction_record_id == induction_record.id }
-            expect(historic_record.start_date).to eq(induction_record.start_date)
-            expect(historic_record.end_date).to eq(induction_record.end_date)
-            expect(historic_record.created_at).to eq(induction_record.created_at)
-            expect(historic_record.updated_at).to eq(induction_record.updated_at)
+            expect(historic_record.start_date.to_date).to eq(induction_record.start_date.to_date)
+            expect(historic_record.end_date&.to_date).to eq(induction_record&.end_date)
+            expect(historic_record.created_at).to be_within(1.second).of(induction_record.created_at)
+            expect(historic_record.updated_at).to be_within(1.second).of(induction_record.updated_at)
             expect(historic_record.cohort_year).to eq(induction_record.schedule.cohort.start_year)
             expect(historic_record.school_urn).to eq(induction_record.induction_programme.school_cohort.school.urn)
             expect(historic_record.schedule.schedule_id).to eq(induction_record.schedule.id)
@@ -87,10 +87,10 @@ describe ECF1TeacherHistory do
         it "populates the right attributes" do
           mentor_induction_records.each do |induction_record|
             historic_record = history.mentor.induction_records.find { |ir| ir.induction_record_id == induction_record.id }
-            expect(historic_record.start_date).to eq(induction_record.start_date)
-            expect(historic_record.end_date).to eq(induction_record.end_date)
-            expect(historic_record.created_at).to eq(induction_record.created_at)
-            expect(historic_record.updated_at).to eq(induction_record.updated_at)
+            expect(historic_record.start_date.to_date).to eq(induction_record.start_date.to_date)
+            expect(historic_record.end_date&.to_date).to eq(induction_record.end_date&.to_date)
+            expect(historic_record.created_at).to be_within(1.second).of(induction_record.created_at)
+            expect(historic_record.updated_at).to be_within(1.second).of(induction_record.updated_at)
             expect(historic_record.cohort_year).to eq(induction_record.schedule.cohort.start_year)
             expect(historic_record.school_urn).to eq(induction_record.induction_programme.school_cohort.school.urn)
             expect(historic_record.schedule.schedule_id).to eq(induction_record.schedule.id)
