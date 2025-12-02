@@ -1,4 +1,6 @@
-RSpec.describe "Assign existing mentor wizard", :enable_schools_interface, :schedules do
+RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
+  include_context "safe_schedules"
+
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { mid_year }
   let(:ect)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }

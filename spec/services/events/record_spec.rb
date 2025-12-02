@@ -1649,7 +1649,9 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe "#record_teacher_schedule_assigned_to_training_period!", :schedules do
+  describe "#record_teacher_schedule_assigned_to_training_period!" do
+    include_context "safe_schedules"
+
     let(:school) { FactoryBot.create(:school) }
     let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Ichigo", trs_last_name: "Kurosaki") }
     let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
@@ -1684,7 +1686,7 @@ RSpec.describe Events::Record do
           training_period:,
           teacher:,
           schedule: training_period.schedule,
-          heading: "Ichigo Kurosaki’s ECT training period schedule was set to ecf-standard-september for 2025",
+          heading: "Ichigo Kurosaki’s ECT training period schedule was set to ecf-standard-september for #{Time.zone.now.year}",
           event_type: :teacher_schedule_assigned_to_training_period,
           happened_at: Time.zone.now,
           **author_params

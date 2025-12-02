@@ -1,7 +1,8 @@
-RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep, :schedules do
-  include ActiveJob::TestHelper
-
+RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
   subject(:step) { described_class.new(wizard:, lead_provider_id:) }
+
+  include_context "safe_schedules"
+  include ActiveJob::TestHelper
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:lead_provider_id) { lead_provider.id }

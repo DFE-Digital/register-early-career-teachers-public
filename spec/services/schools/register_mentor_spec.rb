@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterMentor, :schedules do
+RSpec.describe Schools::RegisterMentor do
   subject(:service) do
     described_class.new(trs_first_name:,
                         trs_last_name:,
@@ -11,6 +11,8 @@ RSpec.describe Schools::RegisterMentor, :schedules do
                         started_on:,
                         author:)
   end
+
+  include_context "safe_schedules"
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:trs_first_name) { "Dusty" }
