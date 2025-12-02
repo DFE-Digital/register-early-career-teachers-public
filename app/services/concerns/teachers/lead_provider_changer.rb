@@ -82,7 +82,7 @@ module Teachers
     end
 
     def destroy_existing_training_period?
-      return unless training_period
+      return false unless training_period
 
       date_of_transition.future? || !training_period_confirmed?
     end
