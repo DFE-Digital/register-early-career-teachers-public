@@ -1,5 +1,7 @@
 module ECTAtSchoolPeriods
   describe ChangeLeadProvider do
+    include_context "safe_schedules"
+
     subject(:change_lead_provider) do
       ChangeLeadProvider.call(
         ect_at_school_period,
@@ -34,13 +36,6 @@ module ECTAtSchoolPeriods
         lead_provider: old_lead_provider,
         contract_period:
       )
-    end
-
-    # If these tests are ran at the end of the year they will fail as
-    # we only create schedules for the current year.
-    around do |example|
-      mid_year = Date.new(Date.current.year, 6, 30)
-      travel_to(mid_year) { example.run }
     end
 
     context "when there is an existing school partnership" do

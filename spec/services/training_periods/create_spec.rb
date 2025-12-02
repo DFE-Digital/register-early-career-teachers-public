@@ -11,10 +11,11 @@ RSpec.describe TrainingPeriods::Create do
     ).call
   end
 
+  include_context "safe_schedules"
+
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:started_on) { Date.new(2025, 9, 1) }
-  let(:year) { started_on.year }
-  let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year:) }
+  let(:started_on) { mid_year }
+  let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -26,7 +27,7 @@ RSpec.describe TrainingPeriods::Create do
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
   let(:expression_of_interest) { nil }
   let(:training_programme) { "provider_led" }
-  let(:finished_on) { Time.zone.today - 3.weeks }
+  let(:finished_on) { mid_year + 1.day }
   let!(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-september") }
 
   context "with an ECTAtSchoolPeriod" do
@@ -34,16 +35,10 @@ RSpec.describe TrainingPeriods::Create do
       FactoryBot.create(
         :ect_at_school_period,
         teacher:,
-        started_on: started_on - 2.weeks,
-        finished_on: started_on + 2.weeks,
+        started_on:,
+        finished_on:,
         school:
       )
-    end
-
-    around do |example|
-      travel_to(started_on + 3.weeks) do
-        example.run
-      end
     end
 
     it "creates a TrainingPeriod associated with the ECTAtSchoolPeriod with the correct schedule" do
@@ -98,22 +93,17 @@ RSpec.describe TrainingPeriods::Create do
       FactoryBot.create(
         :mentor_at_school_period,
         teacher:,
-        started_on: started_on - 1.month,
-        finished_on: started_on + 1.month,
+        started_on:,
+        finished_on:,
         school:
       )
-    end
-
-    around do |example|
-      travel_to(started_on + 3.weeks) do
-        example.run
-      end
     end
 
     it "creates a TrainingPeriod associated with the MentorAtSchoolPeriod" do
       expect { result }.to change(TrainingPeriod, :count).by(1)
 
       training_period = result
+
       expect(training_period.mentor_at_school_period).to eq(period)
       expect(training_period.ect_at_school_period).to be_nil
       expect(training_period.started_on).to eq(started_on)

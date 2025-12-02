@@ -1,5 +1,7 @@
 module ECTAtSchoolPeriods
   RSpec.describe SwitchTraining do
+    include_context "safe_schedules"
+
     let(:ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.ago)
     end
