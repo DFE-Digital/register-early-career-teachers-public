@@ -1,4 +1,5 @@
 ---
+ALLOW_INDEXING: true
 ENABLE_SENTRY: true
 SENTRY_ENVIRONMENT: production
 ENABLE_PERSONAS: false
