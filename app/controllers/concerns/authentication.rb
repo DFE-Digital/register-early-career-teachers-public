@@ -60,7 +60,7 @@ private
 
     case
     when requested_path.present? then requested_path
-    when induction_information_needs_update? then induction_tutor_wizard_path
+    when induction_information_needs_update? then induction_details_service.wizard_path
     when current_user.dfe_user? then admin_path
     when current_user.school_user? then schools_ects_home_path
     when current_user.appropriate_body_user? then ab_teachers_path
@@ -75,25 +75,10 @@ private
   end
 
   def induction_information_needs_update?
-    return unless current_user.school_user?
-    return if current_user.dfe_user_impersonating_school_user?
-    return if multi_role_user?
-    return unless current_user.school
-
-    induction_tutor_updated_in.blank? || induction_tutor_updated_in.year < current_contract_year
+    induction_details_service.needs_update_by_user?
   end
 
-  # TODO: A subsequent PR will check whether the induction tutor details are present
-  # If they are not we'll probably redirect to a different wizard
-  def induction_tutor_wizard_path
-    schools_confirm_existing_induction_tutor_wizard_edit_path
-  end
-
-  def current_contract_year
-    ContractPeriod.containing_date(Time.zone.today).year
-  end
-
-  def induction_tutor_updated_in
-    current_user.school.induction_tutor_last_nominated_in_year
+  def induction_details_service
+    @induction_details_service ||= Schools::InductionTutorDetails.new(current_user)
   end
 end

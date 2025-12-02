@@ -73,6 +73,8 @@ class School < ApplicationRecord
             notify_email: true,
             allow_nil: true
 
+  validate :induction_tutor_details_cannot_be_confirmed_if_blank
+
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
 
   # Scopes
@@ -158,5 +160,13 @@ class School < ApplicationRecord
       Arel.sql("COALESCE(expression_of_interest.lead_provider_id, lead_providers.id)"),
       Arel.sql("COALESCE(expression_of_interest.contract_period_year, contract_periods_school_partnerships.year)")
     ).uniq
+  end
+
+  def induction_tutor_details_cannot_be_confirmed_if_blank
+    return unless induction_tutor_last_nominated_in_year.present?
+
+    if induction_tutor_name.blank? || induction_tutor_email.blank?
+      errors.add(:induction_tutor_last_nominated_in_year, "Cannot be set if induction tutor name or email is blank")
+    end
   end
 end
