@@ -67,6 +67,9 @@ module RegisterEarlyCareerTeachers
       rect_url: ENV["PARITY_CHECK_RECT_URL"],
     }
 
+    allow_indexing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ALLOW_INDEXING", true))
+    (config.action_dispatch.default_headers["X-Robots-Tag"] = "noindex") unless allow_indexing
+
     requested_timeout = ENV.fetch("MAX_SESSION_IDLE_TIME", 7200).to_i
     requested_timeout = 7200 if requested_timeout <= 0
     config.max_session_idle_time = requested_timeout.seconds

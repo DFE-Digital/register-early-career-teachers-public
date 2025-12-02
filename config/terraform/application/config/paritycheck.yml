@@ -1,4 +1,5 @@
 ---
+ALLOW_INDEXING: false
 ENVIRONMENT_COLOUR: orange
 ENVIRONMENT_PHASE_BANNER_TAG: Parity check 🔍
 ENVIRONMENT_PHASE_BANNER_CONTENT: This is the parity check environment.
