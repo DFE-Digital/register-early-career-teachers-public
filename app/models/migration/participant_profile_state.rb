@@ -8,7 +8,7 @@ module Migration
 
     def withdrawn? = state == "withdrawn"
 
-    enum state: {
+    enum :state, {
       active: "active",
       deferred: "deferred",
       withdrawn: "withdrawn",

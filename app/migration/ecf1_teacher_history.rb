@@ -1,8 +1,6 @@
 class ECF1TeacherHistory
   class InvalidPeriodType < StandardError; end
 
-  InductionRecordRow = Struct.new(:start_date, :end_date)
-
   User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at)
 
   ECT = Struct.new(:participant_profile_id,
@@ -21,24 +19,39 @@ class ECF1TeacherHistory
                       :states,
                       :induction_records)
 
-  ProfileStateRow = Struct.new(state:, reason:, created_at:)
+  ProfileStateRow = Struct.new(:state, :reason, :created_at)
+
+  InductionRecordRow = Struct.new(:induction_record_id,
+                                  :start_date,
+                                  :end_date,
+                                  :created_at,
+                                  :updated_at,
+                                  :cohort_year,
+                                  :school_urn,
+                                  :schedule,
+                                  :preferred_identity_email,
+                                  :mentor_profile_id,
+                                  :training_status,
+                                  :induction_status,
+                                  :training_programme,
+                                  :training_provider_info)
 
   TrainingProviderInfo = Struct.new(
-    lead_provider_id:,
-    lead_provider_name:,
-    delivery_partner_id:,
-    delivery_partner_name:,
-    cohort_year:
+    :lead_provider_id,
+    :lead_provider_name,
+    :delivery_partner_id,
+    :delivery_partner_name,
+    :cohort_year
   )
 
   ScheduleInfo = Struct.new(
-    schedule_id:,
-    schedule_identifier:,
-    schedule_type:,
-    cohort_year:
+    :schedule_id,
+    :identifier,
+    :name,
+    :cohort_year
   )
 
-  attr_reader :trn, :full_name, :ect_induction_record_rows, :mentor_induction_record_rows
+  attr_reader :user, :ect, :mentor
 
   def initialize(user:, ect: nil, mentor: nil)
     @user = user
@@ -61,7 +74,7 @@ class ECF1TeacherHistory
 
     ect = build_ect_data(participant_profile: ect_profile) if ect_profile.present?
 
-    mentor = build_mentor_data(mentor_profile) if mentor_profile.present?
+    mentor = build_mentor_data(participant_profile: mentor_profile) if mentor_profile.present?
 
     new(user:, ect:, mentor:)
   end
@@ -74,7 +87,7 @@ class ECF1TeacherHistory
       induction_start_date: participant_profile.induction_start_date,
       induction_completion_date: participant_profile.induction_completion_date,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_records_rows(participant_profile:)
+      induction_records: build_induction_record_rows(participant_profile:)
     )
   end
 
@@ -86,7 +99,7 @@ class ECF1TeacherHistory
       mentor_completion_date: participant_profile.mentor_completion_date,
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_records_rows(participant_profile:)
+      induction_records: build_induction_record_rows(participant_profile:)
     )
   end
 
@@ -98,9 +111,8 @@ class ECF1TeacherHistory
 
   def self.build_induction_record_rows(participant_profile:)
     participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
-      build_provider_info(induction_record:)
-
       InductionRecordRow.new(
+        induction_record_id: induction_record.id,
         start_date: induction_record.start_date,
         end_date: induction_record.end_date,
         created_at: induction_record.created_at,
@@ -118,15 +130,15 @@ class ECF1TeacherHistory
     end
   end
 
-  def self.build_provider_info(induction_record:)
+  def self.build_training_provider_info(induction_record:)
     partnership = induction_record.induction_programme.partnership
     return if partnership.blank?
 
     TrainingProviderInfo.new(
       lead_provider_id: partnership.lead_provider_id,
-      lead_provider_name: partnership.lead_provider_name,
+      lead_provider_name: partnership.lead_provider.name,
       delivery_partner_id: partnership.delivery_partner_id,
-      delivery_partner_name: partnership.delivery_partner_name,
+      delivery_partner_name: partnership.delivery_partner.name,
       cohort_year: partnership.cohort.start_year
     )
   end
@@ -134,8 +146,8 @@ class ECF1TeacherHistory
   def self.build_schedule_info(schedule:)
     ScheduleInfo.new(
       schedule_id: schedule.id,
-      schedule_identifier: schedule.schedule_identifier,
-      schedule_type: schedule.schedule_type,
+      identifier: schedule.schedule_identifier,
+      name: schedule.name,
       cohort_year: schedule.cohort.start_year
     )
   end
