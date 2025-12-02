@@ -18,7 +18,8 @@ RSpec.describe SandboxSeedData::ContractPeriods do
           started_on: Date.new(data[:year], 6, 1),
           finished_on: Date.new(data[:year] + 1, 5, 31),
           payments_frozen_at: data[:payments_frozen_at],
-          mentor_funding_enabled: data[:mentor_funding_enabled]
+          mentor_funding_enabled: data[:mentor_funding_enabled],
+          detailed_evidence_types_enabled: data[:detailed_evidence_types_enabled]
         )
       end
     end
