@@ -155,6 +155,36 @@ describe Interval do
     end
   end
 
+  describe "#leaving?" do
+    subject(:interval) { DummyInterval.new(started_on: 1.week.ago, finished_on:) }
+
+    let(:today) { Time.zone.today }
+
+    context "when finished_on is nil" do
+      let(:finished_on) { nil }
+
+      it { is_expected.not_to be_leaving }
+    end
+
+    context "when finished_on is in the past" do
+      let(:finished_on) { today - 1.day }
+
+      it { is_expected.not_to be_leaving }
+    end
+
+    context "when finished_on is today" do
+      let(:finished_on) { today }
+
+      it { is_expected.to be_leaving }
+    end
+
+    context "when finished_on is in the future" do
+      let(:finished_on) { today + 1.day }
+
+      it { is_expected.to be_leaving }
+    end
+  end
+
   describe "#has_overlap_with_siblings?" do
     subject(:interval) { DummyMentor.new(teacher_id:, school_id:, started_on: 5.days.ago, finished_on: nil) }
 
