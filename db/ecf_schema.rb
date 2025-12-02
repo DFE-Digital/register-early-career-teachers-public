@@ -262,7 +262,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_135429) do
     t.date "automatic_assignment_period_end_date"
     t.datetime "payments_frozen_at"
     t.boolean "mentor_funding", default: false, null: false
-    t.boolean "detailed_evidence_types", default: false, null: false
+    t.boolean "detailed_evidence_types_enabled", default: false, null: false
     t.index ["start_year"], name: "index_cohorts_on_start_year", unique: true
   end
 
