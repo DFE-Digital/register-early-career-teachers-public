@@ -131,7 +131,7 @@ module Schools
           return steps if ect.use_previous_ect_choices.nil?
         end
 
-        unless school.last_programme_choices? && ect.use_previous_ect_choices
+        unless school.last_programme_choices? && ect.use_previous_ect_choices && use_previous_choices_allowed?
           steps << if school.independent?
                      :independent_school_appropriate_body
                    else
@@ -163,11 +163,11 @@ module Schools
         steps << :change_lead_provider if ect.provider_led?
         steps << :change_review_ect_details
         steps << :change_start_date
-        steps << :change_use_previous_ect_choices if school.last_programme_choices?
+        steps << :change_use_previous_ect_choices if school.last_programme_choices? && use_previous_choices_allowed?
         steps << :change_working_pattern
 
         # No previous choices change steps - only if school doesn't use previous choices
-        unless school.last_programme_choices? && ect.use_previous_ect_choices
+        unless school.last_programme_choices? && ect.use_previous_ect_choices && use_previous_choices_allowed?
           steps << :no_previous_ect_choices_change_independent_school_appropriate_body if school.independent?
           steps << :no_previous_ect_choices_change_state_school_appropriate_body unless school.independent?
           steps << :no_previous_ect_choices_change_lead_provider if ect.provider_led?
