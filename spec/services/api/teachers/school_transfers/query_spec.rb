@@ -108,22 +108,72 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
       describe "by `updated_since`" do
         let(:query) { described_class.new(lead_provider_id:, updated_since:) }
         let(:lead_provider_id) { lead_provider.id }
+        let(:transfer_dates) { {} }
 
         before do
-          {
-            teacher1 => 10.days.ago,
-            teacher3 => 6.days.ago,
-            teacher5 => 5.days.ago
-          }.each do |teacher, api_transfer_updated_at|
-            teacher.ect_training_periods.update!(api_transfer_updated_at:)
-            teacher.mentor_training_periods.update!(api_transfer_updated_at:)
+          transfer_dates.each do |teacher, api_transfer_updated_at|
+            teacher.ect_at_school_periods.each do |school_period|
+              school_period.earliest_training_period&.update!(api_transfer_updated_at: api_transfer_updated_at[:joining])
+              school_period.latest_training_period&.update!(api_transfer_updated_at: api_transfer_updated_at[:leaving])
+            end
+
+            teacher.mentor_at_school_periods.each do |school_period|
+              school_period.earliest_training_period&.update!(api_transfer_updated_at: api_transfer_updated_at[:joining])
+              school_period.latest_training_period&.update!(api_transfer_updated_at: api_transfer_updated_at[:leaving])
+            end
           end
         end
 
-        context "when `updated_since` is provided" do
-          let(:updated_since) { 7.days.ago }
+        context "when filtering `updated_since` (joining ECT training period)" do
+          let(:transfer_dates) do
+            {
+              teacher1 => { joining: 10.days.ago, leaving: 1.year.ago },
+              teacher3 => { joining: 1.year.ago, leaving: 1.year.ago },
+              teacher5 => { joining: 1.year.ago, leaving: 1.year.ago }
+            }
+          end
+          let(:updated_since) { 11.days.ago }
 
-          it { is_expected.to contain_exactly(teacher3, teacher5) }
+          it { expect(subject).to contain_exactly(teacher1) }
+        end
+
+        context "when filtering `updated_since` (leaving ECT training period)" do
+          let(:transfer_dates) do
+            {
+              teacher1 => { joining: 1.year.ago, leaving: 11.days.ago },
+              teacher3 => { joining: 1.year.ago, leaving: 1.year.ago },
+              teacher5 => { joining: 1.year.ago, leaving: 12.days.ago }
+            }
+          end
+          let(:updated_since) { 13.days.ago }
+
+          it { expect(subject).to contain_exactly(teacher1, teacher5) }
+        end
+
+        context "when filtering `updated_since` (joining mentor training period)" do
+          let(:transfer_dates) do
+            {
+              teacher1 => { joining: 1.year.ago, leaving: 1.year.ago },
+              teacher3 => { joining: 1.day.ago, leaving: 1.year.ago },
+              teacher5 => { joining: 1.year.ago, leaving: 1.year.ago }
+            }
+          end
+          let(:updated_since) { 2.days.ago }
+
+          it { expect(subject).to be_empty } # teacher3 only has a leaving transfer for the LP
+        end
+
+        context "when filtering `updated_since` (leaving mentor training period)" do
+          let(:transfer_dates) do
+            {
+              teacher1 => { joining: 1.year.ago, leaving: 1.year.ago },
+              teacher3 => { joining: 1.year.ago, leaving: 21.days.ago },
+              teacher5 => { joining: 1.year.ago, leaving: 1.year.ago }
+            }
+          end
+          let(:updated_since) { 22.days.ago }
+
+          it { expect(subject).to contain_exactly(teacher3) }
         end
 
         context "when `updated_since` is blank" do
