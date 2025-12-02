@@ -184,12 +184,6 @@ module ECTAtSchoolPeriods
               FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
             end
 
-            around do |example|
-              travel_to(Date.new(2025, 9, 1)) do
-                example.run
-              end
-            end
-
             let!(:current_mentorship) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee: ect_at_school_period, mentor: previous_mentor) }
             let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
             let(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.weeks.ago, mentor_at_school_period: previous_mentor) }
