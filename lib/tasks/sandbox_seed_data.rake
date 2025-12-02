@@ -13,6 +13,7 @@ namespace :sandbox_seed_data do
       SandboxSeedData::TeacherHistories,
       SandboxSeedData::APITeachersWithHistories,
       SandboxSeedData::UnfundedMentors,
+      SandboxSeedData::APITeachersWithChangeSchedule,
     ]
 
     DeclarativeUpdates.skip(:metadata) do
