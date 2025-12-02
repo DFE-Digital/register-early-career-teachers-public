@@ -61,8 +61,28 @@ private
           current_training.end_date = end_date
           current_training.end_source_id = induction_record.id
         end
+
+        participant_profile_state = induction_record_participant_profile_state(induction_record)
+        deferred_at, deferral_reason = deferral_data(induction_record:, participant_profile_state:)
+        withdrawn_at, withdrawal_reason = withdrawal_data(induction_record:, participant_profile_state:)
+
+        if induction_record.deferred?
+          current_training.deferred_at = deferred_at
+          current_training.deferral_reason = deferral_reason
+        end
+
+        if induction_record.withdrawn?
+          current_training.withdrawn_at = withdrawn_at
+          current_training.withdrawal_reason = withdrawal_reason
+        end
       end
     end
+  end
+
+  def deferral_data(induction_record:, participant_profile_state:)
+    return unless induction_record.deferred? && participant_profile_state&.deferred?
+
+    participant_profile_state.values_at(:created_at, :reason)
   end
 
   def extract_training_data_from(induction_record:, candidate_end_date:)
@@ -72,8 +92,10 @@ private
     delivery_partner = induction_programme.partnership&.delivery_partner&.name
     core_materials = induction_programme.core_induction_programme&.name
     school_urn = induction_programme.school_cohort.school.urn
-
     end_date = corrected_training_period_end_date(induction_record:, induction_records:, candidate_end_date:)
+    participant_profile_state = induction_record_participant_profile_state(induction_record)
+    deferred_at, deferral_reason = deferral_data(induction_record:, participant_profile_state:)
+    withdrawn_at, withdrawal_reason = withdrawal_data(induction_record:, participant_profile_state:)
 
     Migration::TrainingPeriodData.new(training_programme:,
                                       school_urn:,
@@ -85,7 +107,19 @@ private
                                       start_date: induction_record.start_date,
                                       end_date:,
                                       start_source_id: induction_record.id,
-                                      end_source_id: induction_record.id)
+                                      end_source_id: induction_record.id,
+                                      deferred_at:,
+                                      deferral_reason:,
+                                      withdrawn_at:,
+                                      withdrawal_reason:)
+  end
+
+  def induction_record_participant_profile_state(induction_record)
+    induction_record.participant_profile
+                    .participant_profile_states
+                    .order(:created_at)
+                    .where(created_at: ..(induction_record.created_at + 2.seconds))
+                    .last
   end
 
   def mapped_training_programme(ecf_training)
@@ -100,6 +134,14 @@ private
 
     training_programme != current_training.training_programme ||
       induction_programme.partnership&.lead_provider&.name != current_training.lead_provider ||
-      induction_programme.partnership&.delivery_partner&.name != current_training.delivery_partner
+      induction_programme.partnership&.delivery_partner&.name != current_training.delivery_partner ||
+      induction_record.training_active? && (current_training.deferred_at || current_training.withdrawn_at)
+  end
+
+  def withdrawal_data(induction_record:, participant_profile_state:)
+    return unless induction_record.withdrawn? && participant_profile_state&.withdrawn?
+    return if participant_profile_state.lead_provider != induction_record.lead_provider
+
+    participant_profile.values_at(:created_at, :reason)
   end
 end

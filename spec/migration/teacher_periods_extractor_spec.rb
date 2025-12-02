@@ -141,7 +141,9 @@ describe TeacherPeriodsExtractor do
       end
     end
 
-    context "when the participant has two induction records at the same school and LP and only last created induction record is 'withdrawn' or 'deferred'" do
+    context "when the participant has two induction records at the same school and LP and only last created induction record is 'deferred'" do
+      let!(:participant_profile_state) { FactoryBot.create(:migration_participant_profile_state, :deferred, participant_profile:) }
+
       before do
         induction_record_1.update!(end_date: Time.current)
         induction_record_2.update!(training_status: :deferred, induction_programme: induction_programme_1)
@@ -152,6 +154,13 @@ describe TeacherPeriodsExtractor do
         training_period = periods[0].training_periods[0]
 
         expect(training_period.end_date).to eq induction_record_1.end_date
+      end
+
+      it "adjusts the last training period deferral data from the associated participant profile state" do
+        periods = service.teacher_periods
+        training_period = periods[0].training_periods[0]
+
+        expect(training_period.deferred_at).to eq participant_profile_state.created_at
       end
     end
   end
