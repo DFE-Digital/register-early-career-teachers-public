@@ -8,13 +8,15 @@ module Schools
       attribute :are_these_details_correct, :boolean
 
       validates :induction_tutor_email,
-                presence: { message: "Email cannot be blank" }, unless: :are_these_details_correct
+                presence: { message: "Enter an email address" }, unless: :are_these_details_correct,
+                length: { maximum: 254, message: "Enter an email address that is less than 254 characters long" }, unless: :are_these_details_correct
 
       validates :induction_tutor_name,
-                presence: { message: "Name cannot be blank" }, unless: :are_these_details_correct
+                presence: { message: "Enter the correct full name" }, unless: :are_these_details_correct,
+                length: { maximum: 70, message: "Full name must be 70 letters or less" }, unless: :are_these_details_correct
 
       validates :are_these_details_correct,
-                inclusion: { in: [true, false], message: "Select 'Yes' if these details are correct" }
+                inclusion: { in: [true, false], message: "Select 'Yes' or 'No, someone else will be the induction tutor'" }
 
       validate :details_must_be_changed_unless_confirmed
 

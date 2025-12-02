@@ -23,7 +23,7 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
 
   describe ".permitted_params" do
     it "returns the permitted params" do
-      expect(described_class.permitted_params).to match_array(%i[induction_tutor_email induction_tutor_name school_id are_these_details_correct])
+      expect(described_class.permitted_params).to match_array(%i[induction_tutor_email induction_tutor_name are_these_details_correct])
     end
   end
 
@@ -56,7 +56,7 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
       it "is invalid" do
         expect(current_step).not_to be_valid
         expect(current_step.errors.messages_for(:are_these_details_correct)).to contain_exactly(
-          "Select 'Yes' if these details are correct"
+          "Select 'Yes' or 'No, someone else will be the induction tutor'"
         )
       end
     end
@@ -70,7 +70,17 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
         it "is invalid" do
           expect(current_step).not_to be_valid
           expect(current_step.errors.messages_for(:induction_tutor_email)).to contain_exactly(
-            "Email cannot be blank"
+            "Enter an email address"
+          )
+        end
+      end
+
+      context "when induction_tutor_email is too long" do
+        let(:induction_tutor_email) { "A" * 243 + "@example.com" }
+        it "is invalid" do
+          expect(current_step).not_to be_valid
+          expect(current_step.errors.messages_for(:induction_tutor_email)).to contain_exactly(
+            "Enter an email address that is less than 254 characters long"
           )
         end
       end
@@ -81,10 +91,22 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
         it "is invalid" do
           expect(current_step).not_to be_valid
           expect(current_step.errors.messages_for(:induction_tutor_name)).to contain_exactly(
-            "Name cannot be blank"
+            "Enter the correct full name"
           )
         end
       end
+
+      context "when induction_tutor_name is too long" do
+        let(:induction_tutor_name) { "A" * 71 }
+
+        it "is invalid" do
+          expect(current_step).not_to be_valid
+          expect(current_step.errors.messages_for(:induction_tutor_name)).to contain_exactly(
+            "Full name must be 70 letters or less"
+          )
+        end
+      end
+
 
       context "when the email has changed" do
         let(:induction_tutor_email) { Faker::Internet.email }
