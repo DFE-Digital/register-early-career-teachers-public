@@ -14,24 +14,20 @@ RSpec.describe Schools::RegisterECT do
                         author:)
   end
 
+  include_context "safe_schedules"
+
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:corrected_name) { "Randy Marsh" }
   let(:email) { "randy@tegridyfarms.com" }
   let(:school) { FactoryBot.create(:school) }
-  let(:started_on) { Date.new(2024, 9, 17) }
+  let(:started_on) { mid_year - 1.day }
   let(:trn) { "3002586" }
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
   let(:working_pattern) { "full_time" }
   let(:ect_at_school_period) { subject.teacher.ect_at_school_periods.first }
-  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: started_on.year) }
-
-  around do |example|
-    travel_to(started_on + 1.day) do
-      example.run
-    end
-  end
+  let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
 
   describe "#register!" do
     context "when a Teacher record with the same TRN does not exist" do
