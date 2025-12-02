@@ -59,12 +59,16 @@ end
 
 RSpec.shared_examples "a filter by updated_since endpoint" do |updated_at_column: :api_updated_at|
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
-  let!(:resource_updated_one_week_ago) { create_resource(active_lead_provider:).tap { it.update_columns("#{updated_at_column}": 1.week.ago) } }
-  let!(:resource_updated_one_month_ago) { create_resource(active_lead_provider:).tap { it.update_columns("#{updated_at_column}": 1.month.ago) } }
+  let!(:resource_updated_one_week_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, updated_at_column:, value: 1.week.ago) } }
+  let!(:resource_updated_one_month_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, updated_at_column:, value: 1.month.ago) } }
 
   before do
     # Resource updated more than two months ago should not be included.
-    create_resource(active_lead_provider:).update_columns("#{updated_at_column}": 3.months.ago)
+    set_updated_at(resource: create_resource(active_lead_provider:), updated_at_column:, value: 3.months.ago)
+  end
+
+  def set_updated_at(resource:, updated_at_column:, value:)
+    resource.update_columns("#{updated_at_column}": value)
   end
 
   it "returns only resource that have been updated since the provided date" do

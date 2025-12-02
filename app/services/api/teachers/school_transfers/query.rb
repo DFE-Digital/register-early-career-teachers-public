@@ -77,10 +77,9 @@ module API::Teachers::SchoolTransfers
     def where_updated_since(updated_since, lead_provider_id)
       return if ignore?(filter: updated_since)
 
-      # Note that this will include the first training period of a teacher and the last
-      # training period even if they have completed training (which are not classed as transfers).
-      # Excluding these would be very complicated; this is close enough for now and an improvement
-      # over what ECF currently provides.
+      # This includes a teacher’s first and last training periods, even if they aren't true transfers.
+      # Excluding them is complex, and this is still an improvement over ECF. As a result, some teachers
+      # may appear even if their transfer periods weren't necessarily updated — it's a best-effort approach.
       @scope = scope
           .left_joins(
             ect_at_school_periods: {
@@ -92,6 +91,8 @@ module API::Teachers::SchoolTransfers
               latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
             }
           )
+          # On the joins below training_periods is the earliest ECT training periods it is not
+          # aliased like the others because it is the first join onto the training_periods table.
           .where(
             "(training_periods.id IS NOT NULL AND training_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers.lead_provider_id = :lead_provider_id) OR
             (latest_training_periods_ect_at_school_periods.id IS NOT NULL AND latest_training_periods_ect_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships.lead_provider_id = :lead_provider_id) OR

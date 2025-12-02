@@ -1,12 +1,12 @@
 class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
   class TrainingPeriodSerializer < Blueprinter::Base
-    field(:school_urn) do |(data, _options)|
+    field(:school_urn) do |data|
       data[:school].urn
     end
-    field(:provider) do |(data, _options)|
+    field(:provider) do |data|
       data[:training_period].lead_provider&.name
     end
-    field(:date) do |(data, _options)|
+    field(:date) do |data|
       data[:training_period].finished_on&.rfc3339
     end
   end
@@ -39,35 +39,31 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 
-    field(:updated_at) do |teacher, options|
-      combined_transfers(teacher:, options:).max_by(&:api_updated_at).api_updated_at
+    field(:updated_at) do |data|
+      data[:transfers].max_by(&:api_updated_at).api_updated_at
     end
 
-    association :transfers, blueprint: TransferSerializer do |teacher, options|
-      combined_transfers(teacher:, options:).map { |transfer| [transfer, teacher] }
-    end
-
-    def self.combined_transfers(teacher:, options:)
-      @all_transfers ||= {}
-      @all_transfers[teacher] ||= begin
-        ect_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
-          school_periods: teacher.ect_at_school_periods,
-          lead_provider_id: options[:lead_provider_id]
-        )
-        mentor_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
-          school_periods: teacher.mentor_at_school_periods,
-          lead_provider_id: options[:lead_provider_id]
-        )
-
-        (ect_transfers + mentor_transfers).sort_by { |it| it.leaving_training_period.started_on }
-      end
+    association :transfers, blueprint: TransferSerializer do |data|
+      teacher, transfers = data.values
+      transfers.map { |transfer| [transfer, teacher] }
     end
   end
 
   identifier :api_id, name: :id
   field(:type) { "participant-transfer" }
 
-  association :attributes, blueprint: AttributesSerializer do |teacher|
-    teacher
+  association :attributes, blueprint: AttributesSerializer do |teacher, options|
+    ect_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
+      school_periods: teacher.ect_at_school_periods,
+      lead_provider_id: options[:lead_provider_id]
+    )
+    mentor_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
+      school_periods: teacher.mentor_at_school_periods,
+      lead_provider_id: options[:lead_provider_id]
+    )
+
+    transfers = (ect_transfers + mentor_transfers).sort_by { |it| it.leaving_training_period.started_on }
+
+    { teacher:, transfers: }
   end
 end
