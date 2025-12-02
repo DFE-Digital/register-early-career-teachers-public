@@ -12,7 +12,7 @@ module API::Teachers::SchoolTransfers
       @scope = Teacher.distinct
 
       where_lead_provider_is(lead_provider_id)
-      where_updated_since(updated_since)
+      where_updated_since(updated_since, lead_provider_id)
       set_sort_by(sort)
     end
 
@@ -74,20 +74,30 @@ module API::Teachers::SchoolTransfers
         )
     end
 
-    def where_updated_since(updated_since)
+    def where_updated_since(updated_since, lead_provider_id)
       return if ignore?(filter: updated_since)
 
+      # Note that this will include the first training period of a teacher and the last
+      # training period even if they have completed training (which are not classed as transfers).
+      # Excluding these would be very complicated; this is close enough for now and an improvement
+      # over what ECF currently provides.
       @scope = scope
           .left_joins(
-            ect_at_school_periods: %i[earliest_training_period latest_training_period],
-            mentor_at_school_periods: %i[earliest_training_period latest_training_period]
+            ect_at_school_periods: {
+              earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+              latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+            },
+            mentor_at_school_periods: {
+              earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+              latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+            }
           )
           .where(
-            "(training_periods.id IS NOT NULL AND training_periods.api_transfer_updated_at >= :updated_since) OR
-            (latest_training_periods_ect_at_school_periods.id IS NOT NULL AND latest_training_periods_ect_at_school_periods.api_transfer_updated_at >= :updated_since) OR
-            (earliest_training_periods_mentor_at_school_periods.id IS NOT NULL AND earliest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since) OR
-            (latest_training_periods_mentor_at_school_periods.id IS NOT NULL AND latest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since)",
-            updated_since:
+            "(training_periods.id IS NOT NULL AND training_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers.lead_provider_id = :lead_provider_id) OR
+            (latest_training_periods_ect_at_school_periods.id IS NOT NULL AND latest_training_periods_ect_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships.lead_provider_id = :lead_provider_id) OR
+            (earliest_training_periods_mentor_at_school_periods.id IS NOT NULL AND earliest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_2.lead_provider_id = :lead_provider_id) OR
+            (latest_training_periods_mentor_at_school_periods.id IS NOT NULL AND latest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_3.lead_provider_id = :lead_provider_id)",
+            updated_since:, lead_provider_id:
           )
     end
 
