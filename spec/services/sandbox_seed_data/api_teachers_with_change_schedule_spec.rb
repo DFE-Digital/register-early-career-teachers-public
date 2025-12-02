@@ -53,7 +53,7 @@ RSpec.describe SandboxSeedData::APITeachersWithChangeSchedule do
       # 2x teachers (ect + mentor)
       # 3x variations
       # 1x number of records
-      teachers_count = active_lead_providers.count * 2 * 3 * described_class::NUMBER_OF_RECORDS
+      teachers_count = active_lead_providers.count * 2 * described_class::CHANGE_VARIATIONS.count * described_class::NUMBER_OF_RECORDS
 
       expect(Teacher.count).to eq(teachers_count)
     end
