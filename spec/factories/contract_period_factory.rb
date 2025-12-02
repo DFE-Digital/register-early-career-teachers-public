@@ -8,6 +8,10 @@ FactoryBot.define do
       year { Time.zone.today.year }
     end
 
+    trait :previous do
+      year { Time.zone.today.year - 1 }
+    end
+
     enabled { true }
     started_on { Date.new(year, 6, 1) }
     finished_on { Date.new(year.next, 5, 31) }
