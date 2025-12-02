@@ -389,8 +389,8 @@
   :declarations:
   - id
   - training_period_id
-  - billable_statement_id
-  - refundable_statement_id
+  - payment_statement_id
+  - clawback_statement_id
   - declaration_type
   - date
   - voided_at
@@ -398,7 +398,8 @@
   - mentorship_period_id
   - api_id
   - evidence_type
-  - status
+  - payment_status
+  - clawback_status
   - ineligibility_reason
   - sparsity_uplift
   - pupil_premium_uplift
