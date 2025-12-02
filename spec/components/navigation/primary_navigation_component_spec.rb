@@ -1,10 +1,11 @@
 RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
-  subject { described_class.new(current_path:, current_user_type:) }
+  subject { described_class.new(current_path:, current_user:) }
 
   let(:current_path) { "/" }
   let(:current_user_type) { nil }
   let(:nav_selector) { "nav.govuk-service-navigation__wrapper" }
   let(:nav_list_selector) { "#{nav_selector} ul#register-early-career-teachers-service-navigation-list" }
+  let(:current_user) { double(school_user?: false, user_type: current_user_type) }
 
   def validate_navigation_items(expected_items)
     expect(rendered_content).to have_css(nav_list_selector)
@@ -47,7 +48,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
     end
 
     context "when inverse: true" do
-      subject { described_class.new(current_path:, current_user_type:, inverse: true) }
+      subject { described_class.new(current_path:, current_user:, inverse: true) }
 
       before { render_inline(subject) }
 
@@ -137,6 +138,19 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         ]
 
         validate_navigation_items(expected_items)
+      end
+    end
+
+    context "when induction information needs updating" do
+      before do
+        induction_details_service = double("induction_details_service", needs_update_by_user?: true)
+        allow_any_instance_of(Navigation::PrimaryNavigationComponent).to receive(:induction_details_service).and_return(induction_details_service)
+      end
+
+      it "renders no navigation items" do
+        render_inline(subject)
+
+        expect(rendered_content).not_to have_css(nav_selector)
       end
     end
   end

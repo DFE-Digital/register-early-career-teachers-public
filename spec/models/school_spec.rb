@@ -252,6 +252,36 @@ describe School do
           expect(subject.errors.messages[:induction_tutor_name]).to contain_exactly("Must provide name if induction tutor email is set")
         end
       end
+
+      context "when induction_tutor_last_nominated_in_year is set" do
+        subject { FactoryBot.build(:school, induction_tutor_last_nominated_in_year: contract_period, induction_tutor_name:, induction_tutor_email:) }
+
+        let(:contract_period) { FactoryBot.create(:contract_period) }
+        let(:induction_tutor_name) { Faker::Name.name }
+        let(:induction_tutor_email) { Faker::Internet.email }
+
+        context "when both induction_tutor_name and induction_tutor_email are set" do
+          it { is_expected.to be_valid }
+        end
+
+        context "when induction_tutor_name is not set" do
+          let(:induction_tutor_name) { nil }
+
+          it "requires induction_tutor_name and induction_tutor_email to be present" do
+            expect(subject).to be_invalid
+            expect(subject.errors.messages[:induction_tutor_last_nominated_in_year]).to contain_exactly("Cannot be set if induction tutor name or email is blank")
+          end
+        end
+
+        context "when induction_tutor_email is not set" do
+          let(:induction_tutor_email) { nil }
+
+          it "requires induction_tutor_name and induction_tutor_email to be present" do
+            expect(subject).to be_invalid
+            expect(subject.errors.messages[:induction_tutor_last_nominated_in_year]).to contain_exactly("Cannot be set if induction tutor name or email is blank")
+          end
+        end
+      end
     end
   end
 
