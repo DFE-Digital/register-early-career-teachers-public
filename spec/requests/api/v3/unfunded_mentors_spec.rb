@@ -1,4 +1,4 @@
-RSpec.describe "Unfunded mentors API", :with_metadata, type: :request do
+RSpec.describe "Unfunded mentors API", type: :request do
   include MentorshipPeriodHelpers
 
   let(:serializer) { API::Teachers::UnfundedMentorSerializer }
@@ -12,7 +12,12 @@ RSpec.describe "Unfunded mentors API", :with_metadata, type: :request do
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
 
     # Unfunded mentor associated with the lead provider (should be returned)
-    create_mentorship_period_for(mentee_school_partnership: school_partnership).mentor.teacher
+    period = create_mentorship_period_for(mentee_school_partnership: school_partnership)
+
+    Metadata::Handlers::Teacher.new(period.mentor.teacher).refresh_metadata!
+    Metadata::Handlers::Teacher.new(period.mentee.teacher).refresh_metadata!
+
+    period.mentor.teacher
   end
 
   describe "#index" do
