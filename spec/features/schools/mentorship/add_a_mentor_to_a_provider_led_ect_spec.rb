@@ -1,4 +1,6 @@
-RSpec.describe "Add a mentor to a provider led ECT", :enable_schools_interface, :schedules do
+RSpec.describe "Add a mentor to a provider led ECT", :enable_schools_interface do
+  include_context "safe_schedules"
+
   before do
     given_there_is_a_school_in_the_service
     and_the_school_has_a_provider_led_ect_with_no_mentor

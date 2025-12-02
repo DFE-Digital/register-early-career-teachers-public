@@ -1,4 +1,4 @@
-RSpec.describe Schools::RegisterECT, :schedules do
+RSpec.describe Schools::RegisterECT do
   subject(:service) do
     described_class.new(school_reported_appropriate_body:,
                         corrected_name:,
@@ -13,6 +13,8 @@ RSpec.describe Schools::RegisterECT, :schedules do
                         working_pattern:,
                         author:)
   end
+
+  include_context "safe_schedules"
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body) }

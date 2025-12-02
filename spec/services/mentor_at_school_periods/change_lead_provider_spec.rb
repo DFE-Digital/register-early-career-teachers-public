@@ -1,5 +1,7 @@
-RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, :schedules, type: :service do
+RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
   subject { described_class.call(mentor_at_school_period, new_lead_provider: lead_provider, old_lead_provider:, author:) }
+
+  include_context "safe_schedules"
 
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
   let(:teacher) { FactoryBot.create(:teacher) }
@@ -46,7 +48,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, :schedules, type: :ser
         expect(new_training_period.training_programme).to eq("provider_led")
 
         expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
-        expect(new_training_period.schedule.contract_period_year).to eq(2025)
+        expect(new_training_period.schedule.contract_period_year).to eq(Time.zone.now.year)
       end
     end
 
@@ -101,7 +103,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, :schedules, type: :ser
 
           new_training_period = mentor_at_school_period.training_periods.ongoing.first
           expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
-          expect(new_training_period.schedule.contract_period_year).to eq(2025)
+          expect(new_training_period.schedule.contract_period_year).to eq(Time.zone.now.year)
         end
       end
 

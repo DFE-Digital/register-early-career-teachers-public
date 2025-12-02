@@ -1,4 +1,4 @@
-RSpec.describe TrainingPeriods::Create, :schedules do
+RSpec.describe TrainingPeriods::Create do
   subject(:result) do
     described_class.new(
       period:,
@@ -10,6 +10,8 @@ RSpec.describe TrainingPeriods::Create, :schedules do
       author:
     ).call
   end
+
+  include_context "safe_schedules"
 
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:started_on) { mid_year }

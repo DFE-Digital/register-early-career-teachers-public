@@ -1,5 +1,7 @@
 module ECTAtSchoolPeriods
-  describe ChangeLeadProvider, :schedules do
+  describe ChangeLeadProvider do
+    include_context "safe_schedules"
+
     subject(:change_lead_provider) do
       ChangeLeadProvider.call(
         ect_at_school_period,
