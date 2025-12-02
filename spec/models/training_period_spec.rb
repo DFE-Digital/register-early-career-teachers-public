@@ -82,6 +82,12 @@ describe TrainingPeriod do
                                                                       schedule_id
                                                                       school_partnership_id], timestamp_attribute: :api_updated_at
     end
+
+    context "target self" do
+      let(:target) { instance }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[started_on finished_on], timestamp_attribute: :api_transfer_updated_at
+    end
   end
 
   describe "enums" do

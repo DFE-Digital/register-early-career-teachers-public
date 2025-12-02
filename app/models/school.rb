@@ -23,11 +23,13 @@ class School < ApplicationRecord
   has_many :school_partnerships
   has_many :lead_provider_contract_period_metadata, class_name: "Metadata::SchoolLeadProviderContractPeriod"
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
+  has_many :training_periods, through: :school_partnerships
 
   touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
   touch -> { ect_teachers }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
   touch -> { mentor_teachers }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
+  touch -> { training_periods }, when_changing: %i[urn], timestamp_attribute: :api_transfer_updated_at
 
   refresh_metadata -> { self }, on_event: %i[create]
 

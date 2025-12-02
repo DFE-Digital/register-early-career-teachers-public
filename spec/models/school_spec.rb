@@ -45,6 +45,16 @@ describe School do
 
       it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_updated_at
     end
+
+    context "target training periods" do
+      let!(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: instance) }
+      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+      let(:target) { instance.training_periods }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_transfer_updated_at
+    end
   end
 
   describe "enums" do
@@ -68,6 +78,7 @@ describe School do
     it { is_expected.to have_many(:school_partnerships) }
     it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod") }
     it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod") }
+    it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
   end
 
   describe "delegation" do

@@ -37,6 +37,10 @@ module Teachers::SchoolTransfers
       end
     end
 
+    def api_updated_at
+      [leaving_training_period.api_transfer_updated_at, joining_training_period&.api_transfer_updated_at].compact.max
+    end
+
     delegate :for_ect?, :for_mentor?, to: :leaving_training_period
   end
 end
