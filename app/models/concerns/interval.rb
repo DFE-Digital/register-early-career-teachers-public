@@ -63,6 +63,10 @@ module Interval
     started_on <= finished_on
   end
 
+  def leaving?
+    finished_on.present? && finished_on >= Time.zone.today
+  end
+
   def invalid_date_order? = !valid_date_order?
 
   def ongoing? = finished_on.nil?
