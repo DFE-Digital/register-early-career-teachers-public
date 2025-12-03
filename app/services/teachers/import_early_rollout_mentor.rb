@@ -13,15 +13,14 @@ module Teachers
       Teacher.transaction do
         teacher = Teacher.find_or_initialize_by(trn:)
         if teacher.persisted?
-          Rails.logger.info("Teacher #{teacher.id} already exists, skipping Early Roll-out mentor import")
-          return teacher
+          Rails.logger.info("Teacher ##{teacher.id} already exists, skipping Early Roll-out mentor import")
+        else
+          teacher.assign_attributes(early_rollout_attributes)
+          teacher.save!
+
+          record_event(teacher)
+          queue_trs_refresh(teacher)
         end
-
-        teacher.assign_attributes(early_rollout_attributes)
-        teacher.save!
-
-        record_event(teacher)
-        queue_trs_refresh(teacher)
 
         teacher
       end
