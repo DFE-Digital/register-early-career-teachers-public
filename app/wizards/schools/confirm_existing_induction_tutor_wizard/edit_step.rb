@@ -1,7 +1,7 @@
 module Schools
   module ConfirmExistingInductionTutorWizard
     class EditStep < ApplicationWizardStep
-      delegate :school, :author, :valid_step?, to: :wizard
+      delegate :school, :author, :valid_step?, :current_contract_period, to: :wizard
 
       attribute :induction_tutor_email, :string
       attribute :induction_tutor_name, :string
@@ -37,9 +37,13 @@ module Schools
       end
 
       def save!
-        store.induction_tutor_email = induction_tutor_email if valid_step?
-        store.induction_tutor_name = induction_tutor_name if valid_step?
-        store.are_these_details_correct = are_these_details_correct if valid_step?
+        if are_these_details_correct
+          ActiveRecord::Base.transaction do
+            school.update!(induction_tutor_last_nominated_in_year: current_contract_period)
+          end
+        else
+          add_data_to_store
+        end
       end
 
     private
@@ -47,6 +51,14 @@ module Schools
       def pre_populate_attributes
         self.induction_tutor_email = store.induction_tutor_email.presence || school.induction_tutor_email
         self.induction_tutor_name = store.induction_tutor_name.presence || school.induction_tutor_name
+      end
+
+      def add_data_to_store
+        return unless valid_step?
+
+        store.induction_tutor_email = induction_tutor_email
+        store.induction_tutor_name = induction_tutor_name
+        store.are_these_details_correct = are_these_details_correct
       end
 
       def details_must_be_changed_unless_confirmed

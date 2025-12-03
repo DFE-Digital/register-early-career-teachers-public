@@ -24,6 +24,10 @@ module Schools
         @school ||= School.find(school_id)
       end
 
+      def current_contract_period
+        ContractPeriod.containing_date(Time.zone.today)
+      end
+
       delegate :save!, to: :current_step
       delegate :reset, to: :store
     end

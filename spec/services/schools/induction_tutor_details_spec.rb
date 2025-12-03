@@ -9,11 +9,12 @@ RSpec.describe Schools::InductionTutorDetails do
   describe "#update_required?" do
     context "when there is no user" do
       let(:user) { nil }
+
       it "returns false" do
         expect(service).not_to be_update_required
       end
     end
-    
+
     context "when the user is not a school user" do
       let(:user) { FactoryBot.create(:dfe_user) }
 

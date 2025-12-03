@@ -7,7 +7,7 @@ describe Schools::ConfirmExistingInductionTutorWizard::ConfirmationStep do
       step_params: ActionController::Parameters.new(confirmation: params),
       author:,
       store:,
-      school:
+      school_id: school.id
     )
   end
 

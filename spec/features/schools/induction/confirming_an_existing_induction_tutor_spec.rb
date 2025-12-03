@@ -21,9 +21,8 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     and_the_details_are_not_confirmed
     then_i_am_taken_to_the_confirm_existing_induction_tutor_page
     when_i_confirm_that_the_existing_details_are_correct
-    
   end
-  
+
   xscenario "the existing were confirmed last contract period" do
     and_the_details_are_confirmed_for_the_previous_contract_period
     then_i_am_taken_to_the_confirm_existing_induction_tutor_page
@@ -88,7 +87,6 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-
     expect(page).to have_path("/school/confirm-existing-induction-tutor/confirmation")
     expect(page.get_by_text("You've confirmed Alastair Sim will continue as your school's induction tutor")).to be_visible
   end
@@ -105,7 +103,5 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     expect(@school.induction_tutor_last_nominated_in_year.year).to eq(@current_contract_period.year)
   end
 
-
   # page.screenshot(path: "tmp/screenshot.png")
-
 end
