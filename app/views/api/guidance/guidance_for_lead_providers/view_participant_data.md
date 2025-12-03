@@ -99,7 +99,7 @@ The following table explains what the participant status fields mean.
  
 ### Example of how statuses for participants can differ 
 
-A provider records a participant as `training_status = active` because they're still completing training. 
+The API shows a participant as `training_status = active` because they're still completing training. 
 
 At the same time, the API records the participant as `participant_status = leaving`, with a leaving date set for the end of term. 
 
