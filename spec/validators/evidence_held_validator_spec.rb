@@ -47,7 +47,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -68,7 +69,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter a '#/evidence_held' value for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter a '#/evidence_held' value for this participant.")
             end
           end
 
@@ -77,7 +79,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -112,7 +115,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -133,7 +137,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter a '#/evidence_held' value for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter a '#/evidence_held' value for this participant.")
             end
           end
 
@@ -142,7 +147,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -179,7 +185,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -200,7 +207,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter a '#/evidence_held' value for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter a '#/evidence_held' value for this participant.")
             end
           end
 
@@ -209,7 +217,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -244,7 +253,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -265,7 +275,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter a '#/evidence_held' value for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter a '#/evidence_held' value for this participant.")
             end
           end
 
@@ -274,7 +285,8 @@ RSpec.describe EvidenceHeldValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
