@@ -45,8 +45,9 @@ RSpec.describe EvidenceHeldValidator, type: :model do
           context "when `evidence_held` is invalid" do
             let(:evidence_held) { "one-term-induction" }
 
-            it "does not show validation error" do
-              expect(subject).to be_valid
+            it "has a meaningful error", :aggregate_failures do
+              expect(subject).to be_invalid
+              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
@@ -176,8 +177,9 @@ RSpec.describe EvidenceHeldValidator, type: :model do
           context "when `evidence_held` is invalid" do
             let(:evidence_held) { "one-term-induction" }
 
-            it "does not show validation error" do
-              expect(subject).to be_valid
+            it "has a meaningful error", :aggregate_failures do
+              expect(subject).to be_invalid
+              expect(subject.errors.messages_for(:evidence_held)).to include("Enter an available '#/evidence_held' type for this participant.")
             end
           end
 
