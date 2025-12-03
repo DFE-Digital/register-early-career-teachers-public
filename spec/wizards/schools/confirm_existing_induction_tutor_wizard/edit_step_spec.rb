@@ -169,6 +169,22 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
       it "stores the confirmation" do
         expect { current_step.save! }.to change(store, :are_these_details_correct).to(true)
       end
+
+      it "records a confirmation event" do
+        freeze_time
+
+        expect(Events::Record)
+          .to receive(:record_school_induction_tutor_confirmed_event!)
+          .with(
+            author:,
+            school:,
+            name: induction_tutor_name,
+            email: induction_tutor_email,
+            contract_period_year: current_contract_period.year
+          )
+
+        current_step.save!
+      end
     end
 
     context "when the user has changed the details" do
@@ -185,6 +201,11 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
         .and change(store, :induction_tutor_name).to("New Name")
         .and change(store, :induction_tutor_email).to("new.email@example.com")
       end
+
+      it "does not record any events" do
+        expect(Events::Record).not_to receive(:record_school_induction_tutor_confirmed_event!)
+        current_step.save!
+      end
     end
 
     context "when the step is invalid" do
@@ -192,8 +213,17 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
       let(:induction_tutor_name) { school.induction_tutor_name }
       let(:induction_tutor_email) { school.induction_tutor_email }
 
+      it "does not update the school" do
+        expect { current_step.save! }.not_to(change { school.reload.attributes })
+      end
+
       it "does not store any data" do
         expect { current_step.save! }.not_to change(store, :attributes)
+      end
+
+      it "does not record any events" do
+        expect(Events::Record).not_to receive(:record_school_induction_tutor_confirmed_event!)
+        current_step.save!
       end
     end
   end
