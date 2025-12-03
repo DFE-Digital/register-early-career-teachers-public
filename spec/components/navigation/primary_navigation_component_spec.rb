@@ -143,8 +143,10 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
     context "when induction information needs updating" do
       before do
-        induction_details_service = double("induction_details_service", needs_update_by_user?: true)
-        allow_any_instance_of(Navigation::PrimaryNavigationComponent).to receive(:induction_details_service).and_return(induction_details_service)
+        mock_service = instance_double(Schools::InductionTutorDetails, update_required?: true)
+        allow(Schools::InductionTutorDetails).to receive(:new)
+        .with(current_user)
+        .and_return(mock_service)
       end
 
       it "renders no navigation items" do

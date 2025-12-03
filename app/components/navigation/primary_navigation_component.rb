@@ -68,7 +68,7 @@ module Navigation
     end
 
     def induction_information_needs_update?
-      induction_details_service.needs_update_by_user?
+      induction_details_service.update_required?
     end
 
     def induction_details_service
