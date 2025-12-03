@@ -54,6 +54,9 @@ class Declaration < ApplicationRecord
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
 
+  scope :completed, -> { where(declaration_type: "completed") }
+  scope :billable, -> { where(payment_status: %w[eligible payable paid]) }
+
   state_machine :payment_status, initial: :no_payment do
     state :no_payment, :ineligible, :eligible, :payable, :paid, :voided
 

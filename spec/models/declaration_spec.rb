@@ -237,6 +237,24 @@ describe Declaration do
     end
   end
 
+  describe "scopes" do
+    describe ".completed" do
+      it "returns completed declarations" do
+        FactoryBot.create(:declaration, declaration_type: "started")
+        completed_dec = FactoryBot.create(:declaration, declaration_type: "completed")
+        expect(described_class.completed.to_a).to eq([completed_dec])
+      end
+    end
+
+    describe ".billable" do
+      it "returns billable declarations" do
+        FactoryBot.create(:declaration, %i[not_started voided ineligible].sample)
+        billable_dec = FactoryBot.create(:declaration, %i[eligible payable paid].sample)
+        expect(described_class.billable.to_a).to eq([billable_dec])
+      end
+    end
+  end
+
   describe "payment_status transitions" do
     context "when transitioning from no_payment to eligible" do
       let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period) } }

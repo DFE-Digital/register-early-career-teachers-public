@@ -15,6 +15,7 @@ module API::Teachers
     validate :lead_provider_is_currently_training_teacher
     validate :no_future_training_periods_exist
     validate :can_move_to_frozen_cohort
+    validate :trainee_not_completed
 
     def change_schedule
       return false unless valid?
@@ -130,6 +131,20 @@ module API::Teachers
       unless original_frozen_year == contract_period.year
         errors.add(:contract_period_year, "You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.")
       end
+    end
+
+    def trainee_not_completed
+      return if errors[:teacher_api_id].any?
+      return unless training_period
+
+      completed = if training_period.for_ect?
+                    teacher.finished_induction_period&.complete?
+                  else
+                    teacher.mentor_declarations.billable.completed.exists?
+                  end
+      return unless completed
+
+      errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training.")
     end
   end
 end
