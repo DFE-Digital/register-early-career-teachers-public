@@ -8,7 +8,7 @@ module Schools
     end
 
     def update_required?
-      return unless user.school_user?
+      return unless user&.school_user?
       return if user.dfe_user_impersonating_school_user?
       return if user.has_multiple_roles?
       return unless school
