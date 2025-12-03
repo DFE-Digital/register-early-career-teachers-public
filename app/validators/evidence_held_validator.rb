@@ -8,11 +8,11 @@ class EvidenceHeldValidator < ActiveModel::Validator
   def validate(record)
     return if record.errors[:evidence_held].any?
 
+    evidence_held_is_present(record) unless record.declaration_type == "started"
+
     if validate_detailed_evidence_types?(record)
-      evidence_held_is_present(record) unless record.declaration_type == "started"
       evidence_held_is_valid_detailed_evidence_type(record)
     elsif validate_simple_evidence_types?(record)
-      evidence_held_is_present(record)
       evidence_held_is_valid_simple_evidence_type(record)
     end
   end
@@ -24,7 +24,7 @@ private
   end
 
   def validate_simple_evidence_types?(record)
-    record.declaration_type.present? && record.declaration_type != "started"
+    record.declaration_type.present?
   end
 
   def evidence_held_is_present(record)
@@ -36,7 +36,8 @@ private
 
   def evidence_held_is_valid_simple_evidence_type(record)
     return if record.errors[:evidence_held].any?
-    return if SIMPLE_EVIDENCE_TYPES.include?(record.evidence_held)
+    return if record.evidence_held.blank?
+    return if record.evidence_held.in?(SIMPLE_EVIDENCE_TYPES)
 
     record.errors.add(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
   end
