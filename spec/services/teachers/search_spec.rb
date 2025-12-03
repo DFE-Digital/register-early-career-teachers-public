@@ -304,5 +304,21 @@ describe Teachers::Search do
 
       expect(query).to include(order_clause)
     end
+
+    describe "mentor filtering by school and date" do
+      let(:school) { FactoryBot.create(:school) }
+      let(:current_teacher) { FactoryBot.create(:teacher) }
+      let(:future_teacher) { FactoryBot.create(:teacher) }
+      let(:past_teacher) { FactoryBot.create(:teacher) }
+
+      let!(:current_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: current_teacher, school:) }
+      let!(:future_period)  { FactoryBot.create(:mentor_at_school_period, teacher: future_teacher, school:, started_on: 1.month.from_now.to_date, finished_on: nil) }
+      let!(:past_period)    { FactoryBot.create(:mentor_at_school_period, teacher: past_teacher, school:, started_on: 6.months.ago.to_date, finished_on: 1.month.ago.to_date) }
+
+      it "returns only current or future mentors for the school" do
+        expect(described_class.new(mentor_at_school: school).search).to include(current_teacher, future_teacher)
+        expect(described_class.new(mentor_at_school: school).search).not_to include(past_teacher)
+      end
+    end
   end
 end
