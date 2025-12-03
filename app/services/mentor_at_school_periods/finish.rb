@@ -33,6 +33,8 @@ private
   end
 
   def finish_mentor_at_school_period!(period)
+    return if period.finished_on.present? && period.finished_on <= finished_on
+
     period.update!(finished_on:)
   end
 
