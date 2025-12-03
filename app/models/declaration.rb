@@ -5,46 +5,35 @@ class Declaration < ApplicationRecord
   belongs_to :payment_statement, optional: true, class_name: "Statement"
   belongs_to :clawback_statement, optional: true, class_name: "Statement"
 
-  enum :payment_status, {
-    not_started: "not_started",
-    eligible: "eligible",
-    payable: "payable",
-    paid: "paid",
-    voided: "voided",
-    ineligible: "ineligible",
-  }, validate: { message: "Choose a valid payment status" }, prefix: true
+  enum :payment_status,
+       %w[not_started eligible payable paid voided ineligible].index_by(&:itself),
+       validate: { message: "Choose a valid payment status" },
+       prefix: true
 
-  enum :clawback_status, {
-    not_started: "not_started",
-    awaiting_clawback: "awaiting_clawback",
-    clawed_back: "clawed_back"
-  }, validate: { message: "Choose a valid clawback status" }, prefix: true
+  enum :clawback_status,
+       %w[not_started awaiting_clawback clawed_back].index_by(&:itself),
+       validate: { message: "Choose a valid clawback status" },
+       prefix: true
 
-  enum :declaration_type, {
-    started: "started",
-    "retained-1": "retained-1",
-    "retained-2": "retained-2",
-    "retained-3": "retained-3",
-    "retained-4": "retained-4",
-    "extended-1": "extended-1",
-    "extended-2": "extended-2",
-    "extended-3": "extended-3",
-    completed: "completed"
-  }, validate: { message: "Choose a valid declaration type" }
+  enum :declaration_type,
+       %w[started retained-1 retained-2 retained-3 retained-4 extended-1 extended-2 extended-3 completed].index_by(&:itself),
+       validate: { message: "Choose a valid declaration type" }
 
-  enum :evidence_type, {
-    "training-event-attended": "training-event-attended",
-    "self-study-material-completed": "self-study-material-completed",
-    "materials-engaged-with-offline": "materials-engaged-with-offline",
-    "75-percent-engagement-met": "75-percent-engagement-met",
-    "75-percent-engagement-met-reduced-induction": "75-percent-engagement-met-reduced-induction",
-    "one-term-induction": "one-term-induction",
-    other: "other"
-  }, validate: { message: "Choose a valid evidence type", allow_nil: true }
+  enum :evidence_type,
+       %w[
+         training-event-attended
+         self-study-material-completed
+         materials-engaged-with-offline
+         75-percent-engagement-met
+         75-percent-engagement-met-reduced-induction
+         one-term-induction
+         other
+       ].index_by(&:itself),
+       validate: { message: "Choose a valid evidence type", allow_nil: true }
 
-  enum :ineligibility_reason, {
-    duplicate: "duplicate"
-  }, validate: { message: "Choose a valid ineligibility reason", allow_nil: true }
+  enum :ineligibility_reason,
+       %w[duplicate].index_by(&:itself),
+       validate: { message: "Choose a valid ineligibility reason", allow_nil: true }
 
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
 
