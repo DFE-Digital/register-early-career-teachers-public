@@ -7,7 +7,7 @@ RSpec.describe "Changing an ECT's name", :enable_schools_interface do
     FactoryBot.create(:teacher, trs_first_name: "Miriam", trs_last_name: "Margolyes")
   end
 
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, :with_confirmed_induction_tutor_details) }
 
   before do
     given_i_am_logged_in_as_a_school_user
