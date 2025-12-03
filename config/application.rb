@@ -68,7 +68,7 @@ module RegisterEarlyCareerTeachers
     }
 
     allow_indexing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ALLOW_INDEXING", true))
-    (config.action_dispatch.default_headers["X-Robots-Tag"] = "noindex") unless allow_indexing
+    (config.action_dispatch.default_headers["X-Robots-Tag"] = "none") unless allow_indexing
 
     requested_timeout = ENV.fetch("MAX_SESSION_IDLE_TIME", 7200).to_i
     requested_timeout = 7200 if requested_timeout <= 0
