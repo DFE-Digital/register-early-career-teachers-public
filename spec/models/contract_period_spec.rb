@@ -142,4 +142,32 @@ describe ContractPeriod do
       end
     end
   end
+
+  describe "#payments_frozen?" do
+    subject { FactoryBot.build(:contract_period, payments_frozen_at:) }
+
+    context "when `payments_frozen_at` is nil" do
+      let(:payments_frozen_at) { nil }
+
+      it { is_expected.not_to be_payments_frozen }
+    end
+
+    context "when `payments_frozen_at` is in the future" do
+      let(:payments_frozen_at) { 1.day.from_now }
+
+      it { is_expected.not_to be_payments_frozen }
+    end
+
+    context "when `payments_frozen_at` is in the past" do
+      let(:payments_frozen_at) { 1.day.ago }
+
+      it { is_expected.to be_payments_frozen }
+    end
+
+    context "when `payments_frozen_at` is now" do
+      let(:payments_frozen_at) { Time.zone.now }
+
+      it { is_expected.to be_payments_frozen }
+    end
+  end
 end

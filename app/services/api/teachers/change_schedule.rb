@@ -14,6 +14,7 @@ module API::Teachers
     validate :school_partnership_exists_if_changing_contract_period
     validate :lead_provider_is_currently_training_teacher
     validate :no_future_training_periods_exist
+    validate :can_move_to_frozen_cohort
 
     def change_schedule
       return false unless valid?
@@ -118,6 +119,16 @@ module API::Teachers
           .joins(:ect_at_school_period)
           .where(ect_at_school_period: { teacher: })
           .started_after(training_period.started_on)
+      end
+    end
+
+    def can_move_to_frozen_cohort
+      return unless contract_period&.payments_frozen?
+
+      original_frozen_year = training_period.for_ect? ? teacher.ect_payments_frozen_year : teacher.mentor_payments_frozen_year
+
+      unless original_frozen_year == contract_period.year
+        errors.add(:contract_period_year, "You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.")
       end
     end
   end
