@@ -21,6 +21,31 @@
 #
 #     **bold** and _italic_ text
 
+- title: Unfunded mentors endpoint now available in the Register ECTs sandbox
+  date: 2025-12-17
+  tags:
+    - sandbox-release
+  body: |
+    The `GET /unfunded-mentors` endpoint is now available in the Register ECTs sandbox. There are no changes to how this endpoint behaves compared to the existing ‘Manage training for early career teachers’ API.
+
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API?
+
+    ### No changes to endpoint behaviour
+    The unfunded mentors endpoint works in the same way as it does in the current service. It returns mentors who are not trained by the lead provider but who need access to that provider’s learning platform because they mentor an ECT trained by the provider.
+
+    ### We are not going ahead with the change proposed in the draft API specification
+    Section 18.1 of the draft specification proposed expanding the unfunded mentors endpoint to include more mentors who currently appear in the participants endpoint. We are not making this change.
+
+    After reviewing provider feedback, including concerns about duplication and unnecessary complexity, we have kept the endpoint behaviour the same as in the current service.
+
+    ## Why we’ve made these decisions
+    Keeping the endpoint unchanged avoids introducing additional records that would increase lead provider workload and create mismatches between the new and existing APIs.
+
+    ## Impact on lead providers
+    * You should test this endpoint in the Register ECTs sandbox.
+    * No changes are needed to existing integrations, as the endpoint behaviour remains the same.
+
+
 - title: Transfers endpoint now available in the Register ECTs sandbox with updated leaving and date handling logic
   date: 2025-12-17
   tags:
