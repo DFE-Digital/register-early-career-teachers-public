@@ -21,6 +21,38 @@
 #
 #     **bold** and _italic_ text
 
+- title: Transfers endpoint now available in the Register ECTs sandbox with updated leaving and date handling logic
+  date: 2025-12-05
+  tags:
+    - sandbox-release
+  body: |
+    The `GET /participants/transfers` endpoint is now available in the Register ECTs sandbox. We have also updated the leaving reason logic, and how joining and leaving dates are handled.
+
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API?
+
+    ### Schools can now tell us when an ECT or mentor is leaving and not expected to return
+    Schools can now report that an ECT or mentor has left their school for any reason, even when they are not moving to another school. When no new school is reported, the reason will show as `unknown`.
+
+    This means lead providers may see more participants returned in `GET /participants/transfers` once the new service launches.
+
+    Previously, schools could only tell us a participant had left if they believed they were joining another school.
+
+    ### Leaving and joining dates will no longer conflict
+    We have updated the logic so that leaving and joining dates cannot overlap.
+
+    If the leaving date submitted by the old school conflicts with the joining date submitted by the new school, the service will update the leaving date to match the joining date.
+
+    For example, if the old school reports a leaving date of **3 December 2025**, but the new school reports a joining date of **1 December 2025**, the leaving date will be corrected to **1 December 2025** in the transfers response.
+
+    This only applies when dates overlap. If there is a natural gap between leaving and joining, the dates will not be changed.
+
+    ## Why we’ve made these changes
+    These updates ensure that the data returned in the transfers endpoint is more accurate and consistent. Schools can report leaving cases more reliably, and conflicting timelines will no longer appear in the API.
+
+    ## Impact on lead providers
+    * You may see more transfers where a participant has left a school but no new school has been reported yet.
+    * You should ensure your systems can handle leaving dates that may be corrected where a joining date is earlier.
+
 - title: Defer, withdraw, and resume endpoints endpoints added to the Register ECTs API with updated validation rules
   date: 2025-11-27
   tags:
