@@ -22,7 +22,7 @@ Schools can make the following updates: 
 When an update is received:  
 
 * participant records are refreshed in the API 
-* providers will be able to check for changes by querying the `participant_id_changes` filter on a participant's record 
+* providers will be able to check for changes by querying the `updated_at` filter on a participant's record 
 * they should then update their records before submitting declarations 
 * corresponding funding and declaration logic is applied automatically  
 * the `updated_since` filter will include the record for subsequent `GET /participants` queries 
@@ -70,14 +70,6 @@ Providers must notify us of any other schedule via the `PUT /participants/{id
 
 Successful requests will return a response body including updates to the `schedule_identifier` attribute. 
 
-The API will reject a schedule change if any previously submitted `eligible`, `payable` or `paid` declarations have a `declaration_date` which does not align with the new schedule’s milestone dates. 
-
-Where this occurs, providers should: 
-
-1. Void the existing declarations (where `declaration_date` does not align with the new schedule). 
-2. Change the participant’s training schedule. 
-3. Resubmit backdated declarations (where `declaration_date` aligns with the new schedule).
-
 ### Change schedules or cohorts for a participant even if they have billable declarations 
 
 Providers can change an ECT or mentor’s schedule or cohort even if billable declarations exist. 
@@ -93,9 +85,9 @@ ECTs and mentors also cannot be moved back into a closed cohort unless they orig
 
 ## How to assign a replacement mentor 
 
-A new mentor can be assigned to an ECT part way through training. 
+If a school registers a replacement mentor for an ECT, we’ll assign a replacement mentor schedule based on when they’re first registered as the ECT’s mentor (`replacement-september`, `replacement-january` or `replacement-april`). 
 
-Providers must notify us of replacement mentors by updating their training schedule. 
+It’s up to providers to check these automatically assigned replacement schedules. If a replacement mentor later supports an ECT new to training before the term ends, providers must update the mentor’s schedule to a standard one. 
 
 <div class="govuk-inset-text">If a replacement mentor is already mentoring another ECT, the first ECT takes priority. In this case, the provider should not change the mentor’s schedule.</div> 
 
