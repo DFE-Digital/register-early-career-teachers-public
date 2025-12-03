@@ -1,29 +1,154 @@
 class ECF1TeacherHistory
   class InvalidPeriodType < StandardError; end
 
-  InductionRecordRow = Struct.new(:start_date, :end_date)
+  User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at)
 
-  ECT = Struct.new(:induction_records, :states)
+  ECT = Struct.new(:participant_profile_id,
+                   :created_at,
+                   :updated_at,
+                   :induction_start_date,
+                   :induction_completion_date,
+                   :states,
+                   :induction_records)
 
-  attr_reader :trn, :full_name, :ect_induction_record_rows, :mentor_induction_record_rows
+  Mentor = Struct.new(:participant_profile_id,
+                      :created_at,
+                      :updated_at,
+                      :mentor_completion_date,
+                      :mentor_completion_reason,
+                      :states,
+                      :induction_records)
 
-  def initialize(trn:, full_name:, ect_induction_record_rows: [], mentor_induction_record_rows: [])
-    @trn = trn
-    @full_name = full_name
-    @ect_induction_record_rows = ect_induction_record_rows
-    @mentor_induction_record_rows = mentor_induction_record_rows
+  ProfileStateRow = Struct.new(:state, :reason, :created_at)
+
+  InductionRecordRow = Struct.new(:induction_record_id,
+                                  :start_date,
+                                  :end_date,
+                                  :created_at,
+                                  :updated_at,
+                                  :cohort_year,
+                                  :school_urn,
+                                  :schedule,
+                                  :preferred_identity_email,
+                                  :mentor_profile_id,
+                                  :training_status,
+                                  :induction_status,
+                                  :training_programme,
+                                  :training_provider_info)
+
+  TrainingProviderInfo = Struct.new(
+    :lead_provider_id,
+    :lead_provider_name,
+    :delivery_partner_id,
+    :delivery_partner_name,
+    :cohort_year
+  )
+
+  ScheduleInfo = Struct.new(
+    :schedule_id,
+    :identifier,
+    :name,
+    :cohort_year
+  )
+
+  attr_reader :user, :ect, :mentor
+
+  def initialize(user:, ect: nil, mentor: nil)
+    @user = user
+    @ect = ect
+    @mentor = mentor
   end
 
-  def self.build(user:, teacher_profile:, ect_induction_records:, mentor_induction_records:)
-    new(
+  def self.build(teacher_profile:)
+    user_record = teacher_profile.user
+    ect_profile = teacher_profile.participant_profiles.ect.first
+    mentor_profile = teacher_profile.participant_profiles.mentor.first
+
+    user = User.new(
       trn: teacher_profile.trn,
-      full_name: user.full_name,
-      ect_induction_record_rows: ect_induction_records.sort_by(&:created_at).map do
-        InductionRecordRow.new(start_date: it.start_date, end_date: it.end_date)
-      end,
-      mentor_induction_record_rows: mentor_induction_records.sort_by(&:created_at).map do
-        InductionRecordRow.new(start_date: it.start_date, end_date: it.end_date)
-      end
+      full_name: user_record.full_name,
+      user_id: user_record.id,
+      created_at: user_record.created_at,
+      updated_at: user_record.updated_at
+    )
+
+    ect = build_ect_data(participant_profile: ect_profile) if ect_profile.present?
+
+    mentor = build_mentor_data(participant_profile: mentor_profile) if mentor_profile.present?
+
+    new(user:, ect:, mentor:)
+  end
+
+  def self.build_ect_data(participant_profile:)
+    ECT.new(
+      participant_profile_id: participant_profile.id,
+      created_at: participant_profile.created_at,
+      updated_at: participant_profile.updated_at,
+      induction_start_date: participant_profile.induction_start_date,
+      induction_completion_date: participant_profile.induction_completion_date,
+      states: build_profile_states(participant_profile:),
+      induction_records: build_induction_record_rows(participant_profile:)
+    )
+  end
+
+  def self.build_mentor_data(participant_profile:)
+    Mentor.new(
+      participant_profile_id: participant_profile.id,
+      created_at: participant_profile.created_at,
+      updated_at: participant_profile.updated_at,
+      mentor_completion_date: participant_profile.mentor_completion_date,
+      mentor_completion_reason: participant_profile.mentor_completion_reason,
+      states: build_profile_states(participant_profile:),
+      induction_records: build_induction_record_rows(participant_profile:)
+    )
+  end
+
+  def self.build_profile_states(participant_profile:)
+    participant_profile.participant_profile_states.order(:created_at).map do |profile_state|
+      ProfileStateRow.new(state: profile_state.state, reason: profile_state.reason, created_at: profile.created_at)
+    end
+  end
+
+  def self.build_induction_record_rows(participant_profile:)
+    participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
+      InductionRecordRow.new(
+        induction_record_id: induction_record.id,
+        start_date: induction_record.start_date,
+        end_date: induction_record.end_date,
+        created_at: induction_record.created_at,
+        updated_at: induction_record.updated_at,
+        cohort_year: induction_record.schedule.cohort.start_year,
+        school_urn: induction_record.induction_programme.school_cohort.school.urn,
+        schedule: build_schedule_info(schedule: induction_record.schedule),
+        preferred_identity_email: induction_record.preferred_identity.email,
+        mentor_profile_id: induction_record.mentor_profile_id,
+        training_status: induction_record.training_status,
+        induction_status: induction_record.induction_status,
+        training_programme: induction_record.induction_programme.training_programme,
+        training_provider_info: build_training_provider_info(induction_record:)
+      )
+    end
+  end
+
+  def self.build_training_provider_info(induction_record:)
+    partnership = induction_record.induction_programme.partnership
+    return if partnership.blank?
+
+    TrainingProviderInfo.new(
+      lead_provider_id: partnership.lead_provider_id,
+      lead_provider_name: partnership.lead_provider.name,
+      delivery_partner_id: partnership.delivery_partner_id,
+      delivery_partner_name: partnership.delivery_partner.name,
+      cohort_year: partnership.cohort.start_year
+    )
+  end
+
+  def self.build_schedule_info(schedule:)
+    ScheduleInfo.new(
+      schedule_id: schedule.id,
+      identifier: schedule.schedule_identifier,
+      name: schedule.name,
+      cohort_year: schedule.cohort.start_year
     )
   end
 end
