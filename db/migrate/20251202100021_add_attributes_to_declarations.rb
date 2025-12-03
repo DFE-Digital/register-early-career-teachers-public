@@ -17,7 +17,7 @@ class AddAttributesToDeclarations < ActiveRecord::Migration[8.0]
 
       t.datetime :voided_at
       t.uuid :api_id, default: -> { "gen_random_uuid()" }, null: false
-      t.datetime :date, null: false, default: -> { "CURRENT_TIMESTAMP" }
+      t.datetime :declaration_date, null: false, default: -> { "CURRENT_TIMESTAMP" }
       t.enum :evidence_type, enum_type: "evidence_types"
       t.enum :payment_status, enum_type: "declaration_payment_statuses", default: "not_started", null: false
       t.enum :clawback_status, enum_type: "declaration_clawback_statuses", default: "not_started", null: false

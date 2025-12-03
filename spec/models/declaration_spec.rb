@@ -16,7 +16,7 @@ describe Declaration do
     it { expect(FactoryBot.build(:declaration)).to be_valid }
 
     it { is_expected.to validate_presence_of(:training_period).with_message("Choose a training period") }
-    it { is_expected.to validate_presence_of(:date).with_message("Date must be specified") }
+    it { is_expected.to validate_presence_of(:declaration_date).with_message("Declaration date must be specified") }
     it { is_expected.to validate_absence_of(:ineligibility_reason).with_message("Ineligibility reason must not be set unless the declaration is ineligible") }
     it { is_expected.to validate_inclusion_of(:declaration_type).in_array(described_class.declaration_types.keys).with_message("Choose a valid declaration type") }
     it { is_expected.to validate_inclusion_of(:payment_status).in_array(described_class.payment_statuses.keys).with_message("Choose a valid payment status") }
@@ -64,7 +64,7 @@ describe Declaration do
     end
 
     describe "declaration date relative to milestone dates" do
-      subject(:declaration) { FactoryBot.build(:declaration, declaration_type: :started, date:, training_period:) }
+      subject(:declaration) { FactoryBot.build(:declaration, declaration_type: :started, declaration_date:, training_period:) }
 
       let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
       let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
@@ -72,26 +72,26 @@ describe Declaration do
       let(:training_period) { FactoryBot.create(:training_period, schedule:, school_partnership:) }
 
       context "when the declaration date is within the milestone dates" do
-        let(:date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
+        let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
 
         it { is_expected.to be_valid }
       end
 
       context "when the declaration date is before the milestone start_date" do
-        let(:date) { milestone.start_date - 1.day }
+        let(:declaration_date) { milestone.start_date - 1.day }
 
         it "is not valid" do
           expect(declaration).not_to be_valid
-          expect(declaration.errors[:date]).to include("Date must be on or after the milestone start date for the same declaration type")
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or after the milestone start date for the same declaration type")
         end
       end
 
       context "when the declaration date is after the milestone_date" do
-        let(:date) { milestone.milestone_date + 1.day }
+        let(:declaration_date) { milestone.milestone_date + 1.day }
 
         it "is not valid" do
           expect(declaration).not_to be_valid
-          expect(declaration.errors[:date]).to include("Date must be on or before the milestone date for the same declaration type")
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type")
         end
       end
     end

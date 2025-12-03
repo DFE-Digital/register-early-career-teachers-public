@@ -4,7 +4,7 @@ FactoryBot.define do
     payment_status { :not_started }
     clawback_status { :not_started }
     api_id { SecureRandom.uuid }
-    date { Faker::Date.between(from: Time.zone.now, to: 1.year.from_now) }
+    declaration_date { Faker::Date.between(from: Time.zone.now, to: 1.year.from_now) }
     evidence_type { Declaration.evidence_types.keys.sample }
     declaration_type { Declaration.declaration_types.keys.first }
     payment_statement { nil }
