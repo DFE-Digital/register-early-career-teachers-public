@@ -1,7 +1,12 @@
 module Schools
   module ConfirmExistingInductionTutorWizard
     class ConfirmationStep < ApplicationWizardStep
-      delegate :school, :author, :valid_step?, to: :wizard
+      delegate :school, to: :wizard
+
+      def self.permitted_params = []
+
+      def pre_populate_attributes
+      end
 
       def previous_step = :check_answers
 

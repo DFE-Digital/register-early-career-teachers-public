@@ -7,13 +7,14 @@ describe Schools::ConfirmExistingInductionTutorWizard::CheckAnswersStep do
       step_params: ActionController::Parameters.new(check_answers: params),
       author:,
       store:,
-      school:
+      school_id: school.id
     )
   end
 
   let(:store)  { FactoryBot.build(:session_repository, induction_tutor_email:, induction_tutor_name:) }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
+  let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
 
   let(:induction_tutor_email) { Faker::Internet.email }
   let(:induction_tutor_name) { Faker::Name.name }
@@ -33,12 +34,13 @@ describe Schools::ConfirmExistingInductionTutorWizard::CheckAnswersStep do
   end
 
   describe "#save!" do
-    it "updates the school's induction tutor details" do
-      expect { current_step.save! }
-        .to change(school, :induction_tutor_email)
-        .to(induction_tutor_email)
-        .and change(school, :induction_tutor_name)
-        .to(induction_tutor_name)
+    it "updates the school's induction tutor details and sets induction_tutor_last_nominated_in_year" do
+      current_step.save!
+
+      school.reload
+      expect(school.induction_tutor_email).to eq(induction_tutor_email)
+      expect(school.induction_tutor_name).to eq(induction_tutor_name)
+      expect(school.induction_tutor_last_nominated_in_year).to eq(current_contract_period)
     end
 
     it "is truthy" do

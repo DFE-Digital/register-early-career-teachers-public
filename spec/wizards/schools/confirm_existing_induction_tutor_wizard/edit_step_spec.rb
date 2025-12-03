@@ -21,6 +21,8 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
 
   let(:params) { { induction_tutor_email:, induction_tutor_name:, are_these_details_correct: } }
 
+  let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+
   describe ".permitted_params" do
     it "returns the permitted params" do
       expect(described_class.permitted_params).to match_array(%i[induction_tutor_email induction_tutor_name are_these_details_correct])
@@ -153,6 +155,24 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
       it "is valid" do
         expect(current_step).to be_valid
         expect(current_step.errors).to be_empty
+      end
+    end
+  end
+
+  describe "#save!" do
+    context "when the user has confirmed the details are correct" do
+      it "updates the school's induction_tutor_last_nominated_in_year" do
+        wizard.current_step.save!
+        expect(school.reload.induction_tutor_last_nominated_in_year).to eq(current_contract_period)
+      end
+    end
+
+    context "when the user has changed the details" do
+      let(:are_these_details_correct) { false }
+      let(:induction_tutor_name) { "New Name" }
+
+      it "does not update the school" do
+        expect { wizard.current_step.save! }.not_to(change { school.reload.attributes })
       end
     end
   end

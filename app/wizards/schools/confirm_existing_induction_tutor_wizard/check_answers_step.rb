@@ -1,7 +1,7 @@
 module Schools
   module ConfirmExistingInductionTutorWizard
     class CheckAnswersStep < ApplicationWizardStep
-      delegate :school, :author, :valid_step?, to: :wizard
+      delegate :school, :author, :valid_step?, :current_contract_period, to: :wizard
 
       def self.permitted_params = []
 
@@ -13,7 +13,8 @@ module Schools
         ActiveRecord::Base.transaction do
           school.update!(
             induction_tutor_name: store.induction_tutor_name,
-            induction_tutor_email: store.induction_tutor_email
+            induction_tutor_email: store.induction_tutor_email,
+            induction_tutor_last_nominated_in_year: current_contract_period
           )
           true
         end
