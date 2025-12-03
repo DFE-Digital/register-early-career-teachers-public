@@ -162,17 +162,38 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
   describe "#save!" do
     context "when the user has confirmed the details are correct" do
       it "updates the school's induction_tutor_last_nominated_in_year" do
-        wizard.current_step.save!
+        current_step.save!
         expect(school.reload.induction_tutor_last_nominated_in_year).to eq(current_contract_period)
+      end
+
+      it "stores the confirmation" do
+        expect { current_step.save! }.to change(store, :are_these_details_correct).to(true)
       end
     end
 
     context "when the user has changed the details" do
       let(:are_these_details_correct) { false }
       let(:induction_tutor_name) { "New Name" }
+      let(:induction_tutor_email) { "new.email@example.com" }
 
       it "does not update the school" do
-        expect { wizard.current_step.save! }.not_to(change { school.reload.attributes })
+        expect { current_step.save! }.not_to(change { school.reload.attributes })
+      end
+
+      it "stores the data" do
+        expect { current_step.save! }.to change(store, :are_these_details_correct).to(false)
+        .and change(store, :induction_tutor_name).to("New Name")
+        .and change(store, :induction_tutor_email).to("new.email@example.com")
+      end
+    end
+
+    context "when the step is invalid" do
+      let(:are_these_details_correct) { false }
+      let(:induction_tutor_name) { school.induction_tutor_name }
+      let(:induction_tutor_email) { school.induction_tutor_email }
+
+      it "does not store any data" do
+        expect { current_step.save! }.not_to change(store, :attributes)
       end
     end
   end
