@@ -301,4 +301,34 @@ RSpec.describe EvidenceHeldValidator, type: :model do
       end
     end
   end
+
+  describe ".evidence_held_required?" do
+    subject { described_class.evidence_held_required?(record) }
+
+    let(:record) { Struct.new(:declaration_type).new(declaration_type) }
+
+    context "when `declaration_type` is nil" do
+      let(:declaration_type) { nil }
+
+      it "evidence_held is not required" do
+        expect(subject).to be(false)
+      end
+    end
+
+    context "when `declaration_type` is `started`" do
+      let(:declaration_type) { "started" }
+
+      it "evidence_held is not required" do
+        expect(subject).to be(false)
+      end
+    end
+
+    context "when `declaration_type` is other than started" do
+      let(:declaration_type) { "retained-1" }
+
+      it "evidence_held is required" do
+        expect(subject).to be(true)
+      end
+    end
+  end
 end

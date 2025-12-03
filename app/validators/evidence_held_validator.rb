@@ -17,6 +17,10 @@ class EvidenceHeldValidator < ActiveModel::Validator
     end
   end
 
+  def self.evidence_held_required?(record)
+    record.declaration_type.present? && record.declaration_type != "started"
+  end
+
 private
 
   def validate_detailed_evidence_types?(record)
