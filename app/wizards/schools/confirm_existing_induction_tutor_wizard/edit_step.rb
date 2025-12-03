@@ -42,6 +42,8 @@ module Schools
 
           ActiveRecord::Base.transaction do
             school.update!(induction_tutor_last_nominated_in_year: current_contract_period)
+
+            record_confirmation_event!
           end
         else
           add_data_to_store
@@ -61,6 +63,16 @@ module Schools
         store.induction_tutor_email = induction_tutor_email
         store.induction_tutor_name = induction_tutor_name
         store.are_these_details_correct = are_these_details_correct
+      end
+
+      def record_confirmation_event!
+        Events::Record.record_school_induction_tutor_confirmed_event!(
+          school:,
+          name: school.induction_tutor_name,
+          email: school.induction_tutor_email,
+          contract_period_year: current_contract_period.year,
+          author:
+        )
       end
 
       def details_must_be_changed_unless_confirmed
