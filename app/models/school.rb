@@ -163,7 +163,7 @@ class School < ApplicationRecord
   end
 
   def induction_tutor_details_cannot_be_confirmed_if_blank
-    return unless induction_tutor_last_nominated_in_year.present?
+    return if induction_tutor_last_nominated_in_year.blank?
 
     if induction_tutor_name.blank? || induction_tutor_email.blank?
       errors.add(:induction_tutor_last_nominated_in_year, "Cannot be set if induction tutor name or email is blank")
