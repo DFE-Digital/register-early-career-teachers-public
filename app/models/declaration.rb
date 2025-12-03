@@ -41,7 +41,7 @@ class Declaration < ApplicationRecord
   validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_at
   validates :voided_at, presence: { message: "Voided at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
-  validates :date, presence: { message: "Date must be specified" }
+  validates :declaration_date, presence: { message: "Declaration date must be specified" }
   validates :declaration_type, inclusion: { in: Declaration.declaration_types.keys, message: "Choose a valid declaration type" }
   validates :evidence_type, inclusion: { in: Declaration.evidence_types.keys, message: "Choose a valid evidence type" }, allow_nil: true
   validates :ineligibility_reason, inclusion: { in: Declaration.ineligibility_reasons.keys, message: "Choose a valid ineligibility reason" }, allow_nil: true
@@ -50,7 +50,7 @@ class Declaration < ApplicationRecord
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
   validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_not_started?
   validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_not_started?
-  validate :date_within_milestone
+  validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
 
   state_machine :payment_status, initial: :not_started do
@@ -93,15 +93,15 @@ private
     self.ineligibility_reason = nil
   end
 
-  def date_within_milestone
-    return unless milestone && date
+  def declaration_date_within_milestone
+    return unless milestone && declaration_date
 
-    if date < milestone.start_date.beginning_of_day
-      errors.add(:date, "Date must be on or after the milestone start date for the same declaration type")
+    if declaration_date < milestone.start_date.beginning_of_day
+      errors.add(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type")
     end
 
-    if milestone.milestone_date && milestone.milestone_date.end_of_day <= date
-      errors.add(:date, "Date must be on or before the milestone date for the same declaration type")
+    if milestone.milestone_date && milestone.milestone_date.end_of_day <= declaration_date
+      errors.add(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type")
     end
   end
 

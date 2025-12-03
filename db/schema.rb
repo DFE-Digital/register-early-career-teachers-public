@@ -171,7 +171,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_100021) do
     t.bigint "clawback_statement_id"
     t.datetime "voided_at"
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.datetime "date", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "declaration_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.enum "evidence_type", enum_type: "evidence_types"
     t.enum "payment_status", default: "not_started", null: false, enum_type: "declaration_payment_statuses"
     t.enum "clawback_status", default: "not_started", null: false, enum_type: "declaration_clawback_statuses"
