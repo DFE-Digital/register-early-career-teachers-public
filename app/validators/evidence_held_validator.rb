@@ -8,7 +8,7 @@ class EvidenceHeldValidator < ActiveModel::Validator
   def validate(record)
     return if record.errors[:evidence_held].any?
 
-    evidence_held_is_present(record) unless record.declaration_type == "started"
+    evidence_held_is_present(record) if self.class.evidence_held_required?(record)
 
     if validate_detailed_evidence_types?(record)
       evidence_held_is_valid_detailed_evidence_type(record)
@@ -19,6 +19,10 @@ class EvidenceHeldValidator < ActiveModel::Validator
 
   def self.evidence_held_required?(record)
     record.declaration_type.present? && record.declaration_type != "started"
+  end
+
+  def self.evidence_held_allowed?(record)
+    record.training_period.contract_period.detailed_evidence_types_enabled || evidence_held_required?(record)
   end
 
 private

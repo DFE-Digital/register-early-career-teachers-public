@@ -331,4 +331,67 @@ RSpec.describe EvidenceHeldValidator, type: :model do
       end
     end
   end
+
+  describe ".evidence_held_allowed?" do
+    subject { described_class.evidence_held_allowed?(record) }
+
+    let(:record) { Struct.new(:declaration_type, :training_period).new(declaration_type, training_period) }
+    let(:training_period) { Struct.new(:contract_period).new(contract_period) }
+
+    context "when contract period has simple evidence types" do
+      let(:detailed_evidence_types_enabled) { false }
+
+      context "when `declaration_type` is nil" do
+        let(:declaration_type) { nil }
+
+        it "evidence_held is not allowed" do
+          expect(subject).to be(false)
+        end
+      end
+
+      context "when `declaration_type` is `started`" do
+        let(:declaration_type) { "started" }
+
+        it "evidence_held is not allowed" do
+          expect(subject).to be(false)
+        end
+      end
+
+      context "when `declaration_type` is other than started" do
+        let(:declaration_type) { "retained-1" }
+
+        it "evidence_held is allowed" do
+          expect(subject).to be(true)
+        end
+      end
+    end
+
+    context "when contract period has detailed evidence types" do
+      let(:detailed_evidence_types_enabled) { true }
+
+      context "when `declaration_type` is nil" do
+        let(:declaration_type) { nil }
+
+        it "evidence_held is allowed" do
+          expect(subject).to be(true)
+        end
+      end
+
+      context "when `declaration_type` is `started`" do
+        let(:declaration_type) { "started" }
+
+        it "evidence_held is allowed" do
+          expect(subject).to be(true)
+        end
+      end
+
+      context "when `declaration_type` is other than started" do
+        let(:declaration_type) { "retained-1" }
+
+        it "evidence_held is allowed" do
+          expect(subject).to be(true)
+        end
+      end
+    end
+  end
 end
