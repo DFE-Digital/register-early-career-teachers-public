@@ -2005,7 +2005,7 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_school_induction_tutor_updated_event!(author:, school:, old_name:, old_name:, new_name:, new_email:, contract_period_year:)
+        Events::Record.record_school_induction_tutor_updated_event!(author:, school:, old_name:, new_name:, new_email:, contract_period_year:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           hash_including(
