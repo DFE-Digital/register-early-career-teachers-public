@@ -6,7 +6,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     then_i_am_taken_to_the_confirm_existing_induction_tutor_page
   end
 
-  scenario "confirming the existing details" do
+  xscenario "confirming the existing details" do
     # when_i_confirm_that_the_existing_details_are_correct
     # and_i_click_confirm_and_continue
     # then_i_should_be_taken_to_the_confirmation_page
@@ -17,7 +17,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     # then_i_should_see_the_school_home_page
   end
 
-  scenario "changing the existing details" do
+  xscenario "changing the existing details" do
     # when_i_change_the_induction_tutor_name_and_email
     # and_i_click_confirm_and_continue
     # then_i_should_be_taken_to_the_check_answers_page

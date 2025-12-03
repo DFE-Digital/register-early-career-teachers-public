@@ -1,13 +1,13 @@
 module Schools
   class InductionTutorDetails
     include Rails.application.routes.url_helpers
-    attr_reader :school, :user
+    attr_reader :user
 
     def initialize(user)
       @user = user
     end
 
-    def needs_update_by_user?
+    def update_required?
       return unless user.school_user?
       return if user.dfe_user_impersonating_school_user?
       return if user.has_multiple_roles?

@@ -75,13 +75,34 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
         end
       end
 
+      context "when email is invalid" do
+        let(:induction_tutor_email) { "invalid_email" }
+
+        it "is invalid" do
+          expect(current_step).to be_invalid
+          expect(current_step.errors.messages_for(:induction_tutor_email)).to contain_exactly(
+            "Enter an email address in the correct format, like name@example.com"
+          )
+        end
+      end
+
       context "when induction_tutor_email is too long" do
         let(:induction_tutor_email) { "A" * 243 + "@example.com" }
+
         it "is invalid" do
           expect(current_step).not_to be_valid
           expect(current_step.errors.messages_for(:induction_tutor_email)).to contain_exactly(
             "Enter an email address that is less than 254 characters long"
           )
+        end
+      end
+
+      context "when the email is valid" do
+        let(:induction_tutor_email) { Faker::Internet.email }
+
+        it "is valid" do
+          expect(current_step).to be_valid
+          expect(current_step.errors).to be_empty
         end
       end
 
@@ -107,17 +128,7 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
         end
       end
 
-
-      context "when the email has changed" do
-        let(:induction_tutor_email) { Faker::Internet.email }
-
-        it "is valid" do
-          expect(current_step).to be_valid
-          expect(current_step.errors).to be_empty
-        end
-      end
-
-      context "when the name has changed" do
+      context "when the name is valid" do
         let(:induction_tutor_name) { "New Name" }
 
         it "is valid" do
