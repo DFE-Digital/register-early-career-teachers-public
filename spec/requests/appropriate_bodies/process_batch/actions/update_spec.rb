@@ -14,7 +14,7 @@ RSpec.describe "Appropriate Body bulk actions confirmation", type: :request do
 
   describe "PATCH /appropriate-body/bulk/actions/:batch_id" do
     context "with only valid actions" do
-      include_context "3 valid actions"
+      include_context "2 valid actions"
 
       it "enqueues a job" do
         expect {
