@@ -14,7 +14,7 @@ RSpec.describe BulkGenerate do
   end
 
   it "loads TRNS" do
-    expect(bulk_generate.trns.size).to eq(1_525)
+    expect(bulk_generate.trns.size).to eq(1_529)
     expect(bulk_generate.trns.first).to eq(%w[1000522 1986-03-02])
   end
 
@@ -33,7 +33,7 @@ RSpec.describe BulkGenerate do
           OpenStruct.new(present: OpenStruct.new(trs_induction_status: "TRS status"))
         )
         expect(bulk_generate.call).to be_nil
-        expect(bulk_generate.api_client).to have_received(:find_teacher).exactly(1_525).times
+        expect(bulk_generate.api_client).to have_received(:find_teacher).exactly(1_529).times
         expect(bulk_generate.claim_rows.first[4]).to eq("TRS status")
         expect(bulk_generate.action_rows.first[5]).to eq("TRS status")
       end
