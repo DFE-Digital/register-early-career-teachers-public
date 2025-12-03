@@ -12,6 +12,41 @@ describe MentorAtSchoolPeriods::Finish do
   let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
 
   describe "#finish_existing_at_school_periods!" do
+    context "when finished_on is already set" do
+      let(:training_period) { nil }
+      let(:mentorship_period) { nil }
+
+      context "and is earlier" do
+        let(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            teacher:,
+            started_on:,
+            finished_on: finished_on - 1.month
+          )
+        end
+
+        it "does not overwrite the existing finished_on" do
+          expect { subject.finish_existing_at_school_periods! }.not_to(change { mentor_at_school_period.reload.finished_on })
+        end
+      end
+
+      context "and is the same date" do
+        let(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            teacher:,
+            started_on:,
+            finished_on:
+          )
+        end
+
+        it "does not rewrite the finished_on date" do
+          expect { subject.finish_existing_at_school_periods! }.not_to(change { mentor_at_school_period.reload.finished_on })
+        end
+      end
+    end
+
     it "finishes all the associated periods" do
       expect(training_period.finished_on).to be_nil
       expect(mentorship_period.finished_on).to be_nil
