@@ -1,4 +1,20 @@
 FactoryBot.define do
+  factory :ecf1_teacher_history, class: "ECF1TeacherHistory" do
+    initialize_with { new(user:, ect:, mentor:) }
+
+    user { FactoryBot.build(:ecf1_teacher_history_user) }
+    ect { nil }
+    mentor { nil }
+
+    trait :trnless do
+      user { FactoryBot.build(:ecf1_teacher_history_user, trn: nil) }
+    end
+
+    trait :ect_with_one_induction_record do
+      ect { FactoryBot.build(:ecf1_teacher_history_ect, :one_induction_record) }
+    end
+  end
+
   factory :ecf1_teacher_history_user, class: "ECF1TeacherHistory::User" do
     trn { Faker::Number.unique.number(digits: 7) }
     full_name { Faker::FunnyName.two_word_name }
@@ -92,7 +108,7 @@ FactoryBot.define do
     created_at { Random.rand(12).months.ago }
     updated_at { Random.rand(30).days.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
-    induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row)] }
+    induction_records { [] }
 
     initialize_with do
       new(participant_profile_id:,
@@ -102,6 +118,10 @@ FactoryBot.define do
           updated_at:,
           states:,
           induction_records:)
+    end
+
+    trait :one_induction_record do
+      induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row)] }
     end
   end
 
