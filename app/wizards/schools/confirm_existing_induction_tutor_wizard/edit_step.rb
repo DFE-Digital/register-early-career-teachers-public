@@ -38,6 +38,8 @@ module Schools
 
       def save!
         if are_these_details_correct
+          store.are_these_details_correct = are_these_details_correct
+
           ActiveRecord::Base.transaction do
             school.update!(induction_tutor_last_nominated_in_year: current_contract_period)
           end
