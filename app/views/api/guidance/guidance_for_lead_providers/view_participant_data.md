@@ -32,7 +32,7 @@ Providers can use this data to check whether participants:
 * have started their induction (`overall_induction_start_date`), and are therefore eligible for funding 
 * have transferred to or from a school they’re partnered with 
 * have (if they’re ECTs) an assigned unfunded mentor 
-* have (if they’re ECTs) completed induction, according to the Database of Qualified Teachers 
+* have (if they’re ECTs) completed induction
 
 Participants may use different email addresses across training programmes, but providers will only see the email linked to the specific course registration associated with them. 
 
@@ -68,7 +68,7 @@ The following table explains the key participant fields.
 | ------------ | ------------- |  
 | `eligible_for_funding` | For ECTs, becomes `true` once the participant’s induction is confirmed by an appropriate body. It will never revert to `false` | 
 | `overall_induction_start_date` | The date an ECT officially began statutory induction as submitted by their appropriate body | 
-| `induction_end_date` | The date an ECT completed, failed, or otherwise ended induction | 
+| `induction_end_date` | The date an ECT completed (passed or failed) their induction | 
 | `trn` | The participant’s teacher reference number. If a TRN is missing, it means the participant’s registration predates validation, and we have no matching TRN in our records | 
 
 ## Participant statuses 
@@ -101,9 +101,11 @@ The following table explains what the participant status fields mean.
 
 The API shows a participant as `training_status = active` because they're still completing training. 
 
-At the same time, the API records the participant as `participant_status = leaving`, with a leaving date set for the end of term. 
+At the same time, the participant’s school informs us that the participant is leaving with a leaving date set for the end of term. This triggers the `participant_status` to change to `leaving`. 
 
-In this case, the participant is still active in training, but their school has flagged that they're due to leave soon. Once the leaving date passes, the `participant_status` will update to `left`, while the provider will need to update the training record if the participant transfers or withdraws. 
+In this case, the participant is still active in training, but their school has flagged that they're due to leave soon. Once the leaving date passes, the `participant_status` will update to `left`. 
+
+The provider will need to update the training record when they're certain the participant is withdrawn from training and not training with them as the lead provider at their new school.
 
 ## Participant ID changes 
 
