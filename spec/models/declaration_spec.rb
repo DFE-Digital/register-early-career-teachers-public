@@ -126,7 +126,7 @@ describe Declaration do
     it "has a payment_status enum" do
       expect(subject).to define_enum_for(:payment_status)
         .with_values({
-          not_started: "not_started",
+          no_payment: "no_payment",
           eligible: "eligible",
           payable: "payable",
           paid: "paid",
@@ -141,7 +141,7 @@ describe Declaration do
     it "has a clawback_status enum" do
       expect(subject).to define_enum_for(:clawback_status)
         .with_values({
-          not_started: "not_started",
+          no_clawback: "no_clawback",
           awaiting_clawback: "awaiting_clawback",
           clawed_back: "clawed_back"
         })
@@ -193,10 +193,10 @@ describe Declaration do
   end
 
   describe "payment_status transitions" do
-    context "when transitioning from not_started to eligible" do
+    context "when transitioning from no_payment to eligible" do
       let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open) } }
 
-      it { expect { declaration.mark_as_eligible! }.to change(declaration, :payment_status).from("not_started").to("eligible") }
+      it { expect { declaration.mark_as_eligible! }.to change(declaration, :payment_status).from("no_payment").to("eligible") }
     end
 
     context "when transitioning from eligible to payable" do
@@ -230,7 +230,7 @@ describe Declaration do
       it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("payable").to("voided") }
     end
 
-    context "when transitioning from not_started to ineligible" do
+    context "when transitioning from no_payment to ineligible" do
       let(:reason) { described_class.ineligibility_reasons.keys.sample }
       let(:declaration) do
         FactoryBot.create(:declaration).tap do
@@ -239,7 +239,7 @@ describe Declaration do
         end
       end
 
-      it { expect { declaration.mark_as_ineligible! }.to change(declaration, :payment_status).from("not_started").to("ineligible") }
+      it { expect { declaration.mark_as_ineligible! }.to change(declaration, :payment_status).from("no_payment").to("ineligible") }
     end
 
     context "when transitioning to an invalid state" do
@@ -250,13 +250,13 @@ describe Declaration do
   end
 
   describe "clawback_status transitions" do
-    context "when transitioning from not_started to awaiting_clawback" do
+    context "when transitioning from no_clawback to awaiting_clawback" do
       let(:declaration) { FactoryBot.create(:declaration, :paid).tap { it.clawback_statement = FactoryBot.create(:statement, :payable) } }
 
-      it { expect { declaration.mark_as_awaiting_clawback! }.to change(declaration, :clawback_status).from("not_started").to("awaiting_clawback") }
+      it { expect { declaration.mark_as_awaiting_clawback! }.to change(declaration, :clawback_status).from("no_clawback").to("awaiting_clawback") }
     end
 
-    context "when transitioning from not_started to awaiting_clawback, when the declaration is not paid" do
+    context "when transitioning from no_clawback to awaiting_clawback, when the declaration is not paid" do
       let(:declaration) { FactoryBot.create(:declaration, :payable).tap { it.clawback_statement = FactoryBot.create(:statement, :payable) } }
 
       it { expect { declaration.mark_as_awaiting_clawback! }.to raise_error(StateMachines::InvalidTransition) }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_02_100021) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_04_142235) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -22,8 +22,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_100021) do
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
-  create_enum "declaration_clawback_statuses", ["not_started", "awaiting_clawback", "clawed_back"]
-  create_enum "declaration_payment_statuses", ["not_started", "eligible", "payable", "paid", "voided", "ineligible"]
+  create_enum "declaration_clawback_statuses", ["no_clawback", "awaiting_clawback", "clawed_back"]
+  create_enum "declaration_payment_statuses", ["no_payment", "eligible", "payable", "paid", "voided", "ineligible"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
@@ -173,8 +173,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_100021) do
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "declaration_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.enum "evidence_type", enum_type: "evidence_types"
-    t.enum "payment_status", default: "not_started", null: false, enum_type: "declaration_payment_statuses"
-    t.enum "clawback_status", default: "not_started", null: false, enum_type: "declaration_clawback_statuses"
+    t.enum "payment_status", default: "no_payment", null: false, enum_type: "declaration_payment_statuses"
+    t.enum "clawback_status", default: "no_clawback", null: false, enum_type: "declaration_clawback_statuses"
     t.enum "ineligibility_reason", enum_type: "ineligibility_reasons"
     t.enum "declaration_type", default: "started", null: false, enum_type: "declaration_types"
     t.boolean "sparsity_uplift", default: false, null: false
