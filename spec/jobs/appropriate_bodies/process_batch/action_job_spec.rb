@@ -38,13 +38,13 @@ RSpec.describe AppropriateBodies::ProcessBatch::ActionJob, type: :job do
     end
 
     context "with invalid data" do
-      include_context "1 valid and 1 invalid actions"
+      include_context "1 valid and 2 invalid actions"
 
       it "captures error messages" do
         perform_action_job
 
         expect(submissions.without_errors.count).to eq(1)
-        expect(submissions.with_errors.count).to eq(1)
+        expect(submissions.with_errors.count).to eq(2)
       end
     end
   end
