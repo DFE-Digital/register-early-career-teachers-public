@@ -88,12 +88,9 @@ RSpec.describe "Sessions", type: :request do
         }
       end
 
-      let!(:induction_tutor_last_nominated_in_year) { FactoryBot.create(:contract_period, year:) }
-      let(:year) { Time.zone.now.year }
+      let!(:school) { FactoryBot.create(:school, urn: school_urn) }
 
       before do
-        FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in_year:, induction_tutor_name:, induction_tutor_email:)
-
         mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
                                    email:,
                                    first_name:,
@@ -106,44 +103,57 @@ RSpec.describe "Sessions", type: :request do
         stop_mocking_dfe_sign_in_provider!
       end
 
-      context "when the school's induction tutor has never been confirmed" do
-        let(:induction_tutor_name) { Faker::Name.name }
-        let(:induction_tutor_email) { Faker::Internet.email }
-        let(:induction_tutor_last_nominated_in_year) { nil }
-
-        it "authenticates and redirects to the wizard" do
-          allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
-          post("/auth/dfe/callback")
-          expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
-          expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
-        end
+      it "authenticates and redirects to the school home page" do
+        allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
+        post("/auth/dfe/callback")
+        expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
+        expect(response).to redirect_to(schools_ects_home_path)
       end
 
-      context "when the school's induction tutor needs to update information" do
-        let(:year) { 2024 }
-        let(:induction_tutor_name) { Faker::Name.name }
-        let(:induction_tutor_email) { Faker::Internet.email }
-
-        it "authenticates and redirects to the wizard" do
-          FactoryBot.create(:contract_period, year: Time.zone.now.year)
-
-          allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
-          post("/auth/dfe/callback")
-          expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
-          expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
-        end
-      end
-
-      context "when the school's induction tutor does not need to update information" do
+      context "when the feature is enabled", :prompt_for_school_induction_tutor_details do
+        let!(:induction_tutor_last_nominated_in_year) { FactoryBot.create(:contract_period, year:) }
         let(:year) { Time.zone.now.year }
-        let(:induction_tutor_name) { Faker::Name.name }
-        let(:induction_tutor_email) { Faker::Internet.email }
+        let!(:school) { FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in_year:, induction_tutor_name:, induction_tutor_email:) }
 
-        it "authenticates and redirects to the school home page" do
-          allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
-          post("/auth/dfe/callback")
-          expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
-          expect(response).to redirect_to(schools_ects_home_path)
+        context "when the school's induction tutor has never been confirmed" do
+          let(:induction_tutor_name) { Faker::Name.name }
+          let(:induction_tutor_email) { Faker::Internet.email }
+          let(:induction_tutor_last_nominated_in_year) { nil }
+
+          it "authenticates and redirects to the wizard" do
+            allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
+            post("/auth/dfe/callback")
+            expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
+            expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
+          end
+        end
+
+        context "when the school's induction tutor needs to update information" do
+          let(:year) { 2024 }
+          let(:induction_tutor_name) { Faker::Name.name }
+          let(:induction_tutor_email) { Faker::Internet.email }
+
+          it "authenticates and redirects to the wizard" do
+            FactoryBot.create(:contract_period, year: Time.zone.now.year)
+
+            allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
+            post("/auth/dfe/callback")
+            expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
+            expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
+          end
+        end
+
+        context "when the school's induction tutor does not need to update information" do
+          let(:year) { Time.zone.now.year }
+          let(:induction_tutor_name) { Faker::Name.name }
+          let(:induction_tutor_email) { Faker::Internet.email }
+
+          it "authenticates and redirects to the school home page" do
+            allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
+            post("/auth/dfe/callback")
+            expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
+            expect(response).to redirect_to(schools_ects_home_path)
+          end
         end
       end
     end
@@ -198,51 +208,58 @@ RSpec.describe "Sessions", type: :request do
 
     context "when using a school persona" do
       let(:params) { { email:, name:, school_urn: } }
+      let!(:school) { FactoryBot.create(:school, urn: school_urn) }
 
-      let!(:induction_tutor_last_nominated_in_year) { FactoryBot.create(:contract_period, year:) }
-
-      before do
-        FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in_year:, induction_tutor_name:, induction_tutor_email:)
+      it "authenticates and redirects to the school home page" do
+        allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
+        post("/auth/persona/callback", params:)
+        expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
+        expect(response).to redirect_to(schools_ects_home_path)
       end
 
-      context "when the school's induction tutor has never been confirmed" do
-        let(:induction_tutor_name) { Faker::Name.name }
-        let(:induction_tutor_email) { Faker::Internet.email }
-        let(:induction_tutor_last_nominated_in_year) { nil }
+      context "when the feature is enabled", :prompt_for_school_induction_tutor_details do
+        let!(:induction_tutor_last_nominated_in_year) { FactoryBot.create(:contract_period, year:) }
+        let!(:school) { FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in_year:, induction_tutor_name:, induction_tutor_email:) }
 
-        it "authenticates and redirects to the wizard" do
-          allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
-          post("/auth/persona/callback", params:)
-          expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
-          expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
+        context "when the school's induction tutor has never been confirmed" do
+          let(:induction_tutor_name) { Faker::Name.name }
+          let(:induction_tutor_email) { Faker::Internet.email }
+          let(:induction_tutor_last_nominated_in_year) { nil }
+
+          it "authenticates and redirects to the wizard" do
+            allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
+            post("/auth/persona/callback", params:)
+            expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
+            expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
+          end
         end
-      end
 
-      context "when the school's induction tutor needs to update information" do
-        let(:year) { 2024 }
-        let(:induction_tutor_name) { Faker::Name.name }
-        let(:induction_tutor_email) { Faker::Internet.email }
+        context "when the school's induction tutor needs to update information" do
+          let(:year) { 2024 }
+          let(:induction_tutor_name) { Faker::Name.name }
+          let(:induction_tutor_email) { Faker::Internet.email }
 
-        it "authenticates and redirects to the wizard" do
-          FactoryBot.create(:contract_period, year: Time.zone.now.year)
+          it "authenticates and redirects to the wizard" do
+            FactoryBot.create(:contract_period, year: Time.zone.now.year)
 
-          allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
-          post("/auth/persona/callback", params:)
-          expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
-          expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
+            allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
+            post("/auth/persona/callback", params:)
+            expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
+            expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
+          end
         end
-      end
 
-      context "when the school's induction tutor does not need to update information" do
-        let(:year) { Time.zone.now.year }
-        let(:induction_tutor_name) { Faker::Name.name }
-        let(:induction_tutor_email) { Faker::Internet.email }
+        context "when the school's induction tutor does not need to update information" do
+          let(:year) { Time.zone.now.year }
+          let(:induction_tutor_name) { Faker::Name.name }
+          let(:induction_tutor_email) { Faker::Internet.email }
 
-        it "authenticates and redirects to the school home page" do
-          allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
-          post("/auth/persona/callback", params:)
-          expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
-          expect(response).to redirect_to(schools_ects_home_path)
+          it "authenticates and redirects to the school home page" do
+            allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original
+            post("/auth/persona/callback", params:)
+            expect(Sessions::Users::SchoolPersona).to have_received(:new).with(**params).once
+            expect(response).to redirect_to(schools_ects_home_path)
+          end
         end
       end
     end
