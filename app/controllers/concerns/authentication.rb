@@ -60,10 +60,10 @@ private
 
     case
     when requested_path.present? then requested_path
-    when induction_information_needs_update? then induction_details_service.wizard_path
     when current_user.dfe_user? then admin_path
-    when current_user.school_user? then schools_ects_home_path
     when current_user.appropriate_body_user? then ab_teachers_path
+    when induction_information_needs_update? then induction_details_service.wizard_path
+    when current_user.school_user? then schools_ects_home_path
     else
       fail(UnredirectableError)
     end
