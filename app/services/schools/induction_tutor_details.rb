@@ -31,7 +31,7 @@ module Schools
     end
 
     def last_updated_year
-      @user.school.induction_tutor_last_nominated_in_year&.year
+      @user.school.induction_tutor_last_nominated_in&.year
     end
   end
 end

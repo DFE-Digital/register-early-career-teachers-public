@@ -84,10 +84,10 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
       context "when the current details are confirmed" do
         let(:params) { { edit: { are_these_details_correct: "true" } } }
 
-        it "sets induction_tutor_last_nominated_in_year but does not change the details" do
+        it "sets induction_tutor_last_nominated_in but does not change the details" do
           post(path_for_step("edit"), params:)
 
-          expect { school.reload }.to change(school, :induction_tutor_last_nominated_in_year)
+          expect { school.reload }.to change(school, :induction_tutor_last_nominated_in)
           expect(school.induction_tutor_name).to eq(induction_tutor_name)
           expect(school.induction_tutor_email).to eq(induction_tutor_email)
 
@@ -111,7 +111,7 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
             .to("new.name@gmail.com")
             .and change { school.reload.induction_tutor_name }
             .to("New Name")
-            .and(change { school.reload.induction_tutor_last_nominated_in_year })
+            .and(change { school.reload.induction_tutor_last_nominated_in })
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end

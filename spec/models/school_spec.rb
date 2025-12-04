@@ -70,7 +70,7 @@ describe School do
 
   describe "associations" do
     it { is_expected.to belong_to(:gias_school).class_name("GIAS::School").with_foreign_key(:urn).inverse_of(:school) }
-    it { is_expected.to belong_to(:induction_tutor_last_nominated_in_year).class_name("ContractPeriod").optional(true) }
+    it { is_expected.to belong_to(:induction_tutor_last_nominated_in).class_name("ContractPeriod").optional(true) }
     it { is_expected.to have_many(:ect_at_school_periods).inverse_of(:school) }
     it { is_expected.to have_many(:ect_teachers).through(:ect_at_school_periods).source(:teacher) }
     it { is_expected.to have_many(:events) }
@@ -253,8 +253,8 @@ describe School do
         end
       end
 
-      context "when induction_tutor_last_nominated_in_year is set" do
-        subject { FactoryBot.build(:school, induction_tutor_last_nominated_in_year: contract_period, induction_tutor_name:, induction_tutor_email:) }
+      context "when induction_tutor_last_nominated_in is set" do
+        subject { FactoryBot.build(:school, induction_tutor_last_nominated_in: contract_period, induction_tutor_name:, induction_tutor_email:) }
 
         let(:contract_period) { FactoryBot.create(:contract_period) }
         let(:induction_tutor_name) { Faker::Name.name }
@@ -269,7 +269,7 @@ describe School do
 
           it "requires induction_tutor_name and induction_tutor_email to be present" do
             expect(subject).to be_invalid
-            expect(subject.errors.messages[:induction_tutor_last_nominated_in_year]).to contain_exactly("Cannot be set if induction tutor name or email is blank")
+            expect(subject.errors.messages[:induction_tutor_last_nominated_in]).to contain_exactly("Cannot be set if induction tutor name or email is blank")
           end
         end
 
@@ -278,7 +278,7 @@ describe School do
 
           it "requires induction_tutor_name and induction_tutor_email to be present" do
             expect(subject).to be_invalid
-            expect(subject.errors.messages[:induction_tutor_last_nominated_in_year]).to contain_exactly("Cannot be set if induction tutor name or email is blank")
+            expect(subject.errors.messages[:induction_tutor_last_nominated_in]).to contain_exactly("Cannot be set if induction tutor name or email is blank")
           end
         end
       end
