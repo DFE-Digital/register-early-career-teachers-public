@@ -15,6 +15,7 @@ $govuk-assets-path: "/";
 @import "search";
 @import "admin/filter";
 @import "admin/button-group";
+@import "fail_confirm";
 
 // library styles
 @import "accessible-autocomplete/src/autocomplete";
@@ -38,3 +39,4 @@ $govuk-assets-path: "/";
   white-space: pre-wrap;
   font-size: 0.8em;
 }
+

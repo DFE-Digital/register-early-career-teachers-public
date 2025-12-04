@@ -1,0 +1,32 @@
+<% if appropriate_body_mode? && failed? %>
+  <p class="govuk-body">
+    <%= appeal_notice %>
+  </p>
+<% end %>
+
+<p class="govuk-body">confirm you have written to them and told them::</p>
+
+<%=
+ govuk_list([
+    "they have failed their induction",
+    "they have the right to appeal",
+    govuk_link_to("about the appeal process", "https://www.gov.uk/guidance/newly-qualified-teacher-nqt-induction-appeals", no_visited_state: true)
+  ], type: :bullet)
+%>
+
+<br>
+<br>
+
+<div>
+  <input type="checkbox" id='confirm_fail_checkbox' class="govuk-checkboxes__input_visible" >
+  <p class="govuk-body">
+    <%= confirm_appeal %>
+  </p> 
+</div>
+
+<br>
+<br>
+
+<div class="govuk-button-group">
+  <%= govuk_button_to("Continue", new_ab_teacher_record_failed_outcome_path(teacher), disabled: true, method: :get) %>
+</div>

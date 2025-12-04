@@ -10,6 +10,10 @@ RSpec.describe "Recording a failed outcome for an ECT" do
   scenario "Happy path" do
     given_i_am_on_the_ect_page(teacher)
     when_i_click_link("Fail induction")
+    then_i_should_be_on_the_fail_confimation_page(teacher)
+
+    when_i_click_checkbox
+    and_i_click_continue_button
     then_i_should_be_on_the_record_outcome_page(teacher)
 
     when_i_enter_the_finish_date
@@ -32,6 +36,20 @@ private
 
   def when_i_click_link(text)
     page.get_by_role("link", name: text).click
+  end
+
+  def then_i_should_be_on_the_fail_confimation_page(teacher)
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirm_failed_outcome")
+  end
+
+  def when_i_click_checkbox
+    page.click("#confirm_fail_checkbox")
+  end
+
+  def and_i_click_continue_button
+    # remove disabled attribute
+    page.evaluate("let b=document.querySelector('.govuk-button'); b.removeAttribute('disabled'); b.setAttribute('aria-disabled','false');")
+    page.click(".govuk-button")
   end
 
   def then_i_should_be_on_the_record_outcome_page(teacher)
