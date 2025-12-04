@@ -4,15 +4,34 @@ describe "One induction record" do
   let(:cohort_year) { 2024 }
   let(:schedule) { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
 
-  let(:lead_provider_id) { SecureRandom.uuid }
-  let(:lead_provider_name) { "Lead Provider A" }
-  let(:delivery_partner_id) { SecureRandom.uuid }
-  let(:delivery_partner_name) { "Delivery Partner A" }
+  let(:lead_provider) do
+    Types::LeadProvider.new(id: SecureRandom.uuid,
+                            name: "Lead Provider A")
+  end
+
+  let(:delivery_partner) do
+    Types::DeliveryPartner.new(id: SecureRandom.uuid,
+                               name: "Delivery Partner A")
+  end
 
   let(:ecf1_ect) { FactoryBot.build(:ecf1_teacher_history_ect) }
 
   let(:ecf1_teacher_history) do
-    FactoryBot.build(:ecf1_teacher_history, :ect_with_one_induction_record)
+    FactoryBot.build(:ecf1_teacher_history) do |history|
+      history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
+        ect.induction_records = [
+          FactoryBot.build(
+            :ecf1_teacher_history_induction_record_row,
+            cohort_year:,
+            training_provider_info: FactoryBot.build(
+              :ecf1_teacher_history_training_provider_info,
+              lead_provider:,
+              delivery_partner:
+            )
+          )
+        ]
+      end
+    end
   end
 
   describe "teacher attributes" do
