@@ -1,4 +1,6 @@
 class Declaration < ApplicationRecord
+  BILLABLE_PAYMENT_STATUS = %w[eligible payable paid].freeze
+
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
@@ -55,7 +57,7 @@ class Declaration < ApplicationRecord
   validate :contract_period_consistent_across_associations
 
   scope :completed, -> { where(declaration_type: "completed") }
-  scope :billable, -> { where(payment_status: %w[eligible payable paid]) }
+  scope :billable, -> { with_payment_status(*BILLABLE_PAYMENT_STATUS) }
 
   state_machine :payment_status, initial: :no_payment do
     state :no_payment, :ineligible, :eligible, :payable, :paid, :voided

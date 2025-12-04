@@ -242,7 +242,7 @@ describe Declaration do
       it "returns completed declarations" do
         FactoryBot.create(:declaration, declaration_type: "started")
         completed_dec = FactoryBot.create(:declaration, declaration_type: "completed")
-        expect(described_class.completed.to_a).to eq([completed_dec])
+        expect(described_class.completed).to contain_exactly(completed_dec)
       end
     end
 
