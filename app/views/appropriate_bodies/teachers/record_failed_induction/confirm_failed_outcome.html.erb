@@ -1,0 +1,10 @@
+<%
+  page_data(
+  	title: "Confirm #{teacher_full_name(@teacher)} has been notified of their failed induction outcome",
+  )
+%>
+
+<%= render Teachers::ConfirmOutcomeComponent.new(
+  mode: :appropriate_body,
+  service: @record_fail
+) %>
