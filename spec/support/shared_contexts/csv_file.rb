@@ -38,12 +38,13 @@ RSpec.shared_context "2 valid actions" do
   end
 end
 
-RSpec.shared_context "1 valid and 1 invalid actions" do
-  let(:file_name) { "1 valid 1 invalid actions.csv" }
+RSpec.shared_context "1 valid and 2 invalid actions" do
+  let(:file_name) { "1 valid 2 invalid actions.csv" }
 
   let(:data) do
     [
       { trn: "1234567", date_of_birth: "1981-06-30", number_of_terms: "0.5", finished_on: "2025-01-30", outcome: "pass" },
+      { trn: "7654321", date_of_birth: "1981-06-30", number_of_terms: "7.2", finished_on: "2025-01-30", outcome: "pass" },
       { trn: "0000007", date_of_birth: "1981-06-30", number_of_terms: "1",   finished_on: "2025-01-30", outcome: "release" }
     ]
   end
