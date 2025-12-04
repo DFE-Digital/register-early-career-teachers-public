@@ -37,6 +37,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       when_i_click_continue_from_confirmation_page
       then_i_should_see_the_school_home_page
       and_the_navigation_bar_is_visible
+      and_the_induction_tutor_details_should_not_change
       and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     end
 
@@ -55,6 +56,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       when_i_click_continue_from_confirmation_page
       then_i_should_see_the_school_home_page
       and_the_navigation_bar_is_visible
+      and_the_induction_tutor_details_should_not_change
       and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     end
 
@@ -80,9 +82,9 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       when_i_click_cancel_and_go_back
       then_i_am_taken_to_the_confirm_existing_induction_tutor_page
       and_the_navigation_bar_is_not_visible
-      and_my_changes_should_be_preserved
 
-      when_i_change_the_induction_tutor_name_and_email
+      when_i_click_no_these_details_are_incorrect
+      and_i_enter_valid_details
       and_i_click_continue
       then_i_should_be_taken_to_the_check_answers_page
       and_the_navigation_bar_is_not_visible
@@ -96,6 +98,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       when_i_click_continue_from_confirmation_page
       then_i_should_see_the_school_home_page
       and_the_navigation_bar_is_visible
+      and_the_induction_tutor_details_should_have_changed
       and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     end
   end
@@ -111,7 +114,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
 
   def and_the_school_has_an_existing_induction_tutor
     @school.induction_tutor_name = "Alastair Sim"
-    @school.induction_tutor_email = "alastair.sim@st-trinians.co.uk"
+    @school.induction_tutor_email = "alastair.sim@st-trinians.org.uk"
     @school.save!
   end
 
@@ -177,6 +180,16 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     expect(page.get_by_text("Early career teachers (ECT)")).to be_visible
   end
 
+  def and_the_induction_tutor_details_should_not_change
+    expect(@school.reload.induction_tutor_name).to eq("Alastair Sim")
+    expect(@school.induction_tutor_email).to eq("alastair.sim@st-trinians.org.uk")
+  end
+
+  def and_the_induction_tutor_details_should_have_changed
+    expect(@school.reload.induction_tutor_name).to eq("New Name")
+    expect(@school.induction_tutor_email).to eq("new.name@example.com")
+  end
+
   def and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     @school.reload
 
@@ -201,12 +214,14 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     page.get_by_label("Email").fill("new.name@example.com")
   end
 
-  def when_i_change_the_induction_tutor_name_and_email
+  def and_i_enter_valid_details
     page.get_by_label("Full name").fill("New Name")
     page.get_by_label("Email").fill("new.name@example.com")
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
+    page.screenshot(path: "tmp/screenshot.png")
+
     expect(page).to have_path("/school/confirm-existing-induction-tutor/check-answers")
   end
 
@@ -224,14 +239,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     page.get_by_role("link", name: "Cancel and go back").click
   end
 
-  # TODO
-  def and_my_changes_should_be_preserved
-    when_i_click_no_these_details_are_incorrect
-  end
-
   def when_i_click_confirm_change
     page.get_by_role("button", name: "Confirm change").click
   end
-
-  # page.screenshot(path: "tmp/screenshot.png")
 end
