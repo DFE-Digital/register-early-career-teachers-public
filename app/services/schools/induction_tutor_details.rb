@@ -11,14 +11,11 @@ module Schools
       return unless Rails.configuration.prompt_for_school_induction_tutor_details
       return unless user&.school_user?
       return if user.dfe_user_impersonating_school_user?
-      return if user.has_multiple_roles?
       return unless school
 
       last_updated_year.blank? || last_updated_year < current_contract_year
     end
 
-    # TODO: A subsequent PR will check whether the induction tutor details are present
-    # If they are not we'll probably redirect to a different wizard
     def wizard_path
       schools_confirm_existing_induction_tutor_wizard_edit_path
     end
