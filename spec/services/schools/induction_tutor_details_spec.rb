@@ -53,7 +53,7 @@ RSpec.describe Schools::InductionTutorDetails do
           FactoryBot.create(:contract_period, :current)
           previous_contract_period = FactoryBot.create(:contract_period, :previous)
 
-          school.update!(induction_tutor_last_nominated_in_year: previous_contract_period,
+          school.update!(induction_tutor_last_nominated_in: previous_contract_period,
                          induction_tutor_name: "Alastair Sim",
                          induction_tutor_email: "alastair.sim@st-trinians.org.uk")
         end
@@ -66,7 +66,7 @@ RSpec.describe Schools::InductionTutorDetails do
       context "when the induction tutor details were last confirmed in the current contract year" do
         before do
           current_contract_period = FactoryBot.create(:contract_period, :current)
-          school.update!(induction_tutor_last_nominated_in_year: current_contract_period,
+          school.update!(induction_tutor_last_nominated_in: current_contract_period,
                          induction_tutor_name: "Alastair Sim",
                          induction_tutor_email: "alastair.sim@st-trinians.org.uk")
         end

@@ -123,15 +123,15 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   end
 
   def and_the_details_are_not_confirmed
-    @school.induction_tutor_last_nominated_in_year = nil
+    @school.induction_tutor_last_nominated_in = nil
   end
 
   def and_the_details_are_confirmed_for_the_previous_contract_period
-    @school.update(induction_tutor_last_nominated_in_year: @previous_contract_period)
+    @school.update(induction_tutor_last_nominated_in: @previous_contract_period)
   end
 
   def and_the_details_are_confirmed_for_the_current_contract_period
-    @school.update(induction_tutor_last_nominated_in_year: @current_contract_period)
+    @school.update(induction_tutor_last_nominated_in: @current_contract_period)
   end
 
   def then_i_am_taken_to_the_confirm_existing_induction_tutor_page
@@ -193,8 +193,8 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   def and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     @school.reload
 
-    expect(@school.induction_tutor_last_nominated_in_year).to be_present
-    expect(@school.induction_tutor_last_nominated_in_year.year).to eq(@current_contract_period.year)
+    expect(@school.induction_tutor_last_nominated_in).to be_present
+    expect(@school.induction_tutor_last_nominated_in.year).to eq(@current_contract_period.year)
   end
 
   def then_i_should_see_an_error_message_indicating_i_must_change_the_details
