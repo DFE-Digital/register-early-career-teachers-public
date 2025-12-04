@@ -1,14 +1,12 @@
 FactoryBot.define do
   factory(:declaration) do
     training_period
-    payment_status { :not_started }
-    clawback_status { :not_started }
+    payment_status { :no_payment }
+    clawback_status { :no_clawback }
     api_id { SecureRandom.uuid }
     declaration_date { Faker::Date.between(from: Time.zone.now, to: 1.year.from_now) }
     evidence_type { Declaration.evidence_types.keys.sample }
     declaration_type { Declaration.declaration_types.keys.first }
-    payment_statement { nil }
-    clawback_statement { nil }
 
     trait :voided_by_user do
       payment_status { :voided }

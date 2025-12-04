@@ -32,7 +32,7 @@ A declaration has two state machines, one for payments and one for clawbacks.
 
 The payment states are:
 
-- `not_started` is the initial state of a declaration; if the participant is not eligible for funding and there are no duplicate declarations then the declaration remains in this state.
+- `no_payment` is the initial state of a declaration; if the participant is not eligible for funding and there are no duplicate declarations then the declaration remains in this state.
 - `eligible` is the state of a declaration that will progress towards payment.
 - `payable` once it has been confirmed for payment.
 - `paid` when the declaration has been paid.
@@ -41,30 +41,30 @@ The payment states are:
 
 The clawback states are:
 
-- `not_started` is the initial state of a declaration; it remains this way until a clawback is initiated.
+- `no_clawback` is the initial state of a declaration; it remains this way until a clawback is initiated.
 - `awaiting_clawback` is the state after a clawback has been initiated for a paid declaration.
 - `clawed_back` once the amount has successfully been reclaimed.
 
 There are five payment transitions a declaration can go through:
 
-- `mark_as_eligible` transitions a declaration from `not_started` to `eligible`. This happens on submitting a declaration if there are no duplicates and the participant is eligible for funding.
-- `mark_as_ineligible` transitions a declaration from `not_started` to `ineligible`. This happens when there is a duplicate declaration for the participant.
+- `mark_as_eligible` transitions a declaration from `no_payment` to `eligible`. This happens on submitting a declaration if there are no duplicates and the participant is eligible for funding.
+- `mark_as_ineligible` transitions a declaration from `no_payment` to `ineligible`. This happens when there is a duplicate declaration for the participant.
 - `mark_as_payable` transitions a declaration from `eligible` to `payable`. This happens on a daily job that picks up statements when the `deadline_date` has passed.
 - `mark_as_paid` transitions a declaration from `payable` to `paid`. This happens when a finance user marks a statement as paid in the finance dashboard.
 - `mark_as_voided` transitions a declaration from `eligible`, `ineligible` or `payable` to `voided`. This happens when a lead provider voids an unpaid declaration.
 
 There are two clawback transitions a declaration can go through once in the `paid` payment state:
 
-- `mark_as_awaiting_clawback` transitions a declaration from `not_started` to `awaiting_clawback`. This happens when a paid declaration is voided by a lead provider.
+- `mark_as_awaiting_clawback` transitions a declaration from `no_clawback` to `awaiting_clawback`. This happens when a paid declaration is voided by a lead provider.
 - `mark_as_clawed_back` transitions a declaration from `awaiting_clawback` to `clawed_back`. This happens when a declaration is marked as refunded in the finance dashboard.
 
 ### Payment states
 
 ```mermaid
 stateDiagram-v2
-  [*] --> not_started
-  not_started --> eligible : mark_as_eligible
-  not_started --> ineligible: mark_as_ineligible
+  [*] --> no_payment
+  no_payment --> eligible : mark_as_eligible
+  no_payment --> ineligible: mark_as_ineligible
   eligible --> payable : mark_as_payable
   payable --> paid : mark_as_paid
   eligible --> ineligible : mark_as_ineligible
@@ -77,7 +77,7 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-  [*] --> not_started
-  not_started --> awaiting_clawback : mark_as_awaiting_clawback
+  [*] --> no_clawback
+  no_clawback --> awaiting_clawback : mark_as_awaiting_clawback
   awaiting_clawback --> clawed_back : mark_as_clawed_back
 ```

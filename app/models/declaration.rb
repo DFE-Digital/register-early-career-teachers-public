@@ -6,12 +6,12 @@ class Declaration < ApplicationRecord
   belongs_to :clawback_statement, optional: true, class_name: "Statement"
 
   enum :payment_status,
-       %w[not_started eligible payable paid voided ineligible].index_by(&:itself),
+       %w[no_payment eligible payable paid voided ineligible].index_by(&:itself),
        validate: { message: "Choose a valid payment status" },
        prefix: true
 
   enum :clawback_status,
-       %w[not_started awaiting_clawback clawed_back].index_by(&:itself),
+       %w[no_clawback awaiting_clawback clawed_back].index_by(&:itself),
        validate: { message: "Choose a valid clawback status" },
        prefix: true
 
@@ -48,16 +48,18 @@ class Declaration < ApplicationRecord
   validates :ineligibility_reason, presence: { message: "Ineligibility reason must be set when the declaration is ineligible" }, if: :ineligible?
   validates :ineligibility_reason, absence: { message: "Ineligibility reason must not be set unless the declaration is ineligible" }, unless: :ineligible?
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
-  validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_not_started?
-  validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_not_started?
+  validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_no_payment?
+  validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_no_clawback?
   validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
 
-  state_machine :payment_status, initial: :not_started do
+  state_machine :payment_status, initial: :no_payment do
+    state :no_payment, :ineligible, :eligible, :payable, :paid, :voided
+
     before_transition from: :ineligible, do: :clear_ineligibility_reason
 
     event :mark_as_eligible do
-      transition %i[not_started] => :eligible
+      transition %i[no_payment] => :eligible
     end
 
     event :mark_as_payable do
@@ -69,17 +71,19 @@ class Declaration < ApplicationRecord
     end
 
     event :mark_as_ineligible do
-      transition %i[not_started] => :ineligible
+      transition %i[no_payment] => :ineligible
     end
 
     event :mark_as_voided do
-      transition %i[not_started eligible payable ineligible] => :voided
+      transition %i[no_payment eligible payable ineligible] => :voided
     end
   end
 
-  state_machine :clawback_status, initial: :not_started do
+  state_machine :clawback_status, initial: :no_clawback do
+    state :no_clawback, :awaiting_clawback, :clawed_back
+
     event :mark_as_awaiting_clawback do
-      transition %i[not_started] => :awaiting_clawback, if: :payment_status_paid?
+      transition %i[no_clawback] => :awaiting_clawback, if: :payment_status_paid?
     end
 
     event :mark_as_clawed_back do
