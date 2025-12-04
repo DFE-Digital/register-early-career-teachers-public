@@ -4,6 +4,14 @@
     hint: { text: helpers.teacher_induction_date_hint_text }
 %>
 
+<% if appropriate_body_mode? && failed? %>
+  <%=
+    form.govuk_date_field :written_fail_confirmation_on,
+      legend: { text: written_fail_confirm_legend },
+      hint: { text: helpers.teacher_induction_date_hint_text }
+  %>
+<% end %>
+
 <%= form.govuk_number_field(:number_of_terms,
   width: 4,
   suffix_text: 'FTE terms',
@@ -11,12 +19,16 @@
   hint: { text: "Enter induction terms between 0 and 16. You can use up to one decimal place if the term is not a whole number. For example, for 2 and a half terms enter 2.5" }
 ) %>
 
-<p class="govuk-body">You'll need to consider:</p>
+<div id="move_ul_into_form_section">
+  <p class="govuk-body">You'll need to consider:</p>
 
-<%=
-  govuk_list([
-    "the amount of induction time they've completed so far",
-    "their full-time equivalent (FTE) working patterns and any long periods of absence",
-    "if they have sufficient time in their current post which can count towards their induction",
-  ], type: :bullet)
-%>
+  <%=
+    govuk_list([
+      "the amount of induction time they've completed so far",
+      "their full-time equivalent (FTE) working patterns and any long periods of absence",
+      "if they have sufficient time in their current post which can count towards their induction",
+    ], type: :bullet)
+  %>
+</div>
+
+

@@ -37,18 +37,10 @@ module Teachers
       "Record #{type} outcome for #{teacher_full_name}"
     end
 
-    def appeal_notice
-      "#{teacher_full_name} can appeal this outcome. You must tell them about their right to appeal and the appeal process."
-    end
-
     def url
       path_prefix = { admin: "admin", appropriate_body: "ab" }[mode]
       type = { pass: "passed", fail: "failed" }[outcome]
       public_send("#{path_prefix}_teacher_record_#{type}_outcome_path", teacher)
-    end
-
-    def failed?
-      outcome == :fail
     end
 
     def appropriate_body_required?

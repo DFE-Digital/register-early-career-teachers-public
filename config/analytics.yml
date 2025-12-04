@@ -26,6 +26,7 @@ shared:
     - range
     - teacher_id
     - outcome
+    - written_fail_confirmation_on
   :teachers:
     - id
     - created_at
