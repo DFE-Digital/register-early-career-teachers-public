@@ -71,10 +71,10 @@ describe ECF1TeacherHistory do
               expect(historic_record.training_status).to eq(induction_record.training_status)
               expect(historic_record.induction_status).to eq(induction_record.induction_status)
               expect(historic_record.training_programme).to eq(induction_record.induction_programme.training_programme)
-              expect(historic_record.training_provider_info.lead_provider_id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
-              expect(historic_record.training_provider_info.lead_provider_name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
-              expect(historic_record.training_provider_info.delivery_partner_id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
-              expect(historic_record.training_provider_info.delivery_partner_name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
+              expect(historic_record.training_provider_info.lead_provider.id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
+              expect(historic_record.training_provider_info.lead_provider.name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
+              expect(historic_record.training_provider_info.delivery_partner.id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
+              expect(historic_record.training_provider_info.delivery_partner.name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
               expect(historic_record.training_provider_info.cohort_year).to eq(induction_record.induction_programme.partnership.cohort.start_year)
             end
           end
@@ -104,10 +104,10 @@ describe ECF1TeacherHistory do
               expect(historic_record.training_status).to eq(induction_record.training_status)
               expect(historic_record.induction_status).to eq(induction_record.induction_status)
               expect(historic_record.training_programme).to eq(induction_record.induction_programme.training_programme)
-              expect(historic_record.training_provider_info.lead_provider_id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
-              expect(historic_record.training_provider_info.lead_provider_name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
-              expect(historic_record.training_provider_info.delivery_partner_id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
-              expect(historic_record.training_provider_info.delivery_partner_name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
+              expect(historic_record.training_provider_info.lead_provider.id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
+              expect(historic_record.training_provider_info.lead_provider.name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
+              expect(historic_record.training_provider_info.delivery_partner.id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
+              expect(historic_record.training_provider_info.delivery_partner.name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
               expect(historic_record.training_provider_info.cohort_year).to eq(induction_record.induction_programme.partnership.cohort.start_year)
             end
           end
