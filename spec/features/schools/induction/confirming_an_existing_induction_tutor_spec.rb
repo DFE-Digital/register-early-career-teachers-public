@@ -10,6 +10,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       and_the_details_are_not_confirmed
       and_i_sign_in_as_that_school_user
       then_i_should_see_the_school_home_page
+      and_the_navigation_bar_is_visible
     end
   end
 
@@ -18,19 +19,24 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       and_the_details_are_confirmed_for_the_current_contract_period
       and_i_sign_in_as_that_school_user
       then_i_should_see_the_school_home_page
+      and_the_navigation_bar_is_visible
     end
 
     scenario "the existing details have never been confirmed" do
       and_the_details_are_not_confirmed
       and_i_sign_in_as_that_school_user
       then_i_am_taken_to_the_confirm_existing_induction_tutor_page
-      when_i_confirm_that_the_existing_details_are_correct
+      and_the_navigation_bar_is_not_visible
 
+      when_i_confirm_that_the_existing_details_are_correct
       and_i_click_continue
       then_i_should_be_taken_to_the_confirmation_page
+      and_the_navigation_bar_is_visible
       and_i_should_see_a_confirmation_message
-      and_i_click_continue_from_confirmation_page
+
+      when_i_click_continue_from_confirmation_page
       then_i_should_see_the_school_home_page
+      and_the_navigation_bar_is_visible
       and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     end
 
@@ -38,43 +44,58 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       and_the_details_are_confirmed_for_the_previous_contract_period
       and_i_sign_in_as_that_school_user
       then_i_am_taken_to_the_confirm_existing_induction_tutor_page
-      when_i_confirm_that_the_existing_details_are_correct
+      and_the_navigation_bar_is_not_visible
 
+      when_i_confirm_that_the_existing_details_are_correct
       and_i_click_continue
       then_i_should_be_taken_to_the_confirmation_page
+      and_the_navigation_bar_is_visible
       and_i_should_see_a_confirmation_message
-      and_i_click_continue_from_confirmation_page
+
+      when_i_click_continue_from_confirmation_page
       then_i_should_see_the_school_home_page
+      and_the_navigation_bar_is_visible
       and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     end
 
     scenario "changing the existing details" do
       and_i_sign_in_as_that_school_user
+      then_i_am_taken_to_the_confirm_existing_induction_tutor_page
+      and_the_navigation_bar_is_not_visible
+
       when_i_click_no_these_details_are_incorrect
       and_i_click_continue
       then_i_should_see_an_error_message_indicating_i_must_change_the_details
+
       when_i_change_the_induction_tutor_email_to_an_invalid_email
       and_i_click_continue
       then_i_should_see_an_error_message_indicating_the_email_is_invalid
+
       when_i_change_the_induction_tutor_email
       and_i_click_continue
       then_i_should_be_taken_to_the_check_answers_page
+      and_the_navigation_bar_is_not_visible
       and_the_new_email_should_be_displayed_on_the_check_answers_page
 
       when_i_click_cancel_and_go_back
       then_i_am_taken_to_the_confirm_existing_induction_tutor_page
+      and_the_navigation_bar_is_not_visible
       and_my_changes_should_be_preserved
+
       when_i_change_the_induction_tutor_name_and_email
       and_i_click_continue
       then_i_should_be_taken_to_the_check_answers_page
+      and_the_navigation_bar_is_not_visible
       and_the_new_name_and_email_should_be_displayed_on_the_check_answers_page
 
       when_i_click_confirm_change
       then_i_should_be_taken_to_the_confirmation_page
+      and_the_navigation_bar_is_visible
       and_it_should_confirm_the_new_details
 
-      and_i_click_continue_from_confirmation_page
+      when_i_click_continue_from_confirmation_page
       then_i_should_see_the_school_home_page
+      and_the_navigation_bar_is_visible
       and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
     end
   end
@@ -115,6 +136,14 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     expect(page.get_by_text("Confirm induction tutor details")).to be_visible
   end
 
+  def and_the_navigation_bar_is_not_visible
+    expect(page.locator(".govuk-service-navigation__wrapper")).not_to be_visible
+  end
+
+  def and_the_navigation_bar_is_visible
+    expect(page.locator(".govuk-service-navigation__wrapper")).to be_visible
+  end
+
   def when_i_confirm_that_the_existing_details_are_correct
     page.get_by_role("radio", name: "Yes").click
   end
@@ -127,7 +156,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     page.get_by_role("button", name: "Continue").click
   end
 
-  def and_i_click_continue_from_confirmation_page
+  def when_i_click_continue_from_confirmation_page
     page.get_by_role("link", name: "Continue").click
   end
 
