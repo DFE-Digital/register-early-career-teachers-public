@@ -92,7 +92,7 @@ RSpec.describe "Add a mentor to a provider led ECT", :enable_schools_interface d
   end
 
   def given_there_is_a_school_in_the_service
-    @school = FactoryBot.create(:school, :with_confirmed_induction_tutor_details, urn: "1234567")
+    @school = FactoryBot.create(:school, urn: "1234567")
   end
 
   def and_i_sign_in_as_that_school_user

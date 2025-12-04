@@ -37,6 +37,12 @@ RSpec.configure do |config|
       .and_return(true)
   end
 
+  config.before(:each, :prompt_for_school_induction_tutor_details) do
+    allow(Rails.application.config)
+      .to receive(:prompt_for_school_induction_tutor_details)
+      .and_return(true)
+  end
+
   config.around do |example|
     declarative_updates_to_skip = %i[metadata touch]
 
