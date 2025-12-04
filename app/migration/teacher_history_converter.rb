@@ -23,7 +23,7 @@ private
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
         started_on: ir.start_date,
         finished_on: ir.end_date,
-        school: ECF2TeacherHistory::SchoolData.new(urn: ir.school_urn, name: "Thing"),
+        school: Types::SchoolData.new(urn: ir.school_urn, name: "Thing"),
         email: ir.preferred_identity_email,
         mentorship_period_rows: [],
         training_period_rows: [],

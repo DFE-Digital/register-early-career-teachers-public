@@ -37,10 +37,8 @@ class ECF1TeacherHistory
                                   :training_provider_info)
 
   TrainingProviderInfo = Struct.new(
-    :lead_provider_id,
-    :lead_provider_name,
-    :delivery_partner_id,
-    :delivery_partner_name,
+    :lead_provider,
+    :delivery_partner,
     :cohort_year
   )
 
@@ -51,7 +49,7 @@ class ECF1TeacherHistory
     :cohort_year
   )
 
-  attr_reader :user, :ect, :mentor
+  attr_accessor :user, :ect, :mentor
 
   def initialize(user:, ect: nil, mentor: nil)
     @user = user
@@ -135,10 +133,14 @@ class ECF1TeacherHistory
     return if partnership.blank?
 
     TrainingProviderInfo.new(
-      lead_provider_id: partnership.lead_provider_id,
-      lead_provider_name: partnership.lead_provider.name,
-      delivery_partner_id: partnership.delivery_partner_id,
-      delivery_partner_name: partnership.delivery_partner.name,
+      lead_provider: Types::LeadProvider.new(
+        id: partnership.lead_provider.id,
+        name: partnership.lead_provider.name
+      ),
+      delivery_partner: Types::DeliveryPartner.new(
+        id: partnership.delivery_partner.id,
+        name: partnership.delivery_partner.name
+      ),
       cohort_year: partnership.cohort.start_year
     )
   end
