@@ -180,11 +180,48 @@ RSpec.describe Statements::Search do
           end
         end
       end
+
+      describe "by `deadline_date`" do
+        let!(:statement1) { FactoryBot.create(:statement, deadline_date: Date.new(2025, 7, 1)) }
+        let!(:statement2) { FactoryBot.create(:statement, deadline_date: Date.new(2025, 9, 1)) }
+
+        it "returns all statements for 2025-07-01" do
+          search = described_class.new(deadline_date: "2025-07-01")
+          expect(search.statements).to contain_exactly(statement1, statement2)
+        end
+
+        it "returns statement2 for 2025-08-01" do
+          search = described_class.new(deadline_date: "2025-08-01")
+          expect(search.statements).to eq([statement2])
+        end
+
+        it "returns empty for 2025-10-01" do
+          search = described_class.new(deadline_date: "2025-10-01")
+          expect(search.statements).to be_empty
+        end
+
+        context "when filter should be ignored" do
+          it "returns all statements when value is :ignore" do
+            search = described_class.new(deadline_date: :ignore)
+            expect(search.statements).to contain_exactly(statement1, statement2)
+          end
+
+          it "returns all statements when value is blank" do
+            search = described_class.new(deadline_date: " ")
+            expect(search.statements).to contain_exactly(statement1, statement2)
+          end
+
+          it "returns all statements when value is nil" do
+            search = described_class.new(deadline_date: nil)
+            expect(search.statements).to contain_exactly(statement1, statement2)
+          end
+        end
+      end
     end
 
     describe "ordering" do
-      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4, payment_date: "2024-01-01") }
-      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8, payment_date: "2025-01-01") }
+      let!(:statement1) { FactoryBot.create(:statement, year: 2025, month: 4, payment_date: "2024-01-01", deadline_date: "2025-01-01") }
+      let!(:statement2) { FactoryBot.create(:statement, year: 2024, month: 8, payment_date: "2025-01-01", deadline_date: "2024-01-01") }
 
       describe "default order" do
         it "returns statements in correct order" do
@@ -203,6 +240,13 @@ RSpec.describe Statements::Search do
       describe "sort by year and month" do
         it "returns statements in correct order" do
           search = described_class.new(order: :statement_date)
+          expect(search.statements).to eq([statement2, statement1])
+        end
+      end
+
+      describe "sort by `deadline_date`" do
+        it "returns statements in correct order" do
+          search = described_class.new(order: :deadline_date)
           expect(search.statements).to eq([statement2, statement1])
         end
       end
