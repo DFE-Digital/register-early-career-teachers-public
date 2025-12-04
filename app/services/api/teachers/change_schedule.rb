@@ -135,14 +135,7 @@ module API::Teachers
 
     def trainee_not_completed
       return if errors[:teacher_api_id].any?
-      return unless training_period
-
-      completed = if training_period.for_ect?
-                    teacher.finished_induction_period&.complete?
-                  else
-                    teacher.mentor_declarations.billable.completed.exists?
-                  end
-      return unless completed
+      return unless training_period&.teacher_completed_training?
 
       errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training.")
     end
