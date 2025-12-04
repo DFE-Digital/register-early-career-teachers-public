@@ -34,13 +34,13 @@ describe Schools::ConfirmExistingInductionTutorWizard::CheckAnswersStep do
   end
 
   describe "#save!" do
-    it "updates the school's induction tutor details and sets induction_tutor_last_nominated_in_year" do
+    it "updates the school's induction tutor details and sets induction_tutor_last_nominated_in" do
       current_step.save!
 
       school.reload
       expect(school.induction_tutor_email).to eq(induction_tutor_email)
       expect(school.induction_tutor_name).to eq(induction_tutor_name)
-      expect(school.induction_tutor_last_nominated_in_year).to eq(current_contract_period)
+      expect(school.induction_tutor_last_nominated_in).to eq(current_contract_period)
     end
 
     it "is truthy" do

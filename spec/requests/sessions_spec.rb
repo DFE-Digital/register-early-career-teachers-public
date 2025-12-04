@@ -111,14 +111,14 @@ RSpec.describe "Sessions", type: :request do
       end
 
       context "when the feature is enabled", :prompt_for_school_induction_tutor_details do
-        let!(:induction_tutor_last_nominated_in_year) { FactoryBot.create(:contract_period, year:) }
+        let!(:induction_tutor_last_nominated_in) { FactoryBot.create(:contract_period, year:) }
         let(:year) { Time.zone.now.year }
-        let!(:school) { FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in_year:, induction_tutor_name:, induction_tutor_email:) }
+        let!(:school) { FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in:, induction_tutor_name:, induction_tutor_email:) }
 
         context "when the school's induction tutor has never been confirmed" do
           let(:induction_tutor_name) { Faker::Name.name }
           let(:induction_tutor_email) { Faker::Internet.email }
-          let(:induction_tutor_last_nominated_in_year) { nil }
+          let(:induction_tutor_last_nominated_in) { nil }
 
           it "authenticates and redirects to the wizard" do
             allow(Sessions::Users::SchoolUser).to receive(:new).and_call_original
@@ -218,13 +218,13 @@ RSpec.describe "Sessions", type: :request do
       end
 
       context "when the feature is enabled", :prompt_for_school_induction_tutor_details do
-        let!(:induction_tutor_last_nominated_in_year) { FactoryBot.create(:contract_period, year:) }
-        let!(:school) { FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in_year:, induction_tutor_name:, induction_tutor_email:) }
+        let!(:induction_tutor_last_nominated_in) { FactoryBot.create(:contract_period, year:) }
+        let!(:school) { FactoryBot.create(:school, urn: school_urn, induction_tutor_last_nominated_in:, induction_tutor_name:, induction_tutor_email:) }
 
         context "when the school's induction tutor has never been confirmed" do
           let(:induction_tutor_name) { Faker::Name.name }
           let(:induction_tutor_email) { Faker::Internet.email }
-          let(:induction_tutor_last_nominated_in_year) { nil }
+          let(:induction_tutor_last_nominated_in) { nil }
 
           it "authenticates and redirects to the wizard" do
             allow(Sessions::Users::SchoolPersona).to receive(:new).and_call_original

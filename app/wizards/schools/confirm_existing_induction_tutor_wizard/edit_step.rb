@@ -41,7 +41,7 @@ module Schools
           store.are_these_details_correct = are_these_details_correct
 
           ActiveRecord::Base.transaction do
-            school.update!(induction_tutor_last_nominated_in_year: current_contract_period)
+            school.update!(induction_tutor_last_nominated_in: current_contract_period)
 
             record_confirmation_event!
           end

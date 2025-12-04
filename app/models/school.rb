@@ -14,7 +14,7 @@ class School < ApplicationRecord
   belongs_to :gias_school, class_name: "GIAS::School", foreign_key: :urn, inverse_of: :school
   belongs_to :last_chosen_appropriate_body, class_name: "AppropriateBody"
   belongs_to :last_chosen_lead_provider, class_name: "LeadProvider"
-  belongs_to :induction_tutor_last_nominated_in_year, class_name: "ContractPeriod", primary_key: "year", foreign_key: "induction_tutor_last_nominated_in_year", optional: true
+  belongs_to :induction_tutor_last_nominated_in, class_name: "ContractPeriod", primary_key: "year", foreign_key: "induction_tutor_last_nominated_in", optional: true
 
   has_many :ect_at_school_periods, inverse_of: :school
   has_many :ect_teachers, -> { distinct }, through: :ect_at_school_periods, source: :teacher
@@ -163,10 +163,10 @@ class School < ApplicationRecord
   end
 
   def induction_tutor_details_cannot_be_confirmed_if_blank
-    return if induction_tutor_last_nominated_in_year.blank?
+    return if induction_tutor_last_nominated_in.blank?
 
     if induction_tutor_name.blank? || induction_tutor_email.blank?
-      errors.add(:induction_tutor_last_nominated_in_year, "Cannot be set if induction tutor name or email is blank")
+      errors.add(:induction_tutor_last_nominated_in, "Cannot be set if induction tutor name or email is blank")
     end
   end
 end

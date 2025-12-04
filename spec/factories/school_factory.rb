@@ -68,12 +68,5 @@ FactoryBot.define do
       induction_tutor_name { Faker::Name.name }
       induction_tutor_email { Faker::Internet.email }
     end
-
-    trait :with_confirmed_induction_tutor_details do
-      contract_period = FactoryBot.create(:contract_period, :with_schedules, :current)
-      induction_tutor_last_nominated_in_year { contract_period }
-
-      with_induction_tutor
-    end
   end
 end

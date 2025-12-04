@@ -161,9 +161,9 @@ describe Schools::ConfirmExistingInductionTutorWizard::EditStep do
 
   describe "#save!" do
     context "when the user has confirmed the details are correct" do
-      it "updates the school's induction_tutor_last_nominated_in_year" do
+      it "updates the school's induction_tutor_last_nominated_in" do
         current_step.save!
-        expect(school.reload.induction_tutor_last_nominated_in_year).to eq(current_contract_period)
+        expect(school.reload.induction_tutor_last_nominated_in).to eq(current_contract_period)
       end
 
       it "stores the confirmation" do
