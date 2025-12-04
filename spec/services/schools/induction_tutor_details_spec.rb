@@ -42,22 +42,6 @@ RSpec.describe Schools::InductionTutorDetails do
         end
       end
 
-      xcontext "when the user has multiple roles" do
-        let(:user) { FactoryBot.create(:school_user, :with_multiple_roles) }
-
-        it "returns false" do
-          expect(service).not_to be_update_required
-        end
-      end
-
-      xcontext "when the user is not linked to a school" do
-        let(:user) { FactoryBot.create(:school_user) }
-
-        it "returns false" do
-          expect(service).not_to be_update_required
-        end
-      end
-
       context "when the induction tutor details have never been confirmed" do
         it "returns true" do
           expect(service).to be_update_required
