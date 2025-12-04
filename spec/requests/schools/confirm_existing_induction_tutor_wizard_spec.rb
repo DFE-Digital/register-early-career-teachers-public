@@ -85,6 +85,8 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
         let(:params) { { edit: { are_these_details_correct: "true" } } }
 
         it "sets induction_tutor_last_nominated_in but does not change the details" do
+          FactoryBot.create(:contract_period, :current)
+
           post(path_for_step("edit"), params:)
 
           expect { school.reload }.to change(school, :induction_tutor_last_nominated_in)
@@ -99,6 +101,8 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
         let(:params) { { edit: { are_these_details_correct: "false", induction_tutor_name: "New Name", induction_tutor_email: "new.name@gmail.com" } } }
 
         it "updates the details" do
+          FactoryBot.create(:contract_period, :current)
+
           expect { post(path_for_step("edit"), params:) }
             .not_to change(school, :induction_tutor_email)
 
