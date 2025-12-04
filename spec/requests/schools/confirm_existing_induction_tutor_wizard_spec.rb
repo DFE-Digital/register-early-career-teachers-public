@@ -1,8 +1,8 @@
 describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schools_interface do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, induction_tutor_name:, induction_tutor_email:) }
   let(:params) { {} }
-  let(:induction_tutor_name) { "New Induction Tutor Name" }
-  let(:induction_tutor_email) { "new.name@gmail.com" }
+  let(:induction_tutor_name) { "Old Induction Tutor Name" }
+  let(:induction_tutor_email) { "old.name@gmail.com" }
 
   describe "GET #new" do
     context "when not signed in" do
@@ -84,18 +84,21 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
       context "when the current details are confirmed" do
         let(:params) { { edit: { are_these_details_correct: "true" } } }
 
-        it "does not update anything" do
-          expect { post(path_for_step("edit"), params:) }
-            .not_to change(school, :induction_tutor_email)
+        it "sets induction_tutor_last_nominated_in_year but does not change the details" do
+          post(path_for_step("edit"), params:)
+
+          expect { school.reload }.to change(school, :induction_tutor_last_nominated_in_year)
+          expect(school.induction_tutor_name).to eq(induction_tutor_name)
+          expect(school.induction_tutor_email).to eq(induction_tutor_email)
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
       end
 
       context "when the current details changed" do
-        let(:params) { { edit: { are_these_details_correct: "false", induction_tutor_name:, induction_tutor_email: } } }
+        let(:params) { { edit: { are_these_details_correct: "false", induction_tutor_name: "New Name", induction_tutor_email: "new.name@gmail.com" } } }
 
-        it "does not update anything" do
+        it "updates the details" do
           expect { post(path_for_step("edit"), params:) }
             .not_to change(school, :induction_tutor_email)
 
@@ -105,9 +108,10 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
 
           expect { post path_for_step("check-answers") }
             .to change { school.reload.induction_tutor_email }
-            .to(induction_tutor_email)
+            .to("new.name@gmail.com")
             .and change { school.reload.induction_tutor_name }
-            .to(induction_tutor_name)
+            .to("New Name")
+            .and(change { school.reload.induction_tutor_last_nominated_in_year })
 
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
