@@ -14,7 +14,9 @@ private
       trn: @ecf1_teacher_history.user.trn,
       trs_first_name: parsed_name.first_name,
       trs_last_name: parsed_name.last_name,
-      api_id: @ecf1_teacher_history.user.user_id
+      api_id: @ecf1_teacher_history.user.user_id,
+      created_at: @ecf1_teacher_history.user.created_at,
+      updated_at: @ecf1_teacher_history.user.updated_at
     )
   end
 
