@@ -99,6 +99,14 @@ FactoryBot.define do
           training_programme:,
           training_provider_info:)
     end
+
+    trait :created_at_later_than_start_date do
+      created_at { start_date + 2.days }
+    end
+
+    trait :start_date_later_than_created_at do
+      created_at { start_date - 2.days }
+    end
   end
 
   factory :ecf1_teacher_history_ect, class: "ECF1TeacherHistory::ECT" do
