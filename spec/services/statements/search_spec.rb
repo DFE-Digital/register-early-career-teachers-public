@@ -184,14 +184,26 @@ RSpec.describe Statements::Search do
       describe "by `deadline_date`" do
         let!(:statement1) { FactoryBot.create(:statement, deadline_date: Date.new(2025, 7, 1)) }
         let!(:statement2) { FactoryBot.create(:statement, deadline_date: Date.new(2025, 9, 1)) }
+        let!(:statement3) { FactoryBot.create(:statement, deadline_date: Time.zone.today) }
+        let!(:statement4) { FactoryBot.create(:statement, deadline_date: Time.zone.tomorrow) }
 
-        it "returns all statements for 2025-07-01" do
-          search = described_class.new(deadline_date: "2025-07-01")
+        it "returns correct statements for the range `Date.new(2025, 7, 1)..Date.new(2025, 9, 1)`" do
+          search = described_class.new(deadline_date: Date.new(2025, 7, 1)..Date.new(2025, 9, 1))
           expect(search.statements).to contain_exactly(statement1, statement2)
         end
 
-        it "returns statement2 for 2025-08-01" do
-          search = described_class.new(deadline_date: "2025-08-01")
+        it "returns correct statements for the range `Time.zone.today..`" do
+          search = described_class.new(deadline_date: Time.zone.today..)
+          expect(search.statements).to contain_exactly(statement3, statement4)
+        end
+
+        it "returns statement1 for 2025-07-01" do
+          search = described_class.new(deadline_date: "2025-07-01")
+          expect(search.statements).to eq([statement1])
+        end
+
+        it "returns statement2 for 2025-09-01" do
+          search = described_class.new(deadline_date: "2025-09-01")
           expect(search.statements).to eq([statement2])
         end
 
@@ -203,17 +215,17 @@ RSpec.describe Statements::Search do
         context "when filter should be ignored" do
           it "returns all statements when value is :ignore" do
             search = described_class.new(deadline_date: :ignore)
-            expect(search.statements).to contain_exactly(statement1, statement2)
+            expect(search.statements).to contain_exactly(statement1, statement2, statement3, statement4)
           end
 
           it "returns all statements when value is blank" do
             search = described_class.new(deadline_date: " ")
-            expect(search.statements).to contain_exactly(statement1, statement2)
+            expect(search.statements).to contain_exactly(statement1, statement2, statement3, statement4)
           end
 
           it "returns all statements when value is nil" do
             search = described_class.new(deadline_date: nil)
-            expect(search.statements).to contain_exactly(statement1, statement2)
+            expect(search.statements).to contain_exactly(statement1, statement2, statement3, statement4)
           end
         end
       end

@@ -60,7 +60,7 @@ module Statements
       return if ignore?(filter: deadline_date)
       return if deadline_date.blank?
 
-      @scope = scope.where(deadline_date: deadline_date..)
+      @scope = scope.where(deadline_date:)
     end
 
     def set_order(order)
