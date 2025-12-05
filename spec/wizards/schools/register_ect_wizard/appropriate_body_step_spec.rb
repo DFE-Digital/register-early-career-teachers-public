@@ -71,16 +71,32 @@ RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
 
     describe "#previous_step" do
       context "when the school has no last programme choices" do
-        it "returns the previous step" do
+        it "returns :working_pattern" do
           expect(subject.previous_step).to eq(:working_pattern)
         end
       end
 
-      context "when the school has last programme choices" do
+      context "when the school has last programme choices and reuse is allowed" do
         let(:school) { FactoryBot.create(:school, :independent, :national_ab_last_chosen, :school_led_last_chosen) }
 
-        it "returns the previous step" do
+        before do
+          allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
+        end
+
+        it "returns :use_previous_ect_choices" do
           expect(subject.previous_step).to eq(:use_previous_ect_choices)
+        end
+      end
+
+      context "when the school has last programme choices but reuse is not allowed" do
+        let(:school) { FactoryBot.create(:school, :independent, :national_ab_last_chosen, :school_led_last_chosen) }
+
+        before do
+          allow(wizard).to receive(:use_previous_choices_allowed?).and_return(false)
+        end
+
+        it "returns :working_pattern" do
+          expect(subject.previous_step).to eq(:working_pattern)
         end
       end
     end
