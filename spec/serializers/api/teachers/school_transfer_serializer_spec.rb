@@ -55,14 +55,14 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present
         expect(leaving["date"]).to eq(leaving_training_period.finished_on.rfc3339)
         joining = transfer["joining"]
         expect(joining["school_urn"]).to be_present
-        expect(joining["school_urn"]).to eq(joining_school.urn)
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
         expect(joining["provider"]).to be_present
         expect(joining["provider"]).to eq(other_lead_provider.name)
         expect(joining["date"]).to be_present
@@ -89,14 +89,14 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present
         expect(leaving["date"]).to eq(leaving_training_period.finished_on.rfc3339)
         joining = transfer["joining"]
         expect(joining["school_urn"]).to be_present
-        expect(joining["school_urn"]).to eq(joining_school.urn)
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
         expect(joining["provider"]).to be_nil
         expect(joining["date"]).to be_present
         expect(joining["date"]).to eq(joining_training_period.finished_on.rfc3339)
@@ -121,14 +121,14 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present
         expect(leaving["date"]).to eq(leaving_training_period.finished_on.rfc3339)
         joining = transfer["joining"]
         expect(joining["school_urn"]).to be_present
-        expect(joining["school_urn"]).to eq(joining_school.urn)
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
         expect(joining["provider"]).to be_nil
         expect(joining["date"]).to be_nil
       end
@@ -151,7 +151,7 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present
