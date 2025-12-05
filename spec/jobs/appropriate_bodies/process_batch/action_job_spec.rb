@@ -21,11 +21,11 @@ RSpec.describe AppropriateBodies::ProcessBatch::ActionJob, type: :job do
 
   describe "#perform" do
     context "with valid complete data" do
-      include_context "3 valid actions"
+      include_context "2 valid actions"
 
       it "creates records for all rows" do
         perform_action_job
-        expect(submissions.count).to eq(3)
+        expect(submissions.count).to eq(2)
       end
 
       it "broadcasts progress as submission records are created" do
@@ -33,7 +33,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::ActionJob, type: :job do
           perform_action_job
         }.to have_broadcasted_to(
           "batch_progress_stream_#{pending_induction_submission_batch.id}"
-        ).from_channel(pending_induction_submission_batch).exactly(11).times
+        ).from_channel(pending_induction_submission_batch).exactly(8).times
       end
     end
 
@@ -42,6 +42,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::ActionJob, type: :job do
 
       it "captures error messages" do
         perform_action_job
+
         expect(submissions.without_errors.count).to eq(1)
         expect(submissions.with_errors.count).to eq(2)
       end
