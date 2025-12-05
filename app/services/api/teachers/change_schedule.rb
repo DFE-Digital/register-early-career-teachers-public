@@ -14,6 +14,7 @@ module API::Teachers
     validate :school_partnership_exists_if_changing_contract_period
     validate :lead_provider_is_currently_training_teacher
     validate :no_future_training_periods_exist
+    validate :trainee_not_completed
 
     def change_schedule
       return false unless valid?
@@ -119,6 +120,13 @@ module API::Teachers
           .where(ect_at_school_period: { teacher: })
           .started_after(training_period.started_on)
       end
+    end
+
+    def trainee_not_completed
+      return if errors[:teacher_api_id].any?
+      return unless training_period&.teacher_completed_training?
+
+      errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training.")
     end
   end
 end

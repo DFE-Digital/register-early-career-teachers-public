@@ -139,6 +139,14 @@ class TrainingPeriod < ApplicationRecord
       .first
   end
 
+  def teacher_completed_training?
+    if for_ect?
+      trainee.teacher.finished_induction_period&.complete?
+    else
+      trainee.teacher.mentor_became_ineligible_for_funding_on.present?
+    end
+  end
+
 private
 
   def one_id_of_trainee_present

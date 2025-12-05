@@ -1,4 +1,6 @@
 class Declaration < ApplicationRecord
+  BILLABLE_PAYMENT_STATUS = %w[eligible payable paid].freeze
+
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
@@ -52,6 +54,9 @@ class Declaration < ApplicationRecord
   validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_no_clawback?
   validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
+
+  scope :completed, -> { where(declaration_type: "completed") }
+  scope :billable, -> { with_payment_status(*BILLABLE_PAYMENT_STATUS) }
 
   state_machine :payment_status, initial: :no_payment do
     state :no_payment, :ineligible, :eligible, :payable, :paid, :voided
