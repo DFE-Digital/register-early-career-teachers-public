@@ -29,6 +29,7 @@ erDiagram
     datetime withdrawn_at
     enum withdrawal_reason
     integer schedule_id
+    datetime api_transfer_updated_at
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to
@@ -95,6 +96,7 @@ erDiagram
     string induction_tutor_name
     citext induction_tutor_email
     uuid api_id
+    boolean marked_as_eligible
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
