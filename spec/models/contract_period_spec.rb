@@ -167,6 +167,8 @@ describe ContractPeriod do
     context "when `payments_frozen_at` is now" do
       let(:payments_frozen_at) { Time.zone.now }
 
+      before { freeze_time }
+
       it { is_expected.to be_payments_frozen }
     end
   end
