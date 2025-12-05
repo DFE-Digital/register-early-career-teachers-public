@@ -84,8 +84,6 @@ class School < ApplicationRecord
            :administrative_district_name,
            :closed_on,
            :establishment_number,
-           :funding_eligibility,
-           :induction_eligibility,
            :in_england,
            :local_authority_code,
            :local_authority_name,
@@ -157,5 +155,9 @@ class School < ApplicationRecord
       Arel.sql("COALESCE(expression_of_interest.lead_provider_id, lead_providers.id)"),
       Arel.sql("COALESCE(expression_of_interest.contract_period_year, contract_periods_school_partnerships.year)")
     ).uniq
+  end
+
+  def eligible?
+    marked_as_eligible? || gias_school.eligible?
   end
 end
