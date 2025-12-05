@@ -114,7 +114,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               if trainee_type == :ect
                 FactoryBot.create(:induction_period, :pass, teacher:)
               else
-                FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: "completed")
+                teacher.update!(mentor_became_ineligible_for_funding_on: Time.zone.now, mentor_became_ineligible_for_funding_reason: "completed_declaration_received")
               end
             end
 
