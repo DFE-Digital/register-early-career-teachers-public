@@ -1,0 +1,28 @@
+<% page_data(
+    title: "#{@wizard.teacher_full_name} is leaving your school",
+    header: false
+) %>
+
+<%= govuk_panel(
+      title_text: "#{@wizard.teacher_full_name} has been removed from your school’s mentor list"
+    ) %>
+
+<h2 class="govuk-heading-m">What happens next</h2>
+
+<p class="govuk-body">
+  ECTs currently assigned to <%= @wizard.teacher_full_name %> will need to be reassigned to another mentor.
+</p>
+
+<p class="govuk-body">
+  We’ll let <%= @wizard.teacher_full_name %>’s lead provider know (if they were doing a mentor training programme) 
+  that you’ve told us that they’ve left your school and are not expected to return. 
+  They may contact your school for more information.
+</p>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+        "Back to Mentors",
+        schools_mentors_home_path,
+        no_visited_state: true
+      ) %>
+</p>

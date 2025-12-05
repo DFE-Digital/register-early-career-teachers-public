@@ -78,10 +78,10 @@ module Teachers
       return if school == :ignore
 
       @scope = @scope
-        .joins(:mentor_at_school_periods)
+        .eager_load(mentor_at_school_periods: { currently_assigned_ects: :teacher })
         .where(mentor_at_school_periods: { school_id: school.id })
+        .merge(MentorAtSchoolPeriod.current_or_future)
         .distinct
-        .includes(:mentor_at_school_periods)
     end
   end
 end
