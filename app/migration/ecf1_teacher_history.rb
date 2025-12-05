@@ -151,7 +151,7 @@ class ECF1TeacherHistory
     appropriate_body = induction_record.appropriate_body
     return if appropriate_body.blank?
 
-    Types::AppropriateBody.new(id: appropriate_body.id, name: appropriate_body.name)
+    Types::AppropriateBodyData.new(id: appropriate_body.id, name: appropriate_body.name)
   end
 
   def self.build_schedule_info(schedule:)
