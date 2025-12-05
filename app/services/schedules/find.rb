@@ -12,15 +12,17 @@ module Schedules
 
     def call
       return unless provider_led?
-      return teacher.most_recent_schedule if teacher.most_recent_provider_led_period
 
-      find_schedule
+      schedule_for_target_period
     end
 
   private
 
-    def find_schedule
-      Schedule.find_by(contract_period_year:, identifier:)
+    def schedule_for_target_period
+      most_recent_schedule = teacher.most_recent_schedule
+      return most_recent_schedule if most_recent_schedule&.contract_period_year == contract_period_year
+
+      Schedule.find_by(contract_period_year:, identifier: most_recent_schedule&.identifier) || Schedule.find_by(contract_period_year:, identifier:)
     end
 
     def provider_led?
