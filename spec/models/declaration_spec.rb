@@ -94,6 +94,51 @@ describe Declaration do
           expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type")
         end
       end
+
+      describe "contract period consistent across associations" do
+        let(:training_period) { FactoryBot.create(:training_period) }
+
+        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: training_period.contract_period) }
+        let(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
+
+        let(:mismatch_contract_period) { FactoryBot.create(:contract_period, year: training_period.contract_period.year + 1) }
+        let(:mismatch_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: mismatch_contract_period) }
+        let(:mismatch_statement) { FactoryBot.create(:statement, active_lead_provider: mismatch_active_lead_provider) }
+
+        context "checking contract period matches with payment statement" do
+          context "when contract periods match" do
+            subject { FactoryBot.build(:declaration, training_period:, payment_statement: statement) }
+
+            it { is_expected.to be_valid }
+          end
+
+          context "when contract periods do not match" do
+            subject { FactoryBot.build(:declaration, training_period:, payment_statement: mismatch_statement) }
+
+            it "adds an error to schedule" do
+              expect(subject).to be_invalid
+              expect(subject.errors[:training_period]).to include("Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
+            end
+          end
+        end
+
+        context "checking contract period matches with clawback statement" do
+          context "when contract periods match" do
+            subject { FactoryBot.build(:declaration, training_period:, clawback_statement: statement) }
+
+            it { is_expected.to be_valid }
+          end
+
+          context "when contract periods do not match" do
+            subject { FactoryBot.build(:declaration, training_period:, clawback_statement: mismatch_statement) }
+
+            it "adds an error to schedule" do
+              expect(subject).to be_invalid
+              expect(subject.errors[:training_period]).to include("Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
+            end
+          end
+        end
+      end
     end
 
     describe "mentorship_period" do
@@ -194,7 +239,7 @@ describe Declaration do
 
   describe "payment_status transitions" do
     context "when transitioning from no_payment to eligible" do
-      let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open) } }
+      let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period) } }
 
       it { expect { declaration.mark_as_eligible! }.to change(declaration, :payment_status).from("no_payment").to("eligible") }
     end
@@ -235,7 +280,7 @@ describe Declaration do
       let(:declaration) do
         FactoryBot.create(:declaration).tap do
           it.ineligibility_reason = reason
-          it.payment_statement = FactoryBot.create(:statement, :open)
+          it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period)
         end
       end
 
@@ -251,13 +296,13 @@ describe Declaration do
 
   describe "clawback_status transitions" do
     context "when transitioning from no_clawback to awaiting_clawback" do
-      let(:declaration) { FactoryBot.create(:declaration, :paid).tap { it.clawback_statement = FactoryBot.create(:statement, :payable) } }
+      let(:declaration) { FactoryBot.create(:declaration, :paid).tap { it.clawback_statement = FactoryBot.create(:statement, :payable, contract_period: it.training_period.contract_period) } }
 
       it { expect { declaration.mark_as_awaiting_clawback! }.to change(declaration, :clawback_status).from("no_clawback").to("awaiting_clawback") }
     end
 
     context "when transitioning from no_clawback to awaiting_clawback, when the declaration is not paid" do
-      let(:declaration) { FactoryBot.create(:declaration, :payable).tap { it.clawback_statement = FactoryBot.create(:statement, :payable) } }
+      let(:declaration) { FactoryBot.create(:declaration, :payable).tap { it.clawback_statement = FactoryBot.create(:statement, :payable, contract_period: it.training_period.contract_period) } }
 
       it { expect { declaration.mark_as_awaiting_clawback! }.to raise_error(StateMachines::InvalidTransition) }
     end

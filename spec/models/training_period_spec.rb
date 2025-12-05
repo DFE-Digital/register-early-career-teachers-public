@@ -425,7 +425,7 @@ describe TrainingPeriod do
       end
     end
 
-    describe "check if schedule contract period matches" do
+    describe "contract period consistent across associations" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil) }
       let(:school) { ect_at_school_period.school }
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
@@ -433,7 +433,7 @@ describe TrainingPeriod do
       let(:school_partnership) { make_partnership_for(school, contract_period) }
       let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period:) }
 
-      context "contract period from school partnership" do
+      context "checking contract period matches with school partnership" do
         context "when contract periods match" do
           subject { FactoryBot.build(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
 
@@ -446,14 +446,13 @@ describe TrainingPeriod do
           let(:mismatched_school_partnership) { make_partnership_for(school, FactoryBot.create(:contract_period, year: 2025)) }
 
           it "adds an error to schedule" do
-            subject.valid?
-
-            expect(subject.errors[:schedule]).to include("Contract period of schedule must match contract period of EOI and/or school partnership")
+            expect(subject).to be_invalid
+            expect(subject.errors[:schedule]).to include("Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
           end
         end
       end
 
-      context "contract period from expression of interest" do
+      context "checking contract period matches with expression of interest" do
         context "when contract periods match" do
           subject do
             FactoryBot.build(
@@ -490,9 +489,8 @@ describe TrainingPeriod do
           let(:mismatched_expression_of_interest) { FactoryBot.create(:active_lead_provider, contract_period: FactoryBot.create(:contract_period, year: 2025)) }
 
           it "adds an error to schedule" do
-            subject.valid?
-
-            expect(subject.errors[:schedule]).to include("Contract period of schedule must match contract period of EOI and/or school partnership")
+            expect(subject).to be_invalid
+            expect(subject.errors[:schedule]).to include("Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
           end
         end
 
@@ -500,9 +498,34 @@ describe TrainingPeriod do
           subject { FactoryBot.build(:training_period, :ongoing, :school_led, schedule:, ect_at_school_period:) }
 
           it "adds an error to schedule" do
-            subject.valid?
-
+            expect(subject).to be_invalid
             expect(subject.errors[:schedule]).to include("Schedule must be absent for school-led training programmes")
+          end
+        end
+      end
+
+      context "checking contract period matches with declarations" do
+        subject { training_period.tap { |t| t.schedule = mismatch_schedule } }
+
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
+
+        before do
+          FactoryBot.create(:declaration, training_period:)
+        end
+
+        context "when changing schedule with the same contract period" do
+          let!(:mismatch_schedule) { FactoryBot.create(:schedule, identifier: "ecf-standard-january", contract_period:) }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when changing schedule with different contract period" do
+          let(:mismatch_contract_period) { FactoryBot.create(:contract_period, year: contract_period.year + 1) }
+          let!(:mismatch_schedule) { FactoryBot.create(:schedule, identifier: schedule.identifier, contract_period: mismatch_contract_period) }
+
+          it "adds an error to schedule" do
+            expect(subject).to be_invalid
+            expect(subject.errors[:schedule]).to include("Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
           end
         end
       end
