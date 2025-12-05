@@ -36,17 +36,15 @@ describe "One induction record" do
     end
 
     it "set the created and updated timestamps from the user" do
-      skip "not implemented yet"
-
       aggregate_failures do
-        expect(subject.teacher_row.created_at).to eql(ecf1_teacher_history.user.created_at)
-        expect(subject.teacher_row.updated_at).to eql(ecf1_teacher_history.user.updated_at)
+        expect(subject.teacher_row.created_at).to be_within(1.second).of(ecf1_teacher_history.user.created_at)
+        expect(subject.teacher_row.updated_at).to be_within(1.second).of(ecf1_teacher_history.user.updated_at)
       end
     end
   end
 
   describe "ECT at school period attributes" do
-    let(:ecf1_induction_record_row) {ecf1_teacher_history.ect.induction_records.first}
+    let(:ecf1_induction_record_row) { ecf1_teacher_history.ect.induction_records.first }
     let(:ecf2_ect_at_school_period_row) { subject.ect_at_school_period_rows.first }
 
     it "sets the URN from the induction record's induction programme" do
