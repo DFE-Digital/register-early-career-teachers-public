@@ -87,8 +87,6 @@ class School < ApplicationRecord
            :administrative_district_name,
            :closed_on,
            :establishment_number,
-           :funding_eligibility,
-           :induction_eligibility,
            :in_england,
            :local_authority_code,
            :local_authority_name,
@@ -168,5 +166,9 @@ class School < ApplicationRecord
     if induction_tutor_name.blank? || induction_tutor_email.blank?
       errors.add(:induction_tutor_last_nominated_in, "Cannot be set if induction tutor name or email is blank")
     end
+  end
+
+  def eligible?
+    marked_as_eligible? || gias_school.eligible?
   end
 end

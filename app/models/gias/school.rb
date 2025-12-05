@@ -7,13 +7,6 @@ class GIAS::School < ApplicationRecord
   touch -> { school }, when_changing: %i[name], timestamp_attribute: :api_updated_at
 
   # Enums
-  enum :funding_eligibility,
-       { eligible_for_fip: "eligible_for_fip",
-         eligible_for_cip: "eligible_for_cip",
-         ineligible: "ineligible" },
-       prefix: :funding,
-       validate: true
-
   enum :status,
        { open: "open",
          closed: "closed",
