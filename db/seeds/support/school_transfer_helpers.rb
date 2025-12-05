@@ -82,7 +82,8 @@ private
         "#{type}_at_school_period" => school_period,
         school_partnership: school_partnership_between(
           lead_provider: with,
-          school: school_period.school
+          school: school_period.school,
+          from:
         )
       )
     when :school_led
@@ -97,20 +98,26 @@ private
     end
   end
 
-  def school_partnership_between(lead_provider:, school:)
+  def school_partnership_between(lead_provider:, school:, from:)
     existing_school_partnership = SchoolPartnership
       .includes(:active_lead_provider)
       .joins(:active_lead_provider)
       .find_by(active_lead_provider: { lead_provider: }, school:)
 
     unless existing_school_partnership
-      lead_provider_delivery_partnership = FactoryBot.create(
-        :lead_provider_delivery_partnership,
-        active_lead_provider: FactoryBot.create(
-          :active_lead_provider,
-          lead_provider:
+      contract_period = ContractPeriod.started_on_or_before(from).latest_first.first.presence || FactoryBot.create(:contract_period)
+
+      lead_provider_delivery_partnership = LeadProviderDeliveryPartnership
+        .includes(:active_lead_provider)
+        .joins(:active_lead_provider)
+        .find_by(active_lead_provider: { lead_provider:, contract_period: }) || FactoryBot.create(
+          :lead_provider_delivery_partnership,
+          active_lead_provider: FactoryBot.create(
+            :active_lead_provider,
+            lead_provider:,
+            contract_period:
+          )
         )
-      )
       school_partnership = FactoryBot.create(
         :school_partnership,
         lead_provider_delivery_partnership:,
