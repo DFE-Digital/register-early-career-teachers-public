@@ -21,7 +21,7 @@ private
   def ect_at_school_period_rows
     @ecf1_teacher_history.ect.induction_records.map do |ir|
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-        started_on: ir.start_date,
+        started_on: period_started_on(ir),
         finished_on: ir.end_date,
         school: Types::SchoolData.new(urn: ir.school_urn, name: "Thing"),
         email: ir.preferred_identity_email,
@@ -34,6 +34,10 @@ private
 
   def parsed_name
     @parsed_name ||= Teachers::FullNameParser.new(full_name: @ecf1_teacher_history.user.full_name)
+  end
+
+  def period_started_on(induction_record)
+    [induction_record.start_date, induction_record.created_at.to_date].min
   end
 
   def ecf1_events
