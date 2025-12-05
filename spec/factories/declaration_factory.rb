@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:declaration) do
-    training_period
+    training_period { FactoryBot.create(:training_period) }
     payment_status { :no_payment }
     clawback_status { :no_clawback }
     api_id { SecureRandom.uuid }
@@ -16,40 +16,40 @@ FactoryBot.define do
 
     trait :eligible do
       payment_status { :eligible }
-      association :payment_statement, factory: %i[statement open]
+      payment_statement { FactoryBot.create(:statement, :open, contract_period: training_period.contract_period) }
     end
 
     trait :payable do
       payment_status { :payable }
-      association :payment_statement, factory: %i[statement payable]
+      payment_statement { FactoryBot.create(:statement, :payable, contract_period: training_period.contract_period) }
     end
 
     trait :paid do
       payment_status { :paid }
-      association :payment_statement, factory: %i[statement paid]
+      payment_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
     end
 
     trait :voided do
       payment_status { :voided }
-      association :payment_statement, factory: %i[statement paid]
+      payment_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
     end
 
     trait :ineligible do
       payment_status { :ineligible }
-      association :payment_statement, factory: %i[statement paid]
+      payment_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
       ineligibility_reason { Declaration.ineligibility_reasons.keys.sample }
     end
 
     trait :awaiting_clawback do
       paid
       clawback_status { :awaiting_clawback }
-      association :clawback_statement, factory: %i[statement payable]
+      clawback_statement { FactoryBot.create(:statement, :payable, contract_period: training_period.contract_period) }
     end
 
     trait :clawed_back do
       paid
       clawback_status { :clawed_back }
-      association :clawback_statement, factory: %i[statement paid]
+      clawback_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
     end
   end
 end
