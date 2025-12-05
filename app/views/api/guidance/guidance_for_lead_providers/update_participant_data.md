@@ -38,7 +38,7 @@ Lead providers can use the API to notify DfE when a participant has: 
 
 These updates keep participant records aligned between systems and ensure correct funding calculations. 
 
-For technical information, see the Swagger API documentation for [deferring](URL), [resuming](URL) and [withdrawing](/api/docs/v3#/Participants/put_api_v3_participants__id__withdraw) participants, and for [changing training schedules](URL).  
+For technical information, see the Swagger API documentation for [deferring](/api/docs/v3#/Participants/put_api_v3_participants__id__defer), [resuming](/api/docs/v3#/Participants/put_api_v3_participants__id__resume) and [withdrawing](/api/docs/v3#/Participants/put_api_v3_participants__id__withdraw) participants, and for [changing training schedules](/api/docs/v3#/Participants/put_api_v3_participants__id__change_schedule).  
  
 ## When providers can defer or withdraw participants     
 
