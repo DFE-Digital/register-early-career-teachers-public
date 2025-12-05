@@ -4,6 +4,7 @@ describe "School user can change ECTs training programme", :enable_schools_inter
   it "changes the training programme from provider-led to school-led" do
     given_there_is_a_school
     and_there_is_an_ect
+    with_a_mentor
     with_provider_led_training
     and_i_am_logged_in_as_a_school_user
 
@@ -25,6 +26,7 @@ describe "School user can change ECTs training programme", :enable_schools_inter
   it "changes the training programme from school-led to provider-led" do
     given_there_is_a_school
     and_there_is_an_ect
+    with_a_mentor
     and_there_is_a_contract_period
     and_there_is_an_active_lead_provider
     with_school_led_training
@@ -67,6 +69,11 @@ private
       school: @school,
       email: "ect@example.com"
     )
+  end
+
+  def with_a_mentor
+    mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: @ect.started_on)
+    FactoryBot.create(:mentorship_period, mentee: @ect, mentor: mentor_at_school_period)
   end
 
   def and_there_is_a_contract_period
