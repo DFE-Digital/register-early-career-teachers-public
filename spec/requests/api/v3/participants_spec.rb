@@ -78,7 +78,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
           type: "participant-change-schedule",
           attributes: {
             schedule_identifier:,
-            contract_period_year:,
+            cohort: contract_period_year,
             course_identifier:,
           }
         }
