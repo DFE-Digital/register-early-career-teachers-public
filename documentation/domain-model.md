@@ -96,6 +96,7 @@ erDiagram
     string induction_tutor_name
     citext induction_tutor_email
     uuid api_id
+    boolean marked_as_eligible
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
