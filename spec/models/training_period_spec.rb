@@ -956,13 +956,15 @@ describe TrainingPeriod do
       let!(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
 
       context "when not completed training" do
+        before { teacher.update!(mentor_became_ineligible_for_funding_on: nil) }
+
         it "returns false" do
           expect(subject).to be_falsy
         end
       end
 
       context "when completed training" do
-        before { FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: "completed") }
+        before { teacher.update!(mentor_became_ineligible_for_funding_on: Time.zone.now, mentor_became_ineligible_for_funding_reason: "completed_declaration_received") }
 
         it "returns true" do
           expect(subject).to be_truthy
