@@ -34,7 +34,8 @@ class ECF1TeacherHistory
                                   :training_status,
                                   :induction_status,
                                   :training_programme,
-                                  :training_provider_info)
+                                  :training_provider_info,
+                                  :appropriate_body)
 
   TrainingProviderInfo = Struct.new(
     :lead_provider,
@@ -123,7 +124,8 @@ class ECF1TeacherHistory
         training_status: induction_record.training_status,
         induction_status: induction_record.induction_status,
         training_programme: induction_record.induction_programme.training_programme,
-        training_provider_info: build_training_provider_info(induction_record:)
+        training_provider_info: build_training_provider_info(induction_record:),
+        appropriate_body: build_appropriate_body(induction_record:)
       )
     end
   end
@@ -143,6 +145,13 @@ class ECF1TeacherHistory
       ),
       cohort_year: partnership.cohort.start_year
     )
+  end
+
+  def self.build_appropriate_body(induction_record:)
+    appropriate_body = induction_record.appropriate_body
+    return if appropriate_body.blank?
+
+    Types::AppropriateBody.new(id: appropriate_body.id, name: appropriate_body.name)
   end
 
   def self.build_schedule_info(schedule:)

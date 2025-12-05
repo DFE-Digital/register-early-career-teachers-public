@@ -29,7 +29,7 @@ private
         email: ir.preferred_identity_email,
         mentorship_period_rows: [],
         training_period_rows: [],
-        appropriate_body: nil
+        appropriate_body: ir.appropriate_body
       )
     end
   end
