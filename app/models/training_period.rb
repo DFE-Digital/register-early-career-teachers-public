@@ -143,7 +143,7 @@ class TrainingPeriod < ApplicationRecord
     if for_ect?
       trainee.teacher.finished_induction_period&.complete?
     else
-      trainee.teacher.mentor_declarations.billable.completed.exists?
+      trainee.teacher.mentor_became_ineligible_for_funding_on.present?
     end
   end
 
