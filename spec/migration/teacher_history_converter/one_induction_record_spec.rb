@@ -5,8 +5,10 @@ describe "One induction record" do
   # let(:lead_provider) { Types::LeadProvider.new(id: SecureRandom.uuid, name: "Lead Provider A") }
   # let(:delivery_partner) { Types::DeliveryPartner.new(id: SecureRandom.uuid, name: "Delivery Partner A") }
 
+  let(:appropriate_body) { nil }
+
   let(:induction_record) do
-    FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)
+    FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:, appropriate_body:)
   end
 
   let(:ecf1_teacher_history) do
@@ -63,8 +65,11 @@ describe "One induction record" do
       end
 
       context "when there is an appropriate body" do
+        let(:appropriate_body) { Types::AppropriateBodyData.new(id: SecureRandom.uuid, name: "Average Appropriate body") }
+
         it "sets the appropriate body to the one on the induction record" do
-          skip "Not implemented"
+          expect(ecf2_ect_at_school_period_row.appropriate_body.id).to eql(ecf1_induction_record_row.appropriate_body.id)
+          expect(ecf2_ect_at_school_period_row.appropriate_body.name).to eql(ecf1_induction_record_row.appropriate_body.name)
         end
       end
     end
