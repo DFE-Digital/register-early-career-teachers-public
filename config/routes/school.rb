@@ -65,5 +65,9 @@ constraints -> { Rails.application.config.enable_schools_interface } do
     namespace :assign_existing_mentor_wizard, path: "assign-existing-mentor" do
       concerns :wizardable, wizard: Schools::AssignExistingMentorWizard
     end
+
+    namespace :confirm_existing_induction_tutor_wizard, path: "confirm-existing-induction-tutor" do
+      concerns :wizardable, wizard: Schools::ConfirmExistingInductionTutorWizard
+    end
   end
 end
