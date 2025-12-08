@@ -1,0 +1,30 @@
+<% 
+  page_data(
+    title: "Induction tutor", 
+    error: false, 
+    caption: @school.name, 
+    caption_size: 'l'
+  ) 
+%>
+
+<p class="govuk-body">This person is your school's main point of contact for early career training and induction. We share these details with your appropriate body and lead providers (if your school uses provider-led training programmes).</p>
+
+<h1 class="govuk-heading-m">Induction tutor details</h1>
+
+<%= govuk_summary_list do |sl|
+  sl.with_row do |row|
+    row.with_key(text: "Name")
+    row.with_value(text: @school.induction_tutor_name)
+  end
+
+  sl.with_row do |row|
+    row.with_key(text: "Email")
+    row.with_value(text: @school.induction_tutor_email)
+  end
+end %>
+
+<div class="govuk-button-group">
+  <%= govuk_button_to "Change induction tutor", root_path %>
+</div>
+
+

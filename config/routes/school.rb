@@ -65,5 +65,7 @@ constraints -> { Rails.application.config.enable_schools_interface } do
     namespace :assign_existing_mentor_wizard, path: "assign-existing-mentor" do
       concerns :wizardable, wizard: Schools::AssignExistingMentorWizard
     end
+
+    get "/home/induction-tutor", to: "induction_tutor#show", as: :induction_tutor
   end
 end
