@@ -9,7 +9,7 @@ describe "School user reports a mentor leaving", :enable_schools_interface do
     and_i_am_logged_in_as_a_school_user
 
     when_i_visit_the_mentor_page
-    then_i_can_start_the_leaving_wizard
+    then_i_can_start_the_mentor_leaving_flow
 
     when_i_enter_a_future_leaving_date
     then_i_see_the_check_answers_page
@@ -50,7 +50,7 @@ private
     page.goto(schools_mentor_path(@mentor_at_school_period))
   end
 
-  def then_i_can_start_the_leaving_wizard
+  def then_i_can_start_the_mentor_leaving_flow
     page.get_by_role("link", name: "Tell us if Batman is leaving permanently").click
     expect(page.locator("h1", hasText: "Tell us if Batman has left or is leaving your school permanently")).to be_visible
   end
