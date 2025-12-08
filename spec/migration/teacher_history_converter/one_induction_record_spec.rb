@@ -187,6 +187,56 @@ describe "One induction record" do
     describe "deferred" do
       context "when training state is deferred" do
         let(:training_status) { "deferred" }
+
+        it "sets the deferred at timestamp" do
+          expect(ecf2_training_period_row.deferred_at).to eql(ecf1_induction_record_row.end_date)
+        end
+
+        it "leaves the withdrawn at timestamp blank" do
+          expect(ecf2_training_period_row.withdrawn_at).to be_nil
+        end
+
+        describe "deferral reasons" do
+          it "sets the deferral reason" do
+            pending "we need to find the relevant record from participant_profile_states"
+
+            expect(ecf2_training_period_row.deferral_reason).to eql(ecf2_training_period_row.finished_on)
+          end
+
+          # bereavement
+          # long-term-sickness
+          # parental-leave
+          # career-break
+          # other
+        end
+      end
+    end
+
+    describe "withdrawn" do
+      context "when training state is deferred" do
+        let(:training_status) { "withdrawn" }
+
+        it "sets the withdrawn at timestamp" do
+          expect(ecf2_training_period_row.withdrawn_at).to eql(ecf1_induction_record_row.end_date)
+        end
+
+        it "leaves the deferred at timestamp blank" do
+          expect(ecf2_training_period_row.deferred_at).to be_nil
+        end
+
+        describe "withdrawal reasons" do
+          it "sets the withdrawal reason" do
+            pending "we need to find the relevant record from participant_profile_states"
+
+            expect(ecf2_training_period_row.withdrawal_reason).to eql(ecf2_training_period_row.finished_on)
+          end
+
+          # left-teaching-profession
+          # moved-school
+          # mentor-no-longer-being-mentor
+          # school-left-fip
+          # other
+        end
       end
     end
   end

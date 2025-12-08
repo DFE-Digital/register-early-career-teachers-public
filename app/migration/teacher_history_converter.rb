@@ -47,7 +47,9 @@ private
     {
       started_on: period_started_on(induction_record),
       finished_on: induction_record.end_date,
-      training_programme: ecf2_training_programme(induction_record.training_programme)
+      training_programme: ecf2_training_programme(induction_record.training_programme),
+      **deferral_attributes(induction_record),
+      **withdrawal_attributes(induction_record)
     }
   end
 
@@ -68,5 +70,23 @@ private
 
   def ecf2_training_programme(ecf1_training_programme)
     Mappers::TrainingProgrammeMapper.new(ecf1_training_programme.to_s).mapped_value
+  end
+
+  def deferral_attributes(induction_record)
+    return {} unless induction_record.training_status == "deferred"
+
+    {
+      deferred_at: induction_record.end_date,
+      deferral_reason: "???"
+    }
+  end
+
+  def withdrawal_attributes(induction_record)
+    return {} unless induction_record.training_status == "withdrawn"
+
+    {
+      withdrawn_at: induction_record.end_date,
+      withdrawal_reason: "???"
+    }
   end
 end
