@@ -85,7 +85,7 @@ The following table explains what the training status fields mean.
 | `training_status` | Definition | Notes | 
 | ------------ | ------------- | ------------- | 
 | `active` | Participant is currently in training | Update participant data and submit declarations | 
-| `deferred` | Participant has paused training | Cannot update participant data. Can only submit backdated declarations if `declaration_date` is before `deferral_date`. Providers must notify us when the participant resumes | 
+| `deferred` | Participant has paused training | Cannot update participant data. Can submit declarations. Providers must notify us when the participant resumes | 
 | `withdrawn` | Participant has left training | Cannot update participant data. Can only submit backdated declarations if `declaration_date` is before `withdrawal_date` | 
 
 The following table explains what the participant status fields mean. 
