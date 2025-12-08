@@ -3,7 +3,7 @@ module Teachers::SchoolTransfers
     def self.transfers_for(...) = new(...).transfers
 
     def initialize(school_periods:, lead_provider_id:)
-      @school_periods = school_periods.earliest_first
+      @school_periods = school_periods.sort_by(&:started_on)
       @lead_provider_id = lead_provider_id
     end
 
