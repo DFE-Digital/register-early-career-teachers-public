@@ -26,6 +26,8 @@ seed_files = Dir["db/seeds/*.rb"].sort_by do |path|
   priority_seeds.index(filename.chomp(".rb")) || Float::INFINITY
 end
 
+SEED_API_DATA = ActiveModel::Type::Boolean.new.cast(ENV.fetch("SEED_API_DATA", false))
+
 DeclarativeUpdates.skip(:metadata) do
   seed_files.each do |seed_file|
     puts "\r\n🪴 planting #{seed_file}"

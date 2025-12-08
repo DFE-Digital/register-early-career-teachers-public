@@ -107,4 +107,4 @@ module TeacherTransfersSeeder
   end
 end
 
-TeacherTransfersSeeder.seed!
+TeacherTransfersSeeder.seed! if SEED_API_DATA

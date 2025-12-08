@@ -86,4 +86,4 @@ module UnfundedMentorsSeeder
   end
 end
 
-UnfundedMentorsSeeder.seed!
+UnfundedMentorsSeeder.seed! if SEED_API_DATA
