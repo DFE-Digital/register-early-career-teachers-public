@@ -21,17 +21,34 @@ private
   end
 
   def ect_at_school_period_rows
-    @ecf1_teacher_history.ect.induction_records.map do |ir|
+    @ecf1_teacher_history.ect.induction_records.map do |induction_record|
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-        started_on: period_started_on(ir),
-        finished_on: ir.end_date,
-        school: Types::SchoolData.new(urn: ir.school_urn, name: "Thing"),
-        email: ir.preferred_identity_email,
-        mentorship_period_rows: [],
-        training_period_rows: [],
-        appropriate_body: ir.appropriate_body
+        **induction_record_attributes(induction_record),
+        training_period_rows: [
+          ECF2TeacherHistory::TrainingPeriodRow.new(**training_period_attributes(induction_record))
+        ]
       )
     end
+  end
+
+  def induction_record_attributes(induction_record)
+    {
+      started_on: period_started_on(induction_record),
+      finished_on: induction_record.end_date,
+      school: Types::SchoolData.new(urn: induction_record.school_urn, name: "Thing"),
+      email: induction_record.preferred_identity_email,
+      mentorship_period_rows: [],
+      training_period_rows: [],
+      appropriate_body: induction_record.appropriate_body
+    }
+  end
+
+  def training_period_attributes(induction_record)
+    {
+      started_on: period_started_on(induction_record),
+      finished_on: induction_record.end_date,
+      training_programme: ecf2_training_programme(induction_record.training_programme)
+    }
   end
 
   def parsed_name
@@ -47,5 +64,9 @@ private
       # build some kind of chronological representation of
       # what happened
     end
+  end
+
+  def ecf2_training_programme(ecf1_training_programme)
+    Mappers::TrainingProgrammeMapper.new(ecf1_training_programme.to_s).mapped_value
   end
 end

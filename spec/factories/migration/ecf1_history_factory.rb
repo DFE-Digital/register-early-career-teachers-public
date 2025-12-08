@@ -71,7 +71,7 @@ FactoryBot.define do
     induction_record_id { SecureRandom.uuid }
     cohort_year { Random.rand(2020..2119) }
     start_date { Date.new(cohort_year, 9, 1) }
-    end_date { nil }
+    end_date { Date.new(cohort_year + 2, 6, 1) }
     created_at { start_date }
     updated_at { Random.rand(30).days.ago }
     school_urn { Faker::Number.unique.number(digits: 6).to_s }
@@ -108,6 +108,10 @@ FactoryBot.define do
 
     trait :start_date_later_than_created_at do
       created_at { start_date - 2.days }
+    end
+
+    trait :ongoing do
+      end_date { nil }
     end
   end
 

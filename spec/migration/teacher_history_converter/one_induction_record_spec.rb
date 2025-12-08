@@ -5,10 +5,18 @@ describe "One induction record" do
   # let(:lead_provider) { Types::LeadProvider.new(id: SecureRandom.uuid, name: "Lead Provider A") }
   # let(:delivery_partner) { Types::DeliveryPartner.new(id: SecureRandom.uuid, name: "Delivery Partner A") }
 
+  let(:training_status) { "active" }
   let(:appropriate_body) { nil }
+  let(:training_programme) { nil }
 
   let(:induction_record) do
-    FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:, appropriate_body:)
+    FactoryBot.build(
+      :ecf1_teacher_history_induction_record_row,
+      cohort_year:,
+      appropriate_body:,
+      training_programme:,
+      training_status:
+    )
   end
 
   let(:ecf1_teacher_history) do
@@ -78,8 +86,20 @@ describe "One induction record" do
       expect(ecf2_ect_at_school_period_row.started_on).to eql(ecf1_induction_record_row.start_date)
     end
 
-    it "sets the end date to the induction record end date" do
-      expect(ecf2_ect_at_school_period_row.finished_on).to eql(ecf1_induction_record_row.end_date)
+    describe "end date" do
+      context "when there is an end date" do
+        it "sets the end date to the induction record end date" do
+          expect(ecf2_ect_at_school_period_row.finished_on).to eql(ecf1_induction_record_row.end_date)
+        end
+      end
+
+      context "when there is no end date" do
+        let(:induction_record) { FactoryBot.build(:ecf1_teacher_history_induction_record_row, :ongoing, cohort_year:) }
+
+        it "leaves the end date nil" do
+          expect(ecf2_ect_at_school_period_row.finished_on).to be_nil
+        end
+      end
     end
 
     describe "choosing the right started_on date" do
@@ -105,8 +125,69 @@ describe "One induction record" do
     end
   end
 
-  # Extra contexts:
-  # * IR created_at date is later than the start_date
-  # * with an school-reported AB
-  # * deferred / withdrawn?
+  describe "Training period attributes" do
+    let(:ecf1_induction_record_row) { ecf1_teacher_history.ect.induction_records.first }
+    let(:ecf2_ect_at_school_period_row) { subject.ect_at_school_period_rows.first }
+    let(:ecf2_training_period_row) { ecf2_ect_at_school_period_row.training_period_rows.first }
+
+    it "sets the start date to the induction record start date" do
+      expect(ecf2_training_period_row.started_on).to eql(ecf1_induction_record_row.start_date)
+    end
+
+    describe "end date" do
+      context "when there is an end date" do
+        it "sets the end date to the induction record end date" do
+          expect(ecf2_training_period_row.finished_on).to eql(ecf1_induction_record_row.end_date)
+        end
+      end
+
+      context "when there is no end date" do
+        let(:induction_record) { FactoryBot.build(:ecf1_teacher_history_induction_record_row, :ongoing, cohort_year:) }
+
+        it "leaves the end date nil" do
+          expect(ecf2_training_period_row.finished_on).to be_nil
+        end
+      end
+    end
+
+    describe "training programme" do
+      context "when training programme is :school_led" do
+        let(:training_programme) { :core_induction_programme }
+
+        it "sets the training programme to school_led" do
+          expect(ecf2_training_period_row.training_programme).to eql("school_led")
+        end
+      end
+
+      context "when training programme is :design_our_own" do
+        let(:training_programme) { :design_our_own }
+
+        it "sets the training programme to school_led" do
+          expect(ecf2_training_period_row.training_programme).to eql("school_led")
+        end
+      end
+
+      context "when training programme is :school_funded_fip" do
+        let(:training_programme) { :school_funded_fip }
+
+        it "sets the training programme to provider_led" do
+          expect(ecf2_training_period_row.training_programme).to eql("provider_led")
+        end
+      end
+
+      context "when training programme is :provider_led" do
+        let(:training_programme) { :full_induction_programme }
+
+        it "sets the training programme to provider_led" do
+          expect(ecf2_training_period_row.training_programme).to eql("provider_led")
+        end
+      end
+    end
+
+    describe "deferred" do
+      context "when training state is deferred" do
+        let(:training_status) { "deferred" }
+      end
+    end
+  end
 end
