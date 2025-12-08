@@ -29,6 +29,7 @@ erDiagram
     datetime withdrawn_at
     enum withdrawal_reason
     integer schedule_id
+    datetime api_transfer_updated_at
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to
@@ -307,13 +308,14 @@ erDiagram
     datetime updated_at
     integer voided_by_user_id
     integer mentorship_period_id
-    integer billable_statement_id
-    integer refundable_statement_id
+    integer payment_statement_id
+    integer clawback_statement_id
     datetime voided_at
     uuid api_id
-    datetime date
+    datetime declaration_date
     enum evidence_type
-    enum status
+    enum payment_status
+    enum clawback_status
     enum ineligibility_reason
     enum declaration_type
     boolean sparsity_uplift
