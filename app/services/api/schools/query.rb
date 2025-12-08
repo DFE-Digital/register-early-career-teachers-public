@@ -7,7 +7,7 @@ module API::Schools
     def initialize(contract_period_year:, lead_provider_id: :ignore, urn: :ignore, updated_since: :ignore, sort: { created_at: :asc })
       @lead_provider_id = lead_provider_id
       @contract_period_year = contract_period_year
-      @scope = School.eligible.not_cip_only
+      @scope = School.eligible
 
       or_where_school_partnership_exists(contract_period_year)
       where_contract_period_exists(contract_period_year)

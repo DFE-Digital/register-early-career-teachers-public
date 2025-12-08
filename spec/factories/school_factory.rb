@@ -8,7 +8,7 @@ FactoryBot.define do
     end
 
     trait :state_funded do
-      gias_school { association :gias_school, :open, :state_school_type, :eligible, urn: }
+      gias_school { association :gias_school, :open, :eligible, :state_school_type, urn: }
     end
 
     trait :provider_led_last_chosen do

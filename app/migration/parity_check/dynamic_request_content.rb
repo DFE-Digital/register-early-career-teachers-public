@@ -380,7 +380,7 @@ module ParityCheck
         .pluck(:school_id)
         .uniq
 
-      School.where.not(id: existing_school_ids).eligible.not_cip_only.order("RANDOM()").first
+      School.where.not(id: existing_school_ids).eligible.order("RANDOM()").first
     end
 
     def latest_training_period(participant)

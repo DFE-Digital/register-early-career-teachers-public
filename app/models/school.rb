@@ -79,6 +79,7 @@ class School < ApplicationRecord
 
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
+  scope :eligible, -> { in_gias_schools.where(marked_as_eligible: true).or(gias_eligible) }
 
   # Instance Methods
   delegate :address_line1,
@@ -168,7 +169,5 @@ class School < ApplicationRecord
     end
   end
 
-  def eligible?
-    marked_as_eligible? || gias_school.eligible?
-  end
+  def eligible? = marked_as_eligible? || gias_school.eligible?
 end
