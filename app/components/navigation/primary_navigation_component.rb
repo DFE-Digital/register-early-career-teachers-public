@@ -49,6 +49,7 @@ module Navigation
         school_user: [
           { text: "ECTs", href: schools_ects_home_path },
           { text: "Mentors", href: schools_mentors_home_path },
+          { text: "Induction tutor", href: schools_induction_tutor_path }
         ],
         api_guidance: [
           { text: "Home", href: "/api/guidance" },
