@@ -42,6 +42,8 @@ module Migration
       "ineligible"
     end
 
+    def eligible_for_fip? = funding_eligibility == "eligible_for_fip"
+
     def induction_eligibility = funding_eligibility != "ineligible"
 
     def independent_school_type? = GIAS::Types::INDEPENDENT_SCHOOLS_TYPES.include?(school_type_name)

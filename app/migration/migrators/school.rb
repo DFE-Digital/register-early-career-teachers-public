@@ -2,8 +2,7 @@ module Migrators
   class School < Migrators::Base
     FIELDS_MAPPING = {
       administrative_district_name: :administrative_district_name,
-      funding_eligibility: :funding_eligibility,
-      induction_eligibility: :induction_eligibility,
+      eligible: :eligible_for_fip?,
       in_england: :in_england?,
       name: :name,
       phase_name: :school_phase_name,
