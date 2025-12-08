@@ -97,7 +97,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
     end
 
     context "when a teacher leaves provider-led training at one school " \
-            "and has completed their training" do
+            "and has completed their training as an ECT" do
       let(:lead_provider1) { FactoryBot.create(:lead_provider) }
       let(:lead_provider2) { FactoryBot.create(:lead_provider) }
 
@@ -121,6 +121,41 @@ RSpec.describe Teachers::SchoolTransfers::History do
       it "returns no transfers for lead provider #2" do
         history = described_class.new(
           school_periods: teacher.ect_at_school_periods,
+          lead_provider_id: lead_provider2.id
+        )
+
+        expect(history.transfers).to be_empty
+      end
+    end
+
+    context "when a teacher leaves provider-led training at one school " \
+            "and has completed their training as a mentor" do
+      let(:lead_provider1) { FactoryBot.create(:lead_provider) }
+      let(:lead_provider2) { FactoryBot.create(:lead_provider) }
+
+      before do
+        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago, type: :mentor)
+        add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
+        add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
+        @training_period3 = add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: lead_provider2)
+        teacher.update!(
+          mentor_became_ineligible_for_funding_on: 1.week.ago,
+          mentor_became_ineligible_for_funding_reason: :completed_declaration_received
+        )
+      end
+
+      it "returns no transfers for lead provider #1" do
+        history = described_class.new(
+          school_periods: teacher.mentor_at_school_periods,
+          lead_provider_id: lead_provider1.id
+        )
+
+        expect(history.transfers).to be_empty
+      end
+
+      it "returns no transfers for lead provider #2" do
+        history = described_class.new(
+          school_periods: teacher.mentor_at_school_periods,
           lead_provider_id: lead_provider2.id
         )
 
