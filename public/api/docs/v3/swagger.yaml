@@ -863,6 +863,76 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v3/participants/transfers":
+    get:
+      summary: Retrieve all participants with transfers
+      tags:
+      - Transfers
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/ParticipantsTransfersFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      - name: sort
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/SortingTimestamps"
+      responses:
+        '200':
+          description: A list of participants with transfers
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ParticipantsTransfersResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v3/participants/{id}/transfers":
+    get:
+      summary: Retrieve transfers for a given participant
+      tags:
+      - Transfers
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: Transfers for a given participant
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ParticipantTransfersResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v3/unfunded-mentors":
     get:
       summary: Retrieve multiple unfunded mentors
@@ -1981,6 +2051,127 @@ components:
           type: string
           format: date_time
           example: '2023-01-01T12:00:00Z'
+    ParticipantTransfer:
+      description: A participant transfer
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: participant-transfer
+          enum:
+          - participant-transfer
+        attributes:
+          properties:
+            transfers:
+              type: array
+              items:
+                "$ref": "#/components/schemas/ParticipantTransfersTransfer"
+            updated_at:
+              description: The date and time the participant transfer was last updated
+              type: string
+              format: date-time
+              example: '2021-05-31T02:22:32.000Z'
+    ParticipantTransfersTransfer:
+      description: A participant transfer, transfer
+      type: object
+      required:
+      - training_record_id
+      - transfer_type
+      - status
+      - leaving
+      properties:
+        training_record_id:
+          description: The unique identifier of this participant's training record.
+            Should the DfE dedupe a participant, this value will not change.
+          type: string
+          format: uuid
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5
+        transfer_type:
+          description: The type of transfer between schools
+          type: string
+          enum:
+          - new_school
+          - new_provider
+          - unknown
+          example: new_provider
+        status:
+          description: The status of the transfer, if both leaving and joining SIT
+            have completed their journeys or only one has
+          type: string
+          enum:
+          - incomplete
+          - complete
+          example: complete
+        leaving:
+          type: object
+          required:
+          - school_urn
+          properties:
+            school_urn:
+              description: The URN of the school the participant is leaving
+              type: string
+              example: '123456'
+            provider:
+              description: The name of the provider the participant is leaving
+              type: string
+              example: Example Institute
+            date:
+              description: The date the participant will be leaving the school
+              type: string
+              format: date
+              example: '2021-05-31'
+        joining:
+          type: object
+          required:
+          - school_urn
+          properties:
+            school_urn:
+              description: The URN of the school the participant is joining
+              type: string
+              example: '654321'
+            provider:
+              description: The name of the provider the participant is joining
+              type: string
+              example: Example Institute
+            date:
+              description: The date the participant will be joining the school
+              type: string
+              format: date
+              example: '2021-06-01'
+    ParticipantsTransfersResponse:
+      description: A list of transfers
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/ParticipantTransfer"
+    ParticipantsTransfersFilter:
+      description: Filter participant transfers to return more specific results
+      type: object
+      properties:
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format)
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    ParticipantTransfersResponse:
+      description: Transfers for a given participant
+      tyoe: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/ParticipantTransfer"
     UnfundedMentor:
       description: An unfunded mentor
       type: object
