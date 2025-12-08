@@ -17,9 +17,10 @@ module Schools
         end
 
         def save!
-          return false unless leaving_date
+          date = leaving_date
+          return false unless date
 
-          report_teacher_leaving!(leaving_date)
+          report_teacher_leaving!(date)
           true
         end
 
