@@ -6,7 +6,7 @@
 %>
 
 <% if @wizard.store.are_these_details_correct %>
-  <%= govuk_panel(title_text: "You've confirmed #{@wizard.school.induction_tutor_name} will continue as your school's induction tutor") %>
+  <%= govuk_panel(title_text: "You’ve confirmed #{@wizard.school.induction_tutor_name} will continue as your school’s induction tutor") %>
 <% else %>
   <%= govuk_panel(title_text: "You've changed your school's induction tutor to #{@wizard.school.induction_tutor_name}") %>
 <% end %>
