@@ -150,6 +150,28 @@ describe "One induction record" do
       end
     end
 
+    describe "choosing the right started_on date" do
+      context "when the induction record created_at is later than the start_date" do
+        let(:induction_record) do
+          FactoryBot.build(:ecf1_teacher_history_induction_record_row, :created_at_later_than_start_date)
+        end
+
+        it "sets the start date to the induction record start date" do
+          expect(ecf2_training_period_row.started_on).to eql(ecf1_induction_record_row.start_date.to_date)
+        end
+      end
+
+      context "when the induction record start date is later than the created_at" do
+        let(:induction_record) do
+          FactoryBot.build(:ecf1_teacher_history_induction_record_row, :start_date_later_than_created_at)
+        end
+
+        it "sets the start date to the induction record created date" do
+          expect(ecf2_training_period_row.started_on).to eql(ecf1_induction_record_row.created_at.to_date)
+        end
+      end
+    end
+
     describe "training programme" do
       context "when training programme is :school_led" do
         let(:training_programme) { :core_induction_programme }
