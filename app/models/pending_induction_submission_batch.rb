@@ -79,7 +79,6 @@ class PendingInductionSubmissionBatch < ApplicationRecord
       processed_count: processed_count || pending_induction_submissions.count,
       errored_count: errored_count || pending_induction_submissions.with_errors.count,
       released_count: released_count || pending_induction_submissions.released.count,
-      failed_count: failed_count || pending_induction_submissions.failed.count,
       passed_count: passed_count || pending_induction_submissions.passed.count,
       claimed_count: claimed_count || pending_induction_submissions.claimed.count
     }
@@ -93,7 +92,6 @@ class PendingInductionSubmissionBatch < ApplicationRecord
       processed_count: pending_induction_submissions.count,
       errored_count: pending_induction_submissions.with_errors.count,
       released_count: pending_induction_submissions.released.count,
-      failed_count: pending_induction_submissions.failed.count,
       passed_count: pending_induction_submissions.passed.count,
       claimed_count: pending_induction_submissions.claimed.count
     )
