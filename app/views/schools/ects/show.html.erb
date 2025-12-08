@@ -16,7 +16,7 @@
 
       <%= render Schools::ECTTrainingDetailsComponent.new(ect_at_school_period: @ect_at_school_period, training_period: @training_period) %>
 
-      <% if @ect_at_school_period.leaving? %>
+      <% if @ect_at_school_period.leaving_today_or_in_future? %>
         <h2 class="govuk-heading-m"><%= "#{teacher_full_name(@teacher)} is leaving your school" %></h2>
 
         <p class="govuk-body">
