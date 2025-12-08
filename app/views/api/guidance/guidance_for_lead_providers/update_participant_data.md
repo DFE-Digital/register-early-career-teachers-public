@@ -45,7 +45,7 @@ For technical information, see the Swagger API documentation for [deferring](/a
 Providers can defer or withdraw participants as long as:  
 
 * their `participant_status` isn’t `joining`  
-* they've not already been deferred or withdrawn 
+* their training_status doesn't already reflect that status, for example, they aren't trying to defer someone with a training_status of 'deferred'
 
 If a participant never started training, providers should contact us to request deletion of the participant’s record.  
 
