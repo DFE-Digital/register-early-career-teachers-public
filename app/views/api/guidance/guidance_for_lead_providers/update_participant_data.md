@@ -78,6 +78,7 @@ However, providers cannot make these changes if:
 
 * the ECT has an `induction_end_date` (meaning induction is complete), or
 * the mentor has a completed declaration showing they’ve finished training 
+* they have already changed the participant's schedule and made a declaration that day
 
 In both cases, validation errors will block the update. 
 
