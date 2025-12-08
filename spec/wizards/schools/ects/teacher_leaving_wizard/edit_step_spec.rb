@@ -22,8 +22,10 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
       let(:leaving_on) { {} }
 
       it "returns false and does not write to the store" do
-        expect { step.save! }.not_to(change(store, :leaving_on))
-        expect(step.save!).to be_falsey
+        result = step.save!
+
+        expect(result).to be_falsey
+        expect(store.leaving_on).to be_nil
       end
     end
   end
