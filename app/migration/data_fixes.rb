@@ -29,6 +29,12 @@ module DataFixes
   end
 
   def corrected_end_date(induction_record, induction_records)
+    if ect_with_more_than_2_irs_and_completion_date?(induction_record, induction_records)
+      return induction_record.participant_profile.induction_completion_date if last_created_induction_record?(induction_record, induction_records)
+
+      return [induction_record.end_date, induction_record.participant_profile.induction_completion_date].compact.min
+    end
+
     return induction_record.updated_at if last_and_leaving_and_flipping_dates?(induction_record, induction_records)
     return first_created_induction_record(induction_records).updated_at if two_induction_records_and_last_completed?(induction_records)
 
@@ -67,6 +73,13 @@ private
     the_31st_august_following(completion_date)
   end
 
+  def ect_with_more_than_2_irs_and_completion_date?(induction_record, induction_records)
+    return false unless induction_record.participant_profile.ect?
+    return false unless more_than_two_induction_records?(induction_records)
+
+    induction_record.participant_profile.induction_completion_date.present?
+  end
+
   def first_created_induction_record(induction_records) = induction_records.min_by(&:created_at)
 
   def last_created_induction_record(induction_records) = induction_records.max_by(&:created_at)
@@ -80,6 +93,8 @@ private
       induction_record.leaving? &&
       induction_record.flipped_dates?
   end
+
+  def more_than_two_induction_records?(induction_records) = induction_records.count > 2
 
   def two_induction_records?(induction_records) = induction_records.count == 2
 
