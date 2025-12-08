@@ -1,7 +1,7 @@
 class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
   class TrainingPeriodSerializer < Blueprinter::Base
     field(:school_urn) do |data|
-      data[:school].urn
+      data[:school].urn.to_s
     end
     field(:provider) do |data|
       data[:training_period].lead_provider&.name

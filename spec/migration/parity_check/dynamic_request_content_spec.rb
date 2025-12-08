@@ -1,5 +1,6 @@
 RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
   include MentorshipPeriodHelpers
+  include SchoolTransferHelpers
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
@@ -677,6 +678,24 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       end
 
       it { is_expected.to eq(unfunded_mentor.api_id) }
+    end
+
+    context "when fetching `transfer_teacher_api_id`" do
+      let(:identifier) { :transfer_teacher_api_id }
+      let(:transfer_teacher) { FactoryBot.create(:teacher) }
+      let!(:transfer) do
+        build_new_school_transfer(teacher: transfer_teacher, lead_provider:)
+      end
+
+      before do
+        # Transfer teacher for different lead providers should not be used.
+        build_new_school_transfer(
+          teacher: FactoryBot.create(:teacher),
+          lead_provider: FactoryBot.create(:lead_provider)
+        )
+      end
+
+      it { is_expected.to eq(transfer_teacher.api_id) }
     end
   end
 end

@@ -101,6 +101,14 @@ module ParityCheck
         .pick(:api_id)
     end
 
+    def transfer_teacher_api_id
+      API::Teachers::SchoolTransfers::Query.new(lead_provider_id: lead_provider.id)
+        .school_transfers
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body
