@@ -198,6 +198,14 @@ module Events
       new(event_type:, author:, modifications:, teacher:, heading:, happened_at:).record_event!
     end
 
+    def self.teacher_imported_from_dqt_event!(author:, teacher:, happened_at: Time.zone.now)
+      event_type = :import_from_dqt
+      heading = "Early roll-out mentor imported from DQT"
+      body = "Teacher created as part of the Early Roll-out mentor import"
+
+      new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
+    end
+
     def self.record_teacher_trs_deactivated_event!(author:, teacher:, happened_at: Time.zone.now)
       event_type = :teacher_trs_deactivated
       teacher_name = Teachers::Name.new(teacher).full_name
