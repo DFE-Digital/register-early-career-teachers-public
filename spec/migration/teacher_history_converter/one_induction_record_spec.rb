@@ -88,7 +88,7 @@ describe "One induction record" do
           FactoryBot.build(:ecf1_teacher_history_induction_record_row, :created_at_later_than_start_date)
         end
 
-        it "sets the start date to the induction record created date" do
+        it "sets the start date to the induction record start date" do
           expect(ecf2_ect_at_school_period_row.started_on).to eql(ecf1_induction_record_row.start_date.to_date)
         end
       end
