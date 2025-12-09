@@ -505,23 +505,32 @@ describe TrainingPeriod do
       end
 
       context "checking contract period matches with declarations" do
-        subject { training_period.tap { |t| t.schedule = mismatch_schedule } }
-
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
+        let(:training_period) { FactoryBot.create(:training_period, :ongoing, schedule:, school_partnership:, ect_at_school_period:) }
 
         before do
-          FactoryBot.create(:declaration, training_period:)
+          FactoryBot.create(:declaration, :paid, training_period:)
+          training_period.reload
         end
 
         context "when changing schedule with the same contract period" do
-          let!(:mismatch_schedule) { FactoryBot.create(:schedule, identifier: "ecf-standard-january", contract_period:) }
+          subject { training_period.tap { |t| t.schedule = new_schedule } }
+
+          let!(:new_schedule) { FactoryBot.create(:schedule, identifier: "ecf-standard-january", contract_period:) }
 
           it { is_expected.to be_valid }
         end
 
         context "when changing schedule with different contract period" do
+          subject do
+            training_period.tap do |t|
+              t.schedule = new_schedule
+              t.school_partnership = mismatch_school_partnership
+            end
+          end
+
           let(:mismatch_contract_period) { FactoryBot.create(:contract_period, year: contract_period.year + 1) }
-          let!(:mismatch_schedule) { FactoryBot.create(:schedule, identifier: schedule.identifier, contract_period: mismatch_contract_period) }
+          let(:mismatch_school_partnership) { make_partnership_for(school, mismatch_contract_period, lead_provider_name: "Test 1") }
+          let!(:new_schedule) { FactoryBot.create(:schedule, identifier: schedule.identifier, contract_period: mismatch_contract_period) }
 
           it "adds an error to schedule" do
             expect(subject).to be_invalid
