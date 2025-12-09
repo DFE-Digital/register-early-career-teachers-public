@@ -20,7 +20,46 @@
 #     [links](https://www.gov.uk)
 #
 #     **bold** and _italic_ text
+- title: Change schedules endpoint released to the Register ECTs sandbox with updated validation rules
+  date: 2025-12-12
+  tags:
+    - sandbox-release
+  body: |
+    The `PUT /participants/{id}/change-schedule` endpoint is now available in the Register ECTs sandbox. We have also updated the validation rules for when lead providers can change a participant’s schedule or cohort.
 
+    These changes are defined in sections 19.1, 19.2 and 19.3 of the API specification.
+
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API?
+
+    ### Only the most recent lead provider can update a participant’s schedule or cohort
+    Lead providers can now only update schedules or cohorts when they are the participant’s most recent lead provider. If you are not the most recent lead provider, the request will return a validation error.
+
+    Previously, any lead provider could update a schedule or cohort as long as there were no billable declarations.
+
+    ### You can now change schedules or cohorts even when there are billable declarations
+    Lead providers can now move participants between schedules or cohorts when billable declarations exist, as long as they are the most recent lead provider for that participant.
+
+    This replaces the previous behaviour where billable declarations prevented any further changes.
+
+    ### You cannot make multiple cohort changes on the same day when submitting a declaration
+    If you submit a declaration for a participant on a given day, you can only make one cohort change on that same day. Further cohort changes will return a validation error.
+
+    Previously, multiple cohort changes could be made on the same day as a declaration.
+
+    ## Why we have made these changes
+    These changes are intended to avoid scenarios where different lead providers could update a participant’s schedule or cohort, ensure the schedule or cohort reflects the most recent lead provider, and provide more flexibility for managing participants who need to move between schedules or cohorts. They also aim to reduce the need for manual adjustments by DfE and lead providers.
+
+    ## Impact on lead providers
+    * You will not be able to update schedules or cohorts for participants you no longer train, but this should not be needed in practice.
+    * You now have greater flexibility to move participants even when billable declarations exist.
+    * If you need to make more than one cohort change and submit a declaration for the same participant, you may have to wait until the next day.
+
+    ## Example validation errors
+    These will be added once available.
+
+    *Example: attempting to change a schedule when you are not the most recent lead provider*  
+    Example validation error responses will be added once available.
+    
 - title: Defer, withdraw, and resume endpoints endpoints added to the Register ECTs API with updated validation rules
   date: 2025-11-27
   tags:
