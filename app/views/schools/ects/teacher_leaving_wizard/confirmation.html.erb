@@ -1,20 +1,20 @@
 <% page_data(
-    title: "#{@wizard.teacher_full_name} is leaving your school",
+    title: @wizard.current_step.heading_title,
     header: false
 ) %>
 
-<%= govuk_panel(
-      title_text: "#{@wizard.teacher_full_name} has been removed from your school’s ECT list"
-    ) %>
+<%= govuk_panel(title_text: @wizard.current_step.heading_title) %>
 
 <h2 class="govuk-heading-m">What happens next</h2>
 
-<p class="govuk-body">
-  We’ll let <%= @wizard.teacher_full_name %>’s appropriate body and lead provider know (if they’re on a provider-led programme) that you’ve told us that they’ve left your school and are not expected to return. They may contact your school for more information.
-</p>
+<% if @wizard.current_step.training_message %>
+  <p class="govuk-body"><%= @wizard.current_step.training_message %></p>
+<% end %>
+
+<p class="govuk-body"><%= @wizard.current_step.notification_message %></p>
 
 <p class="govuk-body">
-  <%= @wizard.teacher_full_name %>’s mentor can continue their mentor training, even if they do not have other ECTs assigned to them.
+  <%= @wizard.current_step.mentor_training_message %>
 </p>
 
 <p class="govuk-body">
