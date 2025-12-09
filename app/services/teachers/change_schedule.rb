@@ -15,6 +15,7 @@ module Teachers
       ActiveRecord::Base.transaction do
         finished_on = determine_finished_on
 
+        track_payments_frozen_year!
         finish_training_period!
         new_training_period = create_new_training_period!(finished_on:)
         record_change_schedule_event!(original_training_period: training_period, new_training_period:)
@@ -80,6 +81,42 @@ module Teachers
         teacher:,
         lead_provider:
       )
+    end
+
+    def current_contract_period
+      @current_contract_period ||= training_period.schedule.contract_period
+    end
+
+    def new_contract_period
+      @new_contract_period ||= schedule.contract_period
+    end
+
+    def track_payments_frozen_year!
+      if changing_from_payments_frozen_contract_period?
+        set_payments_frozen_year(year: current_contract_period.year)
+      elsif changing_to_payments_frozen_contract_period?
+        set_payments_frozen_year(year: nil)
+      end
+    end
+
+    def set_payments_frozen_year(year:)
+      if training_period.for_ect?
+        teacher.update!(ect_payments_frozen_year: year)
+      else
+        teacher.update!(mentor_payments_frozen_year: year)
+      end
+    end
+
+    def changing_contract_period?
+      current_contract_period != new_contract_period
+    end
+
+    def changing_to_payments_frozen_contract_period?
+      changing_contract_period? && new_contract_period.payments_frozen?
+    end
+
+    def changing_from_payments_frozen_contract_period?
+      changing_contract_period? && current_contract_period.payments_frozen?
     end
   end
 end

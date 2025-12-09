@@ -28,7 +28,7 @@ module API
           teacher_api_id: teacher.api_id,
           teacher_type:,
           schedule_identifier: change_schedule_params[:schedule_identifier],
-          contract_period_year: change_schedule_params[:contract_period_year]
+          contract_period_year: change_schedule_params[:cohort]
         )
 
         respond_with_service(service:, action: :change_schedule)
@@ -114,7 +114,7 @@ module API
       end
 
       def change_schedule_params
-        params.require(:data).expect({ attributes: %i[schedule_identifier contract_period_year course_identifier] })
+        params.require(:data).expect({ attributes: %i[schedule_identifier cohort course_identifier] })
       end
 
       def api_from_teacher_id
