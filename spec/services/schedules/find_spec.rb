@@ -348,5 +348,66 @@ RSpec.describe Schedules::Find do
         end
       end
     end
+
+    context "when the most recent provider-led schedule is from a different contract period" do
+      let(:year) { 2025 }
+      let(:period) { ect_at_school_period }
+      let(:started_on) { Date.new(year, 7, 1) }
+      let(:previous_start_date) { Date.new(year - 1, 7, 1) }
+      let!(:old_schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-september") }
+
+      around { |example| travel_to(started_on) { example.run } }
+
+      before do
+        FactoryBot.create(:training_period, :provider_led, :ongoing,
+                          ect_at_school_period:,
+                          started_on: previous_start_date,
+                          schedule: old_schedule,
+                          school_partnership:)
+      end
+
+      it "returns a schedule in the current contract period" do
+        expect(service).to eq(Schedule.find_by(contract_period_year: contract_period.year, identifier: "ecf-standard-september"))
+      end
+    end
+
+    context "when the most recent provider-led schedule is from a different contract period for a mentor replacement" do
+      let(:year) { 2025 }
+      let(:period) { mentor_at_school_period }
+      let(:started_on) { Date.new(year, 7, 1) }
+      let(:previous_start_date) { Date.new(year - 1, 7, 1) }
+      let!(:old_schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-replacement-september") }
+
+      around { |example| travel_to(started_on) { example.run } }
+
+      before do
+        FactoryBot.create(:training_period, :provider_led, :ongoing,
+                          :for_mentor,
+                          mentor_at_school_period:,
+                          started_on: previous_start_date,
+                          schedule: old_schedule,
+                          school_partnership:)
+      end
+
+      context "and the identifier exists in the current contract period" do
+        before do
+          FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
+        end
+
+        it "carries over the replacement schedule into the current contract period" do
+          expect(service).to eq(Schedule.find_by(contract_period_year: contract_period.year,
+                                                 identifier: "ecf-replacement-september"))
+        end
+      end
+
+      context "and the identifier is missing in the current contract period" do
+        it_behaves_like "no replacement schedule assigned"
+
+        it "falls back to the standard schedule in the current contract period" do
+          expect(service).to eq(Schedule.find_by(contract_period_year: contract_period.year,
+                                                 identifier: "ecf-standard-september"))
+        end
+      end
+    end
   end
 end
