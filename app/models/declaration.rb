@@ -1,4 +1,6 @@
 class Declaration < ApplicationRecord
+  COMPLETABLE_PAYMENT_STATUSES = %w[no_payment eligible payable paid].freeze
+
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
@@ -54,6 +56,8 @@ class Declaration < ApplicationRecord
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
 
+  scope :completed, -> { where(declaration_type: "completed") }
+
   state_machine :payment_status, initial: :no_payment do
     state :no_payment, :ineligible, :eligible, :payable, :paid, :voided
 
@@ -90,6 +94,14 @@ class Declaration < ApplicationRecord
     event :mark_as_clawed_back do
       transition %i[awaiting_clawback] => :clawed_back
     end
+  end
+
+  def declaration_type_completed?
+    declaration_type == "completed"
+  end
+
+  def completable_payment_status?
+    payment_status.in?(COMPLETABLE_PAYMENT_STATUSES) && clawback_status_no_clawback?
   end
 
 private
