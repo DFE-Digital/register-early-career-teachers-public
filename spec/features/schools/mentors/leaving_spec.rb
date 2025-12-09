@@ -72,7 +72,7 @@ private
   end
 
   def then_i_see_the_leaving_confirmation
-    expect(page.locator(".govuk-panel")).to have_text("Batman has been removed from your school’s mentor list")
+    expect(page.locator(".govuk-panel")).to have_text("Batman will be removed from your school’s mentor list")
   end
 
   def when_i_return_to_the_mentor_details
