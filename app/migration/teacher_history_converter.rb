@@ -49,7 +49,9 @@ private
       finished_on: induction_record.end_date,
       training_programme: ecf2_training_programme(induction_record.training_programme),
       **deferral_attributes(induction_record),
-      **withdrawal_attributes(induction_record)
+      **withdrawal_attributes(induction_record),
+      lead_provider: induction_record.training_provider_info.lead_provider,
+      delivery_partner: induction_record.training_provider_info.delivery_partner,
     }
   end
 
