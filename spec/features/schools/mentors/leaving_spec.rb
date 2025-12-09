@@ -76,7 +76,7 @@ private
   end
 
   def when_i_return_to_the_mentor_details
-    page.get_by_role("link", name: "Back to mentors").click
+    page.get_by_role("link", name: "Back to Mentors").click
     page.get_by_role("link", name: "Batman").click
   end
 
