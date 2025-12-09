@@ -37,7 +37,7 @@ module Teachers
       raise LeadProviderNotChangedError unless lead_provider_changed?
 
       ActiveRecord::Base.transaction do
-        if date_of_transition.future? || training_period_not_confirmed
+        if destroy_existing_training_period?
           training_period.destroy!
         else
           finish_training_period!
@@ -81,8 +81,14 @@ module Teachers
       earliest_matching_school_partnership
     end
 
-    def training_period_not_confirmed
-      training_period && training_period.school_partnership.blank?
+    def destroy_existing_training_period?
+      return false unless training_period
+
+      date_of_transition.future? || !training_period_confirmed?
+    end
+
+    def training_period_confirmed?
+      training_period.school_partnership.present?
     end
 
     def date_of_transition
