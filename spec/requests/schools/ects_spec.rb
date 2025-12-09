@@ -3,9 +3,13 @@ RSpec.describe "ECT summary", :enable_schools_interface do
   let(:school) { FactoryBot.create(:school) }
 
   describe "GET #index" do
+    subject { get schools_ects_path }
+
+    it_behaves_like "an induction redirectable route"
+
     context "when not signed in" do
       it "redirects to the rot page" do
-        get schools_ects_path
+        subject
 
         expect(response).to redirect_to(root_path)
       end
@@ -15,7 +19,7 @@ RSpec.describe "ECT summary", :enable_schools_interface do
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        get schools_ects_path
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -25,7 +29,7 @@ RSpec.describe "ECT summary", :enable_schools_interface do
       before { sign_in_as(:school_user, school:) }
 
       it "returns ok" do
-        get schools_ects_path
+        subject
 
         expect(response).to have_http_status(:ok)
       end
@@ -38,7 +42,9 @@ RSpec.describe "ECT summary", :enable_schools_interface do
     end
 
     describe "finding the ECT at school period" do
-      subject { response }
+      it_behaves_like "an induction redirectable route" do
+        subject { get("/school/ects/#{ect.id}") }
+      end
 
       context "when signed in as user from the same school" do
         before do
