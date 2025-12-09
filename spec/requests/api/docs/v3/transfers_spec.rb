@@ -1,6 +1,6 @@
 require "swagger_helper"
 
-RSpec.describe "Tranfers endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml" do
+RSpec.describe "Tranfers endpoint", openapi_spec: "v3/swagger.yaml" do
   include SchoolTransferHelpers
 
   include_context "with authorization for api doc request"
@@ -10,6 +10,11 @@ RSpec.describe "Tranfers endpoint", :with_metadata, openapi_spec: "v3/swagger.ya
 
   before do
     build_new_school_transfer(teacher: transferred_teacher, lead_provider:)
+
+    # We need to manually refresh the metadata as we create lead providers
+    # after training periods in build_new_school_transfer, and we don't
+    # refresh metadata when lead providers are created.
+    Metadata::Handlers::Teacher.new(transferred_teacher).refresh_metadata!
   end
 
   it_behaves_like "an API index endpoint documentation",

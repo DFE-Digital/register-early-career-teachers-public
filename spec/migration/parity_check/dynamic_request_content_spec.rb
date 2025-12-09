@@ -689,10 +689,16 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
       before do
         # Transfer teacher for different lead providers should not be used.
+        other_teacher = FactoryBot.create(:teacher)
         build_new_school_transfer(
-          teacher: FactoryBot.create(:teacher),
+          teacher: other_teacher,
           lead_provider: FactoryBot.create(:lead_provider)
         )
+
+        # We need to manually refresh the metadata as we create lead providers
+        # after training periods in build_new_school_transfer, and we don't
+        # refresh metadata when lead providers are created.
+        Teacher.find_each { Metadata::Handlers::Teacher.new(it).refresh_metadata! }
       end
 
       it { is_expected.to eq(transfer_teacher.api_id) }
