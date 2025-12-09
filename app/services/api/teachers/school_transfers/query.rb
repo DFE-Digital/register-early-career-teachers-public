@@ -40,26 +40,20 @@ module API::Teachers::SchoolTransfers
         .includes(
           lead_provider_metadata: [],
           finished_induction_period: [],
-          ect_at_school_periods: {
-            earliest_training_period: {
-              school_partnership: :school,
-              active_lead_provider: :lead_provider
-            },
-            latest_training_period: {
-              school_partnership: :school,
-              active_lead_provider: :lead_provider
+          ect_at_school_periods: [
+            :school,
+            {
+              earliest_training_period: :lead_provider,
+              latest_training_period: :lead_provider
             }
-          },
-          mentor_at_school_periods: {
-            earliest_training_period: {
-              school_partnership: :school,
-              active_lead_provider: :lead_provider
-            },
-            latest_training_period: {
-              school_partnership: :school,
-              active_lead_provider: :lead_provider
+          ],
+          mentor_at_school_periods: [
+            :school,
+            {
+              earliest_training_period: :lead_provider,
+              latest_training_period: :lead_provider
             }
-          }
+          ]
         )
     end
 

@@ -19,15 +19,9 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
       it { expect(result.association(:ect_at_school_periods)).to be_loaded }
       it { expect(result.association(:mentor_at_school_periods)).to be_loaded }
       it { expect(result.ect_at_school_periods.last.association(:earliest_training_period)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.earliest_training_period.association(:school_partnership)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.earliest_training_period.school_partnership.association(:school)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.earliest_training_period.association(:active_lead_provider)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.earliest_training_period.active_lead_provider.association(:lead_provider)).to be_loaded }
+      it { expect(result.ect_at_school_periods.last.earliest_training_period.association(:lead_provider)).to be_loaded }
       it { expect(result.ect_at_school_periods.last.association(:latest_training_period)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.latest_training_period.association(:school_partnership)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.latest_training_period.school_partnership.association(:school)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.latest_training_period.association(:active_lead_provider)).to be_loaded }
-      it { expect(result.ect_at_school_periods.last.latest_training_period.active_lead_provider.association(:lead_provider)).to be_loaded }
+      it { expect(result.ect_at_school_periods.last.latest_training_period.association(:lead_provider)).to be_loaded }
     end
 
     let(:teacher) { FactoryBot.create(:teacher) }
