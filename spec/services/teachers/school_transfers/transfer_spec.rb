@@ -40,6 +40,31 @@ RSpec.describe Teachers::SchoolTransfers::Transfer do
     it { is_expected.to eq(joining_school) }
   end
 
+  describe "#api_updated_at" do
+    subject { transfer.api_updated_at }
+
+    context "when there is both a leaving and joining training period, and the leaving period was updated most recently" do
+      let(:leaving_training_period) { FactoryBot.build_stubbed(:training_period, api_transfer_updated_at: 1.day.ago) }
+      let(:joining_training_period) { FactoryBot.build_stubbed(:training_period, api_transfer_updated_at: 2.days.ago) }
+
+      it { is_expected.to eq(leaving_training_period.api_transfer_updated_at) }
+    end
+
+    context "when there is both a leaving and joining training period, and the joining period was updated most recently" do
+      let(:leaving_training_period) { FactoryBot.build_stubbed(:training_period, api_transfer_updated_at: 5.days.ago) }
+      let(:joining_training_period) { FactoryBot.build_stubbed(:training_period, api_transfer_updated_at: 2.days.ago) }
+
+      it { is_expected.to eq(joining_training_period.api_transfer_updated_at) }
+    end
+
+    context "when there is only a leaving training period" do
+      let(:leaving_training_period) { FactoryBot.build_stubbed(:training_period, api_transfer_updated_at: 3.days.ago) }
+      let(:joining_training_period) { nil }
+
+      it { is_expected.to eq(leaving_training_period.api_transfer_updated_at) }
+    end
+  end
+
   describe "#type" do
     subject(:type) { transfer.type }
 

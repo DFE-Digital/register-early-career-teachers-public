@@ -1,4 +1,5 @@
 ---
+ALLOW_INDEXING: false
 ENVIRONMENT_COLOUR: yellow
 ENVIRONMENT_PHASE_BANNER_TAG: Lead provider sandbox
 ENVIRONMENT_PHASE_BANNER_CONTENT: This sandbox environment is for lead provider testing.

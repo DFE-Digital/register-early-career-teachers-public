@@ -10,7 +10,7 @@ module Schools
 
     def assign!
       ActiveRecord::Base.transaction do
-        finish_current_mentorship!
+        finish_or_destroy_current_mentorship!
         add_new_mentorship!
         record_events!
       end
@@ -23,15 +23,42 @@ module Schools
     end
 
     def earliest_possible_start
-      [ect.started_on, mentor.started_on, Date.current].compact.max
+      possible_dates = [ect.started_on, mentor.started_on]
+      possible_dates.push(Date.current) unless mentor_moving_schools?
+      possible_dates.compact.max
     end
 
     def latest_possible_finish
       [ect.finished_on, mentor.finished_on].compact.min
     end
 
-    def finish_current_mentorship!
-      ECTAtSchoolPeriods::Mentorship.new(ect).current_or_next_mentorship_period&.finish!(earliest_possible_start)
+    def finish_or_destroy_current_mentorship!
+      return unless current_mentorship_period
+
+      if mentor_moving_schools? && current_mentorship_period.started_on >= earliest_possible_start
+        destroy_events_for_current_mentorship_period
+        current_mentorship_period.destroy!
+      else
+        current_mentorship_period.finish!(earliest_possible_start)
+      end
+    end
+
+    def destroy_events_for_current_mentorship_period
+      Event.where(mentorship_period: current_mentorship_period).delete_all
+    end
+
+    def mentor_moving_schools?
+      previous_school_mentor_at_school_periods.exists?
+    end
+
+    def previous_school_mentor_at_school_periods
+      finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(mentor.started_on)
+      scope = ::MentorAtSchoolPeriod.ongoing.or(finishes_in_the_future_scope)
+      mentor.teacher.mentor_at_school_periods.where.not(school: ect.school).merge(scope)
+    end
+
+    def current_mentorship_period
+      @current_mentorship_period ||= ECTAtSchoolPeriods::Mentorship.new(ect).current_or_next_mentorship_period
     end
 
     def record_events!

@@ -22,11 +22,6 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
     teacher.ect_at_school_periods.second.school
   end
 
-  before do
-    freeze_time
-    teacher.touch(:api_updated_at, time: 3.days.ago)
-  end
-
   describe "core attributes" do
     before do
       build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider, joining_lead_provider: other_lead_provider)
@@ -44,10 +39,13 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
     context "when there is a transfer with both leaving and joining training periods" do
       before do
         build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider, joining_lead_provider: other_lead_provider)
+
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
+        joining_training_period.update!(api_transfer_updated_at: 5.days.ago)
       end
 
       it "serializes correctly" do
-        expect(attributes["updated_at"]).to eq(3.days.ago.utc.rfc3339)
+        expect(attributes["updated_at"]).to eq(leaving_training_period.api_transfer_updated_at.utc.rfc3339)
         expect(attributes["transfers"].size).to eq(1)
 
         transfer = attributes["transfers"].first
@@ -57,14 +55,14 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present
         expect(leaving["date"]).to eq(leaving_training_period.finished_on.rfc3339)
         joining = transfer["joining"]
         expect(joining["school_urn"]).to be_present
-        expect(joining["school_urn"]).to eq(joining_school.urn)
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
         expect(joining["provider"]).to be_present
         expect(joining["provider"]).to eq(other_lead_provider.name)
         expect(joining["date"]).to be_present
@@ -75,10 +73,13 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
     context "when there is a transfer with a school-led joining training period" do
       before do
         build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider)
+
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
+        joining_training_period.update!(api_transfer_updated_at: 1.day.ago)
       end
 
       it "serializes correctly" do
-        expect(attributes["updated_at"]).to eq(3.days.ago.utc.rfc3339)
+        expect(attributes["updated_at"]).to eq(joining_training_period.api_transfer_updated_at.utc.rfc3339)
         expect(attributes["transfers"].size).to eq(1)
 
         transfer = attributes["transfers"].first
@@ -88,14 +89,14 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present
         expect(leaving["date"]).to eq(leaving_training_period.finished_on.rfc3339)
         joining = transfer["joining"]
         expect(joining["school_urn"]).to be_present
-        expect(joining["school_urn"]).to eq(joining_school.urn)
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
         expect(joining["provider"]).to be_nil
         expect(joining["date"]).to be_present
         expect(joining["date"]).to eq(joining_training_period.finished_on.rfc3339)
@@ -105,11 +106,12 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
     context "when there is a transfer with an ongoing joining training period" do
       before do
         build_new_provider_transfer(teacher:, leaving_lead_provider: lead_provider)
-        joining_training_period.update!(finished_on: nil)
+        joining_training_period.update!(finished_on: nil, api_transfer_updated_at: 2.days.ago)
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
       end
 
       it "serializes correctly" do
-        expect(attributes["updated_at"]).to eq(3.days.ago.utc.rfc3339)
+        expect(attributes["updated_at"]).to eq(joining_training_period.api_transfer_updated_at.utc.rfc3339)
         expect(attributes["transfers"].size).to eq(1)
 
         transfer = attributes["transfers"].first
@@ -119,14 +121,14 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present
         expect(leaving["date"]).to eq(leaving_training_period.finished_on.rfc3339)
         joining = transfer["joining"]
         expect(joining["school_urn"]).to be_present
-        expect(joining["school_urn"]).to eq(joining_school.urn)
+        expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
         expect(joining["provider"]).to be_nil
         expect(joining["date"]).to be_nil
       end
@@ -135,10 +137,11 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
     context "when there is a transfer without a joining_training_period" do
       before do
         build_unknown_transfer_for_finished_school_period(teacher:, lead_provider:)
+        leaving_training_period.update!(api_transfer_updated_at: 3.days.ago)
       end
 
       it "serializes correctly" do
-        expect(attributes["updated_at"]).to eq(3.days.ago.utc.rfc3339)
+        expect(attributes["updated_at"]).to eq(leaving_training_period.api_transfer_updated_at.utc.rfc3339)
         expect(attributes["transfers"].size).to eq(1)
 
         transfer = attributes["transfers"].first
@@ -148,7 +151,7 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
 
         leaving = transfer["leaving"]
         expect(leaving["school_urn"]).to be_present
-        expect(leaving["school_urn"]).to eq(leaving_school.urn)
+        expect(leaving["school_urn"]).to eq(leaving_school.urn.to_s)
         expect(leaving["provider"]).to be_present
         expect(leaving["provider"]).to eq(lead_provider.name)
         expect(leaving["date"]).to be_present

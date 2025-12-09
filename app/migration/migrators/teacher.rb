@@ -33,7 +33,8 @@ module Migrators
 
       teacher_profile
         .participant_profiles
-        .eager_load(induction_records: [schedule: :cohort,
+        .eager_load(participant_profile_states: :cpd_lead_provider,
+                    induction_records: [schedule: :cohort,
                                         induction_programme: [
                                           partnership: %i[cohort lead_provider delivery_partner school],
                                           school_cohort: :school
@@ -140,6 +141,10 @@ module Migrators
                                                  find_school_partnership!(training_record, school)
                                                end
           training_period.schedule = find_schedule_for(training_record, participant_profile)
+          training_period.deferred_at = training_record.deferred_at
+          training_period.deferral_reason = training_record.deferral_reason
+          training_period.withdrawn_at = training_record.withdrawn_at
+          training_period.withdrawal_reason = training_record.withdrawal_reason
           training_period.save!
         rescue ActiveRecord::ActiveRecordError => e
           ::TeacherMigrationFailure.create!(teacher:,

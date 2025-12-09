@@ -5,6 +5,8 @@ class Statement < ApplicationRecord
 
   belongs_to :active_lead_provider
   has_many :adjustments
+  has_many :payment_declarations, inverse_of: :payment_statement, class_name: "Declaration"
+  has_many :clawback_declarations, inverse_of: :clawback_statement, class_name: "Declaration"
   has_one :lead_provider, through: :active_lead_provider
   has_one :contract_period, through: :active_lead_provider
 

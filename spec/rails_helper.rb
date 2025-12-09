@@ -6,7 +6,7 @@ require_relative "../config/environment"
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
 
-Rails.root.glob("spec/support/**/*.rb").sort.each { |f| require f }
+Rails.root.glob(["spec/support/**/*.rb", "db/seeds/support/**/*.rb"]).sort.each { |f| require f }
 Rails.application.load_tasks
 
 begin

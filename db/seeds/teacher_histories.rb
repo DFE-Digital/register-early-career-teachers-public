@@ -637,7 +637,8 @@ john_withers_training_period = FactoryBot.create(:training_period,
                                                  school_partnership: teach_first_grain_partnership_2022,
                                                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
-FactoryBot.create(:declaration, training_period: john_withers_training_period)
+john_withers_declaration_date = john_withers_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
+FactoryBot.create(:declaration, declaration_type: :started, declaration_date: john_withers_declaration_date, training_period: john_withers_training_period)
 
 print_seed_info("Ichigo Kurosaki (Mentor)", indent: 2, colour: MENTOR_COLOUR)
 
@@ -799,6 +800,35 @@ FactoryBot.create(:training_period,
                   finished_on: nil,
                   school_partnership: teach_first_grain_partnership_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+print_seed_info("Joyce Grenfell (mentor)", indent: 2, colour: MENTOR_COLOUR)
+joyce_grenfell = Teacher.find_by!(trs_first_name: "Joyce", trs_last_name: "Grenfell")
+
+FactoryBot.create(:mentor_at_school_period,
+                  teacher: joyce_grenfell,
+                  school: ackley_bridge,
+                  email: "joyce.grenfell@st-trinians.co.uk",
+                  started_on: Date.new(2025, 7, 1),
+                  finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+
+print_seed_info("George Cole (mentor)", indent: 2, colour: MENTOR_COLOUR)
+george_cole = Teacher.find_by!(trs_first_name: "George", trs_last_name: "Cole")
+
+george_cole_at_mallory_towers = FactoryBot.create(:mentor_at_school_period,
+                                                  teacher: george_cole,
+                                                  school: mallory_towers,
+                                                  email: "george.cole@st-trinians.co.uk",
+                                                  started_on: Date.new(2025, 6, 15),
+                                                  finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+
+print_seed_info("Frankie Howard (ECT)", indent: 2, colour: ECT_COLOUR)
+frankie_howard = Teacher.find_by!(trs_first_name: "Frankie", trs_last_name: "Howard")
+
+frankie_howard_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
+                                                  teacher: frankie_howard,
+                                                  school: abbey_grove_school,
+                                                  email: "frankie.howard@st-trinians.co.uk",
+                                                  started_on: Date.new(2025, 7, 1),
+                                                  finished_on: nil).tap { |sp| describe_ect_at_school_period(sp) }
 
 print_seed_info("Joan Sims (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
 joan_sims = Teacher.find_by!(trs_first_name: "Joan", trs_last_name: "Sims")
@@ -872,4 +902,16 @@ FactoryBot.create(:mentorship_period,
                   mentor: john_withers_mentoring_at_abbey_grove,
                   mentee: hattie_jacques_ect_at_abbey_grove_school,
                   started_on: Date.new(2025, 9, 25),
+                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+
+FactoryBot.create(:mentorship_period,
+                  mentor: hugh_laurie_mentoring_at_abbey_grove,
+                  mentee: frankie_howard_at_abbey_grove,
+                  started_on: Date.new(2026, 2, 15),
+                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+
+FactoryBot.create(:mentorship_period,
+                  mentor: george_cole_at_mallory_towers,
+                  mentee: imogen_stubbs_at_malory_towers,
+                  started_on: Date.new(2025, 7, 15),
                   finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
