@@ -31,6 +31,9 @@ module ECTAtSchoolPeriods
       )
     end
 
+    let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.years.ago, school: ect_at_school_period.school) }
+    let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee: ect_at_school_period, mentor: current_mentor, started_on: 2.weeks.ago) }
+
     describe ".switch" do
       context "when the ECT is undergoing school-led training" do
         let!(:ect_training_period) do
@@ -51,6 +54,16 @@ module ECTAtSchoolPeriods
           ect_at_school_period.reload
           expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
             .to eq(selected_mentor_at_school_period)
+        end
+
+        it "finishes the current mentorship period" do
+          allow(Schools::AssignMentor).to receive(:new).and_call_original
+          switch_mentor
+
+          expect(Schools::AssignMentor).to have_received(:new).with(ect: ect_at_school_period, mentor: selected_mentor_at_school_period, author:)
+          expect(ect_at_school_period.mentorship_periods.count).to eq(2)
+          expect(current_mentorship.reload.finished_on).to eq(Date.current)
+          expect(ect_at_school_period.mentorship_periods.where(finished_on: nil).count).to eq(1)
         end
 
         it "does not create a training period" do
@@ -85,6 +98,24 @@ module ECTAtSchoolPeriods
           ect_training_period.active_lead_provider.update!(contract_period:)
         end
 
+        it "assigns a mentor" do
+          expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
+
+          ect_at_school_period.reload
+          expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
+            .to eq(selected_mentor_at_school_period)
+        end
+
+        it "finishes the current mentorship period" do
+          allow(Schools::AssignMentor).to receive(:new).and_call_original
+          switch_mentor
+
+          expect(Schools::AssignMentor).to have_received(:new).with(ect: ect_at_school_period, mentor: selected_mentor_at_school_period, author:)
+          expect(ect_at_school_period.mentorship_periods.count).to eq(2)
+          expect(current_mentorship.reload.finished_on).to eq(Date.current)
+          expect(ect_at_school_period.mentorship_periods.where(finished_on: nil).count).to eq(1)
+        end
+
         context "when the mentor has a provider-led training period" do
           let!(:selected_mentor_training_period) do
             FactoryBot.create(
@@ -95,14 +126,6 @@ module ECTAtSchoolPeriods
               mentor_at_school_period: selected_mentor_at_school_period,
               started_on: selected_mentor_at_school_period.started_on
             )
-          end
-
-          it "assigns a mentor" do
-            expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
-
-            ect_at_school_period.reload
-            expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
-              .to eq(selected_mentor_at_school_period)
           end
 
           it "does not create a training period" do
@@ -125,14 +148,6 @@ module ECTAtSchoolPeriods
             FactoryBot.create(:teacher, :ineligible_for_mentor_funding)
           end
 
-          it "assigns a mentor" do
-            expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
-
-            ect_at_school_period.reload
-            expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
-              .to eq(selected_mentor_at_school_period)
-          end
-
           it "does not create a training period" do
             expect { switch_mentor }.not_to change(TrainingPeriod, :count)
           end
@@ -149,14 +164,6 @@ module ECTAtSchoolPeriods
         end
 
         context "when the mentor is eligible for funding" do
-          it "assigns a mentor" do
-            expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
-
-            ect_at_school_period.reload
-            expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
-              .to eq(selected_mentor_at_school_period)
-          end
-
           it "creates a training period" do
             expect { switch_mentor }.to change(TrainingPeriod, :count).by(1)
 
@@ -177,7 +184,7 @@ module ECTAtSchoolPeriods
               FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
             end
 
-            let!(:mentorship_period) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee: ect_at_school_period, mentor: previous_mentor) }
+            let!(:current_mentorship) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee: ect_at_school_period, mentor: previous_mentor) }
             let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
             let(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.weeks.ago, mentor_at_school_period: previous_mentor) }
 
