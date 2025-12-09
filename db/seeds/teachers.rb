@@ -75,6 +75,9 @@ teachers = [
   { trn: "0000027", trs_first_name: "Sid", trs_last_name: "James", trs_induction_status: "InProgress" },
   { trn: "0000028", trs_first_name: "Joan", trs_last_name: "Sims", trs_induction_status: "InProgress" },
   { trn: "0000029", trs_first_name: "Hattie", trs_last_name: "Jacques", trs_induction_status: "InProgress" },
+  { trn: "3002600", trs_first_name: "Joyce", trs_last_name: "Grenfell", trs_induction_status: "Passed" },
+  { trn: "3002601", trs_first_name: "George", trs_last_name: "Cole", trs_induction_status: "Passed" },
+  { trn: "3002602", trs_first_name: "Frankie", trs_last_name: "Howard", trs_induction_status: "InProgress" },
 ]
 
 teachers.each do |attrs|

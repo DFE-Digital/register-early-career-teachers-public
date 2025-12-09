@@ -101,6 +101,14 @@ module ParityCheck
         .pick(:api_id)
     end
 
+    def transfer_teacher_api_id
+      API::Teachers::SchoolTransfers::Query.new(lead_provider_id: lead_provider.id)
+        .school_transfers
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body
@@ -233,17 +241,107 @@ module ParityCheck
       end
     end
 
+    def teacher_api_id_for_change_schedule_action
+      @teacher_api_id_for_change_schedule_action ||= ::Migration::ParticipantProfile
+        .joins(:induction_records, :participant_identity)
+        .joins("JOIN (#{latest_induction_records_join.to_sql}) AS latest_induction_records ON latest_induction_records.latest_id = induction_records.id")
+        .joins("LEFT OUTER JOIN participant_declarations AS excluded_declarations ON excluded_declarations.participant_profile_id = participant_profiles.id AND excluded_declarations.state IN ('submitted', 'eligible', 'payable', 'paid')")
+        .where("excluded_declarations.id IS NULL")
+        .reorder("RANDOM()")
+        .pick(participant_identity: :external_identifier)
+    end
+
+    def participant_change_schedule_payload(course_identifier:, schedule_identifier:, cohort:)
+      {
+        data: {
+          type: "participant-change-schedule",
+          attributes: {
+            course_identifier:,
+            schedule_identifier:,
+            cohort:,
+          }
+        }
+      }
+    end
+
+    def change_schedule_different_schedule_and_cohort_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      contract_period = random_contract_period(excluding_contract_period_year: training_period.contract_period.year)
+      return unless contract_period
+
+      schedule_identifier = random_schedule_identifier(excluding_schedule: training_period.schedule)
+      return unless schedule_identifier
+
+      participant_change_schedule_payload(
+        course_identifier: course_identifier_for(participant),
+        schedule_identifier:,
+        cohort: contract_period.year
+      )
+    end
+
+    def change_schedule_different_cohort_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      contract_period = random_contract_period(excluding_contract_period_year: training_period.contract_period.year)
+      return unless contract_period
+
+      participant_change_schedule_payload(
+        course_identifier: course_identifier_for(participant),
+        schedule_identifier: training_period.schedule.identifier,
+        cohort: contract_period.year
+      )
+    end
+
+    def change_schedule_different_schedule_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      schedule_identifier = random_schedule_identifier(excluding_schedule: training_period.schedule)
+      return unless schedule_identifier
+
+      participant_change_schedule_payload(
+        course_identifier: course_identifier_for(participant),
+        schedule_identifier:,
+        cohort: training_period.contract_period.year
+      )
+    end
+
+    def change_schedule_error_state_participant_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      course_identifier = participant.api_ect_training_record_id.present? ? "ecf-mentor" : "ecf-induction"
+
+      participant_change_schedule_payload(
+        course_identifier:,
+        schedule_identifier: training_period.schedule.identifier,
+        cohort: training_period.contract_period.year
+      )
+    end
+
     # Helpers
 
     def random_school_partnership
       SchoolPartnership.find_by(api_id: partnership_id)
     end
 
-    def random_contract_period
+    def random_contract_period(excluding_contract_period_year: nil)
       lead_provider
         .lead_provider_delivery_partnerships
         .joins(:contract_period)
         .where(contract_period: { enabled: true })
+        .where.not(contract_period: { year: excluding_contract_period_year })
         .order("RANDOM()")
         .first
         &.contract_period
@@ -263,6 +361,53 @@ module ParityCheck
         .uniq
 
       School.where.not(id: existing_school_ids).eligible.not_cip_only.order("RANDOM()").first
+    end
+
+    def latest_training_period(participant)
+      metadata = participant.lead_provider_metadata.find_by(lead_provider_id: lead_provider.id)
+      return unless metadata
+
+      if participant.api_ect_training_record_id.present?
+        metadata.latest_ect_training_period
+      else
+        metadata.latest_mentor_training_period
+      end
+    end
+
+    def random_schedule_identifier(excluding_schedule:)
+      if excluding_schedule.replacement_schedule?
+        Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS.excluding(excluding_schedule.identifier).sample
+      else
+        Schedule.identifiers.values.excluding(Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS).excluding(excluding_schedule.identifier).sample
+      end
+    end
+
+    def latest_induction_records_join
+      ::Migration::InductionRecord
+        .select(Arel.sql("DISTINCT FIRST_VALUE(induction_records.id) OVER (#{latest_induction_record_order}) AS latest_id"))
+        .joins(:participant_profile, { induction_programme: :partnership })
+        .where(
+          induction_programme: {
+            partnerships: {
+              lead_provider_id: lead_provider.ecf_id,
+              challenged_at: nil,
+              challenge_reason: nil,
+            },
+          }
+        )
+    end
+
+    def latest_induction_record_order
+      <<~SQL
+        PARTITION BY induction_records.participant_profile_id ORDER BY
+        CASE
+        WHEN induction_records.end_date IS NULL
+        THEN 1
+        ELSE 2
+        END,
+          induction_records.start_date DESC,
+          induction_records.created_at DESC
+      SQL
     end
   end
 end

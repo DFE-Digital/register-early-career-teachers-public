@@ -196,6 +196,7 @@
   - withdrawn_at
   - withdrawal_reason
   - schedule_id
+  - api_transfer_updated_at
   :teacher_migration_failures:
   - id
   - teacher_id
@@ -388,7 +389,20 @@
   :declarations:
   - id
   - training_period_id
+  - payment_statement_id
+  - clawback_statement_id
   - declaration_type
+  - declaration_date
+  - voided_at
+  - voided_by_user_id
+  - mentorship_period_id
+  - api_id
+  - evidence_type
+  - payment_status
+  - clawback_status
+  - ineligibility_reason
+  - sparsity_uplift
+  - pupil_premium_uplift
   - created_at
   - updated_at
   :data_migrations:
@@ -414,6 +428,7 @@
   - range
   - payments_frozen_at
   - mentor_funding_enabled
+  - detailed_evidence_types_enabled
   :active_lead_providers:
   - id
   - lead_provider_id

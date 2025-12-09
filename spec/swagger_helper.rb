@@ -88,6 +88,13 @@ RSpec.configure do |config|
           ParticipantECFEnrolment: PARTICIPANT_ECF_ENROLMENT,
           ParticipantIDChange: PARTICIPANT_ID_CHANGE,
 
+          # Participants Transfers
+          ParticipantTransfer: PARTICIPANT_TRANSFER,
+          ParticipantTransfersTransfer: PARTICIPANT_TRANSFERS_TRANSFER,
+          ParticipantsTransfersResponse: PARTICIPANTS_TRANSFERS_RESPONSE,
+          ParticipantsTransfersFilter: PARTICIPANTS_TRANSFERS_FILTER,
+          ParticipantTransfersResponse: PARTICIPANT_TRANSFERS_RESPONSE,
+
           # Unfunded mentors
           UnfundedMentor: UNFUNDED_MENTOR,
           UnfundedMentorsFilter: UNFUNDED_MENTORS_FILTER,

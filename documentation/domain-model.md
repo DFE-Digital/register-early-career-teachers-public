@@ -29,6 +29,7 @@ erDiagram
     datetime withdrawn_at
     enum withdrawal_reason
     integer schedule_id
+    datetime api_transfer_updated_at
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to
@@ -303,11 +304,28 @@ erDiagram
   Declaration {
     integer id
     integer training_period_id
-    string declaration_type
     datetime created_at
     datetime updated_at
+    integer voided_by_user_id
+    integer mentorship_period_id
+    integer payment_statement_id
+    integer clawback_statement_id
+    datetime voided_at
+    uuid api_id
+    datetime declaration_date
+    enum evidence_type
+    enum payment_status
+    enum clawback_status
+    enum ineligibility_reason
+    enum declaration_type
+    boolean sparsity_uplift
+    boolean pupil_premium_uplift
   }
   Declaration }o--|| TrainingPeriod : belongs_to
+  Declaration }o--|| User : belongs_to
+  Declaration }o--|| MentorshipPeriod : belongs_to
+  Declaration }o--|| Statement : belongs_to
+  Declaration }o--|| Statement : belongs_to
   ContractPeriod {
     integer year
     datetime created_at
@@ -318,6 +336,7 @@ erDiagram
     daterange range
     datetime payments_frozen_at
     boolean mentor_funding_enabled
+    boolean detailed_evidence_types_enabled
   }
   AppropriateBody {
     integer id

@@ -101,6 +101,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
 
   describe "#previous_school_mentor_at_school_periods" do
     let(:other_school) { FactoryBot.create(:school) }
+    let(:other_teacher) { FactoryBot.create(:teacher) }
     let!(:current_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:) }
     let!(:finished_recently) do
       FactoryBot.create(:mentor_at_school_period,
@@ -115,6 +116,14 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
                         teacher:,
                         school: other_school,
                         started_on: finished_recently.finished_on + 1.day)
+    end
+    let!(:other_teacher_finishes_in_the_future) do
+      FactoryBot.create(:mentor_at_school_period,
+                        :ongoing,
+                        teacher: other_teacher,
+                        school: other_school,
+                        started_on: 2.years.ago,
+                        finished_on: 1.month.from_now)
     end
     let(:start_date) { 1.year.ago }
 

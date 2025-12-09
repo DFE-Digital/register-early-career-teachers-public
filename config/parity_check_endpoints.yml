@@ -320,6 +320,21 @@ get:
         - teacher_reference_number_validated
         - overall_induction_start_date
 
+  - "/api/v3/participants/transfers":
+      ecf_path: "/api/v3/participants/ecf/transfers"
+      paginate: true
+
+  - "/api/v3/participants/transfers":
+      ecf_path: "/api/v3/participants/ecf/transfers"
+      paginate: true
+      query:
+        filter:
+          updated_since: "2025-04-13T11:21:55Z"
+
+  - "/api/v3/participants/:id/transfers":
+      ecf_path: "/api/v3/participants/ecf/:id/transfers"
+      id: ":transfer_teacher_api_id"
+
   - "/api/v3/unfunded-mentors":
       ecf_path: "/api/v3/unfunded-mentors/ecf"
       paginate: true
@@ -416,3 +431,20 @@ put:
       exclude:
         - teacher_reference_number_validated
         - overall_induction_start_date
+
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":teacher_api_id_for_change_schedule_action"
+      body: change_schedule_different_schedule_and_cohort_participant_body
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":teacher_api_id_for_change_schedule_action"
+      body: change_schedule_different_cohort_participant_body
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":teacher_api_id_for_change_schedule_action"
+      body: change_schedule_different_schedule_participant_body
+  - "/api/v3/participants/:id/change-schedule":
+      ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
+      id: ":teacher_api_id_for_change_schedule_action"
+      body: change_schedule_error_state_participant_body

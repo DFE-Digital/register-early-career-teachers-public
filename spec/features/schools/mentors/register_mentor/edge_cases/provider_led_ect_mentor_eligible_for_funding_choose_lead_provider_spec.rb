@@ -47,10 +47,12 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
 
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_all_the_mentor_data_on_the_page
+    and_the_mentors_start_date_should_be_the_entered_date
 
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
     and_mentor_has_mentorship_with_new_school
+    and_the_mentors_training_and_mentorship_periods_start_on_the_entered_date
   end
 
   def given_there_is_a_school_in_the_service
@@ -172,7 +174,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   end
 
   def when_i_enter_mentor_start_date
-    @mentor_start_date = Date.current
+    @mentor_start_date = 2.days.ago.to_date
     page.get_by_label("Day").fill(@mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(@mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(@mentor_start_date.year.to_s)
@@ -222,10 +224,13 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     expect(page.locator("dd", hasText: "example@example.com")).to be_visible
     expect(page.locator("dt", hasText: "Mentoring only at your school")).to be_visible
     expect(page.locator("dd", hasText: "Yes")).to be_visible
-    expect(page.locator("dt", hasText: "Mentor start date")).to be_visible
-    expect(page.locator("dd", hasText: @mentor_start_date.to_fs(:govuk))).to be_visible
     expect(page.locator("dt", hasText: "Lead provider")).to be_visible
     expect(page.locator("dd", hasText: @another_lead_provider.name)).to be_visible
+  end
+
+  def and_the_mentors_start_date_should_be_the_entered_date
+    expect(page.locator("dt", hasText: "Mentor start date")).to be_visible
+    expect(page.locator("dd", hasText: @mentor_start_date.to_fs(:govuk))).to be_visible
   end
 
   def when_i_click_confirm_details
@@ -239,10 +244,21 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   def and_mentor_has_mentorship_with_new_school
     expect(@existing_mentor_at_school_period.reload.finished_on).not_to be_nil
     expect(@teacher.mentor_at_school_periods.count).to eq(2)
+  end
 
+  def and_the_mentors_training_and_mentorship_periods_start_on_the_entered_date
     new_mentor_at_school_period = @teacher.mentor_at_school_periods.excluding(@existing_mentor_at_school_period).last
     expect(new_mentor_at_school_period.started_on).to eq(@mentor_start_date)
     expect(new_mentor_at_school_period.finished_on).to be_nil
+
     expect(new_mentor_at_school_period.training_periods.count).to eq(1)
+    new_training_period = new_mentor_at_school_period.training_periods.last
+    expect(new_training_period.started_on).to eq(@mentor_start_date)
+    expect(new_training_period.finished_on).to be_nil
+
+    expect(new_mentor_at_school_period.mentorship_periods.count).to eq(1)
+    new_mentorship_period = new_mentor_at_school_period.mentorship_periods.last
+    expect(new_mentorship_period.started_on).to eq(@mentor_start_date)
+    expect(new_mentorship_period.finished_on).to be_nil
   end
 end
