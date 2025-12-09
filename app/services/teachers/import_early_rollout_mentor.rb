@@ -12,13 +12,12 @@ module Teachers
 
       Teacher.transaction do
         teacher = Teacher.find_or_initialize_by(trn:)
-        if teacher.persisted?
-          Rails.logger.info("Teacher ##{teacher.id} already exists, skipping Early Roll-out mentor import")
-        else
-          teacher.assign_attributes(early_rollout_attributes)
-          teacher.save!
+        is_new_teacher = teacher.new_record?
+        teacher.assign_attributes(early_rollout_attributes)
 
-          record_event(teacher)
+        if teacher.changed?
+          teacher.save!
+          record_event(teacher, is_new_teacher:)
           queue_trs_refresh(teacher)
         end
 
@@ -41,11 +40,20 @@ module Teachers
       }
     end
 
-    def record_event(teacher)
+    def record_event(teacher, is_new_teacher:)
       Events::Record.teacher_imported_from_dqt_event!(
         author:,
-        teacher:
+        teacher:,
+        body: early_rollout_event_body(is_new_teacher:)
       )
+    end
+
+    def early_rollout_event_body(is_new_teacher:)
+      if is_new_teacher
+        "Teacher created with Early Roll-out mentor attributes during the import"
+      else
+        "Teacher updated with Early Roll-out mentor attributes during the import"
+      end
     end
 
     def queue_trs_refresh(teacher)

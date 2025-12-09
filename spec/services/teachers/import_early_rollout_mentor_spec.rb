@@ -21,7 +21,12 @@ RSpec.describe Teachers::ImportEarlyRolloutMentor do
     it "records an import_from_dqt event" do
       expect { service.call }
         .to have_enqueued_job(RecordEventJob)
-        .with(hash_including(event_type: :import_from_dqt))
+        .with(
+          hash_including(
+            event_type: :import_from_dqt,
+            body: "Teacher created with Early Roll-out mentor attributes during the import"
+          )
+        )
         .exactly(:once)
     end
 
@@ -34,15 +39,30 @@ RSpec.describe Teachers::ImportEarlyRolloutMentor do
     context "when the teacher already exists" do
       let!(:existing_teacher) { FactoryBot.create(:teacher, trn:) }
 
-      it "does not change the teacher count" do
+      it "updates the existing teacher with the Early Roll-out mentor flags" do
         expect { service.call }.not_to change(Teacher, :count)
+
+        existing_teacher.reload
+        expect(existing_teacher.mentor_became_ineligible_for_funding_on).to eq(Date.new(2021, 4, 19))
+        expect(existing_teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_during_early_roll_out")
       end
 
-      it "does not enqueue events or TRS jobs" do
-        service.call
+      it "records an import_from_dqt event" do
+        expect { service.call }
+          .to have_enqueued_job(RecordEventJob)
+          .with(
+            hash_including(
+              event_type: :import_from_dqt,
+              body: "Teacher updated with Early Roll-out mentor attributes during the import"
+            )
+          )
+          .exactly(:once)
+      end
 
-        expect(RecordEventJob).not_to have_been_enqueued
-        expect(Teachers::SyncTeacherWithTRSJob).not_to have_been_enqueued
+      it "queues a TRS attribute refresh" do
+        expect { service.call }
+          .to have_enqueued_job(Teachers::SyncTeacherWithTRSJob)
+          .exactly(:once)
       end
     end
 
