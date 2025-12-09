@@ -50,6 +50,7 @@ class Event < ApplicationRecord
     teacher_resumes_training_period
     teacher_withdraws_training_period
     teacher_changes_schedule_training_period
+    mentor_completion_status_change
     training_period_assigned_to_school_partnership
     dfe_user_created
     dfe_user_updated
@@ -86,6 +87,8 @@ class Event < ApplicationRecord
 
   # bulk uploads
   belongs_to :pending_induction_submission_batch
+
+  belongs_to :declaration
 
   validates :heading, presence: true
   validates :happened_at, presence: true
