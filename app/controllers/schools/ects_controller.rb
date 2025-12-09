@@ -2,6 +2,8 @@ module Schools
   class ECTsController < SchoolsController
     layout "full"
 
+    include Schools::InductionRedirectable
+
     def index
       search = Teachers::Search.new(ect_at_school: school, query_string: params[:q]).search
       @pagy, @teachers = pagy(search)

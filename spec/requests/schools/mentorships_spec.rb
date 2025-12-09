@@ -6,9 +6,13 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
   let(:school) { FactoryBot.create(:school, :independent) }
 
   describe "GET /school/ects/:id/mentorship/new" do
+    subject { get("/school/ects/#{ect_at_school_period.id}/mentorship/new") }
+
+    it_behaves_like "an induction redirectable route"
+
     context "when not signed in" do
       it "redirects to the root page" do
-        get("/school/ects/#{ect_at_school_period.id}/mentorship/new")
+        subject
         expect(response).to redirect_to(root_url)
       end
     end
@@ -21,7 +25,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
       it "instantiates a new Schools::AssignMentorForm and renders the page" do
         allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-        get("/school/ects/#{ect_at_school_period.id}/mentorship/new")
+        subject
 
         expect(response).to be_successful
         expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period).once
@@ -140,9 +144,13 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
   end
 
   describe "GET /school/ects/:id/mentorship/confirmation" do
+    subject { get("/school/ects/#{ect_at_school_period.id}/mentorship/confirmation") }
+
+    it_behaves_like "an induction redirectable route"
+
     context "when not signed in" do
       it "redirects to the root page" do
-        get("/school/ects/#{ect_at_school_period.id}/mentorship/confirmation")
+        subject
         expect(response).to redirect_to(root_url)
       end
     end
@@ -158,7 +166,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
         Schools::AssignMentor.new(ect: ect_at_school_period, mentor:, author:).assign!
         allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-        get("/school/ects/#{ect_at_school_period.id}/mentorship/confirmation")
+        subject
 
         expect(response).to be_successful
         expect(sanitize(response.body)).to include("You've assigned #{Teachers::Name.new(mentor.teacher).full_name} as a mentor")

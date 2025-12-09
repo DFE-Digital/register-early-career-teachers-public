@@ -61,9 +61,8 @@ private
     case
     when requested_path.present? then requested_path
     when current_user.dfe_user? then admin_path
-    when current_user.appropriate_body_user? then ab_teachers_path
-    when induction_information_needs_update? then induction_details_service.wizard_path
     when current_user.school_user? then schools_ects_home_path
+    when current_user.appropriate_body_user? then ab_teachers_path
     else
       fail(UnredirectableError)
     end
@@ -72,13 +71,5 @@ private
   # @return [Sessions::Manager]
   def session_manager
     @session_manager ||= Sessions::Manager.new(session, cookies)
-  end
-
-  def induction_information_needs_update?
-    induction_details_service.update_required?
-  end
-
-  def induction_details_service
-    @induction_details_service ||= Schools::InductionTutorDetails.new(current_user)
   end
 end
