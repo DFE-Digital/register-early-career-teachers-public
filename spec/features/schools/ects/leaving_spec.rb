@@ -64,7 +64,7 @@ private
   end
 
   def then_i_see_the_check_answers_page
-    expect(page.locator("h1", hasText: "Confirm that Batman has left your school permanently")).to be_visible
+    expect(page.locator("h1", hasText: "Confirm that Batman is leaving your school permanently")).to be_visible
   end
 
   def when_i_confirm_the_leaving_date

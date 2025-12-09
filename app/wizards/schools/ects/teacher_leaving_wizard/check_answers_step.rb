@@ -24,6 +24,29 @@ module Schools
           true
         end
 
+        def leaving_today_or_in_future?
+          return unless leaving_date
+
+          leaving_date >= Time.zone.today
+        end
+
+        def heading_title
+          "Confirm that #{teacher_full_name} #{leaving_today_or_in_future? ? 'is leaving' : 'has left'} your school permanently"
+        end
+
+        def leaving_statement
+          "You’ve told us that #{teacher_full_name} #{leaving_today_or_in_future? ? 'is leaving' : 'left'} your school on #{leaving_date.to_fs(:govuk)}."
+        end
+
+        def teacher_full_name
+          name_for(ect_at_school_period.teacher)
+        end
+
+        def edit_warning_statement
+          suffix = leaving_today_or_in_future? ? " after #{leaving_date.to_fs(:govuk)}" : ""
+          "You will not be able to view or edit #{teacher_full_name}’s details#{suffix}."
+        end
+
       private
 
         def pre_populate_attributes
