@@ -114,6 +114,15 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it { is_expected.to have_one_error_per_attribute }
           end
+
+          context "when moving to a frozen contract period where the participant has not been before" do
+            let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen, year: training_period.contract_period.year + 1) }
+            let!(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, lead_provider:, school: training_period.school_partnership.school) }
+
+            it { is_expected.to have_one_error_per_attribute }
+
+            it { is_expected.to have_error(:contract_period_year, "You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.") }
+          end
         end
       end
     end
@@ -152,12 +161,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             context "when the contract period year is changing" do
               let(:contract_period) { FactoryBot.create(:contract_period, year: training_period.contract_period.year + 1) }
-              let(:school_partnership) do
-                active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-                school = training_period.school_partnership.school
-                lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-                FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
-              end
+              let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, school: training_period.school_partnership.school) }
 
               it "changes the schedule via change schedule service" do
                 instance.change_schedule
@@ -171,6 +175,19 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               let(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year: training_period.contract_period.year) }
 
               it "uses to their current contract period year" do
+                instance.change_schedule
+
+                expect(service).to have_received(:change_schedule).once
+              end
+            end
+
+            context "when moving back to a frozen contract period" do
+              let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen, year: training_period.contract_period.year + 1) }
+              let!(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, lead_provider:, school: training_period.school_partnership.school) }
+
+              before { teacher.update!("#{trainee_type}_payments_frozen_year": contract_period.year) }
+
+              it "changes the schedule via change schedule service" do
                 instance.change_schedule
 
                 expect(service).to have_received(:change_schedule).once

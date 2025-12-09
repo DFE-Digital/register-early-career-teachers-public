@@ -100,6 +100,31 @@ RSpec.describe Teachers::ChangeSchedule do
             end
           end
         end
+
+        context "when moving away from a frozen contract period" do
+          let(:contract_period) { training_period.contract_period }
+
+          before { contract_period.update!(payments_frozen_at: Time.zone.now) }
+
+          it "updates `#{trainee_type}_payments_frozen_year` value accordingly" do
+            service.change_schedule
+
+            expect(teacher.reload.public_send("#{trainee_type}_payments_frozen_year")).to eq(contract_period.year)
+          end
+        end
+
+        context "when moving back to a frozen contract period" do
+          let(:new_contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen, year: training_period.contract_period.year + 1) }
+          let!(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: new_contract_period.year, lead_provider:, school: training_period.school_partnership.school) }
+
+          before { teacher.update!("#{trainee_type}_payments_frozen_year": new_contract_period.year) }
+
+          it "resets `#{trainee_type}_payments_frozen_year` value" do
+            service.change_schedule
+
+            expect(teacher.reload.public_send("#{trainee_type}_payments_frozen_year")).to be_nil
+          end
+        end
       end
     end
   end
