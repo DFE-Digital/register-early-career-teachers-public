@@ -125,7 +125,7 @@ private
   def contract_period_consistent_across_associations
     associated_contract_periods = [training_period&.contract_period, payment_statement&.contract_period, clawback_statement&.contract_period]
 
-    return unless associated_contract_periods.compact.uniq.count > 1
+    return unless associated_contract_periods.compact.uniq.many?
 
     errors.add(:training_period, "Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
   end

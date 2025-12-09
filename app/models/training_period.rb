@@ -194,7 +194,7 @@ private
     associated_contract_periods = [contract_period, expression_of_interest_contract_period, schedule&.contract_period]
     associated_contract_periods += declarations.map { |dec| [dec.payment_statement&.contract_period, dec.clawback_statement&.contract_period] }.flatten
 
-    return unless associated_contract_periods.compact.uniq.count > 1
+    return unless associated_contract_periods.compact.uniq.many?
 
     errors.add(:schedule, "Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
   end
