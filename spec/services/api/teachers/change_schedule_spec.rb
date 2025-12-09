@@ -14,7 +14,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
   let(:school_partnership) { training_period.school_partnership }
   let(:contract_period) { training_period.contract_period }
   let(:contract_period_year) { contract_period.year }
-  let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year: contract_period.year) }
+  let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period:) }
   let(:schedule_identifier) { training_period.for_ect? ? "ecf-standard-april" : "ecf-replacement-september" }
 
   it_behaves_like "an API teacher shared action" do
@@ -57,7 +57,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           if trainee_type == :ect
             context "when an ECT attempts to change to a replacement schedule" do
               let(:schedule_identifier) { "ecf-replacement-september" }
-              let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year: contract_period.year) }
+              let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period:) }
 
               it { is_expected.to have_one_error_per_attribute }
               it { is_expected.to have_error(:schedule_identifier, "Selected schedule is not valid for the teacher_type") }
@@ -68,8 +68,8 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             let(:contract_period_year) { Time.zone.today.year + 3 }
 
             before do
-              FactoryBot.create(:contract_period, year: contract_period_year)
-              FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year:)
+              contract_period = FactoryBot.create(:contract_period, year: contract_period_year)
+              FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period:)
             end
 
             it { is_expected.to have_one_error_per_attribute }
@@ -138,6 +138,27 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it { is_expected.to have_error(:contract_period_year, "You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.") }
           end
+
+          context "when the training period `started_on` has not yet passed and there are existing declarations" do
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: Time.zone.today, finished_on: 2.weeks.from_now) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+            let!(:declaration) { FactoryBot.create(:declaration, training_period:) }
+
+            context "when declarations are valid for the new schedule" do
+              it { is_expected.to be_valid }
+            end
+
+            context "when declarations are not valid for the new schedule" do
+              before do
+                declaration.update!(declaration_date: 5.years.ago)
+                FactoryBot.create(:milestone, schedule:)
+              end
+
+              it { is_expected.to have_one_error_per_attribute }
+
+              it { is_expected.to have_error(:schedule_identifier, "The schedule change cannot be applied because it would make existing declarations invalid. Please contact DfE for assistance.") }
+            end
+          end
         end
       end
     end
@@ -187,7 +208,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             context "when the contract_period_year is not specified" do
               let(:contract_period_year) { nil }
-              let(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period_year: training_period.contract_period.year) }
+              let(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period: training_period.contract_period) }
 
               it "uses to their current contract period year" do
                 instance.change_schedule
@@ -201,6 +222,17 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               let!(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, lead_provider:, school: training_period.school_partnership.school) }
 
               before { teacher.update!("#{trainee_type}_payments_frozen_year": contract_period.year) }
+
+              it "changes the schedule via change schedule service" do
+                instance.change_schedule
+
+                expect(service).to have_received(:change_schedule).once
+              end
+            end
+
+            context "when the training period `started_on` has not yet passed" do
+              let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: Time.zone.today, finished_on: 2.weeks.from_now) }
+              let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
 
               it "changes the schedule via change schedule service" do
                 instance.change_schedule

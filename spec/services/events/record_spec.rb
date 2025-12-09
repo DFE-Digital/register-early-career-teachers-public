@@ -1278,7 +1278,7 @@ RSpec.describe Events::Record do
     let(:author_params) { { author_name: lead_provider.name, author_type: "lead_provider_api" } }
     let(:metadata) do
       {
-        new_training_period_id: new_training_period.id,
+        training_period_id: new_training_period.id,
         from_schedule_id: original_training_period.schedule.id,
         to_schedule_id: new_training_period.schedule.id
       }
@@ -1287,12 +1287,13 @@ RSpec.describe Events::Record do
     context "when ECT training" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
       let(:original_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:original_schedule) { original_training_period.schedule }
       let(:new_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
       let(:course_identifier) { "ecf-induction" }
 
       it "queues a RecordEventJob with the correct values" do
         freeze_time do
-          Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:)
+          Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, original_schedule:, new_training_period:, teacher:, lead_provider:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period: original_training_period,
@@ -1312,12 +1313,13 @@ RSpec.describe Events::Record do
     context "when Mentor training" do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
       let(:original_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
+      let(:original_schedule) { original_training_period.schedule }
       let(:new_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
       let(:course_identifier) { "ecf-mentor" }
 
       it "queues a RecordEventJob with the correct values" do
         freeze_time do
-          Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:)
+          Events::Record.record_teacher_schedule_changed_event!(author:, original_training_period:, original_schedule:, new_training_period:, teacher:, lead_provider:)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             training_period: original_training_period,
