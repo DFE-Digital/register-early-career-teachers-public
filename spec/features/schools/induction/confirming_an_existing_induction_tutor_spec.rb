@@ -168,11 +168,11 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   end
 
   def and_i_should_see_a_confirmation_message
-    expect(page.get_by_text("You've confirmed Alastair Sim will continue as your school's induction tutor")).to be_visible
+    expect(page.get_by_text("You’ve confirmed Alastair Sim will continue as your school’s induction tutor")).to be_visible
   end
 
   def and_it_should_confirm_the_new_details
-    expect(page.get_by_text("You've changed your school's induction tutor to New Name")).to be_visible
+    expect(page.get_by_text("You’ve changed your school’s induction tutor to New Name")).to be_visible
   end
 
   def then_i_should_see_the_school_home_page
