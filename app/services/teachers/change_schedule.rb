@@ -1,6 +1,6 @@
 module Teachers
   class ChangeSchedule
-    attr_reader :lead_provider, :teacher, :training_period, :schedule, :school_partnership, :author
+    attr_reader :lead_provider, :teacher, :training_period, :schedule, :school_partnership, :author, :original_schedule
 
     def initialize(author:, lead_provider:, teacher:, training_period:, schedule:, school_partnership:)
       @lead_provider = lead_provider
@@ -9,22 +9,43 @@ module Teachers
       @schedule = schedule
       @school_partnership = school_partnership
       @author = author
+      @original_schedule = training_period&.schedule
     end
 
     def change_schedule
       ActiveRecord::Base.transaction do
-        finished_on = determine_finished_on
-
         track_payments_frozen_year!
-        finish_training_period!
-        new_training_period = create_new_training_period!(finished_on:)
-        record_change_schedule_event!(original_training_period: training_period, new_training_period:)
+
+        if training_period.started_on.past?
+          create_new_training_period!
+        else
+          update_training_period_in_place!
+        end
       end
 
       teacher
     end
 
   private
+
+    def update_training_period_in_place!
+      training_period.update!(
+        schedule:,
+        school_partnership:,
+        expression_of_interest: training_period.expression_of_interest.present? ? school_partnership.active_lead_provider : nil
+      )
+
+      record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period: training_period)
+    end
+
+    def create_new_training_period!
+      finished_on = determine_finished_on
+
+      finish_training_period!
+      new_training_period = create_new_training_period_with!(finished_on:)
+
+      record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period:)
+    end
 
     # Determine the correct finished_on date for the new training period.
     # In order of priority, we will take:
@@ -59,7 +80,7 @@ module Teachers
       end
     end
 
-    def create_new_training_period!(finished_on:)
+    def create_new_training_period_with!(finished_on:)
       TrainingPeriods::Create.provider_led(
         period: training_period.trainee,
         started_on: Time.zone.today,
@@ -71,12 +92,11 @@ module Teachers
       ).call
     end
 
-    def record_change_schedule_event!(original_training_period:, new_training_period:)
-      return unless original_training_period.saved_changes?
-
+    def record_change_schedule_event!(original_training_period:, original_schedule:, new_training_period:)
       Events::Record.record_teacher_schedule_changed_event!(
         author:,
         original_training_period:,
+        original_schedule:,
         new_training_period:,
         teacher:,
         lead_provider:

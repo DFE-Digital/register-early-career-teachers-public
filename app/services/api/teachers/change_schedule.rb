@@ -16,6 +16,7 @@ module API::Teachers
     validate :no_future_training_periods_exist
     validate :can_move_to_frozen_cohort
     validate :trainee_not_completed
+    validate :schedule_does_not_invalidate_declarations
 
     def change_schedule
       return false unless valid?
@@ -138,6 +139,24 @@ module API::Teachers
       return unless training_period&.teacher_completed_training?
 
       errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training.")
+    end
+
+    def schedule_does_not_invalidate_declarations
+      return if errors[:schedule_identifier].any?
+      return unless training_period
+      return if training_period.started_on.past?
+      return unless declarations_would_become_invalid?
+
+      errors.add(:schedule_identifier, "The schedule change cannot be applied because it would make existing declarations invalid. Please contact DfE for assistance.")
+    end
+
+    def declarations_would_become_invalid?
+      original = training_period.schedule
+      training_period.schedule = schedule
+
+      training_period.declarations.any?(&:invalid?)
+    ensure
+      training_period.schedule = original
     end
   end
 end
