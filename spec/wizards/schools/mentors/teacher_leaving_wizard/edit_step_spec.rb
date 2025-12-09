@@ -55,7 +55,7 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::EditStep do
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:leaving_on]).to include("Leaving date must be on or after the start date (1 January 2025)")
+        expect(step.errors[:leaving_on]).to include("Enter a date which is after when the mentor started at your school (1 January 2025)")
       end
     end
   end

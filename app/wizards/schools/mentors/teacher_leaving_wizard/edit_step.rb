@@ -46,7 +46,7 @@ module Schools
 
           errors.add(
             :leaving_on,
-            "Leaving date must be on or after the start date (#{mentor_at_school_period.started_on.to_fs(:govuk)})"
+            "Enter a date which is after when the mentor started at your school (#{mentor_at_school_period.started_on.to_fs(:govuk)})"
           )
         end
 
