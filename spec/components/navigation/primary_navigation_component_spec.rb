@@ -1,6 +1,7 @@
 RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
-  subject { described_class.new(current_path:, current_user_type:) }
+  subject { described_class.new(current_path:, current_user_type:, current_user:) }
 
+  let(:current_user) { FactoryBot.create(:user, :finance) }
   let(:current_path) { "/" }
   let(:current_user_type) { nil }
   let(:nav_selector) { "nav.govuk-service-navigation__wrapper" }
@@ -46,8 +47,26 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
       end
     end
 
+    context "when in admin section and user does not have finance access" do
+      subject { described_class.new(current_path:, current_user_type:, current_user:) }
+
+      let(:current_path) { "/admin" }
+      let(:current_user_type) { :dfe_staff_user }
+      let(:current_user) { FactoryBot.create(:user, :admin) }
+
+      it "does not render the Finance item" do
+        render_inline(subject)
+
+        expect(rendered_content).to have_link("Teachers", href: "/admin/teachers")
+        expect(rendered_content).to have_link("Schools", href: "/admin/schools")
+        expect(rendered_content).to have_link("Organisations", href: "/admin/organisations")
+        expect(rendered_content).to have_link("Users", href: "/admin/users")
+        expect(rendered_content).not_to have_link("Finance", href: "/admin/finance")
+      end
+    end
+
     context "when inverse: true" do
-      subject { described_class.new(current_path:, current_user_type:, inverse: true) }
+      subject { described_class.new(current_path:, current_user_type:, inverse: true, current_user:) }
 
       before { render_inline(subject) }
 
