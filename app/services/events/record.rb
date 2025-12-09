@@ -198,10 +198,9 @@ module Events
       new(event_type:, author:, modifications:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_imported_from_dqt_event!(author:, teacher:, happened_at: Time.zone.now)
+    def self.teacher_imported_from_dqt_event!(author:, teacher:, body:, happened_at: Time.zone.now)
       event_type = :import_from_dqt
       heading = "Early roll-out mentor imported from DQT"
-      body = "Teacher created as part of the Early Roll-out mentor import"
 
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end
