@@ -173,7 +173,7 @@ describe "One induction record" do
     end
 
     describe "training programme" do
-      context "when training programme is :school_led" do
+      context "when training programme is :core_induction_programme" do
         let(:training_programme) { :core_induction_programme }
 
         it "sets the training programme to school_led" do
@@ -197,7 +197,7 @@ describe "One induction record" do
         end
       end
 
-      context "when training programme is :provider_led" do
+      context "when training programme is :full_induction_programme" do
         let(:training_programme) { :full_induction_programme }
 
         it "sets the training programme to provider_led" do
