@@ -928,4 +928,48 @@ describe TrainingPeriod do
       expect(subject).not_to include(unrelated_training_period)
     end
   end
+
+  describe "#teacher_completed_training?" do
+    subject { training_period.teacher_completed_training? }
+
+    let(:teacher) { training_period.trainee.teacher }
+
+    context "when ECT" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+      context "when not completed training" do
+        it "returns false" do
+          expect(subject).to be_falsy
+        end
+      end
+
+      context "when completed training" do
+        before { FactoryBot.create(:induction_period, :pass, teacher:) }
+
+        it "returns true" do
+          expect(subject).to be_truthy
+        end
+      end
+    end
+
+    context "when Mentor" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
+
+      context "when not completed training" do
+        before { teacher.update!(mentor_became_ineligible_for_funding_on: nil) }
+
+        it "returns false" do
+          expect(subject).to be_falsy
+        end
+      end
+
+      context "when completed training" do
+        before { teacher.update!(mentor_became_ineligible_for_funding_on: Time.zone.now, mentor_became_ineligible_for_funding_reason: "completed_declaration_received") }
+
+        it "returns true" do
+          expect(subject).to be_truthy
+        end
+      end
+    end
+  end
 end

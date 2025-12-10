@@ -109,6 +109,21 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
           end
 
+          context "when participant has completed training" do
+            before do
+              if trainee_type == :ect
+                FactoryBot.create(:induction_period, :pass, teacher:)
+              else
+                teacher.update!(mentor_became_ineligible_for_funding_on: Time.zone.now, mentor_became_ineligible_for_funding_reason: "completed_declaration_received")
+              end
+            end
+
+            it "returns error" do
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training.")
+            end
+          end
+
           context "guarded error messages" do
             subject(:instance) { described_class.new }
 
