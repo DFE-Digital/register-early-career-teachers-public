@@ -81,7 +81,7 @@ class TrainingPeriod < ApplicationRecord
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
   validates :schedule, presence: { message: "Schedule is required for provider-led training periods" }, if: :provider_led_training_programme?
-  validate :schedule_contract_period_matches, if: :provider_led_training_programme?
+  validate :contract_period_consistent_across_associations, if: :provider_led_training_programme?
   validate :schedule_absent_for_school_led, if: :school_led_training_programme?
   validate :schedule_applicable_for_trainee
 
@@ -190,14 +190,13 @@ private
     errors.add(:school_partnership, "School partnership must be absent for school-led training programmes")
   end
 
-  def schedule_contract_period_matches
-    contract_periods_to_check = [contract_period, expression_of_interest_contract_period].compact.uniq
+  def contract_period_consistent_across_associations
+    associated_contract_periods = [contract_period, expression_of_interest_contract_period, schedule&.contract_period]
+    associated_contract_periods += declarations.map { |dec| [dec.payment_statement&.contract_period, dec.clawback_statement&.contract_period] }.flatten
 
-    return if schedule.blank? || contract_periods_to_check.blank?
+    return unless associated_contract_periods.compact.uniq.many?
 
-    unless contract_periods_to_check.all?(schedule.contract_period)
-      errors.add(:schedule, "Contract period of schedule must match contract period of EOI and/or school partnership")
-    end
+    errors.add(:schedule, "Contract period mismatch: schedule, EOI, school partnership, and declarations must have the same contract period.")
   end
 
   def schedule_absent_for_school_led
