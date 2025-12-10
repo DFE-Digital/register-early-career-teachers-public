@@ -909,6 +909,56 @@ describe TrainingPeriod do
         expect(relation.includes_values).to include(:school_partnership)
       end
     end
+
+    describe ".ongoing_on_including" do
+      it "returns records that include the date (inclusive)" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 31))
+        training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on)
+
+        another_ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 2, 1), finished_on: Date.new(2025, 2, 28))
+        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: another_ect_at_school_period, started_on: another_ect_at_school_period.started_on, finished_on: another_ect_at_school_period.finished_on)
+
+        result = TrainingPeriod.ongoing_on_including(Date.new(2025, 1, 15))
+        expect(result).to contain_exactly(training_period)
+
+        result = TrainingPeriod.ongoing_on_including(Date.new(2025, 1, 1))
+        expect(result).to contain_exactly(training_period)
+
+        result = TrainingPeriod.ongoing_on_including(Date.new(2025, 1, 31))
+        expect(result).to contain_exactly(training_period)
+      end
+    end
+
+    describe ".ongoing_or_closest_to" do
+      let(:date) { Date.new(2025, 1, 22) }
+
+      it "returns the record that is ongoing on the date when present" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 20), finished_on: Date.new(2025, 1, 25))
+        covering = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on)
+
+        another_ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 10))
+        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: another_ect_at_school_period, started_on: another_ect_at_school_period.started_on, finished_on: another_ect_at_school_period.finished_on)
+
+        result = TrainingPeriod.ongoing_or_closest_to(date)
+
+        expect(result).to contain_exactly(covering)
+      end
+
+      it "returns the closest record by start/finish when none cover the date" do
+        ect_at_school_period1 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 10))
+        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period1, started_on: ect_at_school_period1.started_on, finished_on: ect_at_school_period1.finished_on)
+
+        ect_at_school_period2 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 15), finished_on: Date.new(2025, 1, 20))
+        training_period2 = FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period2, started_on: ect_at_school_period2.started_on, finished_on: ect_at_school_period2.finished_on)
+
+        ect_at_school_period3 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 25), finished_on: Date.new(2025, 1, 30))
+        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period3, started_on: ect_at_school_period3.started_on, finished_on: ect_at_school_period3.finished_on)
+
+        result = TrainingPeriod.ongoing_or_closest_to(date)
+
+        expect(result).to contain_exactly(training_period2)
+      end
+    end
   end
 
   describe "#siblings" do
@@ -979,6 +1029,42 @@ describe TrainingPeriod do
         it "returns true" do
           expect(subject).to be_truthy
         end
+      end
+    end
+  end
+
+  describe "#eligible_for_funding?" do
+    subject { training_period.eligible_for_funding? }
+
+    let(:teacher) { training_period.trainee.teacher }
+
+    context "when ECT" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+      context "when not eligible for funding" do
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(ect_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
+      end
+    end
+
+    context "when Mentor" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
+
+      context "when not eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: nil) }
+
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
       end
     end
   end
