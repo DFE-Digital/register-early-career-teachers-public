@@ -31,12 +31,16 @@ RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
   end
 
   describe "GET /school/assign-existing-mentor/:step" do
+    subject { get schools_assign_existing_mentor_wizard_review_mentor_eligibility_path }
+
+    it_behaves_like "an induction redirectable route"
+    
     context "when signed in as a school user" do
       before { sign_in_as(:school_user, school:) }
 
       context "when the wizard is not yet started" do
         it "redirects to the root path" do
-          get schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+          subject
           expect(response).to redirect_to(root_path)
         end
       end
@@ -45,7 +49,7 @@ RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
         before { kickoff_wizard! }
 
         it "renders the review_mentor_eligibility step" do
-          get schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+          subject
           expect(response).to have_http_status(:ok)
         end
 
@@ -65,11 +69,14 @@ RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
   end
 
   describe "POST /school/assign-existing-mentor/:step" do
+    subject { post schools_assign_existing_mentor_wizard_review_mentor_eligibility_path }
     before { sign_in_as(:school_user, school:) }
+
+    it_behaves_like "an induction redirectable route"
 
     context "when the wizard is not started" do
       it "redirects to the root path" do
-        post schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+        subject
         expect(response).to redirect_to(root_path)
       end
     end
@@ -78,7 +85,7 @@ RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
       before { kickoff_wizard! }
 
       it "redirects to the confirmation step" do
-        post schools_assign_existing_mentor_wizard_review_mentor_eligibility_path
+        subject
         expect(response).to redirect_to(schools_assign_existing_mentor_wizard_confirmation_path)
       end
     end
