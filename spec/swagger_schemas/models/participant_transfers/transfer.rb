@@ -33,6 +33,12 @@ PARTICIPANT_TRANSFERS_TRANSFER = {
       ],
       example: "complete"
     },
+    created_at: {
+      description: "The date and time the participant transfer was created",
+      type: :string,
+      format: :date,
+      example: "2021-05-31"
+    },
     leaving: {
       type: :object,
       required: %i[
