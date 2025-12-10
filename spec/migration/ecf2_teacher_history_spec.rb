@@ -166,13 +166,15 @@ describe ECF2TeacherHistory do
 
         context "when training periods are present" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
           let(:lead_provider) { FactoryBot.create(:lead_provider) }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
+
+          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+          let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
 
           let(:first_training_period_row) do
             ECF2TeacherHistory::TrainingPeriodRow.new(
@@ -182,7 +184,7 @@ describe ECF2TeacherHistory do
               lead_provider:,
               delivery_partner:,
               contract_period:,
-              schedule:
+              schedule_info:,
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -254,6 +256,7 @@ describe ECF2TeacherHistory do
                   expect(p1_tp.active_lead_provider).to eql(active_lead_provider)
                   expect(p1_tp.lead_provider).to eql(lead_provider)
                   expect(p1_tp.contract_period).to eql(contract_period)
+                  expect(p1_tp.schedule).to eql(schedule)
                   # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
                   # expect(p1_tp.withdrawn_at).to eql(1.month.ago.round(2))
                   # expect(p1_tp.withdrawal_reason).to eql("switched_to_school_led")
@@ -277,6 +280,7 @@ describe ECF2TeacherHistory do
                   expect(p2_tp.started_on).to eql(1.month.ago.to_date)
                   expect(p2_tp.finished_on).to eql(1.week.ago.to_date)
                   expect(p2_tp.training_programme).to eql("school_led")
+                  expect(p2_tp.schedule).to be_nil
                 end
               end
             end
@@ -440,13 +444,15 @@ describe ECF2TeacherHistory do
 
         context "when training periods are present" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
           let(:lead_provider) { FactoryBot.create(:lead_provider) }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
+
+          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+          let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
 
           let(:first_training_period_row) do
             ECF2TeacherHistory::TrainingPeriodRow.new(
@@ -456,7 +462,7 @@ describe ECF2TeacherHistory do
               lead_provider:,
               delivery_partner:,
               contract_period:,
-              schedule:
+              schedule_info:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",

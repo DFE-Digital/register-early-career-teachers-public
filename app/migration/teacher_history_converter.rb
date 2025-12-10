@@ -52,7 +52,7 @@ private
       **withdrawal_attributes(induction_record),
       lead_provider: induction_record.training_provider_info.lead_provider,
       delivery_partner: induction_record.training_provider_info.delivery_partner,
-      schedule: induction_record.schedule
+      schedule_info: induction_record.schedule_info
     }
   end
 

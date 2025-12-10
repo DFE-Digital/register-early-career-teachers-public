@@ -37,7 +37,7 @@ FactoryBot.define do
     initialize_with { new(state:, reason:, created_at:) }
   end
 
-  factory :ecf1_teacher_history_schedule_info, class: "ECF1TeacherHistory::ScheduleInfo" do
+  factory :ecf1_teacher_history_schedule_info, class: "Types::ScheduleInfo" do
     schedule_id { SecureRandom.uuid }
     name { "ECF Standard September" }
     identifier { "ecf-standard-september" }
@@ -75,7 +75,7 @@ FactoryBot.define do
     created_at { start_date }
     updated_at { Random.rand(30).days.ago }
     school_urn { Faker::Number.unique.number(digits: 6).to_s }
-    schedule { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
+    schedule_info { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
     preferred_identity_email { Faker::Internet.unique.email(name: full_name) }
     mentor_profile_id { SecureRandom.uuid }
     training_status { "active" }
@@ -92,7 +92,7 @@ FactoryBot.define do
           updated_at:,
           cohort_year:,
           school_urn:,
-          schedule:,
+          schedule_info:,
           preferred_identity_email:,
           mentor_profile_id:,
           training_status:,

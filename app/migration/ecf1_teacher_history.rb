@@ -28,7 +28,7 @@ class ECF1TeacherHistory
                                   :updated_at,
                                   :cohort_year,
                                   :school_urn,
-                                  :schedule,
+                                  :schedule_info,
                                   :preferred_identity_email,
                                   :mentor_profile_id,
                                   :training_status,
@@ -40,13 +40,6 @@ class ECF1TeacherHistory
   TrainingProviderInfo = Struct.new(
     :lead_provider,
     :delivery_partner,
-    :cohort_year
-  )
-
-  ScheduleInfo = Struct.new(
-    :schedule_id,
-    :identifier,
-    :name,
     :cohort_year
   )
 
@@ -118,7 +111,7 @@ class ECF1TeacherHistory
         updated_at: induction_record.updated_at,
         cohort_year: induction_record.schedule.cohort.start_year,
         school_urn: induction_record.induction_programme.school_cohort.school.urn,
-        schedule: build_schedule_info(schedule: induction_record.schedule),
+        schedule_info: build_schedule_info(schedule: induction_record.schedule),
         preferred_identity_email: induction_record.preferred_identity.email,
         mentor_profile_id: induction_record.mentor_profile_id,
         training_status: induction_record.training_status,
@@ -155,7 +148,7 @@ class ECF1TeacherHistory
   end
 
   def self.build_schedule_info(schedule:)
-    ScheduleInfo.new(
+    Types::ScheduleInfo.new(
       schedule_id: schedule.id,
       identifier: schedule.schedule_identifier,
       name: schedule.name,
