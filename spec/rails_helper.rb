@@ -37,9 +37,9 @@ RSpec.configure do |config|
       .and_return(true)
   end
 
-  config.before(:each, :prompt_for_school_induction_tutor_details) do
+  config.before(:each, :enable_prompt_for_school_induction_tutor_details) do
     allow(Rails.application.config)
-      .to receive(:prompt_for_school_induction_tutor_details)
+      .to receive(:enable_prompt_for_school_induction_tutor_details)
       .and_return(true)
   end
 

@@ -34,9 +34,15 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
   end
 
   describe "POST /school/ects/:id/mentorship" do
+    subject { post("/school/ects/#{ect_at_school_period.id}/mentorship", params:) }
+
+    let(:params) { {} }
+
+    it_behaves_like "an induction redirectable route"
+
     context "when not signed in" do
       it "redirects to the root page" do
-        post("/school/ects/#{ect_at_school_period.id}/mentorship")
+        subject
         expect(response).to redirect_to(root_url)
       end
     end
@@ -50,7 +56,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
         let(:params) { { schools_assign_mentor_form: { mentor_id: "0" } } }
 
         it "redirects to the start of the wizard to add a new mentor to the school" do
-          post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
+          subject
           expect(response).to redirect_to(schools_register_mentor_wizard_start_url(ect_id: ect_at_school_period.id))
         end
       end
@@ -61,7 +67,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
         it "renders the form again for the user to select a different option" do
           allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-          post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
+          subject
 
           expect(response).to be_successful
           expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period, mentor_id: mentor.id.next.to_s).once
@@ -80,7 +86,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
         it "creates the mentorship and redirects the user to the confirmation page" do
           allow(Schools::AssignMentorForm).to receive(:new).and_call_original
 
-          post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
+          subject
 
           expect(Schools::AssignMentorForm).to have_received(:new).with(ect: ect_at_school_period, mentor_id: mentor.id.to_s).once
           expect(ECTAtSchoolPeriods::Mentorship.new(ect_at_school_period).current_mentor).to eq(mentor)
@@ -102,7 +108,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
               .with(trn: mentor.teacher.trn)
               .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: true))
 
-            post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
+            subject
           end
 
           it "redirects the user to the assign existing mentor wizard" do
@@ -119,7 +125,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
               .with(trn: mentor.teacher.trn)
               .and_return(instance_double(Teachers::MentorFundingEligibility, eligible?: false))
 
-            post("/school/ects/#{ect_at_school_period.id}/mentorship", params:)
+            subject
           end
 
           it "creates the mentorship and redirects the user to the confirmation page" do
@@ -132,7 +138,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
         context "when no mentor_at_school_period is found" do
           let(:params) { { schools_assign_mentor_form: { mentor_id: "non-existent" } } }
 
-          before { post("/school/ects/#{ect_at_school_period.id}/mentorship", params:) }
+          before { subject }
 
           it "redirects to the new form again" do
             expect(response).to have_http_status(:ok)
