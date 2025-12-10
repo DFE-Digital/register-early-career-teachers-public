@@ -1,5 +1,7 @@
 module Declarations
   class MentorCompletion
+    BILLABLE_OR_CHANGEABLE_STATUSES = %w[no_payment eligible payable paid].freeze
+
     attr_reader :author, :declaration
 
     def initialize(author:, declaration:)
@@ -11,7 +13,7 @@ module Declarations
       return false unless mentor_completion_event?
 
       ActiveRecord::Base.transaction do
-        if latest_completed_declaration.completable_payment_status?
+        if declaration_billable_or_changeable?
           mentor_completed_training!
         else
           mentor_not_completed_training!
@@ -48,9 +50,14 @@ module Declarations
     def latest_completed_declaration
       @latest_completed_declaration ||= teacher
         .mentor_declarations
-        .completed
+        .declaration_type_completed
         .order(declaration_date: :desc)
         .first!
+    end
+
+    def declaration_billable_or_changeable?
+      latest_completed_declaration.payment_status.in?(BILLABLE_OR_CHANGEABLE_STATUSES) &&
+        latest_completed_declaration.clawback_status_no_clawback?
     end
 
     def record_completion_change_event!

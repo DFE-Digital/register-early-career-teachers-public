@@ -5,7 +5,6 @@ RSpec.describe Declarations::MentorCompletion do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
   let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
-  let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:) }
 
   let(:service) do
     described_class.new(
@@ -15,8 +14,10 @@ RSpec.describe Declarations::MentorCompletion do
   end
 
   describe "#perform" do
-    context "when declaration type is `completed`" do
+    context "when declaration is billable or changeable" do
       context "when mentor training is completed" do
+        let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:) }
+
         it "mentor is now ineligible for funding" do
           expect(teacher.mentor_became_ineligible_for_funding_on).to be_nil
           expect(teacher.mentor_became_ineligible_for_funding_reason).to be_nil
@@ -74,7 +75,7 @@ RSpec.describe Declarations::MentorCompletion do
       end
     end
 
-    context "when declaration type is not `completed`" do
+    context "when declaration is not billable or changeable" do
       let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "started") }
 
       it "returns false without action" do
@@ -86,6 +87,7 @@ RSpec.describe Declarations::MentorCompletion do
     context "when teacher type is ECT" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
+      let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:) }
 
       it "returns false without action" do
         expect(Events::Record).not_to receive(:record_mentor_completion_status_change!)
