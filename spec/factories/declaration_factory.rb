@@ -14,6 +14,10 @@ FactoryBot.define do
       voided_at { Time.zone.now }
     end
 
+    trait :no_payment do
+      payment_status { :no_payment }
+    end
+
     trait :eligible do
       payment_status { :eligible }
       payment_statement { FactoryBot.create(:statement, :open, contract_period: training_period.contract_period) }
