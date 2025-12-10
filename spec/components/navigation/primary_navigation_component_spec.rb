@@ -65,7 +65,8 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
         expected_items = [
           { text: "ECTs", href: "/school/home/ects" },
-          { text: "Mentors", href: "/school/home/mentors" }
+          { text: "Mentors", href: "/school/home/mentors" },
+          { text: "Induction tutor", href: "/school/home/induction-tutor" }
         ]
 
         validate_navigation_items(expected_items)
@@ -131,7 +132,8 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
         expected_items = [
           { text: "ECTs", href: "/school/home/ects" },
-          { text: "Mentors", href: "/school/home/mentors" }
+          { text: "Mentors", href: "/school/home/mentors" },
+          { text: "Induction tutor", href: "/school/home/induction-tutor" }
         ]
 
         validate_navigation_items(expected_items)
