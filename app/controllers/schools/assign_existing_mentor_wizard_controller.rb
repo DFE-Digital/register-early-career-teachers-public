@@ -1,6 +1,6 @@
 class Schools::AssignExistingMentorWizardController < SchoolsController
   include Schools::InductionRedirectable
-  
+
   before_action :initialize_wizard, only: %i[new create]
   before_action :check_allowed_step, only: %i[new create]
 

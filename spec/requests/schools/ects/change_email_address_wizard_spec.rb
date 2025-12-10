@@ -13,6 +13,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
 
   describe "GET #new" do
     subject { get path_for_step("edit") }
+
     it_behaves_like "an induction redirectable route"
     context "when not signed in" do
       it "redirects to the root page" do
@@ -55,6 +56,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
 
   describe "POST #create" do
     subject { post(path_for_step("edit"), params:) }
+
     let(:new_email) { "ect@example.com" }
     let(:params) { { edit: { email: new_email } } }
 

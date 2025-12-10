@@ -1,6 +1,8 @@
 module Schools
   module ECTs
     class ChangeLeadProviderWizardController < SchoolsController
+      include Schools::InductionRedirectable
+
       include Wizardable
 
       before_action :ensure_provider_led!
