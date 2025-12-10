@@ -278,9 +278,9 @@ if ENV["SEED_NEW_APPROPRIATE_BODY_MODELS"] == "y"
 
   # Bright Futures' second region
   second_hub = FactoryBot.create(:teaching_school_hub,
+                                 #  region: "Manchester, Stockport",
                                  lead_school: School.find_by(urn: 137_289),
                                  name: "Bright Futures Teaching School Hub (Manchester & Stockport)")
-  #  region: "Manchester, Stockport"
 
   print_seed_info("#{second_hub.name} (#{type})", indent: 2)
   describe_lead_school(second_hub.lead_school)

@@ -3,7 +3,7 @@ module AppropriateBodies
     class ActionsController < PendingInductionSubmissionBatchController
       def index
         @pending_induction_submission_batches = PendingInductionSubmissionBatch
-            .for_appropriate_body(@appropriate_body)
+            .for_appropriate_body_period(@appropriate_body)
             .action
             .order(id: :desc)
       end
@@ -53,7 +53,7 @@ module AppropriateBodies
     private
 
       def new_batch_action
-        PendingInductionSubmissionBatch.new_action_for(appropriate_body: @appropriate_body)
+        PendingInductionSubmissionBatch.new_action_for(appropriate_body_period: @appropriate_body)
       end
 
       def process_batch_action

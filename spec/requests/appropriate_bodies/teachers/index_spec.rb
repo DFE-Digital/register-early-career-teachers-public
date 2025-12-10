@@ -1,5 +1,5 @@
 RSpec.describe "Appropriate Body teacher index page", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   describe "GET /appropriate-body/teachers" do
     context "when not signed in" do
@@ -10,13 +10,13 @@ RSpec.describe "Appropriate Body teacher index page", type: :request do
     end
 
     context "when signed in as an appropriate body user" do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       context "when there are more than 50 teachers" do
         let!(:additional_teachers) do
           FactoryBot.create_list(:teacher, 51, trs_first_name: "John", trs_last_name: "Smith").tap do |teachers|
             teachers.each do |teacher|
-              FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
+              FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
             end
           end
         end

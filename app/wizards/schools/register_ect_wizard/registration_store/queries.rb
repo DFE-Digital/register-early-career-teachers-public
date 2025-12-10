@@ -15,7 +15,7 @@ module Schools
         end
 
         def appropriate_body
-          @appropriate_body ||= AppropriateBody.find_by_id(registration_store.appropriate_body_id)
+          @appropriate_body ||= AppropriateBodyPeriod.find_by_id(registration_store.appropriate_body_id)
         end
 
         def lead_provider

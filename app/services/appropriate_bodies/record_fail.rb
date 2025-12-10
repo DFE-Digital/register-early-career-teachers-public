@@ -21,7 +21,7 @@ module AppropriateBodies
       Events::Record.record_teacher_fails_induction_event!(
         author:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         induction_period: ongoing_induction_period
       )
     end

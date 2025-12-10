@@ -32,6 +32,6 @@ class ECF2TeacherHistory::ECTAtSchoolPeriodRow
   end
 
   def real_appropriate_body
-    AppropriateBody.find(appropriate_body.id)
+    AppropriateBodyPeriod.find(appropriate_body.id)
   end
 end
