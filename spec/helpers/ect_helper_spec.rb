@@ -8,6 +8,16 @@ RSpec.describe ECTHelper, type: :helper do
     let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher, school:, started_on:) }
     let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
 
+    context "when the ECT is leaving" do
+      before do
+        ect_at_school_period.update!(finished_on: Time.zone.today + 1.day)
+      end
+
+      it "returns a yellow 'Leaving school' tag" do
+        expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
+      end
+    end
+
     context "when the ECT has a TRS induction status" do
       context "when the status is Passed" do
         let(:trs_induction_status) { "Passed" }

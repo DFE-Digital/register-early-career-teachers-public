@@ -19,6 +19,8 @@ module ECTAtSchoolPeriods
   private
 
     def finish_ect_at_school_period!
+      return if ect_at_school_period.finished_on.present? && ect_at_school_period.finished_on <= finished_on
+
       ect_at_school_period.finish!(finished_on)
 
       Events::Record.record_teacher_left_school_as_ect!(
