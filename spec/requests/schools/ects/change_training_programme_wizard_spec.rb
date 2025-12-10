@@ -22,9 +22,13 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
   end
 
   describe "GET #new" do
+    subject { get path_for_step("edit") }
+
+    it_behaves_like "an induction redirectable route"
+
     context "when not signed in" do
       it "redirects to the root page" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to redirect_to(root_path)
       end
@@ -34,7 +38,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -53,7 +57,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
 
       context "when the current_step is valid" do
         it "returns ok" do
-          get path_for_step("edit")
+          subject
 
           expect(response).to have_http_status(:ok)
         end
@@ -62,12 +66,16 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
   end
 
   describe "POST #create" do
-    let(:new_training_programme) { "provider_led" }
+    subject { post path_for_step("edit"), params: }
+
     let(:params) { { edit: { training_programme: new_training_programme } } }
+    let(:new_training_programme) { "provider_led" }
+
+    it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
       it "redirects to the root path" do
-        post(path_for_step("edit"), params:)
+        subject
 
         expect(response).to redirect_to(root_path)
       end
@@ -77,7 +85,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        post(path_for_step("edit"), params:)
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -100,7 +108,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
         let(:new_training_programme) { "" }
 
         it "returns unprocessable_content" do
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -120,7 +128,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
         let(:new_training_programme) { "school_led" }
 
         it "switches the training to school-led" do
-          post(path_for_step("edit"), params:)
+          subject
 
           follow_redirect!
 
@@ -137,7 +145,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
         it "creates an event only after confirmation" do
           allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
 
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(Events::Record).not_to have_received(:record_teacher_training_programme_updated_event!)
           expect(response).to redirect_to(path_for_step("check-answers"))
@@ -172,7 +180,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
         end
 
         it "switches the training to provider-led" do
-          post(path_for_step("edit"), params:)
+          subject
 
           follow_redirect!
 
@@ -196,7 +204,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
         it "creates an event only after confirmation" do
           allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
 
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(Events::Record).not_to have_received(:record_teacher_training_programme_updated_event!)
           expect(response).to redirect_to(path_for_step("lead-provider"))

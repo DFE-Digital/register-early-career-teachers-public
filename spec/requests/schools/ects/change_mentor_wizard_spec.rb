@@ -34,6 +34,10 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
   end
 
   describe "GET #new" do
+    subject { get path_for_step("edit") }
+
+    it_behaves_like "an induction redirectable route"
+
     context "when not signed in" do
       it "redirects to the root page" do
         get path_for_step("edit")
@@ -46,7 +50,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -59,7 +63,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         let(:mentorship_period) { nil }
 
         it "redirects to the register mentor wizard" do
-          get path_for_step("edit")
+          subject
           expect(response).to redirect_to(
             schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
           )
@@ -76,7 +80,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
 
       context "when the current_step is valid" do
         it "returns ok" do
-          get path_for_step("edit")
+          subject
 
           expect(response).to have_http_status(:ok)
         end
@@ -85,7 +89,10 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
   end
 
   describe "POST #create" do
-    let(:other_mentor_teacher) { FactoryBot.create(:teacher) }
+    subject { post(path_for_step("edit"), params:) }
+
+    let(:params) { { edit: { mentor_at_school_period_id: } } }
+    let(:mentor_at_school_period_id) { other_mentor_at_school_period.id }
     let(:other_mentor_at_school_period) do
       FactoryBot.create(
         :mentor_at_school_period,
@@ -95,8 +102,9 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         started_on: ect_at_school_period.started_on - 1.week
       )
     end
-    let(:mentor_at_school_period_id) { other_mentor_at_school_period.id }
-    let(:params) { { edit: { mentor_at_school_period_id: } } }
+    let(:other_mentor_teacher) { FactoryBot.create(:teacher) }
+
+    it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
       it "redirects to the root path" do
@@ -110,7 +118,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        post(path_for_step("edit"), params:)
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -134,7 +142,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         let(:mentor_at_school_period_id) { 0 }
 
         it "redirects to the register mentor wizard" do
-          post(path_for_step("edit"), params:)
+          subject
           expect(response).to redirect_to(
             schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
           )
@@ -154,7 +162,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         end
 
         it "assigns a mentor without training" do
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(response).to redirect_to(path_for_step("check-answers"))
 
@@ -177,7 +185,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
           allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
           allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
 
-          post(path_for_step("edit"), params:)
+          subject
           follow_redirect!
           post(path_for_step("check-answers"))
 
@@ -218,7 +226,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
           end
 
           it "assigns a mentor without training" do
-            post(path_for_step("edit"), params:)
+            subject
 
             expect(response).to redirect_to(path_for_step("check-answers"))
 
@@ -241,7 +249,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
             allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
             allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
 
-            post(path_for_step("edit"), params:)
+            subject
             follow_redirect!
             post(path_for_step("check-answers"))
 
@@ -259,7 +267,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
           end
 
           it "assigns a mentor without training" do
-            post(path_for_step("edit"), params:)
+            subject
 
             expect(response).to redirect_to(path_for_step("check-answers"))
 
@@ -282,7 +290,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
             allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
             allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
 
-            post(path_for_step("edit"), params:)
+            subject
             follow_redirect!
             post(path_for_step("check-answers"))
 
@@ -297,7 +305,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         context "when the mentor is eligible for funding" do
           context "when the mentor has the same lead provider" do
             it "assigns a mentor with training" do
-              post(path_for_step("edit"), params:)
+              subject
 
               expect(response).to redirect_to(path_for_step("review-mentor-eligibility"))
 
@@ -330,7 +338,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
               allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
               allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
 
-              post(path_for_step("edit"), params:)
+              subject
               follow_redirect!
               review_mentor_eligibility_params = { review_mentor_eligibility: { accepting_current_lead_provider: true } }
               post(path_for_step("review-mentor-eligibility"), params: review_mentor_eligibility_params)
@@ -352,7 +360,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
             end
 
             it "assigns a mentor with training" do
-              post(path_for_step("edit"), params:)
+              subject
 
               expect(response).to redirect_to(path_for_step("review-mentor-eligibility"))
 
@@ -389,7 +397,7 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
               allow(Events::Record).to receive(:record_teacher_starts_being_mentored_event!)
               allow(Events::Record).to receive(:record_teacher_starts_mentoring_event!)
 
-              post(path_for_step("edit"), params:)
+              subject
               follow_redirect!
               lead_provider_params = {
                 lead_provider: { lead_provider_id: other_lead_provider.id }
