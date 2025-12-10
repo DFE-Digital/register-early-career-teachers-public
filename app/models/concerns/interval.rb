@@ -20,6 +20,23 @@ module Interval
     scope :overlapping_with, ->(period) { where(*overlapping_with_range(period.started_on, period.finished_on)) }
     scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
     scope :ongoing_on, ->(date) { where(*date_in_range(date)) }
+    scope :ongoing_on_including, ->(date) { started_on_or_before(date).and(finished_on_or_after(date)) }
+    scope :ongoing_or_closest_to, ->(date) {
+      # try to find a record ongoing on including the date
+      covering = ongoing_on_including(date).first
+      return where(id: covering.id) if covering
+
+      # otherwise find the closest record by start or finish date
+      records_with_distance = all.map do |record|
+        start_distance = (record.started_on - date.to_date).abs.to_i
+        finish_distance = record.finished_on ? (record.finished_on - date.to_date).abs.to_i : Float::INFINITY
+        min_distance = [start_distance, finish_distance].min
+        [record, min_distance]
+      end
+
+      closest_record = records_with_distance.min_by { |_, distance| distance }&.first
+      where(id: closest_record&.id)
+    }
 
     # Date relative scopes
     scope :ongoing_today, -> { ongoing_on(Time.zone.today) }

@@ -123,6 +123,38 @@ describe Interval do
         expect(DummyMentor).to have_received(:starting_tomorrow_or_after).once
       end
     end
+
+    describe ".ongoing_on_including" do
+      it "builds SQL combining `started_on_or_before` and `finished_on_or_after`" do
+        sql = DummyMentor.ongoing_on_including(Date.new(2023, 1, 1)).to_sql
+
+        expect(sql).to end_with(%("mentor_at_school_periods"."started_on" <= '2023-01-01' AND "mentor_at_school_periods"."finished_on" >= '2023-01-01'))
+      end
+    end
+
+    describe ".ongoing_or_closest_to" do
+      it "returns a SQL relation selecting a covering record when present" do
+        date = Date.new(2023, 5, 1)
+        sql = DummyMentor.ongoing_or_closest_to(date).to_sql
+
+        expect(sql).to include(%(WHERE "mentor_at_school_periods"."id" = #{period_1.id}))
+      end
+
+      it "returns a SQL relation selecting the closest record when none cover the date" do
+        date = Date.new(2023, 12, 10)
+        sql = DummyMentor.ongoing_or_closest_to(date).to_sql
+
+        expect(sql).to include(%(WHERE "mentor_at_school_periods"."id" = #{period_2.id}))
+      end
+    end
+
+    describe ".ongoing_on" do
+      it "builds SQL that queries the range contains the date" do
+        sql = DummyMentor.ongoing_on(Date.new(2023, 2, 15)).to_sql
+
+        expect(sql).to end_with(%{"range" @> date('2023-02-15'))})
+      end
+    end
   end
 
   describe "#finish!" do

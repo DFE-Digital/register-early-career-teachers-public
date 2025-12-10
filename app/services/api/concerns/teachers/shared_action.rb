@@ -24,6 +24,17 @@ module API::Concerns::Teachers
       }, allow_blank: true
     end
 
+    def training_period
+      return unless metadata
+
+      @training_period ||= case teacher_type
+                           when :ect
+                             metadata.latest_ect_training_period
+                           when :mentor
+                             metadata.latest_mentor_training_period
+                           end
+    end
+
   private
 
     def lead_provider
@@ -50,17 +61,6 @@ module API::Concerns::Teachers
 
     def metadata
       @metadata ||= teacher.lead_provider_metadata.find_by(lead_provider_id:) if teacher && lead_provider
-    end
-
-    def training_period
-      return unless metadata
-
-      @training_period ||= case teacher_type
-                           when :ect
-                             metadata.latest_ect_training_period
-                           when :mentor
-                             metadata.latest_mentor_training_period
-                           end
     end
 
     def training_status

@@ -116,7 +116,7 @@ describe Declaration do
 
         it "is not valid" do
           expect(declaration).not_to be_valid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or after the milestone start date for the same declaration type")
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or after the milestone start date for the same declaration type.")
         end
       end
 
@@ -125,7 +125,7 @@ describe Declaration do
 
         it "is not valid" do
           expect(declaration).not_to be_valid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type")
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type.")
         end
       end
 
@@ -340,6 +340,39 @@ describe Declaration do
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: true)
+    end
+  end
+
+  describe "scopes" do
+    describe "payment statuses" do
+      let(:declarations) { described_class.payment_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
+
+      describe ".billable" do
+        it "returns declarations with billable payment statuses" do
+          billable_declarations = declarations.select { |d| %w[eligible payable paid].include?(d.payment_status) }
+
+          expect(described_class.billable).to match_array(billable_declarations)
+        end
+      end
+
+      describe ".no_payment_or_billable" do
+        it "returns declarations with no payment or billable payment statuses" do
+          no_payment_or_billable_declarations = declarations.select { |d| %w[no_payment eligible payable paid].include?(d.payment_status) }
+
+          expect(described_class.no_payment_or_billable).to match_array(no_payment_or_billable_declarations)
+        end
+      end
+
+      describe ".no_payment_or_billable_for_declaration_type" do
+        it "returns declarations with no payment or billable payment statuses for a specific declaration type" do
+          no_payment_or_billable_declarations = declarations.select { |d| %w[no_payment eligible payable paid].include?(d.payment_status) }
+
+          declaration = no_payment_or_billable_declarations.sample
+          declaration.update!(declaration_type: "retained-1")
+
+          expect(described_class.no_payment_or_billable_for_declaration_type("retained-1")).to contain_exactly(declaration)
+        end
+      end
     end
   end
 
@@ -609,6 +642,33 @@ describe Declaration do
 
         it { is_expected.not_to be_voidable_payment }
       end
+    end
+  end
+
+  describe ".milestone" do
+    subject { declaration.milestone }
+
+    context "when there is no training_period" do
+      let(:declaration) { FactoryBot.build(:declaration, :started, training_period: nil) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when schedule exists but no milestone for `declaration_type`" do
+      let(:training_period) { FactoryBot.create(:training_period) }
+      let(:declaration) { FactoryBot.create(:declaration, :started, training_period:) }
+
+      before { FactoryBot.create(:milestone, declaration_type: "retained-1", schedule: training_period.schedule) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when milestone exists for `declaration_type`" do
+      let(:training_period) { FactoryBot.create(:training_period) }
+      let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule: training_period.schedule) }
+      let(:declaration) { FactoryBot.create(:declaration, :started, training_period:, declaration_date: Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)) }
+
+      it { is_expected.to eq(milestone) }
     end
   end
 end
