@@ -109,5 +109,22 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStartDateStep, type: :model do
       step.save!
       expect(store[:school_partnership_to_reuse_id]).to be_nil
     end
+
+    context "when reuse is no longer allowed" do
+      before do
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(false)
+        step.ect.appropriate_body_id = 99
+        step.ect.training_programme = "provider_led"
+        step.ect.lead_provider_id = 42
+      end
+
+      it "clears programme choices populated from reuse" do
+        step.save!
+
+        expect(step.ect.appropriate_body_id).to be_nil
+        expect(step.ect.training_programme).to be_nil
+        expect(step.ect.lead_provider_id).to be_nil
+      end
+    end
   end
 end
