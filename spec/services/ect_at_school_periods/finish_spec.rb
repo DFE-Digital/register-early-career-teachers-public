@@ -22,6 +22,16 @@ describe ECTAtSchoolPeriods::Finish do
   end
 
   describe "#finish!" do
+    context "when finished_on is already set to an earlier date" do
+      let(:existing_finished_on) { 1.month.ago.to_date }
+      let(:original_dates) { { started_on:, finished_on: existing_finished_on } }
+      let(:finished_on) { Date.current }
+
+      it "does not overwrite the existing finished_on" do
+        expect { subject.finish! }.not_to(change { ect_at_school_period.reload.finished_on })
+      end
+    end
+
     it "closes the ect_at_school_period" do
       subject.finish!
 
