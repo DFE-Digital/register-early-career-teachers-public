@@ -242,13 +242,33 @@ module ParityCheck
     end
 
     def teacher_api_id_for_change_schedule_action
-      @teacher_api_id_for_change_schedule_action ||= ::Migration::ParticipantProfile
-        .joins(:induction_records, :participant_identity)
-        .joins("JOIN (#{latest_induction_records_join.to_sql}) AS latest_induction_records ON latest_induction_records.latest_id = induction_records.id")
-        .joins("LEFT OUTER JOIN participant_declarations AS excluded_declarations ON excluded_declarations.participant_profile_id = participant_profiles.id AND excluded_declarations.state IN ('submitted', 'eligible', 'payable', 'paid')")
-        .where("excluded_declarations.id IS NULL")
-        .reorder("RANDOM()")
-        .pick(participant_identity: :external_identifier)
+      excluded = Migration::ParticipantDeclaration
+        .where(state: %w[submitted eligible payable paid])
+        .select(:participant_profile_id)
+
+      included = Migration::ParticipantProfile.joins(:induction_records)
+        .group("participant_profiles.id")
+        .having("COUNT(induction_records.id) = 1").select(:id)
+
+      @teacher_api_id_for_change_schedule_action ||= begin
+        participant_profile_id = Migration::ParticipantProfile
+          .where.not(id: excluded)
+          .where(id: included)
+          .joins(induction_records: { induction_programme: :partnership })
+          .where(
+            partnerships: {
+              lead_provider_id: lead_provider.ecf_id,
+              challenged_at: nil,
+              challenge_reason: nil
+            }
+          )
+          .distinct
+          .limit(20)
+          .pluck(:id)
+          .sample
+
+        Migration::ParticipantProfile.find(participant_profile_id).participant_identity.user_id
+      end
     end
 
     def participant_change_schedule_payload(course_identifier:, schedule_identifier:, cohort:)
@@ -265,7 +285,7 @@ module ParityCheck
     end
 
     def change_schedule_different_schedule_and_cohort_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
@@ -284,7 +304,7 @@ module ParityCheck
     end
 
     def change_schedule_different_cohort_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
@@ -300,7 +320,7 @@ module ParityCheck
     end
 
     def change_schedule_different_schedule_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
@@ -316,7 +336,7 @@ module ParityCheck
     end
 
     def change_schedule_error_state_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
@@ -380,34 +400,6 @@ module ParityCheck
       else
         Schedule.identifiers.values.excluding(Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS).excluding(excluding_schedule.identifier).sample
       end
-    end
-
-    def latest_induction_records_join
-      ::Migration::InductionRecord
-        .select(Arel.sql("DISTINCT FIRST_VALUE(induction_records.id) OVER (#{latest_induction_record_order}) AS latest_id"))
-        .joins(:participant_profile, { induction_programme: :partnership })
-        .where(
-          induction_programme: {
-            partnerships: {
-              lead_provider_id: lead_provider.ecf_id,
-              challenged_at: nil,
-              challenge_reason: nil,
-            },
-          }
-        )
-    end
-
-    def latest_induction_record_order
-      <<~SQL
-        PARTITION BY induction_records.participant_profile_id ORDER BY
-        CASE
-        WHEN induction_records.end_date IS NULL
-        THEN 1
-        ELSE 2
-        END,
-          induction_records.start_date DESC,
-          induction_records.created_at DESC
-      SQL
     end
   end
 end
