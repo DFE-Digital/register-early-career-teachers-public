@@ -210,6 +210,7 @@ describe Declaration do
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: false)
+        .with_prefix
     end
 
     it "has a evidence_type enum" do
@@ -234,16 +235,6 @@ describe Declaration do
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: true)
-    end
-  end
-
-  describe "scopes" do
-    describe ".completed" do
-      it "returns completed declarations" do
-        FactoryBot.create(:declaration, declaration_type: "started")
-        completed_dec = FactoryBot.create(:declaration, declaration_type: "completed")
-        expect(described_class.completed).to contain_exactly(completed_dec)
-      end
     end
   end
 
@@ -327,50 +318,6 @@ describe Declaration do
       let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
 
       it { expect { declaration.mark_as_clawed_back! }.to raise_error(StateMachines::InvalidTransition) }
-    end
-  end
-
-  describe ".declaration_type_completed?" do
-    context "when completed" do
-      subject(:declaration) { FactoryBot.build(:declaration, declaration_type: "completed") }
-
-      it { expect(subject.declaration_type_completed?).to be(true) }
-    end
-
-    context "when not completed" do
-      subject(:declaration) { FactoryBot.build(:declaration, declaration_type: "started") }
-
-      it { expect(subject.declaration_type_completed?).to be(false) }
-    end
-  end
-
-  describe ".completable_payment_status?" do
-    context "when clawback_status is `no_clawback`" do
-      subject(:declaration) { FactoryBot.build(:declaration, clawback_status: "no_clawback", payment_status:) }
-
-      Declaration::COMPLETABLE_PAYMENT_STATUSES.each do |status|
-        context "when payment_status is `#{status}`" do
-          let(:payment_status) { status }
-
-          it { expect(subject.completable_payment_status?).to be(true) }
-        end
-      end
-
-      Declaration.payment_statuses.values.excluding(Declaration::COMPLETABLE_PAYMENT_STATUSES).each do |status|
-        context "when payment_status is `#{status}`" do
-          let(:payment_status) { status }
-
-          it { expect(subject.completable_payment_status?).to be(false) }
-        end
-      end
-    end
-
-    Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
-      context "when clawback_status is `#{clawback_status}`" do
-        subject(:declaration) { FactoryBot.build(:declaration, clawback_status:, payment_status: Declaration.payment_statuses.values.sample) }
-
-        it { expect(subject.completable_payment_status?).to be(false) }
-      end
     end
   end
 end

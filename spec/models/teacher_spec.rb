@@ -35,6 +35,7 @@ describe Teacher do
     it { is_expected.to have_many(:appropriate_bodies).through(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:mentor_declarations).through(:mentor_training_periods) }
     it { is_expected.to have_many(:teacher_id_changes) }
     it { is_expected.to have_many(:lead_provider_metadata).class_name("Metadata::TeacherLeadProvider") }
     it { is_expected.to have_one(:started_induction_period).class_name("InductionPeriod") }
@@ -544,27 +545,6 @@ describe Teacher do
         expected_clause = %("teachers"."trs_deactivated" = FALSE)
 
         expect(Teacher.active_in_trs.to_sql).to end_with(expected_clause)
-      end
-    end
-
-    describe ".mentor_declarations" do
-      let(:teacher) { FactoryBot.create(:teacher) }
-
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-      let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
-      let!(:mentor_declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
-
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
-      let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
-
-      before do
-        # Other declarations that should not be returned
-        FactoryBot.create(:declaration)
-        FactoryBot.create(:declaration, training_period: ect_training_period)
-      end
-
-      it "returns mentor declarations" do
-        expect(teacher.mentor_declarations).to contain_exactly(mentor_declaration)
       end
     end
   end
