@@ -8,6 +8,7 @@ describe "One induction record" do
   let(:lead_provider) { nil }
   let(:delivery_partner) { nil }
   let(:training_programme) { nil }
+  let(:schedule) { nil }
   let(:training_provider_info) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:, lead_provider:, delivery_partner:) }
 
   let(:induction_record) do
@@ -17,7 +18,8 @@ describe "One induction record" do
       appropriate_body:,
       training_programme:,
       training_status:,
-      training_provider_info:
+      training_provider_info:,
+      schedule:
     )
   end
 
@@ -274,6 +276,22 @@ describe "One induction record" do
 
       it "sets the delivery partner to the one in the training period info" do
         expect(ecf2_training_period_row.delivery_partner).to eql(ecf1_induction_record_row.training_provider_info.delivery_partner)
+      end
+    end
+
+    describe "schedules" do
+      context "when there is no schedule" do
+        it "leaves the schedule blank" do
+          expect(ecf2_training_period_row.schedule).to be_nil
+        end
+      end
+
+      context "when there is a schedule" do
+        let(:schedule) { FactoryBot.build(:ecf1_teacher_history_schedule_info) }
+
+        it "sets the schedule to the one from the induction record" do
+          expect(ecf2_training_period_row.schedule).to eql(ecf1_induction_record_row.schedule)
+        end
       end
     end
   end
