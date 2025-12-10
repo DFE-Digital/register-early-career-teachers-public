@@ -285,7 +285,7 @@ module ParityCheck
     end
 
     def change_schedule_different_schedule_and_cohort_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
@@ -304,7 +304,7 @@ module ParityCheck
     end
 
     def change_schedule_different_cohort_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
@@ -320,7 +320,7 @@ module ParityCheck
     end
 
     def change_schedule_different_schedule_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
@@ -336,7 +336,7 @@ module ParityCheck
     end
 
     def change_schedule_error_state_participant_body
-      participant = Teacher.find_by(api_id: active_teacher_api_id_for_participant_action)
+      participant = Teacher.find_by(api_id: teacher_api_id_for_change_schedule_action)
 
       training_period = latest_training_period(participant)
       return unless training_period
