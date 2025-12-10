@@ -26,6 +26,71 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStartDateStep, type: :model do
     store[:school_partnership_to_reuse_id] = 123
   end
 
+  describe "#next_step" do
+    context "when the school has last programme choices and reuse is still allowed" do
+      before do
+        allow(school).to receive(:last_programme_choices?).and_return(true)
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
+      end
+
+      it "goes back to the reuse choices step" do
+        expect(step.next_step).to eq(:use_previous_ect_choices)
+      end
+    end
+
+    context "when the school has last programme choices but reuse is no longer allowed" do
+      before do
+        allow(school).to receive(:last_programme_choices?).and_return(true)
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(false)
+      end
+
+      context "and the school is independent" do
+        let(:school) { FactoryBot.create(:school, :independent) }
+
+        it "falls back to the independent appropriate body step" do
+          expect(step.next_step).to eq(:independent_school_appropriate_body)
+        end
+      end
+
+      context "and the school is state funded" do
+        let(:school) { FactoryBot.create(:school, :state_funded) }
+
+        it "falls back to the state-school appropriate body step" do
+          expect(step.next_step).to eq(:state_school_appropriate_body)
+        end
+      end
+    end
+
+    context "when the school does not have last programme choices" do
+      before do
+        allow(school).to receive(:last_programme_choices?).and_return(false)
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
+      end
+
+      context "and the school is independent" do
+        let(:school) { FactoryBot.create(:school, :independent) }
+
+        it "goes to independent appropriate body step" do
+          expect(step.next_step).to eq(:independent_school_appropriate_body)
+        end
+      end
+
+      context "and the school is state funded" do
+        let(:school) { FactoryBot.create(:school, :state_funded) }
+
+        it "goes to state-school appropriate body step" do
+          expect(step.next_step).to eq(:state_school_appropriate_body)
+        end
+      end
+    end
+  end
+
+  describe "#previous_step" do
+    it "always goes back to check answers" do
+      expect(step.previous_step).to eq(:check_answers)
+    end
+  end
+
   describe "#save!" do
     it "updates the wizard ect start date" do
       expect { step.save! }
@@ -40,6 +105,7 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStartDateStep, type: :model do
     end
 
     it "clears stored school_partnership_to_reuse_id" do
+      expect(store[:school_partnership_to_reuse_id]).to eq(123)
       step.save!
       expect(store[:school_partnership_to_reuse_id]).to be_nil
     end
