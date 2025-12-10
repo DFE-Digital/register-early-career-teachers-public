@@ -5,7 +5,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     and_the_school_has_an_existing_induction_tutor
   end
 
-  context "prompt_for_school_induction_tutor_details flag is not enabled" do
+  context "enable_prompt_for_school_induction_tutor_details flag is not enabled" do
     scenario "signing in as a school user takes you to the school home page" do
       and_the_details_are_not_confirmed
       and_i_sign_in_as_that_school_user
@@ -14,7 +14,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     end
   end
 
-  context "prompt_for_school_induction_tutor_details flag is enabled", :prompt_for_school_induction_tutor_details do
+  context "enable_prompt_for_school_induction_tutor_details flag is enabled", :enable_prompt_for_school_induction_tutor_details do
     scenario "the details have been confirmed in the current contract period" do
       and_the_details_are_confirmed_for_the_current_contract_period
       and_i_sign_in_as_that_school_user
