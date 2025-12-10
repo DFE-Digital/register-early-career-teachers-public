@@ -1,6 +1,10 @@
 FactoryBot.define do
   factory(:statement) do
-    active_lead_provider
+    transient do
+      contract_period { FactoryBot.create(:contract_period) }
+    end
+
+    active_lead_provider { FactoryBot.create(:active_lead_provider, contract_period:) }
 
     api_id { SecureRandom.uuid }
     sequence(:month) { |n| ((n - 1) % 12) + 1 }

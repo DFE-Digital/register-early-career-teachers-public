@@ -52,6 +52,7 @@ class Declaration < ApplicationRecord
   validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_no_clawback?
   validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
+  validate :contract_period_consistent_across_associations
 
   state_machine :payment_status, initial: :no_payment do
     state :no_payment, :ineligible, :eligible, :payable, :paid, :voided
@@ -119,5 +120,13 @@ private
     unless mentorship_period.in?(training_period.trainee.mentorship_periods)
       errors.add(:mentorship_period, "Mentorship period must belong to the trainee")
     end
+  end
+
+  def contract_period_consistent_across_associations
+    associated_contract_periods = [training_period&.contract_period, payment_statement&.contract_period, clawback_statement&.contract_period]
+
+    return unless associated_contract_periods.compact.uniq.many?
+
+    errors.add(:training_period, "Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
   end
 end
