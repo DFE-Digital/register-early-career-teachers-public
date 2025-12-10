@@ -13,7 +13,7 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController", :enable_schools
 
   describe "GET #new" do
     subject { get path_for_step("edit") }
-    
+
     it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
@@ -56,12 +56,12 @@ describe "Schools::Mentors::ChangeEmailAddressWizardController", :enable_schools
   end
 
   describe "POST #create" do
-    subject { post path_for_step("edit"), params: params }
-    
-    it_behaves_like "an induction redirectable route"
-    
-    let(:new_email) { "mentor@example.com" }
+    subject { post path_for_step("edit"), params: }
+
     let(:params) { { edit: { email: new_email } } }
+    let(:new_email) { "mentor@example.com" }
+
+    it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
       it "redirects to the root path" do
