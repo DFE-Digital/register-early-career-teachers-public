@@ -17,7 +17,7 @@ RSpec.shared_examples "an induction redirectable route" do
         end
       end
 
-      context "when the feature is enabled", :enable_prompt_for_school_induction_tutor_details do
+      context "when the feature is enabled", :enable_induction_tutor_prompt do
         context "when the school's induction tutor has never been confirmed" do
           let(:induction_tutor_last_nominated_in) { nil }
 
