@@ -8,7 +8,7 @@ module Schools
     end
 
     def update_required?
-      return unless Rails.configuration.enable_prompt_for_school_induction_tutor_details
+      return unless Rails.configuration.enable_induction_tutor_prompt
       return unless user&.school_user?
       return if user.dfe_user_impersonating_school_user?
       return unless school

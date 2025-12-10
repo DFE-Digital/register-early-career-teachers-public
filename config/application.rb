@@ -52,7 +52,7 @@ module RegisterEarlyCareerTeachers
     config.enable_persona_avatars = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONA_AVATARS", true))
     config.enable_migration_testing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_MIGRATION_TESTING", false))
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SCHOOLS_INTERFACE", false))
-    config.enable_prompt_for_school_induction_tutor_details = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PROMPT_FOR_SCHOOL_INDUCTION_TUTOR_DETAILS", false))
+    config.enable_induction_tutor_prompt = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INDUCTION_TUTOR_PROMPT", false))
     config.enable_incident_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INCIDENT_BANNER", false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))

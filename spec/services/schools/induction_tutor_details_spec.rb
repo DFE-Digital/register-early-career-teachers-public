@@ -13,7 +13,7 @@ RSpec.describe Schools::InductionTutorDetails do
       end
     end
 
-    context "when the feature is enabled", :enable_prompt_for_school_induction_tutor_details do
+    context "when the feature is enabled", :enable_induction_tutor_prompt do
       context "when there is no user" do
         let(:user) { nil }
 
