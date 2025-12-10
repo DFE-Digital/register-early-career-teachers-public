@@ -4,10 +4,10 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
       data[:school].urn.to_s
     end
     field(:provider) do |data|
-      data[:training_period].lead_provider&.name
+      data[:lead_provider]&.name
     end
     field(:date) do |data|
-      data[:training_period].finished_on&.to_fs(:api)
+      data[:date].to_fs(:api)
     end
   end
 
@@ -30,11 +30,13 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
       transfer.leaving_training_period.created_at.utc.rfc3339
     end
     association :leaving, blueprint: TrainingPeriodSerializer do |(transfer, _teacher, _options)|
-      { training_period: transfer.leaving_training_period, school: transfer.leaving_school }
+      training_period = transfer.leaving_training_period
+      { lead_provider: training_period.lead_provider, school: transfer.leaving_school, date: training_period.finished_on }
     end
     association :joining, blueprint: TrainingPeriodSerializer do |(transfer, _teacher, _options)|
-      if transfer.joining_training_period.present?
-        { training_period: transfer.joining_training_period, school: transfer.joining_school }
+      training_period = transfer.joining_training_period
+      if training_period.present?
+        { lead_provider: training_period.lead_provider, school: transfer.joining_school, date: training_period.started_on }
       end
     end
   end
