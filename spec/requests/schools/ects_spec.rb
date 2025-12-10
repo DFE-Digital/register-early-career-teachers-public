@@ -52,7 +52,11 @@ RSpec.describe "ECT summary", :enable_schools_interface do
           subject
         end
 
-        it { is_expected.to be_successful }
+        it "returns ok" do
+          subject
+
+          expect(response).to have_http_status(:ok)
+        end
       end
 
       context "when signed in as user from another school" do
@@ -61,7 +65,11 @@ RSpec.describe "ECT summary", :enable_schools_interface do
           subject
         end
 
-        it { is_expected.to be_not_found }
+        it "returns not found" do
+          subject
+
+          expect(response).to have_http_status(:not_found)
+        end
       end
 
       context "when there is no training period" do
@@ -72,7 +80,11 @@ RSpec.describe "ECT summary", :enable_schools_interface do
           subject
         end
 
-        it { is_expected.to be_successful }
+        it "returns ok" do
+          subject
+
+          expect(response).to have_http_status(:ok)
+        end
       end
 
       context "when accessing old period ID from different school" do
