@@ -34,7 +34,7 @@ RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
     subject { get schools_assign_existing_mentor_wizard_review_mentor_eligibility_path }
 
     it_behaves_like "an induction redirectable route"
-    
+
     context "when signed in as a school user" do
       before { sign_in_as(:school_user, school:) }
 
@@ -70,6 +70,7 @@ RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
 
   describe "POST /school/assign-existing-mentor/:step" do
     subject { post schools_assign_existing_mentor_wizard_review_mentor_eligibility_path }
+
     before { sign_in_as(:school_user, school:) }
 
     it_behaves_like "an induction redirectable route"
