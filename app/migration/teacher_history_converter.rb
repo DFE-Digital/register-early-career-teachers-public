@@ -52,7 +52,9 @@ private
       **withdrawal_attributes(induction_record),
       lead_provider_info: induction_record.training_provider_info.lead_provider_info,
       delivery_partner_info: induction_record.training_provider_info.delivery_partner_info,
-      schedule_info: induction_record.schedule_info
+      schedule_info: induction_record.schedule_info,
+      # FIXME: rename this to contract_period_year
+      contract_period: induction_record.cohort_year
     }
   end
 

@@ -61,13 +61,13 @@ class ECF2TeacherHistory::TrainingPeriodRow
   end
 
   def ecf2_schedule
-    return unless schedule_info.present?
+    return if schedule_info.blank?
 
     Schedule.find_by(contract_period_year: schedule_info.cohort_year, identifier: schedule_info.identifier)
   end
 
   def lead_provider
-    return unless lead_provider_info.present?
+    return if lead_provider_info.blank?
 
     LeadProvider.find_by!(ecf_id: lead_provider_info.id)
   end
