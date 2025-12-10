@@ -2,8 +2,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
   attr_reader :started_on,
               :finished_on,
               :training_programme,
-              :lead_provider,
-              :delivery_partner,
+              :lead_provider_info,
+              :delivery_partner_info,
               :contract_period,
               :schedule_info,
               :deferred_at,
@@ -14,8 +14,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
   def initialize(started_on:,
                  finished_on:,
                  training_programme:,
-                 lead_provider: nil,
-                 delivery_partner: nil,
+                 lead_provider_info: nil,
+                 delivery_partner_info: nil,
                  contract_period: nil,
                  schedule_info: nil,
                  deferred_at: nil,
@@ -25,8 +25,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
     @started_on = started_on
     @finished_on = finished_on
     @training_programme = training_programme
-    @lead_provider = lead_provider
-    @delivery_partner = delivery_partner
+    @lead_provider_info = lead_provider_info
+    @delivery_partner_info = delivery_partner_info
     @contract_period = contract_period
     @schedule_info = schedule_info
     # FIXME: rename schedule_info? We could probably do with a convention here
@@ -52,6 +52,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
     }
   end
 
+  # FIXME: the school here is from one level up, perhaps there's a nicer way of cross-referencing?
   def school_partnership(school:)
     SchoolPartnerships::Search.new(school:, contract_period:, lead_provider:, delivery_partner:)
       .school_partnerships
@@ -63,5 +64,17 @@ class ECF2TeacherHistory::TrainingPeriodRow
     return unless schedule_info.present?
 
     Schedule.find_by(contract_period_year: schedule_info.cohort_year, identifier: schedule_info.identifier)
+  end
+
+  def lead_provider
+    return unless lead_provider_info.present?
+
+    LeadProvider.find_by!(ecf_id: lead_provider_info.id)
+  end
+
+  def delivery_partner
+    return unless delivery_partner_info.present?
+
+    DeliveryPartner.find_by!(api_id: delivery_partner_info.id)
   end
 end

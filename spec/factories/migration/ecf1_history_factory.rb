@@ -52,13 +52,13 @@ FactoryBot.define do
   end
 
   factory :ecf1_teacher_history_training_provider_info, class: "ECF1TeacherHistory::TrainingProviderInfo" do
-    sequence(:lead_provider) { |n| Types::LeadProvider.new(id: SecureRandom.uuid, name: "History Lead Provider #{n}") }
-    sequence(:delivery_partner) { |n| Types::DeliveryPartner.new(id: SecureRandom.uuid, name: "History Delivery Partner #{n}") }
+    sequence(:lead_provider_info) { |n| Types::LeadProviderInfo.new(id: SecureRandom.uuid, name: "History Lead Provider #{n}") }
+    sequence(:delivery_partner_info) { |n| Types::DeliveryPartnerInfo.new(id: SecureRandom.uuid, name: "History Delivery Partner #{n}") }
     cohort_year { Random.rand(2020..2119) }
 
     initialize_with do
-      new(lead_provider:,
-          delivery_partner:,
+      new(lead_provider_info:,
+          delivery_partner_info:,
           cohort_year:)
     end
   end

@@ -38,8 +38,8 @@ class ECF1TeacherHistory
                                   :appropriate_body)
 
   TrainingProviderInfo = Struct.new(
-    :lead_provider,
-    :delivery_partner,
+    :lead_provider_info,
+    :delivery_partner_info,
     :cohort_year
   )
 
@@ -128,11 +128,11 @@ class ECF1TeacherHistory
     return if partnership.blank?
 
     TrainingProviderInfo.new(
-      lead_provider: Types::LeadProvider.new(
+      lead_provider_info: Types::LeadProviderInfo.new(
         id: partnership.lead_provider.id,
         name: partnership.lead_provider.name
       ),
-      delivery_partner: Types::DeliveryPartner.new(
+      delivery_partner_info: Types::DeliveryPartnerInfo.new(
         id: partnership.delivery_partner.id,
         name: partnership.delivery_partner.name
       ),

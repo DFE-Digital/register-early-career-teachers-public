@@ -5,11 +5,11 @@ describe "One induction record" do
 
   let(:training_status) { "active" }
   let(:appropriate_body) { nil }
-  let(:lead_provider) { nil }
-  let(:delivery_partner) { nil }
+  let(:lead_provider_info) { nil }
+  let(:delivery_partner_info) { nil }
   let(:training_programme) { nil }
   let(:schedule_info) { nil }
-  let(:training_provider_info) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:, lead_provider:, delivery_partner:) }
+  let(:training_provider_info) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:, lead_provider_info:, delivery_partner_info:) }
 
   let(:induction_record) do
     FactoryBot.build(
@@ -267,15 +267,15 @@ describe "One induction record" do
     end
 
     describe "lead providers and delivery partners" do
-      let(:lead_provider) { Types::LeadProvider.new(id: SecureRandom.uuid, name: "Lead Provider A") }
-      let(:delivery_partner) { Types::DeliveryPartner.new(id: SecureRandom.uuid, name: "Delivery Partner A") }
+      let(:lead_provider) { Types::LeadProviderInfo.new(id: SecureRandom.uuid, name: "Lead Provider A") }
+      let(:delivery_partner) { Types::DeliveryPartnerInfo.new(id: SecureRandom.uuid, name: "Delivery Partner A") }
 
       it "sets the lead provider to the one in the training period info" do
-        expect(ecf2_training_period_row.lead_provider).to eql(ecf1_induction_record_row.training_provider_info.lead_provider)
+        expect(ecf2_training_period_row.lead_provider).to eql(ecf1_induction_record_row.training_provider_info.lead_provider_info)
       end
 
       it "sets the delivery partner to the one in the training period info" do
-        expect(ecf2_training_period_row.delivery_partner).to eql(ecf1_induction_record_row.training_provider_info.delivery_partner)
+        expect(ecf2_training_period_row.delivery_partner_info).to eql(ecf1_induction_record_row.training_provider_info.delivery_partner_info)
       end
     end
 
