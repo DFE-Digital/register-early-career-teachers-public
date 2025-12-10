@@ -2,6 +2,8 @@ module Schools
   class MentorsController < SchoolsController
     layout "full"
 
+    include Schools::InductionRedirectable
+
     before_action :set_school_home
     before_action :set_mentor, only: :show
     before_action :set_decorated_mentor, only: :show
