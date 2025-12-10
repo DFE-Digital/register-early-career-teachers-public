@@ -447,16 +447,39 @@ RSpec.describe Events::Record do
   end
 
   describe ".teacher_imported_from_dqt_event!" do
-    it "queues a RecordEventJob with the correct values" do
+    it "queues a RecordEventJob with the correct values for created teachers" do
       freeze_time do
-        Events::Record.teacher_imported_from_dqt_event!(author:, teacher:)
+        Events::Record.teacher_imported_from_dqt_event!(
+          author:,
+          teacher:,
+          body: "Teacher created with Early Roll-out mentor attributes during the import"
+        )
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           heading: "Early roll-out mentor imported from DQT",
           event_type: :import_from_dqt,
           happened_at: Time.zone.now,
-          body: "Teacher created as part of the Early Roll-out mentor import",
+          body: "Teacher created with Early Roll-out mentor attributes during the import",
+          **author_params
+        )
+      end
+    end
+
+    it "queues a RecordEventJob with the correct values for updated teachers" do
+      freeze_time do
+        Events::Record.teacher_imported_from_dqt_event!(
+          author:,
+          teacher:,
+          body: "Teacher updated with Early Roll-out mentor attributes during the import"
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Early roll-out mentor imported from DQT",
+          event_type: :import_from_dqt,
+          happened_at: Time.zone.now,
+          body: "Teacher updated with Early Roll-out mentor attributes during the import",
           **author_params
         )
       end
