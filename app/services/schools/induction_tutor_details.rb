@@ -13,7 +13,7 @@ module Schools
       return if user.dfe_user_impersonating_school_user?
       return unless school
 
-      last_updated_year.blank? || last_updated_year < current_contract_year
+      last_updated_year.blank? || last_updated_year < ContractPeriod.current.year
     end
 
     def wizard_path
@@ -21,10 +21,6 @@ module Schools
     end
 
   private
-
-    def current_contract_year
-      ContractPeriod.containing_date(Time.zone.today).year
-    end
 
     def school
       @school ||= @user&.school
