@@ -55,10 +55,25 @@
     * If you need to make more than one cohort change and submit a declaration for the same participant, you may have to wait until the next day.
 
     ## Example validation errors
-    These will be added once available.
+    **Not the most recent lead provider**
+    ```
+    You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.
+    ```
 
-    *Example: attempting to change a schedule when you are not the most recent lead provider*  
-    Example validation error responses will be added once available.
+    **Participant is due to start with another lead provider**
+    ```
+    You cannot change this participant’s schedule as they are due to start with another lead provider in the future.
+    ```
+
+    **Moving a participant to a payments frozen cohort they were not previously part of**
+    ```
+    You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.
+    ```
+
+    **Schedule change would invalidate declarations**
+    ```
+    The schedule change cannot be applied because it would make existing declarations invalid. Please contact DfE for assistance.
+    ```
     
 - title: Defer, withdraw, and resume endpoints endpoints added to the Register ECTs API with updated validation rules
   date: 2025-11-27
