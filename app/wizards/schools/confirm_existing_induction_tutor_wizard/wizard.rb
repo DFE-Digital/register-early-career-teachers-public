@@ -25,7 +25,7 @@ module Schools
       end
 
       def current_contract_period
-        ContractPeriod.containing_date(Time.zone.today)
+        ContractPeriod.current
       end
 
       delegate :save!, to: :current_step
