@@ -42,14 +42,14 @@ RSpec.describe "ECT summary", :enable_schools_interface do
     end
 
     describe "finding the ECT at school period" do
-      it_behaves_like "an induction redirectable route" do
-        subject { get("/school/ects/#{ect.id}") }
-      end
+      subject { get("/school/ects/#{ect.id}") }
+
+      it_behaves_like "an induction redirectable route"
 
       context "when signed in as user from the same school" do
         before do
           sign_in_as(:school_user, school:)
-          get("/school/ects/#{ect.id}")
+          subject
         end
 
         it { is_expected.to be_successful }
@@ -58,7 +58,7 @@ RSpec.describe "ECT summary", :enable_schools_interface do
       context "when signed in as user from another school" do
         before do
           sign_in_as(:school_user, school: FactoryBot.create(:school))
-          get("/school/ects/#{ect.id}")
+          subject
         end
 
         it { is_expected.to be_not_found }
@@ -69,7 +69,7 @@ RSpec.describe "ECT summary", :enable_schools_interface do
 
         before do
           sign_in_as(:school_user, school:)
-          get("/school/ects/#{ect.id}")
+          subject
         end
 
         it { is_expected.to be_successful }
@@ -82,7 +82,7 @@ RSpec.describe "ECT summary", :enable_schools_interface do
 
         before do
           sign_in_as(:school_user, school: other_school)
-          get("/school/ects/#{ect.id}")
+          subject
         end
 
         it "returns not found" do
