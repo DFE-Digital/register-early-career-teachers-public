@@ -27,6 +27,7 @@ module Events
                 :lead_provider_delivery_partnership,
                 :statement,
                 :statement_adjustment,
+                :declaration,
                 :user,
                 :modifications,
                 :metadata,
@@ -56,6 +57,7 @@ module Events
       lead_provider_delivery_partnership: nil,
       statement: nil,
       statement_adjustment: nil,
+      declaration: nil,
       user: nil,
       modifications: nil,
       metadata: nil,
@@ -84,6 +86,7 @@ module Events
       @lead_provider_delivery_partnership = lead_provider_delivery_partnership
       @statement = statement
       @statement_adjustment = statement_adjustment
+      @declaration = declaration
       @user = user
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
@@ -515,6 +518,15 @@ module Events
       new(event_type:, author:, heading:, teacher:, happened_at:, modifications:).record_event!
     end
 
+    def self.record_mentor_completion_status_change!(author:, teacher:, training_period:, declaration:, modifications:, happened_at: Time.zone.now)
+      event_type = :mentor_completion_status_change
+      teacher_name = Teachers::Name.new(teacher).full_name
+      status = teacher.mentor_became_ineligible_for_funding_on ? "completed" : "not completed"
+      heading = "#{teacher_name}’s mentor completion status changed to #{status}"
+
+      new(event_type:, author:, heading:, teacher:, training_period:, declaration:, modifications:, happened_at:).record_event!
+    end
+
     # Bulk Upload Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)
@@ -855,6 +867,7 @@ module Events
         lead_provider_delivery_partnership:,
         statement:,
         statement_adjustment:,
+        declaration:,
         user:,
         pending_induction_submission_batch:,
       }.compact
