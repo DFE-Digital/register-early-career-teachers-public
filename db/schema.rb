@@ -75,7 +75,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.uuid "dfe_sign_in_organisation_id"
     t.uuid "dqt_id"
     t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
+    t.bigint "teaching_school_hub_id"
+    t.bigint "lead_school_id"
+    t.bigint "national_body_id"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id", unique: true
+    t.index ["lead_school_id"], name: "index_appropriate_bodies_on_lead_school_id"
+    t.index ["national_body_id"], name: "index_appropriate_bodies_on_national_body_id"
+    t.index ["teaching_school_hub_id"], name: "index_appropriate_bodies_on_teaching_school_hub_id"
   end
 
   create_table "blazer_audits", force: :cascade do |t|
@@ -195,6 +201,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["api_id"], name: "index_delivery_partners_on_api_id", unique: true
     t.index ["name"], name: "index_delivery_partners_on_name", unique: true
+  end
+
+  create_table "dfe_sign_in_organisations", force: :cascade do |t|
+    t.string "name", null: false
+    t.uuid "uuid", null: false
+    t.string "urn"
+    t.string "address"
+    t.string "company_registration_number"
+    t.string "category"
+    t.string "organisation_type"
+    t.string "status"
+    t.datetime "first_authenticated_at"
+    t.datetime "last_authenticated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_dfe_sign_in_organisations_on_name", unique: true
+    t.index ["urn"], name: "index_dfe_sign_in_organisations_on_urn", unique: true
+    t.index ["uuid"], name: "index_dfe_sign_in_organisations_on_uuid", unique: true
   end
 
   create_table "ect_at_school_periods", force: :cascade do |t|
@@ -361,6 +385,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
   end
 
+  create_table "legacy_appropriate_bodies", force: :cascade do |t|
+    t.uuid "dqt_id", null: false
+    t.string "name", null: false
+    t.enum "body_type", null: false, enum_type: "appropriate_body_type"
+    t.bigint "appropriate_body_period_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appropriate_body_period_id"], name: "index_legacy_appropriate_bodies_on_appropriate_body_period_id", unique: true
+    t.index ["dqt_id"], name: "index_legacy_appropriate_bodies_on_dqt_id", unique: true
+    t.index ["name"], name: "index_legacy_appropriate_bodies_on_name", unique: true
+  end
+
   create_table "mentor_at_school_periods", force: :cascade do |t|
     t.bigint "school_id", null: false
     t.bigint "teacher_id", null: false
@@ -471,6 +507,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.datetime "updated_at", null: false
     t.index ["schedule_id", "declaration_type"], name: "index_milestones_on_schedule_id_and_declaration_type", unique: true
     t.index ["schedule_id"], name: "index_milestones_on_schedule_id"
+  end
+
+  create_table "national_bodies", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "dfe_sign_in_organisation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dfe_sign_in_organisation_id"], name: "index_national_bodies_on_dfe_sign_in_organisation_id", unique: true
+    t.index ["name"], name: "index_national_bodies_on_name", unique: true
   end
 
   create_table "parity_check_endpoints", force: :cascade do |t|
@@ -835,6 +880,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.check_constraint "trnless OR trn IS NOT NULL", name: "check_trn_presence"
   end
 
+  create_table "teaching_school_hubs", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "lead_school_id", null: false
+    t.bigint "dfe_sign_in_organisation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dfe_sign_in_organisation_id"], name: "index_teaching_school_hubs_on_dfe_sign_in_organisation_id"
+    t.index ["lead_school_id"], name: "index_teaching_school_hubs_on_lead_school_id"
+  end
+
   create_table "training_periods", force: :cascade do |t|
     t.bigint "school_partnership_id"
     t.date "started_on", null: false
@@ -878,6 +933,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "appropriate_bodies", "national_bodies"
+  add_foreign_key "appropriate_bodies", "schools", column: "lead_school_id"
+  add_foreign_key "appropriate_bodies", "teaching_school_hubs"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
@@ -908,6 +966,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
   add_foreign_key "induction_extensions", "teachers"
   add_foreign_key "induction_periods", "appropriate_bodies"
   add_foreign_key "induction_periods", "teachers"
+  add_foreign_key "legacy_appropriate_bodies", "appropriate_bodies", column: "appropriate_body_period_id"
   add_foreign_key "mentor_at_school_periods", "schools"
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
@@ -926,6 +985,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_ect_training_period_id", on_delete: :nullify
   add_foreign_key "metadata_teachers_lead_providers", "training_periods", column: "latest_mentor_training_period_id", on_delete: :nullify
   add_foreign_key "milestones", "schedules"
+  add_foreign_key "national_bodies", "dfe_sign_in_organisations"
   add_foreign_key "parity_check_requests", "lead_providers"
   add_foreign_key "parity_check_requests", "parity_check_endpoints", column: "endpoint_id"
   add_foreign_key "parity_check_requests", "parity_check_runs", column: "run_id"
@@ -952,6 +1012,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
   add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
   add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
+  add_foreign_key "teaching_school_hubs", "dfe_sign_in_organisations"
+  add_foreign_key "teaching_school_hubs", "schools", column: "lead_school_id"
   add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"
   add_foreign_key "training_periods", "ect_at_school_periods"
   add_foreign_key "training_periods", "mentor_at_school_periods"

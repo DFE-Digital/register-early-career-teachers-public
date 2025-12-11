@@ -23,6 +23,33 @@
     sl.with_row do |row|
       row.with_key(text: 'DfE Sign-in organisation ID')
       row.with_value(text: tag.code(appropriate_body.dfe_sign_in_organisation_id))
+      row.with_action(
+        text: 'View',
+        href: admin_dsi_org_path(appropriate_body.dfe_sign_in_organisation.uuid),
+        visually_hidden_text: 'DfE Sign-In data'
+      ) if Rails.application.config.enable_teaching_school_hubs && appropriate_body.dfe_sign_in_organisation.present?
+    end
+
+    if Rails.application.config.enable_teaching_school_hubs
+      sl.with_row do |row|
+        row.with_key(text: 'Lead school')
+        row.with_value(text: appropriate_body.lead_school&.name)
+        row.with_action(
+          text: 'View',
+          href: admin_school_overview_path(appropriate_body.lead_school.urn),
+          visually_hidden_text: 'lead school'
+        ) if appropriate_body.lead_school.present?
+      end
+
+      sl.with_row do |row|
+        row.with_key(text: 'Supported schools (or maybe schools that chose this AB?)')
+        row.with_value(text: govuk_list(appropriate_body.supported_schools.map(&:name)))
+      end
+
+      sl.with_row do |row|
+        row.with_key(text: 'Type')
+        row.with_value(text: appropriate_body.body_type.titlecase)
+      end
     end
   end
 %>
