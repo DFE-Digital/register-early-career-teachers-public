@@ -17,7 +17,15 @@ RSpec.shared_examples "an induction redirectable route" do
         context "when the school's induction tutor has never been confirmed" do
           let(:induction_tutor_last_nominated_in) { nil }
 
-          it_behaves_like "redirects to wizard"
+          it_behaves_like "redirects to confirmation wizard"
+        end
+
+        context "when the school's induction tutor is not set" do
+          let(:induction_tutor_last_nominated_in) { nil }
+          let(:induction_tutor_name) { nil }
+          let(:induction_tutor_email) { nil }
+
+          it_behaves_like "redirects to new wizard"
         end
 
         context "when the school's induction tutor needs to update information" do
@@ -25,7 +33,7 @@ RSpec.shared_examples "an induction redirectable route" do
 
           before { FactoryBot.create(:contract_period, year: Time.zone.now.year) }
 
-          it_behaves_like "redirects to wizard"
+          it_behaves_like "redirects to confirmation wizard"
         end
 
         context "when the school's induction tutor does not need to update information" do
@@ -46,6 +54,14 @@ RSpec.shared_examples "an induction redirectable route" do
       context "when the feature is enabled", :enable_induction_tutor_prompt do
         context "when the school's induction tutor has never been confirmed" do
           let(:induction_tutor_last_nominated_in) { nil }
+
+          it_behaves_like "does not redirect to wizard"
+        end
+
+        context "when the school's induction tutor is not set" do
+          let(:induction_tutor_last_nominated_in) { nil }
+          let(:induction_tutor_name) { nil }
+          let(:induction_tutor_email) { nil }
 
           it_behaves_like "does not redirect to wizard"
         end
@@ -76,6 +92,14 @@ RSpec.shared_examples "an induction redirectable route" do
           it_behaves_like "does not redirect to wizard"
         end
 
+        context "when the school's induction tutor is not set" do
+          let(:induction_tutor_last_nominated_in) { nil }
+          let(:induction_tutor_name) { nil }
+          let(:induction_tutor_email) { nil }
+
+          it_behaves_like "does not redirect to wizard"
+        end
+
         context "when the school's induction tutor needs to update information" do
           let(:year) { 2024 }
 
@@ -88,16 +112,24 @@ RSpec.shared_examples "an induction redirectable route" do
   end
 end
 
-RSpec.shared_examples "redirects to wizard" do
+RSpec.shared_examples "redirects to confirmation wizard" do
   it "redirects to the wizard" do
     subject
     expect(response).to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
   end
 end
 
+RSpec.shared_examples "redirects to new wizard" do
+  it "redirects to the wizard" do
+    subject
+    expect(response).to redirect_to(schools_new_induction_tutor_wizard_edit_path)
+  end
+end
+
 RSpec.shared_examples "does not redirect to wizard" do
-  it "does not redirect to the wizard" do
+  it "does not redirect to either wizard" do
     subject
     expect(response).not_to redirect_to(schools_confirm_existing_induction_tutor_wizard_edit_path)
+    expect(response).not_to redirect_to(schools_new_induction_tutor_wizard_edit_path)
   end
 end

@@ -17,7 +17,11 @@ module Schools
     end
 
     def wizard_path
-      schools_confirm_existing_induction_tutor_wizard_edit_path
+      if school.induction_tutor_email.present?
+        schools_confirm_existing_induction_tutor_wizard_edit_path
+      else
+        schools_new_induction_tutor_wizard_edit_path
+      end
     end
 
   private
@@ -27,7 +31,7 @@ module Schools
     end
 
     def last_updated_year
-      @user.school.induction_tutor_last_nominated_in&.year
+      school.induction_tutor_last_nominated_in&.year
     end
   end
 end
