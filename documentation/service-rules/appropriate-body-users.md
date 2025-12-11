@@ -297,7 +297,7 @@ Every column is mandatory.
 
 `TRN,Date of birth,Induction programme,Induction period start date`
 
-#### Actions - pass/fail outcomes or release
+#### Actions - pass or release outcomes
 
 `TRN,Date of birth,Induction period end date,Number of terms,Outcome`
 
