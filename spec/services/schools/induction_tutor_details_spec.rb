@@ -42,7 +42,15 @@ RSpec.describe Schools::InductionTutorDetails do
         end
       end
 
+      context "when the induction tutor details are not set for the school" do
+        it "returns true" do
+          expect(service).to be_update_required
+        end
+      end
+
       context "when the induction tutor details have never been confirmed" do
+        let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
+
         it "returns true" do
           expect(service).to be_update_required
         end
@@ -74,6 +82,22 @@ RSpec.describe Schools::InductionTutorDetails do
         it "returns false" do
           expect(service).not_to be_update_required
         end
+      end
+    end
+  end
+
+  describe "#wizard_path" do
+    context "when the school has an unconfirmed induction tutor" do
+      let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
+
+      it "returns the confirm existing induction tutor wizard path" do
+        expect(service.wizard_path).to eq("/school/confirm-existing-induction-tutor/edit")
+      end
+    end
+
+    context "when the school does not have an induction tutor nominted" do
+      it "returns the new induction tutor wizard path" do
+        expect(service.wizard_path).to eq("/school/new-induction-tutor/edit")
       end
     end
   end
