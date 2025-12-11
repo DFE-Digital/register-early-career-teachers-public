@@ -82,6 +82,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
       when_i_click_cancel_and_go_back
       then_i_am_taken_to_the_confirm_existing_induction_tutor_page
       and_the_navigation_bar_is_not_visible
+      and_the_data_i_entered_is_saved
 
       when_i_click_no_these_details_are_incorrect
       and_i_enter_valid_details
@@ -145,6 +146,11 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
 
   def and_the_navigation_bar_is_visible
     expect(page.locator(".govuk-service-navigation__wrapper")).to be_visible
+  end
+
+  def and_the_data_i_entered_is_saved
+    expect(page.get_by_role("radio", name: "No")).to be_checked
+    expect(page.get_by_label("Email").input_value).to eq("new.name@example.com")
   end
 
   def when_i_confirm_that_the_existing_details_are_correct
