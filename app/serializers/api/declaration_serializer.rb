@@ -15,13 +15,8 @@ class API::DeclarationSerializer < Blueprinter::Base
     end
 
     field(:state) do |declaration|
-      if declaration.clawback_status != "no_clawback"
-        declaration.clawback_status
-      elsif declaration.payment_status == "no_payment"
-        "submitted"
-      else
-        declaration.payment_status
-      end
+      status = declaration.overall_status
+      status == "no_payment" ? "submitted" : status
     end
 
     field(:updated_at) { |declaration| declaration.updated_at.rfc3339 }
