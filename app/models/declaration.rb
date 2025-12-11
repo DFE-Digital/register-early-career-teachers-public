@@ -100,6 +100,12 @@ class Declaration < ApplicationRecord
       clawback_status_no_clawback?
   end
 
+  def overall_status
+    return clawback_status unless clawback_status == "no_clawback"
+
+    payment_status
+  end
+
   def uplift_paid?
     training_period.for_ect? &&
       declaration_type_started? &&

@@ -5,7 +5,7 @@ describe API::DeclarationSerializer, type: :serializer do
     JSON.parse(described_class.render(declaration))
   end
 
-  let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
+  let(:declaration) { FactoryBot.create(:declaration) }
   let(:teacher) { declaration.training_period.trainee.teacher }
   let(:delivery_partner) { declaration.training_period.delivery_partner }
   let(:lead_provider) { declaration.training_period.lead_provider }
@@ -32,9 +32,10 @@ describe API::DeclarationSerializer, type: :serializer do
       expect(attributes["updated_at"]).to eq(declaration.updated_at.rfc3339)
       expect(attributes["created_at"]).to eq(declaration.created_at.rfc3339)
       expect(attributes["delivery_partner_id"]).to eq(delivery_partner.api_id)
-      expect(attributes["statement_id"]).to eq(payment_statement.api_id)
-      expect(attributes["clawback_statement_id"]).to eq(clawback_statement.api_id)
+      expect(attributes["statement_id"]).to be_nil
+      expect(attributes["clawback_statement_id"]).to be_nil
 
+      expect(attributes["mentor_id"]).to be_nil
       expect(attributes["evidence_held"]).to be_present
       expect(attributes["evidence_held"]).to eq(declaration.evidence_type)
 
@@ -85,6 +86,28 @@ describe API::DeclarationSerializer, type: :serializer do
       end
     end
 
+    describe "statement_id" do
+      context "when declaration status is `paid`" do
+        let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+        it "serializes correctly" do
+          expect(attributes["statement_id"]).to eq(payment_statement.api_id)
+          expect(attributes["clawback_statement_id"]).to be_nil
+        end
+      end
+    end
+
+    describe "clawback_statement_id" do
+      context "when declaration status is `clawed_back`" do
+        let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
+
+        it "serializes correctly" do
+          expect(attributes["statement_id"]).to eq(payment_statement.api_id)
+          expect(attributes["clawback_statement_id"]).to eq(clawback_statement.api_id)
+        end
+      end
+    end
+
     describe "mentor_id" do
       let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period: mentee) }
@@ -94,7 +117,7 @@ describe API::DeclarationSerializer, type: :serializer do
 
       it "serializes correctly" do
         expect(attributes["mentor_id"]).to be_present
-        expect(attributes["mentor_id"]).to eq(mentor_teacher&.api_id)
+        expect(attributes["mentor_id"]).to eq(mentor_teacher.api_id)
       end
     end
 

@@ -351,6 +351,18 @@ describe Declaration do
     end
   end
 
+  describe ".overall_status" do
+    %i[no_payment eligible payable paid voided ineligible awaiting_clawback clawed_back].each do |status|
+      context "when status is `#{status}`" do
+        let(:declaration) { FactoryBot.create(:declaration, status) }
+
+        it "returns `#{status}`" do
+          expect(declaration.overall_status).to eq(status.to_s)
+        end
+      end
+    end
+  end
+
   describe ".uplift_paid?" do
     subject(:declaration) { FactoryBot.build(:declaration, training_period:, declaration_type:, payment_status:, sparsity_uplift:, pupil_premium_uplift:) }
 
