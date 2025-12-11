@@ -350,4 +350,57 @@ describe Declaration do
       end
     end
   end
+
+  describe ".uplift_paid?" do
+    subject(:declaration) { FactoryBot.build(:declaration, training_period:, declaration_type:, payment_status:, sparsity_uplift:, pupil_premium_uplift:) }
+
+    let(:training_period) { FactoryBot.build_stubbed(:training_period) }
+    let(:declaration_type) { Declaration.declaration_types.values.sample }
+    let(:payment_status) { Declaration.payment_statuses.values.sample }
+    let(:sparsity_uplift) { [true, false].sample }
+    let(:pupil_premium_uplift) { [true, false].sample }
+
+    context "when ECT" do
+      before { allow(training_period).to receive(:for_ect?).and_return(true) }
+
+      context "when declaration_type is `started`" do
+        let(:declaration_type) { "started" }
+
+        context "when payment_status is `paid`" do
+          let(:payment_status) { "paid" }
+
+          [true, false].each do |s_uplift|
+            context "when sparsity_uplift is `#{s_uplift}`" do
+              [true, false].each do |p_uplift|
+                context "when pupil_premium_uplift is `#{p_uplift}`" do
+                  let(:sparsity_uplift) { s_uplift }
+                  let(:pupil_premium_uplift) { p_uplift }
+
+                  it { expect(declaration.uplift_paid?).to be(s_uplift || p_uplift) }
+                end
+              end
+            end
+          end
+        end
+
+        context "when payment status is not `paid`" do
+          let(:payment_status) { Declaration.payment_statuses.values.excluding("paid").sample }
+
+          it { expect(declaration.uplift_paid?).to be(false) }
+        end
+      end
+
+      context "when declaration_type is not `started`" do
+        let(:declaration_type) { Declaration.declaration_types.values.excluding("started").sample }
+
+        it { expect(declaration.uplift_paid?).to be(false) }
+      end
+    end
+
+    context "when Mentor" do
+      before { allow(training_period).to receive(:for_ect?).and_return(false) }
+
+      it { expect(declaration.uplift_paid?).to be(false) }
+    end
+  end
 end
