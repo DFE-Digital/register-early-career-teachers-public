@@ -100,6 +100,13 @@ class Declaration < ApplicationRecord
       clawback_status_no_clawback?
   end
 
+  def uplift_paid?
+    training_period.for_ect? &&
+      declaration_type_started? &&
+      payment_status_paid? &&
+      (sparsity_uplift || pupil_premium_uplift)
+  end
+
 private
 
   def clear_ineligibility_reason
