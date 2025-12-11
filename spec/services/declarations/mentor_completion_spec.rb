@@ -45,12 +45,12 @@ RSpec.describe Declarations::MentorCompletion do
       end
 
       context "when completed mentor training is voided" do
-        let!(:teacher) { FactoryBot.create(:teacher, mentor_became_ineligible_for_funding_on: Time.zone.today, mentor_became_ineligible_for_funding_reason: "completed_declaration_received") }
+        let!(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
         let!(:declaration) { FactoryBot.create(:declaration, :voided, declaration_type: "completed", training_period:) }
 
         it "mentor is now eligible for funding" do
-          expect(teacher.mentor_became_ineligible_for_funding_on).to eq(Time.zone.today)
-          expect(teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_declaration_received")
+          expect(teacher.mentor_became_ineligible_for_funding_on).to be_present
+          expect(teacher.mentor_became_ineligible_for_funding_reason).to be_present
 
           service.perform
 
@@ -65,8 +65,8 @@ RSpec.describe Declarations::MentorCompletion do
             training_period:,
             declaration:,
             modifications: hash_including(
-              mentor_became_ineligible_for_funding_on: [Time.zone.today, nil],
-              mentor_became_ineligible_for_funding_reason: ["completed_declaration_received", nil]
+              mentor_became_ineligible_for_funding_on: [teacher.mentor_became_ineligible_for_funding_on, nil],
+              mentor_became_ineligible_for_funding_reason: [teacher.mentor_became_ineligible_for_funding_reason, nil]
             )
           )
 
@@ -75,7 +75,7 @@ RSpec.describe Declarations::MentorCompletion do
       end
     end
 
-    context "when declaration is not billable or changeable" do
+    context "when declaration is not completed" do
       let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "started") }
 
       it "returns false without action" do

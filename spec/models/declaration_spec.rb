@@ -320,4 +320,34 @@ describe Declaration do
       it { expect { declaration.mark_as_clawed_back! }.to raise_error(StateMachines::InvalidTransition) }
     end
   end
+
+  describe ".billable_or_changeable?" do
+    context "when clawback_status is `no_clawback`" do
+      subject(:declaration) { FactoryBot.build(:declaration, clawback_status: "no_clawback", payment_status:) }
+
+      Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.each do |status|
+        context "when payment_status is `#{status}`" do
+          let(:payment_status) { status }
+
+          it { expect(subject.billable_or_changeable?).to be(true) }
+        end
+      end
+
+      Declaration.payment_statuses.values.excluding(Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES).each do |status|
+        context "when payment_status is `#{status}`" do
+          let(:payment_status) { status }
+
+          it { expect(subject.billable_or_changeable?).to be(false) }
+        end
+      end
+    end
+
+    Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
+      context "when clawback_status is `#{clawback_status}`" do
+        subject(:declaration) { FactoryBot.build(:declaration, clawback_status:, payment_status: Declaration.payment_statuses.values.sample) }
+
+        it { expect(subject.billable_or_changeable?).to be(false) }
+      end
+    end
+  end
 end
