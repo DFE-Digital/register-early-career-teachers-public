@@ -1943,4 +1943,33 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_mentor_completion_status_change!" do
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+    let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
+    let(:declaration) { FactoryBot.create(:declaration, training_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        teacher.mentor_became_ineligible_for_funding_on = Time.zone.now
+        teacher.mentor_became_ineligible_for_funding_reason = "completed_declaration_received"
+        raw_modifications = teacher.changes
+
+        Events::Record.record_mentor_completion_status_change!(author:, teacher:, training_period:, declaration:, modifications: raw_modifications, happened_at:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          **author_params,
+          event_type: :mentor_completion_status_change,
+          happened_at:,
+          heading: "Rhys Ifans’s mentor completion status changed to completed",
+          metadata: raw_modifications,
+          modifications: ["Mentor became ineligible for funding on set to '#{Time.zone.now.to_date.to_fs(:govuk_short)}'",
+                          "Mentor became ineligible for funding reason set to 'completed_declaration_received'"],
+          teacher:,
+          training_period:,
+          declaration:
+        )
+      end
+    end
+  end
 end

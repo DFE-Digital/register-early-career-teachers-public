@@ -364,6 +364,7 @@
   - metadata
   - modifications
   - zendesk_ticket_id
+  - declaration_id
   :ect_at_school_periods:
   - id
   - school_id

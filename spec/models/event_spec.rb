@@ -20,6 +20,7 @@ describe Event do
     it { is_expected.to belong_to(:pending_induction_submission_batch).optional }
     it { is_expected.to belong_to(:statement).optional }
     it { is_expected.to belong_to(:statement_adjustment).optional }
+    it { is_expected.to belong_to(:declaration).optional }
 
     it { is_expected.to belong_to(:author).class_name("User").optional }
   end

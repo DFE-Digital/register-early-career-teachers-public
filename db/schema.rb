@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_04_142235) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -251,10 +251,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_04_142235) do
     t.bigint "statement_adjustment_id"
     t.integer "zendesk_ticket_id"
     t.bigint "schedule_id"
+    t.bigint "declaration_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_id"], name: "index_events_on_appropriate_body_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
+    t.index ["declaration_id"], name: "index_events_on_declaration_id"
     t.index ["delivery_partner_id"], name: "index_events_on_delivery_partner_id"
     t.index ["ect_at_school_period_id"], name: "index_events_on_ect_at_school_period_id"
     t.index ["induction_extension_id"], name: "index_events_on_induction_extension_id"
@@ -884,6 +886,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_04_142235) do
   add_foreign_key "ect_at_school_periods", "teachers"
   add_foreign_key "events", "active_lead_providers", on_delete: :nullify
   add_foreign_key "events", "appropriate_bodies", on_delete: :nullify
+  add_foreign_key "events", "declarations", on_delete: :nullify
   add_foreign_key "events", "delivery_partners", on_delete: :nullify
   add_foreign_key "events", "ect_at_school_periods", on_delete: :nullify
   add_foreign_key "events", "induction_extensions", on_delete: :nullify

@@ -1,4 +1,6 @@
 class Declaration < ApplicationRecord
+  BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES = %w[no_payment eligible payable paid].freeze
+
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
@@ -17,7 +19,8 @@ class Declaration < ApplicationRecord
 
   enum :declaration_type,
        %w[started retained-1 retained-2 retained-3 retained-4 extended-1 extended-2 extended-3 completed].index_by(&:itself),
-       validate: { message: "Choose a valid declaration type" }
+       validate: { message: "Choose a valid declaration type" },
+       prefix: true
 
   enum :evidence_type,
        %w[
@@ -90,6 +93,11 @@ class Declaration < ApplicationRecord
     event :mark_as_clawed_back do
       transition %i[awaiting_clawback] => :clawed_back
     end
+  end
+
+  def billable_or_changeable?
+    payment_status.in?(BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES) &&
+      clawback_status_no_clawback?
   end
 
 private
