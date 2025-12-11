@@ -1972,7 +1972,7 @@ RSpec.describe Events::Record do
       end
     end
   end
-  
+
   describe ".record_school_induction_tutor_confirmed_event!" do
     let(:contract_period_year) { FactoryBot.create(:contract_period, :current).year }
     let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
