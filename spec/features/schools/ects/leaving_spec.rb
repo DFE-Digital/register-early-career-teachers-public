@@ -64,7 +64,7 @@ private
   end
 
   def then_i_see_the_check_answers_page
-    expect(page.locator("h1", hasText: "Confirm that Batman has left your school permanently")).to be_visible
+    expect(page.locator("h1", hasText: "Confirm that Batman is leaving your school permanently")).to be_visible
   end
 
   def when_i_confirm_the_leaving_date
@@ -72,7 +72,7 @@ private
   end
 
   def then_i_see_the_leaving_confirmation
-    expect(page.locator(".govuk-panel")).to have_text("Batman has been removed from your school’s ECT list")
+    expect(page.locator(".govuk-panel")).to have_text("Batman will be removed from your school’s ECT list after 1 February 2025")
   end
 
   def when_i_return_to_the_ect_details
