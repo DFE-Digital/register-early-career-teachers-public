@@ -1,4 +1,4 @@
-describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schools_interface do
+describe "Schools::InductionTutor::ConfirmExistingInductionTutorWizardController", :enable_schools_interface do
   let(:school) { FactoryBot.create(:school, induction_tutor_name:, induction_tutor_email:) }
   let(:params) { {} }
   let(:induction_tutor_name) { "Old Induction Tutor Name" }
@@ -144,6 +144,6 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
 private
 
   def path_for_step(step)
-    "/school/confirm-existing-induction-tutor/#{step}"
+    "/school/induction-tutor/confirm-existing-induction-tutor/#{step}"
   end
 end

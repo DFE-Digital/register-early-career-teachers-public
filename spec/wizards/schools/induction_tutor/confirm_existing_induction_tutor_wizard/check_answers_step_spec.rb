@@ -1,8 +1,8 @@
-describe Schools::NewInductionTutorWizard::CheckAnswersStep do
+describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::CheckAnswersStep do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
-    Schools::NewInductionTutorWizard::Wizard.new(
+    Schools::InductionTutor::ConfirmExistingInductionTutorWizard::Wizard.new(
       current_step: :check_answers,
       step_params: ActionController::Parameters.new(check_answers: params),
       author:,
@@ -13,7 +13,7 @@ describe Schools::NewInductionTutorWizard::CheckAnswersStep do
 
   let(:store)  { FactoryBot.build(:session_repository, induction_tutor_email:, induction_tutor_name:) }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
   let!(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
 
   let(:induction_tutor_email) { Faker::Internet.email }
