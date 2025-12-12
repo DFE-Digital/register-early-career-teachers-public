@@ -156,7 +156,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
               it { is_expected.to have_one_error_per_attribute }
 
-              it { is_expected.to have_error(:schedule_identifier, "The schedule change cannot be applied because it would make existing declarations invalid. Please contact DfE for assistance.") }
+              it { is_expected.to have_error(:schedule_identifier, "The change of schedule cannot be applied because a previous change of schedule and a declaration were made on the same day. Applying another change of schedule would invalidate existing declarations. Please contact DfE for assistance.") }
             end
           end
         end
