@@ -69,12 +69,12 @@ class ECF2TeacherHistory::TrainingPeriodRow
   def lead_provider
     return if lead_provider_info.blank?
 
-    LeadProvider.find_by!(ecf_id: lead_provider_info.id)
+    LeadProvider.find_by!(ecf_id: lead_provider_info.ecf1_id)
   end
 
   def delivery_partner
     return if delivery_partner_info.blank?
 
-    DeliveryPartner.find_by!(api_id: delivery_partner_info.id)
+    DeliveryPartner.find_by!(api_id: delivery_partner_info.ecf1_id)
   end
 end

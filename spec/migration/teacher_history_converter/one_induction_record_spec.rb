@@ -77,11 +77,10 @@ describe "One induction record" do
       end
 
       context "when there is an appropriate body" do
-        let(:appropriate_body) { Types::AppropriateBodyData.new(id: SecureRandom.uuid, name: "Average Appropriate body") }
+        let(:appropriate_body) { Types::AppropriateBodyData.new(ecf1_id: SecureRandom.uuid, name: "Average Appropriate body") }
 
         it "sets the appropriate body to the one on the induction record" do
-          expect(ecf2_ect_at_school_period_row.appropriate_body.id).to eql(ecf1_induction_record_row.appropriate_body.id)
-          expect(ecf2_ect_at_school_period_row.appropriate_body.name).to eql(ecf1_induction_record_row.appropriate_body.name)
+          expect(ecf2_ect_at_school_period_row.appropriate_body).to eql(ecf1_induction_record_row.appropriate_body)
         end
       end
     end

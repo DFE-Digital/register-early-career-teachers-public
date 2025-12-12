@@ -129,11 +129,11 @@ class ECF1TeacherHistory
 
     TrainingProviderInfo.new(
       lead_provider_info: Types::LeadProviderInfo.new(
-        id: partnership.lead_provider.id,
+        ecf1_id: partnership.lead_provider.id,
         name: partnership.lead_provider.name
       ),
       delivery_partner_info: Types::DeliveryPartnerInfo.new(
-        id: partnership.delivery_partner.id,
+        ecf1_id: partnership.delivery_partner.id,
         name: partnership.delivery_partner.name
       ),
       cohort_year: partnership.cohort.start_year
@@ -144,7 +144,7 @@ class ECF1TeacherHistory
     appropriate_body = induction_record.appropriate_body
     return if appropriate_body.blank?
 
-    Types::AppropriateBodyData.new(id: appropriate_body.id, name: appropriate_body.name)
+    Types::AppropriateBodyData.new(ecf1_id: appropriate_body.id, name: appropriate_body.name)
   end
 
   def self.build_schedule_info(schedule:)
