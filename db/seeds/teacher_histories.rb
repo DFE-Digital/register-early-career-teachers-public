@@ -171,6 +171,11 @@ teach_first_grain_partnership_2022 = find_school_partnership(
   lead_provider: teach_first,
   delivery_partner: grain_teaching_school_hub
 )
+teach_first_grain_partnership_2023 = find_school_partnership(
+  contract_period: ContractPeriod.find_by!(year: 2023),
+  lead_provider: teach_first,
+  delivery_partner: grain_teaching_school_hub
+)
 teach_first_grain_partnership_2024 = find_school_partnership(
   contract_period: ContractPeriod.find_by!(year: 2024),
   lead_provider: teach_first,
@@ -623,7 +628,7 @@ print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
 john_withers = Teacher.find_by!(trs_first_name: "John", trs_last_name: "Withers")
 john_withers_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
                                                           teacher: john_withers,
-                                                          school: teach_first_grain_partnership_2022.school,
+                                                          school: teach_first_grain_partnership_2023.school,
                                                           email: "john.withers@amusementpark.com",
                                                           started_on: Date.new(2022, 9, 1),
                                                           finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
@@ -634,7 +639,7 @@ john_withers_training_period = FactoryBot.create(:training_period,
                                                  mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
                                                  started_on: Date.new(2022, 9, 1),
                                                  finished_on: nil,
-                                                 school_partnership: teach_first_grain_partnership_2022,
+                                                 school_partnership: teach_first_grain_partnership_2023,
                                                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 john_withers_declaration_date = john_withers_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
