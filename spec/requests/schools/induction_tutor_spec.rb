@@ -27,8 +27,10 @@ RSpec.describe "Induction Tutor", :enable_schools_interface do
         get schools_induction_tutor_path
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include(school.induction_tutor_name)
-        expect(response.body).to include(school.induction_tutor_email)
+
+        body = CGI.unescapeHTML(response.body)
+        expect(body).to include(school.induction_tutor_name)
+        expect(body).to include(school.induction_tutor_email)
       end
     end
   end
