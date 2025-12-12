@@ -11,5 +11,18 @@ FactoryBot.define do
     user_id { participant_profile.participant_identity.user.id }
 
     state { :submitted }
+
+    trait :paid do
+      state { "paid" }
+    end
+
+    trait :clawed_back do
+      state { "clawed_back" }
+    end
+
+    trait :for_mentor do
+      participant_profile { FactoryBot.create(:migration_participant_profile, :mentor) }
+      course_identifier { "ecf-mentor" }
+    end
   end
 end

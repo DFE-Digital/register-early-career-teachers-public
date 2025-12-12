@@ -89,6 +89,12 @@ module Migrators
     end
 
     def migrate_profile_periods(teacher, participant_profile)
+      # ERO mentors may have no induction records but still have paid/clawed_back declarations
+      # that need to be migrated. Handle this case separately.
+      if participant_profile.mentor? && participant_profile.induction_records.empty?
+        return migrate_ero_mentor_periods(teacher, participant_profile)
+      end
+
       sanitizer = ::InductionRecordSanitizer.new(participant_profile:)
 
       # TeacherPeriodsExtractor creates nested periods for a teacher with school periods at the top
@@ -179,6 +185,126 @@ module Migrators
         teacher.api_mentor_training_record_id = participant_profile.id
       end
       teacher.save!
+    end
+
+    # Migrates ERO (Early Rollout) mentors who have no induction records but have
+    # paid/clawed_back declarations. Creates school periods and training periods
+    # from the declaration and school_cohort data.
+    def migrate_ero_mentor_periods(teacher, participant_profile)
+      billable_declaration = participant_profile.participant_declarations.billable.order(:declaration_date).first
+
+      # If no billable declarations, nothing to migrate - just set teacher profile values
+      unless billable_declaration
+        set_teacher_profile_values!(teacher, participant_profile)
+        return true
+      end
+
+      school = find_school_by_urn!(participant_profile.school_cohort.school.urn)
+      cohort_year = billable_declaration.cohort.start_year
+
+      # Create the MentorAtSchoolPeriod
+      start_date = calculate_ero_mentor_start_date(participant_profile, billable_declaration)
+      end_date = calculate_ero_mentor_end_date(participant_profile, billable_declaration)
+
+      mentor_at_school_period = ::MentorAtSchoolPeriod.find_or_initialize_by(
+        teacher:,
+        school:,
+        started_on: start_date
+      )
+      mentor_at_school_period.finished_on = end_date
+      mentor_at_school_period.created_at ||= participant_profile.created_at
+      mentor_at_school_period.save!
+
+      # Create the TrainingPeriod (only if we can find the school partnership)
+      create_ero_mentor_training_period!(
+        mentor_at_school_period:,
+        declaration: billable_declaration,
+        school:,
+        cohort_year:
+      )
+
+      set_teacher_profile_values!(teacher, participant_profile)
+      true
+    rescue ActiveRecord::ActiveRecordError => e
+      ::TeacherMigrationFailure.create!(
+        teacher:,
+        model: :mentor_at_school_period,
+        message: e.message,
+        migration_item_id: participant_profile.id,
+        migration_item_type: "Migration::ParticipantProfile"
+      )
+      false
+    end
+
+    def calculate_ero_mentor_start_date(participant_profile, declaration)
+      # Use the earliest of: declaration date, profile created_at, or service start (2021-09-01)
+      service_start = Date.new(2021, 9, 1)
+      [declaration.declaration_date.to_date, participant_profile.created_at.to_date, service_start].min
+    end
+
+    def calculate_ero_mentor_end_date(participant_profile, declaration)
+      # If mentor has completion date, use 31 August following that date
+      # Otherwise use 31 August following the declaration date
+      reference_date = participant_profile.mentor_completion_date || declaration.declaration_date.to_date
+      the_31st_august_following(reference_date)
+    end
+
+    def the_31st_august_following(date)
+      year = date.month > 8 ? date.year + 1 : date.year
+      Date.new(year, 8, 31)
+    end
+
+    def create_ero_mentor_training_period!(mentor_at_school_period:, declaration:, school:, cohort_year:)
+      school_partnership = find_ero_school_partnership(declaration, school, cohort_year)
+
+      training_period = ::TrainingPeriod.find_or_initialize_by(
+        mentor_at_school_period:,
+        started_on: mentor_at_school_period.started_on
+      )
+      training_period.training_programme = "provider_led"
+      training_period.finished_on = mentor_at_school_period.finished_on
+      training_period.school_partnership = school_partnership
+      training_period.schedule = find_ero_schedule(cohort_year)
+      training_period.save!
+
+      training_period
+    end
+
+    def find_ero_school_partnership(declaration, school, cohort_year)
+      # Get lead provider from declaration's cpd_lead_provider
+      cpd_lead_provider = declaration.cpd_lead_provider
+      ecf_lead_provider = cpd_lead_provider.lead_provider
+
+      lead_provider = cache_manager.find_lead_provider_by_ecf_id(ecf_lead_provider.id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProvider for ECF ID #{ecf_lead_provider.id}") unless lead_provider
+
+      active_lead_provider = cache_manager.find_active_lead_provider(lead_provider_id: lead_provider.id, contract_period_year: cohort_year)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find ActiveLeadProvider") unless active_lead_provider
+
+      # Get delivery partner from declaration
+      delivery_partner = cache_manager.find_delivery_partner_by_api_id(declaration.delivery_partner_id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find DeliveryPartner for API ID #{declaration.delivery_partner_id}") unless delivery_partner
+
+      lead_provider_delivery_partnership = cache_manager.find_lead_provider_delivery_partnership_by_key(
+        active_lead_provider_id: active_lead_provider.id,
+        delivery_partner_id: delivery_partner.id
+      )
+      raise(ActiveRecord::RecordNotFound, "Couldn't find LeadProviderDeliveryPartnership") unless lead_provider_delivery_partnership
+
+      school_partnership = cache_manager.find_school_partnership(
+        lead_provider_delivery_partnership_id: lead_provider_delivery_partnership.id,
+        school_id: school.id
+      )
+      raise(ActiveRecord::RecordNotFound, "Couldn't find SchoolPartnership") unless school_partnership
+
+      school_partnership
+    end
+
+    def find_ero_schedule(cohort_year)
+      ::Schedule.find_by(
+        identifier: "ecf-standard-september",
+        contract_period_year: cohort_year
+      )
     end
 
     def add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile)

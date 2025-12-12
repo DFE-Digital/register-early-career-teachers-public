@@ -283,6 +283,103 @@ RSpec.describe Migrators::Teacher do
           end
         end
       end
+
+      context "when the mentor has no induction records (ERO mentor)" do
+        let(:mentor) { FactoryBot.create(:migration_participant_profile, :mentor) }
+        let(:school) { mentor.school_cohort.school }
+        let(:cohort) { mentor.school_cohort.cohort }
+
+        let!(:cpd_lead_provider) { FactoryBot.create(:migration_cpd_lead_provider) }
+        let!(:ecf_lead_provider) { cpd_lead_provider.lead_provider }
+        let!(:ecf_delivery_partner) { FactoryBot.create(:migration_delivery_partner) }
+
+        let!(:declaration) do
+          FactoryBot.create(
+            :migration_participant_declaration,
+            :paid,
+            participant_profile: mentor,
+            cpd_lead_provider:,
+            delivery_partner: ecf_delivery_partner,
+            cohort:,
+            declaration_date: Date.new(2021, 10, 15)
+          )
+        end
+
+        let!(:rect_school) { FactoryBot.create(:school, urn: school.urn) }
+        let!(:rect_lead_provider) { FactoryBot.create(:lead_provider, name: ecf_lead_provider.name, ecf_id: ecf_lead_provider.id) }
+        let!(:rect_delivery_partner) { FactoryBot.create(:delivery_partner, name: ecf_delivery_partner.name, api_id: ecf_delivery_partner.id) }
+        let!(:contract_period) { FactoryBot.create(:contract_period, year: cohort.start_year) }
+        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: rect_lead_provider, contract_period:) }
+        let!(:lpdp) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner: rect_delivery_partner) }
+        let!(:school_partnership) { FactoryBot.create(:school_partnership, school: rect_school, lead_provider_delivery_partnership: lpdp) }
+        let!(:schedule) { ::Schedule.find_or_create_by!(identifier: "ecf-standard-september", contract_period_year: cohort.start_year) }
+
+        it "creates a MentorAtSchoolPeriod from the declaration data" do
+          expect {
+            instance.migrate!
+          }.to change(::MentorAtSchoolPeriod, :count).by(1)
+
+          teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+          expect(teacher).to be_present
+          expect(teacher.mentor_at_school_periods.count).to eq(1)
+
+          mentor_at_school_period = teacher.mentor_at_school_periods.first
+          expect(mentor_at_school_period.school).to eq(rect_school)
+          expect(mentor_at_school_period.started_on).to be_present
+        end
+
+        it "creates a TrainingPeriod from the declaration data" do
+          instance.migrate!
+
+          teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+          training_period = teacher.mentor_at_school_periods.first.training_periods.first
+
+          expect(training_period).to be_present
+          expect(training_period.training_programme).to eq("provider_led")
+          expect(training_period.school_partnership).to eq(school_partnership)
+          expect(training_period.schedule).to eq(schedule)
+        end
+
+        it "sets the training period end date to 31 August following the declaration date" do
+          instance.migrate!
+
+          teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+          training_period = teacher.mentor_at_school_periods.first.training_periods.first
+
+          expect(training_period.finished_on).to eq(Date.new(2022, 8, 31))
+        end
+
+        context "when the mentor has no billable declarations" do
+          before do
+            declaration.update!(state: "voided")
+          end
+
+          it "still creates the Teacher record but no periods" do
+            expect {
+              instance.migrate!
+            }.not_to change(::MentorAtSchoolPeriod, :count)
+
+            teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+            expect(teacher).to be_present
+            expect(teacher.mentor_at_school_periods.count).to eq(0)
+          end
+        end
+
+        context "when the mentor has a completion date" do
+          before do
+            mentor.update!(mentor_completion_date: Date.new(2021, 12, 1))
+          end
+
+          it "sets the training period end date to 31 August following the completion date" do
+            instance.migrate!
+
+            teacher = ::Teacher.find_by(api_mentor_training_record_id: mentor.id)
+            training_period = teacher.mentor_at_school_periods.first.training_periods.first
+
+            expect(training_period.finished_on).to eq(Date.new(2022, 8, 31))
+          end
+        end
+      end
     end
 
     describe "#calculate_api_updated_at" do
