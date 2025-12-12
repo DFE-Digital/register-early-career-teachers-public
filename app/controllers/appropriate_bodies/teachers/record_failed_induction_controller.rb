@@ -25,6 +25,10 @@ module AppropriateBodies
         render :new, status: :unprocessable_content
       end
 
+      def confirm_failed_outcome
+        @record_fail = record_fail
+      end
+
     private
 
       def record_fail
