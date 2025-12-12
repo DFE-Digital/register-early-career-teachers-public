@@ -174,8 +174,8 @@ describe ECF2TeacherHistory do
           let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
           let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
 
-          let(:lead_provider_info) { Types::LeadProviderInfo.new(id: lead_provider.ecf_id, name: lead_provider.name) }
-          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(id: delivery_partner.api_id, name: delivery_partner.name) }
+          let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
@@ -454,8 +454,8 @@ describe ECF2TeacherHistory do
           let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
           let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
 
-          let(:lead_provider_info) { Types::LeadProviderInfo.new(id: lead_provider.ecf_id, name: lead_provider.name) }
-          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(id: delivery_partner.api_id, name: delivery_partner.name) }
+          let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
