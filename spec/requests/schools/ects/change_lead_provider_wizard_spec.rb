@@ -41,9 +41,12 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
   end
 
   describe "GET #new" do
+    subject { get path_for_step("edit") }
+
+    it_behaves_like "an induction redirectable route"
     context "when not signed in" do
       it "redirects to the root page" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to redirect_to(root_path)
       end
@@ -53,7 +56,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -72,7 +75,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
 
       context "when the current_step is valid" do
         it "returns ok" do
-          get path_for_step("edit")
+          subject
 
           expect(response).to have_http_status(:ok)
         end
@@ -81,8 +84,12 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
   end
 
   describe "POST #create" do
-    let(:lead_provider_id) { other_lead_provider.id }
+    subject { post(path_for_step("edit"), params:) }
+
     let(:params) { { edit: { lead_provider_id: } } }
+    let(:lead_provider_id) { other_lead_provider.id }
+
+    it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
       it "redirects to the root path" do
@@ -119,7 +126,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         let(:lead_provider_id) { "" }
 
         it "returns unprocessable_content" do
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -129,7 +136,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         let(:lead_provider_id) { "invalid" }
 
         it "returns unprocessable_content" do
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -146,7 +153,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         end
 
         it "updates the lead provider only after confirmation" do
-          post(path_for_step("edit"), params:)
+          subject
 
           follow_redirect!
 
@@ -164,7 +171,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
 
         context "when the previous school partnership was not confirmed" do
           it "assigns a new schedule" do
-            post(path_for_step("edit"), params:)
+            subject
 
             follow_redirect!
 
@@ -192,7 +199,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           end
 
           it "assigns the previous schedule" do
-            post(path_for_step("edit"), params:)
+            subject
 
             follow_redirect!
 
@@ -206,7 +213,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         it "creates an event only after confirmation" do
           allow(Events::Record).to receive(:record_teacher_training_lead_provider_updated_event!)
 
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(Events::Record).not_to have_received(:record_teacher_training_lead_provider_updated_event!)
           expect(response).to redirect_to(path_for_step("check-answers"))
@@ -232,7 +239,7 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         end
 
         it "returns not found for the edit get step" do
-          get path_for_step("edit")
+          subject
           expect(response).to have_http_status(:not_found)
         end
 

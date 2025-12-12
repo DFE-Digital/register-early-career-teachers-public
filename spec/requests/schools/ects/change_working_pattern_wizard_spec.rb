@@ -12,9 +12,13 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
   end
 
   describe "GET #new" do
+    subject { get path_for_step("edit") }
+
+    it_behaves_like "an induction redirectable route"
+
     context "when not signed in" do
       it "redirects to the root page" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to redirect_to(root_path)
       end
@@ -24,7 +28,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -43,7 +47,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
 
       context "when the current_step is valid" do
         it "returns ok" do
-          get path_for_step("edit")
+          subject
 
           expect(response).to have_http_status(:ok)
         end
@@ -52,8 +56,12 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
   end
 
   describe "POST #create" do
-    let(:new_working_pattern) { "part_time" }
+    subject { post(path_for_step("edit"), params:) }
+
     let(:params) { { edit: { working_pattern: new_working_pattern } } }
+    let(:new_working_pattern) { "part_time" }
+
+    it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
       it "redirects to the root path" do
@@ -67,7 +75,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        post(path_for_step("edit"), params:)
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -88,7 +96,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
         let(:new_working_pattern) { "part_time" }
 
         it "updates the working pattern only after confirmation" do
-          expect { post(path_for_step("edit"), params:) }
+          expect { subject }
             .not_to change(ect_at_school_period, :working_pattern)
 
           expect(response).to redirect_to(path_for_step("check-answers"))
@@ -105,7 +113,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
         it "creates an event only after confirmation" do
           allow(Events::Record).to receive(:record_teacher_working_pattern_updated_event!)
 
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(Events::Record).not_to have_received(:record_teacher_working_pattern_updated_event!)
           expect(response).to redirect_to(path_for_step("check-answers"))
@@ -123,7 +131,7 @@ describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_
         let(:new_working_pattern) { "full_time" }
 
         it "returns unprocessable_content" do
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(response).to have_http_status(:unprocessable_content)
         end

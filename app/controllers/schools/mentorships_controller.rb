@@ -1,5 +1,7 @@
 module Schools
   class MentorshipsController < SchoolsController
+    include Schools::InductionRedirectable
+
     before_action :set_ect
     before_action :register_mentor, only: :create, if: :register_new_mentor?
 

@@ -650,6 +650,38 @@ module Events
       ).record_event!
     end
 
+    def self.record_school_induction_tutor_confirmed_event!(author:, school:, name:, email:, contract_period_year:)
+      event_type = :school_induction_tutor_confirmed
+      heading = "Induction Tutor #{name} confirmed for #{contract_period_year}"
+
+      metadata = { contract_period_year:, name:, email: }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        school:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
+    def self.record_school_induction_tutor_updated_event!(author:, school:, old_name:, new_name:, new_email:, contract_period_year:)
+      event_type = :school_induction_tutor_updated
+      heading = TransitionDescription.for("Induction Tutor for #{contract_period_year}", from: old_name, to: new_name)
+
+      metadata = { contract_period_year:, name: new_name, email: new_email }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        school:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
     # Statement Events
 
     def self.record_statement_authorised_for_payment_event!(author:, statement:, happened_at: Time.zone.now)

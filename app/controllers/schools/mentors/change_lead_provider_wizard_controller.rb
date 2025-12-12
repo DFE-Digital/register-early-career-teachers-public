@@ -1,6 +1,8 @@
 module Schools
   module Mentors
     class ChangeLeadProviderWizardController < SchoolsController
+      include Schools::InductionRedirectable
+
       include Wizardable
 
       wizard_for :mentor

@@ -50,6 +50,30 @@ describe ContractPeriod do
     end
   end
 
+  describe ".current" do
+    context "when there is a current contract period" do
+      let!(:period) do
+        FactoryBot.create(:contract_period, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31))
+      end
+
+      it "returns the current contract period" do
+        FactoryBot.create(:contract_period, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31))
+
+        travel_to Date.new(2024, 6, 1) do
+          expect(ContractPeriod.current).to eq(period)
+        end
+      end
+    end
+
+    context "when there is no current contract period" do
+      it "returns nil" do
+        travel_to Date.new(2025, 6, 1) do
+          expect(ContractPeriod.current).to be_nil
+        end
+      end
+    end
+  end
+
   describe ".earliest_permitted_start_date" do
     context "when there are contract periods" do
       let!(:oldest) do

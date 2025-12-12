@@ -1,6 +1,8 @@
 module Schools
   module ECTs
     class ChangeMentorWizardController < SchoolsController
+      include Schools::InductionRedirectable
+
       include Wizardable
       wizard_for :ect
 

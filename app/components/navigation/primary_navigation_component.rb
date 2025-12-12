@@ -1,10 +1,10 @@
 module Navigation
   class PrimaryNavigationComponent < ApplicationComponent
-    attr_accessor :current_path, :current_user_type, :inverse
+    attr_accessor :current_path, :current_user, :inverse
 
-    def initialize(current_path:, current_user_type:, inverse: false)
+    def initialize(current_path:, current_user:, inverse: false)
       @current_path = current_path
-      @current_user_type = current_user_type
+      @current_user = current_user
       @inverse = inverse
     end
 
@@ -37,6 +37,8 @@ module Navigation
     end
 
     def navigation_items
+      return {} if induction_information_needs_update?
+
       {
         appropriate_body_user: [],
         dfe_staff_user: [
@@ -59,6 +61,18 @@ module Navigation
           { text: "Guidance", href: "/api/guidance/guidance-for-lead-providers", active_when: "/api/guidance/guidance-for-lead-providers" },
         ]
       }.fetch(navigation_area, [])
+    end
+
+    def current_user_type
+      current_user&.user_type
+    end
+
+    def induction_information_needs_update?
+      induction_details_service.update_required?
+    end
+
+    def induction_details_service
+      @induction_details_service ||= Schools::InductionTutorDetails.new(current_user)
     end
   end
 end
