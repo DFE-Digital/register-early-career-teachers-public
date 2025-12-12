@@ -612,6 +612,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.string "induction_tutor_name"
     t.citext "induction_tutor_email"
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.integer "induction_tutor_last_nominated_in"
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
@@ -936,6 +937,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_bodies", column: "last_chosen_appropriate_body_id"
+  add_foreign_key "schools", "contract_periods", column: "induction_tutor_last_nominated_in", primary_key: "year"
   add_foreign_key "schools", "gias_schools", column: "urn", primary_key: "urn"
   add_foreign_key "schools", "lead_providers", column: "last_chosen_lead_provider_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

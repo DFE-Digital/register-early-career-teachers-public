@@ -12,9 +12,12 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
   end
 
   describe "GET #new" do
+    subject { get path_for_step("edit") }
+
+    it_behaves_like "an induction redirectable route"
     context "when not signed in" do
       it "redirects to the root page" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to redirect_to(root_path)
       end
@@ -24,7 +27,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        get path_for_step("edit")
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -43,7 +46,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
 
       context "when the current_step is valid" do
         it "returns ok" do
-          get path_for_step("edit")
+          subject
 
           expect(response).to have_http_status(:ok)
         end
@@ -52,8 +55,12 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
   end
 
   describe "POST #create" do
+    subject { post(path_for_step("edit"), params:) }
+
     let(:new_email) { "ect@example.com" }
     let(:params) { { edit: { email: new_email } } }
+
+    it_behaves_like "an induction redirectable route"
 
     context "when not signed in" do
       it "redirects to the root path" do
@@ -67,7 +74,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
       include_context "sign in as DfE user"
 
       it "returns unauthorized" do
-        post(path_for_step("edit"), params:)
+        subject
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -88,7 +95,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
         let(:new_email) { "new-ect@example.com" }
 
         it "updates the email only after confirmation" do
-          expect { post(path_for_step("edit"), params:) }
+          expect { subject }
             .not_to change(ect_at_school_period, :email)
 
           expect(response).to redirect_to(path_for_step("check-answers"))
@@ -105,7 +112,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
         it "creates an event only after confirmation" do
           allow(Events::Record).to receive(:record_teacher_email_updated_event!)
 
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(Events::Record).not_to have_received(:record_teacher_email_updated_event!)
           expect(response).to redirect_to(path_for_step("check-answers"))
@@ -121,7 +128,7 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
 
       context "when the email is unchanged" do
         it "returns unprocessable_content" do
-          post(path_for_step("edit"), params:)
+          subject
 
           expect(response).to have_http_status(:unprocessable_content)
         end

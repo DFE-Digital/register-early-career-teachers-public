@@ -1,8 +1,9 @@
 module Schools
   module Mentors
     class ChangeEmailAddressWizardController < SchoolsController
-      include Wizardable
+      include Schools::InductionRedirectable
 
+      include Wizardable
       wizard_for :mentor
 
       def new

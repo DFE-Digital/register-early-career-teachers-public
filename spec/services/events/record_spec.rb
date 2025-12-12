@@ -1972,4 +1972,52 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_school_induction_tutor_confirmed_event!" do
+    let(:contract_period_year) { FactoryBot.create(:contract_period, :current).year }
+    let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
+    let(:name) { Faker::Name.name }
+    let(:email) { Faker::Internet.email }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_school_induction_tutor_confirmed_event!(author:, school:, name:, email:, contract_period_year:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            school:,
+            heading: "Induction Tutor #{name} confirmed for #{contract_period_year}",
+            event_type: :school_induction_tutor_confirmed,
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        )
+      end
+    end
+  end
+
+  describe ".record_school_induction_tutor_updated_event!" do
+    let(:contract_period_year) { FactoryBot.create(:contract_period, :current).year }
+    let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
+    let(:new_name) { Faker::Name.name }
+    let(:new_email) { Faker::Internet.email }
+    let(:old_name) { school.induction_tutor_name }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_school_induction_tutor_updated_event!(author:, school:, old_name:, new_name:, new_email:, contract_period_year:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            school:,
+            heading: "Induction tutor for #{contract_period_year} changed from '#{old_name}' to '#{new_name}'",
+            event_type: :school_induction_tutor_updated,
+            metadata: { contract_period_year:, name: new_name, email: new_email },
+            happened_at: Time.zone.now,
+            **author_params
+          )
+        )
+      end
+    end
+  end
 end

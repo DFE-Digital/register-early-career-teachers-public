@@ -32,8 +32,11 @@ class ContractPeriod < ApplicationRecord
     find_by(*date_in_range(date))
   end
 
+  def self.current
+    containing_date(Time.zone.today)
+  end
+
   def self.earliest_permitted_start_date
-    current = containing_date(Time.zone.today)
     return unless current
 
     current
