@@ -18,9 +18,9 @@ module Schools
 
     def wizard_path
       if school.induction_tutor_email.present?
-        schools_induction_tutors_confirm_existing_induction_tutor_wizard_edit_path
+        schools_induction_tutor_confirm_existing_induction_tutor_wizard_edit_path
       else
-        schools_induction_tutors_new_induction_tutor_wizard_edit_path
+        schools_induction_tutor_new_induction_tutor_wizard_edit_path
       end
     end
 
