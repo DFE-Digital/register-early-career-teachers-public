@@ -1,10 +1,10 @@
-RSpec.describe Declarations::MentorCompletion do
+RSpec.describe Declarations::MentorCompletion, :with_metadata do
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-  let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 1.month.ago, finished_on: nil) }
+  let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago, finished_on: nil) }
 
   let(:service) do
     described_class.new(
@@ -16,7 +16,7 @@ RSpec.describe Declarations::MentorCompletion do
   describe "#perform" do
     context "when declaration is billable or changeable" do
       context "when mentor training is completed" do
-        let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:) }
+        let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date: 2.weeks.ago) }
 
         it "mentor is now ineligible for funding" do
           expect(teacher.mentor_became_ineligible_for_funding_on).to be_nil
@@ -26,6 +26,18 @@ RSpec.describe Declarations::MentorCompletion do
 
           expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.declaration_date.to_date)
           expect(teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_declaration_received")
+        end
+
+        it "finishes the training period" do
+          expect { service.perform }.to change { training_period.reload.finished_on }.from(nil).to(declaration.declaration_date.to_date)
+        end
+
+        context "when the declaration_date is before the training period started_on date" do
+          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date: 2.months.ago) }
+
+          it "sets finished_on to the day after started_on" do
+            expect { service.perform }.to change { training_period.reload.finished_on }.from(nil).to(training_period.started_on + 1.day)
+          end
         end
 
         it "records a mentor completion status change event" do
@@ -56,6 +68,25 @@ RSpec.describe Declarations::MentorCompletion do
 
           expect(teacher.mentor_became_ineligible_for_funding_on).to be_nil
           expect(teacher.mentor_became_ineligible_for_funding_reason).to be_nil
+        end
+
+        it "does not create a new training period if there is one already ongoing for the lead provider" do
+          expect { service.perform }.not_to change(TrainingPeriod, :count)
+        end
+
+        context "when there is no training period ongoing today for the lead provider" do
+          before { training_period.update!(finished_on: 1.day.ago) }
+
+          it "creates a new training period, starting the day the previous one finished" do
+            expect { service.perform }.to change(TrainingPeriod, :count).by(1)
+
+            new_training_period = TrainingPeriod.last
+            expect(new_training_period.mentor_at_school_period).to eq(mentor_at_school_period)
+            expect(new_training_period.started_on).to eq(training_period.finished_on)
+            expect(new_training_period.school_partnership).to eq(training_period.school_partnership)
+            expect(new_training_period.schedule).to eq(training_period.schedule)
+            expect(new_training_period.expression_of_interest).to be_nil
+          end
         end
 
         it "records a mentor completion status change event" do
