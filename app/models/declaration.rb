@@ -101,7 +101,7 @@ class Declaration < ApplicationRecord
   end
 
   def overall_status
-    return clawback_status unless clawback_status == "no_clawback"
+    return clawback_status unless clawback_status_no_clawback?
 
     payment_status
   end
