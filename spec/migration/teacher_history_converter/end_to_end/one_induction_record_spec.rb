@@ -3,7 +3,7 @@ describe "One induction record (end to end)" do
 
   # ECF1 data
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme) }
+  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round) }
   let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
   let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
 
@@ -56,6 +56,8 @@ describe "One induction record (end to end)" do
 
       expect(training_period.schedule.identifier).to eql(ecf1_induction_record.schedule.schedule_identifier)
       expect(training_period.schedule.contract_period_year).to eql(ecf1_induction_record.schedule.cohort.start_year)
+
+      expect(training_period.created_at).to eql(ecf1_induction_record.created_at)
     end
   end
 end
