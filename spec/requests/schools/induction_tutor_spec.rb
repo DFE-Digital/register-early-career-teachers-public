@@ -31,8 +31,9 @@ RSpec.describe "Induction Tutor", :enable_schools_interface do
       end
 
       it "shows the induction tutor name and email address" do
-        expect(response.body).to include(school.induction_tutor_name)
-        expect(response.body).to include(school.induction_tutor_email)
+        body = CGI.unescapeHTML(response.body)
+        expect(body).to include(school.induction_tutor_name)
+        expect(body).to include(school.induction_tutor_email)
       end
     end
   end

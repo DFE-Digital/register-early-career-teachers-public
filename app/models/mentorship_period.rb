@@ -26,6 +26,7 @@ class MentorshipPeriod < ApplicationRecord
             presence: true
 
   validate :not_self_mentoring
+  validate :mentor_and_mentee_periods_are_at_same_school, if: -> { mentor.present? && mentee.present? }
   validate :mentee_distinct_period
   validate :enveloped_by_ect_at_school_period, if: -> { mentee.present? && started_on.present? }
   validate :enveloped_by_mentor_at_school_period, if: -> { mentor.present? && started_on.present? }
@@ -66,5 +67,11 @@ private
     return if mentor.teacher_id != mentee.teacher_id
 
     errors.add(:base, "A mentee cannot mentor themself")
+  end
+
+  def mentor_and_mentee_periods_are_at_same_school
+    return if mentor.school_id == mentee.school_id
+
+    errors.add(:base, "Mentor and mentee periods must belong to the same school")
   end
 end

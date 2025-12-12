@@ -2,7 +2,19 @@ RSpec.describe APISeedData::UnfundedMentors, :with_metadata do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
-  let!(:school_partnerships) { FactoryBot.create_list(:school_partnership, 2) }
+  let!(:school) { FactoryBot.create(:school) }
+  let!(:active_lead_providers) { FactoryBot.create_list(:active_lead_provider, 2) }
+  let!(:school_partnerships) do
+    active_lead_providers.map do |alp|
+      lpdp = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: alp)
+
+      FactoryBot.create(
+        :school_partnership,
+        school:,
+        lead_provider_delivery_partnership: lpdp
+      )
+    end
+  end
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
