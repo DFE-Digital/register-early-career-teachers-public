@@ -52,8 +52,8 @@ FactoryBot.define do
   end
 
   factory :ecf1_teacher_history_training_provider_info, class: "ECF1TeacherHistory::TrainingProviderInfo" do
-    sequence(:lead_provider_info) { |n| Types::LeadProviderInfo.new(id: SecureRandom.uuid, name: "History Lead Provider #{n}") }
-    sequence(:delivery_partner_info) { |n| Types::DeliveryPartnerInfo.new(id: SecureRandom.uuid, name: "History Delivery Partner #{n}") }
+    sequence(:lead_provider_info) { |n| Types::LeadProviderInfo.new(ecf1_id: SecureRandom.uuid, name: "History Lead Provider #{n}") }
+    sequence(:delivery_partner_info) { |n| Types::DeliveryPartnerInfo.new(ecf1_id: SecureRandom.uuid, name: "History Delivery Partner #{n}") }
     cohort_year { Random.rand(2020..2119) }
 
     initialize_with do
@@ -82,7 +82,7 @@ FactoryBot.define do
     induction_status { "active" }
     training_programme { "full_induction_programme" }
     training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:) }
-    sequence(:appropriate_body) { |n| Types::AppropriateBodyData.new(id: SecureRandom.uuid, name: "History Appropriate body #{n}") }
+    sequence(:appropriate_body) { |n| Types::AppropriateBodyData.new(ecf1_id: SecureRandom.uuid, name: "History Appropriate body #{n}") }
 
     initialize_with do
       new(induction_record_id:,
