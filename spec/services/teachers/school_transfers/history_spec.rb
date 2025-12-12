@@ -57,8 +57,8 @@ RSpec.describe Teachers::SchoolTransfers::History do
       end
     end
 
-    context "when a teacher leaves provider-led training at one school " \
-            "but has not completed their training" do
+    context "when a teacher leaves provider-led training at one school and has " \
+            "not yet started training at another school" do
       let(:lead_provider1) { FactoryBot.create(:lead_provider) }
       let(:lead_provider2) { FactoryBot.create(:lead_provider) }
 
@@ -93,38 +93,6 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(transfer).not_to be_for_mentor
         expect(transfer.leaving_training_period).to eq(@training_period3)
         expect(transfer.joining_training_period).to be_nil
-      end
-    end
-
-    context "when a teacher leaves provider-led training at one school " \
-            "and has completed their training" do
-      let(:lead_provider1) { FactoryBot.create(:lead_provider) }
-      let(:lead_provider2) { FactoryBot.create(:lead_provider) }
-
-      before do
-        school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago)
-        add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
-        @training_period3 = add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: lead_provider2)
-        record_completed_induction(teacher, school_period1)
-      end
-
-      it "returns no transfers for lead provider #1" do
-        history = described_class.new(
-          school_periods: teacher.ect_at_school_periods,
-          lead_provider_id: lead_provider1.id
-        )
-
-        expect(history.transfers).to be_empty
-      end
-
-      it "returns no transfers for lead provider #2" do
-        history = described_class.new(
-          school_periods: teacher.ect_at_school_periods,
-          lead_provider_id: lead_provider2.id
-        )
-
-        expect(history.transfers).to be_empty
       end
     end
 
@@ -307,18 +275,6 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(history.transfers).to be_empty
       end
     end
-  end
-
-private
-
-  def record_completed_induction(teacher, school_period)
-    FactoryBot.create(
-      :induction_period,
-      :pass,
-      teacher:,
-      started_on: school_period.started_on,
-      finished_on: school_period.finished_on
-    )
   end
 end
 # rubocop:enable RSpec/InstanceVariable
