@@ -27,6 +27,12 @@
     - lead_school_id
     - created_at
     - updated_at
+  :regions:
+    - id
+    - code
+    - districts
+    - created_at
+    - updated_at
   :legacy_appropriate_bodies:
     - id
     - dqt_id
