@@ -163,5 +163,71 @@ describe TeacherPeriodsExtractor do
         expect(training_period.deferred_at).to eq participant_profile_state.created_at
       end
     end
+
+    context "when the participant is an ECT with more than two induction records and induction completion date" do
+      let!(:induction_record_2) do
+        FactoryBot.create(:migration_induction_record,
+                          participant_profile:,
+                          induction_programme: induction_programme_2,
+                          start_date: induction_record_1.end_date,
+                          end_date: Date.current)
+      end
+
+      let!(:induction_record_3) do
+        FactoryBot.create(:migration_induction_record,
+                          participant_profile:,
+                          induction_programme: induction_programme_2,
+                          start_date: induction_record_2.end_date,
+                          end_date: induction_record_2.end_date + 1.week)
+      end
+
+      context "when the completion date is before the end_date of the last induction records" do
+        let(:induction_completion_date) { induction_record_2.end_date - 1.day }
+
+        before do
+          induction_records << induction_record_3
+          participant_profile.update!(induction_completion_date:)
+        end
+
+        it "adjusts the last training period end date to be the completion date" do
+          periods = service.teacher_periods
+          training_period = periods[1].training_periods[0]
+
+          expect(training_period.end_date).to eq induction_completion_date
+        end
+      end
+
+      context "when the completion date is before the end_date of the last induction record" do
+        let(:induction_completion_date) { induction_record_3.end_date - 1.day }
+
+        before do
+          induction_records << induction_record_3
+          participant_profile.update!(induction_completion_date:)
+        end
+
+        it "adjusts the last training period end date to be the completion date" do
+          periods = service.teacher_periods
+          training_period = periods[1].training_periods[0]
+
+          expect(training_period.end_date).to eq induction_completion_date
+        end
+      end
+
+      context "when the completion date is after the end_date of the last induction record" do
+        let(:induction_completion_date) { induction_record_3.end_date + 1.day }
+
+        before do
+          induction_records << induction_record_3
+          participant_profile.update!(induction_completion_date:)
+        end
+
+        it "adjusts the last training period end date to be the completion date" do
+          periods = service.teacher_periods
+          training_period = periods[1].training_periods[0]
+
+          expect(training_period.end_date).to eq induction_completion_date
+        end
+      end
+    end
   end
 end
