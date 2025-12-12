@@ -15,7 +15,10 @@ describe "Unfunded mentors endpoint", :with_metadata, openapi_spec: "v3/swagger.
     FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
   end
   let!(:unfunded_mentor) do
-    create_mentorship_period_for(mentee_school_partnership: school_partnership).mentor.teacher
+    create_mentorship_period_for(
+      mentee_school_partnership: school_partnership,
+      create_mentor_training_period: false
+    ).mentor.teacher
   end
 
   let(:resource) { unfunded_mentor }
