@@ -1,5 +1,5 @@
 module Schools
-  module ConfirmExistingInductionTutorWizard
+  module InductionTutor
     class ConfirmationStep < ApplicationWizardStep
       delegate :school, :are_these_details_correct, to: :wizard
 
