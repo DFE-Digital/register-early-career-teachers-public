@@ -16,7 +16,6 @@ module Teachers::SchoolTransfers
 
         next_school_period = @school_periods[index + 1]
         next unless different_school?(school_period, next_school_period)
-        next if teacher_completed_induction?(school_period.teacher, next_school_period)
 
         joining_training_period = next_school_period&.earliest_training_period
         next unless relevant_to_lead_provider?(leaving_training_period, joining_training_period)
@@ -34,11 +33,6 @@ module Teachers::SchoolTransfers
 
     def different_school?(school_period, next_school_period)
       school_period.school != next_school_period&.school
-    end
-
-    def teacher_completed_induction?(teacher, next_school_period)
-      finished_induction_period = teacher.finished_induction_period
-      next_school_period.nil? && finished_induction_period&.complete?
     end
 
     def relevant_to_lead_provider?(leaving_training_period, joining_training_period)
