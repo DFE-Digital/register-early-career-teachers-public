@@ -4,7 +4,11 @@ class TeacherHistoryConverter
   end
 
   def convert_to_ecf2!
-    ECF2TeacherHistory.new(teacher_row:, ect_at_school_period_rows:)
+    ECF2TeacherHistory.new(
+      teacher_row:,
+      ect_at_school_period_rows:,
+      mentor_at_school_period_rows:
+    )
   end
 
 private
@@ -21,6 +25,8 @@ private
   end
 
   def ect_at_school_period_rows
+    return [] unless @ecf1_teacher_history.ect
+
     @ecf1_teacher_history.ect.induction_records.map do |induction_record|
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
         **induction_record_attributes(induction_record),
@@ -29,6 +35,85 @@ private
         ]
       )
     end
+  end
+
+  def mentor_at_school_period_rows
+    return [] unless @ecf1_teacher_history.mentor
+
+    mentor = @ecf1_teacher_history.mentor
+
+    # If mentor has induction records, convert those
+    if mentor.induction_records.any?
+      return mentor.induction_records.map do |induction_record|
+        ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
+          **mentor_induction_record_attributes(induction_record),
+          training_period_rows: [
+            ECF2TeacherHistory::TrainingPeriodRow.new(**training_period_attributes(induction_record))
+          ]
+        )
+      end
+    end
+
+    # ERO mentor: no induction records but has declaration data
+    return [] unless mentor.ero_declaration
+
+    [ero_mentor_at_school_period_row(mentor)]
+  end
+
+  def mentor_induction_record_attributes(induction_record)
+    {
+      started_on: period_started_on(induction_record),
+      finished_on: induction_record.end_date,
+      school: Types::SchoolData.new(urn: induction_record.school_urn, name: "Thing"),
+      email: induction_record.preferred_identity_email,
+      training_period_rows: []
+    }
+  end
+
+  def ero_mentor_at_school_period_row(mentor)
+    ero_declaration = mentor.ero_declaration
+    start_date = calculate_ero_mentor_start_date(mentor, ero_declaration)
+    end_date = calculate_ero_mentor_end_date(mentor, ero_declaration)
+
+    ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
+      started_on: start_date,
+      finished_on: end_date,
+      school: Types::SchoolData.new(urn: ero_declaration.school_urn, name: "Thing"),
+      email: ero_declaration.preferred_identity_email,
+      training_period_rows: [
+        ECF2TeacherHistory::TrainingPeriodRow.new(**ero_mentor_training_period_attributes(ero_declaration, start_date, end_date))
+      ]
+    )
+  end
+
+  def ero_mentor_training_period_attributes(ero_declaration, start_date, end_date)
+    {
+      started_on: start_date,
+      finished_on: end_date,
+      training_programme: "provider_led",
+      lead_provider_info: ero_declaration.training_provider_info.lead_provider_info,
+      delivery_partner_info: ero_declaration.training_provider_info.delivery_partner_info,
+      schedule_info: nil, # ERO mentors use ecf-standard-september schedule, looked up by cohort_year
+      contract_period: ero_declaration.cohort_year
+    }
+  end
+
+  def calculate_ero_mentor_start_date(mentor, ero_declaration)
+    # Use the earliest of: declaration date, profile created_at, or service start (2021-09-01)
+    service_start = Date.new(2021, 9, 1)
+    [ero_declaration.declaration_date.to_date, mentor.created_at.to_date, service_start].min
+  end
+
+  def calculate_ero_mentor_end_date(mentor, ero_declaration)
+    # If mentor has completion date, use 31 August following that date
+    # Otherwise use 31 August following the declaration date
+    reference_date = mentor.mentor_completion_date || ero_declaration.declaration_date.to_date
+    the_31st_august_following(reference_date)
+  end
+
+  def the_31st_august_following(date)
+    year = date.month > 8 ? date.year + 1 : date.year
+    Date.new(year, 8, 31)
   end
 
   def induction_record_attributes(induction_record)
