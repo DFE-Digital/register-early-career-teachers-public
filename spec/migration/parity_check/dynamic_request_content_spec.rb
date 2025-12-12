@@ -1,6 +1,7 @@
 RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
   include MentorshipPeriodHelpers
   include SchoolTransferHelpers
+  include UnfundedMentorHelpers
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
@@ -745,7 +746,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
       let(:other_school_partnership) { FactoryBot.create(:school_partnership) }
-      let!(:unfunded_mentor) { create_mentorship_period_for(mentee_school_partnership: school_partnership).mentor.teacher }
+      let!(:unfunded_mentor) { create_unfunded_mentor_for(school_partnership:) }
 
       before do
         # Unfunded mentor for different lead providers should not be used.
