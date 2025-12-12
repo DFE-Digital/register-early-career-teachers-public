@@ -1,11 +1,11 @@
 <%
   page_data(
-    title: "You’ve confirmed #{@wizard.school.induction_tutor_name} will continue as your school’s induction tutor",
+    title: "#{@wizard.school.induction_tutor_name} is your school’s induction tutor",
     header: false
   )
 %>
 
-<%= govuk_panel(title_text: "You’ve changed your school’s induction tutor to #{@wizard.school.induction_tutor_name}") %>
+<%= govuk_panel(title_text: "#{@wizard.school.induction_tutor_name} is your school’s induction tutor") %>
 
 <h2 class="govuk-heading-m">What happens next</h2>
 
@@ -15,4 +15,3 @@
 <p class="govuk-body">
   <%= govuk_button_link_to("Continue", schools_ects_home_path) %>
 </p>
-
