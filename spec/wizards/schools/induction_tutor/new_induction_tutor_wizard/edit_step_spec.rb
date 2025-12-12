@@ -1,8 +1,8 @@
-describe Schools::NewInductionTutorWizard::EditStep do
+describe Schools::InductionTutor::NewInductionTutorWizard::EditStep do
   subject(:current_step) { wizard.current_step }
 
   let(:wizard) do
-    Schools::NewInductionTutorWizard::Wizard.new(
+    Schools::InductionTutor::NewInductionTutorWizard::Wizard.new(
       current_step: :edit,
       step_params: ActionController::Parameters.new(edit: params),
       author:,

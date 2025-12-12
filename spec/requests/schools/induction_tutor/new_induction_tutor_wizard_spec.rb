@@ -1,4 +1,4 @@
-describe "Schools::NewInductionTutorWizardController", :enable_schools_interface do
+describe "Schools::InductionTutor::NewInductionTutorWizardController", :enable_schools_interface do
   let(:school) { FactoryBot.create(:school) }
   let(:params) { {} }
   let(:induction_tutor_name) { "Old Induction Tutor Name" }
@@ -117,6 +117,6 @@ describe "Schools::NewInductionTutorWizardController", :enable_schools_interface
 private
 
   def path_for_step(step)
-    "/school/new-induction-tutor/#{step}"
+    "/school/induction-tutor/new-induction-tutor/#{step}"
   end
 end
