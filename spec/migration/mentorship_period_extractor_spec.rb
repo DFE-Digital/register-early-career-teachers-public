@@ -88,5 +88,70 @@ describe MentorshipPeriodExtractor do
         expect(period.end_date).to eq induction_record_1.updated_at
       end
     end
+
+    context "when the participant is an ECT with more than two induction records and induction completion date" do
+      let!(:induction_record_2) do
+        FactoryBot.create(:migration_induction_record,
+                          :with_mentor,
+                          participant_profile:,
+                          induction_programme: induction_programme_2,
+                          start_date: induction_record_1.end_date,
+                          end_date: Date.current)
+      end
+
+      let!(:induction_record_3) do
+        FactoryBot.create(:migration_induction_record,
+                          mentor_profile: induction_record_2.mentor_profile,
+                          participant_profile:,
+                          induction_programme: induction_programme_2,
+                          start_date: induction_record_2.end_date,
+                          end_date: induction_record_2.end_date + 1.week)
+      end
+
+      context "when the completion date is before the end_date of the last induction records" do
+        let(:induction_completion_date) { induction_record_2.end_date - 1.day }
+
+        before do
+          induction_records << induction_record_3
+          participant_profile.update!(induction_completion_date:)
+        end
+
+        it "adjusts the last training period end date to be the completion date" do
+          period = service.mentorship_periods.last
+
+          expect(period.end_date).to eq induction_completion_date
+        end
+      end
+
+      context "when the completion date is before the end_date of the last induction record" do
+        let(:induction_completion_date) { induction_record_3.end_date - 1.day }
+
+        before do
+          induction_records << induction_record_3
+          participant_profile.update!(induction_completion_date:)
+        end
+
+        it "adjusts the last training period end date to be the completion date" do
+          period = service.mentorship_periods.last
+
+          expect(period.end_date).to eq induction_completion_date
+        end
+      end
+
+      context "when the completion date is after the end_date of the last induction record" do
+        let(:induction_completion_date) { induction_record_3.end_date + 1.day }
+
+        before do
+          induction_records << induction_record_3
+          participant_profile.update!(induction_completion_date:)
+        end
+
+        it "adjusts the last training period end date to be the completion date" do
+          period = service.mentorship_periods.last
+
+          expect(period.end_date).to eq induction_completion_date
+        end
+      end
+    end
   end
 end
