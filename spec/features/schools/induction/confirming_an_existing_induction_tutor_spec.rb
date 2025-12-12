@@ -226,8 +226,6 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    page.screenshot(path: "tmp/screenshot.png")
-
     expect(page).to have_path("/school/confirm-existing-induction-tutor/check-answers")
   end
 
