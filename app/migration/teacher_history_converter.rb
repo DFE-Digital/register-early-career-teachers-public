@@ -4,21 +4,94 @@ class TeacherHistoryConverter
   end
 
   def convert_to_ecf2!
-    ECF2TeacherHistory.new.tap do |th|
-      # set the name, TRN, etc
-      #
-      # ecf1_events.each do |event|
-      #   add the periods
-      # end
-    end
+    ECF2TeacherHistory.new(teacher_row:, ect_at_school_period_rows:)
   end
 
 private
+
+  def teacher_row
+    ECF2TeacherHistory::TeacherRow.new(
+      trn: @ecf1_teacher_history.user.trn,
+      trs_first_name: parsed_name.first_name,
+      trs_last_name: parsed_name.last_name,
+      api_id: @ecf1_teacher_history.user.user_id,
+      created_at: @ecf1_teacher_history.user.created_at,
+      updated_at: @ecf1_teacher_history.user.updated_at
+    )
+  end
+
+  def ect_at_school_period_rows
+    @ecf1_teacher_history.ect.induction_records.map do |induction_record|
+      ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+        **induction_record_attributes(induction_record),
+        training_period_rows: [
+          ECF2TeacherHistory::TrainingPeriodRow.new(**training_period_attributes(induction_record))
+        ]
+      )
+    end
+  end
+
+  def induction_record_attributes(induction_record)
+    {
+      started_on: period_started_on(induction_record),
+      finished_on: induction_record.end_date,
+      school: Types::SchoolData.new(urn: induction_record.school_urn, name: "Thing"),
+      email: induction_record.preferred_identity_email,
+      mentorship_period_rows: [],
+      training_period_rows: [],
+      appropriate_body: induction_record.appropriate_body
+    }
+  end
+
+  def training_period_attributes(induction_record)
+    {
+      started_on: period_started_on(induction_record),
+      finished_on: induction_record.end_date,
+      training_programme: ecf2_training_programme(induction_record.training_programme),
+      **deferral_attributes(induction_record),
+      **withdrawal_attributes(induction_record),
+      lead_provider_info: induction_record.training_provider_info.lead_provider_info,
+      delivery_partner_info: induction_record.training_provider_info.delivery_partner_info,
+      schedule_info: induction_record.schedule_info,
+      # FIXME: rename this to contract_period_year
+      contract_period: induction_record.cohort_year
+    }
+  end
+
+  def parsed_name
+    @parsed_name ||= Teachers::FullNameParser.new(full_name: @ecf1_teacher_history.user.full_name)
+  end
+
+  def period_started_on(induction_record)
+    [induction_record.start_date, induction_record.created_at.to_date].min
+  end
 
   def ecf1_events
     @ecf1_teacher_history.induction_records.map do |ir|
       # build some kind of chronological representation of
       # what happened
     end
+  end
+
+  def ecf2_training_programme(ecf1_training_programme)
+    Mappers::TrainingProgrammeMapper.new(ecf1_training_programme.to_s).mapped_value
+  end
+
+  def deferral_attributes(induction_record)
+    return {} unless induction_record.training_status == "deferred"
+
+    {
+      deferred_at: induction_record.end_date,
+      deferral_reason: "???"
+    }
+  end
+
+  def withdrawal_attributes(induction_record)
+    return {} unless induction_record.training_status == "withdrawn"
+
+    {
+      withdrawn_at: induction_record.end_date,
+      withdrawal_reason: "???"
+    }
   end
 end

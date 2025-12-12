@@ -15,7 +15,9 @@ class ECF2TeacherHistory::TeacherRow
               :mentor_became_ineligible_for_funding_on,
               :mentor_became_ineligible_for_funding_reason,
               :mentor_first_became_eligible_for_training_at,
-              :mentor_payments_frozen_year
+              :mentor_payments_frozen_year,
+              :created_at,
+              :updated_at
 
   def initialize(trn:,
                  trs_first_name:,
@@ -33,7 +35,9 @@ class ECF2TeacherHistory::TeacherRow
                  mentor_became_ineligible_for_funding_on: nil,
                  mentor_became_ineligible_for_funding_reason: nil,
                  mentor_first_became_eligible_for_training_at: nil,
-                 mentor_payments_frozen_year: nil)
+                 mentor_payments_frozen_year: nil,
+                 created_at: nil,
+                 updated_at: nil)
     @trn = trn
     @trnless = trnless
     @trs_first_name = trs_first_name
@@ -51,6 +55,8 @@ class ECF2TeacherHistory::TeacherRow
     @mentor_became_ineligible_for_funding_reason = mentor_became_ineligible_for_funding_reason
     @mentor_first_became_eligible_for_training_at = mentor_first_became_eligible_for_training_at
     @mentor_payments_frozen_year = mentor_payments_frozen_year
+    @created_at = created_at
+    @updated_at = updated_at
   end
 
   def to_hash
@@ -73,7 +79,10 @@ class ECF2TeacherHistory::TeacherRow
       mentor_became_ineligible_for_funding_on:,
       mentor_became_ineligible_for_funding_reason:,
       mentor_first_became_eligible_for_training_at:,
-      mentor_payments_frozen_year:
+      mentor_payments_frozen_year:,
+
+      created_at:,
+      updated_at:
     }.compact
   end
 end

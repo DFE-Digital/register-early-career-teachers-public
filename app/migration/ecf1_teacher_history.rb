@@ -28,30 +28,22 @@ class ECF1TeacherHistory
                                   :updated_at,
                                   :cohort_year,
                                   :school_urn,
-                                  :schedule,
+                                  :schedule_info,
                                   :preferred_identity_email,
                                   :mentor_profile_id,
                                   :training_status,
                                   :induction_status,
                                   :training_programme,
-                                  :training_provider_info)
+                                  :training_provider_info,
+                                  :appropriate_body)
 
   TrainingProviderInfo = Struct.new(
-    :lead_provider_id,
-    :lead_provider_name,
-    :delivery_partner_id,
-    :delivery_partner_name,
+    :lead_provider_info,
+    :delivery_partner_info,
     :cohort_year
   )
 
-  ScheduleInfo = Struct.new(
-    :schedule_id,
-    :identifier,
-    :name,
-    :cohort_year
-  )
-
-  attr_reader :user, :ect, :mentor
+  attr_accessor :user, :ect, :mentor
 
   def initialize(user:, ect: nil, mentor: nil)
     @user = user
@@ -119,13 +111,14 @@ class ECF1TeacherHistory
         updated_at: induction_record.updated_at,
         cohort_year: induction_record.schedule.cohort.start_year,
         school_urn: induction_record.induction_programme.school_cohort.school.urn,
-        schedule: build_schedule_info(schedule: induction_record.schedule),
+        schedule_info: build_schedule_info(schedule: induction_record.schedule),
         preferred_identity_email: induction_record.preferred_identity.email,
         mentor_profile_id: induction_record.mentor_profile_id,
         training_status: induction_record.training_status,
         induction_status: induction_record.induction_status,
         training_programme: induction_record.induction_programme.training_programme,
-        training_provider_info: build_training_provider_info(induction_record:)
+        training_provider_info: build_training_provider_info(induction_record:),
+        appropriate_body: build_appropriate_body(induction_record:)
       )
     end
   end
@@ -135,16 +128,27 @@ class ECF1TeacherHistory
     return if partnership.blank?
 
     TrainingProviderInfo.new(
-      lead_provider_id: partnership.lead_provider_id,
-      lead_provider_name: partnership.lead_provider.name,
-      delivery_partner_id: partnership.delivery_partner_id,
-      delivery_partner_name: partnership.delivery_partner.name,
+      lead_provider_info: Types::LeadProviderInfo.new(
+        id: partnership.lead_provider.id,
+        name: partnership.lead_provider.name
+      ),
+      delivery_partner_info: Types::DeliveryPartnerInfo.new(
+        id: partnership.delivery_partner.id,
+        name: partnership.delivery_partner.name
+      ),
       cohort_year: partnership.cohort.start_year
     )
   end
 
+  def self.build_appropriate_body(induction_record:)
+    appropriate_body = induction_record.appropriate_body
+    return if appropriate_body.blank?
+
+    Types::AppropriateBodyData.new(id: appropriate_body.id, name: appropriate_body.name)
+  end
+
   def self.build_schedule_info(schedule:)
-    ScheduleInfo.new(
+    Types::ScheduleInfo.new(
       schedule_id: schedule.id,
       identifier: schedule.schedule_identifier,
       name: schedule.name,
