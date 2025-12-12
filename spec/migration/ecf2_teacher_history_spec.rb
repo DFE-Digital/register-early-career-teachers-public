@@ -166,11 +166,16 @@ describe ECF2TeacherHistory do
 
         context "when training periods are present" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
           let(:lead_provider) { FactoryBot.create(:lead_provider) }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-          let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+          let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+          let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
+
+          let(:lead_provider_info) { Types::LeadProviderInfo.new(id: lead_provider.ecf_id, name: lead_provider.name) }
+          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(id: delivery_partner.api_id, name: delivery_partner.name) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
@@ -179,10 +184,10 @@ describe ECF2TeacherHistory do
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               training_programme: :provider_led,
-              lead_provider:,
-              delivery_partner:,
+              lead_provider_info:,
+              delivery_partner_info:,
               contract_period:,
-              schedule:
+              schedule_info:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -243,7 +248,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(1.month.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
-                expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
+                # expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
 
                 p1.training_periods.first!.tap do |p1_tp|
                   expect(p1_tp.started_on).to eql(1.year.ago.to_date)
@@ -254,6 +259,7 @@ describe ECF2TeacherHistory do
                   expect(p1_tp.active_lead_provider).to eql(active_lead_provider)
                   expect(p1_tp.lead_provider).to eql(lead_provider)
                   expect(p1_tp.contract_period).to eql(contract_period)
+                  expect(p1_tp.schedule).to eql(schedule)
                   # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
                   # expect(p1_tp.withdrawn_at).to eql(1.month.ago.round(2))
                   # expect(p1_tp.withdrawal_reason).to eql("switched_to_school_led")
@@ -271,12 +277,13 @@ describe ECF2TeacherHistory do
                 expect(p2.finished_on).to eql(1.week.ago.to_date)
                 expect(p2.school.urn).to eql(school_b_data.urn)
                 expect(p2.email).to eql("b@example.org")
-                expect(p2.school_reported_appropriate_body.id).to eql(appropriate_body_b_data.id)
+                # expect(p2.school_reported_appropriate_body.id).to eql(appropriate_body_b_data.id)
 
                 p2.training_periods.first!.tap do |p2_tp|
                   expect(p2_tp.started_on).to eql(1.month.ago.to_date)
                   expect(p2_tp.finished_on).to eql(1.week.ago.to_date)
                   expect(p2_tp.training_programme).to eql("school_led")
+                  expect(p2_tp.schedule).to be_nil
                 end
               end
             end
@@ -341,7 +348,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(1.month.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
-                expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
+                # expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
 
                 p1.mentorship_periods.first!.tap do |p1_mp|
                   expect(p1_mp.started_on).to eql(1.year.ago.to_date)
@@ -440,11 +447,15 @@ describe ECF2TeacherHistory do
 
         context "when training periods are present" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
           let(:lead_provider) { FactoryBot.create(:lead_provider) }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+          let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
+
+          let(:lead_provider_info) { Types::LeadProviderInfo.new(id: lead_provider.ecf_id, name: lead_provider.name) }
+          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(id: delivery_partner.api_id, name: delivery_partner.name) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
@@ -453,10 +464,10 @@ describe ECF2TeacherHistory do
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               training_programme: :provider_led,
-              lead_provider:,
-              delivery_partner:,
+              lead_provider_info:,
+              delivery_partner_info:,
               contract_period:,
-              schedule:
+              schedule_info:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",

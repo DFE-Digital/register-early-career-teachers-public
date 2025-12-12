@@ -33,11 +33,12 @@ describe ECF1TeacherHistory do
 
     let(:ect_profile) { FactoryBot.create(:migration_participant_profile, :ect) }
     let(:induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-    let!(:ect_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: ect_profile, induction_programme:) }
+    let(:appropriate_body) { FactoryBot.create(:migration_appropriate_body) }
+    let!(:ect_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: ect_profile, induction_programme:, appropriate_body:) }
     let(:teacher_profile) { ect_profile.teacher_profile }
     let!(:user) { teacher_profile.user }
     let!(:mentor_profile) { FactoryBot.create(:migration_participant_profile, :mentor, teacher_profile:) }
-    let!(:mentor_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: mentor_profile, induction_programme:) }
+    let!(:mentor_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: mentor_profile, induction_programme:, appropriate_body:) }
 
     it "can be built with ECF1 data" do
       expect(history.user.trn).to eq(teacher_profile.trn)
@@ -62,20 +63,22 @@ describe ECF1TeacherHistory do
               expect(historic_record.updated_at).to be_within(1.second).of(induction_record.updated_at)
               expect(historic_record.cohort_year).to eq(induction_record.schedule.cohort.start_year)
               expect(historic_record.school_urn).to eq(induction_record.induction_programme.school_cohort.school.urn)
-              expect(historic_record.schedule.schedule_id).to eq(induction_record.schedule.id)
-              expect(historic_record.schedule.name).to eq(induction_record.schedule.name)
-              expect(historic_record.schedule.identifier).to eq(induction_record.schedule.schedule_identifier)
-              expect(historic_record.schedule.cohort_year).to eq(induction_record.schedule.cohort.start_year)
+              expect(historic_record.schedule_info.schedule_id).to eq(induction_record.schedule.id)
+              expect(historic_record.schedule_info.name).to eq(induction_record.schedule.name)
+              expect(historic_record.schedule_info.identifier).to eq(induction_record.schedule.schedule_identifier)
+              expect(historic_record.schedule_info.cohort_year).to eq(induction_record.schedule.cohort.start_year)
               expect(historic_record.preferred_identity_email).to eq(induction_record.preferred_identity.email)
               expect(historic_record.mentor_profile_id).to eq(induction_record.mentor_profile_id)
               expect(historic_record.training_status).to eq(induction_record.training_status)
               expect(historic_record.induction_status).to eq(induction_record.induction_status)
               expect(historic_record.training_programme).to eq(induction_record.induction_programme.training_programme)
-              expect(historic_record.training_provider_info.lead_provider_id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
-              expect(historic_record.training_provider_info.lead_provider_name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
-              expect(historic_record.training_provider_info.delivery_partner_id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
-              expect(historic_record.training_provider_info.delivery_partner_name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
+              expect(historic_record.training_provider_info.lead_provider_info.id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
+              expect(historic_record.training_provider_info.lead_provider_info.name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
+              expect(historic_record.training_provider_info.delivery_partner_info.id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
+              expect(historic_record.training_provider_info.delivery_partner_info.name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
               expect(historic_record.training_provider_info.cohort_year).to eq(induction_record.induction_programme.partnership.cohort.start_year)
+              expect(historic_record.appropriate_body.id).to eq(induction_record.appropriate_body.id)
+              expect(historic_record.appropriate_body.name).to eq(induction_record.appropriate_body.name)
             end
           end
         end
@@ -96,18 +99,18 @@ describe ECF1TeacherHistory do
               expect(historic_record.updated_at).to be_within(1.second).of(induction_record.updated_at)
               expect(historic_record.cohort_year).to eq(induction_record.schedule.cohort.start_year)
               expect(historic_record.school_urn).to eq(induction_record.induction_programme.school_cohort.school.urn)
-              expect(historic_record.schedule.schedule_id).to eq(induction_record.schedule.id)
-              expect(historic_record.schedule.name).to eq(induction_record.schedule.name)
-              expect(historic_record.schedule.identifier).to eq(induction_record.schedule.schedule_identifier)
-              expect(historic_record.schedule.cohort_year).to eq(induction_record.schedule.cohort.start_year)
+              expect(historic_record.schedule_info.schedule_id).to eq(induction_record.schedule.id)
+              expect(historic_record.schedule_info.name).to eq(induction_record.schedule.name)
+              expect(historic_record.schedule_info.identifier).to eq(induction_record.schedule.schedule_identifier)
+              expect(historic_record.schedule_info.cohort_year).to eq(induction_record.schedule.cohort.start_year)
               expect(historic_record.preferred_identity_email).to eq(induction_record.preferred_identity.email)
               expect(historic_record.training_status).to eq(induction_record.training_status)
               expect(historic_record.induction_status).to eq(induction_record.induction_status)
               expect(historic_record.training_programme).to eq(induction_record.induction_programme.training_programme)
-              expect(historic_record.training_provider_info.lead_provider_id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
-              expect(historic_record.training_provider_info.lead_provider_name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
-              expect(historic_record.training_provider_info.delivery_partner_id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
-              expect(historic_record.training_provider_info.delivery_partner_name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
+              expect(historic_record.training_provider_info.lead_provider_info.id).to eq(induction_record.induction_programme.partnership.lead_provider_id)
+              expect(historic_record.training_provider_info.lead_provider_info.name).to eq(induction_record.induction_programme.partnership.lead_provider.name)
+              expect(historic_record.training_provider_info.delivery_partner_info.id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
+              expect(historic_record.training_provider_info.delivery_partner_info.name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
               expect(historic_record.training_provider_info.cohort_year).to eq(induction_record.induction_programme.partnership.cohort.start_year)
             end
           end
