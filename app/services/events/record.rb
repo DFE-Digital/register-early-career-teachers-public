@@ -446,18 +446,18 @@ module Events
       new(event_type:, author:, heading:, training_period:, teacher:, lead_provider:, metadata:, happened_at:).record_event!
     end
 
-    def self.record_teacher_schedule_changed_event!(author:, original_training_period:, new_training_period:, teacher:, lead_provider:, happened_at: Time.zone.now)
+    def self.record_teacher_schedule_changed_event!(author:, original_training_period:, original_schedule:, new_training_period:, teacher:, lead_provider:, happened_at: Time.zone.now)
       event_type = :teacher_changes_schedule_training_period
       teacher_name = Teachers::Name.new(teacher).full_name
       training_type = (original_training_period.for_ect?) ? "ECT" : "mentor"
-      heading = "#{teacher_name}’s #{training_type} training changed schedule from #{original_training_period.schedule.description} to #{new_training_period.schedule.description} by #{lead_provider.name}"
+      heading = "#{teacher_name}’s #{training_type} training changed schedule from #{original_schedule.description} to #{new_training_period.schedule.description} by #{lead_provider.name}"
       metadata = {
-        new_training_period_id: new_training_period.id,
-        from_schedule_id: original_training_period.schedule.id,
+        training_period_id: new_training_period.id,
+        from_schedule_id: original_schedule.id,
         to_schedule_id: new_training_period.schedule.id,
       }
 
-      new(event_type:, author:, heading:, training_period: original_training_period, schedule: original_training_period.schedule, teacher:, lead_provider:, metadata:, happened_at:).record_event!
+      new(event_type:, author:, heading:, training_period: original_training_period, schedule: original_schedule, teacher:, lead_provider:, metadata:, happened_at:).record_event!
     end
 
     def self.record_teacher_schedule_assigned_to_training_period!(author:, training_period:, teacher:, schedule:, happened_at: Time.zone.now)
