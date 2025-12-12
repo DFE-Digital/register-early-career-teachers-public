@@ -71,7 +71,7 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
   end
 
   def then_i_am_taken_to_the_new_induction_tutor_page
-    expect(page).to have_path("/school/induction-tutors/new-induction-tutor/edit")
+    expect(page).to have_path("/school/induction-tutor/new-induction-tutor/edit")
     expect(page.get_by_text("Tell us your induction tutor")).to be_visible
   end
 
@@ -97,7 +97,7 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page).to have_path("/school/induction-tutors/new-induction-tutor/confirmation")
+    expect(page).to have_path("/school/induction-tutor/new-induction-tutor/confirmation")
   end
 
   def and_i_should_see_a_confirmation_message
@@ -136,7 +136,7 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page).to have_path("/school/induction-tutors/new-induction-tutor/check-answers")
+    expect(page).to have_path("/school/induction-tutor/new-induction-tutor/check-answers")
   end
 
   def and_the_new_name_and_email_should_be_displayed_on_the_check_answers_page

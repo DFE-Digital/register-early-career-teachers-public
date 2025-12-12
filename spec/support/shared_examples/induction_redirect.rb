@@ -115,21 +115,21 @@ end
 RSpec.shared_examples "redirects to confirmation wizard" do
   it "redirects to the wizard" do
     subject
-    expect(response).to redirect_to(schools_induction_tutors_confirm_existing_induction_tutor_wizard_edit_path)
+    expect(response).to redirect_to(schools_induction_tutor_confirm_existing_induction_tutor_wizard_edit_path)
   end
 end
 
 RSpec.shared_examples "redirects to new wizard" do
   it "redirects to the wizard" do
     subject
-    expect(response).to redirect_to(schools_induction_tutors_new_induction_tutor_wizard_edit_path)
+    expect(response).to redirect_to(schools_induction_tutor_new_induction_tutor_wizard_edit_path)
   end
 end
 
 RSpec.shared_examples "does not redirect to wizard" do
   it "does not redirect to either wizard" do
     subject
-    expect(response).not_to redirect_to(schools_induction_tutors_confirm_existing_induction_tutor_wizard_edit_path)
-    expect(response).not_to redirect_to(schools_induction_tutors_new_induction_tutor_wizard_edit_path)
+    expect(response).not_to redirect_to(schools_induction_tutor_confirm_existing_induction_tutor_wizard_edit_path)
+    expect(response).not_to redirect_to(schools_induction_tutor_new_induction_tutor_wizard_edit_path)
   end
 end

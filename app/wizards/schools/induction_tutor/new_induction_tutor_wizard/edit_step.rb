@@ -1,7 +1,7 @@
 module Schools
   module InductionTutor
     module NewInductionTutorWizard
-      class EditStep < ApplicationWizardStep
+      class EditStep < InductionTutor::Step
         delegate :school, :author, :valid_step?, :current_contract_period, to: :wizard
 
         attribute :induction_tutor_email, :string
