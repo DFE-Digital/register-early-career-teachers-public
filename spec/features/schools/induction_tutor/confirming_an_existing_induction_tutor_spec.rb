@@ -136,7 +136,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   end
 
   def then_i_am_taken_to_the_confirm_existing_induction_tutor_page
-    expect(page).to have_path("/school/confirm-existing-induction-tutor/edit")
+    expect(page).to have_path("/school/induction-tutors/confirm-existing-induction-tutor/edit")
     expect(page.get_by_text("Confirm induction tutor details")).to be_visible
   end
 
@@ -170,7 +170,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    expect(page).to have_path("/school/confirm-existing-induction-tutor/confirmation")
+    expect(page).to have_path("/school/induction-tutors/confirm-existing-induction-tutor/confirmation")
   end
 
   def and_i_should_see_a_confirmation_message
@@ -226,7 +226,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
-    expect(page).to have_path("/school/confirm-existing-induction-tutor/check-answers")
+    expect(page).to have_path("/school/induction-tutors/confirm-existing-induction-tutor/check-answers")
   end
 
   def and_the_new_email_should_be_displayed_on_the_check_answers_page
