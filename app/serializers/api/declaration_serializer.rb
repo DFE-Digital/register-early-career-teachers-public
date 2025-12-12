@@ -16,6 +16,7 @@ class API::DeclarationSerializer < Blueprinter::Base
 
     field(:state) do |declaration|
       status = declaration.overall_status
+      # This is for ecf1 consistency as "submitted" has been renamed to "no_payment" on rect
       status == "no_payment" ? "submitted" : status
     end
 
