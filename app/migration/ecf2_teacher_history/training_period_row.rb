@@ -73,7 +73,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
   end
 
   def delivery_partner
-    return unless delivery_partner_info.present?
+    return if delivery_partner_info.blank?
 
     DeliveryPartner.find_by!(api_id: delivery_partner_info.id)
   end
