@@ -111,8 +111,8 @@ RSpec.describe API::Schools::Query, :with_metadata do
       describe "by `contract_period_year`" do
         let!(:contract_period) { another_contract_period }
         let!(:school1) { FactoryBot.create(:school, :eligible) }
-        let!(:school2) { FactoryBot.create(:school) }
-        let!(:school3) { FactoryBot.create(:school) }
+        let!(:school2) { FactoryBot.create(:school, :ineligible) }
+        let!(:school3) { FactoryBot.create(:school, :ineligible) }
         let(:another_contract_period) { FactoryBot.create(:contract_period) }
         let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: another_contract_period) }
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }

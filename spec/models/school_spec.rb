@@ -92,8 +92,6 @@ describe School do
       administrative_district_name
       closed_on
       establishment_number
-      funding_eligibility
-      induction_eligibility
       in_england
       local_authority_code
       local_authority_name
@@ -401,6 +399,29 @@ describe School do
           [lead_provider.id, contract_period.year]
         )
       end
+    end
+  end
+
+  describe "#eligible?" do
+    subject { school.eligible? }
+
+    let(:school) { FactoryBot.build(:school) }
+    let(:gias_eligible?) { false }
+
+    before { allow(school.gias_school).to receive(:eligible?).and_return(gias_eligible?) }
+
+    it { is_expected.to be(false) }
+
+    context "when the GIAS school is eligible" do
+      let(:gias_eligible?) { true }
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when the school has been marked as eligible" do
+      before { school.marked_as_eligible = true }
+
+      it { is_expected.to be(true) }
     end
   end
 end

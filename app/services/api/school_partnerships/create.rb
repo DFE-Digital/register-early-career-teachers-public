@@ -16,7 +16,6 @@ module API::SchoolPartnerships
     validate :contract_period_enabled
     validate :lead_provider_exists
     validate :school_exists
-    validate :school_is_not_cip_only
     validate :school_is_eligible
     validate :delivery_partner_exists
     validate :lead_provider_delivery_partnership_exists
@@ -75,16 +74,10 @@ module API::SchoolPartnerships
       errors.add(:school_api_id, "The '#/school_api_id' you have entered is invalid. Check school details and try again. Contact the DfE for support if you are unable to find the '#/school_api_id'.") unless school
     end
 
-    def school_is_not_cip_only
-      return if errors[:school_api_id].any?
-
-      errors.add(:school_api_id, "The school you have entered has not registered to deliver DfE-funded training. Contact the school for more information.") if school&.eligible_for_cip?
-    end
-
     def school_is_eligible
       return if errors[:school_api_id].any?
 
-      errors.add(:school_api_id, "The school you have entered is currently ineligible for DfE funding. Contact the school for more information.") unless school&.eligible_for_fip?
+      errors.add(:school_api_id, "The school you have entered is currently ineligible for DfE funding. Contact the school for more information.") unless school&.eligible?
     end
 
     def school_partnership_does_not_already_exists

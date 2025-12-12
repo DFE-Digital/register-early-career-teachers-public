@@ -146,7 +146,6 @@
   - urn
   - name
   - status
-  - funding_eligibility
   - address_line1
   - address_line2
   - address_line3
@@ -166,8 +165,8 @@
   - type_name
   - ukprn
   - website
-  - induction_eligibility
   - in_england
+  - eligible
   :users:
   - id
   - name
@@ -219,6 +218,7 @@
   - induction_tutor_name
   - induction_tutor_email
   - api_id
+  - marked_as_eligible
   :school_partnerships:
   - id
   - created_at

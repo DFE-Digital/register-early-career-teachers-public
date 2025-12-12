@@ -1,7 +1,7 @@
 module APISeedData
   class Schools < Base
     NUMBER_OF_RECORDS = 100
-    SCHOOL_TYPES = %i[independent state_funded eligible ineligible cip_only not_cip_only].freeze
+    SCHOOL_TYPES = %i[independent state_funded eligible ineligible].freeze
 
     def plant
       return unless plantable?

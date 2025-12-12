@@ -1,8 +1,6 @@
 FactoryBot.define do
   factory(:gias_school, class: GIAS::School) do
-    eligible_for_registration
-    eligible_for_fip
-    induction_eligible
+    eligible
     not_section_41
 
     local_authority_code { Faker::Number.within(range: 1..999) }
@@ -13,51 +11,22 @@ FactoryBot.define do
     ukprn { Faker::Number.unique.within(range: 1_000_000..99_999_999).to_s }
 
     # eligibility to be registered in the service
-    trait(:eligible_for_registration) do
+    trait(:eligible) do
       open
       in_england
+      eligible { true }
 
       if [true, false].sample
         eligible_type
       else
-        not_eligible_type
         independent_school_type
         section_41
       end
     end
 
-    # cip_only
-    trait(:cip_only) do
-      cip_only_type
-      not_section_41
-      [true, false].sample ? eligible_for_cip : funding_ineligible
-    end
-
-    trait(:not_cip_only) do
-      not_cip_only_type
-      [true, false].sample ? eligible_for_fip : funding_ineligible
-    end
-
-    # funding_eligibility
-    trait(:eligible_for_fip) do
-      funding_eligibility { "eligible_for_fip" }
-    end
-
-    trait(:eligible_for_cip) do
-      funding_eligibility { "eligible_for_cip" }
-    end
-
-    trait(:funding_ineligible) do
-      funding_eligibility { "ineligible" }
-    end
-
-    # induction_eligibility
-    trait(:induction_eligible) do
-      induction_eligibility { true }
-    end
-
-    trait(:induction_ineligible) do
-      induction_eligibility { false }
+    trait(:ineligible) do
+      not_eligible_type
+      eligible { false }
     end
 
     # section 41 approved
@@ -90,14 +59,6 @@ FactoryBot.define do
     end
 
     # type code
-    trait(:cip_only_type) do
-      type_name { GIAS::Types::CIP_ONLY_TYPES.sample }
-    end
-
-    trait(:not_cip_only_type) do
-      type_name { (GIAS::Types::ALL_TYPES - GIAS::Types::CIP_ONLY_TYPES).sample }
-    end
-
     trait(:eligible_type) do
       type_name { GIAS::Types::ELIGIBLE_TYPES.sample }
     end
