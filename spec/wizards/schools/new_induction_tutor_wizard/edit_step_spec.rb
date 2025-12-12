@@ -15,8 +15,8 @@ describe Schools::NewInductionTutorWizard::EditStep do
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
 
-  let(:induction_tutor_email) { "New Name" }
-  let(:induction_tutor_name) { "new.email@example.com" }
+  let(:induction_tutor_email) { "new.email@example.com" }
+  let(:induction_tutor_name) { "New Name" }
 
   let(:params) { { induction_tutor_email:, induction_tutor_name: } }
 
@@ -107,7 +107,7 @@ describe Schools::NewInductionTutorWizard::EditStep do
       end
     end
 
-    context "when the name is valid" do
+    context "when the name and email are valid" do
       it "is valid" do
         expect(current_step).to be_valid
         expect(current_step.errors).to be_empty
