@@ -9,10 +9,12 @@ class ECF2TeacherHistory::TrainingPeriodRow
               :deferred_at,
               :deferral_reason,
               :withdrawn_at,
-              :withdrawal_reason
+              :withdrawal_reason,
+              :created_at
 
   def initialize(started_on:,
                  finished_on:,
+                 created_at:,
                  training_programme:,
                  lead_provider_info: nil,
                  delivery_partner_info: nil,
@@ -24,6 +26,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
                  withdrawal_reason: nil)
     @started_on = started_on
     @finished_on = finished_on
+    @created_at = created_at
     @training_programme = training_programme
     @lead_provider_info = lead_provider_info
     @delivery_partner_info = delivery_partner_info
@@ -44,6 +47,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
       finished_on:,
       training_programme:,
       schedule: ecf2_schedule,
+      created_at:
       # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
       # deferred_at:,
       # deferral_reason:,

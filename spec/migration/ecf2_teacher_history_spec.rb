@@ -12,6 +12,7 @@ describe ECF2TeacherHistory do
   let(:school_a_data) { ECF2TeacherHistory::SchoolData.new(urn: 111_111, name: "School A") }
   let(:school_b_data) { ECF2TeacherHistory::SchoolData.new(urn: 222_222, name: "School B") }
   let(:mentor_data) { ECF2TeacherHistory::MentorData.new(trn: "1234567", urn: "123456", started_on: 1.week.ago, finished_on: 1.day.ago) }
+  let(:created_at) { 1.month.ago.round }
 
   let(:mentorship_period_rows) do
     [
@@ -30,6 +31,7 @@ describe ECF2TeacherHistory do
       ECF2TeacherHistory::TrainingPeriodRow.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
+        created_at:,
         training_programme: :provider_led
       ),
     ]
@@ -183,6 +185,7 @@ describe ECF2TeacherHistory do
             ECF2TeacherHistory::TrainingPeriodRow.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
+              created_at:,
               training_programme: :provider_led,
               lead_provider_info:,
               delivery_partner_info:,
@@ -212,6 +215,7 @@ describe ECF2TeacherHistory do
             ECF2TeacherHistory::TrainingPeriodRow.new(
               started_on: 1.month.ago.to_date,
               finished_on: 1.week.ago.to_date,
+              created_at:,
               training_programme: :school_led
             )
           end
@@ -260,6 +264,7 @@ describe ECF2TeacherHistory do
                   expect(p1_tp.lead_provider).to eql(lead_provider)
                   expect(p1_tp.contract_period).to eql(contract_period)
                   expect(p1_tp.schedule).to eql(schedule)
+                  expect(p1_tp.created_at).to eql(created_at)
                   # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
                   # expect(p1_tp.withdrawn_at).to eql(1.month.ago.round(2))
                   # expect(p1_tp.withdrawal_reason).to eql("switched_to_school_led")
@@ -282,6 +287,7 @@ describe ECF2TeacherHistory do
                 p2.training_periods.first!.tap do |p2_tp|
                   expect(p2_tp.started_on).to eql(1.month.ago.to_date)
                   expect(p2_tp.finished_on).to eql(1.week.ago.to_date)
+                  expect(p2_tp.created_at).to eql(created_at)
                   expect(p2_tp.training_programme).to eql("school_led")
                   expect(p2_tp.schedule).to be_nil
                 end
@@ -463,6 +469,7 @@ describe ECF2TeacherHistory do
             ECF2TeacherHistory::TrainingPeriodRow.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
+              created_at:,
               training_programme: :provider_led,
               lead_provider_info:,
               delivery_partner_info:,
