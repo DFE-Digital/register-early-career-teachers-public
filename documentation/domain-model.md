@@ -96,9 +96,11 @@ erDiagram
     string induction_tutor_name
     citext induction_tutor_email
     uuid api_id
+    integer induction_tutor_last_nominated_in
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
+  School }o--|| ContractPeriod : belongs_to
   Schedule {
     integer id
     integer contract_period_year
@@ -310,7 +312,7 @@ erDiagram
     integer mentorship_period_id
     integer payment_statement_id
     integer clawback_statement_id
-    datetime voided_at
+    datetime voided_by_user_at
     uuid api_id
     datetime declaration_date
     enum evidence_type

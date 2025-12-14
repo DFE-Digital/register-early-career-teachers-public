@@ -11,7 +11,7 @@ FactoryBot.define do
     trait :voided_by_user do
       payment_status { :voided }
       voided_by_user { FactoryBot.create(:user) }
-      voided_at { Time.zone.now }
+      voided_by_user_at { Time.zone.now }
     end
 
     trait :no_payment do
