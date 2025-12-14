@@ -44,6 +44,7 @@ RSpec.describe "Partnerships API", type: :request do
     let(:resource_type) { SchoolPartnership }
     let(:delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
     let(:school) { FactoryBot.create(:school, :eligible) }
+
     let(:service_args) do
       {
         lead_provider_id: active_lead_provider.lead_provider_id,
@@ -52,6 +53,7 @@ RSpec.describe "Partnerships API", type: :request do
         delivery_partner_api_id: delivery_partnership.delivery_partner.api_id,
       }
     end
+
     let(:params) do
       {
         data: {
@@ -75,16 +77,19 @@ RSpec.describe "Partnerships API", type: :request do
     let(:resource_type) { SchoolPartnership }
     let(:resource) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+
     let(:other_delivery_partner) do
       other_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
       other_delivery_partnership.delivery_partner
     end
+
     let(:service_args) do
       {
         school_partnership_id: resource.id,
         delivery_partner_api_id: other_delivery_partner.api_id,
       }
     end
+
     let(:params) do
       {
         data: {

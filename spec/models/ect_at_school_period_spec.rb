@@ -100,8 +100,8 @@ describe ECTAtSchoolPeriod do
     end
 
     describe ".current_or_next_mentorship_period" do
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: nil) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school) }
       let(:mentorship_started_on) { 3.weeks.ago }
       let(:mentorship_finished_on) { nil }
 
@@ -154,8 +154,8 @@ describe ECTAtSchoolPeriod do
     describe ".latest_mentorship_period" do
       subject { ect_at_school_period.latest_mentorship_period }
 
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school) }
       let(:mentorship_started_on) { 3.weeks.ago }
       let(:mentorship_finished_on) { nil }
       let!(:latest_mentorship_period) do
