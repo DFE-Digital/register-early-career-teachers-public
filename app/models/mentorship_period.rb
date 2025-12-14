@@ -70,6 +70,11 @@ private
   end
 
   def mentor_and_mentee_periods_are_at_same_school
+    # A MentorshipPeriod must link a mentor-at-school period and an ECT-at-school period
+    # that belong to the same school.
+    #
+    # This validation is scoped to the at-school periods, not the teachers themselves:
+    # a mentor may mentor at different schools in different periods.
     return if mentor.school_id == mentee.school_id
 
     errors.add(:base, "Mentor and mentee periods must belong to the same school")

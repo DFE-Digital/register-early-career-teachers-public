@@ -15,7 +15,7 @@ RSpec.describe APISeedData::Schools do
     it "creates the correct quantity of schools" do
       instance.plant
 
-      expect(School.all.size).to eq(described_class::NUMBER_OF_RECORDS)
+      expect(School.count).to eq(described_class::NUMBER_OF_RECORDS)
     end
 
     it "does not create data when already present" do

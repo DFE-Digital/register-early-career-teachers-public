@@ -76,7 +76,7 @@ FactoryBot.define do
     end
 
     trait(:with_school) do
-      school { build_school }
+      association :school
     end
   end
 end
