@@ -4,7 +4,8 @@ module MentorshipPeriodHelpers
     mentor_school_partnership: mentee_school_partnership,
     mentee: FactoryBot.create(:teacher, :with_realistic_name),
     mentor: FactoryBot.create(:teacher, :with_realistic_name),
-    create_mentor_training_period: true
+    create_mentor_training_period: true,
+    refresh_metadata: false
   )
     # Mentorship periods must be within the same school
     # (mirrors MentorshipPeriod model validation)
@@ -13,17 +14,20 @@ module MentorshipPeriodHelpers
             "#{mentor_school_partnership.school_id} vs #{mentee_school_partnership.school_id}"
     end
 
+    school = mentee_school_partnership.school
+
     mentee_school_period = FactoryBot.create(
       :ect_at_school_period,
       :ongoing,
       teacher: mentee,
-      school: mentee_school_partnership.school,
+      school:,
       started_on: 2.months.ago
     )
 
     FactoryBot.create(
       :training_period,
       :for_ect,
+      :ongoing,
       started_on: 1.month.ago,
       ect_at_school_period: mentee_school_period,
       school_partnership: mentee_school_partnership
@@ -33,7 +37,7 @@ module MentorshipPeriodHelpers
       :mentor_at_school_period,
       :ongoing,
       teacher: mentor,
-      school: mentor_school_partnership.school,
+      school:,
       started_on: 2.months.ago
     )
 
@@ -41,17 +45,28 @@ module MentorshipPeriodHelpers
       FactoryBot.create(
         :training_period,
         :for_mentor,
+        :ongoing,
         started_on: 1.month.ago,
         mentor_at_school_period: mentor_school_period,
         school_partnership: mentor_school_partnership
       )
     end
 
-    FactoryBot.create(
+    mentor.update!(api_id: SecureRandom.uuid) if mentor.api_id.blank?
+    mentee.update!(api_id: SecureRandom.uuid) if mentee.api_id.blank?
+
+    mentorship_period = FactoryBot.create(
       :mentorship_period,
       :ongoing,
       mentee: mentee_school_period,
       mentor: mentor_school_period
     )
+
+    if refresh_metadata
+      Metadata::Handlers::Teacher.new(mentor).refresh_metadata!
+      Metadata::Handlers::Teacher.new(mentee).refresh_metadata!
+    end
+
+    mentorship_period
   end
 end

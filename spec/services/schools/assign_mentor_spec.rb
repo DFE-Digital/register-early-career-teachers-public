@@ -20,7 +20,7 @@ RSpec.describe Schools::AssignMentor do
       end
 
       context "when there is a mentorship period" do
-        let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on) }
+        let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on, school: mentee.school) }
         let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: mentorship_period_started_on) }
 
         context "current mentorship starts in the future" do
@@ -132,7 +132,7 @@ RSpec.describe Schools::AssignMentor do
 
     context "when the new mentor is not moving schools" do
       context "when there is a mentorship period" do
-        let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: mentor_started_on) }
+        let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: mentee.school, started_on: mentor_started_on) }
         let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: mentorship_period_started_on) }
 
         context "current mentorship starts in the future" do
@@ -252,7 +252,7 @@ RSpec.describe Schools::AssignMentor do
 
       context "when only the mentor is scheduled to leave" do
         let(:mentor_finish_date) { 3.months.from_now.to_date }
-        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date) }
+        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date, school: mentee.school) }
 
         it "sets finished_on to the mentor finish date" do
           service.assign!
@@ -265,7 +265,7 @@ RSpec.describe Schools::AssignMentor do
         let(:ect_finish_date) { 2.months.from_now.to_date }
         let(:mentor_finish_date) { 3.months.from_now.to_date }
         let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: mentee_started_on, finished_on: ect_finish_date) }
-        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date) }
+        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date, school: mentee.school) }
 
         it "sets finished_on to the earliest finish date" do
           service.assign!
@@ -278,7 +278,7 @@ RSpec.describe Schools::AssignMentor do
         let(:ect_finish_date) { 3.months.from_now.to_date }
         let(:mentor_finish_date) { 2.months.from_now.to_date }
         let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: mentee_started_on, finished_on: ect_finish_date) }
-        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date) }
+        let(:new_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: mentor_started_on, finished_on: mentor_finish_date, school: mentee.school) }
 
         it "sets finished_on to the mentor finish date" do
           service.assign!
