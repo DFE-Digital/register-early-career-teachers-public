@@ -60,7 +60,7 @@ def describe_induction_period(ip)
   if ip.finished_on
     FactoryBot.create(
       :event,
-      event_type: "induction_period_opened",
+      event_type: "induction_period_closed",
       induction_period: ip,
       teacher: ip.teacher,
       appropriate_body: ip.appropriate_body,
@@ -100,20 +100,10 @@ end
 def describe_mentor_at_school_period(sp)
   suffix = "(mentor at school period)"
 
-  print_seed_info("* was a mentor at #{sp.school.name} from #{sp.started_on} #{describe_period_duration(sp)} #{suffix}", indent: 4)
+  print_seed_info("* was a mentor at #{sp.school.name} #{describe_period_duration(sp)} #{suffix}", indent: 4)
 end
 
 def create_same_school_mentorship!(mentor:, mentee:, started_on:, finished_on:)
-  mentor_school = mentor.school
-  mentee_school = mentee.school
-
-  if mentor_school.id != mentee_school.id
-    raise(
-      "Seed bug: mentor #{teacher_name(mentor.teacher)} at #{mentor_school.name} " \
-      "and mentee #{teacher_name(mentee.teacher)} at #{mentee_school.name} are at different schools"
-    )
-  end
-
   FactoryBot.create(
     :mentorship_period,
     mentor:,
@@ -150,10 +140,9 @@ def find_school_partnership(delivery_partner:, lead_provider:, contract_period:)
     )
 end
 
-cp_2022 = ContractPeriod.find_by(year: 2022)
-cp_2023 = ContractPeriod.find_by(year: 2023)
-_cp_2024 = ContractPeriod.find_by(year: 2024)
-cp_2025 = ContractPeriod.find_by(year: 2025)
+cp_2022 = ContractPeriod.find_by!(year: 2022)
+cp_2023 = ContractPeriod.find_by!(year: 2023)
+cp_2025 = ContractPeriod.find_by!(year: 2025)
 
 ambition_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambition_institute)
 ambition_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambition_institute)
@@ -890,36 +879,6 @@ FactoryBot.create(:training_period,
                   finished_on: nil,
                   school_partnership: ambition_artisan_partnership_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
-
-[hugh_laurie_mentoring_at_abbey_grove, hugh_grant_ect_at_abbey_grove].each do |period|
-  period.reload
-  period.update!(school: abbey_grove_school)
-end
-
-[andre_roussimoff_mentoring_at_ackley_bridge, kate_winslet_ect_at_ackley_bridge].each do |period|
-  period.reload
-  period.update!(school: ackley_bridge)
-end
-
-[helen_mirren_mentoring_at_brookfield_school, stephen_fry_ect_at_brookfield_school].each do |period|
-  period.reload
-  period.update!(school: brookfield_school)
-end
-
-[
-  john_withers_mentoring_at_abbey_grove,
-  joan_sims_ect_at_abbey_grove_school,
-  hattie_jacques_ect_at_abbey_grove_school,
-  frankie_howard_at_abbey_grove
-].each do |period|
-  period.reload
-  period.update!(school: abbey_grove_school)
-end
-
-[george_cole_at_mallory_towers, imogen_stubbs_at_malory_towers].each do |period|
-  period.reload
-  period.update!(school: mallory_towers)
-end
 
 print_seed_info("Adding mentorships:")
 

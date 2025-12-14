@@ -252,7 +252,7 @@ RSpec.describe Schedules::Find do
       let(:provider_led_start_date) { Date.new(year, 12, 1) }
       let(:previous_start_date) { Date.new(year, 7, 1) }
 
-      let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
+      let(:mentee) { FactoryBot.create(:ect_at_school_period, school:, started_on: previous_start_date, finished_on: 1.day.ago) }
       let(:schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-september") }
 
       before do
@@ -283,7 +283,7 @@ RSpec.describe Schedules::Find do
       context "when the mentee has previously received provider-led training" do
         context "when there is one previous mentor with a training period" do
           let!(:mentee_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date, ect_at_school_period: mentee) }
-          let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: previous_start_date, finished_on: 1.day.ago) }
+          let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on: previous_start_date, finished_on: 1.day.ago) }
           let!(:mentorship_period) { FactoryBot.create(:mentorship_period, started_on: previous_start_date, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
           let!(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: previous_start_date, mentor_at_school_period: previous_mentor) }
 
@@ -323,8 +323,8 @@ RSpec.describe Schedules::Find do
           let(:first_date) { Date.new(year, 7, 1) }
           let(:second_date) { Date.new(year, 7, 15) }
 
-          let(:first_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: first_date, finished_on: second_date) }
-          let(:second_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: first_date, finished_on: 1.day.ago) }
+          let(:first_mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on: first_date, finished_on: second_date) }
+          let(:second_mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on: first_date, finished_on: 1.day.ago) }
           let!(:first_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: first_date, mentor_at_school_period: first_mentor) }
           let!(:second_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: second_date, mentor_at_school_period: second_mentor) }
 

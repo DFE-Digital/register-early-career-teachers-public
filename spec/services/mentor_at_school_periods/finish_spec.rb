@@ -9,7 +9,7 @@ describe MentorAtSchoolPeriods::Finish do
 
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: mentor_at_school_period.school) }
   let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
 
   describe "#finish_existing_at_school_periods!" do

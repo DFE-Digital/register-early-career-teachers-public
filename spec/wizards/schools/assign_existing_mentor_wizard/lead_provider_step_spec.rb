@@ -107,7 +107,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
     end
 
     context "when the mentee has previously started training with another mentor" do
-      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on:, finished_on: started_on + 2.months) }
+      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: started_on + 2.months) }
       let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on:, mentor_at_school_period: previous_mentor) }
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: Date.current) }
 
