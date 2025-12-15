@@ -168,7 +168,7 @@ RSpec.describe API::Declarations::Query do
             let!(:declaration5) do
               create_declaration(
                 training_period: training_period1,
-                declaration_type: "retained-3",
+                declaration_type: "retained-4",
                 declaration_date: training_period3.started_on.next_day
               )
             end
