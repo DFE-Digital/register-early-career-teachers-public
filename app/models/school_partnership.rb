@@ -7,12 +7,14 @@ class SchoolPartnership < ApplicationRecord
   has_many :events
   has_many :ongoing_training_periods, -> { ongoing_today }, class_name: "TrainingPeriod"
   has_many :training_periods
+  has_many :declarations, through: :training_periods
   has_one :active_lead_provider, through: :lead_provider_delivery_partnership
   has_one :delivery_partner, through: :lead_provider_delivery_partnership
   has_one :contract_period, through: :active_lead_provider
   has_one :lead_provider, through: :active_lead_provider
 
   touch -> { self }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+  touch -> { declarations }, when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
   refresh_metadata -> { school }, on_event: %i[create destroy update]
 
   # Validations

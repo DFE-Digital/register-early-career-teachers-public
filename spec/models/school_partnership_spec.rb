@@ -1,16 +1,23 @@
 describe SchoolPartnership do
   describe "declarative updates" do
-    describe "declarative touch" do
+    def will_change_attribute(attribute_to_change:, new_value:)
+      FactoryBot.create(:lead_provider_delivery_partnership, id: new_value) if attribute_to_change == :lead_provider_delivery_partnership
+    end
+
+    describe "declarative touch target self" do
       let(:instance) { FactoryBot.create(:school_partnership) }
       let(:target) { instance }
 
-      def will_change_attribute(attribute_to_change:, new_value:)
-        FactoryBot.create(:lead_provider_delivery_partnership, id: new_value) if attribute_to_change == :lead_provider_delivery_partnership
-      end
+      it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
+    end
 
-      it_behaves_like "a declarative touch model",
-                      when_changing: %i[lead_provider_delivery_partnership_id],
-                      timestamp_attribute: :api_updated_at
+    describe "declarative touch target declarations" do
+      let(:instance) { FactoryBot.create(:school_partnership) }
+      let(:training_period) { FactoryBot.create(:training_period, school_partnership: instance) }
+      let!(:declaration) { FactoryBot.create(:declaration, training_period:) }
+      let(:target) { instance.declarations }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[lead_provider_delivery_partnership_id], timestamp_attribute: :api_updated_at
     end
 
     describe "declarative metadata" do
@@ -31,6 +38,7 @@ describe SchoolPartnership do
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_many(:training_periods) }
+    it { is_expected.to have_many(:declarations).through(:training_periods) }
 
     describe "#ongoing_training_periods" do
       subject { instance.ongoing_training_periods }
