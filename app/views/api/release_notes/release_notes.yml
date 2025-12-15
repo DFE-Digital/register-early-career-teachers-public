@@ -32,7 +32,7 @@
 
     ### No changes to endpoint behaviour
     The unfunded mentors endpoint works in the same way as it does in the current service. It returns mentors who are not trained by the lead provider but who need access to that provider’s learning platform because they mentor an ECT trained by the provider.
-
+While the endpoint behaviour is unchanged, some results returned in the production environment may differ from the existing service due to known data issues.
     ### We are not going ahead with the change proposed in the draft API specification
     Section 18.1 of the draft specification proposed expanding the unfunded mentors endpoint to include more mentors who currently appear in the participants endpoint. We are not making this change.
 
@@ -42,6 +42,9 @@
     Keeping the endpoint unchanged avoids introducing additional records that would increase lead provider workload and create mismatches between the new and existing APIs.
 
     ## Impact on lead providers
+    These changes should have minimal impact:
+    * you should test this endpoint in the Register ECTs sandbox
+    * no changes are needed to existing integrations
     * You should test this endpoint in the Register ECTs sandbox.
     * No changes are needed to existing integrations, as the endpoint behaviour remains the same.
 
