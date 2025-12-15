@@ -442,4 +442,26 @@ describe Declaration do
       it { expect(declaration.uplift_paid?).to be(false) }
     end
   end
+
+  describe "#voidable_payment?" do
+    Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
+      context "when payment_status is `#{status}`" do
+        subject(:declaration) do
+          FactoryBot.build_stubbed(:declaration, payment_status: status)
+        end
+
+        it { is_expected.to be_voidable_payment }
+      end
+    end
+
+    Declaration.payment_statuses.values.excluding(Declaration::VOIDABLE_PAYMENT_STATUSES).each do |status|
+      context "when payment_status is `#{status}`" do
+        subject(:declaration) do
+          FactoryBot.build_stubbed(:declaration, payment_status: status)
+        end
+
+        it { is_expected.not_to be_voidable_payment }
+      end
+    end
+  end
 end

@@ -2,6 +2,7 @@ class Declaration < ApplicationRecord
   include DeclarativeUpdates
 
   BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES = %w[no_payment eligible payable paid].freeze
+  VOIDABLE_PAYMENT_STATUSES = %w[no_payment eligible payable ineligible].freeze
 
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
@@ -132,6 +133,8 @@ class Declaration < ApplicationRecord
       payment_status_paid? &&
       (sparsity_uplift || pupil_premium_uplift)
   end
+
+  def voidable_payment? = payment_status.in?(VOIDABLE_PAYMENT_STATUSES)
 
 private
 
