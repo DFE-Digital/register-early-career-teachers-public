@@ -29,31 +29,8 @@ module Migrators
     end
 
     def migrate_one!(teacher_profile)
-      teacher = migrate_teacher!(teacher_profile)
-
-      teacher_profile
-        .participant_profiles
-        .eager_load(participant_profile_states: :cpd_lead_provider,
-                    induction_records: [schedule: :cohort,
-                                        induction_programme: [
-                                          partnership: %i[cohort lead_provider delivery_partner school],
-                                          school_cohort: :school
-                                        ]])
-        .find_each do |participant_profile|
-          migrate_profile_periods(teacher, participant_profile)
-        end
-
-      teacher
-    end
-
-    # FIXME: eventually replaces #migrate_one, placeholder for now
-    def migrate_one_record!(teacher_profile)
-      user = teacher_profile.user
-
-      ecf1_teacher_history = ECF1TeacherHistory.build(user:, teacher_profile:, induction_records:)
-
+      ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
       ecf2_teacher_history = TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2!
-
       ecf2_teacher_history.save_all!
     end
 
