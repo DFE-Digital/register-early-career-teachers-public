@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_14_090653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -169,7 +169,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.bigint "mentorship_period_id"
     t.bigint "payment_statement_id"
     t.bigint "clawback_statement_id"
-    t.datetime "voided_at"
+    t.datetime "voided_by_user_at"
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "declaration_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.enum "evidence_type", enum_type: "evidence_types"
