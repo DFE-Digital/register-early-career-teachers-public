@@ -81,15 +81,16 @@ private
       school: Types::SchoolData.new(urn: ero_declaration.school_urn, name: "Thing"),
       email: ero_declaration.preferred_identity_email,
       training_period_rows: [
-        ECF2TeacherHistory::TrainingPeriodRow.new(**ero_mentor_training_period_attributes(ero_declaration, start_date, end_date))
+        ECF2TeacherHistory::TrainingPeriodRow.new(**ero_mentor_training_period_attributes(mentor, ero_declaration, start_date, end_date))
       ]
     )
   end
 
-  def ero_mentor_training_period_attributes(ero_declaration, start_date, end_date)
+  def ero_mentor_training_period_attributes(mentor, ero_declaration, start_date, end_date)
     {
       started_on: start_date,
       finished_on: end_date,
+      created_at: mentor.created_at,
       training_programme: "provider_led",
       lead_provider_info: ero_declaration.training_provider_info.lead_provider_info,
       delivery_partner_info: ero_declaration.training_provider_info.delivery_partner_info,
