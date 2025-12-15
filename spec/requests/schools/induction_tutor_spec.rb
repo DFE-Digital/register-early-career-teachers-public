@@ -21,12 +21,16 @@ RSpec.describe "Induction Tutor", :enable_schools_interface do
     end
 
     context "when signed in as a school user" do
-      before { sign_in_as(:school_user, school:) }
+      before do
+        sign_in_as(:school_user, school:)
+        get schools_induction_tutor_path
+      end
 
       it "returns ok" do
-        get schools_induction_tutor_path
-
         expect(response).to have_http_status(:ok)
+      end
+
+      it "shows the induction tutor name and email address" do
         expect(response.body).to include(school.induction_tutor_name)
         expect(response.body).to include(school.induction_tutor_email)
       end
