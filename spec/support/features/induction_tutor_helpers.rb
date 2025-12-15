@@ -1,5 +1,9 @@
 module Features
   module InductionTutorHelpers
+    def and_i_sign_in_as_that_school_user
+      sign_in_as_school_user(school: @school)
+    end
+
     def and_there_are_contract_periods
       @previous_contract_period = FactoryBot.create(:contract_period, :previous, :with_schedules)
       @current_contract_period  = FactoryBot.create(:contract_period, :current,  :with_schedules)
@@ -11,14 +15,6 @@ module Features
 
     def and_the_details_are_confirmed_for_the_current_contract_period
       @school.update(induction_tutor_last_nominated_in: @current_contract_period)
-    end
-
-    def and_i_sign_in_as_that_school_user
-      sign_in_as_school_user(school: @school)
-    end
-
-    def and_i_click_continue
-      page.get_by_role("button", name: "Continue").click
     end
 
     def when_i_click_continue_from_confirmation_page
