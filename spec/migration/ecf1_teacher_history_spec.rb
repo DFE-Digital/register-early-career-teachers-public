@@ -118,4 +118,50 @@ describe ECF1TeacherHistory do
       end
     end
   end
+
+  describe "#build for ERO mentor (no induction records but has billable declaration)" do
+    subject(:history) { described_class.build(teacher_profile:) }
+
+    let(:mentor_profile) { FactoryBot.create(:migration_participant_profile, :mentor) }
+    let(:teacher_profile) { mentor_profile.teacher_profile }
+    let(:cohort) { mentor_profile.school_cohort.cohort }
+    let!(:cpd_lead_provider) { FactoryBot.create(:migration_cpd_lead_provider) }
+    let!(:delivery_partner) { FactoryBot.create(:migration_delivery_partner) }
+    let!(:declaration) do
+      FactoryBot.create(
+        :migration_participant_declaration,
+        :paid,
+        participant_profile: mentor_profile,
+        cpd_lead_provider:,
+        delivery_partner:,
+        cohort:,
+        declaration_date: Date.new(2021, 10, 15)
+      )
+    end
+
+    it "has no induction records" do
+      expect(history.mentor.induction_records).to be_empty
+    end
+
+    it "populates ero_declaration from the billable declaration" do
+      ero_declaration = history.mentor.ero_declaration
+      expect(ero_declaration).to be_present
+      expect(ero_declaration.declaration_id).to eq(declaration.id)
+      expect(ero_declaration.declaration_date.to_date).to eq(declaration.declaration_date.to_date)
+      expect(ero_declaration.cohort_year).to eq(cohort.start_year)
+      expect(ero_declaration.school_urn).to eq(mentor_profile.school_cohort.school.urn)
+      expect(ero_declaration.training_provider_info.lead_provider_info.ecf1_id).to eq(cpd_lead_provider.lead_provider.id)
+      expect(ero_declaration.training_provider_info.delivery_partner_info.ecf1_id).to eq(delivery_partner.id)
+    end
+
+    context "when mentor has no billable declarations" do
+      before do
+        declaration.update!(state: "voided")
+      end
+
+      it "has no ero_declaration" do
+        expect(history.mentor.ero_declaration).to be_nil
+      end
+    end
+  end
 end

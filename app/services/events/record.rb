@@ -208,6 +208,33 @@ module Events
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end
 
+    def self.record_imported_from_ecf1_event!(
+      author:,
+      teacher:,
+      body:,
+      mentor_at_school_period: nil,
+      ect_at_school_period: nil,
+      training_period: nil,
+      school: nil,
+      happened_at: Time.zone.now
+    )
+      event_type = :import_from_ecf1
+      heading = "Imported from ECF1"
+
+      new(
+        event_type:,
+        author:,
+        teacher:,
+        heading:,
+        body:,
+        mentor_at_school_period:,
+        ect_at_school_period:,
+        training_period:,
+        school:,
+        happened_at:
+      ).record_event!
+    end
+
     def self.record_teacher_trs_deactivated_event!(author:, teacher:, happened_at: Time.zone.now)
       event_type = :teacher_trs_deactivated
       teacher_name = Teachers::Name.new(teacher).full_name

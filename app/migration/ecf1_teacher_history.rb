@@ -17,7 +17,17 @@ class ECF1TeacherHistory
                       :mentor_completion_date,
                       :mentor_completion_reason,
                       :states,
-                      :induction_records)
+                      :induction_records,
+                      :ero_declaration)
+
+  # ERO (Early Rollout) mentors may have no induction records but have billable declarations.
+  # This struct captures the declaration data needed to create periods.
+  EroMentorDeclarationRow = Struct.new(:declaration_id,
+                                       :declaration_date,
+                                       :cohort_year,
+                                       :school_urn,
+                                       :training_provider_info,
+                                       :preferred_identity_email)
 
   ProfileStateRow = Struct.new(:state, :reason, :created_at)
 
@@ -84,6 +94,13 @@ class ECF1TeacherHistory
   end
 
   def self.build_mentor_data(participant_profile:)
+    induction_records = build_induction_record_rows(participant_profile:)
+
+    # For ERO mentors with no induction records, try to build data from billable declarations
+    ero_declaration = if induction_records.empty?
+                        build_ero_mentor_declaration(participant_profile:)
+                      end
+
     Mentor.new(
       participant_profile_id: participant_profile.id,
       created_at: participant_profile.created_at,
@@ -91,7 +108,8 @@ class ECF1TeacherHistory
       mentor_completion_date: participant_profile.mentor_completion_date,
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_record_rows(participant_profile:)
+      induction_records:,
+      ero_declaration:
     )
   end
 
@@ -153,6 +171,44 @@ class ECF1TeacherHistory
       identifier: schedule.schedule_identifier,
       name: schedule.name,
       cohort_year: schedule.cohort.start_year
+    )
+  end
+
+  # Builds ERO mentor declaration data for mentors without induction records
+  # but with billable (paid/clawed_back) declarations
+  def self.build_ero_mentor_declaration(participant_profile:)
+    billable_declaration = participant_profile
+      .participant_declarations
+      .where(state: %w[paid clawed_back])
+      .order(:declaration_date)
+      .first
+
+    return nil unless billable_declaration
+
+    cpd_lead_provider = billable_declaration.cpd_lead_provider
+    ecf_lead_provider = cpd_lead_provider.lead_provider
+
+    training_provider_info = TrainingProviderInfo.new(
+      lead_provider_info: Types::LeadProviderInfo.new(
+        ecf1_id: ecf_lead_provider.id,
+        name: ecf_lead_provider.name
+      ),
+      delivery_partner_info: if billable_declaration.delivery_partner
+                               Types::DeliveryPartnerInfo.new(
+                                 ecf1_id: billable_declaration.delivery_partner.id,
+                                 name: billable_declaration.delivery_partner.name
+                               )
+                             end,
+      cohort_year: billable_declaration.cohort.start_year
+    )
+
+    EroMentorDeclarationRow.new(
+      declaration_id: billable_declaration.id,
+      declaration_date: billable_declaration.declaration_date,
+      cohort_year: billable_declaration.cohort.start_year,
+      school_urn: participant_profile.school_cohort.school.urn,
+      training_provider_info:,
+      preferred_identity_email: participant_profile.participant_identity&.email
     )
   end
 end
