@@ -1,0 +1,17 @@
+<%
+  page_data(
+    title: "#{@wizard.school.induction_tutor_name} is your school’s induction tutor",
+    header: false
+  )
+%>
+
+<%= govuk_panel(title_text: "#{@wizard.school.induction_tutor_name} is your school’s induction tutor") %>
+
+<h2 class="govuk-heading-m">What happens next</h2>
+
+<p class="govuk-body">We’ll send an email to <%= @wizard.school.induction_tutor_name %> at <%= @wizard.school.induction_tutor_email %> to let them know.</p>
+<p class="govuk-body">We’ll also let your school's appropriate body and lead providers know about the change. <%= @wizard.school.induction_tutor_name %> will be their main contact for early career training and induction at your school.</p>
+
+<p class="govuk-body">
+  <%= govuk_button_link_to("Continue", schools_ects_home_path) %>
+</p>
