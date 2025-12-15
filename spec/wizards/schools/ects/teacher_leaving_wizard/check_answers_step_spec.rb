@@ -18,6 +18,10 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::CheckAnswersStep do
   let(:author) { instance_double(User) }
   let(:leaving_on) { { "1" => "2025", "2" => "3", "3" => "1" } }
 
+  before do
+    allow(wizard).to receive(:name_for) { |teacher| Teachers::Name.new(teacher).full_name }
+  end
+
   describe "#previous_step" do
     it { expect(step.previous_step).to eq(:edit) }
   end
@@ -35,6 +39,45 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::CheckAnswersStep do
       let(:leaving_on) { nil }
 
       it { expect(step.leaving_date).to be_nil }
+    end
+  end
+
+  describe "content helpers" do
+    around do |example|
+      travel_to(Date.new(2025, 1, 1)) { example.run }
+    end
+
+    context "when date is today" do
+      let(:leaving_on) { { "1" => "2025", "2" => "1", "3" => "1" } }
+
+      it "returns the present tense variants" do
+        expect(step.leaving_today_or_in_future?).to be(true)
+        expect(step.heading_title).to eq("Confirm that #{step.teacher_full_name} is leaving your school permanently")
+        expect(step.leaving_statement).to eq("You’ve told us that #{step.teacher_full_name} is leaving your school on 1 January 2025.")
+        expect(step.edit_warning_statement).to eq("You will not be able to view or edit #{step.teacher_full_name}’s details after 1 January 2025.")
+      end
+    end
+
+    context "when date is in the future" do
+      let(:leaving_on) { { "1" => "2025", "2" => "1", "3" => "2" } }
+
+      it "returns the future tense variants" do
+        expect(step.leaving_today_or_in_future?).to be(true)
+        expect(step.heading_title).to eq("Confirm that #{step.teacher_full_name} is leaving your school permanently")
+        expect(step.leaving_statement).to eq("You’ve told us that #{step.teacher_full_name} is leaving your school on 2 January 2025.")
+        expect(step.edit_warning_statement).to eq("You will not be able to view or edit #{step.teacher_full_name}’s details after 2 January 2025.")
+      end
+    end
+
+    context "when date is in the past" do
+      let(:leaving_on) { { "1" => "2024", "2" => "12", "3" => "31" } }
+
+      it "returns the past tense variants" do
+        expect(step.leaving_today_or_in_future?).to be(false)
+        expect(step.heading_title).to eq("Confirm that #{step.teacher_full_name} has left your school permanently")
+        expect(step.leaving_statement).to eq("You’ve told us that #{step.teacher_full_name} left your school on 31 December 2024.")
+        expect(step.edit_warning_statement).to eq("You will not be able to view or edit #{step.teacher_full_name}’s details.")
+      end
     end
   end
 
