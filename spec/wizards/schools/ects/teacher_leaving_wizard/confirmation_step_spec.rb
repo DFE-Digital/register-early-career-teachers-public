@@ -47,11 +47,11 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::ConfirmationStep do
     context "when date is today" do
       let(:store_leaving_on) { { "1" => "2025", "2" => "1", "3" => "1" } }
 
-      it "returns the present tense variants" do
-        expect(step.leaving_today_or_in_future?).to be(true)
-        expect(step.heading_title).to eq("Batman will be removed from your school’s ECT list after 1 January 2025")
-        expect(step.training_message).to eq("Batman should continue with their current training programme until their leaving date.")
-        expect(step.notification_message).to eq("We’ll let their appropriate body and lead provider know (if they’re on a provider-led programme) that you’ve told us that they’re leaving your school and are not expected to return. They may contact your school for more information.")
+      it "returns the past tense variants" do
+        expect(step.leaving_in_future?).to be(false)
+        expect(step.heading_title).to eq("Batman has been removed from your school’s ECT list")
+        expect(step.training_message).to be_nil
+        expect(step.notification_message).to eq("We’ll let Batman’s appropriate body and lead provider know (if they’re on a provider-led programme) that you’ve told us that they’ve left your school and are not expected to return. They may contact your school for more information.")
         expect(step.mentor_training_message).to eq("Batman’s mentor can continue their mentor training, even if they do not have other ECTs assigned to them.")
       end
     end
@@ -60,7 +60,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::ConfirmationStep do
       let(:store_leaving_on) { { "1" => "2025", "2" => "1", "3" => "2" } }
 
       it "returns the future tense variants" do
-        expect(step.leaving_today_or_in_future?).to be(true)
+        expect(step.leaving_in_future?).to be(true)
         expect(step.heading_title).to eq("Batman will be removed from your school’s ECT list after 2 January 2025")
         expect(step.training_message).to eq("Batman should continue with their current training programme until their leaving date.")
         expect(step.notification_message).to eq("We’ll let their appropriate body and lead provider know (if they’re on a provider-led programme) that you’ve told us that they’re leaving your school and are not expected to return. They may contact your school for more information.")
@@ -72,7 +72,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::ConfirmationStep do
       let(:store_leaving_on) { { "1" => "2024", "2" => "12", "3" => "31" } }
 
       it "returns the past tense variants" do
-        expect(step.leaving_today_or_in_future?).to be(false)
+        expect(step.leaving_in_future?).to be(false)
         expect(step.heading_title).to eq("Batman has been removed from your school’s ECT list")
         expect(step.training_message).to be_nil
         expect(step.notification_message).to eq("We’ll let Batman’s appropriate body and lead provider know (if they’re on a provider-led programme) that you’ve told us that they’ve left your school and are not expected to return. They may contact your school for more information.")
