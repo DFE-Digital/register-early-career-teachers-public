@@ -32,6 +32,9 @@ describe Declaration do
     it { is_expected.to belong_to(:mentorship_period).optional }
     it { is_expected.to belong_to(:payment_statement).optional }
     it { is_expected.to belong_to(:clawback_statement).optional }
+    it { is_expected.to have_one(:lead_provider).through(:training_period) }
+    it { is_expected.to have_one(:delivery_partner).through(:training_period) }
+    it { is_expected.to have_one(:contract_period).through(:training_period) }
   end
 
   describe "delegations" do
