@@ -19,6 +19,7 @@ class ECF2TeacherHistory
   end
 
   def save_all_ect_data!
+    puts teacher_row.to_hash
     Teacher.create!(**teacher_row).tap do |teacher|
       ect_at_school_period_rows.each do |ect_at_school_period_row|
         ECTAtSchoolPeriod.create!(teacher:, **ect_at_school_period_row).tap do |ect_at_school_period|
