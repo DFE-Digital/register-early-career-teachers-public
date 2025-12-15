@@ -109,6 +109,14 @@ describe ContractPeriod do
     end
   end
 
+  describe "check constraints" do
+    subject { FactoryBot.build(:contract_period, started_on: Date.current, finished_on: Date.current) }
+
+    it "prevents 0 day periods from being written to the database" do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    end
+  end
+
   describe "scopes" do
     describe ".most_recent_first" do
       let!(:period_2022) { FactoryBot.create(:contract_period, year: 2022, started_on: Date.new(2022, 6, 1), finished_on: Date.new(2023, 5, 31)) }

@@ -60,7 +60,7 @@ module Interval
   def valid_date_order?
     return true if incomplete?
 
-    started_on <= finished_on
+    started_on < finished_on
   end
 
   def leaving_today_or_in_future?

@@ -74,6 +74,17 @@ RSpec.describe InductionPeriod do
       end
     end
 
+    describe "check constraints" do
+      subject { FactoryBot.build(:induction_period, teacher:, appropriate_body:, started_on: Date.current, finished_on: Date.current) }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+
+      it "prevents 0 day periods from being written to the database" do
+        expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+      end
+    end
+
     describe "declarative updates" do
       let(:instance) { FactoryBot.create(:induction_period, :pass) }
 

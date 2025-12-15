@@ -14,8 +14,10 @@ RSpec.describe TrainingPeriods::Create do
   include_context "safe_schedules"
 
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:started_on) { mid_year }
-  let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
+  let(:started_on) { Date.new(2025, 9, 1) }
+  let(:finished_on) { mid_year + 1.day }
+  let(:year) { started_on.year }
+  let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -27,7 +29,6 @@ RSpec.describe TrainingPeriods::Create do
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
   let(:expression_of_interest) { nil }
   let(:training_programme) { "provider_led" }
-  let(:finished_on) { mid_year + 1.day }
   let!(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: "ecf-standard-september") }
 
   context "with an ECTAtSchoolPeriod" do
