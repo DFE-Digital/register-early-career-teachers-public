@@ -33,7 +33,17 @@ module DeclarativeUpdates
 
         should_touch = should_touch_based_on_changes && should_touch_based_on_condition
 
-        Array.wrap(instance_exec(&target)).map { it.update_column(timestamp_attribute, Time.zone.now) } if should_touch
+        next unless should_touch
+
+        evaluated_target = instance_exec(&target)
+
+        next unless evaluated_target
+
+        if evaluated_target.respond_to?(:update_all)
+          evaluated_target.update_all(timestamp_attribute => Time.zone.now)
+        else
+          evaluated_target.update_column(timestamp_attribute, Time.zone.now)
+        end
       end
     end
   end
