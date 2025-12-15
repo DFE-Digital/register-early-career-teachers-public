@@ -3,11 +3,13 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::EditStep do
 
   let(:wizard) { instance_double(Schools::Mentors::TeacherLeavingWizard::Wizard, store:, mentor_at_school_period:) }
   let(:mentor_at_school_period) { FactoryBot.build_stubbed(:mentor_at_school_period, started_on: Date.new(2025, 1, 1)) }
+  let(:teacher_name) { Teachers::Name.new(mentor_at_school_period.teacher).full_name }
   let(:store) { FactoryBot.build(:session_repository, form_key: :teacher_leaving_wizard) }
   let(:leaving_on) { { "day" => "1", "month" => "3", "year" => "2025" } }
 
   before do
     allow(wizard).to receive(:valid_step?) { step.valid? }
+    allow(wizard).to receive(:name_for).and_return(teacher_name)
   end
 
   describe "#save!" do
@@ -55,7 +57,9 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::EditStep do
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:leaving_on]).to include("Leaving date must be on or after the start date (1 January 2025)")
+        expect(step.errors[:leaving_on].map(&:squish)).to include(
+          "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a later date."
+        )
       end
     end
   end
