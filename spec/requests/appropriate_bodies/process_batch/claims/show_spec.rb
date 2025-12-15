@@ -1,8 +1,8 @@
 RSpec.describe "Appropriate Body bulk claims show page", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:batch) do
     FactoryBot.create(:pending_induction_submission_batch, :claim,
-                      appropriate_body:,
+                      appropriate_body_period:,
                       data:)
   end
 
@@ -18,7 +18,7 @@ RSpec.describe "Appropriate Body bulk claims show page", type: :request do
 
     context "when signed in as an appropriate body user" do
       it "renders the page successfully" do
-        sign_in_as(:appropriate_body_user, appropriate_body:)
+        sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period)
         get("/appropriate-body/bulk/claims/#{batch.id}")
         expect(response).to be_successful
       end

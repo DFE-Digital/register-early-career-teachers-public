@@ -10,10 +10,10 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     )
   end
 
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:email) { "appropriate_body_user@email.com" }
   let(:name) { "Christopher Lee" }
-  let(:dfe_sign_in_organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
+  let(:dfe_sign_in_organisation_id) { appropriate_body_period.dfe_sign_in_organisation_id }
   let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
   let(:dfe_sign_in_roles) { %w[AppropriateBodyUser] }
   let(:last_active_at) { 4.minutes.ago }
@@ -42,13 +42,13 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
 
   describe "#appropriate_body" do
     it "returns the appropriate_body associated to the persona" do
-      expect(appropriate_body_user.appropriate_body).to eql(appropriate_body)
+      expect(appropriate_body_user.appropriate_body_period).to eql(appropriate_body_period)
     end
   end
 
-  describe "#appropriate_body_id" do
-    it "returns the id of the appropriate body of the user" do
-      expect(appropriate_body_user.appropriate_body_id).to eql(appropriate_body.id)
+  describe "#appropriate_body_period_id" do
+    it "returns the id of the appropriate body period of the user" do
+      expect(appropriate_body_user.appropriate_body_period_id).to eql(appropriate_body_period.id)
     end
   end
 
@@ -94,7 +94,7 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
 
   describe "#organisation_name" do
     it "returns the name of the appropriate body associated to the user" do
-      expect(appropriate_body_user.organisation_name).to eq(appropriate_body.name)
+      expect(appropriate_body_user.organisation_name).to eq(appropriate_body_period.name)
     end
   end
 

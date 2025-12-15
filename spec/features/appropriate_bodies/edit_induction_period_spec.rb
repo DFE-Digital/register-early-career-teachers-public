@@ -1,15 +1,15 @@
 RSpec.describe "Appropriate body editing an induction period" do
   include ActiveJob::TestHelper
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
 
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
   end
 
   before do
-    sign_in_as_appropriate_body_user(appropriate_body:)
+    sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period)
     page.goto(ab_teacher_path(teacher))
   end
 

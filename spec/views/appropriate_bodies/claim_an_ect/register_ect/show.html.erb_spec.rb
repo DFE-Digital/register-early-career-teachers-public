@@ -2,7 +2,7 @@ RSpec.describe "appropriate_bodies/claim_an_ect/register_ect/show.html.erb" do
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trs_first_name: "Crispin", trs_last_name: "Bonham-Carter") }
 
   it "sets the page title to '<name> is registered'" do
-    assign(:appropriate_body, pending_induction_submission.appropriate_body)
+    assign(:appropriate_body, pending_induction_submission.appropriate_body_period)
     assign(:pending_induction_submission, pending_induction_submission)
 
     render
@@ -12,7 +12,7 @@ RSpec.describe "appropriate_bodies/claim_an_ect/register_ect/show.html.erb" do
   end
 
   it "has links to register another ECT and to return to the homepage" do
-    assign(:appropriate_body, pending_induction_submission.appropriate_body)
+    assign(:appropriate_body, pending_induction_submission.appropriate_body_period)
     assign(:pending_induction_submission, pending_induction_submission)
 
     render
