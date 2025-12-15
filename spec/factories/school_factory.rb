@@ -65,8 +65,8 @@ FactoryBot.define do
     end
 
     trait :with_induction_tutor do
-      induction_tutor_name { Faker::Name.name }
-      induction_tutor_email { Faker::Internet.email }
+      induction_tutor_name { "Induction Tutor" }
+      induction_tutor_email { "induction.tutor@a-very-nice-school.sch.uk" }
     end
   end
 end
