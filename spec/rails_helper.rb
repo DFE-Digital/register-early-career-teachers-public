@@ -22,6 +22,7 @@ RSpec.configure do |config|
 
   config.include ActiveSupport::Testing::TimeHelpers
   config.include Features::ViewHelpers, type: :feature
+  config.include Features::InductionTutorHelpers, type: :feature
   config.include AuthHelper, type: :request
   config.include APIHelper, type: :request
   config.include HaveSummaryListRow, type: :component
