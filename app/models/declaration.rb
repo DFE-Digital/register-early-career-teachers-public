@@ -9,6 +9,9 @@ class Declaration < ApplicationRecord
   belongs_to :mentorship_period, optional: true
   belongs_to :payment_statement, optional: true, class_name: "Statement"
   belongs_to :clawback_statement, optional: true, class_name: "Statement"
+  has_one :lead_provider, through: :training_period
+  has_one :delivery_partner, through: :training_period
+  has_one :contract_period, through: :training_period
 
   enum :payment_status,
        %w[no_payment eligible payable paid voided ineligible].index_by(&:itself),
