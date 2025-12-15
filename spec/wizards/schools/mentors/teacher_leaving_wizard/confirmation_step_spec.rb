@@ -48,11 +48,24 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::ConfirmationStep do
       travel_to(Date.new(2025, 1, 1)) { example.run }
     end
 
-    context "when date is today or in the future" do
+    context "when date is today" do
+      let(:store_leaving_on) { { "1" => "2025", "2" => "1", "3" => "1" } }
+
+      it "returns the past tense variants" do
+        expect(step.leaving_in_future?).to be(false)
+        expect(step.heading_title).to eq("Peter Wright has been removed from your school’s mentor list")
+        expect(step.assigned_ects_message).to eq("ECTs currently assigned to Peter Wright will need to be reassigned to another mentor.")
+        expect(step.training_heading).to be_nil
+        expect(step.training_message).to be_nil
+        expect(step.notification_message).to eq("We’ll let Peter Wright’s lead provider know (if they were doing a mentor training programme) that you’ve told us that they’ve left your school and are not expected to return. They may contact your school for more information.")
+      end
+    end
+
+    context "when date is in the future" do
       let(:store_leaving_on) { { "1" => "2025", "2" => "3", "3" => "1" } }
 
       it "returns the future tense variants" do
-        expect(step.leaving_today_or_in_future?).to be(true)
+        expect(step.leaving_in_future?).to be(true)
         expect(step.heading_title).to eq("Peter Wright will be removed from your school’s mentor list after 1 March 2025")
         expect(step.assigned_ects_message).to eq("ECTs currently assigned to Peter Wright will need to be reassigned to another mentor.")
         expect(step.training_heading).to eq("If Peter Wright is doing mentor training")
@@ -65,7 +78,7 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::ConfirmationStep do
       let(:store_leaving_on) { { "1" => "2024", "2" => "12", "3" => "31" } }
 
       it "returns the past tense variants" do
-        expect(step.leaving_today_or_in_future?).to be(false)
+        expect(step.leaving_in_future?).to be(false)
         expect(step.heading_title).to eq("Peter Wright has been removed from your school’s mentor list")
         expect(step.assigned_ects_message).to eq("ECTs currently assigned to Peter Wright will need to be reassigned to another mentor.")
         expect(step.training_heading).to be_nil
