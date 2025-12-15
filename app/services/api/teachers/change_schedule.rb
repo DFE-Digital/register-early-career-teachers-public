@@ -147,7 +147,7 @@ module API::Teachers
       return if training_period.started_on.past?
       return unless declarations_would_become_invalid?
 
-      errors.add(:schedule_identifier, "The schedule change cannot be applied because it would make existing declarations invalid. Please contact DfE for assistance.")
+      errors.add(:schedule_identifier, "The change of schedule cannot be applied because a previous change of schedule and a declaration were made on the same day. Applying another change of schedule would invalidate existing declarations. Please contact DfE for assistance.")
     end
 
     def declarations_would_become_invalid?
