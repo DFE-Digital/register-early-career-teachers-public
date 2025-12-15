@@ -1975,6 +1975,39 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_declaration_voided" do
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:)
+    end
+    let(:training_period) do
+      FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
+    end
+    let(:declaration) do
+      FactoryBot.create(:declaration, :voided, training_period:)
+    end
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_declaration_voided!(
+        author:,
+        teacher:,
+        training_period:,
+        declaration:
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :teacher_declaration_voided,
+        heading: "Rhys Ifans’s declaration was voided",
+        teacher:,
+        training_period:,
+        declaration:,
+        happened_at: Time.current,
+        **author_params
+      )
+    end
+  end
+
   describe ".record_school_induction_tutor_confirmed_event!" do
     let(:contract_period_year) { FactoryBot.create(:contract_period, :current).year }
     let(:school) { FactoryBot.create(:school, :with_induction_tutor) }

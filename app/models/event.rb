@@ -52,6 +52,7 @@ class Event < ApplicationRecord
     teacher_resumes_training_period
     teacher_withdraws_training_period
     teacher_changes_schedule_training_period
+    teacher_declaration_voided
     mentor_completion_status_change
     training_period_assigned_to_school_partnership
     dfe_user_created
