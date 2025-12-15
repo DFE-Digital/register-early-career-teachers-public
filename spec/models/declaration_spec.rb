@@ -25,7 +25,7 @@ describe Declaration do
     it { is_expected.to validate_inclusion_of(:ineligibility_reason).in_array(described_class.ineligibility_reasons.keys).with_message("Choose a valid ineligibility reason").allow_nil }
     it { is_expected.to validate_uniqueness_of(:api_id).with_message("API id already exists for another declaration").case_insensitive }
     it { is_expected.not_to validate_presence_of(:voided_by_user) }
-    it { is_expected.not_to validate_presence_of(:voided_at) }
+    it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
     it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
@@ -54,7 +54,7 @@ describe Declaration do
       subject { FactoryBot.build(:declaration, :voided_by_user) }
 
       it { is_expected.to validate_presence_of(:voided_by_user).with_message("Voided by user must be set as well as the voided date") }
-      it { is_expected.to validate_presence_of(:voided_at).with_message("Voided at must be set as well as the voided by user") }
+      it { is_expected.to validate_presence_of(:voided_by_user_at).with_message("Voided by user at must be set as well as the voided by user") }
     end
 
     context "when ineligible" do

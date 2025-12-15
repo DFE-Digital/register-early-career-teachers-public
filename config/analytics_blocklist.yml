@@ -395,7 +395,7 @@
   - clawback_statement_id
   - declaration_type
   - declaration_date
-  - voided_at
+  - voided_by_user_at
   - voided_by_user_id
   - mentorship_period_id
   - api_id

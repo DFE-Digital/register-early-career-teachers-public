@@ -41,8 +41,8 @@ class Declaration < ApplicationRecord
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
 
   validates :training_period, presence: { message: "Choose a training period" }
-  validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_at
-  validates :voided_at, presence: { message: "Voided at must be set as well as the voided by user" }, if: :voided_by_user
+  validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_by_user_at
+  validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
   validates :declaration_date, presence: { message: "Declaration date must be specified" }
   validates :declaration_type, inclusion: { in: Declaration.declaration_types.keys, message: "Choose a valid declaration type" }
