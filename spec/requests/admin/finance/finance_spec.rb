@@ -29,9 +29,7 @@ RSpec.describe "Admin finance page", type: :request do
     end
 
     context "when signed in as a finance DfE user" do
-      before do
-        sign_in_as(:dfe_user, user: FactoryBot.create(:user, :finance))
-      end
+      include_context "sign in as finance DfE user"
 
       it "displays the finance page" do
         get "/admin/finance"

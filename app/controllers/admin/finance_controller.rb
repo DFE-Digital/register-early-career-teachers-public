@@ -1,5 +1,5 @@
 module Admin
-  class FinanceController < AdminController
+  class Admin::FinanceController < Admin::Finance::BaseController
     def show
     end
 

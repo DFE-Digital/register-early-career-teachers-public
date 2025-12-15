@@ -25,6 +25,6 @@ class User < ApplicationRecord
   scope :alphabetical, -> { order(name: :asc) }
 
   def finance_access?
-    role.in?(%w[finance super_admin])
+    finance?
   end
 end
