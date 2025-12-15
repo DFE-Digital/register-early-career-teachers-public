@@ -103,6 +103,44 @@ describe "ERO mentor (no induction records, has billable declaration)" do
           expect(mentor_period_row.finished_on).to eq(Date.new(2022, 8, 31))
         end
       end
+
+      describe "import_note" do
+        it "includes explanation of how dates were calculated" do
+          expect(mentor_period_row.import_note).to include("ERO mentor with no induction records")
+          expect(mentor_period_row.import_note).to include("dates were calculated from declaration data")
+        end
+
+        it "includes the calculated start date with explanation" do
+          expect(mentor_period_row.import_note).to include("Start date: 2021-09-01")
+          expect(mentor_period_row.import_note).to include("declaration date 2021-10-15")
+          expect(mentor_period_row.import_note).to include("profile created 2021-09-15")
+          expect(mentor_period_row.import_note).to include("service start 2021-09-01")
+        end
+
+        it "includes the calculated end date with explanation" do
+          expect(mentor_period_row.import_note).to include("End date: 2022-08-31")
+          expect(mentor_period_row.import_note).to include("31 August following declaration date")
+        end
+
+        context "when mentor has a completion date" do
+          let(:mentor) do
+            ECF1TeacherHistory::Mentor.new(
+              participant_profile_id: SecureRandom.uuid,
+              created_at: mentor_created_at,
+              updated_at: Time.zone.now,
+              mentor_completion_date: Date.new(2021, 12, 1),
+              mentor_completion_reason: "completed",
+              states: [],
+              induction_records: [],
+              ero_declaration:
+            )
+          end
+
+          it "includes completion date in the end date explanation" do
+            expect(mentor_period_row.import_note).to include("31 August following completion date 2021-12-01")
+          end
+        end
+      end
     end
 
     describe "training period attributes" do

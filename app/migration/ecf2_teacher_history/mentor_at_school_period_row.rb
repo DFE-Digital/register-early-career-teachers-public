@@ -3,14 +3,16 @@ class ECF2TeacherHistory::MentorAtSchoolPeriodRow
               :finished_on,
               :school,
               :email,
-              :training_period_rows
+              :training_period_rows,
+              :import_note
 
-  def initialize(started_on:, finished_on:, school:, email:, training_period_rows: [])
+  def initialize(started_on:, finished_on:, school:, email:, training_period_rows: [], import_note: nil)
     @started_on = started_on
     @finished_on = finished_on
     @school = school
     @email = email
     @training_period_rows = training_period_rows
+    @import_note = import_note
   end
 
   def to_hash

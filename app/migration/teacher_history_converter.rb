@@ -82,8 +82,20 @@ private
       email: ero_declaration.preferred_identity_email,
       training_period_rows: [
         ECF2TeacherHistory::TrainingPeriodRow.new(**ero_mentor_training_period_attributes(mentor, ero_declaration, start_date, end_date))
-      ]
+      ],
+      import_note: ero_mentor_import_note(mentor, ero_declaration, start_date, end_date)
     )
+  end
+
+  def ero_mentor_import_note(mentor, ero_declaration, start_date, end_date)
+    reference_date = mentor.mentor_completion_date || ero_declaration.declaration_date.to_date
+    end_date_source = mentor.mentor_completion_date ? "completion date" : "declaration date"
+
+    <<~NOTE.strip
+      ERO mentor with no induction records - dates were calculated from declaration data.
+      Start date: #{start_date} (earliest of declaration date #{ero_declaration.declaration_date.to_date}, profile created #{mentor.created_at.to_date}, or service start 2021-09-01).
+      End date: #{end_date} (31 August following #{end_date_source} #{reference_date}).
+    NOTE
   end
 
   def ero_mentor_training_period_attributes(mentor, ero_declaration, start_date, end_date)

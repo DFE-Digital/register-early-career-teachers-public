@@ -4,6 +4,7 @@ class Event < ApplicationRecord
     bulk_upload_started
     delivery_partner_name_changed
     import_from_dqt
+    import_from_ecf1
     induction_extension_created
     induction_extension_updated
     induction_period_closed

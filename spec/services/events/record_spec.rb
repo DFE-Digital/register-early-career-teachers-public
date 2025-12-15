@@ -486,6 +486,36 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_imported_from_ecf1_event!" do
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+    let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_imported_from_ecf1_event!(
+          author:,
+          teacher:,
+          body: "ERO mentor imported from ECF1 with calculated dates",
+          mentor_at_school_period:,
+          training_period:,
+          school: mentor_at_school_period.school
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Imported from ECF1",
+          event_type: :import_from_ecf1,
+          happened_at: Time.zone.now,
+          body: "ERO mentor imported from ECF1 with calculated dates",
+          mentor_at_school_period:,
+          training_period:,
+          school: mentor_at_school_period.school,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".record_teacher_trs_deactivated_event!" do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
