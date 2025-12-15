@@ -8,6 +8,9 @@ class ECF1TeacherHistory
                    :updated_at,
                    :induction_start_date,
                    :induction_completion_date,
+                   :pupil_premium_uplift,
+                   :sparsity_uplift,
+                   :payments_frozen_cohort_start_year,
                    :states,
                    :induction_records)
 
@@ -16,6 +19,7 @@ class ECF1TeacherHistory
                       :updated_at,
                       :mentor_completion_date,
                       :mentor_completion_reason,
+                      :payments_frozen_cohort_start_year,
                       :states,
                       :induction_records)
 
@@ -43,12 +47,13 @@ class ECF1TeacherHistory
     :cohort_year
   )
 
-  attr_accessor :user, :ect, :mentor
+  attr_accessor :user, :ect, :mentor, :participant_identity_updated_ats
 
-  def initialize(user:, ect: nil, mentor: nil)
+  def initialize(user:, ect: nil, mentor: nil, participant_identity_updated_ats: [])
     @user = user
     @ect = ect
     @mentor = mentor
+    @participant_identity_updated_ats = participant_identity_updated_ats
   end
 
   def self.build(teacher_profile:)
@@ -68,7 +73,10 @@ class ECF1TeacherHistory
 
     mentor = build_mentor_data(participant_profile: mentor_profile) if mentor_profile.present?
 
-    new(user:, ect:, mentor:)
+    # Capture participant_identities updated_at timestamps for api_updated_at calculation
+    participant_identity_updated_ats = user_record.participant_identities.map(&:updated_at)
+
+    new(user:, ect:, mentor:, participant_identity_updated_ats:)
   end
 
   def self.build_ect_data(participant_profile:)
@@ -78,6 +86,9 @@ class ECF1TeacherHistory
       updated_at: participant_profile.updated_at,
       induction_start_date: participant_profile.induction_start_date,
       induction_completion_date: participant_profile.induction_completion_date,
+      pupil_premium_uplift: participant_profile.pupil_premium_uplift,
+      sparsity_uplift: participant_profile.sparsity_uplift,
+      payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
       induction_records: build_induction_record_rows(participant_profile:)
     )
@@ -90,6 +101,7 @@ class ECF1TeacherHistory
       updated_at: participant_profile.updated_at,
       mentor_completion_date: participant_profile.mentor_completion_date,
       mentor_completion_reason: participant_profile.mentor_completion_reason,
+      payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
       induction_records: build_induction_record_rows(participant_profile:)
     )
@@ -97,7 +109,7 @@ class ECF1TeacherHistory
 
   def self.build_profile_states(participant_profile:)
     participant_profile.participant_profile_states.order(:created_at).map do |profile_state|
-      ProfileStateRow.new(state: profile_state.state, reason: profile_state.reason, created_at: profile.created_at)
+      ProfileStateRow.new(state: profile_state.state, reason: profile_state.reason, created_at: profile_state.created_at)
     end
   end
 
