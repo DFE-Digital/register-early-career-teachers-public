@@ -13,7 +13,8 @@ namespace :api_seed_data do
       APISeedData::TeachersWithHistories,
       APISeedData::UnfundedMentors,
       APISeedData::TeachersWithChangeSchedule,
-      APISeedData::Teachers::SchoolTransfers
+      APISeedData::Teachers::SchoolTransfers,
+      APISeedData::Declarations,
     ]
 
     if Rails.env.development? || Rails.env.review?
