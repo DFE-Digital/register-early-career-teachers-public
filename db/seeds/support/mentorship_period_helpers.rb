@@ -62,6 +62,7 @@ module MentorshipPeriodHelpers
       mentor: mentor_school_period
     )
 
+    # Required for specs that query via metadata tables rather than live joins
     if refresh_metadata
       Metadata::Handlers::Teacher.new(mentor).refresh_metadata!
       Metadata::Handlers::Teacher.new(mentee).refresh_metadata!

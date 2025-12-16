@@ -4,31 +4,12 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
   let(:school_partnership) { FactoryBot.create(:school_partnership) }
   let(:lead_provider_id) { school_partnership.lead_provider.id }
   let(:query) { described_class.new(lead_provider_id:) }
-  let!(:unfunded_mentor) { create_unfunded_mentor_for(partnership: school_partnership) }
 
-  def create_unfunded_mentor_for(partnership:)
-    period = create_mentorship_period_for(
-      mentee_school_partnership: partnership,
-      create_mentor_training_period: false
-    )
-
-    Metadata::Handlers::Teacher.new(period.mentor.teacher).refresh_metadata!
-    Metadata::Handlers::Teacher.new(period.mentee.teacher).refresh_metadata!
-
-    period.mentor.teacher
-  end
-
-  def create_funded_mentor_for(partnership:)
-    period = create_mentorship_period_for(
-      mentee_school_partnership: partnership,
-      mentor_school_partnership: partnership,
-      create_mentor_training_period: true
-    )
-
-    Metadata::Handlers::Teacher.new(period.mentor.teacher).refresh_metadata!
-    Metadata::Handlers::Teacher.new(period.mentee.teacher).refresh_metadata!
-
-    period.mentor.teacher
+  let!(:unfunded_mentor) do
+    create_mentorship_period_for(
+      mentee_school_partnership: school_partnership,
+      refresh_metadata: true
+    ).mentor.teacher
   end
 
   it_behaves_like "a query that avoids includes" do
@@ -62,15 +43,26 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
   describe "#unfunded_mentors" do
     describe "filtering" do
       describe "by `lead_provider`" do
-        let!(:other_unfunded_mentor) { create_unfunded_mentor_for(partnership: school_partnership) }
+        let!(:other_unfunded_mentor) do
+          create_mentorship_period_for(
+            mentee_school_partnership: school_partnership,
+            refresh_metadata: true
+          ).mentor.teacher
+        end
 
         before do
           # Mentor associated with the lead provider (so not unfunded and should be ignored)
-          create_funded_mentor_for(partnership: school_partnership)
+          create_mentorship_period_for(
+            mentee_school_partnership: school_partnership,
+            mentor_school_partnership: school_partnership,
+            refresh_metadata: true
+          )
 
           # Unfunded mentor for another lead provider (should be ignored)
-          other_partnership = FactoryBot.create(:school_partnership)
-          create_unfunded_mentor_for(partnership: other_partnership)
+          create_mentorship_period_for(
+            mentee_school_partnership: FactoryBot.create(:school_partnership),
+            refresh_metadata: true
+          )
         end
 
         it "filters by `lead_provider`" do
@@ -97,7 +89,12 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
       end
 
       describe "by `updated_since`" do
-        let!(:other_unfunded_mentor) { create_unfunded_mentor_for(partnership: school_partnership) }
+        let!(:other_unfunded_mentor) do
+          create_mentorship_period_for(
+            mentee_school_partnership: school_partnership,
+            refresh_metadata: true
+          ).mentor.teacher
+        end
 
         before do
           unfunded_mentor.update!(api_unfunded_mentor_updated_at: 3.days.ago)
@@ -123,7 +120,12 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
     end
 
     describe "ordering" do
-      let!(:other_unfunded_mentor) { create_unfunded_mentor_for(partnership: school_partnership) }
+      let!(:other_unfunded_mentor) do
+        create_mentorship_period_for(
+          mentee_school_partnership: school_partnership,
+          refresh_metadata: true
+        ).mentor.teacher
+      end
 
       before do
         unfunded_mentor.update!(api_unfunded_mentor_updated_at: 1.day.ago)
