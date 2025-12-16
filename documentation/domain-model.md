@@ -123,7 +123,6 @@ erDiagram
     integer processed_count
     integer errored_count
     integer released_count
-    integer failed_count
     integer passed_count
     integer claimed_count
     integer file_size
