@@ -13,7 +13,6 @@ class Declaration < ApplicationRecord
   has_one :lead_provider, through: :training_period
   has_one :delivery_partner, through: :training_period
   has_one :contract_period, through: :training_period
-
   has_one :ect_at_school_period, through: :training_period
   has_one :ect_teacher, through: :ect_at_school_period, source: :teacher
   has_one :mentor_at_school_period, through: :training_period
@@ -100,12 +99,11 @@ class Declaration < ApplicationRecord
         ]
 
   # Scopes
-  scope :billable, -> { where(payment_status: %w[eligible payable paid]) }
-  scope :no_payment_or_billable, -> {
-    where(payment_status: "no_payment").or(billable)
+  scope :billable_or_changeable, -> {
+    where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
   }
-  scope :no_payment_or_billable_for_declaration_type, ->(declaration_type) {
-    no_payment_or_billable.where(declaration_type:)
+  scope :billable_or_changeable_for_declaration_type, ->(declaration_type) {
+    billable_or_changeable.where(declaration_type:)
   }
 
   state_machine :payment_status, initial: :no_payment do

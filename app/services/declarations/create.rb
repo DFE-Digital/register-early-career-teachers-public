@@ -1,8 +1,8 @@
 module Declarations
   class Create
-    attr_reader :author, :lead_provider, :teacher, :training_period, :declaration_date, :declaration_type, :evidence_type
+    attr_reader :author, :lead_provider, :teacher, :training_period, :declaration_date, :declaration_type, :evidence_type, :payment_statement, :mentorship_period, :delivery_partner
 
-    def initialize(author:, lead_provider:, teacher:, training_period:, declaration_date:, declaration_type:, evidence_type:)
+    def initialize(author:, lead_provider:, teacher:, training_period:, declaration_date:, declaration_type:, evidence_type:, payment_statement:, mentorship_period:, delivery_partner:)
       @author = author
       @lead_provider = lead_provider
       @teacher = teacher
@@ -10,6 +10,9 @@ module Declarations
       @declaration_date = declaration_date
       @declaration_type = declaration_type
       @evidence_type = evidence_type
+      @payment_statement = payment_statement
+      @mentorship_period = mentorship_period
+      @delivery_partner = delivery_partner
     end
 
     def create
@@ -25,36 +28,40 @@ module Declarations
 
   private
 
-    def mentorship_period
-      return unless training_period.for_ect?
-
-      @mentorship_period ||= training_period.trainee.mentorship_periods.ongoing_or_closest_to(declaration_date).earliest_first.first
+    def existing_declarations
+      @existing_declarations ||= if training_period.for_ect?
+                                   teacher.ect_declarations
+                                 else
+                                   teacher.mentor_declarations
+                                 end
     end
 
     def existing_declaration
-      @existing_declaration ||= training_period
-        .declarations
-        .no_payment_or_billable
+      @existing_declaration ||= existing_declarations
+        .billable_or_changeable
+        .joins(:lead_provider, :delivery_partner)
         .find_by(
-          declaration_type:,
           declaration_date:,
+          declaration_type:,
           evidence_type:,
-          mentorship_period:
+          mentorship_period:,
+          lead_provider: { id: lead_provider.id },
+          delivery_partner: { id: delivery_partner.id }
         )
     end
 
-    def find_declaration
+    def find_or_create_declaration
       existing_declaration || training_period.declarations.create!(
         declaration_date:,
         declaration_type:,
-        evidence_type: declaration_type != "started" ? evidence_type : nil,
+        evidence_type:,
         mentorship_period:
       )
     end
 
     def declaration
-      @declaration ||= find_declaration.tap do |pd|
-        pd.update!(
+      @declaration ||= find_or_create_declaration.tap do |d|
+        d.update!(
           {
             pupil_premium_uplift: teacher.ect_pupil_premium_uplift,
             sparsity_uplift: teacher.ect_sparsity_uplift
@@ -67,14 +74,6 @@ module Declarations
       if training_period.eligible_for_funding?
         declaration.update!(payment_status: :eligible, payment_statement:)
       end
-    end
-
-    def payment_statement
-      @payment_statement ||= Statements::Search.new(lead_provider_id: lead_provider.id,
-                                                    contract_period_years: training_period.contract_period.year,
-                                                    fee_type: "output",
-                                                    deadline_date: Time.zone.today..,
-                                                    order: :deadline_date).statements.first
     end
 
     def set_payment_statement!

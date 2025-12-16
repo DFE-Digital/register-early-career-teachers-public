@@ -1,4 +1,4 @@
-RSpec.describe DeclarationDateFormatValidator, type: :model do
+RSpec.describe APIDateTimeFormatValidator, type: :model do
   subject { model_class.new(declaration_date:) }
 
   let(:model_class) do
@@ -7,7 +7,7 @@ RSpec.describe DeclarationDateFormatValidator, type: :model do
 
       attr_accessor :declaration_date
 
-      validates :declaration_date, declaration_date_format: true
+      validates :declaration_date, api_date_time_format: true
     end
   end
 
