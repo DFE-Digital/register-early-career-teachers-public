@@ -17,6 +17,7 @@ class Milestone < ApplicationRecord
 
   validates :schedule_id, presence: { message: "Choose a schedule" }
   validates :start_date, presence: { message: "Enter a start date" }
+  validates :milestone_date, comparison: { greater_than: :start_date, message: "Milestone date must be after the start date" }, allow_nil: true
 
   validates :declaration_type,
             uniqueness: {

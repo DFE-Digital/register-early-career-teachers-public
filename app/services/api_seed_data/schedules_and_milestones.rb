@@ -112,36 +112,36 @@ module APISeedData
           identifier: "ecf-standard-september",
           contract_period_year: 2021,
           milestones: [
-            { declaration_type: "started", start_date: "2021-11-30", milestone_date: "2021-11-30" },
-            { declaration_type: "retained-1", start_date: "2022-02-28", milestone_date: "2022-01-31" },
-            { declaration_type: "retained-2", start_date: "2022-05-31", milestone_date: "2022-04-30" },
-            { declaration_type: "retained-3", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-            { declaration_type: "retained-4", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-            { declaration_type: "completed", start_date: "2023-05-31", milestone_date: "2023-04-30" }
+            { declaration_type: "started", start_date: "2021-09-01", milestone_date: "2021-11-30" },
+            { declaration_type: "retained-1", start_date: "2021-09-01", milestone_date: "2022-01-31" },
+            { declaration_type: "retained-2", start_date: "2022-02-01", milestone_date: "2022-04-30" },
+            { declaration_type: "retained-3", start_date: "2022-05-01", milestone_date: "2022-09-30" },
+            { declaration_type: "retained-4", start_date: "2022-10-01", milestone_date: "2023-01-31" },
+            { declaration_type: "completed", start_date: "2023-02-01", milestone_date: "2023-04-30" }
           ]
         },
         {
           identifier: "ecf-standard-january",
           contract_period_year: 2021,
           milestones: [
-            { declaration_type: "started", start_date: "2022-02-28", milestone_date: "2022-01-31" },
-            { declaration_type: "retained-1", start_date: "2022-05-31", milestone_date: "2022-04-30" },
-            { declaration_type: "retained-2", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-            { declaration_type: "retained-3", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-            { declaration_type: "retained-4", start_date: "2023-05-31", milestone_date: "2023-04-30" },
-            { declaration_type: "completed", start_date: "2023-11-30", milestone_date: "2023-09-30" }
+            { declaration_type: "started", start_date: "2021-12-01", milestone_date: "2022-01-31" },
+            { declaration_type: "retained-1", start_date: "2022-02-01", milestone_date: "2022-04-30" },
+            { declaration_type: "retained-2", start_date: "2022-05-01", milestone_date: "2022-09-30" },
+            { declaration_type: "retained-3", start_date: "2022-10-01", milestone_date: "2023-01-31" },
+            { declaration_type: "retained-4", start_date: "2023-02-01", milestone_date: "2023-04-30" },
+            { declaration_type: "completed", start_date: "2023-05-01", milestone_date: "2023-09-30" }
           ]
         },
         {
           identifier: "ecf-standard-april",
           contract_period_year: 2021,
           milestones: [
-            { declaration_type: "started", start_date: "2022-05-31", milestone_date: "2022-05-31" },
-            { declaration_type: "retained-1", start_date: "2022-10-31", milestone_date: "2022-09-30" },
-            { declaration_type: "retained-2", start_date: "2023-02-28", milestone_date: "2023-01-31" },
-            { declaration_type: "retained-3", start_date: "2023-05-31", milestone_date: "2023-04-30" },
-            { declaration_type: "retained-4", start_date: "2023-11-30", milestone_date: "2023-09-30" },
-            { declaration_type: "completed", start_date: "2024-02-28", milestone_date: "2024-01-31" }
+            { declaration_type: "started", start_date: "2022-02-01", milestone_date: "2022-05-31" },
+            { declaration_type: "retained-1", start_date: "2022-05-01", milestone_date: "2022-09-30" },
+            { declaration_type: "retained-2", start_date: "2022-10-01", milestone_date: "2023-01-31" },
+            { declaration_type: "retained-3", start_date: "2023-02-01", milestone_date: "2023-04-30" },
+            { declaration_type: "retained-4", start_date: "2023-05-01", milestone_date: "2023-09-30" },
+            { declaration_type: "completed", start_date: "2023-10-01", milestone_date: "2024-01-31" }
           ]
         },
 
@@ -171,36 +171,36 @@ module APISeedData
           identifier: "ecf-standard-september",
           contract_period_year: 2022,
           milestones: [
-            { declaration_type: "started", start_date: "2022-11-30", milestone_date: "2022-12-31" },
-            { declaration_type: "retained-1", start_date: "2023-04-30", milestone_date: "2023-03-31" },
-            { declaration_type: "retained-2", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-            { declaration_type: "retained-3", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-            { declaration_type: "retained-4", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-            { declaration_type: "completed", start_date: "2024-08-31", milestone_date: "2024-07-31" }
+            { declaration_type: "started", start_date: "2022-06-01", milestone_date: "2022-12-31" },
+            { declaration_type: "retained-1", start_date: "2023-01-01", milestone_date: "2023-03-31" },
+            { declaration_type: "retained-2", start_date: "2023-04-01", milestone_date: "2023-07-31" },
+            { declaration_type: "retained-3", start_date: "2023-08-01", milestone_date: "2023-12-31" },
+            { declaration_type: "retained-4", start_date: "2024-01-01", milestone_date: "2024-03-31" },
+            { declaration_type: "completed", start_date: "2024-04-01", milestone_date: "2024-07-31" }
           ]
         },
         {
           identifier: "ecf-standard-january",
           contract_period_year: 2022,
           milestones: [
-            { declaration_type: "started", start_date: "2023-04-30", milestone_date: "2023-03-31" },
-            { declaration_type: "retained-1", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-            { declaration_type: "retained-2", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-            { declaration_type: "retained-3", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-            { declaration_type: "retained-4", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-            { declaration_type: "completed", start_date: "2025-01-31", milestone_date: "2024-12-31" }
+            { declaration_type: "started", start_date: "2023-01-01", milestone_date: "2023-03-31" },
+            { declaration_type: "retained-1", start_date: "2023-04-01", milestone_date: "2023-07-31" },
+            { declaration_type: "retained-2", start_date: "2023-08-01", milestone_date: "2023-12-31" },
+            { declaration_type: "retained-3", start_date: "2024-01-01", milestone_date: "2024-03-31" },
+            { declaration_type: "retained-4", start_date: "2024-04-01", milestone_date: "2024-07-31" },
+            { declaration_type: "completed", start_date: "2024-08-01", milestone_date: "2024-12-31" }
           ]
         },
         {
           identifier: "ecf-standard-april",
           contract_period_year: 2022,
           milestones: [
-            { declaration_type: "started", start_date: "2023-08-31", milestone_date: "2023-07-31" },
-            { declaration_type: "retained-1", start_date: "2024-01-31", milestone_date: "2023-12-31" },
-            { declaration_type: "retained-2", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-            { declaration_type: "retained-3", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-            { declaration_type: "retained-4", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-            { declaration_type: "completed", start_date: "2025-04-30", milestone_date: "2025-03-31" }
+            { declaration_type: "started", start_date: "2023-04-01", milestone_date: "2023-07-31" },
+            { declaration_type: "retained-1", start_date: "2023-08-01", milestone_date: "2023-12-31" },
+            { declaration_type: "retained-2", start_date: "2024-01-01", milestone_date: "2024-03-31" },
+            { declaration_type: "retained-3", start_date: "2024-04-01", milestone_date: "2024-07-31" },
+            { declaration_type: "retained-4", start_date: "2024-08-01", milestone_date: "2024-12-31" },
+            { declaration_type: "completed", start_date: "2025-01-01", milestone_date: "2025-03-31" }
           ]
         },
 
@@ -228,36 +228,36 @@ module APISeedData
           identifier: "ecf-standard-september",
           contract_period_year: 2023,
           milestones: [
-            { declaration_type: "started", start_date: "2023-11-30", milestone_date: "2023-12-31" },
-            { declaration_type: "retained-1", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-            { declaration_type: "retained-2", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-            { declaration_type: "retained-3", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-            { declaration_type: "retained-4", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-            { declaration_type: "completed", start_date: "2025-08-31", milestone_date: "2025-07-31" }
+            { declaration_type: "started", start_date: "2023-06-01", milestone_date: "2023-12-31" },
+            { declaration_type: "retained-1", start_date: "2024-01-01", milestone_date: "2024-03-31" },
+            { declaration_type: "retained-2", start_date: "2024-04-01", milestone_date: "2024-07-31" },
+            { declaration_type: "retained-3", start_date: "2024-08-01", milestone_date: "2024-12-31" },
+            { declaration_type: "retained-4", start_date: "2025-01-01", milestone_date: "2025-03-31" },
+            { declaration_type: "completed", start_date: "2025-04-01", milestone_date: "2025-07-31" }
           ]
         },
         {
           identifier: "ecf-standard-january",
           contract_period_year: 2023,
           milestones: [
-            { declaration_type: "started", start_date: "2024-04-30", milestone_date: "2024-03-31" },
-            { declaration_type: "retained-1", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-            { declaration_type: "retained-2", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-            { declaration_type: "retained-3", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-            { declaration_type: "retained-4", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-            { declaration_type: "completed", start_date: "2026-01-31", milestone_date: "2025-12-31" }
+            { declaration_type: "started", start_date: "2024-01-01", milestone_date: "2024-03-31" },
+            { declaration_type: "retained-1", start_date: "2024-04-01", milestone_date: "2024-07-31" },
+            { declaration_type: "retained-2", start_date: "2024-08-01", milestone_date: "2024-12-31" },
+            { declaration_type: "retained-3", start_date: "2025-01-01", milestone_date: "2025-03-31" },
+            { declaration_type: "retained-4", start_date: "2025-04-01", milestone_date: "2025-07-31" },
+            { declaration_type: "completed", start_date: "2025-08-01", milestone_date: "2025-12-31" }
           ]
         },
         {
           identifier: "ecf-standard-april",
           contract_period_year: 2023,
           milestones: [
-            { declaration_type: "started", start_date: "2024-08-31", milestone_date: "2024-07-31" },
-            { declaration_type: "retained-1", start_date: "2025-01-31", milestone_date: "2024-12-31" },
-            { declaration_type: "retained-2", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-            { declaration_type: "retained-3", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-            { declaration_type: "retained-4", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-            { declaration_type: "completed", start_date: "2026-04-30", milestone_date: "2026-03-31" }
+            { declaration_type: "started", start_date: "2024-04-01", milestone_date: "2024-07-31" },
+            { declaration_type: "retained-1", start_date: "2024-08-01", milestone_date: "2024-12-31" },
+            { declaration_type: "retained-2", start_date: "2025-01-01", milestone_date: "2025-03-31" },
+            { declaration_type: "retained-3", start_date: "2025-04-01", milestone_date: "2025-07-31" },
+            { declaration_type: "retained-4", start_date: "2025-08-01", milestone_date: "2025-12-31" },
+            { declaration_type: "completed", start_date: "2026-01-01", milestone_date: "2026-03-31" }
           ]
         },
 
@@ -286,36 +286,36 @@ module APISeedData
           identifier: "ecf-standard-september",
           contract_period_year: 2024,
           milestones: [
-            { declaration_type: "started", start_date: "2024-11-30", milestone_date: "2024-12-31" },
-            { declaration_type: "retained-1", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-            { declaration_type: "retained-2", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-            { declaration_type: "retained-3", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-            { declaration_type: "retained-4", start_date: "2026-04-30", milestone_date: "2026-03-31" },
-            { declaration_type: "completed", start_date: "2026-08-31", milestone_date: "2026-07-31" }
+            { declaration_type: "started", start_date: "2024-06-01", milestone_date: "2024-12-31" },
+            { declaration_type: "retained-1", start_date: "2025-01-01", milestone_date: "2025-03-31" },
+            { declaration_type: "retained-2", start_date: "2025-04-01", milestone_date: "2025-07-31" },
+            { declaration_type: "retained-3", start_date: "2025-08-01", milestone_date: "2025-12-31" },
+            { declaration_type: "retained-4", start_date: "2026-01-01", milestone_date: "2026-03-31" },
+            { declaration_type: "completed", start_date: "2026-04-01", milestone_date: "2026-07-31" }
           ]
         },
         {
           identifier: "ecf-standard-january",
           contract_period_year: 2024,
           milestones: [
-            { declaration_type: "started", start_date: "2025-04-30", milestone_date: "2025-03-31" },
-            { declaration_type: "retained-1", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-            { declaration_type: "retained-2", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-            { declaration_type: "retained-3", start_date: "2026-04-30", milestone_date: "2026-03-31" },
-            { declaration_type: "retained-4", start_date: "2026-08-31", milestone_date: "2026-07-31" },
-            { declaration_type: "completed", start_date: "2027-01-31", milestone_date: "2026-12-31" }
+            { declaration_type: "started", start_date: "2025-01-01", milestone_date: "2025-03-31" },
+            { declaration_type: "retained-1", start_date: "2025-04-01", milestone_date: "2025-07-31" },
+            { declaration_type: "retained-2", start_date: "2025-08-01", milestone_date: "2025-12-31" },
+            { declaration_type: "retained-3", start_date: "2026-01-01", milestone_date: "2026-03-31" },
+            { declaration_type: "retained-4", start_date: "2026-04-01", milestone_date: "2026-07-31" },
+            { declaration_type: "completed", start_date: "2026-08-01", milestone_date: "2026-12-31" }
           ]
         },
         {
           identifier: "ecf-standard-april",
           contract_period_year: 2024,
           milestones: [
-            { declaration_type: "started", start_date: "2025-08-31", milestone_date: "2025-07-31" },
-            { declaration_type: "retained-1", start_date: "2026-01-31", milestone_date: "2025-12-31" },
-            { declaration_type: "retained-2", start_date: "2026-04-30", milestone_date: "2026-03-31" },
-            { declaration_type: "retained-3", start_date: "2026-08-31", milestone_date: "2026-07-31" },
-            { declaration_type: "retained-4", start_date: "2027-01-31", milestone_date: "2026-12-31" },
-            { declaration_type: "completed", start_date: "2027-04-30", milestone_date: "2027-03-31" }
+            { declaration_type: "started", start_date: "2025-04-01", milestone_date: "2025-07-31" },
+            { declaration_type: "retained-1", start_date: "2025-08-01", milestone_date: "2025-12-31" },
+            { declaration_type: "retained-2", start_date: "2026-01-01", milestone_date: "2026-03-31" },
+            { declaration_type: "retained-3", start_date: "2026-04-01", milestone_date: "2026-07-31" },
+            { declaration_type: "retained-4", start_date: "2026-08-01", milestone_date: "2026-12-31" },
+            { declaration_type: "completed", start_date: "2027-01-01", milestone_date: "2027-03-31" }
           ]
         },
 
