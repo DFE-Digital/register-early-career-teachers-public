@@ -62,5 +62,16 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::EditStep do
         )
       end
     end
+
+    context "when leaving date is the same as the start date" do
+      let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 1 } }
+
+      it "is invalid with the correct error message" do
+        expect(step).not_to be_valid
+        expect(step.errors[:leaving_on].map(&:squish)).to include(
+          "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a later date."
+        )
+      end
+    end
   end
 end

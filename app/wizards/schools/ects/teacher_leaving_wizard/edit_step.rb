@@ -42,7 +42,7 @@ module Schools
 
         def leaving_after_start_date
           return unless leaving_on_input.valid?
-          return if leaving_on_input.value_as_date >= ect_at_school_period.started_on
+          return if leaving_on_input.value_as_date > ect_at_school_period.started_on
 
           errors.add(
             :leaving_on,
