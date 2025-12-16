@@ -18,13 +18,6 @@ class ECF2TeacherHistory
     @mentor_at_school_period_rows = mentor_at_school_period_rows
   end
 
-  def save_all!
-    teacher = find_or_create_teacher!
-    save_ect_periods!(teacher)
-    save_mentor_periods!(teacher)
-    teacher
-  end
-
   def save_all_ect_data!
     teacher = find_or_create_teacher!
     save_ect_periods!(teacher)
