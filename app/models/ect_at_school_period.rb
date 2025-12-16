@@ -66,6 +66,14 @@ class ECTAtSchoolPeriod < ApplicationRecord
     .where(expression_of_interest: { lead_provider_id: })
   }
 
+  def reported_leaving_by?(school)
+    reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id
+  end
+
+  def leaving_reported_for_school?(school)
+    leaving_today_or_in_future? && reported_leaving_by?(school)
+  end
+
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
 
   def school_reported_appropriate_body_type = school_reported_appropriate_body&.body_type
