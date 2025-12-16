@@ -13,6 +13,11 @@ class Declaration < ApplicationRecord
   has_one :delivery_partner, through: :training_period
   has_one :contract_period, through: :training_period
 
+  has_one :ect_at_school_period, through: :training_period
+  has_one :ect_teacher, through: :ect_at_school_period, source: :teacher
+  has_one :mentor_at_school_period, through: :training_period
+  has_one :mentor_teacher, through: :mentor_at_school_period, source: :teacher
+
   enum :payment_status,
        %w[no_payment eligible payable paid voided ineligible].index_by(&:itself),
        validate: { message: "Choose a valid payment status" },

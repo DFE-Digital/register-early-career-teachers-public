@@ -107,13 +107,8 @@ module API::Declarations
     def where_teacher_is(teacher_api_ids)
       return if ignore?(filter: teacher_api_ids)
 
-      ect_join = scope
-        .left_outer_joins(training_period: { ect_at_school_period: :teacher, mentor_at_school_period: :teacher })
-        .where(teachers_ect_at_school_periods: { api_id: teacher_api_ids })
-
-      mentor_join = scope
-        .left_outer_joins(training_period: { ect_at_school_period: :teacher, mentor_at_school_period: :teacher })
-        .where(teachers_mentor_at_school_periods: { api_id: teacher_api_ids })
+      ect_join = scope.left_outer_joins(:ect_teacher, :mentor_teacher).where(ect_teacher: { api_id: teacher_api_ids })
+      mentor_join = scope.left_outer_joins(:ect_teacher, :mentor_teacher).where(mentor_teacher: { api_id: teacher_api_ids })
 
       @scope = ect_join.or(mentor_join)
     end
