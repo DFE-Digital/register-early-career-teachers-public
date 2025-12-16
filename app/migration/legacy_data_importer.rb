@@ -34,7 +34,7 @@ private
 
     case @version
     when 1
-      all_migrators.reject { |m| m.model.in?(%i[teacher_mentor_data teacher_ect_data]) }
+      all_migrators.reject { |m| m.model.in?(%i[mentor ect]) }
     when 2
       all_migrators.reject { |m| m.model.in?(%i[teacher mentorship_period]) }
     else

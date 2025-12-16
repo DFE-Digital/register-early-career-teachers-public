@@ -1,8 +1,8 @@
 module Migrators
   # NOTE: This migrator may be obsolete with the new two-pass approach.
-  # MentorshipPeriods are now created by Migrators::ECTData as part of
+  # MentorshipPeriods are now created by Migrators::ECT as part of
   # the ECT data save. This migrator is kept for backwards compatibility
-  # but may create duplicate records if run after ECTData.
+  # but may create duplicate records if run after ECT.
   class MentorshipPeriod < Migrators::Base
     def self.record_count
       ects.count
@@ -17,7 +17,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[teacher_ect_data]
+      %i[ect]
     end
 
     def self.reset!
