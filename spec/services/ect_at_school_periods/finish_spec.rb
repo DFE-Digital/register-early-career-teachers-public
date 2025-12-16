@@ -80,6 +80,21 @@ describe ECTAtSchoolPeriods::Finish do
         end
       end
 
+      context "when the mentorship period starts on the finished_on date" do
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: finished_on
+          )
+        end
+
+        it "deletes the mentorship period" do
+          expect { subject.finish! }.to change(MentorshipPeriod, :count).by(-1)
+        end
+      end
+
       context "when there is an ongoing mentorship_period" do
         let!(:mentorship_period) do
           FactoryBot.create(
