@@ -29,13 +29,7 @@ jobs:
         azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
-    - name: Get credentials
-      run: make ci staging get-cluster-credentials
-
-    - name: Truncate DB
-      run: |
-        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rake db:truncate_all"
-
     - name: Reseed Staging
       run: |
-        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rake api_seed_data:generate"
+        make ci staging get-cluster-credentials
+        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rails db:seed:replant"
