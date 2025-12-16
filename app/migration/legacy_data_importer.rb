@@ -43,11 +43,6 @@ private
   end
 
   def migrators_in_dependency_order
-    graph = migrators.index_by(&:model)
-
-    each_node = ->(&b) { graph.each_key(&b) }
-    each_child = ->(model, &b) { graph[model].dependencies.each(&b) }
-
-    TSort.strongly_connected_components(each_node, each_child).flatten.map { |key| graph[key] }
+    Migrators::Base.migrators_in_dependency_order.select { |m| migrators.include?(m) }
   end
 end
