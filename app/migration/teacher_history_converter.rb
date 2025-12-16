@@ -154,7 +154,7 @@ private
       lead_provider_info: induction_record.training_provider_info&.lead_provider_info,
       delivery_partner_info: induction_record.training_provider_info&.delivery_partner_info,
       schedule_info: induction_record.schedule_info,
-      contract_period: induction_record.cohort_year,
+      contract_period_year: induction_record.cohort_year,
       created_at: induction_record.created_at,
       ecf_start_induction_record_id: induction_record.induction_record_id
     }
