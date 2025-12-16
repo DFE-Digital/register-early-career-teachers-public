@@ -910,26 +910,7 @@ describe TrainingPeriod do
       end
     end
 
-    describe ".ongoing_on_including" do
-      it "returns records that include the date (inclusive)" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 31))
-        training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on)
-
-        another_ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 2, 1), finished_on: Date.new(2025, 2, 28))
-        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: another_ect_at_school_period, started_on: another_ect_at_school_period.started_on, finished_on: another_ect_at_school_period.finished_on)
-
-        result = TrainingPeriod.ongoing_on_including(Date.new(2025, 1, 15))
-        expect(result).to contain_exactly(training_period)
-
-        result = TrainingPeriod.ongoing_on_including(Date.new(2025, 1, 1))
-        expect(result).to contain_exactly(training_period)
-
-        result = TrainingPeriod.ongoing_on_including(Date.new(2025, 1, 31))
-        expect(result).to contain_exactly(training_period)
-      end
-    end
-
-    describe ".ongoing_or_closest_to" do
+    describe ".closest_to" do
       let(:date) { Date.new(2025, 1, 22) }
 
       it "returns the record that is ongoing on the date when present" do
@@ -939,7 +920,7 @@ describe TrainingPeriod do
         another_ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 10))
         FactoryBot.create(:training_period, :for_ect, ect_at_school_period: another_ect_at_school_period, started_on: another_ect_at_school_period.started_on, finished_on: another_ect_at_school_period.finished_on)
 
-        result = TrainingPeriod.ongoing_or_closest_to(date)
+        result = TrainingPeriod.closest_to(date)
 
         expect(result).to contain_exactly(covering)
       end
@@ -954,7 +935,7 @@ describe TrainingPeriod do
         ect_at_school_period3 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 25), finished_on: Date.new(2025, 1, 30))
         FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period3, started_on: ect_at_school_period3.started_on, finished_on: ect_at_school_period3.finished_on)
 
-        result = TrainingPeriod.ongoing_or_closest_to(date)
+        result = TrainingPeriod.closest_to(date)
 
         expect(result).to contain_exactly(training_period2)
       end

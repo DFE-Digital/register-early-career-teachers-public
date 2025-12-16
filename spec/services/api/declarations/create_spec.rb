@@ -20,6 +20,7 @@ RSpec.describe API::Declarations::Create, type: :model do
   let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:, start_date: Date.new(2024, 11, 1), milestone_date: Date.new(2024, 12, 1)) }
   let(:declaration_datetime) { Faker::Time.between(from: milestone.start_date, to: milestone.milestone_date) }
   let(:declaration_date) { declaration_datetime.rfc3339 }
+  let(:active_lead_provider) { training_period.active_lead_provider }
 
   it_behaves_like "an API teacher shared action" do
     describe "validations" do
@@ -102,7 +103,7 @@ RSpec.describe API::Declarations::Create, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} cohort. The funding contract for this cohort has ended. Get in touch if you need to discuss this with us.") }
+            it { is_expected.to have_error(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
           end
 
           context "when a declaration already exists" do
@@ -127,7 +128,7 @@ RSpec.describe API::Declarations::Create, type: :model do
     end
 
     describe "#create" do
-      subject(:create_declaration) { service.create }
+      subject(:create_declaration) { instance.create }
 
       %i[ect mentor].each do |trainee_type|
         context "for #{trainee_type}" do
@@ -145,6 +146,14 @@ RSpec.describe API::Declarations::Create, type: :model do
             let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
             let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
             let(:service) { instance_double(Declarations::Create) }
+            let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
+            let!(:mentorship_period) do
+              if trainee_type == :ect
+                mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
+                FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
+              end
+            end
+            let(:delivery_partner) { training_period.delivery_partner }
 
             before do
               author = an_instance_of(Events::LeadProviderAPIAuthor)
@@ -154,7 +163,10 @@ RSpec.describe API::Declarations::Create, type: :model do
                                                                 training_period:,
                                                                 declaration_date:,
                                                                 declaration_type:,
-                                                                evidence_type:).and_return(service)
+                                                                evidence_type:,
+                                                                payment_statement:,
+                                                                mentorship_period:,
+                                                                delivery_partner:).and_return(service)
               allow(service).to receive(:create)
             end
 

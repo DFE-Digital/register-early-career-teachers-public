@@ -347,30 +347,22 @@ describe Declaration do
     describe "payment statuses" do
       let(:declarations) { described_class.payment_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
 
-      describe ".billable" do
-        it "returns declarations with billable payment statuses" do
-          billable_declarations = declarations.select { |d| %w[eligible payable paid].include?(d.payment_status) }
+      describe ".billable_or_changeable" do
+        it "returns declarations with billable or changeable payment statuses" do
+          billable_declarations = declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) }
 
-          expect(described_class.billable).to match_array(billable_declarations)
+          expect(described_class.billable_or_changeable).to match_array(billable_declarations)
         end
       end
 
-      describe ".no_payment_or_billable" do
-        it "returns declarations with no payment or billable payment statuses" do
-          no_payment_or_billable_declarations = declarations.select { |d| %w[no_payment eligible payable paid].include?(d.payment_status) }
+      describe ".billable_or_changeable_for_declaration_type" do
+        it "returns declarations with billable or changeable payment statuses for a specific declaration type" do
+          billable_or_changeable_declarations = declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) }
 
-          expect(described_class.no_payment_or_billable).to match_array(no_payment_or_billable_declarations)
-        end
-      end
-
-      describe ".no_payment_or_billable_for_declaration_type" do
-        it "returns declarations with no payment or billable payment statuses for a specific declaration type" do
-          no_payment_or_billable_declarations = declarations.select { |d| %w[no_payment eligible payable paid].include?(d.payment_status) }
-
-          declaration = no_payment_or_billable_declarations.sample
+          declaration = billable_or_changeable_declarations.sample
           declaration.update!(declaration_type: "retained-1")
 
-          expect(described_class.no_payment_or_billable_for_declaration_type("retained-1")).to contain_exactly(declaration)
+          expect(described_class.billable_or_changeable_for_declaration_type("retained-1")).to contain_exactly(declaration)
         end
       end
     end

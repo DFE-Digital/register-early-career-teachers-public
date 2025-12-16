@@ -2101,9 +2101,9 @@ RSpec.describe Events::Record do
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           **author_params,
-          event_type: :declaration_created,
+          event_type: :teacher_declaration_created,
           happened_at: Time.zone.now,
-          heading: "A new declaration with id #{declaration.id} was created for the teacher: Rhys Ifans (#{lead_provider.name})",
+          heading: "A new declaration (started - no_payment) with id #{declaration.id} was created for the teacher: Rhys Ifans (#{lead_provider.name})",
           teacher:,
           declaration:,
           lead_provider:

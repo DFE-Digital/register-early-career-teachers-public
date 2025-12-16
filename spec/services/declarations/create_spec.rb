@@ -10,6 +10,8 @@ RSpec.describe Declarations::Create do
   let(:declaration_date) { declaration_datetime.iso8601 }
   let(:contract_period) { training_period.contract_period }
   let(:active_lead_provider) { training_period.active_lead_provider }
+  let(:delivery_partner) { training_period.delivery_partner }
+  let(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
 
   let(:service) do
     described_class.new(
@@ -19,7 +21,10 @@ RSpec.describe Declarations::Create do
       training_period:,
       declaration_date:,
       declaration_type:,
-      evidence_type:
+      evidence_type:,
+      payment_statement:,
+      mentorship_period:,
+      delivery_partner:
     )
   end
 
@@ -33,7 +38,6 @@ RSpec.describe Declarations::Create do
         context "when there's no existing declaration" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
-          let!(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
           let!(:mentorship_period) do
             if trainee_type == :ect
               mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
@@ -63,18 +67,8 @@ RSpec.describe Declarations::Create do
             expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
           end
 
-          context "when `evidence_type` is not applicable" do
-            it "clears the evidence type" do
-              expect(create_declaration.evidence_type).to be_nil
-            end
-          end
-
-          context "when `evidence_type` is applicable" do
-            let!(:declaration_type) { "completed" }
-
-            it "does not clear the evidence type" do
-              expect(create_declaration.evidence_type).to eq(evidence_type)
-            end
+          it "sets the evidence type" do
+            expect(create_declaration.evidence_type).to eq(evidence_type)
           end
 
           context "when teacher is eligible for funding" do
@@ -91,7 +85,7 @@ RSpec.describe Declarations::Create do
             it "assigns a payment statement" do
               declaration = create_declaration
 
-              expect(declaration.payment_statement).to eq(statement)
+              expect(declaration.payment_statement).to eq(payment_statement)
             end
           end
 
@@ -133,8 +127,7 @@ RSpec.describe Declarations::Create do
         context "when an existing declaration exists" do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
-          let!(:statement) { FactoryBot.create(:statement, active_lead_provider:) }
-          let!(:mentorship_period) do
+          let(:mentorship_period) do
             if trainee_type == :ect
               mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
               FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
@@ -193,7 +186,7 @@ RSpec.describe Declarations::Create do
             it "assigns a payment statement" do
               declaration = create_declaration
 
-              expect(declaration.payment_statement).to eq(statement)
+              expect(declaration.payment_statement).to eq(payment_statement)
             end
           end
 
