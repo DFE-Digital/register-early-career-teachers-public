@@ -66,10 +66,12 @@ describe ECF2TeacherHistory do
 
   describe "#initialize" do
     it "is initialized with a teacher row" do
-      expect(subject.teacher_row.trn).to eql(trn)
-      expect(subject.teacher_row.trs_first_name).to eql(trs_first_name)
-      expect(subject.teacher_row.trs_last_name).to eql(trs_last_name)
-      expect(subject.teacher_row.corrected_name).to eql(corrected_name)
+      aggregate_failures do
+        expect(subject.teacher_row.trn).to eql(trn)
+        expect(subject.teacher_row.trs_first_name).to eql(trs_first_name)
+        expect(subject.teacher_row.trs_last_name).to eql(trs_last_name)
+        expect(subject.teacher_row.corrected_name).to eql(corrected_name)
+      end
     end
 
     context "when ect_at_school_period_rows are present" do
@@ -161,10 +163,12 @@ describe ECF2TeacherHistory do
         it "updates the existing teacher record" do
           teacher = subject.save_all_ect_data!
 
-          expect(teacher.id).to eql(existing_teacher.id)
-          expect(teacher.trs_first_name).to eql(trs_first_name)
-          expect(teacher.trs_last_name).to eql(trs_last_name)
-          expect(teacher.corrected_name).to eql(corrected_name)
+          aggregate_failures do
+            expect(teacher.id).to eql(existing_teacher.id)
+            expect(teacher.trs_first_name).to eql(trs_first_name)
+            expect(teacher.trs_last_name).to eql(trs_last_name)
+            expect(teacher.corrected_name).to eql(corrected_name)
+          end
         end
 
         it "updates ECT-specific attributes" do
@@ -272,8 +276,10 @@ describe ECF2TeacherHistory do
           end
 
           it "saves the right number of training periods" do
-            expect(teacher.ect_at_school_periods.first.training_periods.count).to be(1)
-            expect(teacher.ect_at_school_periods.second.training_periods.count).to be(1)
+            aggregate_failures do
+              expect(teacher.ect_at_school_periods.first.training_periods.count).to be(1)
+              expect(teacher.ect_at_school_periods.second.training_periods.count).to be(1)
+            end
           end
 
           it "saves provider led training periods with the right data" do
@@ -477,10 +483,12 @@ describe ECF2TeacherHistory do
         it "updates the existing teacher record" do
           teacher = subject.save_all_mentor_data!
 
-          expect(teacher.id).to eql(existing_teacher.id)
-          expect(teacher.trs_first_name).to eql(trs_first_name)
-          expect(teacher.trs_last_name).to eql(trs_last_name)
-          expect(teacher.corrected_name).to eql(corrected_name)
+          aggregate_failures do
+            expect(teacher.id).to eql(existing_teacher.id)
+            expect(teacher.trs_first_name).to eql(trs_first_name)
+            expect(teacher.trs_last_name).to eql(trs_last_name)
+            expect(teacher.corrected_name).to eql(corrected_name)
+          end
         end
 
         it "updates mentor-specific attributes" do
