@@ -4,7 +4,7 @@ FactoryBot.define do
 
     name { "Started" }
     start_date { Date.new(2024, 9, 1) }
-    milestone_date { Date.new(2024, 9, 1) }
+    milestone_date { Date.new(2024, 10, 1) }
     payment_date { Date.new(2024, 10, 1) }
     declaration_type { "started" }
   end
