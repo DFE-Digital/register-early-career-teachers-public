@@ -12,6 +12,50 @@ RSpec.describe LegacyDataImporter do
     allow(Migrators::Base).to receive(:migrators).and_return [migrator1, migrator2]
   end
 
+  describe "version filtering" do
+    let(:teacher_migrator) { class_double(Migrators::Base, model: :teacher, dependencies: []) }
+    let(:mentorship_period_migrator) { class_double(Migrators::Base, model: :mentorship_period, dependencies: [:teacher]) }
+    let(:mentor_data_migrator) { class_double(Migrators::Base, model: :teacher_mentor_data, dependencies: []) }
+    let(:ect_data_migrator) { class_double(Migrators::Base, model: :teacher_ect_data, dependencies: [:teacher_mentor_data]) }
+    let(:other_migrator) { class_double(Migrators::Base, model: :other, dependencies: []) }
+
+    let(:all_migrators) { [teacher_migrator, mentorship_period_migrator, mentor_data_migrator, ect_data_migrator, other_migrator] }
+
+    before do
+      allow(Migrators::Base).to receive(:migrators).and_return(all_migrators)
+    end
+
+    context "with version 1 (default)" do
+      subject(:importer) { described_class.new }
+
+      it "excludes V2 migrators (teacher_mentor_data and teacher_ect_data)" do
+        migrators = importer.send(:migrators)
+
+        expect(migrators).to include(teacher_migrator, mentorship_period_migrator, other_migrator)
+        expect(migrators).not_to include(mentor_data_migrator, ect_data_migrator)
+      end
+    end
+
+    context "with version 2" do
+      subject(:importer) { described_class.new(version: 2) }
+
+      it "excludes V1 migrators (teacher and mentorship_period)" do
+        migrators = importer.send(:migrators)
+
+        expect(migrators).to include(mentor_data_migrator, ect_data_migrator, other_migrator)
+        expect(migrators).not_to include(teacher_migrator, mentorship_period_migrator)
+      end
+    end
+
+    context "with invalid version" do
+      subject(:importer) { described_class.new(version: 99) }
+
+      it "raises an ArgumentError" do
+        expect { importer.send(:migrators) }.to raise_error(ArgumentError, "Unknown migrator version: 99")
+      end
+    end
+  end
+
   describe "#prepare!" do
     it "calls .prepare! on each migrator" do
       expect([migrator1, migrator2]).to all(receive(:prepare!))
