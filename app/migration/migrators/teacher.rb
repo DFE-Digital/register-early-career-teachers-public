@@ -1,4 +1,9 @@
 module Migrators
+  # NOTE: This migrator is deprecated for batch migration.
+  # Use Migrators::MentorData and Migrators::ECTData instead.
+  #
+  # This class is kept for single-teacher migration via MigrateEntity,
+  # which needs to migrate both mentor and ECT data in one call.
   class Teacher < Migrators::Base
     def self.record_count
       teachers.count
@@ -28,10 +33,22 @@ module Migrators
       end
     end
 
+    # Migrates a single teacher's mentor and ECT data.
+    # Used by MigrateEntity for single-teacher migration.
+    #
+    # For batch migration, use Migrators::MentorData followed by
+    # Migrators::ECTData to ensure mentors are migrated before ECTs
+    # (required for MentorshipPeriod creation).
     def migrate_one!(teacher_profile)
       ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
       ecf2_teacher_history = TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2!
-      ecf2_teacher_history.save_all!
+
+      # For single-teacher migration, we can safely do both in one call
+      # since any mentor this teacher has would be migrated separately.
+      ecf2_teacher_history.save_all_mentor_data! if ecf1_teacher_history.mentor.present?
+      ecf2_teacher_history.save_all_ect_data! if ecf1_teacher_history.ect.present?
+
+      ::Teacher.find_by(trn: teacher_profile.trn) || ::Teacher.find_by(api_id: teacher_profile.user.id)
     end
 
   private
