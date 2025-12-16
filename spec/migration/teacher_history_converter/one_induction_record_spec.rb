@@ -55,6 +55,83 @@ describe "One induction record" do
         expect(subject.teacher_row.updated_at).to be_within(1.second).of(ecf1_teacher_history.user.updated_at)
       end
     end
+
+    describe "setting api_updated_at" do
+      let(:short_time_ago) { 3.months.ago }
+      let(:long_time_ago) { 6.months.ago }
+
+      let(:user_updated_at) { long_time_ago }
+      let(:ect_updated_at) { long_time_ago }
+      let(:ect_induction_record_updated_at) { long_time_ago }
+      let(:mentor_updated_at) { long_time_ago }
+      let(:mentor_induction_record_updated_at) { long_time_ago }
+      let(:participant_identity_updated_ats) { [long_time_ago, long_time_ago] }
+
+      let(:ecf1_teacher_history_user) { FactoryBot.build(:ecf1_teacher_history_user, updated_at: user_updated_at) }
+
+      let(:ecf1_teacher_history) do
+        FactoryBot.build(:ecf1_teacher_history, user: ecf1_teacher_history_user, participant_identity_updated_ats:) do |history|
+          history.ect = FactoryBot.build(:ecf1_teacher_history_ect, updated_at: ect_updated_at) do |ect|
+            ect.induction_records = [
+              FactoryBot.build(:ecf1_teacher_history_induction_record_row, updated_at: ect_induction_record_updated_at)
+            ]
+          end
+          history.mentor = FactoryBot.build(:ecf1_teacher_history_mentor, updated_at: mentor_updated_at) do |mentor|
+            mentor.induction_records = [
+              FactoryBot.build(:ecf1_teacher_history_induction_record_row, updated_at: mentor_induction_record_updated_at)
+            ]
+          end
+        end
+      end
+
+      context "when the user record was updated most recently" do
+        let(:user_updated_at) { short_time_ago }
+
+        it "selects the user updated at timestamp" do
+          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(user_updated_at) }
+        end
+      end
+
+      context "when the ECT participant profile was updated most recently" do
+        let(:ect_updated_at) { short_time_ago }
+
+        it "selects the ECT participant profile timestamp" do
+          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(ect_updated_at) }
+        end
+      end
+
+      context "when an ECT induction record was updated most recently" do
+        let(:ect_induction_record_updated_at) { short_time_ago }
+
+        it "selects the ECT induction record timestamp" do
+          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(ect_induction_record_updated_at) }
+        end
+      end
+
+      context "when the mentor participant profile was most recently" do
+        let(:mentor_updated_at) { short_time_ago }
+
+        it "selects the mentor participant profile timestamp" do
+          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(mentor_updated_at) }
+        end
+      end
+
+      context "when the mentor induction record was most recently" do
+        let(:mentor_induction_record_updated_at) { short_time_ago }
+
+        it "selects the mentor induction record timestamp" do
+          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(mentor_induction_record_updated_at) }
+        end
+      end
+
+      context "when a participant identity was updated most recently" do
+        let(:participant_identity_updated_ats) { [long_time_ago, short_time_ago] }
+
+        it "selects the mentor induction record timestamp" do
+          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(short_time_ago) }
+        end
+      end
+    end
   end
 
   describe "ECT at school period attributes" do
