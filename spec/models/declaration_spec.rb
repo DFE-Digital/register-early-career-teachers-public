@@ -35,6 +35,10 @@ describe Declaration do
     it { is_expected.to have_one(:lead_provider).through(:training_period) }
     it { is_expected.to have_one(:delivery_partner).through(:training_period) }
     it { is_expected.to have_one(:contract_period).through(:training_period) }
+    it { is_expected.to have_one(:ect_at_school_period).through(:training_period) }
+    it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
+    it { is_expected.to have_one(:ect_teacher).through(:ect_at_school_period).source(:teacher) }
+    it { is_expected.to have_one(:mentor_teacher).through(:mentor_at_school_period).source(:teacher) }
   end
 
   describe "delegations" do
