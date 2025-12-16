@@ -19,7 +19,13 @@ module Schools
   private
 
     def add_new_mentorship!
-      @mentorship_period = ect.mentorship_periods.create!(mentor:, started_on: earliest_possible_start, finished_on: latest_possible_finish)
+      started_on = earliest_possible_start
+
+      if current_mentorship_period&.finished_on == started_on
+        started_on = current_mentorship_period.finished_on.next_day
+      end
+
+      @mentorship_period = ect.mentorship_periods.create!(mentor:, started_on:, finished_on: latest_possible_finish)
     end
 
     def earliest_possible_start
