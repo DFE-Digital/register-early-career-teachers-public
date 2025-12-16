@@ -25,13 +25,12 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
 
-    when_i_click_confirm
+    when_i_click_confirm_change
     then_i_should_be_taken_to_the_confirmation_page
     and_i_should_see_a_confirmation_message
 
     when_i_click_continue_from_confirmation_page
-    then_i_should_see_the_school_home_page
-
+    then_i_should_see_the_school_induction_tutor_page
     and_the_induction_tutor_details_should_have_changed
     and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
   end
@@ -48,8 +47,16 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
     page.get_by_role("link", name: "Change induction tutor details").click
   end
 
+  def when_i_click_confirm_change
+    page.get_by_role("button", name: "Confirm change").click
+  end
+
   def and_i_should_see_a_confirmation_message
-    expect(page.get_by_text("New Name is your school’s induction tutor")).to be_visible
+    expect(page.get_by_text("You've changed your school’s induction tutor to New Name")).to be_visible
+  end
+
+  def then_i_should_see_the_school_induction_tutor_page
+    expect(page).to have_path("/school/home/induction-tutor")
   end
 
   def base_page
