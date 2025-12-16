@@ -159,7 +159,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
 
     context "when induction information needs updating" do
       before do
-        mock_service = instance_double(Schools::InductionTutorDetails, needs_update_by_user?: true)
+        mock_service = instance_double(Schools::InductionTutorDetails, update_required?: true)
         allow(Schools::InductionTutorDetails).to receive(:new)
           .with(current_user)
           .and_return(mock_service)
