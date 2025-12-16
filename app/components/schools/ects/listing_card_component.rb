@@ -4,12 +4,13 @@ module Schools
       include TeacherHelper
       include ECTHelper
 
-      attr_reader :teacher, :ect_at_school_period, :training_period
+      attr_reader :teacher, :ect_at_school_period, :training_period, :current_school
 
-      def initialize(teacher:, ect_at_school_period:, training_period:)
+      def initialize(teacher:, ect_at_school_period:, training_period:, current_school: nil)
         @teacher = teacher
         @ect_at_school_period = ect_at_school_period
         @training_period = training_period
+        @current_school = current_school
       end
 
     private
@@ -81,7 +82,7 @@ module Schools
       end
 
       def status_row
-        { key: { text: "Status" }, value: { text: ect_status(ect_at_school_period) } }
+        { key: { text: "Status" }, value: { text: ect_status(ect_at_school_period, current_school:) } }
       end
 
       def trn_row
