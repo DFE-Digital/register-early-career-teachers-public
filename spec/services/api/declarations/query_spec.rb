@@ -261,7 +261,7 @@ RSpec.describe API::Declarations::Query do
         end
       end
 
-      describe "by `teacher_id`" do
+      describe "by `teacher_api_ids`" do
         let(:teacher1) { FactoryBot.create(:teacher) }
         let(:teacher2) { FactoryBot.create(:teacher) }
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: teacher1) }
@@ -273,67 +273,83 @@ RSpec.describe API::Declarations::Query do
         let!(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
         let!(:declaration3) { FactoryBot.create(:declaration) }
 
-        context "when `teacher_id` param is omitted" do
+        context "when `teacher_api_ids` param is omitted" do
           it "returns all declarations" do
             expect(instance.declarations).to contain_exactly(declaration1, declaration2, declaration3)
           end
         end
 
-        it "filters by `teacher_id` for ECT" do
-          query = described_class.new(teacher_id: teacher1.id)
+        it "filters by `teacher_api_ids` for ECT" do
+          query = described_class.new(teacher_api_ids: teacher1.api_id)
 
           expect(query.declarations).to contain_exactly(declaration1)
         end
 
-        it "filters by `teacher_id` for mentor" do
-          query = described_class.new(teacher_id: teacher2.id)
+        it "filters by `teacher_api_ids` for mentor" do
+          query = described_class.new(teacher_api_ids: teacher2.api_id)
 
           expect(query.declarations).to contain_exactly(declaration2)
         end
 
-        it "returns empty if no declarations are found for the given `teacher_id`" do
-          query = described_class.new(teacher_id: FactoryBot.create(:teacher).id)
+        it "filters by multiple `teacher_api_ids`" do
+          query = described_class.new(teacher_api_ids: [teacher1.api_id, teacher2.api_id])
+
+          expect(query.declarations).to contain_exactly(declaration1, declaration2)
+        end
+
+        it "returns empty if no declarations are found for the given `teacher_api_ids`" do
+          query = described_class.new(teacher_api_ids: FactoryBot.create(:teacher).api_id)
 
           expect(query.declarations).to be_empty
         end
 
-        it "does not filter by `teacher_id` if an empty string is supplied" do
-          query = described_class.new(teacher_id: " ")
+        it "does not filter by `teacher_api_ids` if an empty string is supplied" do
+          query = described_class.new(teacher_api_ids: " ")
 
           expect(query.declarations).to contain_exactly(declaration1, declaration2, declaration3)
         end
       end
 
-      describe "by `delivery_partner_id`" do
-        let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-        let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:) }
-        let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
-        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      describe "by `delivery_partner_api_ids`" do
+        let(:delivery_partner1) { FactoryBot.create(:delivery_partner) }
+        let(:delivery_partner2) { FactoryBot.create(:delivery_partner) }
+        let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner1) }
+        let(:lead_provider_delivery_partnership2) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner2) }
+        let(:school_partnership1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership1) }
+        let(:school_partnership2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership2) }
+        let(:training_period1) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership: school_partnership1) }
+        let(:training_period2) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership: school_partnership2) }
 
-        let!(:declaration1) { FactoryBot.create(:declaration, training_period:) }
-        let!(:declaration2) { FactoryBot.create(:declaration) }
+        let!(:declaration1) { FactoryBot.create(:declaration, training_period: training_period1) }
+        let!(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
         let!(:declaration3) { FactoryBot.create(:declaration) }
 
-        context "when `delivery_partner_id` param is omitted" do
+        context "when `delivery_partner_api_ids` param is omitted" do
           it "returns all declarations" do
             expect(instance.declarations).to contain_exactly(declaration1, declaration2, declaration3)
           end
         end
 
-        it "filters by `delivery_partner_id`" do
-          query = described_class.new(delivery_partner_id: delivery_partner.id)
+        it "filters by `delivery_partner_api_ids`" do
+          query = described_class.new(delivery_partner_api_ids: delivery_partner1.api_id)
 
           expect(query.declarations).to contain_exactly(declaration1)
         end
 
-        it "returns empty if no declarations are found for the given `delivery_partner_id`" do
-          query = described_class.new(delivery_partner_id: FactoryBot.create(:delivery_partner).id)
+        it "filters by multiple `delivery_partner_api_ids`" do
+          query = described_class.new(delivery_partner_api_ids: [delivery_partner1.api_id, delivery_partner2.api_id])
+
+          expect(query.declarations).to contain_exactly(declaration1, declaration2)
+        end
+
+        it "returns empty if no declarations are found for the given `delivery_partner_api_ids`" do
+          query = described_class.new(delivery_partner_api_ids: FactoryBot.create(:delivery_partner).api_id)
 
           expect(query.declarations).to be_empty
         end
 
-        it "does not filter by `delivery_partner_id` if an empty string is supplied" do
-          query = described_class.new(delivery_partner_id: " ")
+        it "does not filter by `delivery_partner_api_ids` if an empty string is supplied" do
+          query = described_class.new(delivery_partner_api_ids: " ")
 
           expect(query.declarations).to contain_exactly(declaration1, declaration2, declaration3)
         end
@@ -385,7 +401,7 @@ RSpec.describe API::Declarations::Query do
       declaration1 = FactoryBot.create(:declaration)
       declaration2 = FactoryBot.create(:declaration)
 
-      query = described_class.new(delivery_partner_id: declaration1.delivery_partner.id)
+      query = described_class.new(delivery_partner_api_ids: declaration1.delivery_partner.api_id)
 
       expect { query.declaration_by_api_id(declaration2.api_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -412,7 +428,7 @@ RSpec.describe API::Declarations::Query do
       declaration1 = FactoryBot.create(:declaration)
       declaration2 = FactoryBot.create(:declaration)
 
-      query = described_class.new(delivery_partner_id: declaration1.delivery_partner.id)
+      query = described_class.new(delivery_partner_api_ids: declaration1.delivery_partner.api_id)
 
       expect { query.declaration_by_id(declaration2.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
