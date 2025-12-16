@@ -204,6 +204,41 @@ RSpec.describe API::Declarations::Query do
               expect(query.declarations).to contain_exactly(declaration1, declaration2, declaration3, declaration5)
             end
           end
+
+          context "when teacher has ECT declarations with previous declarations and new lead provider has mentor declarations" do
+            # New mentor lead provider
+            let(:lead_provider4) { FactoryBot.create(:lead_provider) }
+            let(:active_lead_provider4) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider4, contract_period:) }
+            let(:lead_provider_delivery_partnership4) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider4) }
+            let(:school_partnership4) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership4) }
+
+            # Teacher belonging to `ect_at_school_period`, we will make them a mentor with `lead_provider4`
+            let(:teacher) { ect_at_school_period.teacher }
+            let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
+            let(:mentor_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_mentor,
+                :ongoing,
+                mentor_at_school_period:,
+                school_partnership: school_partnership4
+              )
+            end
+            let!(:mentor_declaration) do
+              FactoryBot.create(
+                :declaration,
+                training_period: mentor_training_period,
+                declaration_type: "started",
+                declaration_date: mentor_training_period.started_on.next_day
+              )
+            end
+
+            it "does not return previous ECT declarations, only mentor declaration" do
+              query = described_class.new(lead_provider_id: lead_provider4.id)
+
+              expect(query.declarations.map(&:id)).to contain_exactly(mentor_declaration.id)
+            end
+          end
         end
       end
 

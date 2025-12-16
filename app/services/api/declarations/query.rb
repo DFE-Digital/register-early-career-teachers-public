@@ -57,40 +57,43 @@ module API::Declarations
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
-      # Direct declarations - submitted by the lead provider
-      direct_sql = <<~SQL.squish
-        EXISTS (
-          SELECT 1 FROM training_periods
-          JOIN school_partnerships ON school_partnerships.id = training_periods.school_partnership_id
-          JOIN lead_provider_delivery_partnerships ON lead_provider_delivery_partnerships.id = school_partnerships.lead_provider_delivery_partnership_id
-          JOIN active_lead_providers ON active_lead_providers.id = lead_provider_delivery_partnerships.active_lead_provider_id
-          WHERE training_periods.id = declarations.training_period_id
-          AND active_lead_providers.lead_provider_id = :lead_provider_id
-        )
-      SQL
+      # Direct declarations: training period belongs to this lead provider
+      direct_scope = scope
+        .joins(training_period: :lead_provider)
+        .where(lead_providers: { id: lead_provider_id })
 
-      # Previous declarations - for teachers who have a training period with this lead provider
+      # Previous declarations: teachers who trained with this LP (with date/status constraints)
+      previous_scope = previous_declarations_for_lead_provider(lead_provider_id)
+
+      @scope = scope.where(id: direct_scope.select(:id)).or(scope.where(id: previous_scope.select(:id)))
+    end
+
+    def previous_declarations_for_lead_provider(lead_provider_id)
+      # Uses EXISTS to find declarations where the teacher has an active/relevant training period with this LP
       previous_sql = <<~SQL.squish
         EXISTS (
           SELECT 1 FROM training_periods tp
-          JOIN school_partnerships sp ON sp.id = tp.school_partnership_id
-          JOIN lead_provider_delivery_partnerships lpdp ON lpdp.id = sp.lead_provider_delivery_partnership_id
-          JOIN active_lead_providers alp ON alp.id = lpdp.active_lead_provider_id
+          INNER JOIN school_partnerships sp ON sp.id = tp.school_partnership_id
+          INNER JOIN lead_provider_delivery_partnerships lpdp ON lpdp.id = sp.lead_provider_delivery_partnership_id
+          INNER JOIN active_lead_providers alp ON alp.id = lpdp.active_lead_provider_id
           LEFT JOIN ect_at_school_periods ect ON ect.id = tp.ect_at_school_period_id
           LEFT JOIN mentor_at_school_periods mentor ON mentor.id = tp.mentor_at_school_period_id
-          JOIN training_periods decl_tp ON decl_tp.id = declarations.training_period_id
+          INNER JOIN training_periods decl_tp ON decl_tp.id = declarations.training_period_id
           LEFT JOIN ect_at_school_periods decl_ect ON decl_ect.id = decl_tp.ect_at_school_period_id
           LEFT JOIN mentor_at_school_periods decl_mentor ON decl_mentor.id = decl_tp.mentor_at_school_period_id
           WHERE alp.lead_provider_id = :lead_provider_id
           AND (
-            COALESCE(ect.teacher_id, mentor.teacher_id) = COALESCE(decl_ect.teacher_id, decl_mentor.teacher_id)
+            (ect.teacher_id IS NOT NULL AND decl_ect.teacher_id = ect.teacher_id)
+            OR
+            (mentor.teacher_id IS NOT NULL AND decl_mentor.teacher_id = mentor.teacher_id)
           )
           AND (tp.finished_on IS NULL OR declarations.declaration_date <= tp.finished_on)
         )
-        AND declarations.payment_status IN ('no_payment', 'eligible', 'payable', 'paid')
       SQL
 
-      @scope = scope.where("(#{direct_sql}) OR (#{previous_sql})", lead_provider_id:)
+      scope
+        .where(payment_status: Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES)
+        .where(previous_sql, lead_provider_id:)
     end
 
     def where_contract_period_year_in(contract_period_years)
