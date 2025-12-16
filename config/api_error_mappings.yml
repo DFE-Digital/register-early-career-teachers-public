@@ -5,3 +5,4 @@
 "delivery_partner_api_id": "delivery_partner_id"
 "teacher_api_id": "participant_id"
 "teacher_type": "course_identifier"
+"declaration_id": "participant_declaration_id"
