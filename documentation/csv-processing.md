@@ -25,7 +25,6 @@ erDiagram
     integer processed_count
     integer errored_count
     integer released_count
-    integer failed_count
     integer passed_count
     integer claimed_count
   }
@@ -77,7 +76,7 @@ erDiagram
 - Decided against storing files and adding ActiveStorage for lower overhead and easier deployment, instead we process data in memory and store as JSON in the database.
 - Data is processed asynchronously in two stages to support the "Check your answers" pattern.
 - Validations needed to behave slightly differently to the manual journey with extra formatting validations and different messages, surfaced with a particular hierarchy.
-- The `PendingInductionSubmissionBatch` record is either a "claim" or "action" type, with the latter resulting in pass or fail outcomes, or releases.
+- The `PendingInductionSubmissionBatch` record is either a "claim" or "action" type, with the latter resulting in a pass or release outcome.
 - A batch transitions through various states, with "processing" potentially taking minutes to complete for large files and the user experience uses dynamic page updates to track progress.
 - Any batch that contains rows that could not be actioned retains its submissions and data which are combined for the user to download as a CSV with actionable errors.
 
@@ -87,7 +86,7 @@ erDiagram
 - ECT checks use both TRN and DoB. The database submission TRN field has constraints so extra guard logic was necessary.
 - The only file format we accept is CSV, and the files we generate use quotations around cells. There are two templates, one for each batch type. All dates must use the ISO8601 standard. The maximum number of rows we allow is 1k.
 - CSV rows are wrapped in `Data` objects for processing which enforce the templates and encapsulate the common formatting logic.
-- Counts of outcomes and failures are tallied before CSV data which contains PII is redacted and submissions pruned as usual
+- Counts of outcomes are tallied before CSV data which contains PII is redacted and submissions pruned as usual
 - Batch jobs use inheritance to defer to a dedicated service class which have their own queue. The queue is higher priority like the mailers because it impacts the user experience.
 - The event records were updated to associate to batches and it is through events we are able to determine which inductions were done via a bulk upload.
 
