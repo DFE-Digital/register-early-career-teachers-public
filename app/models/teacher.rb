@@ -117,18 +117,4 @@ class Teacher < ApplicationRecord
   def eligible_for_funding?
     Teachers::MentorFundingEligibility.new(trn:).eligible?
   end
-
-  def training_periods
-    return ect_training_periods if ect_at_school_periods.exists?
-
-    mentor_training_periods if mentor_at_school_periods.exists?
-  end
-
-  def most_recent_provider_led_period
-    training_periods&.provider_led_training_programme&.latest_first&.first
-  end
-
-  def most_recent_schedule
-    most_recent_provider_led_period&.schedule
-  end
 end
