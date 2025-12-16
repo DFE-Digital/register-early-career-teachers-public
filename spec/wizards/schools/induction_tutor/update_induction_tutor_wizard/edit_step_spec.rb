@@ -113,6 +113,18 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::EditStep do
         expect(current_step.errors).to be_empty
       end
     end
+
+    context "when neither the name nor email have changed" do
+      let(:induction_tutor_name) { school.induction_tutor_name }
+      let(:induction_tutor_email) { school.induction_tutor_email }
+
+      it "is invalid" do
+        expect(current_step).to be_invalid
+        expect(current_step.errors.messages_for(:base)).to contain_exactly(
+          "You must change one of the fields to change the induction tutor details"
+        )
+      end
+    end
   end
 
   describe "#save!" do
