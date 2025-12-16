@@ -4,13 +4,15 @@ class ECF2TeacherHistory::TrainingPeriodRow
               :training_programme,
               :lead_provider_info,
               :delivery_partner_info,
-              :contract_period,
+              :contract_period_year,
               :schedule_info,
               :deferred_at,
               :deferral_reason,
               :withdrawn_at,
               :withdrawal_reason,
-              :created_at
+              :created_at,
+              :ecf_start_induction_record_id,
+              :is_ect
 
   def initialize(started_on:,
                  finished_on:,
@@ -18,27 +20,28 @@ class ECF2TeacherHistory::TrainingPeriodRow
                  training_programme:,
                  lead_provider_info: nil,
                  delivery_partner_info: nil,
-                 contract_period: nil,
+                 contract_period_year: nil,
                  schedule_info: nil,
                  deferred_at: nil,
                  deferral_reason: nil,
                  withdrawn_at: nil,
-                 withdrawal_reason: nil)
+                 withdrawal_reason: nil,
+                 ecf_start_induction_record_id: nil,
+                 is_ect: false)
     @started_on = started_on
     @finished_on = finished_on
     @created_at = created_at
     @training_programme = training_programme
     @lead_provider_info = lead_provider_info
     @delivery_partner_info = delivery_partner_info
-    @contract_period = contract_period
+    @contract_period_year = contract_period_year
     @schedule_info = schedule_info
-    # FIXME: rename schedule_info? We could probably do with a convention here
-    #        to differentiate between ecf1 records, ecf2 records and the data objects
-    #        we're using for migration
     @deferred_at = deferred_at
     @deferral_reason = deferral_reason
     @withdrawn_at = withdrawn_at
     @withdrawal_reason = withdrawal_reason
+    @ecf_start_induction_record_id = ecf_start_induction_record_id
+    @is_ect = is_ect
   end
 
   def to_hash
@@ -47,18 +50,14 @@ class ECF2TeacherHistory::TrainingPeriodRow
       finished_on:,
       training_programme:,
       schedule: ecf2_schedule,
-      created_at:
-      # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
-      # deferred_at:,
-      # deferral_reason:,
-      # withdrawn_at:,
-      # withdrawal_reason:
+      created_at:,
+      ecf_start_induction_record_id:
     }
   end
 
   # FIXME: the school here is from one level up, perhaps there's a nicer way of cross-referencing?
   def school_partnership(school:)
-    SchoolPartnerships::Search.new(school:, contract_period:, lead_provider:, delivery_partner:)
+    SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
       .school_partnerships
       .first
       .then { |school_partnership| { school_partnership: } }
@@ -67,7 +66,12 @@ class ECF2TeacherHistory::TrainingPeriodRow
   def ecf2_schedule
     return if schedule_info.blank?
 
-    Schedule.find_by(contract_period_year: schedule_info.cohort_year, identifier: schedule_info.identifier)
+    schedule = Schedule.find_by(contract_period_year: schedule_info.cohort_year, identifier: schedule_info.identifier)
+
+    # ECTs cannot be assigned to replacement schedules
+    return nil if schedule&.replacement_schedule? && is_ect
+
+    schedule
   end
 
   def lead_provider

@@ -66,10 +66,12 @@ describe ECF2TeacherHistory do
 
   describe "#initialize" do
     it "is initialized with a teacher row" do
-      expect(subject.teacher_row.trn).to eql(trn)
-      expect(subject.teacher_row.trs_first_name).to eql(trs_first_name)
-      expect(subject.teacher_row.trs_last_name).to eql(trs_last_name)
-      expect(subject.teacher_row.corrected_name).to eql(corrected_name)
+      aggregate_failures do
+        expect(subject.teacher_row.trn).to eql(trn)
+        expect(subject.teacher_row.trs_first_name).to eql(trs_first_name)
+        expect(subject.teacher_row.trs_last_name).to eql(trs_last_name)
+        expect(subject.teacher_row.corrected_name).to eql(corrected_name)
+      end
     end
 
     context "when ect_at_school_period_rows are present" do
@@ -144,7 +146,40 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher record already exists" do
-        pending "it updates the existing teacher record"
+        let!(:existing_teacher) do
+          FactoryBot.create(
+            :teacher,
+            trn:,
+            trs_first_name: "Old First Name",
+            trs_last_name: "Old Last Name",
+            corrected_name: nil
+          )
+        end
+
+        it "does not create a new teacher record" do
+          expect { subject.save_all_ect_data! }.not_to change(Teacher, :count)
+        end
+
+        it "updates the existing teacher record" do
+          teacher = subject.save_all_ect_data!
+
+          aggregate_failures do
+            expect(teacher.id).to eql(existing_teacher.id)
+            expect(teacher.trs_first_name).to eql(trs_first_name)
+            expect(teacher.trs_last_name).to eql(trs_last_name)
+            expect(teacher.corrected_name).to eql(corrected_name)
+          end
+        end
+
+        it "updates ECT-specific attributes" do
+          teacher = subject.save_all_ect_data!
+
+          aggregate_failures do
+            expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
+            expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
+            expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
+          end
+        end
       end
 
       context "when the teacher has ECT at school periods" do
@@ -189,7 +224,7 @@ describe ECF2TeacherHistory do
               training_programme: :provider_led,
               lead_provider_info:,
               delivery_partner_info:,
-              contract_period:,
+              contract_period_year: contract_period.year,
               schedule_info:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
@@ -241,8 +276,10 @@ describe ECF2TeacherHistory do
           end
 
           it "saves the right number of training periods" do
-            expect(teacher.ect_at_school_periods.first.training_periods.count).to be(1)
-            expect(teacher.ect_at_school_periods.second.training_periods.count).to be(1)
+            aggregate_failures do
+              expect(teacher.ect_at_school_periods.first.training_periods.count).to be(1)
+              expect(teacher.ect_at_school_periods.second.training_periods.count).to be(1)
+            end
           end
 
           it "saves provider led training periods with the right data" do
@@ -429,7 +466,40 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher record already exists" do
-        pending "it updates the existing teacher record"
+        let!(:existing_teacher) do
+          FactoryBot.create(
+            :teacher,
+            trn:,
+            trs_first_name: "Old First Name",
+            trs_last_name: "Old Last Name",
+            corrected_name: nil
+          )
+        end
+
+        it "does not create a new teacher record" do
+          expect { subject.save_all_mentor_data! }.not_to change(Teacher, :count)
+        end
+
+        it "updates the existing teacher record" do
+          teacher = subject.save_all_mentor_data!
+
+          aggregate_failures do
+            expect(teacher.id).to eql(existing_teacher.id)
+            expect(teacher.trs_first_name).to eql(trs_first_name)
+            expect(teacher.trs_last_name).to eql(trs_last_name)
+            expect(teacher.corrected_name).to eql(corrected_name)
+          end
+        end
+
+        it "updates mentor-specific attributes" do
+          teacher = subject.save_all_mentor_data!
+
+          aggregate_failures do
+            expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
+            expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)
+            expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
+          end
+        end
       end
 
       context "when the teacher has mentor at school periods" do
@@ -473,7 +543,7 @@ describe ECF2TeacherHistory do
               training_programme: :provider_led,
               lead_provider_info:,
               delivery_partner_info:,
-              contract_period:,
+              contract_period_year: contract_period.year,
               schedule_info:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),

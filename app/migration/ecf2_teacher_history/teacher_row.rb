@@ -70,6 +70,7 @@ class ECF2TeacherHistory::TeacherRow
       api_id:,
       api_ect_training_record_id:,
       api_mentor_training_record_id:,
+      api_updated_at:,
 
       ect_pupil_premium_uplift:,
       ect_sparsity_uplift:,

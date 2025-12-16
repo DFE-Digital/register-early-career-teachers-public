@@ -1,5 +1,6 @@
-# TODO: delete this class and use LegacyDataImporterV2 instead
-class LegacyDataImporter
+class LegacyDataImporterV2
+  MIGRATORS = %i[mentor ect].freeze
+
   def prepare!
     migrators.each(&:prepare!)
   end
@@ -13,8 +14,6 @@ class LegacyDataImporter
   end
 
   def reset!
-    # FIXME: could cause an issue if there are any jobs in process, plus do
-    # we want to do this?
     DataMigration.all.find_each(&:destroy!)
 
     Metadata::Manager.destroy_all_metadata!
@@ -25,7 +24,7 @@ class LegacyDataImporter
 private
 
   def migrators
-    Migrators::Base.migrators.reject { |m| m.model.in?(%i[mentor ect]) }
+    Migrators::Base.migrators.reject { |m| m.model.in?(%i[teacher mentorship_period]) }
   end
 
   def migrators_in_dependency_order
