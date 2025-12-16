@@ -1,6 +1,6 @@
 <%
   page_data(
-    title: 'Check and confirm',
+    title: 'Check and confirm change',
     backlink_href: @wizard.previous_step_path
   )
 %>
@@ -20,7 +20,7 @@
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-  <%= f.govuk_submit 'Confirm induction tutor' %>
+  <%= f.govuk_submit 'Confirm change' %>
 <% end %>
 
 <p class="govuk-body">
