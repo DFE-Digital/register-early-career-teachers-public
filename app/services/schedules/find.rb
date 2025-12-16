@@ -19,7 +19,6 @@ module Schedules
   private
 
     def schedule_for_target_period
-      most_recent_schedule = teacher.most_recent_schedule
       return most_recent_schedule if most_recent_schedule&.contract_period_year == contract_period_year
 
       Schedule.find_by(contract_period_year:, identifier: most_recent_schedule&.identifier) || Schedule.find_by(contract_period_year:, identifier:)
@@ -31,6 +30,20 @@ module Schedules
 
     def teacher
       period.teacher
+    end
+
+    def training_periods
+      return teacher.ect_training_periods if teacher.ect_at_school_periods.exists?
+
+      teacher.mentor_training_periods if teacher.mentor_at_school_periods.exists?
+    end
+
+    def most_recent_provider_led_period
+      training_periods&.provider_led_training_programme&.latest_first&.first
+    end
+
+    def most_recent_schedule
+      most_recent_provider_led_period&.schedule
     end
 
     def latest_start_date
