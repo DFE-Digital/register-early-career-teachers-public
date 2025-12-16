@@ -32,7 +32,7 @@ module Migrators
 
       ecf2_teacher_history = TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2!
       ecf2_teacher_history.save_all_mentor_data!
-      true
+      ecf2_teacher_history.success?
     end
 
   private

@@ -19,15 +19,21 @@ class ECF2TeacherHistory
   end
 
   def save_all_ect_data!
+    @success = true
     teacher = find_or_create_teacher!
     save_ect_periods!(teacher)
     teacher
   end
 
   def save_all_mentor_data!
+    @success = true
     teacher = find_or_create_teacher!
     save_mentor_periods!(teacher)
     teacher
+  end
+
+  def success?
+    @success
   end
 
 private
@@ -55,6 +61,7 @@ private
           **training_period_row
         )
       rescue ActiveRecord::ActiveRecordError => e
+        @success = false
         TeacherMigrationFailure.create!(
           teacher:,
           model: :training_period,
@@ -70,8 +77,18 @@ private
           **mentorship_period_row.mentor_at_school_period,
           **mentorship_period_row
         )
+      rescue ActiveRecord::ActiveRecordError => e
+        @success = false
+        TeacherMigrationFailure.create!(
+          teacher:,
+          model: :mentorship_period,
+          message: e.message,
+          migration_item_id: mentorship_period_row.ecf_start_induction_record_id,
+          migration_item_type: "Migration::InductionRecord"
+        )
       end
     rescue ActiveRecord::ActiveRecordError => e
+      @success = false
       TeacherMigrationFailure.create!(
         teacher:,
         model: :ect_at_school_period,
@@ -93,6 +110,7 @@ private
           **training_period_row
         )
       rescue ActiveRecord::ActiveRecordError => e
+        @success = false
         TeacherMigrationFailure.create!(
           teacher:,
           model: :training_period,
@@ -102,6 +120,7 @@ private
         )
       end
     rescue ActiveRecord::ActiveRecordError => e
+      @success = false
       TeacherMigrationFailure.create!(
         teacher:,
         model: :mentor_at_school_period,
