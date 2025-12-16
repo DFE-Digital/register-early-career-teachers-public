@@ -1,4 +1,4 @@
-RSpec.describe LegacyDataImporter do
+RSpec.describe LegacyDataImporterV2 do
   include ActiveJob::TestHelper
 
   subject(:importer) { described_class.new }
@@ -25,11 +25,11 @@ RSpec.describe LegacyDataImporter do
       allow(Migrators::Base).to receive(:migrators).and_return(all_migrators)
     end
 
-    it "excludes V2 migrators (mentor and ect)" do
+    it "excludes V1 migrators (teacher and mentorship_period)" do
       migrators = importer.send(:migrators)
 
-      expect(migrators).to include(teacher_migrator, mentorship_period_migrator, other_migrator)
-      expect(migrators).not_to include(mentor_migrator, ect_migrator)
+      expect(migrators).to include(mentor_migrator, ect_migrator, other_migrator)
+      expect(migrators).not_to include(teacher_migrator, mentorship_period_migrator)
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe LegacyDataImporter do
 
       expect {
         importer.reset!
-      }.to change { DataMigration.count }.by(-2)
+      }.to change(DataMigration, :count).by(-2)
     end
 
     it "calls .reset! on each migrator" do
