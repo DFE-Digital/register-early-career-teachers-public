@@ -224,7 +224,7 @@ describe ECF2TeacherHistory do
               training_programme: :provider_led,
               lead_provider_info:,
               delivery_partner_info:,
-              contract_period:,
+              contract_period_year: contract_period.year,
               schedule_info:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
@@ -543,7 +543,7 @@ describe ECF2TeacherHistory do
               training_programme: :provider_led,
               lead_provider_info:,
               delivery_partner_info:,
-              contract_period:,
+              contract_period_year: contract_period.year,
               schedule_info:
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),

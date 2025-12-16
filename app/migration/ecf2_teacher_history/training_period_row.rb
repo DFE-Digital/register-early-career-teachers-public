@@ -4,7 +4,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
               :training_programme,
               :lead_provider_info,
               :delivery_partner_info,
-              :contract_period,
+              :contract_period_year,
               :schedule_info,
               :deferred_at,
               :deferral_reason,
@@ -20,7 +20,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
                  training_programme:,
                  lead_provider_info: nil,
                  delivery_partner_info: nil,
-                 contract_period: nil,
+                 contract_period_year: nil,
                  schedule_info: nil,
                  deferred_at: nil,
                  deferral_reason: nil,
@@ -34,7 +34,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
     @training_programme = training_programme
     @lead_provider_info = lead_provider_info
     @delivery_partner_info = delivery_partner_info
-    @contract_period = contract_period
+    @contract_period_year = contract_period_year
     @schedule_info = schedule_info
     @deferred_at = deferred_at
     @deferral_reason = deferral_reason
@@ -57,7 +57,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
 
   # FIXME: the school here is from one level up, perhaps there's a nicer way of cross-referencing?
   def school_partnership(school:)
-    SchoolPartnerships::Search.new(school:, contract_period:, lead_provider:, delivery_partner:)
+    SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
       .school_partnerships
       .first
       .then { |school_partnership| { school_partnership: } }
