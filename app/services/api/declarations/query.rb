@@ -7,8 +7,8 @@ module API::Declarations
     def initialize(
       lead_provider_id: :ignore,
       contract_period_years: :ignore,
-      teacher_id: :ignore,
-      delivery_partner_id: :ignore,
+      teacher_api_ids: :ignore,
+      delivery_partner_api_ids: :ignore,
       updated_since: :ignore
     )
       @lead_provider_id = lead_provider_id
@@ -16,8 +16,8 @@ module API::Declarations
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
-      where_teacher_is(teacher_id)
-      where_delivery_partner_is(delivery_partner_id)
+      where_teacher_is(teacher_api_ids)
+      where_delivery_partner_is(delivery_partner_api_ids)
       where_updated_since(updated_since)
     end
 
@@ -101,24 +101,26 @@ module API::Declarations
         .where(contract_period: { year: contract_period_years })
     end
 
-    def where_teacher_is(teacher_id)
-      return if ignore?(filter: teacher_id)
+    def where_teacher_is(teacher_api_ids)
+      return if ignore?(filter: teacher_api_ids)
 
-      @scope = scope
-        .joins(:training_period)
-        .left_outer_joins(training_period: %i[ect_at_school_period mentor_at_school_period])
-        .where(
-          "ect_at_school_periods.teacher_id = :teacher_id OR mentor_at_school_periods.teacher_id = :teacher_id",
-          teacher_id:
-        )
+      ect_join = scope
+        .left_outer_joins(training_period: { ect_at_school_period: :teacher, mentor_at_school_period: :teacher })
+        .where(teachers_ect_at_school_periods: { api_id: teacher_api_ids })
+
+      mentor_join = scope
+        .left_outer_joins(training_period: { ect_at_school_period: :teacher, mentor_at_school_period: :teacher })
+        .where(teachers_mentor_at_school_periods: { api_id: teacher_api_ids })
+
+      @scope = ect_join.or(mentor_join)
     end
 
-    def where_delivery_partner_is(delivery_partner_id)
-      return if ignore?(filter: delivery_partner_id)
+    def where_delivery_partner_is(delivery_partner_api_ids)
+      return if ignore?(filter: delivery_partner_api_ids)
 
       @scope = scope
         .joins(:delivery_partner)
-        .where(delivery_partner: { id: delivery_partner_id })
+        .where(delivery_partners: { api_id: delivery_partner_api_ids })
     end
 
     def where_updated_since(updated_since)
