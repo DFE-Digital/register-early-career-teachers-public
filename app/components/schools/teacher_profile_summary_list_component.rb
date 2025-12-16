@@ -3,8 +3,9 @@ module Schools
     include TeacherHelper
     include ECTHelper
 
-    def initialize(ect)
+    def initialize(ect, current_school: nil)
       @ect = ect
+      @current_school = current_school
     end
 
   private
