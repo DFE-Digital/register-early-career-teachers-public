@@ -1,4 +1,6 @@
 class Declaration < ApplicationRecord
+  include DeclarativeUpdates
+
   BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES = %w[no_payment eligible payable paid].freeze
 
   belongs_to :training_period
@@ -56,6 +58,24 @@ class Declaration < ApplicationRecord
   validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
+
+  touch -> { self },
+        timestamp_attribute: :api_updated_at,
+        when_changing: %i[
+          api_id
+          mentorship_period_id
+          training_period_id
+          payment_statement_id
+          clawback_statement_id
+          declaration_type
+          declaration_date
+          payment_status
+          clawback_status
+          ineligibility_reason
+          sparsity_uplift
+          pupil_premium_uplift
+          evidence_type
+        ]
 
   state_machine :payment_status, initial: :no_payment do
     state :no_payment, :ineligible, :eligible, :payable, :paid, :voided

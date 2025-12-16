@@ -1,4 +1,31 @@
 describe Declaration do
+  describe "declarative updates" do
+    def will_change_attribute(attribute_to_change:, new_value:)
+      FactoryBot.create(:statement, id: new_value) if attribute_to_change.in?(%i[payment_statement_id clawback_statement_id])
+    end
+
+    describe "declarative touch target self" do
+      let(:instance) { FactoryBot.create(:declaration) }
+      let(:target) { instance }
+
+      it_behaves_like "a declarative touch model", when_changing: %i[
+        api_id
+        mentorship_period_id
+        training_period_id
+        payment_statement_id
+        clawback_statement_id
+        declaration_type
+        declaration_date
+        payment_status
+        clawback_status
+        ineligibility_reason
+        sparsity_uplift
+        pupil_premium_uplift
+        evidence_type
+      ], timestamp_attribute: :api_updated_at
+    end
+  end
+
   describe "associations" do
     it { is_expected.to belong_to(:training_period) }
     it { is_expected.to belong_to(:voided_by_user).class_name("User").optional }

@@ -407,6 +407,7 @@
   - pupil_premium_uplift
   - created_at
   - updated_at
+  - api_updated_at
   :data_migrations:
   - id
   - model
