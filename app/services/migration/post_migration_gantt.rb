@@ -56,7 +56,12 @@ module Migration
         at_school_periods.each do |at_school_period|
           chunk << %(-- #{school.urn} --) if school.urn != urn
 
-          identifier = %(ECT:#{at_school_period.id})
+          identifier = case at_school_period
+                       when MentorAtSchoolPeriod
+                         %(Mentor:#{at_school_period.id})
+                       when ECTAtSchoolPeriod
+                         %(ECT:#{at_school_period.id})
+                       end
 
           chunk << %([#{identifier}] starts on #{at_school_period.started_on} and ends on #{at_school_period.finished_on || Time.zone.today})
 
