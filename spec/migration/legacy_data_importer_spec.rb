@@ -15,11 +15,11 @@ RSpec.describe LegacyDataImporter do
   describe "version filtering" do
     let(:teacher_migrator) { class_double(Migrators::Base, model: :teacher, dependencies: []) }
     let(:mentorship_period_migrator) { class_double(Migrators::Base, model: :mentorship_period, dependencies: [:teacher]) }
-    let(:mentor_data_migrator) { class_double(Migrators::Base, model: :teacher_mentor_data, dependencies: []) }
-    let(:ect_data_migrator) { class_double(Migrators::Base, model: :teacher_ect_data, dependencies: [:teacher_mentor_data]) }
+    let(:mentor_migrator) { class_double(Migrators::Base, model: :mentor, dependencies: []) }
+    let(:ect_migrator) { class_double(Migrators::Base, model: :ect, dependencies: [:mentor]) }
     let(:other_migrator) { class_double(Migrators::Base, model: :other, dependencies: []) }
 
-    let(:all_migrators) { [teacher_migrator, mentorship_period_migrator, mentor_data_migrator, ect_data_migrator, other_migrator] }
+    let(:all_migrators) { [teacher_migrator, mentorship_period_migrator, mentor_migrator, ect_migrator, other_migrator] }
 
     before do
       allow(Migrators::Base).to receive(:migrators).and_return(all_migrators)
@@ -28,11 +28,11 @@ RSpec.describe LegacyDataImporter do
     context "with version 1 (default)" do
       subject(:importer) { described_class.new }
 
-      it "excludes V2 migrators (teacher_mentor_data and teacher_ect_data)" do
+      it "excludes V2 migrators (mentor and ect)" do
         migrators = importer.send(:migrators)
 
         expect(migrators).to include(teacher_migrator, mentorship_period_migrator, other_migrator)
-        expect(migrators).not_to include(mentor_data_migrator, ect_data_migrator)
+        expect(migrators).not_to include(mentor_migrator, ect_migrator)
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe LegacyDataImporter do
       it "excludes V1 migrators (teacher and mentorship_period)" do
         migrators = importer.send(:migrators)
 
-        expect(migrators).to include(mentor_data_migrator, ect_data_migrator, other_migrator)
+        expect(migrators).to include(mentor_migrator, ect_migrator, other_migrator)
         expect(migrators).not_to include(teacher_migrator, mentorship_period_migrator)
       end
     end

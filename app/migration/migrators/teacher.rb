@@ -1,6 +1,6 @@
 module Migrators
   # NOTE: This migrator is deprecated for batch migration.
-  # Use Migrators::MentorData and Migrators::ECTData instead.
+  # Use Migrators::Mentor and Migrators::ECT instead.
   #
   # This class is kept for single-teacher migration via MigrateEntity,
   # which needs to migrate both mentor and ECT data in one call.
@@ -36,8 +36,8 @@ module Migrators
     # Migrates a single teacher's mentor and ECT data.
     # Used by MigrateEntity for single-teacher migration.
     #
-    # For batch migration, use Migrators::MentorData followed by
-    # Migrators::ECTData to ensure mentors are migrated before ECTs
+    # For batch migration, use Migrators::Mentor followed by
+    # Migrators::ECT to ensure mentors are migrated before ECTs
     # (required for MentorshipPeriod creation).
     def migrate_one!(teacher_profile)
       ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)

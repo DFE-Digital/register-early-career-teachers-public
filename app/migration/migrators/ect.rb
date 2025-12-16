@@ -1,11 +1,11 @@
 module Migrators
-  class MentorData < Migrators::Base
+  class ECT < Migrators::Base
     def self.record_count
       teachers.count
     end
 
     def self.model
-      :teacher_mentor_data
+      :ect
     end
 
     def self.teachers
@@ -13,11 +13,13 @@ module Migrators
     end
 
     def self.dependencies
-      %i[schedule school_partnership]
+      %i[mentor]
     end
 
     def self.reset!
-      # Reset is handled by ECTData which truncates the Teacher table
+      if Rails.application.config.enable_migration_testing
+        ::Teacher.connection.execute("TRUNCATE #{::Teacher.table_name} RESTART IDENTITY CASCADE")
+      end
     end
 
     def migrate!
@@ -28,10 +30,10 @@ module Migrators
 
     def migrate_one!(teacher_profile)
       ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
-      return true if ecf1_teacher_history.mentor.blank?
+      return true if ecf1_teacher_history.ect.blank?
 
       ecf2_teacher_history = TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2!
-      ecf2_teacher_history.save_all_mentor_data!
+      ecf2_teacher_history.save_all_ect_data!
       true
     end
 
