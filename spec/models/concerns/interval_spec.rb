@@ -125,14 +125,30 @@ describe Interval do
     end
 
     describe ".closest_to" do
-      it "returns a SQL relation selecting the closest record" do
-        date = Date.new(2023, 12, 10)
-        sql = DummyMentor.closest_to(date).to_sql
+      it "returns the record that is ongoing on the given date" do
+        closest_mentor = DummyMentor.closest_to("2023-09-01")
 
-        expect(sql).to include("ORDER BY LEAST")
-        expect(sql).to include('ABS("mentor_at_school_periods".started_on - DATE \'2023-12-10\')')
-        expect(sql).to include('COALESCE(ABS("mentor_at_school_periods".finished_on - DATE \'2023-12-10\')')
-        expect(sql).to include("LIMIT 1")
+        expect(closest_mentor).to match_array([period_2])
+      end
+
+      context "when no records cover the date" do
+        it "returns the closest record by `started_on`" do
+          closest_mentor = DummyMentor.closest_to("2023-06-20")
+
+          expect(closest_mentor).to match_array([period_2])
+        end
+
+        it "returns the closest record by `finished_on`" do
+          closest_mentor = DummyMentor.closest_to("2023-06-05")
+
+          expect(closest_mentor).to match_array([period_1])
+        end
+
+        it "returns the closest record by `started_on` and `finished_on` is nil" do
+          closest_mentor = DummyMentor.closest_to("2024-02-01")
+
+          expect(closest_mentor).to match_array([period_3])
+        end
       end
     end
 

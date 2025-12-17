@@ -17,27 +17,30 @@ module Declarations
 
     def create
       ActiveRecord::Base.transaction do
-        set_eligibility!
-        set_payment_statement!
-        check_mentor_completion!
-        record_declaration_created_event!
-      end
+        declaration = find_or_create_declaration
 
-      declaration
+        set_eligibility!(declaration)
+        update_uplifts!(declaration)
+        set_payment_statement!(declaration)
+        check_mentor_completion!(declaration)
+        record_declaration_created_event!(declaration)
+
+        declaration
+      end
     end
 
   private
 
     def existing_declarations
-      @existing_declarations ||= if training_period.for_ect?
-                                   teacher.ect_declarations
-                                 else
-                                   teacher.mentor_declarations
-                                 end
+      if training_period.for_ect?
+        teacher.ect_declarations
+      else
+        teacher.mentor_declarations
+      end
     end
 
-    def existing_declaration
-      @existing_declaration ||= existing_declarations
+    def existing_duplicate_declaration
+      @existing_duplicate_declaration ||= existing_declarations
         .billable_or_changeable
         .joins(:lead_provider, :delivery_partner)
         .find_by(
@@ -51,7 +54,7 @@ module Declarations
     end
 
     def find_or_create_declaration
-      existing_declaration || training_period.declarations.create!(
+      existing_duplicate_declaration || training_period.declarations.create!(
         declaration_date:,
         declaration_type:,
         evidence_type:,
@@ -59,34 +62,34 @@ module Declarations
       )
     end
 
-    def declaration
-      @declaration ||= find_or_create_declaration.tap do |d|
-        d.update!(
-          {
-            pupil_premium_uplift: teacher.ect_pupil_premium_uplift,
-            sparsity_uplift: teacher.ect_sparsity_uplift
-          }
-        )
-      end
+    def update_uplifts!(declaration)
+      declaration.update!(
+        {
+          pupil_premium_uplift: teacher.ect_pupil_premium_uplift,
+          sparsity_uplift: teacher.ect_sparsity_uplift
+        }
+      )
     end
 
-    def set_eligibility!
+    def set_eligibility!(declaration)
       if training_period.eligible_for_funding?
         declaration.update!(payment_status: :eligible, payment_statement:)
       end
     end
 
-    def set_payment_statement!
+    def set_payment_statement!(declaration)
       return if declaration.payment_status_no_payment?
 
       declaration.update!(payment_statement:)
     end
 
-    def check_mentor_completion!
+    def check_mentor_completion!(declaration)
+      return if declaration.for_ect?
+
       Declarations::MentorCompletion.new(author:, declaration:).perform
     end
 
-    def record_declaration_created_event!
+    def record_declaration_created_event!(declaration)
       Events::Record.record_declaration_created_event!(
         author:,
         teacher:,
