@@ -1,4 +1,48 @@
 RSpec.describe API::Declarations::Query do
+  def create_training_period(trainee:, contract_period: nil, teacher: nil, prev_training_period: nil, delivery_partner: nil)
+    contract_period ||= FactoryBot.create(:contract_period)
+    lead_provider = FactoryBot.create(:lead_provider)
+    active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+    delivery_partner ||= FactoryBot.create(:delivery_partner)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+    school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+
+    opts = { school_partnership: }
+
+    teacher ||= FactoryBot.create(:teacher)
+
+    if prev_training_period
+      prev_finished_on = prev_training_period.started_on + rand(10..100).days
+      # set previous training period to end
+      prev_training_period.update!(finished_on: prev_finished_on)
+
+      opts[:started_on] = prev_finished_on
+      opts[:"#{trainee}_at_school_period"] = prev_training_period.send("#{trainee}_at_school_period")
+    else
+      opts[:"#{trainee}_at_school_period"] = FactoryBot.create(:"#{trainee}_at_school_period", :ongoing, teacher:)
+    end
+
+    FactoryBot.create(
+      :training_period,
+      (trainee == :ect ? :for_ect : :for_mentor),
+      :ongoing,
+      **opts
+    )
+  end
+
+  def create_declaration(declaration_type: "started", contract_period: nil, training_period: nil, status: nil, declaration_date: nil)
+    contract_period ||= FactoryBot.create(:contract_period)
+    training_period ||= create_training_period(contract_period:, trainee: :ect)
+    declaration_date ||= training_period.started_on.next_day
+    FactoryBot.create(
+      :declaration,
+      status,
+      training_period:,
+      declaration_type:,
+      declaration_date:
+    )
+  end
+
   it_behaves_like "a query that avoids includes" do
     before { FactoryBot.create(:declaration) }
   end
@@ -84,73 +128,25 @@ RSpec.describe API::Declarations::Query do
         context "when there are declarations from previous lead provider" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
 
-          # Previous lead provider
-          let(:lead_provider1) { FactoryBot.create(:lead_provider) }
-          let(:active_lead_provider1) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider1, contract_period:) }
-          let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider1) }
-          let(:school_partnership1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership1) }
+          # Previous training period with `lead_provider1`
+          let(:training_period1) { create_training_period(contract_period:, trainee: :ect) }
+          let(:lead_provider1) { training_period1.lead_provider }
 
-          # Current lead provider
-          let(:lead_provider2) { FactoryBot.create(:lead_provider) }
-          let(:active_lead_provider2) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider2, contract_period:) }
-          let(:lead_provider_delivery_partnership2) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider2) }
-          let(:school_partnership2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership2) }
+          # Current training period with `lead_provider2`
+          let(:training_period2) { create_training_period(contract_period:, trainee: :ect, prev_training_period: training_period1) }
+          let(:lead_provider2) { training_period2.lead_provider }
 
-          # New lead provider
-          let(:lead_provider3) { FactoryBot.create(:lead_provider) }
-          let(:active_lead_provider3) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider3, contract_period:) }
-          let(:lead_provider_delivery_partnership3) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider3) }
-          let(:school_partnership3) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership3) }
-
-          # Previous training period
-          let(:training_period1) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership: school_partnership1) }
-          let(:ect_at_school_period) { training_period1.ect_at_school_period }
-
-          # Current training period
-          let(:prev_finished_on) { training_period1.started_on + rand(100).days }
-          let(:training_period2) do
-            # set previous training period to end
-            training_period1.update!(finished_on: prev_finished_on)
-
-            FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: prev_finished_on, school_partnership: school_partnership2)
-          end
-
-          # New training period
-          let(:curr_finished_on) { training_period2.started_on + rand(100).days }
-          let(:training_period3) do
-            # set current training period to end
-            training_period2.update!(finished_on: curr_finished_on)
-
-            FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: curr_finished_on, school_partnership: school_partnership3)
-          end
+          # New ongoing training period with `lead_provider3`
+          let(:training_period3) { create_training_period(contract_period:, trainee: :ect, prev_training_period: training_period2) }
+          let(:lead_provider3) { training_period3.lead_provider }
 
           # Declaration for each training period
-          let!(:declaration1) do
-            FactoryBot.create(
-              :declaration,
-              training_period: training_period1,
-              declaration_type: "started",
-              declaration_date: training_period1.started_on.next_day
-            )
-          end
-          let!(:declaration2) do
-            FactoryBot.create(
-              :declaration,
-              training_period: training_period2,
-              declaration_type: "retained-1",
-              declaration_date: training_period2.started_on.next_day
-            )
-          end
-          let!(:declaration3) do
-            FactoryBot.create(
-              :declaration,
-              training_period: training_period3,
-              declaration_type: "retained-2",
-              declaration_date: training_period3.started_on.next_day
-            )
-          end
+          let!(:declaration1) { create_declaration(training_period: training_period1, declaration_type: "started") }
+          let!(:declaration2) { create_declaration(training_period: training_period2, declaration_type: "retained-1") }
+          let!(:declaration3) { create_declaration(training_period: training_period3, declaration_type: "retained-3") }
+
           # Additional unrelated declaration
-          let!(:declaration4) { FactoryBot.create(:declaration) }
+          before { FactoryBot.create(:declaration) }
 
           context "when lead_provider2 has previous and direct declaration" do
             it "returns previous declarations and direct declarations for lead_provider2" do
@@ -172,15 +168,7 @@ RSpec.describe API::Declarations::Query do
 
           %i[voided ineligible awaiting_clawback clawed_back].each do |ignored_status|
             context "when previous declaration is `#{ignored_status}`" do
-              let!(:declaration1) do
-                FactoryBot.create(
-                  :declaration,
-                  ignored_status,
-                  training_period: training_period1,
-                  declaration_type: "started",
-                  declaration_date: training_period1.started_on.next_day
-                )
-              end
+              let!(:declaration1) { create_declaration(training_period: training_period1, declaration_type: "started", status: ignored_status) }
 
               it "returns only the direct declaration" do
                 query = described_class.new(lead_provider_id: lead_provider2.id)
@@ -192,11 +180,10 @@ RSpec.describe API::Declarations::Query do
 
           context "when declaration submitted after all the training period started on date" do
             let!(:declaration5) do
-              FactoryBot.create(
-                :declaration,
+              create_declaration(
                 training_period: training_period1,
                 declaration_type: "retained-3",
-                declaration_date: training_period1.started_on.next_day
+                declaration_date: training_period3.started_on.next_day
               )
             end
 
@@ -208,58 +195,29 @@ RSpec.describe API::Declarations::Query do
           end
 
           context "when teacher has ECT declarations with previous declarations and new lead provider has mentor declarations" do
-            # New mentor lead provider
-            let(:lead_provider4) { FactoryBot.create(:lead_provider) }
-            let(:active_lead_provider4) { FactoryBot.create(:active_lead_provider, lead_provider: lead_provider4, contract_period:) }
-            let(:lead_provider_delivery_partnership4) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: active_lead_provider4) }
-            let(:school_partnership4) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership4) }
-
-            # Teacher belonging to `ect_at_school_period`, we will make them a mentor with `lead_provider4`
-            let(:teacher) { ect_at_school_period.teacher }
-            let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:) }
-            let(:mentor_training_period) do
-              FactoryBot.create(
-                :training_period,
-                :for_mentor,
-                :ongoing,
-                mentor_at_school_period:,
-                school_partnership: school_partnership4
-              )
-            end
-            let!(:mentor_declaration) do
-              FactoryBot.create(
-                :declaration,
-                training_period: mentor_training_period,
-                declaration_type: "started",
-                declaration_date: mentor_training_period.started_on.next_day
-              )
-            end
+            # ECT teacher for `training_period1` will be a mentor with a new lead provider `lead_provider4`
+            let(:teacher) { training_period1.trainee.teacher }
+            let(:mentor_training_period) { create_training_period(contract_period:, trainee: :mentor, teacher:) }
+            let(:lead_provider4) { mentor_training_period.lead_provider }
+            let!(:mentor_declaration) { create_declaration(training_period: mentor_training_period, declaration_type: "started") }
 
             it "does not return previous ECT declarations, only mentor declaration" do
               query = described_class.new(lead_provider_id: lead_provider4.id)
 
-              expect(query.declarations.map(&:id)).to contain_exactly(mentor_declaration.id)
+              expect(query.declarations).to contain_exactly(mentor_declaration)
             end
           end
         end
       end
 
       describe "by `contract_period_years`" do
-        def create_declaration_for_contract_period(contract_period:)
-          active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period:)
-          lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-          school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
-          training_period = FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:)
-          FactoryBot.create(:declaration, training_period:)
-        end
-
         let(:contract_period1) { FactoryBot.create(:contract_period) }
         let(:contract_period2) { FactoryBot.create(:contract_period) }
         let(:contract_period3) { FactoryBot.create(:contract_period) }
 
-        let!(:declaration1) { create_declaration_for_contract_period(contract_period: contract_period1) }
-        let!(:declaration2) { create_declaration_for_contract_period(contract_period: contract_period2) }
-        let!(:declaration3) { create_declaration_for_contract_period(contract_period: contract_period3) }
+        let!(:declaration1) { create_declaration(contract_period: contract_period1) }
+        let!(:declaration2) { create_declaration(contract_period: contract_period2) }
+        let!(:declaration3) { create_declaration(contract_period: contract_period3) }
 
         context "when `contract_period_years` param is omitted" do
           it "returns all declarations" do
@@ -301,10 +259,9 @@ RSpec.describe API::Declarations::Query do
       describe "by `teacher_api_ids`" do
         let(:teacher1) { FactoryBot.create(:teacher) }
         let(:teacher2) { FactoryBot.create(:teacher) }
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: teacher1) }
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: teacher2) }
-        let(:training_period1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
-        let(:training_period2) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
+
+        let(:training_period1) { create_training_period(trainee: :ect, teacher: teacher1) }
+        let(:training_period2) { create_training_period(trainee: :ect, teacher: teacher2) }
 
         let!(:declaration1) { FactoryBot.create(:declaration, training_period: training_period1) }
         let!(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
@@ -350,12 +307,9 @@ RSpec.describe API::Declarations::Query do
       describe "by `delivery_partner_api_ids`" do
         let(:delivery_partner1) { FactoryBot.create(:delivery_partner) }
         let(:delivery_partner2) { FactoryBot.create(:delivery_partner) }
-        let(:lead_provider_delivery_partnership1) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner1) }
-        let(:lead_provider_delivery_partnership2) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner: delivery_partner2) }
-        let(:school_partnership1) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership1) }
-        let(:school_partnership2) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: lead_provider_delivery_partnership2) }
-        let(:training_period1) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership: school_partnership1) }
-        let(:training_period2) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership: school_partnership2) }
+
+        let(:training_period1) { create_training_period(trainee: :ect, delivery_partner: delivery_partner1) }
+        let(:training_period2) { create_training_period(trainee: :mentor, delivery_partner: delivery_partner2) }
 
         let!(:declaration1) { FactoryBot.create(:declaration, training_period: training_period1) }
         let!(:declaration2) { FactoryBot.create(:declaration, training_period: training_period2) }
