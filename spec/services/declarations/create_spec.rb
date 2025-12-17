@@ -45,30 +45,26 @@ RSpec.describe Declarations::Create do
             end
           end
 
-          it "creates a new declaration" do
-            expect { create_declaration }.to change(Declaration, :count).by(1)
-          end
+          it "creates a new declaration with correct attributes" do
+            declaration = nil
+            expect { declaration = create_declaration }.to change(Declaration, :count).by(1)
 
-          it "does not assign a payment statement" do
-            expect(create_declaration.payment_statement).to be_nil
-          end
-
-          if trainee_type == :ect
-            it "assigns a mentorship period" do
-              expect(create_declaration.mentorship_period).to eq(mentorship_period)
+            expect(declaration.payment_statement).to be_nil
+            if trainee_type == :ect
+              expect(declaration.mentorship_period).to eq(mentorship_period)
             end
+            expect(declaration.evidence_type).to eq(evidence_type)
+            expect(declaration.payment_status_eligible?).to be(false)
           end
 
-          it "runs mentor completion" do
-            allow(Declarations::MentorCompletion).to receive(:new).and_call_original
+          if trainee_type == :mentor
+            it "runs mentor completion" do
+              allow(Declarations::MentorCompletion).to receive(:new).and_call_original
 
-            declaration = create_declaration
+              declaration = create_declaration
 
-            expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
-          end
-
-          it "sets the evidence type" do
-            expect(create_declaration.evidence_type).to eq(evidence_type)
+              expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
+            end
           end
 
           context "when teacher is eligible for funding" do
@@ -86,20 +82,6 @@ RSpec.describe Declarations::Create do
               declaration = create_declaration
 
               expect(declaration.payment_statement).to eq(payment_statement)
-            end
-          end
-
-          context "when teacher is not eligible for funding" do
-            it "does not mark declaration `payment_status` as eligible" do
-              declaration = create_declaration
-
-              expect(declaration.payment_status_eligible?).to be(false)
-            end
-
-            it "does not assign a payment statement" do
-              declaration = create_declaration
-
-              expect(declaration.payment_statement).to be_nil
             end
           end
 
@@ -164,12 +146,14 @@ RSpec.describe Declarations::Create do
             end
           end
 
-          it "runs mentor completion" do
-            allow(Declarations::MentorCompletion).to receive(:new).and_call_original
+          if trainee_type == :mentor
+            it "runs mentor completion" do
+              allow(Declarations::MentorCompletion).to receive(:new).and_call_original
 
-            declaration = create_declaration
+              declaration = create_declaration
 
-            expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
+              expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
+            end
           end
 
           context "when teacher is eligible for funding" do

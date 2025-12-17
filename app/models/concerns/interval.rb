@@ -21,18 +21,21 @@ module Interval
     scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
     scope :ongoing_on, ->(date) { where(*date_in_range(date)) }
     scope :closest_to, ->(date) {
-      return all if date.blank?
-
-      target_date = date.to_date
-      table = connection.quote_table_name(table_name)
+      date = date&.to_date or next all
 
       order(
-        Arel.sql(<<~SQL)
-          LEAST(
-            ABS(#{table}.started_on - DATE '#{target_date}'),
-            COALESCE(ABS(#{table}.finished_on - DATE '#{target_date}'), 999999)
-          )
-        SQL
+        Arel.sql(
+          <<~SQL
+            CASE
+              WHEN #{table_name}.finished_on IS NULL
+                THEN ABS(#{table_name}.started_on - DATE '#{date}')
+              ELSE LEAST(
+                ABS(#{table_name}.started_on - DATE '#{date}'),
+                ABS(#{table_name}.finished_on - DATE '#{date}')
+              )
+            END
+          SQL
+        )
       ).limit(1)
     }
 

@@ -41,34 +41,33 @@ module API::Declarations
         training_period:,
         declaration_date:,
         declaration_type:,
-        evidence_type: EvidenceTypeValidator.evidence_type_allowed?(self) ? evidence_type : nil,
+        evidence_type:,
         payment_statement:,
         mentorship_period:,
         delivery_partner:
       ).create
     end
 
+    def training_periods
+      teacher_type == :ect ? teacher.ect_training_periods : teacher.mentor_training_periods
+    end
+
     def training_period
       return unless teacher
 
-      @training_period ||= case teacher_type
-                           when :ect
-                             teacher.ect_training_periods
+      @training_period ||= training_periods
                              .includes(:lead_provider)
                              .where(active_lead_providers: { lead_provider_id: })
                              .closest_to(declaration_date)
                              .first
-                           when :mentor
-                             teacher.mentor_training_periods
-                             .includes(:lead_provider)
-                             .where(active_lead_providers: { lead_provider_id: })
-                             .closest_to(declaration_date)
-                             .first
-                           end
     end
 
     def milestone
       @milestone ||= schedule&.milestones&.find_by(declaration_type:)
+    end
+
+    def evidence_type
+      @evidence_type ||= EvidenceTypeValidator.evidence_type_allowed?(self) ? super : nil
     end
 
   private
@@ -107,8 +106,8 @@ module API::Declarations
                                  end
     end
 
-    def existing_declaration
-      @existing_declaration ||= existing_declarations
+    def existing_duplicate_declaration
+      @existing_duplicate_declaration ||= existing_declarations
         .billable_or_changeable
         .joins(:lead_provider, :delivery_partner)
         .find_by(
@@ -181,8 +180,8 @@ module API::Declarations
 
     def payment_statement_available
       return unless training_period
-      return if existing_declaration&.payment_status_no_payment?
-      return if existing_declaration.nil? && !training_period.eligible_for_funding?
+      return if existing_duplicate_declaration&.payment_status_no_payment?
+      return if existing_duplicate_declaration.nil? && !training_period.eligible_for_funding?
       return if payment_statement.present?
 
       errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
