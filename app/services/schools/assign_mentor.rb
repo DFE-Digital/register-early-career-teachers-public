@@ -42,13 +42,13 @@ module Schools
       return unless current_mentorship_period
 
       if current_mentorship_period.started_on >= earliest_possible_start
-        destroy_current_mentorship_period!
+        destroy_unstarted_current_mentorship_period!
       else
         current_mentorship_period.finish!(earliest_possible_start)
       end
     end
 
-    def destroy_current_mentorship_period!
+    def destroy_unstarted_current_mentorship_period!
       Event.where(mentorship_period: current_mentorship_period).delete_all
 
       current_mentorship_period.destroy!
