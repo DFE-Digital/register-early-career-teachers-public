@@ -45,6 +45,7 @@ module API::Declarations
         .includes(
           :payment_statement,
           :clawback_statement,
+          mentorship_period: { mentor: :teacher },
           training_period: [
             { ect_at_school_period: :teacher },
             { mentor_at_school_period: :teacher },
@@ -69,31 +70,26 @@ module API::Declarations
     end
 
     def previous_declarations_for_lead_provider(lead_provider_id)
-      # Uses EXISTS to find declarations where the teacher has an active/relevant training period with this LP
-      previous_sql = <<~SQL.squish
-        EXISTS (
-          SELECT 1 FROM training_periods tp
-          INNER JOIN school_partnerships sp ON sp.id = tp.school_partnership_id
-          INNER JOIN lead_provider_delivery_partnerships lpdp ON lpdp.id = sp.lead_provider_delivery_partnership_id
-          INNER JOIN active_lead_providers alp ON alp.id = lpdp.active_lead_provider_id
-          LEFT JOIN ect_at_school_periods ect ON ect.id = tp.ect_at_school_period_id
-          LEFT JOIN mentor_at_school_periods mentor ON mentor.id = tp.mentor_at_school_period_id
-          INNER JOIN training_periods decl_tp ON decl_tp.id = declarations.training_period_id
-          LEFT JOIN ect_at_school_periods decl_ect ON decl_ect.id = decl_tp.ect_at_school_period_id
-          LEFT JOIN mentor_at_school_periods decl_mentor ON decl_mentor.id = decl_tp.mentor_at_school_period_id
-          WHERE alp.lead_provider_id = :lead_provider_id
-          AND (
-            (ect.teacher_id IS NOT NULL AND decl_ect.teacher_id = ect.teacher_id)
-            OR
-            (mentor.teacher_id IS NOT NULL AND decl_mentor.teacher_id = mentor.teacher_id)
-          )
-          AND (tp.finished_on IS NULL OR declarations.declaration_date <= tp.finished_on)
+      previous_training_periods = TrainingPeriod
+        .joins(:lead_provider)
+        .left_joins(:ect_at_school_period, :mentor_at_school_period)
+        .joins("INNER JOIN training_periods declaration_tp ON declaration_tp.id = declarations.training_period_id")
+        .joins("LEFT OUTER JOIN ect_at_school_periods declaration_ect ON declaration_ect.id = declaration_tp.ect_at_school_period_id")
+        .joins("LEFT OUTER JOIN mentor_at_school_periods declaration_mentor ON declaration_mentor.id = declaration_tp.mentor_at_school_period_id")
+        .where(lead_provider: { id: lead_provider_id })
+        .where(
+          <<~SQL
+            (ect_at_school_periods.teacher_id IS NOT NULL AND declaration_ect.teacher_id = ect_at_school_periods.teacher_id)
+              OR
+            (mentor_at_school_periods.teacher_id IS NOT NULL AND declaration_mentor.teacher_id = mentor_at_school_periods.teacher_id)
+          SQL
         )
-      SQL
+        .where("training_periods.finished_on IS NULL OR declarations.declaration_date <= training_periods.finished_on")
+        .select("1")
 
       scope
         .billable_or_changeable
-        .where(previous_sql, lead_provider_id:)
+        .where("EXISTS (#{previous_training_periods.to_sql})")
     end
 
     def where_contract_period_year_in(contract_period_years)
