@@ -45,6 +45,7 @@
 
     ## Impact on lead providers
     These changes should have minimal impact:
+    
     * you should test this endpoint in the Register ECTs sandbox
     * no changes are needed to existing integrations
 
