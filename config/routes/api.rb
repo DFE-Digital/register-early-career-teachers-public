@@ -21,7 +21,7 @@ constraints -> { Rails.application.config.enable_api } do
       end
 
       resources :declarations, only: %i[create show index], param: :api_id do
-        put :void, path: "void"
+        member { put :void, path: "void" }
       end
 
       resources :statements, only: %i[index show], param: :api_id
