@@ -170,21 +170,23 @@ RSpec.describe API::Declarations::Query do
             end
           end
 
-          context "when previous declaration is voided" do
-            let!(:declaration1) do
-              FactoryBot.create(
-                :declaration,
-                :voided,
-                training_period: training_period1,
-                declaration_type: "started",
-                declaration_date: training_period1.started_on.next_day
-              )
-            end
+          %i[voided ineligible awaiting_clawback clawed_back].each do |ignored_status|
+            context "when previous declaration is `#{ignored_status}`" do
+              let!(:declaration1) do
+                FactoryBot.create(
+                  :declaration,
+                  ignored_status,
+                  training_period: training_period1,
+                  declaration_type: "started",
+                  declaration_date: training_period1.started_on.next_day
+                )
+              end
 
-            it "returns only the direct declaration" do
-              query = described_class.new(lead_provider_id: lead_provider2.id)
+              it "returns only the direct declaration" do
+                query = described_class.new(lead_provider_id: lead_provider2.id)
 
-              expect(query.declarations).to contain_exactly(declaration2)
+                expect(query.declarations).to contain_exactly(declaration2)
+              end
             end
           end
 

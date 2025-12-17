@@ -68,6 +68,10 @@ class Declaration < ApplicationRecord
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
 
+  scope :billable_or_changeable, -> {
+    where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
+  }
+
   touch -> { self },
         timestamp_attribute: :api_updated_at,
         when_changing: %i[

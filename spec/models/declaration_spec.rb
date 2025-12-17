@@ -201,6 +201,23 @@ describe Declaration do
     end
   end
 
+  describe "scopes" do
+    let!(:no_payment_declaration) { FactoryBot.create(:declaration, :no_payment) }
+    let!(:eligible_declaration) { FactoryBot.create(:declaration, :eligible) }
+    let!(:payable_declaration) { FactoryBot.create(:declaration, :payable) }
+    let!(:paid_declaration) { FactoryBot.create(:declaration, :paid) }
+    let!(:voided_declaration) { FactoryBot.create(:declaration, :voided) }
+    let!(:ineligible_declaration) { FactoryBot.create(:declaration, :ineligible) }
+    let!(:awaiting_clawback_declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
+    let!(:clawed_back_declaration) { FactoryBot.create(:declaration, :clawed_back) }
+
+    describe ".billable_or_changeable" do
+      subject { described_class.billable_or_changeable }
+
+      it { is_expected.to include(no_payment_declaration, eligible_declaration, payable_declaration, paid_declaration) }
+    end
+  end
+
   describe "enums" do
     it "has a payment_status enum" do
       expect(subject).to define_enum_for(:payment_status)
