@@ -58,8 +58,8 @@ describe Teacher do
       end
 
       context "when there are multiple induction periods" do
-        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: 1.year.ago, teacher:) }
-        let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 2.years.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, :ongoing, started_on: 1.year.ago, teacher:) }
+        let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 4.years.ago, finished_on: 2.years.ago, teacher:) }
 
         it { is_expected.to eq(earliest_induction_period) }
       end
@@ -86,14 +86,14 @@ describe Teacher do
 
       context "when there are multiple induction periods, all without an outcome" do
         let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 3.months.ago, teacher:) }
-        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: 3.months.ago, finished_on: 1.day.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, started_on: 2.months.ago, finished_on: 1.day.ago, teacher:) }
 
         it { is_expected.to be_nil }
       end
 
       context "when there are multiple induction periods, with and without outcomes" do
         let!(:earliest_induction_period) { FactoryBot.create(:induction_period, started_on: 6.months.ago, finished_on: 3.months.ago, teacher:) }
-        let!(:latest_induction_period) { FactoryBot.create(:induction_period, :pass, started_on: 3.months.ago, finished_on: 1.day.ago, teacher:) }
+        let!(:latest_induction_period) { FactoryBot.create(:induction_period, :pass, started_on: 2.months.ago, finished_on: 1.day.ago, teacher:) }
 
         it { is_expected.to eq(latest_induction_period) }
       end
@@ -157,7 +157,7 @@ describe Teacher do
 
       context "when there is a current period and a future period" do
         let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, teacher:) }
-        let!(:future_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.weeks.from_now, finished_on: nil, teacher:) }
+        let!(:future_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 3.weeks.from_now, finished_on: nil, teacher:) }
 
         it "returns the current ect_at_school_period" do
           expect(teacher.current_or_next_ect_at_school_period).to eql(ect_at_school_period)
@@ -188,7 +188,7 @@ describe Teacher do
         :induction_period,
         teacher:,
         appropriate_body:,
-        started_on: 1.year.ago,
+        started_on: 6.months.ago,
         finished_on: nil,
         number_of_terms: nil
       )
@@ -211,7 +211,7 @@ describe Teacher do
         :induction_period,
         teacher:,
         appropriate_body:,
-        started_on: 1.year.ago,
+        started_on: 6.months.ago,
         finished_on: 2.weeks.ago
       )
 
