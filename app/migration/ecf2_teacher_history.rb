@@ -67,10 +67,10 @@ private
     )
   end
 
-  def school_partnership_for(training_period_row, school:)
+  def school_partnership_for(training_period_row)
     return { school_partnership: nil } unless training_period_row.training_programme.to_s == "provider_led"
 
-    training_period_row.school_partnership(school:)
+    training_period_row.school_partnership
   end
 
   def save_ect_periods!(teacher)
@@ -82,7 +82,7 @@ private
           with_failure_recording(teacher:, model: :training_period, migration_item_id: training_period_row.ecf_start_induction_record_id) do
             TrainingPeriod.create!(
               ect_at_school_period:,
-              **school_partnership_for(training_period_row, school: ect_at_school_period_row.real_school),
+              **school_partnership_for(training_period_row),
               **training_period_row
             )
           end
@@ -120,7 +120,7 @@ private
           with_failure_recording(teacher:, model: :training_period, migration_item_id: training_period_row.ecf_start_induction_record_id) do
             TrainingPeriod.create!(
               mentor_at_school_period:,
-              **school_partnership_for(training_period_row, school: mentor_at_school_period_row.real_school),
+              **school_partnership_for(training_period_row),
               **training_period_row
             )
           end

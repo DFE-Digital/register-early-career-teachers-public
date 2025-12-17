@@ -229,7 +229,8 @@ describe ECF2TeacherHistory do
               lead_provider_info:,
               delivery_partner_info:,
               contract_period_year: contract_period.year,
-              schedule_info:
+              schedule_info:,
+              school_urn: school_a.urn
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -552,7 +553,8 @@ describe ECF2TeacherHistory do
               lead_provider_info:,
               delivery_partner_info:,
               contract_period_year: contract_period.year,
-              schedule_info:
+              schedule_info:,
+              school_urn: school_a.urn
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -783,7 +785,8 @@ describe ECF2TeacherHistory do
           lead_provider_info:,
           delivery_partner_info:,
           contract_period_year: contract_period.year,
-          ecf_start_induction_record_id:
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
         )
       end
 
@@ -901,7 +904,8 @@ describe ECF2TeacherHistory do
           lead_provider_info: nonexistent_lead_provider_info,
           delivery_partner_info:,
           contract_period_year: contract_period.year,
-          ecf_start_induction_record_id:
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
         )
       end
 
@@ -959,7 +963,8 @@ describe ECF2TeacherHistory do
           lead_provider_info:,
           delivery_partner_info: nonexistent_delivery_partner_info,
           contract_period_year: contract_period.year,
-          ecf_start_induction_record_id:
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
         )
       end
 

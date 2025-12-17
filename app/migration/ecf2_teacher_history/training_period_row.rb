@@ -12,7 +12,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
               :withdrawal_reason,
               :created_at,
               :ecf_start_induction_record_id,
-              :is_ect
+              :is_ect,
+              :school_urn
 
   def initialize(started_on:,
                  finished_on:,
@@ -27,7 +28,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
                  withdrawn_at: nil,
                  withdrawal_reason: nil,
                  ecf_start_induction_record_id: nil,
-                 is_ect: false)
+                 is_ect: false,
+                 school_urn: nil)
     @started_on = started_on
     @finished_on = finished_on
     @created_at = created_at
@@ -42,6 +44,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
     @withdrawal_reason = withdrawal_reason
     @ecf_start_induction_record_id = ecf_start_induction_record_id
     @is_ect = is_ect
+    @school_urn = school_urn
   end
 
   def to_hash
@@ -55,8 +58,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
     }
   end
 
-  # FIXME: the school here is from one level up, perhaps there's a nicer way of cross-referencing?
-  def school_partnership(school:)
+  def school_partnership
     partnership = SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
       .school_partnerships
       .first
@@ -66,6 +68,10 @@ class ECF2TeacherHistory::TrainingPeriodRow
     end
 
     { school_partnership: partnership }
+  end
+
+  def school
+    @school ||= GIAS::School.find_by!(urn: school_urn).school
   end
 
   def ecf2_schedule
