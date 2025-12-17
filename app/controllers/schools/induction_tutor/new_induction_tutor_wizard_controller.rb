@@ -31,7 +31,7 @@ module Schools
       end
 
       def store
-        @store ||= SessionRepository.new(session:, form_key: :confirm_existing_induction_tutor_wizard)
+        @store ||= SessionRepository.new(session:, form_key: :new_induction_tutor_wizard)
       end
 
       def current_step
