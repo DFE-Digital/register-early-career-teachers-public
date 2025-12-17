@@ -1,33 +1,20 @@
 RSpec.describe API::Declarations::Query do
-  def create_training_period(trainee:, contract_period: nil, teacher: nil, prev_training_period: nil, delivery_partner: nil)
-    contract_period ||= FactoryBot.create(:contract_period)
-    lead_provider = FactoryBot.create(:lead_provider)
-    active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-    delivery_partner ||= FactoryBot.create(:delivery_partner)
-    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
-    school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+  def create_training_period(trainee:, contract_period: nil, teacher: nil, following_on_from_training_period: nil, delivery_partner: nil)
+    school_partnership = FactoryBot.create(:school_partnership, :for_year, year: contract_period&.year || Date.current.year)
+    school_partnership.lead_provider_delivery_partnership.update!(delivery_partner:) if delivery_partner
+    trait = trainee == :ect ? :for_ect : :for_mentor
 
-    opts = { school_partnership: }
+    if following_on_from_training_period
+      previous_finished_on = following_on_from_training_period.started_on + rand(10..100).days
+      following_on_from_training_period.update!(finished_on: previous_finished_on)
+      school_period = following_on_from_training_period.trainee
 
-    teacher ||= FactoryBot.create(:teacher)
-
-    if prev_training_period
-      prev_finished_on = prev_training_period.started_on + rand(10..100).days
-      # set previous training period to end
-      prev_training_period.update!(finished_on: prev_finished_on)
-
-      opts[:started_on] = prev_finished_on
-      opts[:"#{trainee}_at_school_period"] = prev_training_period.send("#{trainee}_at_school_period")
+      FactoryBot.create(:training_period, trait, :ongoing, school_partnership:, started_on: previous_finished_on, "#{trainee}_at_school_period": school_period)
     else
-      opts[:"#{trainee}_at_school_period"] = FactoryBot.create(:"#{trainee}_at_school_period", :ongoing, teacher:)
+      teacher ||= FactoryBot.create(:teacher)
+      school_period = FactoryBot.create(:"#{trainee}_at_school_period", :ongoing, teacher:)
+      FactoryBot.create(:training_period, trait, :ongoing, school_partnership:, "#{trainee}_at_school_period": school_period)
     end
-
-    FactoryBot.create(
-      :training_period,
-      (trainee == :ect ? :for_ect : :for_mentor),
-      :ongoing,
-      **opts
-    )
   end
 
   def create_declaration(declaration_type: "started", contract_period: nil, training_period: nil, status: nil, declaration_date: nil)
@@ -133,11 +120,11 @@ RSpec.describe API::Declarations::Query do
           let(:lead_provider1) { training_period1.lead_provider }
 
           # Current training period with `lead_provider2`
-          let(:training_period2) { create_training_period(contract_period:, trainee: :ect, prev_training_period: training_period1) }
+          let(:training_period2) { create_training_period(contract_period:, trainee: :ect, following_on_from_training_period: training_period1) }
           let(:lead_provider2) { training_period2.lead_provider }
 
           # New ongoing training period with `lead_provider3`
-          let(:training_period3) { create_training_period(contract_period:, trainee: :ect, prev_training_period: training_period2) }
+          let(:training_period3) { create_training_period(contract_period:, trainee: :ect, following_on_from_training_period: training_period2) }
           let(:lead_provider3) { training_period3.lead_provider }
 
           # Declaration for each training period
@@ -194,7 +181,7 @@ RSpec.describe API::Declarations::Query do
             end
           end
 
-          context "when teacher has ECT declarations with previous declarations and new lead provider has mentor declarations" do
+          context "when teacher has previous ECT declarations, however the lead provider is only associated with their mentor training" do
             # ECT teacher for `training_period1` will be a mentor with a new lead provider `lead_provider4`
             let(:teacher) { training_period1.trainee.teacher }
             let(:mentor_training_period) { create_training_period(contract_period:, trainee: :mentor, teacher:) }
