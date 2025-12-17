@@ -21,21 +21,19 @@ class ECF2TeacherHistory
   end
 
   def save_all_ect_data!
-    @success = true
     teacher = find_or_create_teacher!
     save_ect_periods!(teacher)
     teacher
   end
 
   def save_all_mentor_data!
-    @success = true
     teacher = find_or_create_teacher!
     save_mentor_periods!(teacher)
     teacher
   end
 
   def success?
-    @success
+    !@failed
   end
 
 private
@@ -55,7 +53,7 @@ private
   def with_failure_recording(teacher:, model:, migration_item_id:)
     yield
   rescue ActiveRecord::ActiveRecordError => e
-    @success = false
+    @failed = true
     TeacherMigrationFailure.create!(
       teacher:,
       model:,
