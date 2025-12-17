@@ -14,19 +14,14 @@
   ], type: :bullet)
 %>
 
-<br>
-<br>
 
-<div>
-  <input type="checkbox" id='confirm_fail_checkbox' class="govuk-checkboxes__input_visible" >
-  <p class="govuk-body">
-    <%= confirm_appeal %>
-  </p> 
-</div>
+<%= form_with(model: teacher, url: confirm_failed_outcome_checked_ab_teacher_record_failed_outcome_path(teacher), class: "govuk-!-margin-top-9") do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-<br>
-<br>
+  <%= f.govuk_check_box(:confirm_failed_outcome, "1", label: {
+    text: confirm_appeal
+  }) %>
 
-<div class="govuk-button-group">
-  <%= govuk_button_to("Continue", new_ab_teacher_record_failed_outcome_path(teacher), disabled: true, method: :get) %>
-</div>
+  <%= f.govuk_submit "Continue", class: "govuk-!-margin-top-8" %>
+<% end %>
+
