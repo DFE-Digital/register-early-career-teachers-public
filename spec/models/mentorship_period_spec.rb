@@ -197,7 +197,7 @@ describe MentorshipPeriod do
     let!(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01") }
     let!(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: "2021-01-01") }
     let!(:period_1) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: "2022-01-01", finished_on: "2022-06-01") }
-    let!(:period_2) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: "2022-06-01", finished_on: "2023-01-01") }
+    let!(:period_2) { FactoryBot.create(:mentorship_period, mentee:, mentor:, started_on: "2022-06-02", finished_on: "2023-01-01") }
 
     let!(:unrelated_mentee) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01") }
     let!(:unrelated_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: unrelated_mentee, started_on: "2022-06-01", finished_on: "2023-01-01") }
