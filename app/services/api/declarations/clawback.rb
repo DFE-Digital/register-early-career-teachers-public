@@ -19,21 +19,21 @@ module API::Declarations
   private
 
     def paid
-      return if errors[:declaration_id].any?
+      return if errors[:declaration_api_id].any?
       return if declaration.payment_status_paid?
 
-      errors.add(:declaration_id, "The declaration must be paid before it can be clawed back")
+      errors.add(:declaration_api_id, "The declaration must be paid before it can be clawed back")
     end
 
     def not_already_refunded
-      return if errors[:declaration_id].any?
+      return if errors[:declaration_api_id].any?
       return if declaration.clawback_status_no_clawback?
 
-      errors.add(:declaration_id, "The declaration will or has been refunded")
+      errors.add(:declaration_api_id, "The declaration will or has been refunded")
     end
 
     def output_fee_statement_available
-      return if errors[:declaration_id].any?
+      return if errors[:declaration_api_id].any?
       return if next_available_output_fee_statement.present?
 
       no_output_fee_statement_error_message = <<~TXT.squish
@@ -41,7 +41,7 @@ module API::Declarations
         contract period. The funding contract for this contract period has
         ended. Get in touch if you need to discuss this with us
       TXT
-      errors.add(:declaration_id, no_output_fee_statement_error_message)
+      errors.add(:declaration_api_id, no_output_fee_statement_error_message)
     end
 
     def next_available_output_fee_statement

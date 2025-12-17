@@ -1,6 +1,6 @@
 RSpec.describe API::Declarations::Void, type: :model do
   subject(:instance) do
-    described_class.new(declaration_id: declaration.api_id, lead_provider_id:)
+    described_class.new(declaration_api_id: declaration.api_id, lead_provider_id:)
   end
 
   let(:lead_provider_id) { declaration.training_period.lead_provider.id }
@@ -26,14 +26,14 @@ RSpec.describe API::Declarations::Void, type: :model do
       let(:declaration) { FactoryBot.create(:declaration, :voided) }
 
       it { is_expected.to have_one_error_per_attribute }
-      it { is_expected.to have_error(:declaration_id, "The declaration has already been voided.") }
+      it { is_expected.to have_error(:declaration_api_id, "The declaration has already been voided.") }
     end
 
     context "when declaration is paid" do
       let(:declaration) { FactoryBot.create(:declaration, :paid) }
 
       it { is_expected.to have_one_error_per_attribute }
-      it { is_expected.to have_error(:declaration_id, "This declaration has been clawed-back, so you can only view it.") }
+      it { is_expected.to have_error(:declaration_api_id, "This declaration has been clawed-back, so you can only view it.") }
     end
 
     Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
