@@ -18,7 +18,7 @@ module Teachers
     # @param service [Object]
     # @raise [Teachers::RecordOutcomeComponent::InvalidOutcomeError]
     # @raise [Teachers::RecordOutcomeComponent::MissingAppropriateBodyError]
-    def initialize(mode:, service:)
+    def initialize(mode:, service:, failed:)
       super
 
       @service = service
@@ -28,6 +28,7 @@ module Teachers
       raise(MissingAppropriateBodyError) if appropriate_body_required?
 
       @teacher_full_name = ::Teachers::Name.new(teacher).full_name
+      @failed = failed
     end
 
   private
@@ -54,6 +55,10 @@ module Teachers
     def unsupported_service?
       !service.is_a?(::AppropriateBodies::RecordPass) &&
         !service.is_a?(::AppropriateBodies::RecordFail)
+    end
+
+    def failed?
+      @failed
     end
   end
 end
