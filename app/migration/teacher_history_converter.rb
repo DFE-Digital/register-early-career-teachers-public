@@ -158,7 +158,8 @@ private
       schedule_info: induction_record.schedule_info,
       contract_period_year: induction_record.cohort_year,
       created_at: induction_record.created_at,
-      ecf_start_induction_record_id: induction_record.induction_record_id
+      ecf_start_induction_record_id: induction_record.induction_record_id,
+      school_urn: induction_record.school_urn
     }
   end
 
