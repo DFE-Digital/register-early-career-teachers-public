@@ -1,21 +1,17 @@
 module API::Declarations
   class Create
-    include ActiveModel::Model
-    include ActiveModel::Attributes
+    include API::Concerns::Declarations::SharedAction
 
     TEACHER_TYPES = %i[ect mentor].freeze
 
-    attribute :lead_provider_id
     attribute :teacher_api_id
     attribute :teacher_type
     attribute :declaration_date
     attribute :declaration_type
     attribute :evidence_type
 
-    validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
     validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }
-    validate :lead_provider_exists
     validate :teacher_training_exists
     validates :teacher_type, inclusion: {
       in: TEACHER_TYPES,
@@ -39,7 +35,7 @@ module API::Declarations
       return false unless valid?
 
       Declarations::Create.new(
-        author: Events::LeadProviderAPIAuthor.new(lead_provider:),
+        author:,
         lead_provider:,
         teacher:,
         training_period:,
@@ -76,10 +72,6 @@ module API::Declarations
     end
 
   private
-
-    def lead_provider
-      @lead_provider ||= LeadProvider.find_by(id: lead_provider_id) if lead_provider_id
-    end
 
     def teacher
       @teacher ||= Teacher.find_by(api_id: teacher_api_id) if teacher_api_id
@@ -145,13 +137,6 @@ module API::Declarations
       if declaration_date && declaration_date > Time.zone.now
         errors.add(:declaration_date, "The '#/declaration_date' value cannot be a future date. Check the date and try again.")
       end
-    end
-
-    def lead_provider_exists
-      return if errors[:lead_provider_id].any?
-      return if lead_provider
-
-      errors.add(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.")
     end
 
     def teacher_training_exists
