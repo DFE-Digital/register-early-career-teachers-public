@@ -55,9 +55,7 @@ module Schools
 
         def pre_populate_attributes
           self.are_these_details_correct = store.are_these_details_correct unless store.are_these_details_correct.nil?
-
           self.induction_tutor_name = store.induction_tutor_name.presence || school.induction_tutor_name
-
           self.induction_tutor_email = store.induction_tutor_email.presence || school.induction_tutor_email
         end
 
