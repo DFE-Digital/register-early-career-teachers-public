@@ -23,7 +23,7 @@ module PeriodHelpers
         OpenStruct.new(
           description: "when the later period starts on the day the former one finishes",
           existing_period_range: 4.months.ago.to_date..1.month.ago.to_date,
-          new_period_range: 1.month.ago.to_date..1.week.ago.to_date,
+          new_period_range: 1.month.ago.tomorrow.to_date..1.week.ago.to_date,
           expected_valid: true
         ),
         OpenStruct.new(
