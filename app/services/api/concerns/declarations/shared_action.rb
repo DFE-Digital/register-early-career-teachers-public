@@ -7,7 +7,7 @@ module API::Concerns::Declarations
       include ActiveModel::Attributes
 
       attribute :lead_provider_id
-      attribute :declaration_id
+      attribute :declaration_api_id
 
       validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
       validate :lead_provider_exists
@@ -20,7 +20,7 @@ module API::Concerns::Declarations
     end
 
     def declaration
-      @declaration ||= Declaration.find_by!(api_id: declaration_id)
+      @declaration ||= Declaration.find_by!(api_id: declaration_api_id)
     end
 
     def lead_provider_exists
