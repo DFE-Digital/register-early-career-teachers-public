@@ -92,7 +92,7 @@ module API::Declarations
       SQL
 
       scope
-        .where(payment_status: Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES)
+        .billable_or_changeable
         .where(previous_sql, lead_provider_id:)
     end
 
