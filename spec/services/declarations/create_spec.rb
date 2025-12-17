@@ -12,6 +12,7 @@ RSpec.describe Declarations::Create do
   let(:active_lead_provider) { training_period.active_lead_provider }
   let(:delivery_partner) { training_period.delivery_partner }
   let(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
+  let(:existing_duplicate_declaration) { nil }
 
   let(:service) do
     described_class.new(
@@ -24,7 +25,8 @@ RSpec.describe Declarations::Create do
       evidence_type:,
       payment_statement:,
       mentorship_period:,
-      delivery_partner:
+      delivery_partner:,
+      existing_duplicate_declaration:
     )
   end
 
@@ -116,7 +118,7 @@ RSpec.describe Declarations::Create do
             end
           end
 
-          let!(:existing_declaration) do
+          let!(:existing_duplicate_declaration) do
             FactoryBot.create(:declaration, :no_payment, training_period:, declaration_type:, declaration_date:, evidence_type:, mentorship_period:)
           end
 
@@ -125,7 +127,7 @@ RSpec.describe Declarations::Create do
           end
 
           it "returns the existing declaration" do
-            expect(create_declaration).to eq(existing_declaration)
+            expect(create_declaration).to eq(existing_duplicate_declaration)
           end
 
           it "does not assign a payment statement" do
@@ -134,15 +136,15 @@ RSpec.describe Declarations::Create do
 
           if trainee_type == :ect
             it "updates the existing declaration's pupil premium and sparsity uplifts" do
-              expect(existing_declaration.pupil_premium_uplift).to be(false)
-              expect(existing_declaration.sparsity_uplift).to be(false)
+              expect(existing_duplicate_declaration.pupil_premium_uplift).to be(false)
+              expect(existing_duplicate_declaration.sparsity_uplift).to be(false)
 
               teacher.update!("#{trainee_type}_pupil_premium_uplift": true, "#{trainee_type}_sparsity_uplift": true)
 
               create_declaration
 
-              expect(existing_declaration.reload.pupil_premium_uplift).to be(true)
-              expect(existing_declaration.reload.sparsity_uplift).to be(true)
+              expect(existing_duplicate_declaration.reload.pupil_premium_uplift).to be(true)
+              expect(existing_duplicate_declaration.reload.sparsity_uplift).to be(true)
             end
           end
 

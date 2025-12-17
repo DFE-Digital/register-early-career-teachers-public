@@ -154,9 +154,9 @@ describe Interval do
 
     describe ".ongoing_on" do
       it "builds SQL that queries the range contains the date" do
-        sql = DummyMentor.ongoing_on(Date.new(2023, 2, 15)).to_sql
+        ongoing_mentor = DummyMentor.ongoing_on(Date.new(2023, 2, 15))
 
-        expect(sql).to end_with(%{"range" @> date('2023-02-15'))})
+        expect(ongoing_mentor).to match_array([period_1, teacher_2_period])
       end
     end
   end
