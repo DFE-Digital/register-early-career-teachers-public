@@ -55,6 +55,12 @@ describe "One induction record" do
         expect(subject.teacher_row.updated_at).to be_within(1.second).of(ecf1_teacher_history.user.updated_at)
       end
     end
+
+    it "sets the api updated at timestamp to the latest value from the teacher" do
+      latest_updated_at = [ecf1_teacher_history.user.updated_at, ecf1_teacher_history.ect.updated_at, *ecf1_teacher_history.ect.induction_records.map(&:updated_at)].max
+
+      expect(subject.teacher_row.api_updated_at).to be_within(1.second).of(latest_updated_at)
+    end
   end
 
   describe "ECT at school period attributes" do
