@@ -90,6 +90,10 @@ private
 
         ect_at_school_period_row.mentorship_period_rows.each do |mentorship_period_row|
           with_failure_recording(teacher:, model: :mentorship_period, migration_item_id: mentorship_period_row.ecf_start_induction_record_id) do
+            if mentorship_period_row.mentor_teacher.nil?
+              raise ActiveRecord::RecordNotFound, "Mentor not found in migrated data"
+            end
+
             mentor_period = mentorship_period_row.mentor_at_school_period[:mentor]
 
             if mentor_period.nil?
