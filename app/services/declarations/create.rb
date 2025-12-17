@@ -1,8 +1,30 @@
 module Declarations
   class Create
-    attr_reader :author, :lead_provider, :teacher, :training_period, :declaration_date, :declaration_type, :evidence_type, :payment_statement, :mentorship_period, :delivery_partner
+    attr_reader :author,
+                :lead_provider,
+                :teacher,
+                :training_period,
+                :declaration_date,
+                :declaration_type,
+                :evidence_type,
+                :payment_statement,
+                :mentorship_period,
+                :delivery_partner,
+                :existing_duplicate_declaration
 
-    def initialize(author:, lead_provider:, teacher:, training_period:, declaration_date:, declaration_type:, evidence_type:, payment_statement:, mentorship_period:, delivery_partner:)
+    def initialize(
+      author:,
+      lead_provider:,
+      teacher:,
+      training_period:,
+      declaration_date:,
+      declaration_type:,
+      evidence_type:,
+      payment_statement:,
+      mentorship_period:,
+      delivery_partner:,
+      existing_duplicate_declaration:
+    )
       @author = author
       @lead_provider = lead_provider
       @teacher = teacher
@@ -13,6 +35,7 @@ module Declarations
       @payment_statement = payment_statement
       @mentorship_period = mentorship_period
       @delivery_partner = delivery_partner
+      @existing_duplicate_declaration = existing_duplicate_declaration
     end
 
     def create
@@ -30,28 +53,6 @@ module Declarations
     end
 
   private
-
-    def existing_declarations
-      if training_period.for_ect?
-        teacher.ect_declarations
-      else
-        teacher.mentor_declarations
-      end
-    end
-
-    def existing_duplicate_declaration
-      @existing_duplicate_declaration ||= existing_declarations
-        .billable_or_changeable
-        .joins(:lead_provider, :delivery_partner)
-        .find_by(
-          declaration_date:,
-          declaration_type:,
-          evidence_type:,
-          mentorship_period:,
-          lead_provider: { id: lead_provider.id },
-          delivery_partner: { id: delivery_partner.id }
-        )
-    end
 
     def find_or_create_declaration
       existing_duplicate_declaration || training_period.declarations.create!(

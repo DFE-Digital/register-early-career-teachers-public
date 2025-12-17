@@ -268,7 +268,8 @@ RSpec.describe API::Declarations::Create, type: :model do
                                                               evidence_type:,
                                                               payment_statement:,
                                                               mentorship_period:,
-                                                              delivery_partner:).and_return(service)
+                                                              delivery_partner:,
+                                                              existing_duplicate_declaration: nil).and_return(service)
             allow(service).to receive(:create)
           end
 

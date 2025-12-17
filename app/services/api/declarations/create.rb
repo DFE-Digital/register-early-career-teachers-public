@@ -44,7 +44,8 @@ module API::Declarations
         evidence_type:,
         payment_statement:,
         mentorship_period:,
-        delivery_partner:
+        delivery_partner:,
+        existing_duplicate_declaration:
       ).create
     end
 
