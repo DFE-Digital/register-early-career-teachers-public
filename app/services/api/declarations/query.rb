@@ -58,38 +58,61 @@ module API::Declarations
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
-      # Direct declarations: training period belongs to this lead provider
-      direct_scope = scope
-        .joins(training_period: :lead_provider)
-        .where(lead_providers: { id: lead_provider_id })
-
-      # Previous declarations: teachers who trained with this LP (with date/status constraints)
-      previous_scope = previous_declarations_for_lead_provider(lead_provider_id)
-
-      @scope = scope.where(id: direct_scope.select(:id)).or(scope.where(id: previous_scope.select(:id)))
-    end
-
-    def previous_declarations_for_lead_provider(lead_provider_id)
-      previous_training_periods = TrainingPeriod
-        .joins(:lead_provider)
-        .left_joins(:ect_at_school_period, :mentor_at_school_period)
-        .joins("INNER JOIN training_periods declaration_tp ON declaration_tp.id = declarations.training_period_id")
-        .joins("LEFT OUTER JOIN ect_at_school_periods declaration_ect ON declaration_ect.id = declaration_tp.ect_at_school_period_id")
-        .joins("LEFT OUTER JOIN mentor_at_school_periods declaration_mentor ON declaration_mentor.id = declaration_tp.mentor_at_school_period_id")
-        .where(lead_provider: { id: lead_provider_id })
-        .where(
-          <<~SQL
-            (ect_at_school_periods.teacher_id IS NOT NULL AND declaration_ect.teacher_id = ect_at_school_periods.teacher_id)
-              OR
-            (mentor_at_school_periods.teacher_id IS NOT NULL AND declaration_mentor.teacher_id = mentor_at_school_periods.teacher_id)
-          SQL
+      @scope = scope
+        # Join the lead provider for the declaration.
+        .joins(
+          training_period: {
+            school_partnership: {
+              lead_provider_delivery_partnership: :active_lead_provider
+            }
+          }
         )
-        .where("training_periods.finished_on IS NULL OR declarations.declaration_date <= training_periods.finished_on")
-        .select("1")
-
-      scope
-        .billable_or_changeable
-        .where("EXISTS (#{previous_training_periods.to_sql})")
+        # Join the ECT and mentor school periods (left join as its one or the other).
+        .left_joins(training_period: %i[ect_at_school_period mentor_at_school_period])
+        # Join the latest ECT and mentor training period for the lead provider we are filtering by.
+        # This will restrict declarations to only those for teachers associated with the lead provider we are filtering by.
+        .joins(<<-SQL)
+          JOIN metadata_teachers_lead_providers ON metadata_teachers_lead_providers.lead_provider_id = #{lead_provider_id}
+          AND (
+            (metadata_teachers_lead_providers.teacher_id = ect_at_school_periods.teacher_id AND latest_ect_training_period_id IS NOT NULL)
+            OR (metadata_teachers_lead_providers.teacher_id = mentor_at_school_periods.teacher_id AND latest_mentor_training_period_id IS NOT NULL)
+          )
+        SQL
+        .joins(<<-SQL)
+          LEFT JOIN training_periods latest_mentor_training_period
+          ON latest_mentor_training_period.id = metadata_teachers_lead_providers.latest_mentor_training_period_id
+        SQL
+        .joins(<<-SQL)
+          LEFT JOIN training_periods latest_ect_training_period ON
+          latest_ect_training_period.id = metadata_teachers_lead_providers.latest_ect_training_period_id
+        SQL
+        # Restrict to either:
+        #   * Declarations directly associated with the lead provider we are filtering by.
+        #   * Billable declarations dated earlier than the latest ECT/mentor training period for the lead provider we are filtering by.
+        .where(<<-SQL, payment_statuses: Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, lead_provider_id:)
+          active_lead_providers.lead_provider_id = :lead_provider_id
+          OR
+          (
+            (
+              CASE
+                WHEN ect_at_school_periods.id IS NOT NULL THEN
+                  latest_ect_training_period.finished_on
+                ELSE
+                  latest_mentor_training_period.finished_on
+              END IS NULL
+              OR
+              declarations.declaration_date <=
+              CASE
+                WHEN ect_at_school_periods.id IS NOT NULL THEN
+                  latest_ect_training_period.finished_on
+                ELSE
+                  latest_mentor_training_period.finished_on
+              END
+            )
+            AND declarations.payment_status IN (:payment_statuses)
+            AND declarations.clawback_status = 'no_clawback'
+          )
+        SQL
     end
 
     def where_contract_period_year_in(contract_period_years)

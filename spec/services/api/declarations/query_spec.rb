@@ -1,4 +1,4 @@
-RSpec.describe API::Declarations::Query do
+RSpec.describe API::Declarations::Query, :with_metadata do
   def create_training_period(trainee:, contract_period: nil, teacher: nil, following_on_from_training_period: nil, delivery_partner: nil)
     school_partnership = FactoryBot.create(:school_partnership, :for_year, year: contract_period&.year || Date.current.year)
     school_partnership.lead_provider_delivery_partnership.update!(delivery_partner:) if delivery_partner
