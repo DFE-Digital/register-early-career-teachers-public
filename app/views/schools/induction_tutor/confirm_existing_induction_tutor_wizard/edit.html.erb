@@ -1,6 +1,6 @@
 <% page_data(
     title: "Confirm induction tutor details",
-    # error: @wizard.school.errors.present?
+    error: @wizard.current_step.errors.present?,
 ) %>
 
 <p class="govuk-body">This person will be your main point of contact for early career 

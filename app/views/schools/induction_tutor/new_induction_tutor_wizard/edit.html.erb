@@ -1,6 +1,6 @@
 <% page_data(
     title: "Tell us your induction tutor",
-    error: @wizard.school.errors.present?
+    error: @wizard.current_step.errors.present?,
 ) %>
 
 <p class="govuk-body">Our records show that your school does not have an induction tutor.</p>
