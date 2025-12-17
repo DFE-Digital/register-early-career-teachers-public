@@ -53,14 +53,24 @@ private
   def with_failure_recording(teacher:, model:, migration_item_id:)
     yield
   rescue ActiveRecord::ActiveRecordError => e
+    record_failure!(teacher:, model:, message: e.message, migration_item_id:)
+  end
+
+  def record_failure!(teacher:, model:, message:, migration_item_id:)
     @failed = true
     TeacherMigrationFailure.create!(
       teacher:,
       model:,
-      message: e.message,
+      message:,
       migration_item_id:,
       migration_item_type: MIGRATION_ITEM_TYPE
     )
+  end
+
+  def school_partnership_for(training_period_row, school:)
+    return { school_partnership: nil } unless training_period_row.training_programme.to_s == "provider_led"
+
+    training_period_row.school_partnership(school:)
   end
 
   def save_ect_periods!(teacher)
@@ -72,7 +82,7 @@ private
           with_failure_recording(teacher:, model: :training_period, migration_item_id: training_period_row.ecf_start_induction_record_id) do
             TrainingPeriod.create!(
               ect_at_school_period:,
-              **training_period_row.school_partnership(school: ect_at_school_period_row.real_school),
+              **school_partnership_for(training_period_row, school: ect_at_school_period_row.real_school),
               **training_period_row
             )
           end
@@ -80,9 +90,15 @@ private
 
         ect_at_school_period_row.mentorship_period_rows.each do |mentorship_period_row|
           with_failure_recording(teacher:, model: :mentorship_period, migration_item_id: mentorship_period_row.ecf_start_induction_record_id) do
+            mentor_period = mentorship_period_row.mentor_at_school_period[:mentor]
+
+            if mentor_period.nil?
+              raise ActiveRecord::RecordNotFound, "No MentorAtSchoolPeriod found for mentorship dates"
+            end
+
             MentorshipPeriod.create!(
               mentee: ect_at_school_period,
-              **mentorship_period_row.mentor_at_school_period,
+              mentor: mentor_period,
               **mentorship_period_row
             )
           end
@@ -100,7 +116,7 @@ private
           with_failure_recording(teacher:, model: :training_period, migration_item_id: training_period_row.ecf_start_induction_record_id) do
             TrainingPeriod.create!(
               mentor_at_school_period:,
-              **training_period_row.school_partnership(school: mentor_at_school_period_row.real_school),
+              **school_partnership_for(training_period_row, school: mentor_at_school_period_row.real_school),
               **training_period_row
             )
           end

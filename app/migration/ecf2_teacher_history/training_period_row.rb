@@ -57,10 +57,15 @@ class ECF2TeacherHistory::TrainingPeriodRow
 
   # FIXME: the school here is from one level up, perhaps there's a nicer way of cross-referencing?
   def school_partnership(school:)
-    SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
+    partnership = SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
       .school_partnerships
       .first
-      .then { |school_partnership| { school_partnership: } }
+
+    if partnership.nil?
+      raise ActiveRecord::RecordNotFound, "No SchoolPartnership found for training period"
+    end
+
+    { school_partnership: partnership }
   end
 
   def ecf2_schedule
