@@ -3,8 +3,8 @@ module Schools
     module UpdateInductionTutorWizard
       class EditStep < InductionTutor::EditStep
         validate :details_must_be_changed
-        
-        private
+
+      private
 
         def details_must_be_changed
           if induction_tutor_email == school.induction_tutor_email &&
