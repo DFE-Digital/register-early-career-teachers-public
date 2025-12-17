@@ -47,6 +47,35 @@ describe MentorAtSchoolPeriods::Finish do
       end
     end
 
+    context "when the mentorship period has not started yet" do
+      let(:mentorship_start_date) { finished_on + 2.weeks }
+      let!(:mentorship_period) do
+        FactoryBot.create(
+          :mentorship_period,
+          mentor: mentor_at_school_period,
+          mentee: ect_at_school_period,
+          started_on: mentorship_start_date
+        )
+      end
+
+      it "deletes the mentorship period" do
+        expect { subject.finish_existing_at_school_periods! }.to change(MentorshipPeriod, :count).by(-1)
+      end
+
+      it "deletes any events associated with the mentorship period" do
+        FactoryBot.create(:event, mentorship_period:)
+        FactoryBot.create(:event, mentorship_period:)
+        other_event = FactoryBot.create(:event)
+
+        expect(Event.where(mentorship_period:).count).to eq(2)
+
+        subject.finish_existing_at_school_periods!
+
+        expect(Event.where(mentorship_period:)).to be_empty
+        expect(Event.exists?(other_event.id)).to be true
+      end
+    end
+
     it "finishes all the associated periods" do
       expect(training_period.finished_on).to be_nil
       expect(mentorship_period.finished_on).to be_nil
