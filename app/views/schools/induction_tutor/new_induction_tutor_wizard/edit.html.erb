@@ -16,7 +16,7 @@ target: "_blank" )%>.
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
-    <h2 class="govuk-heading-m">Enter your school's induction tutor details</h2>
+    <h2 class="govuk-heading-m">Enter your school’s induction tutor details</h2>
     <%= f.govuk_text_field :induction_tutor_name,
                             label: {
                               text: "Full name"
