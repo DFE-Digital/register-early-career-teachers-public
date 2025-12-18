@@ -39,6 +39,7 @@ module Declarations
       ActiveRecord::Base.transaction do
         declaration = create_declaration
 
+        update_uplifts!(declaration)
         set_eligibility!(declaration)
         set_payment_statement!(declaration)
         check_mentor_completion!(declaration)
@@ -55,7 +56,14 @@ module Declarations
         declaration_date:,
         declaration_type:,
         evidence_type:,
-        mentorship_period:,
+        mentorship_period:
+      )
+    end
+
+    def update_uplifts!(declaration)
+      return unless declaration.for_ect?
+
+      declaration.update!(
         pupil_premium_uplift: teacher.ect_pupil_premium_uplift,
         sparsity_uplift: teacher.ect_sparsity_uplift
       )

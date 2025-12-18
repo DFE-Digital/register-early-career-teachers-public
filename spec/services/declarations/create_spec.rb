@@ -57,12 +57,23 @@ RSpec.describe Declarations::Create do
 
         if trainee_type == :ect
           it "sets pupil premium and sparsity uplifts" do
-            teacher.update!("#{trainee_type}_pupil_premium_uplift": true, "#{trainee_type}_sparsity_uplift": true)
+            teacher.update!("ect_pupil_premium_uplift": true, "ect_sparsity_uplift": true)
 
             declaration = create_declaration
 
             expect(declaration.reload.pupil_premium_uplift).to be(true)
             expect(declaration.reload.sparsity_uplift).to be(true)
+          end
+        end
+
+        if trainee_type == :mentor
+          it "does not set pupil premium and sparsity uplifts" do
+            teacher.update!("ect_pupil_premium_uplift": true, "ect_sparsity_uplift": true)
+
+            declaration = create_declaration
+
+            expect(declaration.reload.pupil_premium_uplift).to be(false)
+            expect(declaration.reload.sparsity_uplift).to be(false)
           end
         end
 

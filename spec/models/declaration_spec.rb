@@ -253,6 +253,20 @@ describe Declaration do
         it { is_expected.to be_valid }
       end
     end
+
+    describe "uplifts absent for mentor declarations" do
+      subject(:declaration) { FactoryBot.build(:declaration, training_period:, sparsity_uplift: true, pupil_premium_uplift: true) }
+
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.month.ago) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on: 1.month.ago) }
+
+      it "is not valid" do
+        expect(declaration).to be_invalid
+        expect(declaration).to have_one_error_per_attribute
+        expect(declaration).to have_error(:sparsity_uplift, "must be absent for mentor declarations.")
+        expect(declaration).to have_error(:pupil_premium_uplift, "must be absent for mentor declarations.")
+      end
+    end
   end
 
   describe "scopes" do
