@@ -12,7 +12,6 @@ RSpec.describe Declarations::Create do
   let(:active_lead_provider) { training_period.active_lead_provider }
   let(:delivery_partner) { training_period.delivery_partner }
   let(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
-  let(:existing_duplicate_declaration) { nil }
 
   let(:service) do
     described_class.new(
@@ -25,8 +24,7 @@ RSpec.describe Declarations::Create do
       evidence_type:,
       payment_statement:,
       mentorship_period:,
-      delivery_partner:,
-      existing_duplicate_declaration:
+      delivery_partner:
     )
   end
 
@@ -36,179 +34,82 @@ RSpec.describe Declarations::Create do
     %i[ect mentor].each do |trainee_type|
       context "for #{trainee_type}" do
         let(:teacher_type) { trainee_type }
-
-        context "when there's no existing declaration" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
-          let!(:mentorship_period) do
-            if trainee_type == :ect
-              mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
-              FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
-            end
-          end
-
-          it "creates a new declaration with correct attributes" do
-            declaration = nil
-            expect { declaration = create_declaration }.to change(Declaration, :count).by(1)
-
-            expect(declaration.payment_statement).to be_nil
-            if trainee_type == :ect
-              expect(declaration.mentorship_period).to eq(mentorship_period)
-            end
-            expect(declaration.evidence_type).to eq(evidence_type)
-            expect(declaration.payment_status_eligible?).to be(false)
-          end
-
-          if trainee_type == :mentor
-            it "runs mentor completion" do
-              allow(Declarations::MentorCompletion).to receive(:new).and_call_original
-
-              declaration = create_declaration
-
-              expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
-            end
-          end
-
-          context "when teacher is eligible for funding" do
-            before do
-              teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": 1.year.ago)
-            end
-
-            it "marks declaration `payment_status` as eligible" do
-              declaration = create_declaration
-
-              expect(declaration.payment_status_eligible?).to be(true)
-            end
-
-            it "assigns a payment statement" do
-              declaration = create_declaration
-
-              expect(declaration.payment_statement).to eq(payment_statement)
-            end
-          end
-
-          it "records a declaration created event" do
-            allow(Events::Record).to receive(:record_declaration_created_event!).once.and_call_original
-
-            declaration = create_declaration
-
-            expect(Events::Record).to have_received(:record_declaration_created_event!).once.with(
-              hash_including(
-                {
-                  author: an_object_having_attributes(
-                    class: Events::LeadProviderAPIAuthor,
-                    lead_provider:
-                  ),
-                  teacher:,
-                  lead_provider:,
-                  declaration:
-                }
-              )
-            )
+        let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
+        let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
+        let!(:mentorship_period) do
+          if trainee_type == :ect
+            mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
+            FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
           end
         end
 
-        context "when an existing declaration exists" do
-          let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
-          let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
-          let(:mentorship_period) do
-            if trainee_type == :ect
-              mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
-              FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
-            end
-          end
+        it "creates a new declaration with correct attributes" do
+          declaration = nil
+          expect { declaration = create_declaration }.to change(Declaration, :count).by(1)
 
-          let!(:existing_duplicate_declaration) do
-            FactoryBot.create(:declaration, :no_payment, training_period:, declaration_type:, declaration_date:, evidence_type:, mentorship_period:)
-          end
-
-          it "does not create a new declaration" do
-            expect { create_declaration }.not_to change(Declaration, :count)
-          end
-
-          it "returns the existing declaration" do
-            expect(create_declaration).to eq(existing_duplicate_declaration)
-          end
-
-          it "does not assign a payment statement" do
-            expect(create_declaration.payment_statement).to be_nil
-          end
-
+          expect(declaration.payment_statement).to be_nil
           if trainee_type == :ect
-            it "updates the existing declaration's pupil premium and sparsity uplifts" do
-              expect(existing_duplicate_declaration.pupil_premium_uplift).to be(false)
-              expect(existing_duplicate_declaration.sparsity_uplift).to be(false)
-
-              teacher.update!("#{trainee_type}_pupil_premium_uplift": true, "#{trainee_type}_sparsity_uplift": true)
-
-              create_declaration
-
-              expect(existing_duplicate_declaration.reload.pupil_premium_uplift).to be(true)
-              expect(existing_duplicate_declaration.reload.sparsity_uplift).to be(true)
-            end
+            expect(declaration.mentorship_period).to eq(mentorship_period)
           end
+          expect(declaration.evidence_type).to eq(evidence_type)
+          expect(declaration).not_to be_payment_status_eligible
+        end
 
-          if trainee_type == :mentor
-            it "runs mentor completion" do
-              allow(Declarations::MentorCompletion).to receive(:new).and_call_original
-
-              declaration = create_declaration
-
-              expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
-            end
-          end
-
-          context "when teacher is eligible for funding" do
-            before do
-              teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": 1.year.ago)
-            end
-
-            it "marks declaration `payment_status` as eligible" do
-              declaration = create_declaration
-
-              expect(declaration.payment_status_eligible?).to be(true)
-            end
-
-            it "assigns a payment statement" do
-              declaration = create_declaration
-
-              expect(declaration.payment_statement).to eq(payment_statement)
-            end
-          end
-
-          context "when teacher is not eligible for funding" do
-            it "does not mark declaration `payment_status` as eligible" do
-              declaration = create_declaration
-
-              expect(declaration.payment_status_eligible?).to be(false)
-            end
-
-            it "does not assign a payment statement" do
-              declaration = create_declaration
-
-              expect(declaration.payment_statement).to be_nil
-            end
-          end
-
-          it "records a declaration created event" do
-            allow(Events::Record).to receive(:record_declaration_created_event!).once.and_call_original
+        if trainee_type == :ect
+          it "sets pupil premium and sparsity uplifts" do
+            teacher.update!("#{trainee_type}_pupil_premium_uplift": true, "#{trainee_type}_sparsity_uplift": true)
 
             declaration = create_declaration
 
-            expect(Events::Record).to have_received(:record_declaration_created_event!).once.with(
-              hash_including(
-                {
-                  author: an_object_having_attributes(
-                    class: Events::LeadProviderAPIAuthor,
-                    lead_provider:
-                  ),
-                  teacher:,
-                  lead_provider:,
-                  declaration:
-                }
-              )
-            )
+            expect(declaration.reload.pupil_premium_uplift).to be(true)
+            expect(declaration.reload.sparsity_uplift).to be(true)
           end
+        end
+
+        it "runs mentor completion" do
+          allow(Declarations::MentorCompletion).to receive(:new).and_call_original
+
+          declaration = create_declaration
+
+          expect(Declarations::MentorCompletion).to have_received(:new).with(author:, declaration:).once
+        end
+
+        context "when teacher is eligible for funding" do
+          before do
+            teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": 1.year.ago)
+          end
+
+          it "marks declaration `payment_status` as eligible" do
+            declaration = create_declaration
+
+            expect(declaration).to be_payment_status_eligible
+          end
+
+          it "assigns a payment statement" do
+            declaration = create_declaration
+
+            expect(declaration.payment_statement).to eq(payment_statement)
+          end
+        end
+
+        it "records a declaration created event" do
+          allow(Events::Record).to receive(:record_declaration_created_event!).once.and_call_original
+
+          declaration = create_declaration
+
+          expect(Events::Record).to have_received(:record_declaration_created_event!).once.with(
+            hash_including(
+              {
+                author: an_object_having_attributes(
+                  class: Events::LeadProviderAPIAuthor,
+                  lead_provider:
+                ),
+                teacher:,
+                lead_provider:,
+                declaration:
+              }
+            )
+          )
         end
       end
     end

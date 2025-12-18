@@ -909,67 +909,6 @@ describe TrainingPeriod do
         expect(relation.includes_values).to include(:school_partnership)
       end
     end
-
-    describe ".closest_to" do
-      it "returns the record that is ongoing on the date when present" do
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 20), finished_on: Date.new(2025, 1, 25))
-        covering = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on)
-
-        another_ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 10))
-        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: another_ect_at_school_period, started_on: another_ect_at_school_period.started_on, finished_on: another_ect_at_school_period.finished_on)
-
-        result = TrainingPeriod.closest_to(Date.new(2025, 1, 22))
-
-        expect(result).to contain_exactly(covering)
-      end
-
-      context "when no records cover the date" do
-        it "returns the closest record by `started_on`" do
-          ect_at_school_period1 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 10))
-          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period1, started_on: ect_at_school_period1.started_on, finished_on: ect_at_school_period1.finished_on)
-
-          ect_at_school_period2 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 15), finished_on: Date.new(2025, 1, 20))
-          training_period2 = FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period2, started_on: ect_at_school_period2.started_on, finished_on: ect_at_school_period2.finished_on)
-
-          ect_at_school_period3 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 25), finished_on: Date.new(2025, 1, 30))
-          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period3, started_on: ect_at_school_period3.started_on, finished_on: ect_at_school_period3.finished_on)
-
-          result = TrainingPeriod.closest_to(Date.new(2025, 1, 13))
-
-          expect(result).to contain_exactly(training_period2)
-        end
-
-        it "returns the closest record by `finished_on`" do
-          ect_at_school_period1 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 10))
-          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period1, started_on: ect_at_school_period1.started_on, finished_on: ect_at_school_period1.finished_on)
-
-          ect_at_school_period2 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 15), finished_on: Date.new(2025, 1, 20))
-          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period2, started_on: ect_at_school_period2.started_on, finished_on: ect_at_school_period2.finished_on)
-
-          ect_at_school_period3 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 25), finished_on: Date.new(2025, 1, 30))
-          training_period3 = FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period3, started_on: ect_at_school_period3.started_on, finished_on: ect_at_school_period3.finished_on)
-
-          result = TrainingPeriod.closest_to(Date.new(2025, 2, 1))
-
-          expect(result).to contain_exactly(training_period3)
-        end
-
-        it "returns the closest record by `started_on` and `finished_on` is nil" do
-          ect_at_school_period1 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 1, 10))
-          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period1, started_on: ect_at_school_period1.started_on, finished_on: ect_at_school_period1.finished_on)
-
-          ect_at_school_period2 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 15), finished_on: Date.new(2025, 1, 20))
-          FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period2, started_on: ect_at_school_period2.started_on, finished_on: ect_at_school_period2.finished_on)
-
-          ect_at_school_period3 = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 25), finished_on: nil)
-          training_period3 = FactoryBot.create(:training_period, :for_ect, ect_at_school_period: ect_at_school_period3, started_on: ect_at_school_period3.started_on, finished_on: ect_at_school_period3.finished_on)
-
-          result = TrainingPeriod.closest_to(Date.new(2025, 1, 23))
-
-          expect(result).to contain_exactly(training_period3)
-        end
-      end
-    end
   end
 
   describe "#siblings" do
