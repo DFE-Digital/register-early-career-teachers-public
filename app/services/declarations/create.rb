@@ -9,8 +9,7 @@ module Declarations
                 :evidence_type,
                 :payment_statement,
                 :mentorship_period,
-                :delivery_partner,
-                :existing_duplicate_declaration
+                :delivery_partner
 
     def initialize(
       author:,
@@ -22,8 +21,7 @@ module Declarations
       evidence_type:,
       payment_statement:,
       mentorship_period:,
-      delivery_partner:,
-      existing_duplicate_declaration:
+      delivery_partner:
     )
       @author = author
       @lead_provider = lead_provider
@@ -35,15 +33,14 @@ module Declarations
       @payment_statement = payment_statement
       @mentorship_period = mentorship_period
       @delivery_partner = delivery_partner
-      @existing_duplicate_declaration = existing_duplicate_declaration
     end
 
     def create
       ActiveRecord::Base.transaction do
-        declaration = find_or_create_declaration
+        declaration = create_declaration
 
-        set_eligibility!(declaration)
         update_uplifts!(declaration)
+        set_eligibility!(declaration)
         set_payment_statement!(declaration)
         check_mentor_completion!(declaration)
         record_declaration_created_event!(declaration)
@@ -54,8 +51,8 @@ module Declarations
 
   private
 
-    def find_or_create_declaration
-      existing_duplicate_declaration || training_period.declarations.create!(
+    def create_declaration
+      training_period.declarations.create!(
         declaration_date:,
         declaration_type:,
         evidence_type:,
@@ -85,8 +82,6 @@ module Declarations
     end
 
     def check_mentor_completion!(declaration)
-      return if declaration.for_ect?
-
       Declarations::MentorCompletion.new(author:, declaration:).perform
     end
 

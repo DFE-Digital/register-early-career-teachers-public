@@ -169,20 +169,7 @@ RSpec.describe API::Declarations::Create, type: :model do
         end
 
         describe "payment statement availability validations" do
-          context "when existing declaration is payment status is `no_payment`" do
-            let!(:existing_declaration) do
-              FactoryBot.create(:declaration,
-                                :no_payment,
-                                declaration_date:,
-                                training_period:,
-                                evidence_type:,
-                                declaration_type: "completed")
-            end
-
-            it { is_expected.to be_valid }
-          end
-
-          context "when no existing declaration and not eligible for funding" do
+          context "when not eligible for funding" do
             before do
               teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": nil)
             end
@@ -196,31 +183,38 @@ RSpec.describe API::Declarations::Create, type: :model do
             it { is_expected.to be_valid }
           end
 
-          context "otherwise" do
-            before do
-              teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": 3.years.ago)
-            end
+          context "when payment statement does not exist" do
+            context "when the teacher is fundable" do
+              before do
+                teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": 3.years.ago)
+              end
 
-            it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
+              it { is_expected.to have_one_error_per_attribute }
+              it { is_expected.to have_error(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
+            end
           end
         end
 
-        context "when a declaration already exists" do
+        context "when a duplicate declaration already exists" do
           %w[no_payment eligible payable paid].each do |payment_status|
             context "with payment status `#{payment_status}`" do
-              let!(:existing_declaration) do
+              let!(:existing_duplicate_declaration) do
                 FactoryBot.create(:declaration,
-                                  payment_status.to_sym,
+                                  :no_payment,
                                   declaration_date:,
+                                  declaration_type:,
+                                  evidence_type:,
                                   training_period:)
               end
 
               let!(:another_existing_declaration) do
-                FactoryBot.create(:declaration, payment_status.to_sym)
+                FactoryBot.create(:declaration,
+                                  payment_status.to_sym,
+                                  declaration_type:)
               end
 
               it { is_expected.to have_one_error_per_attribute }
+
               it { is_expected.to have_error(:base, "A declaration has already been submitted that will be, or has been, paid for this event.") }
             end
           end
@@ -268,8 +262,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                                                               evidence_type:,
                                                               payment_statement:,
                                                               mentorship_period:,
-                                                              delivery_partner:,
-                                                              existing_duplicate_declaration: nil).and_return(service)
+                                                              delivery_partner:).and_return(service)
             allow(service).to receive(:create)
           end
 

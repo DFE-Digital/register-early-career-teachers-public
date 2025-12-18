@@ -153,7 +153,7 @@ describe Interval do
     end
 
     describe ".ongoing_on" do
-      it "builds SQL that queries the range contains the date" do
+      it "returns records where the `started_on` and `finished_on` cover the date" do
         ongoing_mentor = DummyMentor.ongoing_on(Date.new(2023, 2, 15))
 
         expect(ongoing_mentor).to match_array([period_1, teacher_2_period])

@@ -44,8 +44,7 @@ module API::Declarations
         evidence_type:,
         payment_statement:,
         mentorship_period:,
-        delivery_partner:,
-        existing_duplicate_declaration:
+        delivery_partner:
       ).create
     end
 
@@ -180,9 +179,8 @@ module API::Declarations
     end
 
     def payment_statement_available
-      return unless training_period
-      return if existing_duplicate_declaration&.payment_status_no_payment?
-      return if existing_duplicate_declaration.nil? && !training_period.eligible_for_funding?
+      return if errors.any?
+      return unless training_period&.eligible_for_funding?
       return if payment_statement.present?
 
       errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
