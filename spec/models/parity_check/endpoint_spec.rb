@@ -68,6 +68,31 @@ describe ParityCheck::Endpoint do
     end
   end
 
+  describe "#excluded_for_lead_provider?" do
+    subject { FactoryBot.build(:parity_check_endpoint, method: :get, path: "/a/path", options:) }
+
+    let(:options) { { exclude_lead_providers: %w[Capita] } }
+
+    context "when the lead provider is excluded" do
+      let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Capita") }
+
+      it { is_expected.to be_excluded_for_lead_provider(lead_provider) }
+    end
+
+    context "when the lead provider is not excluded" do
+      let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Teach First") }
+
+      it { is_expected.not_to be_excluded_for_lead_provider(lead_provider) }
+    end
+
+    context "when no lead providers are exluded" do
+      let(:options) { {} }
+      let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Capita") }
+
+      it { is_expected.not_to be_excluded_for_lead_provider(lead_provider) }
+    end
+  end
+
   describe "#group_name" do
     subject { described_class.new(path:).group_name }
 
