@@ -161,6 +161,8 @@ erDiagram
     boolean trnless
     datetime api_updated_at
     datetime api_unfunded_mentor_updated_at
+    enum ect_migration_mode
+    enum mentor_migration_mode
   }
   PendingInductionSubmission {
     integer id
@@ -233,6 +235,7 @@ erDiagram
     uuid ecf_start_induction_record_id
     uuid ecf_end_induction_record_id
     citext email
+    integer reported_leaving_by_school_id
   }
   MentorAtSchoolPeriod }o--|| School : belongs_to
   MentorAtSchoolPeriod }o--|| Teacher : belongs_to
@@ -291,6 +294,7 @@ erDiagram
     enum working_pattern
     citext email
     integer school_reported_appropriate_body_id
+    integer reported_leaving_by_school_id
   }
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
@@ -322,6 +326,7 @@ erDiagram
     enum declaration_type
     boolean sparsity_uplift
     boolean pupil_premium_uplift
+    datetime api_updated_at
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| User : belongs_to

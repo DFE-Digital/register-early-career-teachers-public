@@ -443,4 +443,83 @@ describe ECTAtSchoolPeriod do
       expect(ect_at_school_period.siblings).to match_array([period_1, period_2, period_3])
     end
   end
+
+  describe "#reported_leaving_by?" do
+    subject(:period) { FactoryBot.create(:ect_at_school_period, :ongoing, reported_leaving_by_school_id: reporter_id) }
+
+    let(:reporting_school) { FactoryBot.create(:school) }
+    let(:other_school) { FactoryBot.create(:school) }
+
+    context "when reported by the given school" do
+      let(:reporter_id) { reporting_school.id }
+
+      it "returns true" do
+        expect(period.reported_leaving_by?(reporting_school)).to be true
+      end
+    end
+
+    context "when reported by a different school" do
+      let(:reporter_id) { reporting_school.id }
+
+      it "returns false" do
+        expect(period.reported_leaving_by?(other_school)).to be false
+      end
+    end
+
+    context "when not reported" do
+      let(:reporter_id) { nil }
+
+      it "returns false" do
+        expect(period.reported_leaving_by?(reporting_school)).to be false
+      end
+    end
+  end
+
+  describe "#leaving_reported_for_school?" do
+    let(:reporting_school) { FactoryBot.create(:school) }
+
+    context "when leaving in the future and reported by the school" do
+      subject(:period) do
+        FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.day.from_now,
+                                                 reported_leaving_by_school_id: reporting_school.id)
+      end
+
+      it "returns true" do
+        expect(period.leaving_reported_for_school?(reporting_school)).to be true
+      end
+    end
+
+    context "when finished in the past" do
+      subject(:period) do
+        FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.day.ago,
+                                                 reported_leaving_by_school_id: reporting_school.id)
+      end
+
+      it "returns false" do
+        expect(period.leaving_reported_for_school?(reporting_school)).to be false
+      end
+    end
+
+    context "when not reported by the school" do
+      subject(:period) do
+        FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.day.from_now,
+                                                 reported_leaving_by_school_id: nil)
+      end
+
+      it "returns false" do
+        expect(period.leaving_reported_for_school?(reporting_school)).to be false
+      end
+    end
+
+    context "when reported by the school and finished_on is today" do
+      subject(:period) do
+        FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: Time.zone.today,
+                                                 reported_leaving_by_school_id: reporting_school.id)
+      end
+
+      it "returns true" do
+        expect(period.leaving_reported_for_school?(reporting_school)).to be true
+      end
+    end
+  end
 end

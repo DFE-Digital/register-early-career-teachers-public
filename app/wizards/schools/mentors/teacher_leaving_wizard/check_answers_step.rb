@@ -57,7 +57,8 @@ module Schools
           MentorAtSchoolPeriods::Finish.new(
             teacher: mentor_at_school_period.teacher,
             finished_on:,
-            author:
+            author:,
+            reported_by_school_id: mentor_at_school_period.school_id
           ).finish_existing_at_school_periods!
         end
       end
