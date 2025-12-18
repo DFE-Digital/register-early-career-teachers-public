@@ -766,6 +766,7 @@ GEM
       attr_required (>= 0.0.5)
       faraday (~> 2.0)
       faraday-follow_redirects
+    table_print (1.5.7)
     thor (1.4.0)
     timeout (0.4.4)
     traces (0.16.2)
@@ -895,6 +896,7 @@ DEPENDENCIES
   solid_queue
   stackprof
   state_machines-activerecord
+  table_print
   turbo-rails
   tzinfo-data
   webmock
