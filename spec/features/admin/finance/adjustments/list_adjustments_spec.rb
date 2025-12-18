@@ -1,5 +1,5 @@
 RSpec.describe "List adjustments for statement" do
-  before { sign_in_as_dfe_user(role: :admin) }
+  before { sign_in_as_dfe_user(role: :finance) }
 
   scenario "Statement with adjustments" do
     given_a_finance_statement_exists
