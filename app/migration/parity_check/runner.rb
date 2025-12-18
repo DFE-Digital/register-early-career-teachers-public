@@ -19,7 +19,7 @@ module ParityCheck
 
       Run.create!(mode:).tap do |run|
         lead_providers.to_a.product(endpoints).each do |lead_provider, endpoint|
-          run.requests.create!(lead_provider:, endpoint:)
+          run.requests.create!(lead_provider:, endpoint:) unless endpoint.excluded_for_lead_provider?(lead_provider)
         end
 
         ParityCheck::RunDispatcher.new.dispatch
