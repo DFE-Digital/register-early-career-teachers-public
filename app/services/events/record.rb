@@ -864,6 +864,24 @@ module Events
       new(event_type:, author:, user:, heading:, modifications:, happened_at:).record_event!
     end
 
+    # Declarations events
+
+    def self.record_declaration_created_event!(author:, teacher:, lead_provider:, declaration:)
+      event_type = :teacher_declaration_created
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "A new declaration (#{declaration.declaration_type} - #{declaration.payment_status}) with id #{declaration.id} was created for the teacher: #{teacher_name} (#{lead_provider.name})"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        teacher:,
+        declaration:,
+        lead_provider:,
+        happened_at: Time.zone.now
+      ).record_event!
+    end
+
   private
 
     def attributes

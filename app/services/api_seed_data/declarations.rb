@@ -74,7 +74,7 @@ module APISeedData
           training_period:,
           ineligibility_reason:,
           mentorship_period:,
-          **uplifts
+          **uplifts(training_period:)
         )
 
         next if declaration.duplicate_declaration_exists?
@@ -84,7 +84,9 @@ module APISeedData
       end
     end
 
-    def uplifts
+    def uplifts(training_period:)
+      return {} unless training_period.for_ect?
+
       { sparsity_uplift: Faker::Boolean.boolean, pupil_premium_uplift: Faker::Boolean.boolean }
     end
 

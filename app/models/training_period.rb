@@ -147,6 +147,14 @@ class TrainingPeriod < ApplicationRecord
     end
   end
 
+  def eligible_for_funding?
+    if for_ect?
+      trainee.teacher.ect_first_became_eligible_for_training_at.present?
+    else
+      trainee.teacher.mentor_first_became_eligible_for_training_at.present?
+    end
+  end
+
 private
 
   def one_id_of_trainee_present

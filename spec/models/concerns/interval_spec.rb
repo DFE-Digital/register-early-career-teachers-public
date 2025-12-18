@@ -123,6 +123,42 @@ describe Interval do
         expect(DummyMentor).to have_received(:starting_tomorrow_or_after).once
       end
     end
+
+    describe ".closest_to" do
+      it "returns the record that is ongoing on the given date" do
+        closest_mentor = DummyMentor.closest_to("2023-09-01")
+
+        expect(closest_mentor).to match_array([period_2])
+      end
+
+      context "when no records cover the date" do
+        it "returns the closest record by `started_on`" do
+          closest_mentor = DummyMentor.closest_to("2023-06-20")
+
+          expect(closest_mentor).to match_array([period_2])
+        end
+
+        it "returns the closest record by `finished_on`" do
+          closest_mentor = DummyMentor.closest_to("2023-06-05")
+
+          expect(closest_mentor).to match_array([period_1])
+        end
+
+        it "returns the closest record by `started_on` and `finished_on` is nil" do
+          closest_mentor = DummyMentor.closest_to("2024-02-01")
+
+          expect(closest_mentor).to match_array([period_3])
+        end
+      end
+    end
+
+    describe ".ongoing_on" do
+      it "returns records where the `started_on` and `finished_on` cover the date" do
+        ongoing_mentor = DummyMentor.ongoing_on(Date.new(2023, 2, 15))
+
+        expect(ongoing_mentor).to match_array([period_1, teacher_2_period])
+      end
+    end
   end
 
   describe "#finish!" do

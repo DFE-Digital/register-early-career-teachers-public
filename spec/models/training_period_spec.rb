@@ -982,4 +982,40 @@ describe TrainingPeriod do
       end
     end
   end
+
+  describe "#eligible_for_funding?" do
+    subject { training_period.eligible_for_funding? }
+
+    let(:teacher) { training_period.trainee.teacher }
+
+    context "when ECT" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+      context "when not eligible for funding" do
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(ect_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
+      end
+    end
+
+    context "when Mentor" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
+
+      context "when not eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: nil) }
+
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
+      end
+    end
+  end
 end

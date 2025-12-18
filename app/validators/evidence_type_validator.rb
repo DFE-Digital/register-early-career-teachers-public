@@ -1,4 +1,4 @@
-class EvidenceHeldValidator < ActiveModel::Validator
+class EvidenceTypeValidator < ActiveModel::Validator
   SIMPLE_EVIDENCE_TYPES = %w[
     training-event-attended
     self-study-material-completed
@@ -6,23 +6,24 @@ class EvidenceHeldValidator < ActiveModel::Validator
   ].freeze
 
   def validate(record)
-    return if record.errors[:evidence_held].any?
+    return if record.errors[:evidence_type].any?
+    return if record.training_period.blank?
 
-    evidence_held_is_present(record) if self.class.evidence_held_required?(record)
+    evidence_type_is_present(record) if self.class.evidence_type_required?(record)
 
     if validate_detailed_evidence_types?(record)
-      evidence_held_is_valid_detailed_evidence_type(record)
+      evidence_type_is_valid_detailed_evidence_type(record)
     elsif validate_simple_evidence_types?(record)
-      evidence_held_is_valid_simple_evidence_type(record)
+      evidence_type_is_valid_simple_evidence_type(record)
     end
   end
 
-  def self.evidence_held_required?(record)
+  def self.evidence_type_required?(record)
     record.declaration_type.present? && record.declaration_type != "started"
   end
 
-  def self.evidence_held_allowed?(record)
-    record.training_period.contract_period.detailed_evidence_types_enabled || evidence_held_required?(record)
+  def self.evidence_type_allowed?(record)
+    record.training_period.contract_period.detailed_evidence_types_enabled || evidence_type_required?(record)
   end
 
 private
@@ -35,33 +36,33 @@ private
     record.declaration_type.present?
   end
 
-  def evidence_held_is_present(record)
-    return if record.errors[:evidence_held].any?
-    return if record.evidence_held.present?
+  def evidence_type_is_present(record)
+    return if record.errors[:evidence_type].any?
+    return if record.evidence_type.present?
 
-    record.errors.add(:evidence_held, "Enter a '#/evidence_held' value for this participant.")
+    record.errors.add(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
   end
 
-  def evidence_held_is_valid_simple_evidence_type(record)
-    return if record.errors[:evidence_held].any?
-    return if record.evidence_held.blank?
-    return if record.evidence_held.in?(SIMPLE_EVIDENCE_TYPES)
+  def evidence_type_is_valid_simple_evidence_type(record)
+    return if record.errors[:evidence_type].any?
+    return if record.evidence_type.blank?
+    return if record.evidence_type.in?(SIMPLE_EVIDENCE_TYPES)
 
-    record.errors.add(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
+    record.errors.add(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
   end
 
-  def evidence_held_is_valid_detailed_evidence_type(record)
-    return if record.errors[:evidence_held].any?
-    return if record.evidence_held.blank?
+  def evidence_type_is_valid_detailed_evidence_type(record)
+    return if record.errors[:evidence_type].any?
+    return if record.evidence_type.blank?
 
     evidences = if record.training_period.for_ect?
                   ect_evidences(record.declaration_type)
                 else
                   mentor_evidences(record.declaration_type)
                 end
-    return if record.evidence_held.in?(evidences)
+    return if record.evidence_type.in?(evidences)
 
-    record.errors.add(:evidence_held, "Enter an available '#/evidence_held' type for this participant.")
+    record.errors.add(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
   end
 
   def ect_evidences(declaration_type)
