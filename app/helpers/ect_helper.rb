@@ -46,8 +46,8 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
-  def ect_status(ect)
-    return govuk_tag(text: "Leaving school", colour: "yellow") if ect.leaving_today_or_in_future?
+  def ect_status(ect, current_school: nil)
+    return govuk_tag(text: "Leaving school", colour: "yellow") if current_school && ect.leaving_reported_for_school?(current_school)
 
     induction_status = ect.teacher.trs_induction_status
 

@@ -64,6 +64,14 @@ class MentorAtSchoolPeriod < ApplicationRecord
     teacher.mentor_at_school_periods.for_school(school_id).excluding(self)
   end
 
+  def reported_leaving_by?(school)
+    reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id
+  end
+
+  def leaving_reported_for_school?(school)
+    leaving_today_or_in_future? && reported_leaving_by?(school)
+  end
+
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
   delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
 

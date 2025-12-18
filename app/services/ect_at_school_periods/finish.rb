@@ -1,11 +1,12 @@
 module ECTAtSchoolPeriods
   class Finish
-    attr_reader :ect_at_school_period, :finished_on, :author
+    attr_reader :ect_at_school_period, :finished_on, :author, :reported_by_school_id
 
-    def initialize(ect_at_school_period:, finished_on:, author:)
+    def initialize(ect_at_school_period:, finished_on:, author:, reported_by_school_id: nil)
       @ect_at_school_period = ect_at_school_period
       @finished_on = finished_on
       @author = author
+      @reported_by_school_id = reported_by_school_id
     end
 
     def finish!
@@ -19,9 +20,12 @@ module ECTAtSchoolPeriods
   private
 
     def finish_ect_at_school_period!
-      return if ect_at_school_period.finished_on.present? && ect_at_school_period.finished_on <= finished_on
+      if ect_at_school_period.finished_on.present? && ect_at_school_period.finished_on <= finished_on
+        update_reporting_school!
+        return
+      end
 
-      ect_at_school_period.finish!(finished_on)
+      ect_at_school_period.update!(finish_attrs)
 
       Events::Record.record_teacher_left_school_as_ect!(
         author:,
@@ -29,6 +33,12 @@ module ECTAtSchoolPeriods
         happened_at: finished_on,
         **event_params
       )
+    end
+
+    def update_reporting_school!
+      return unless reported_by_school_id
+
+      ect_at_school_period.update!(reported_leaving_by_school_id: reported_by_school_id)
     end
 
     def finish_mentorship_periods!
@@ -72,6 +82,12 @@ module ECTAtSchoolPeriods
         school: ect_at_school_period.school,
         training_period: ect_at_school_period.current_or_next_training_period
       }
+    end
+
+    def finish_attrs
+      { finished_on: }.tap do |attrs|
+        attrs[:reported_leaving_by_school_id] = reported_by_school_id if reported_by_school_id
+      end
     end
   end
 end

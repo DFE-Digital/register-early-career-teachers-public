@@ -57,7 +57,8 @@ module Schools
           ECTAtSchoolPeriods::Finish.new(
             ect_at_school_period:,
             finished_on:,
-            author:
+            author:,
+            reported_by_school_id: ect_at_school_period.school_id
           ).finish!
         end
       end

@@ -1,10 +1,11 @@
 describe MentorAtSchoolPeriods::Finish do
-  subject { MentorAtSchoolPeriods::Finish.new(teacher:, finished_on:, author:) }
+  subject { MentorAtSchoolPeriods::Finish.new(teacher:, finished_on:, author:, reported_by_school_id:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:started_on) { 3.months.ago.to_date }
   let(:finished_on) { Date.current }
   let(:author) { FactoryBot.create(:school_user, school_urn: mentor_at_school_period.school.urn) }
+  let(:reported_by_school_id) { nil }
 
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on:) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:) }
@@ -98,6 +99,15 @@ describe MentorAtSchoolPeriods::Finish do
       )
 
       subject.finish_existing_at_school_periods!
+    end
+
+    context "when reported_by_school_id is provided" do
+      let(:reported_by_school_id) { mentor_at_school_period.school_id }
+
+      it "stores the reporting school id" do
+        subject.finish_existing_at_school_periods!
+        expect(mentor_at_school_period.reload.reported_leaving_by_school_id).to eq(reported_by_school_id)
+      end
     end
 
     it "uses MentorshipPeriods::Finish to close mentorship periods" do

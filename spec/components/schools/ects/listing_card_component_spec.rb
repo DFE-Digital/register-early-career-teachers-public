@@ -100,4 +100,22 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       expect(rendered_content).to have_text("Their lead provider will confirm this")
     end
   end
+
+  context "when the ECT is reported as leaving by the current school" do
+    before do
+      ect_at_school_period.update!(finished_on: Time.zone.today + 1.day, reported_leaving_by_school_id: school.id)
+    end
+
+    it "shows the leaving status when current_school is provided" do
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
+
+      expect(rendered_content).to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
+    end
+
+    it "does not show the leaving status when current_school is not provided" do
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+
+      expect(rendered_content).not_to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
+    end
+  end
 end

@@ -327,6 +327,7 @@
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   - email
+  - reported_leaving_by_school_id
   :lead_providers:
   - id
   - ecf_id
@@ -383,6 +384,7 @@
   - email
   - school_reported_appropriate_body_id
   - training_programme
+  - reported_leaving_by_school_id
   :delivery_partners:
   - id
   - name
