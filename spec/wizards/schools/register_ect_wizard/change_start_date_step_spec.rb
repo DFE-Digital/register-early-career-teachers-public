@@ -2,7 +2,6 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStartDateStep, type: :model do
   subject(:step) { described_class.new(wizard:, start_date: new_start_date) }
 
   let(:new_start_date) { "1 July 2024" }
-
   let(:school) { FactoryBot.create(:school, :state_funded) }
 
   let(:store) do
@@ -108,6 +107,42 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStartDateStep, type: :model do
       expect(store[:school_partnership_to_reuse_id]).to eq(123)
       step.save!
       expect(store[:school_partnership_to_reuse_id]).to be_nil
+    end
+
+    context "when reuse is no longer allowed" do
+      before do
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(false)
+
+        wizard.ect.appropriate_body_id = 99
+        wizard.ect.training_programme = "provider_led"
+        wizard.ect.lead_provider_id = 42
+      end
+
+      it "clears programme choices" do
+        step.save!
+
+        expect(wizard.ect.appropriate_body_id).to be_nil
+        expect(wizard.ect.training_programme).to be_nil
+        expect(wizard.ect.lead_provider_id).to be_nil
+      end
+    end
+
+    context "when reuse is still allowed" do
+      before do
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
+
+        wizard.ect.appropriate_body_id = 99
+        wizard.ect.training_programme = "provider_led"
+        wizard.ect.lead_provider_id = 42
+      end
+
+      it "does not clear programme choices" do
+        step.save!
+
+        expect(wizard.ect.appropriate_body_id).to eq(99)
+        expect(wizard.ect.training_programme).to eq("provider_led")
+        expect(wizard.ect.lead_provider_id).to eq(42)
+      end
     end
   end
 end
