@@ -175,11 +175,11 @@ module API::Declarations
       return unless training_period
       return unless existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
 
-      errors.add(:base, "A declaration has already been submitted that will be, or has been, paid for this event.")
+      errors.add(:declaration_type, "A declaration has already been submitted that will be, or has been, paid for this event.")
     end
 
     def payment_statement_available
-      return if errors.any?
+      return if errors[:declaration_type].any?
       return unless training_period&.eligible_for_funding?
       return if payment_statement.present?
 

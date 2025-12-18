@@ -24,10 +24,7 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
   context "when before the milestone start" do
     let(:declaration_date) { Date.new(2022, 1, 28) }
 
-    it "has a meaningful error" do
-      expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:declaration_date)).to eq(["Declaration date must be on or after the milestone start date for the same declaration type."])
-    end
+    it { is_expected.to have_error(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type.") }
   end
 
   context "when at the milestone start" do
@@ -51,9 +48,6 @@ RSpec.describe DeclarationDateWithinMilestoneValidator, type: :model do
   context "when after the milestone start" do
     let(:declaration_date) { milestone_date + 1 }
 
-    it "has a meaningful error" do
-      expect(subject).to be_invalid
-      expect(subject.errors.messages_for(:declaration_date)).to eq(["Declaration date must be on or before the milestone date for the same declaration type."])
-    end
+    it { is_expected.to have_error(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type.") }
   end
 end

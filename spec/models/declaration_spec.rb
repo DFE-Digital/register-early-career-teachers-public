@@ -256,19 +256,61 @@ describe Declaration do
   end
 
   describe "scopes" do
-    let!(:no_payment_declaration) { FactoryBot.create(:declaration, :no_payment) }
-    let!(:eligible_declaration) { FactoryBot.create(:declaration, :eligible) }
-    let!(:payable_declaration) { FactoryBot.create(:declaration, :payable) }
-    let!(:paid_declaration) { FactoryBot.create(:declaration, :paid) }
-    let!(:voided_declaration) { FactoryBot.create(:declaration, :voided) }
-    let!(:ineligible_declaration) { FactoryBot.create(:declaration, :ineligible) }
-    let!(:awaiting_clawback_declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
-    let!(:clawed_back_declaration) { FactoryBot.create(:declaration, :clawed_back) }
+    describe "payment statuses scopes" do
+      let(:declarations) { described_class.payment_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
 
-    describe ".billable_or_changeable" do
-      subject { described_class.billable_or_changeable }
+      describe ".billable_or_changeable" do
+        let(:billable_declarations) { declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) } }
 
-      it { is_expected.to contain_exactly(no_payment_declaration, eligible_declaration, payable_declaration, paid_declaration) }
+        it "returns declarations with billable or changeable payment statuses" do
+          expect(described_class.billable_or_changeable).to match_array(billable_declarations)
+        end
+
+        Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
+          context "when clawback_status is `#{clawback_status}`" do
+            before do
+              billable_declarations.each do |d|
+                d.update!(
+                  clawback_status:,
+                  clawback_statement: FactoryBot.create(:statement, :open, contract_period: d.training_period.contract_period)
+                )
+              end
+            end
+
+            it "returns no declarations" do
+              expect(described_class.billable_or_changeable).to be_empty
+            end
+          end
+        end
+      end
+
+      describe ".billable_or_changeable_for_declaration_type" do
+        let(:billable_or_changeable_declarations) { declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) } }
+
+        it "returns declarations with billable or changeable payment statuses for a specific declaration type" do
+          declaration = billable_or_changeable_declarations.sample
+          declaration.update!(declaration_type: "retained-1")
+
+          expect(described_class.billable_or_changeable_for_declaration_type("retained-1")).to contain_exactly(declaration)
+        end
+
+        Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
+          context "when clawback_status is `#{clawback_status}`" do
+            before do
+              billable_or_changeable_declarations.each do |d|
+                d.update!(
+                  clawback_status:,
+                  clawback_statement: FactoryBot.create(:statement, :open, contract_period: d.training_period.contract_period)
+                )
+              end
+            end
+
+            it "returns no declarations" do
+              expect(described_class.billable_or_changeable_for_declaration_type("retained-1")).to be_empty
+            end
+          end
+        end
+      end
     end
   end
 
@@ -340,65 +382,6 @@ describe Declaration do
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: true)
-    end
-  end
-
-  describe "scopes" do
-    describe "payment statuses" do
-      let(:declarations) { described_class.payment_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
-
-      describe ".billable_or_changeable" do
-        let(:billable_declarations) { declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) } }
-
-        it "returns declarations with billable or changeable payment statuses" do
-          expect(described_class.billable_or_changeable).to match_array(billable_declarations)
-        end
-
-        Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
-          context "when clawback_status is `#{clawback_status}`" do
-            before do
-              billable_declarations.each do |d|
-                d.update!(
-                  clawback_status:,
-                  clawback_statement: FactoryBot.create(:statement, :open, contract_period: d.training_period.contract_period)
-                )
-              end
-            end
-
-            it "returns no declarations" do
-              expect(described_class.billable_or_changeable).to be_empty
-            end
-          end
-        end
-      end
-
-      describe ".billable_or_changeable_for_declaration_type" do
-        let(:billable_or_changeable_declarations) { declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) } }
-
-        it "returns declarations with billable or changeable payment statuses for a specific declaration type" do
-          declaration = billable_or_changeable_declarations.sample
-          declaration.update!(declaration_type: "retained-1")
-
-          expect(described_class.billable_or_changeable_for_declaration_type("retained-1")).to contain_exactly(declaration)
-        end
-
-        Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
-          context "when clawback_status is `#{clawback_status}`" do
-            before do
-              billable_or_changeable_declarations.each do |d|
-                d.update!(
-                  clawback_status:,
-                  clawback_statement: FactoryBot.create(:statement, :open, contract_period: d.training_period.contract_period)
-                )
-              end
-            end
-
-            it "returns no declarations" do
-              expect(described_class.billable_or_changeable_for_declaration_type("retained-1")).to be_empty
-            end
-          end
-        end
-      end
     end
   end
 

@@ -16,7 +16,7 @@ RSpec.describe API::Declarations::Create, type: :model do
   let(:teacher_api_id) { teacher.api_id }
   let(:school_partnership) { training_period.school_partnership }
   let(:contract_period) { training_period.contract_period }
-  let!(:declaration_type) { "started" }
+  let(:declaration_type) { "started" }
   let(:evidence_type) { "training-event-attended" }
   let(:schedule) { training_period.schedule }
   let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:, start_date: Date.new(2024, 11, 1), milestone_date: Date.new(2024, 12, 1)) }
@@ -215,7 +215,7 @@ RSpec.describe API::Declarations::Create, type: :model do
 
               it { is_expected.to have_one_error_per_attribute }
 
-              it { is_expected.to have_error(:base, "A declaration has already been submitted that will be, or has been, paid for this event.") }
+              it { is_expected.to have_error(:declaration_type, "A declaration has already been submitted that will be, or has been, paid for this event.") }
             end
           end
         end
