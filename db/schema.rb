@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_17_130947) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -212,7 +212,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_130947) do
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
+    t.bigint "reported_leaving_by_school_id"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
+    t.index ["reported_leaving_by_school_id"], name: "index_ect_at_school_periods_on_reported_leaving_by_school_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
@@ -375,7 +377,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_130947) do
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.citext "email"
+    t.bigint "reported_leaving_by_school_id"
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
+    t.index ["reported_leaving_by_school_id"], name: "idx_on_reported_leaving_by_school_id_6c1d88c6d0"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
     t.index ["teacher_id"], name: "index_mentor_at_school_periods_on_teacher_id"
@@ -892,6 +896,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_130947) do
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
   add_foreign_key "ect_at_school_periods", "appropriate_bodies", column: "school_reported_appropriate_body_id"
   add_foreign_key "ect_at_school_periods", "schools"
+  add_foreign_key "ect_at_school_periods", "schools", column: "reported_leaving_by_school_id"
   add_foreign_key "ect_at_school_periods", "teachers"
   add_foreign_key "events", "active_lead_providers", on_delete: :nullify
   add_foreign_key "events", "appropriate_bodies", on_delete: :nullify
@@ -918,6 +923,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_130947) do
   add_foreign_key "induction_periods", "appropriate_bodies"
   add_foreign_key "induction_periods", "teachers"
   add_foreign_key "mentor_at_school_periods", "schools"
+  add_foreign_key "mentor_at_school_periods", "schools", column: "reported_leaving_by_school_id"
   add_foreign_key "mentor_at_school_periods", "teachers"
   add_foreign_key "mentorship_periods", "ect_at_school_periods"
   add_foreign_key "mentorship_periods", "mentor_at_school_periods"
