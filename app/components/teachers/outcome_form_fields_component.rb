@@ -2,7 +2,7 @@ module Teachers
   # Renders the form fields for recording an induction outcome
   # and shared between admin console and appropriate bodies
   class OutcomeFormFieldsComponent < ApplicationComponent
-    attr_reader :form, :appropriate_body
+    attr_reader :form, :appropriate_body, :failed
 
     include UserModes
 
@@ -31,15 +31,10 @@ module Teachers
       "When did you send written confirmation of their failed induction?"
     end
 
-
     def number_of_terms_label
       return "How many terms of induction did they spend with you?" if appropriate_body_mode?
 
       "How many terms of induction did they complete?"
-    end
-
-    def failed?
-      @failed
     end
   end
 end

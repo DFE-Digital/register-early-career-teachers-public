@@ -1,6 +1,6 @@
 RSpec.describe Teachers::ConfirmOutcomeComponent, type: :component do
   subject(:component) do
-    described_class.new(mode:, service:)
+    described_class.new(service:)
   end
 
   let(:teacher) { FactoryBot.create(:teacher, :with_name) }

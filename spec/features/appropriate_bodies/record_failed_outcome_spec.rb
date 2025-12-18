@@ -17,6 +17,7 @@ RSpec.describe "Recording a failed outcome for an ECT" do
     then_i_should_be_on_the_record_outcome_page(teacher)
 
     when_i_enter_the_finish_date
+    when_i_enter_the_written_fail_confirmation_on_date
     and_i_enter_a_terms_value_of(number_of_completed_terms)
     and_i_click_submit
 
@@ -43,12 +44,10 @@ private
   end
 
   def when_i_click_checkbox
-    page.click("#confirm_fail_checkbox")
+    page.click("#teacher-confirm-failed-outcome-1-field")
   end
 
   def and_i_click_continue_button
-    # remove disabled attribute
-    page.evaluate("let b=document.querySelector('.govuk-button'); b.removeAttribute('disabled'); b.setAttribute('aria-disabled','false');")
     page.click(".govuk-button")
   end
 
@@ -57,9 +56,15 @@ private
   end
 
   def when_i_enter_the_finish_date
-    page.get_by_label("Day", exact: true).fill(today.day.to_s)
-    page.get_by_label("Month", exact: true).fill(today.month.to_s)
-    page.get_by_label("Year", exact: true).fill(today.year.to_s)
+    page.fill "#appropriate_bodies_record_fail_finished_on_3i", today.day.to_s
+    page.fill "#appropriate_bodies_record_fail_finished_on_2i", today.month.to_s
+    page.fill "#appropriate_bodies_record_fail_finished_on_1i", today.year.to_s
+  end
+
+  def when_i_enter_the_written_fail_confirmation_on_date
+    page.fill "#appropriate_bodies_record_fail_written_fail_confirmation_on_3i", today.day.to_s
+    page.fill "#appropriate_bodies_record_fail_written_fail_confirmation_on_2i", today.month.to_s
+    page.fill "#appropriate_bodies_record_fail_written_fail_confirmation_on_1i", today.year.to_s
   end
 
   def and_i_enter_a_terms_value_of(number)
