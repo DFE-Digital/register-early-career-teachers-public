@@ -11,6 +11,10 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
       started_on: contract_period.started_on + 2.months
     )
   end
+
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: ect_at_school_period.started_on) }
+  let!(:mentorship_period) { FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period) }
+
   let!(:training_period) do
     FactoryBot.create(
       :training_period,

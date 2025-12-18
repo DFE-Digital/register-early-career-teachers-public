@@ -209,6 +209,34 @@ RSpec.shared_examples "a filter by from_participant_id endpoint" do
   end
 end
 
+RSpec.shared_examples "a filter by participant_id endpoint" do
+  it "returns only resources for the specified participant_id" do
+    teacher = FactoryBot.create(:teacher)
+    resource = create_resource(active_lead_provider:, teacher:)
+
+    # Resource for another teacher should not be included.
+    create_resource(active_lead_provider:)
+
+    params = { filter: { participant_id: teacher.api_id } }
+    authenticated_api_get(path, params:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([resource.reload], root: "data", **serializer_options))
+  end
+
+  it "returns no resources if the participant_id is not found" do
+    create_resource(active_lead_provider:)
+
+    params = { filter: { participant_id: SecureRandom.uuid } }
+    authenticated_api_get(path, params:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render([], root: "data", **serializer_options))
+  end
+end
+
 RSpec.shared_examples "a filter by training_status endpoint" do
   it "returns only resources that have the specified training_status" do
     deferred_resource = create_resource(active_lead_provider:, training_status: :deferred)
@@ -299,6 +327,23 @@ RSpec.shared_examples "a does not filter by delivery_partner_id endpoint" do
     different_resource = create_resource(active_lead_provider:)
 
     params = { filter: { delivery_partner_id: different_resource.delivery_partner.api_id } }
+    authenticated_api_get(path, params:)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.content_type).to eql("application/json; charset=utf-8")
+    expect(response.body).to eq(serializer.render(resource.reload, root: "data", **serializer_options))
+  end
+end
+
+RSpec.shared_examples "a does not filter by participant_id endpoint" do
+  let(:options) { defined?(serializer_options) ? serializer_options : {} }
+
+  it "returns the resources, ignoring the `participant_id`" do
+    # Use of a filter with a different participant_id should not change the resource returned.
+    different_teacher = FactoryBot.create(:teacher)
+    create_resource(active_lead_provider:, teacher: different_teacher)
+
+    params = { filter: { participant_id: different_teacher.api_id } }
     authenticated_api_get(path, params:)
 
     expect(response).to have_http_status(:ok)

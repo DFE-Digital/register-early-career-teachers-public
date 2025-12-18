@@ -630,6 +630,16 @@ describe TrainingPeriod do
     end
   end
 
+  describe "check constraints" do
+    subject { FactoryBot.build(:training_period, ect_at_school_period:, started_on: Date.current, finished_on: Date.current) }
+
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
+
+    it "prevents 0 day periods from being written to the database" do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    end
+  end
+
   describe "scopes" do
     describe ".for_ect" do
       it "returns training periods only for the specified ect at school period" do
@@ -969,6 +979,42 @@ describe TrainingPeriod do
         it "returns true" do
           expect(subject).to be_truthy
         end
+      end
+    end
+  end
+
+  describe "#eligible_for_funding?" do
+    subject { training_period.eligible_for_funding? }
+
+    let(:teacher) { training_period.trainee.teacher }
+
+    context "when ECT" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+      context "when not eligible for funding" do
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(ect_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
+      end
+    end
+
+    context "when Mentor" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
+
+      context "when not eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: nil) }
+
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
       end
     end
   end

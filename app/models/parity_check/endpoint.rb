@@ -33,6 +33,12 @@ module ParityCheck
       "#{method.to_s.upcase} #{path}#{query_string}#{pagination_note}"
     end
 
+    def excluded_for_lead_provider?(lead_provider)
+      excluded_lead_providers = options[:exclude_lead_providers] || []
+
+      lead_provider.name.in?(excluded_lead_providers)
+    end
+
   private
 
     def options_is_a_hash

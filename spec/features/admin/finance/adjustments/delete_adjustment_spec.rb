@@ -1,7 +1,7 @@
 RSpec.describe "Delete adjustment from statement" do
   include ActiveJob::TestHelper
 
-  before { sign_in_as_dfe_user(role: :admin) }
+  before { sign_in_as_dfe_user(role: :finance) }
 
   scenario "Delete adjustment" do
     given_a_finance_statement_exists

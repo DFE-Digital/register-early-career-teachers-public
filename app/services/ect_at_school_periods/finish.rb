@@ -32,6 +32,8 @@ module ECTAtSchoolPeriods
     end
 
     def finish_mentorship_periods!
+      destroy_unstarted_mentorship_periods!
+
       return unless (
         mentorship_period = ect_at_school_period.mentorship_periods
                                                 .find_by(MentorshipPeriod.date_in_range(finished_on))
@@ -55,6 +57,13 @@ module ECTAtSchoolPeriods
 
     def training_period
       @training_period ||= ect_at_school_period.current_or_next_training_period
+    end
+
+    def destroy_unstarted_mentorship_periods!
+      ect_at_school_period.mentorship_periods.started_on_or_after(finished_on).find_each do |mentorship_period|
+        Event.where(mentorship_period:).delete_all
+        mentorship_period.destroy!
+      end
     end
 
     def event_params

@@ -23,12 +23,20 @@ module Migration
       type == "ParticipantProfile::Mentor"
     end
 
+    def more_than_two_induction_records? = induction_records.count > 2
+
     def previous_payments_frozen_cohort_start_year
       return nil unless cohort_changed_after_payments_frozen?
 
       induction_records
         .find { |ir| ir.cohort.payments_frozen? && ir.cohort.id != schedule.cohort_id }
         &.cohort&.start_year
+    end
+
+    def two_induction_records_that_overlap?
+      induction_records.count == 2 &&
+        (induction_records.first.start_date..induction_records.first.end_date)
+          .overlaps?(induction_records.last.start_date..induction_records.last.end_date)
     end
   end
 end

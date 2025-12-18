@@ -1,5 +1,5 @@
 RSpec.describe "Payment authorisation for statement" do
-  before { sign_in_as_dfe_user(role: :admin) }
+  before { sign_in_as_dfe_user(role: :finance) }
 
   scenario "Statement can be authorised for payment" do
     given_a_payable_finance_statement_exists

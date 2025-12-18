@@ -52,6 +52,34 @@ module ParityCheck
         .pick(:id)
     end
 
+    def declaration_with_output_fee_statement
+      ::Migration::ParticipantDeclaration
+        .joins(cpd_lead_provider: %i[statements lead_provider])
+        .where(lead_provider: { id: lead_provider.ecf_id })
+        .where("statements.cohort_id = participant_declarations.cohort_id")
+        .where(statements: { output_fee: true })
+        .where("statements.deadline_date >= ?", Date.current)
+        .order("RANDOM()")
+    end
+
+    def paid_declaration_for_clawback_id
+      declaration_with_output_fee_statement
+        .where(state: :paid)
+        .pick(:id)
+    end
+
+    def voidable_declaration_for_voiding_id
+      declaration_with_output_fee_statement
+        .where(state: %w[submitted eligible payable ineligible])
+        .pick(:id)
+    end
+
+    def already_voided_declaration_for_voiding_id
+      declaration_with_output_fee_statement
+        .where(state: :voided)
+        .pick(:id)
+    end
+
     def teacher_api_id
       API::Teachers::Query.new(lead_provider_id: lead_provider.id)
         .teachers

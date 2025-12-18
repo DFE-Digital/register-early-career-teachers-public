@@ -6,9 +6,12 @@ describe Milestone do
   end
 
   describe "validation" do
+    subject { FactoryBot.build(:milestone) }
+
     it { is_expected.to validate_presence_of(:schedule_id).with_message("Choose a schedule") }
     it { is_expected.to validate_presence_of(:start_date).with_message("Enter a start date") }
     it { is_expected.to validate_inclusion_of(:declaration_type).in_array(declaration_types).with_message("Choose a valid declaration type") }
+    it { is_expected.to validate_comparison_of(:milestone_date).is_greater_than(:start_date).with_message("Milestone date must be after the start date").allow_nil }
 
     it "ensures uniqueness of declaration_types and schedule_ids" do
       original = FactoryBot.create(:milestone)

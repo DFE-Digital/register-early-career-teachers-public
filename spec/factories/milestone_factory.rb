@@ -4,6 +4,6 @@ FactoryBot.define do
     declaration_type { "started" }
 
     start_date { Date.new(2024, 9, 1) }
-    milestone_date { Date.new(2024, 9, 1) }
+    milestone_date { Date.new(2024, 10, 1) }
   end
 end

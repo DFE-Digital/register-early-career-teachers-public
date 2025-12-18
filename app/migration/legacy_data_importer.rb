@@ -1,10 +1,11 @@
+# TODO: delete this class and use LegacyDataImporterV2 instead
 class LegacyDataImporter
   def prepare!
-    Migrators::Base.migrators.each(&:prepare!)
+    migrators.each(&:prepare!)
   end
 
   def migrate!
-    Migrators::Base.migrators_in_dependency_order.each do |migrator|
+    migrators_in_dependency_order.each do |migrator|
       migrator.queue if migrator.runnable?
     end
 
@@ -18,6 +19,16 @@ class LegacyDataImporter
 
     Metadata::Manager.destroy_all_metadata!
 
-    Migrators::Base.migrators_in_dependency_order.reverse.each(&:reset!)
+    migrators_in_dependency_order.reverse.each(&:reset!)
+  end
+
+private
+
+  def migrators
+    Migrators::Base.migrators.reject { |m| m.model.in?(%i[mentor ect]) }
+  end
+
+  def migrators_in_dependency_order
+    Migrators::Base.migrators_in_dependency_order.select { |m| migrators.include?(m) }
   end
 end

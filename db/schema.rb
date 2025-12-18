@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_17_130947) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -39,6 +39,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
   create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
+  create_enum "participant_migration_mode", ["latest_induction_records", "all_induction_records", "not_migrated"]
   create_enum "request_method_types", ["get", "post", "put"]
   create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
@@ -144,6 +145,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.boolean "mentor_funding_enabled", default: false, null: false
     t.boolean "detailed_evidence_types_enabled", default: false, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "data_migrations", force: :cascade do |t|
@@ -168,7 +170,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.bigint "mentorship_period_id"
     t.bigint "payment_statement_id"
     t.bigint "clawback_statement_id"
-    t.datetime "voided_at"
+    t.datetime "voided_by_user_at"
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "declaration_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.enum "evidence_type", enum_type: "evidence_types"
@@ -178,6 +180,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.enum "declaration_type", default: "started", null: false, enum_type: "declaration_types"
     t.boolean "sparsity_uplift", default: false, null: false
     t.boolean "pupil_premium_uplift", default: false, null: false
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
     t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
@@ -215,6 +218,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "events", force: :cascade do |t|
@@ -336,6 +340,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.enum "training_programme", enum_type: "training_programme"
     t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
@@ -374,6 +379,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
     t.index ["teacher_id"], name: "index_mentor_at_school_periods_on_teacher_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "mentorship_periods", force: :cascade do |t|
@@ -391,6 +397,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
     t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
     t.index ["mentor_at_school_period_id"], name: "index_mentorship_periods_on_mentor_at_school_period_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "metadata_delivery_partners_lead_providers", force: :cascade do |t|
@@ -535,7 +542,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.integer "processed_count"
     t.integer "errored_count"
     t.integer "released_count"
-    t.integer "failed_count"
     t.integer "passed_count"
     t.integer "claimed_count"
     t.integer "file_size"
@@ -822,6 +828,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.boolean "trnless", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.enum "ect_migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
+    t.enum "mentor_migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
@@ -863,6 +871,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_151009) do
     t.index ["schedule_id"], name: "index_training_periods_on_schedule_id"
     t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
     t.index ["school_partnership_id"], name: "index_training_periods_on_school_partnership_id"
+    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "users", force: :cascade do |t|

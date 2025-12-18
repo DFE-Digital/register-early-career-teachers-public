@@ -23,7 +23,7 @@ module Migration
 
         #{ect_at_school_period_bars.join("\n")}
 
-        #{legend(present_lead_provider_names, extras: { 'School led' => 'yellow' })}
+        #{legend(present_lead_provider_names, extras: extra_keys)}
 
         @endgantt
       PLANTUML
@@ -37,6 +37,14 @@ module Migration
       # TODO: get a list of all the lead providers associated with this teacher, either
       #       as an ECT or mentor
       at_school_periods.flat_map(&:training_periods).compact.map { it.lead_provider&.name }
+    end
+
+    def extra_keys
+      if at_school_periods.flat_map(&:training_periods).compact.any?(&:school_led_training_programme?)
+        { "School led" => "yellow" }
+      else
+        {}
+      end
     end
 
     def at_school_periods
@@ -56,7 +64,12 @@ module Migration
         at_school_periods.each do |at_school_period|
           chunk << %(-- #{school.urn} --) if school.urn != urn
 
-          identifier = %(ECT:#{at_school_period.id})
+          identifier = case at_school_period
+                       when MentorAtSchoolPeriod
+                         %(Mentor:#{at_school_period.id})
+                       when ECTAtSchoolPeriod
+                         %(ECT:#{at_school_period.id})
+                       end
 
           chunk << %([#{identifier}] starts on #{at_school_period.started_on} and ends on #{at_school_period.finished_on || Time.zone.today})
 

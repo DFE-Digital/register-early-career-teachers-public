@@ -138,7 +138,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         it "captures an error message" do
           expect(submission.error_messages).to eq [
             "Fill in the blanks on this row",
-            "Outcome must be either pass, fail or release"
+            "Outcome must be either pass or release"
           ]
         end
       end
@@ -223,7 +223,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:outcome) { "foo" }
 
         it "captures an error message" do
-          expect(submission.error_messages).to eq ["Outcome must be either pass, fail or release"]
+          expect(submission.error_messages).to eq ["Outcome must be either pass or release"]
         end
       end
 
@@ -239,7 +239,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         let(:outcome) { "Failure" }
 
         it "captures an error message" do
-          expect(submission.error_messages).to eq ["Outcome must be either pass, fail or release"]
+          expect(submission.error_messages).to eq ["Outcome must be either pass or release"]
         end
       end
 
@@ -259,6 +259,14 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
         end
       end
 
+      context "when the outcome is fail" do
+        let(:outcome) { "fail" }
+
+        it "captures an error message" do
+          expect(submission.error_messages).to eq ["Fail cannot be recorded in bulk upload"]
+        end
+      end
+
       context "when multiple cells are invalid" do
         let(:teacher) {}
         let(:trn) { "0004" }
@@ -273,7 +281,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
             "Enter a valid TRN using 7 digits",
             "Dates must be in the format YYYY-MM-DD",
             "Dates cannot be in the future",
-            "Outcome must be either pass, fail or release",
+            "Outcome must be either pass or release",
             "Enter number of terms between 0 and 16 using up to one decimal place"
           ]
         end
@@ -383,18 +391,6 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
 
           it "enqueues a job to complete the submission" do
             expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RecordPassJob).with(
-              submission.id,
-              author.email,
-              author.name
-            ).and have_enqueued_job(AnalyticsBatchJob)
-          end
-        end
-
-        context "when failing" do
-          let(:outcome) { "fail" }
-
-          it "enqueues a job to complete the submission" do
-            expect { service.complete! }.to have_enqueued_job(AppropriateBodies::ProcessBatch::RecordFailJob).with(
               submission.id,
               author.email,
               author.name

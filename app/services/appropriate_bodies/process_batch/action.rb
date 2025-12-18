@@ -11,8 +11,6 @@ module AppropriateBodies
             RecordReleaseJob.perform_later(pending_induction_submission.id, author.email, author.name)
           elsif pending_induction_submission.pass?
             RecordPassJob.perform_later(pending_induction_submission.id, author.email, author.name)
-          elsif pending_induction_submission.fail?
-            RecordFailJob.perform_later(pending_induction_submission.id, author.email, author.name)
           end
         end
 
@@ -32,9 +30,6 @@ module AppropriateBodies
         )
 
         case row.outcome
-        when /fail/i
-          pending_induction_submission.assign_attributes(outcome: "fail")
-          pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
         when /pass/i
           pending_induction_submission.assign_attributes(outcome: "pass")
           pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)
@@ -80,7 +75,12 @@ module AppropriateBodies
       def incorrectly_formatted?
         super
 
-        pending_induction_submission.errors.add(:base, "Outcome must be either pass, fail or release") if invalid_outcome?
+        if fail_outcome?
+          pending_induction_submission.errors.add(:base, "Fail cannot be recorded in bulk upload")
+        elsif invalid_outcome?
+          pending_induction_submission.errors.add(:base, "Outcome must be either pass or release")
+        end
+
         pending_induction_submission.errors.add(:base, "Enter number of terms between 0 and 16 using up to one decimal place") if invalid_terms?
 
         pending_induction_submission.errors.any? ? pending_induction_submission.playback_errors : false
@@ -88,7 +88,12 @@ module AppropriateBodies
 
       # @return [Boolean] case-insensitive
       def invalid_outcome?
-        row.outcome !~ /\A(pass|fail|release)\z/i
+        row.outcome !~ /\A(pass|release)\z/i
+      end
+
+      # @return [Boolean] case-insensitive
+      def fail_outcome?
+        row.outcome =~ /\A(fail)\z/i
       end
 
       # @return [Boolean] 0-16 upto one decimal place
