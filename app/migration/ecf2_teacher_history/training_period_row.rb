@@ -59,6 +59,9 @@ class ECF2TeacherHistory::TrainingPeriodRow
   end
 
   def school_partnership
+    validate_active_lead_provider_exists!
+    validate_lead_provider_delivery_partnership_exists!
+
     partnership = SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
       .school_partnerships
       .first
@@ -68,6 +71,29 @@ class ECF2TeacherHistory::TrainingPeriodRow
     end
 
     { school_partnership: partnership }
+  end
+
+  def validate_active_lead_provider_exists!
+    return if lead_provider.nil?
+
+    active_lead_provider = ActiveLeadProvider.find_by(lead_provider:, contract_period_year:)
+    if active_lead_provider.nil?
+      raise ActiveRecord::RecordNotFound,
+            "No ActiveLeadProvider found for lead_provider_id #{lead_provider.id} and contract_period_year #{contract_period_year}"
+    end
+  end
+
+  def validate_lead_provider_delivery_partnership_exists!
+    return if lead_provider.nil? || delivery_partner.nil?
+
+    active_lead_provider = ActiveLeadProvider.find_by(lead_provider:, contract_period_year:)
+    return if active_lead_provider.nil?
+
+    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.find_by(active_lead_provider:, delivery_partner:)
+    if lead_provider_delivery_partnership.nil?
+      raise ActiveRecord::RecordNotFound,
+            "No LeadProviderDeliveryPartnership found for active_lead_provider_id #{active_lead_provider.id} and delivery_partner_id #{delivery_partner.id}"
+    end
   end
 
   def school
