@@ -18,7 +18,6 @@ RSpec.describe API::Declarations::Query do
   end
 
   def create_declaration(declaration_type: "started", contract_period: nil, training_period: nil, status: nil, declaration_date: nil)
-    contract_period ||= FactoryBot.create(:contract_period)
     training_period ||= create_training_period(contract_period:, trainee: :ect)
     declaration_date ||= training_period.started_on.next_day
     FactoryBot.create(
