@@ -1,10 +1,19 @@
 class Teacher < ApplicationRecord
   include DeclarativeUpdates
 
+  MIGRATION_MODES = {
+    latest_induction_records: "latest_induction_records",
+    all_induction_records: "all_induction_records",
+    not_migrated: "not_migrated"
+  }.freeze
+
   TRN_FORMAT = %r{\A\d{7}\z}
 
   self.ignored_columns = %i[search]
 
+  # Enums
+  enum :ect_migration_mode, MIGRATION_MODES, validate: { message: "Must be latest_induction_records, all_induction_records or not_migrated" }, suffix: true
+  enum :mentor_migration_mode, MIGRATION_MODES, validate: { message: "Must be latest_induction_records, all_induction_records or not_migrated" }, suffix: true
   enum :mentor_became_ineligible_for_funding_reason, {
     completed_declaration_received: "completed_declaration_received",
     completed_during_early_roll_out: "completed_during_early_roll_out",
