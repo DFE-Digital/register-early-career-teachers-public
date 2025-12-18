@@ -96,9 +96,12 @@ erDiagram
     string induction_tutor_name
     citext induction_tutor_email
     uuid api_id
+    integer induction_tutor_last_nominated_in
+    boolean marked_as_eligible
   }
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
+  School }o--|| ContractPeriod : belongs_to
   Schedule {
     integer id
     integer contract_period_year
