@@ -1,4 +1,4 @@
-RSpec.shared_examples "an API update endpoint" do
+RSpec.shared_examples "an API update endpoint" do |example_options|
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
 
   it "updates and returns the resource in a serialized format" do
@@ -29,12 +29,14 @@ RSpec.shared_examples "an API update endpoint" do
     expect(response.body).to eq({ errors: [{ title: "attr", detail: "message" }] }.to_json)
   end
 
-  it "returns a 400 response if the request body is malformed" do
-    authenticated_api_put(path, params: { not_a_valid: :body })
+  unless example_options && example_options[:accepts_request_body] == false
+    it "returns a 400 response if the request body is malformed" do
+      authenticated_api_put(path, params: { not_a_valid: :body })
 
-    expect(response).to have_http_status(:bad_request)
-    expect(response.content_type).to eql("application/json; charset=utf-8")
-    expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "Correct json data structure required. See API docs for reference." }] }.to_json)
+      expect(response).to have_http_status(:bad_request)
+      expect(response.content_type).to eql("application/json; charset=utf-8")
+      expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "Correct json data structure required. See API docs for reference." }] }.to_json)
+    end
   end
 
   context "when the resource has a different lead provider" do

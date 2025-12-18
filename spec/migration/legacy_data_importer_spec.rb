@@ -3,17 +3,38 @@ RSpec.describe LegacyDataImporter do
 
   subject(:importer) { described_class.new }
 
-  let(:migrator1) { class_double(Migrators::Base) }
-  let(:migrator2) { class_double(Migrators::Base) }
+  let(:migrator1) { class_double(Migrators::Base, model: :migrator1, dependencies: []) }
+  let(:migrator2) { class_double(Migrators::Base, model: :migrator2, dependencies: [:migrator1]) }
 
   before do
     allow(migrator1).to receive(:record_count).and_return(10)
     allow(migrator2).to receive(:record_count).and_return(20)
+    allow(Migrators::Base).to receive(:migrators).and_return [migrator1, migrator2]
+  end
+
+  describe "migrator filtering" do
+    let(:teacher_migrator) { class_double(Migrators::Base, model: :teacher, dependencies: []) }
+    let(:mentorship_period_migrator) { class_double(Migrators::Base, model: :mentorship_period, dependencies: [:teacher]) }
+    let(:mentor_migrator) { class_double(Migrators::Base, model: :mentor, dependencies: []) }
+    let(:ect_migrator) { class_double(Migrators::Base, model: :ect, dependencies: [:mentor]) }
+    let(:other_migrator) { class_double(Migrators::Base, model: :other, dependencies: []) }
+
+    let(:all_migrators) { [teacher_migrator, mentorship_period_migrator, mentor_migrator, ect_migrator, other_migrator] }
+
+    before do
+      allow(Migrators::Base).to receive(:migrators).and_return(all_migrators)
+    end
+
+    it "excludes V2 migrators (mentor and ect)" do
+      migrators = importer.send(:migrators)
+
+      expect(migrators).to include(teacher_migrator, mentorship_period_migrator, other_migrator)
+      expect(migrators).not_to include(mentor_migrator, ect_migrator)
+    end
   end
 
   describe "#prepare!" do
     it "calls .prepare! on each migrator" do
-      allow(Migrators::Base).to receive(:migrators).and_return [migrator1, migrator2]
       expect([migrator1, migrator2]).to all(receive(:prepare!))
       importer.prepare!
     end
@@ -23,8 +44,6 @@ RSpec.describe LegacyDataImporter do
     let!(:data_migration) { FactoryBot.create(:data_migration, :in_progress) }
 
     it "queues the next runnable migrator" do
-      allow(Migrators::Base).to receive(:migrators_in_dependency_order).and_return [migrator1, migrator2]
-
       allow(migrator1).to receive(:runnable?).and_return(false)
       allow(migrator2).to receive(:runnable?).and_return(true)
 
@@ -37,7 +56,7 @@ RSpec.describe LegacyDataImporter do
       let!(:data_migration) { FactoryBot.create(:data_migration, :completed) }
 
       it "initiates an async refresh of the metadata" do
-        allow(Migrators::Base).to receive(:migrators_in_dependency_order).and_return([])
+        allow(Migrators::Base).to receive(:migrators).and_return([])
 
         expect(Metadata::Manager).to receive(:refresh_all_metadata!).with(async: true)
         importer.migrate!
@@ -46,10 +65,6 @@ RSpec.describe LegacyDataImporter do
   end
 
   describe "#reset!" do
-    before do
-      allow(Migrators::Base).to receive(:migrators_in_dependency_order).and_return [migrator1, migrator2]
-    end
-
     it "destroys any DataMigration records" do
       FactoryBot.create_list(:data_migration, 2)
       [migrator1, migrator2].each { |migrator| allow(migrator).to receive(:reset!) }

@@ -1,6 +1,6 @@
 RSpec.describe "Admin finance statement filter" do
   before do
-    sign_in_as_dfe_user(role: :admin)
+    sign_in_as_dfe_user(role: :finance)
 
     given_statements_exist
 

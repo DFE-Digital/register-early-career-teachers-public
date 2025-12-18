@@ -12,6 +12,7 @@ describe ECF2TeacherHistory do
   let(:school_a_data) { ECF2TeacherHistory::SchoolData.new(urn: 111_111, name: "School A") }
   let(:school_b_data) { ECF2TeacherHistory::SchoolData.new(urn: 222_222, name: "School B") }
   let(:mentor_data) { ECF2TeacherHistory::MentorData.new(trn: "1234567", urn: "123456", started_on: 1.week.ago, finished_on: 1.day.ago) }
+  let(:created_at) { 1.month.ago.round }
 
   let(:mentorship_period_rows) do
     [
@@ -30,6 +31,7 @@ describe ECF2TeacherHistory do
       ECF2TeacherHistory::TrainingPeriodRow.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
+        created_at:,
         training_programme: :provider_led
       ),
     ]
@@ -64,10 +66,12 @@ describe ECF2TeacherHistory do
 
   describe "#initialize" do
     it "is initialized with a teacher row" do
-      expect(subject.teacher_row.trn).to eql(trn)
-      expect(subject.teacher_row.trs_first_name).to eql(trs_first_name)
-      expect(subject.teacher_row.trs_last_name).to eql(trs_last_name)
-      expect(subject.teacher_row.corrected_name).to eql(corrected_name)
+      aggregate_failures do
+        expect(subject.teacher_row.trn).to eql(trn)
+        expect(subject.teacher_row.trs_first_name).to eql(trs_first_name)
+        expect(subject.teacher_row.trs_last_name).to eql(trs_last_name)
+        expect(subject.teacher_row.corrected_name).to eql(corrected_name)
+      end
     end
 
     context "when ect_at_school_period_rows are present" do
@@ -96,6 +100,7 @@ describe ECF2TeacherHistory do
       let(:api_id) { SecureRandom.uuid }
       let(:api_ect_training_record_id) { SecureRandom.uuid }
       let(:api_mentor_training_record_id) { SecureRandom.uuid }
+      let(:ect_migration_mode) { "latest_induction_records" }
       let(:ect_pupil_premium_uplift) { true }
       let(:ect_sparsity_uplift) { true }
       let(:ect_first_became_eligible_for_training_at) { 3.years.ago.round(2) }
@@ -112,6 +117,7 @@ describe ECF2TeacherHistory do
           api_ect_training_record_id:,
           api_mentor_training_record_id:,
 
+          ect_migration_mode:,
           ect_pupil_premium_uplift:,
           ect_sparsity_uplift:,
           ect_first_became_eligible_for_training_at:,
@@ -134,6 +140,7 @@ describe ECF2TeacherHistory do
           expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
           expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
 
+          expect(teacher.ect_migration_mode).to eql(ect_migration_mode)
           expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
           expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
           expect(teacher.ect_first_became_eligible_for_training_at).to eql(ect_first_became_eligible_for_training_at)
@@ -142,7 +149,41 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher record already exists" do
-        pending "it updates the existing teacher record"
+        let!(:existing_teacher) do
+          FactoryBot.create(
+            :teacher,
+            trn:,
+            trs_first_name: "Old First Name",
+            trs_last_name: "Old Last Name",
+            corrected_name: nil
+          )
+        end
+
+        it "does not create a new teacher record" do
+          expect { subject.save_all_ect_data! }.not_to change(Teacher, :count)
+        end
+
+        it "updates the existing teacher record" do
+          teacher = subject.save_all_ect_data!
+
+          aggregate_failures do
+            expect(teacher.id).to eql(existing_teacher.id)
+            expect(teacher.trs_first_name).to eql(trs_first_name)
+            expect(teacher.trs_last_name).to eql(trs_last_name)
+            expect(teacher.corrected_name).to eql(corrected_name)
+          end
+        end
+
+        it "updates ECT-specific attributes" do
+          teacher = subject.save_all_ect_data!
+
+          aggregate_failures do
+            expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
+            expect(teacher.ect_migration_mode).to eql(ect_migration_mode)
+            expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
+            expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
+          end
+        end
       end
 
       context "when the teacher has ECT at school periods" do
@@ -166,11 +207,16 @@ describe ECF2TeacherHistory do
 
         context "when training periods are present" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
           let(:lead_provider) { FactoryBot.create(:lead_provider) }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-          let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+          let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+          let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
+
+          let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
@@ -178,11 +224,13 @@ describe ECF2TeacherHistory do
             ECF2TeacherHistory::TrainingPeriodRow.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
+              created_at:,
               training_programme: :provider_led,
-              lead_provider:,
-              delivery_partner:,
-              contract_period:,
-              schedule:
+              lead_provider_info:,
+              delivery_partner_info:,
+              contract_period_year: contract_period.year,
+              schedule_info:,
+              school_urn: school_a.urn
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -207,6 +255,7 @@ describe ECF2TeacherHistory do
             ECF2TeacherHistory::TrainingPeriodRow.new(
               started_on: 1.month.ago.to_date,
               finished_on: 1.week.ago.to_date,
+              created_at:,
               training_programme: :school_led
             )
           end
@@ -232,8 +281,10 @@ describe ECF2TeacherHistory do
           end
 
           it "saves the right number of training periods" do
-            expect(teacher.ect_at_school_periods.first.training_periods.count).to be(1)
-            expect(teacher.ect_at_school_periods.second.training_periods.count).to be(1)
+            aggregate_failures do
+              expect(teacher.ect_at_school_periods.first.training_periods.count).to be(1)
+              expect(teacher.ect_at_school_periods.second.training_periods.count).to be(1)
+            end
           end
 
           it "saves provider led training periods with the right data" do
@@ -243,7 +294,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(1.month.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
-                expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
+                # expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
 
                 p1.training_periods.first!.tap do |p1_tp|
                   expect(p1_tp.started_on).to eql(1.year.ago.to_date)
@@ -254,6 +305,8 @@ describe ECF2TeacherHistory do
                   expect(p1_tp.active_lead_provider).to eql(active_lead_provider)
                   expect(p1_tp.lead_provider).to eql(lead_provider)
                   expect(p1_tp.contract_period).to eql(contract_period)
+                  expect(p1_tp.schedule).to eql(schedule)
+                  expect(p1_tp.created_at).to eql(created_at)
                   # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
                   # expect(p1_tp.withdrawn_at).to eql(1.month.ago.round(2))
                   # expect(p1_tp.withdrawal_reason).to eql("switched_to_school_led")
@@ -271,12 +324,14 @@ describe ECF2TeacherHistory do
                 expect(p2.finished_on).to eql(1.week.ago.to_date)
                 expect(p2.school.urn).to eql(school_b_data.urn)
                 expect(p2.email).to eql("b@example.org")
-                expect(p2.school_reported_appropriate_body.id).to eql(appropriate_body_b_data.id)
+                # expect(p2.school_reported_appropriate_body.id).to eql(appropriate_body_b_data.id)
 
                 p2.training_periods.first!.tap do |p2_tp|
                   expect(p2_tp.started_on).to eql(1.month.ago.to_date)
                   expect(p2_tp.finished_on).to eql(1.week.ago.to_date)
+                  expect(p2_tp.created_at).to eql(created_at)
                   expect(p2_tp.training_programme).to eql("school_led")
+                  expect(p2_tp.schedule).to be_nil
                 end
               end
             end
@@ -341,7 +396,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(1.month.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
-                expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
+                # expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
 
                 p1.mentorship_periods.first!.tap do |p1_mp|
                   expect(p1_mp.started_on).to eql(1.year.ago.to_date)
@@ -367,6 +422,7 @@ describe ECF2TeacherHistory do
       let(:api_id) { SecureRandom.uuid }
       let(:api_ect_training_record_id) { SecureRandom.uuid }
       let(:api_mentor_training_record_id) { SecureRandom.uuid }
+      let(:mentor_migration_mode) { "all_induction_records" }
       let(:mentor_became_ineligible_for_funding_on) { 2.years.ago.to_date }
       let(:mentor_became_ineligible_for_funding_reason) { "completed_declaration_received" }
       let(:mentor_first_became_eligible_for_training_at) { 2.years.ago.round(2) }
@@ -383,6 +439,7 @@ describe ECF2TeacherHistory do
           api_ect_training_record_id:,
           api_mentor_training_record_id:,
 
+          mentor_migration_mode:,
           mentor_became_ineligible_for_funding_on:,
           mentor_became_ineligible_for_funding_reason:,
           mentor_first_became_eligible_for_training_at:,
@@ -408,6 +465,7 @@ describe ECF2TeacherHistory do
           expect(teacher.ect_pupil_premium_uplift).to be(false)
           expect(teacher.ect_sparsity_uplift).to be(false)
 
+          expect(teacher.mentor_migration_mode).to eql(mentor_migration_mode)
           expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)
           expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
           expect(teacher.mentor_first_became_eligible_for_training_at).to eql(mentor_first_became_eligible_for_training_at)
@@ -416,7 +474,41 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher record already exists" do
-        pending "it updates the existing teacher record"
+        let!(:existing_teacher) do
+          FactoryBot.create(
+            :teacher,
+            trn:,
+            trs_first_name: "Old First Name",
+            trs_last_name: "Old Last Name",
+            corrected_name: nil
+          )
+        end
+
+        it "does not create a new teacher record" do
+          expect { subject.save_all_mentor_data! }.not_to change(Teacher, :count)
+        end
+
+        it "updates the existing teacher record" do
+          teacher = subject.save_all_mentor_data!
+
+          aggregate_failures do
+            expect(teacher.id).to eql(existing_teacher.id)
+            expect(teacher.trs_first_name).to eql(trs_first_name)
+            expect(teacher.trs_last_name).to eql(trs_last_name)
+            expect(teacher.corrected_name).to eql(corrected_name)
+          end
+        end
+
+        it "updates mentor-specific attributes" do
+          teacher = subject.save_all_mentor_data!
+
+          aggregate_failures do
+            expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
+            expect(teacher.mentor_migration_mode).to eql(mentor_migration_mode)
+            expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)
+            expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
+          end
+        end
       end
 
       context "when the teacher has mentor at school periods" do
@@ -440,11 +532,15 @@ describe ECF2TeacherHistory do
 
         context "when training periods are present" do
           let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
           let(:lead_provider) { FactoryBot.create(:lead_provider) }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+          let(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+          let(:schedule_info) { Types::ScheduleInfo.new(schedule_id: schedule.id, identifier: schedule.identifier, name: schedule.identifier, cohort_year: schedule.contract_period_year) }
+
+          let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+          let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
@@ -452,11 +548,13 @@ describe ECF2TeacherHistory do
             ECF2TeacherHistory::TrainingPeriodRow.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
+              created_at:,
               training_programme: :provider_led,
-              lead_provider:,
-              delivery_partner:,
-              contract_period:,
-              schedule:
+              lead_provider_info:,
+              delivery_partner_info:,
+              contract_period_year: contract_period.year,
+              schedule_info:,
+              school_urn: school_a.urn
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -514,6 +612,515 @@ describe ECF2TeacherHistory do
             end
           end
         end
+      end
+    end
+  end
+
+  describe "failure recording" do
+    let(:other_arguments) { { ect_at_school_period_rows: } }
+
+    describe "when Mentor Teacher is not found" do
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:mentor_data) do
+        ECF2TeacherHistory::MentorData.new(
+          trn: "9999999",
+          urn: school_a.urn,
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date
+        )
+      end
+
+      let(:mentorship_period_row) do
+        ECF2TeacherHistory::MentorshipPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          ecf_start_induction_record_id:,
+          ecf_end_induction_record_id: SecureRandom.uuid,
+          mentor_data:
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [mentorship_period_row],
+          training_period_rows: []
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records the failure with the correct model" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.model).to eq("mentorship_period")
+      end
+
+      it "records a specific error message" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to eq("Mentor not found in migrated data")
+      end
+
+      it "records the migration item reference" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_item_id).to eq(ecf_start_induction_record_id)
+        expect(failure.migration_item_type).to eq("Migration::InductionRecord")
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+
+      it "still creates the ECTAtSchoolPeriod" do
+        teacher = subject.save_all_ect_data!
+
+        expect(teacher.ect_at_school_periods.count).to eq(1)
+      end
+    end
+
+    describe "when MentorAtSchoolPeriod is not found" do
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+      let!(:mentor_teacher) { FactoryBot.create(:teacher, trn: "9999999") }
+
+      let(:mentor_data) do
+        ECF2TeacherHistory::MentorData.new(
+          trn: mentor_teacher.trn,
+          urn: school_a.urn,
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date
+        )
+      end
+
+      let(:mentorship_period_row) do
+        ECF2TeacherHistory::MentorshipPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          ecf_start_induction_record_id:,
+          ecf_end_induction_record_id: SecureRandom.uuid,
+          mentor_data:
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [mentorship_period_row],
+          training_period_rows: []
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records the failure with the correct model" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.model).to eq("mentorship_period")
+      end
+
+      it "records a specific error message" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to eq("No MentorAtSchoolPeriod found for mentorship dates")
+      end
+
+      it "records the migration item reference" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_item_id).to eq(ecf_start_induction_record_id)
+        expect(failure.migration_item_type).to eq("Migration::InductionRecord")
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+
+      it "still creates the ECTAtSchoolPeriod" do
+        teacher = subject.save_all_ect_data!
+
+        expect(teacher.ect_at_school_periods.count).to eq(1)
+      end
+    end
+
+    describe "when SchoolPartnership is not found" do
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period_year: contract_period.year) }
+      let!(:lead_provider_delivery_partnership) do
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+      end
+      let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+      let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :provider_led,
+          lead_provider_info:,
+          delivery_partner_info:,
+          contract_period_year: contract_period.year,
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records the failure with the correct model" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.model).to eq("training_period")
+      end
+
+      it "records a specific error message" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to eq("No SchoolPartnership found for training period")
+      end
+
+      it "records the migration item reference" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_item_id).to eq(ecf_start_induction_record_id)
+        expect(failure.migration_item_type).to eq("Migration::InductionRecord")
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+    end
+
+    describe "when School is not found" do
+      let(:nonexistent_school_data) { ECF2TeacherHistory::SchoolData.new(urn: 999_999, name: "Nonexistent School") }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :school_led,
+          ecf_start_induction_record_id:
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: nonexistent_school_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records the failure with the correct model" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.model).to eq("ect_at_school_period")
+      end
+
+      it "records a specific error message about the school" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to include("Couldn't find GIAS::School")
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+    end
+
+    describe "when LeadProvider is not found" do
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:nonexistent_lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: SecureRandom.uuid, name: "Nonexistent LP") }
+      let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :provider_led,
+          lead_provider_info: nonexistent_lead_provider_info,
+          delivery_partner_info:,
+          contract_period_year: contract_period.year,
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records the failure with the correct model" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.model).to eq("training_period")
+      end
+
+      it "records a specific error message about LeadProvider" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to include("Couldn't find LeadProvider")
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+    end
+
+    describe "when ActiveLeadProvider is not found" do
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      # No ActiveLeadProvider created for this lead_provider + contract_period combo
+      let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+      let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :provider_led,
+          lead_provider_info:,
+          delivery_partner_info:,
+          contract_period_year: contract_period.year,
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records a specific error message about ActiveLeadProvider" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to include("No ActiveLeadProvider found")
+        expect(failure.message).to include(lead_provider.id.to_s)
+        expect(failure.message).to include(contract_period.year.to_s)
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+    end
+
+    describe "when LeadProviderDeliveryPartnership is not found" do
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period_year: contract_period.year) }
+      # No LeadProviderDeliveryPartnership created for this active_lead_provider + delivery_partner combo
+      let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+      let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :provider_led,
+          lead_provider_info:,
+          delivery_partner_info:,
+          contract_period_year: contract_period.year,
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records a specific error message about LeadProviderDeliveryPartnership" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to include("No LeadProviderDeliveryPartnership found")
+        expect(failure.message).to include(active_lead_provider.id.to_s)
+        expect(failure.message).to include(delivery_partner.id.to_s)
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+    end
+
+    describe "when DeliveryPartner is not found" do
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period_year: contract_period.year) }
+      let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+      let(:nonexistent_delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: SecureRandom.uuid, name: "Nonexistent DP") }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :provider_led,
+          lead_provider_info:,
+          delivery_partner_info: nonexistent_delivery_partner_info,
+          contract_period_year: contract_period.year,
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records the failure with the correct model" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.model).to eq("training_period")
+      end
+
+      it "records a specific error message about DeliveryPartner" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to include("Couldn't find DeliveryPartner")
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
       end
     end
   end

@@ -45,7 +45,7 @@ RSpec.describe BatchHelper, type: :helper do
   describe "#batch_example_action" do
     it do
       expect(batch_example_action).to have_text("Your file needs to look like this example")
-      expect(batch_example_action).to have_selector("table tr", count: 4)
+      expect(batch_example_action).to have_selector("table tr", count: 3)
       expect(batch_example_action).to have_selector("th", text: "TRN")
       expect(batch_example_action).to have_selector("th", text: "Date of birth")
       expect(batch_example_action).to have_selector("th", text: "Induction period end date")
@@ -80,7 +80,6 @@ RSpec.describe BatchHelper, type: :helper do
     describe "#batch_action_summary" do
       it do
         expect(batch_action_summary(batch)).to have_text("0 ECTs with a passed induction")
-        expect(batch_action_summary(batch)).to have_text("0 ECTs with a failed induction")
         expect(batch_action_summary(batch)).to have_text("0 ECTs with a released outcome")
       end
     end

@@ -1,10 +1,30 @@
 FactoryBot.define do
+  factory :ecf1_teacher_history, class: "ECF1TeacherHistory" do
+    initialize_with { new(user:, ect:, mentor:) }
+
+    transient do
+      cohort_year { Random.rand(2020..2119) }
+    end
+
+    user { FactoryBot.build(:ecf1_teacher_history_user) }
+    ect { nil }
+    mentor { nil }
+
+    trait :trnless do
+      user { FactoryBot.build(:ecf1_teacher_history_user, trn: nil) }
+    end
+
+    trait :ect_with_one_induction_record do
+      ect { FactoryBot.build(:ecf1_teacher_history_ect, :one_induction_record, cohort_year:) }
+    end
+  end
+
   factory :ecf1_teacher_history_user, class: "ECF1TeacherHistory::User" do
     trn { Faker::Number.unique.number(digits: 7) }
     full_name { Faker::FunnyName.two_word_name }
     user_id { SecureRandom.uuid }
-    created_at { Random.rand(12).months.ago }
-    updated_at { Random.rand(30).days.ago }
+    created_at { 12.months.ago }
+    updated_at { 6.months.ago }
 
     initialize_with { new(trn:, full_name:, user_id:, created_at:, updated_at:) }
   end
@@ -12,12 +32,12 @@ FactoryBot.define do
   factory :ecf1_teacher_history_profile_state_row, class: "ECF1TeacherHistory::ProfileStateRow" do
     state { "active" }
     reason { nil }
-    created_at { Random.rand(12).months.ago }
+    created_at { 12.months.ago }
 
     initialize_with { new(state:, reason:, created_at:) }
   end
 
-  factory :ecf1_teacher_history_schedule_info, class: "ECF1TeacherHistory::ScheduleInfo" do
+  factory :ecf1_teacher_history_schedule_info, class: "Types::ScheduleInfo" do
     schedule_id { SecureRandom.uuid }
     name { "ECF Standard September" }
     identifier { "ecf-standard-september" }
@@ -32,17 +52,13 @@ FactoryBot.define do
   end
 
   factory :ecf1_teacher_history_training_provider_info, class: "ECF1TeacherHistory::TrainingProviderInfo" do
-    lead_provider_id { SecureRandom.uuid }
-    sequence(:lead_provider_name) { |n| "History Lead Provider #{n}" }
-    delivery_partner_id { SecureRandom.uuid }
-    sequence(:delivery_partner_name) { |n| "History Delivery Partner#{n}" }
+    sequence(:lead_provider_info) { |n| Types::LeadProviderInfo.new(ecf1_id: SecureRandom.uuid, name: "History Lead Provider #{n}") }
+    sequence(:delivery_partner_info) { |n| Types::DeliveryPartnerInfo.new(ecf1_id: SecureRandom.uuid, name: "History Delivery Partner #{n}") }
     cohort_year { Random.rand(2020..2119) }
 
     initialize_with do
-      new(lead_provider_id:,
-          lead_provider_name:,
-          delivery_partner_id:,
-          delivery_partner_name:,
+      new(lead_provider_info:,
+          delivery_partner_info:,
           cohort_year:)
     end
   end
@@ -53,19 +69,20 @@ FactoryBot.define do
     end
 
     induction_record_id { SecureRandom.uuid }
-    start_date { Random.rand(12).months.ago }
-    end_date { nil }
+    cohort_year { Random.rand(2020..2119) }
+    start_date { Date.new(cohort_year, 9, 1) }
+    end_date { Date.new(cohort_year + 2, 6, 1) }
     created_at { start_date }
-    updated_at { Random.rand(30).days.ago }
-    cohort_year { start_date.month > 8 ? start_date.year : start_date.year - 1 }
+    updated_at { 6.months.ago }
     school_urn { Faker::Number.unique.number(digits: 6).to_s }
-    schedule { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
+    schedule_info { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
     preferred_identity_email { Faker::Internet.unique.email(name: full_name) }
     mentor_profile_id { SecureRandom.uuid }
     training_status { "active" }
     induction_status { "active" }
     training_programme { "full_induction_programme" }
     training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:) }
+    sequence(:appropriate_body) { |n| Types::AppropriateBodyData.new(ecf1_id: SecureRandom.uuid, name: "History Appropriate body #{n}") }
 
     initialize_with do
       new(induction_record_id:,
@@ -75,27 +92,46 @@ FactoryBot.define do
           updated_at:,
           cohort_year:,
           school_urn:,
-          schedule:,
+          schedule_info:,
           preferred_identity_email:,
           mentor_profile_id:,
           training_status:,
           induction_status:,
           training_programme:,
-          training_provider_info:)
+          training_provider_info:,
+          appropriate_body:)
+    end
+
+    trait :created_at_later_than_start_date do
+      created_at { start_date + 2.days }
+    end
+
+    trait :start_date_later_than_created_at do
+      created_at { start_date - 2.days }
+    end
+
+    trait :ongoing do
+      end_date { nil }
     end
   end
 
   factory :ecf1_teacher_history_ect, class: "ECF1TeacherHistory::ECT" do
+    transient do
+      cohort_year { Random.rand(2020..2119) }
+    end
+
     participant_profile_id { SecureRandom.uuid }
-    induction_start_date { Random.rand(12).months.ago }
+    migration_mode { "all_induction_records" }
+    induction_start_date { Date.new(cohort_year, 9, 1) }
     induction_completion_date { nil }
-    created_at { Random.rand(12).months.ago }
-    updated_at { Random.rand(30).days.ago }
+    created_at { Date.new(cohort_year, 9, 1) }
+    updated_at { 6.months.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
-    induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row)] }
+    induction_records { [] }
 
     initialize_with do
       new(participant_profile_id:,
+          migration_mode:,
           induction_start_date:,
           induction_completion_date:,
           created_at:,
@@ -103,19 +139,29 @@ FactoryBot.define do
           states:,
           induction_records:)
     end
+
+    trait :one_induction_record do
+      induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)] }
+    end
   end
 
   factory :ecf1_teacher_history_mentor, class: "ECF1TeacherHistory::Mentor" do
+    transient do
+      cohort_year { Random.rand(2020..2119) }
+    end
+
     participant_profile_id { SecureRandom.uuid }
+    migration_mode { "latest_induction_records" }
     mentor_completion_date { nil }
     mentor_completion_reason { nil }
-    created_at { Random.rand(12).months.ago }
-    updated_at { Random.rand(30).days.ago }
+    created_at { Date.new(cohort_year, 9, 1) }
+    updated_at { 6.months.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
-    induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row)] }
+    induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)] }
 
     initialize_with do
       new(participant_profile_id:,
+          migration_mode:,
           mentor_completion_date:,
           mentor_completion_reason:,
           created_at:,

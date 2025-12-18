@@ -1,6 +1,6 @@
 RSpec.describe "Admin finance statement selector" do
   before do
-    sign_in_as_dfe_user(role: :admin)
+    sign_in_as_dfe_user(role: :finance)
 
     given_statement_exist_with_dropdown_options
     when_i_visit_the_statement_page

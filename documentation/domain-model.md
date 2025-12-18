@@ -124,7 +124,6 @@ erDiagram
     integer processed_count
     integer errored_count
     integer released_count
-    integer failed_count
     integer passed_count
     integer claimed_count
     integer file_size
@@ -313,7 +312,7 @@ erDiagram
     integer mentorship_period_id
     integer payment_statement_id
     integer clawback_statement_id
-    datetime voided_at
+    datetime voided_by_user_at
     uuid api_id
     datetime declaration_date
     enum evidence_type

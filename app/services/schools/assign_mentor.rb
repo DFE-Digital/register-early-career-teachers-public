@@ -19,7 +19,13 @@ module Schools
   private
 
     def add_new_mentorship!
-      @mentorship_period = ect.mentorship_periods.create!(mentor:, started_on: earliest_possible_start, finished_on: latest_possible_finish)
+      started_on = earliest_possible_start
+
+      if current_mentorship_period&.finished_on == started_on
+        started_on = current_mentorship_period.finished_on.next_day
+      end
+
+      @mentorship_period = ect.mentorship_periods.create!(mentor:, started_on:, finished_on: latest_possible_finish)
     end
 
     def earliest_possible_start
@@ -35,16 +41,17 @@ module Schools
     def finish_or_destroy_current_mentorship!
       return unless current_mentorship_period
 
-      if mentor_moving_schools? && current_mentorship_period.started_on >= earliest_possible_start
-        destroy_events_for_current_mentorship_period
-        current_mentorship_period.destroy!
+      if current_mentorship_period.started_on >= earliest_possible_start
+        destroy_unstarted_current_mentorship_period!
       else
         current_mentorship_period.finish!(earliest_possible_start)
       end
     end
 
-    def destroy_events_for_current_mentorship_period
+    def destroy_unstarted_current_mentorship_period!
       Event.where(mentorship_period: current_mentorship_period).delete_all
+
+      current_mentorship_period.destroy!
     end
 
     def mentor_moving_schools?

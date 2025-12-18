@@ -1,7 +1,7 @@
 RSpec.describe "Create adjustment for statement" do
   include ActiveJob::TestHelper
 
-  before { sign_in_as_dfe_user(role: :admin) }
+  before { sign_in_as_dfe_user(role: :finance) }
 
   scenario "Add new adjustment" do
     given_a_finance_statement_exists

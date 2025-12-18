@@ -1,4 +1,9 @@
 module Migrators
+  # NOTE: This migrator is deprecated for batch migration.
+  # Use Migrators::Mentor and Migrators::ECT instead.
+  #
+  # This class is kept for single-teacher migration via MigrateEntity,
+  # which needs to migrate both mentor and ECT data in one call.
   class Teacher < Migrators::Base
     def self.record_count
       teachers.count
@@ -28,33 +33,22 @@ module Migrators
       end
     end
 
+    # Migrates a single teacher's mentor and ECT data.
+    # Used by MigrateEntity for single-teacher migration.
+    #
+    # For batch migration, use Migrators::Mentor followed by
+    # Migrators::ECT to ensure mentors are migrated before ECTs
+    # (required for MentorshipPeriod creation).
     def migrate_one!(teacher_profile)
-      teacher = migrate_teacher!(teacher_profile)
-
-      teacher_profile
-        .participant_profiles
-        .eager_load(participant_profile_states: :cpd_lead_provider,
-                    induction_records: [schedule: :cohort,
-                                        induction_programme: [
-                                          partnership: %i[cohort lead_provider delivery_partner school],
-                                          school_cohort: :school
-                                        ]])
-        .find_each do |participant_profile|
-          migrate_profile_periods(teacher, participant_profile)
-        end
-
-      teacher
-    end
-
-    # FIXME: eventually replaces #migrate_one, placeholder for now
-    def migrate_one_record!(teacher_profile)
-      user = teacher_profile.user
-
-      ecf1_teacher_history = ECF1TeacherHistory.build(user:, teacher_profile:, induction_records:)
-
+      ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
       ecf2_teacher_history = TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2!
 
-      ecf2_teacher_history.save_all!
+      # For single-teacher migration, we can safely do both in one call
+      # since any mentor this teacher has would be migrated separately.
+      ecf2_teacher_history.save_all_mentor_data! if ecf1_teacher_history.mentor.present?
+      ecf2_teacher_history.save_all_ect_data! if ecf1_teacher_history.ect.present?
+
+      ::Teacher.find_by(trn: teacher_profile.trn) || ::Teacher.find_by(api_id: teacher_profile.user.id)
     end
 
   private
@@ -100,7 +94,9 @@ module Migrators
       # |    |-training_period_3
       #
       teacher_periods = ::TeacherPeriodsExtractor.new(induction_records: sanitizer.induction_records).teacher_periods
-      teacher_periods = add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile) if participant_profile.mentor?
+
+      # TODO: Paused temporarily
+      # teacher_periods = add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile) if participant_profile.mentor?
 
       result = create_teacher_periods(teacher, teacher_periods, participant_profile)
       set_teacher_profile_values!(teacher, participant_profile)
@@ -181,19 +177,20 @@ module Migrators
       teacher.save!
     end
 
-    def add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile)
-      urns = teacher_periods.map(&:urn)
-      participant_profile.school_mentors.eager_load(:school).find_each do |school_mentor|
-        next if urns.include? school_mentor.school.urn
-
-        teacher_periods << Migration::SchoolPeriod.new(urn: school_mentor.school.urn,
-                                                       start_date: school_mentor.created_at.to_date,
-                                                       end_date: nil,
-                                                       start_source_id: school_mentor.id,
-                                                       end_source_id: nil)
-      end
-      teacher_periods
-    end
+    # TODO: Paused temporarily
+    # def add_mentor_at_multiple_school_periods_to(teacher_periods, participant_profile)
+    #   urns = teacher_periods.map(&:urn)
+    #   participant_profile.school_mentors.eager_load(:school).find_each do |school_mentor|
+    #     next if urns.include? school_mentor.school.urn
+    #
+    #     teacher_periods << Migration::SchoolPeriod.new(urn: school_mentor.school.urn,
+    #                                                    start_date: school_mentor.created_at.to_date,
+    #                                                    end_date: nil,
+    #                                                    start_source_id: school_mentor.id,
+    #                                                    end_source_id: nil)
+    #   end
+    #   teacher_periods
+    # end
 
     def name_does_not_match?(teacher, full_name)
       [teacher.trs_first_name, teacher.trs_last_name].join(" ") != full_name

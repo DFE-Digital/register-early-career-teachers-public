@@ -17,6 +17,10 @@ class ECF2TeacherHistory::MentorshipPeriodRow
     { started_on:, finished_on:, ecf_start_induction_record_id:, ecf_end_induction_record_id: }
   end
 
+  def mentor_teacher
+    Teacher.find_by(trn: mentor_data.trn)
+  end
+
   def mentor_at_school_period
     {
       # FIXME: use dates too to ensure we pick the right mentorship period, it's feasible

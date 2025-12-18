@@ -1,15 +1,14 @@
 <% page_data(
-    title: "Confirm that #{@wizard.teacher_full_name} has left your school permanently",
+    title: @wizard.current_step.heading_title,
     backlink_href: @wizard.previous_step_path
 ) %>
 
 <p class="govuk-body">
-  You’ve told us that <%= @wizard.teacher_full_name %> 
-  left your school on <%= @wizard.current_step.leaving_date.to_fs(:govuk) %>.
+  <%= @wizard.current_step.leaving_statement %>
 </p>
 
 <p class="govuk-body">
-  You will not be able to view or edit <%= @wizard.teacher_full_name %>’s details.
+  <%= @wizard.current_step.edit_warning_statement %>
 </p>
 
 <%= govuk_button_to(

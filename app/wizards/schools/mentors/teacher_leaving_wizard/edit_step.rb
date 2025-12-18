@@ -42,11 +42,12 @@ module Schools
 
         def leaving_after_start_date
           return unless leaving_on_input.valid?
-          return if leaving_on_input.value_as_date >= mentor_at_school_period.started_on
+          return if leaving_on_input.value_as_date > mentor_at_school_period.started_on
 
           errors.add(
             :leaving_on,
-            "Leaving date must be on or after the start date (#{mentor_at_school_period.started_on.to_fs(:govuk)})"
+            "Our records show that #{name_for(mentor_at_school_period.teacher)} started teaching at your school on
+            #{mentor_at_school_period.started_on.to_formatted_s(:govuk)}. Enter a later date."
           )
         end
 

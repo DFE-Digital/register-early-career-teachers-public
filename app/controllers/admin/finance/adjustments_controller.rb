@@ -1,5 +1,5 @@
 module Admin::Finance
-  class AdjustmentsController < AdminController
+  class AdjustmentsController < Admin::Finance::BaseController
     before_action :set_statement
     before_action :redirect_if_adjustment_not_editable
     before_action :set_adjustment, only: %i[edit update delete destroy]
