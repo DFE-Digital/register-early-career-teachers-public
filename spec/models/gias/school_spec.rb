@@ -12,9 +12,8 @@ describe GIAS::School do
     it { is_expected.to have_db_column(:administrative_district_name).of_type(:string) }
     it { is_expected.to have_db_column(:closed_on).of_type(:date) }
     it { is_expected.to have_db_column(:created_at).of_type(:datetime).with_options(null: false) }
+    it { is_expected.to have_db_column(:eligible).of_type(:boolean).with_options(null: false) }
     it { is_expected.to have_db_column(:establishment_number).of_type(:integer) }
-    it { is_expected.to have_db_column(:funding_eligibility).of_type(:enum).with_options(null: false) }
-    it { is_expected.to have_db_column(:induction_eligibility).of_type(:boolean).with_options(null: false) }
     it { is_expected.to have_db_column(:in_england).of_type(:boolean).with_options(null: false) }
     it { is_expected.to have_db_column(:local_authority_code).of_type(:integer).with_options(null: false) }
     it { is_expected.to have_db_column(:local_authority_name).of_type(:string) }
@@ -46,16 +45,6 @@ describe GIAS::School do
   end
 
   describe "enums" do
-    it {
-      is_expected.to define_enum_for(:funding_eligibility)
-                       .with_values(eligible_for_fip: "eligible_for_fip",
-                                    eligible_for_cip: "eligible_for_cip",
-                                    ineligible: "ineligible")
-                       .backed_by_column_of_type(:enum)
-                       .with_prefix(:funding)
-                       .validating
-    }
-
     it {
       is_expected.to define_enum_for(:status)
                        .with_values(open: "open",

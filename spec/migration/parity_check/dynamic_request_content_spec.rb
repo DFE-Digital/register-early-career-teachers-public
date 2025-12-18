@@ -33,15 +33,9 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:identifier) { :school_id }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, active_lead_provider:) }
-      let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
+      let!(:school) { FactoryBot.create(:school, :eligible) }
 
-      before do
-        # Ineligible school
-        FactoryBot.create(:school, :ineligible, :not_cip_only)
-          .tap { it.gias_school.update!(funding_eligibility: :ineligible) }
-        # CIP only school
-        FactoryBot.create(:school, :eligible, :cip_only)
-      end
+      before { FactoryBot.create(:school, :ineligible) }
 
       it { is_expected.to eq(school.api_id) }
     end
@@ -243,7 +237,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
     context "when fetching partnership_create_body" do
       let(:identifier) { :partnership_create_body }
       let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-      let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
+      let!(:school) { FactoryBot.create(:school, :eligible) }
 
       before do
         # Disabled contract period
@@ -254,8 +248,6 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         FactoryBot.create(:lead_provider_delivery_partnership)
         # Ineligible school
         FactoryBot.create(:school, :ineligible)
-        # CIP only school
-        FactoryBot.create(:school, :eligible, :cip_only)
       end
 
       it "returns a partnership create body" do
