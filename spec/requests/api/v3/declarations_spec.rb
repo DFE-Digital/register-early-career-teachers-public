@@ -1,11 +1,11 @@
 RSpec.describe "Declarations API", :with_metadata, type: :request do
   let(:serializer) { API::DeclarationSerializer }
-  let(:serializer_options) { {} }
+  let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Declarations::Query }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let(:lead_provider) { active_lead_provider.lead_provider }
 
-  def create_resource(active_lead_provider:, teacher: nil)
+  def create_resource(active_lead_provider:, teacher: nil, declaration_trait: :no_payment)
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
     teacher ||= FactoryBot.create(:teacher)
@@ -13,7 +13,9 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
     ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil, teacher:, school: school_partnership.school)
     training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:)
 
-    FactoryBot.create(:declaration, training_period:)
+    declaration = FactoryBot.create(:declaration, declaration_trait, training_period:)
+    declaration.payment_statement&.update!(active_lead_provider:)
+    declaration
   end
 
   describe "#index" do
@@ -55,13 +57,34 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
   end
 
   describe "#void" do
-    let(:path) { api_v3_declaration_void_path(123) }
+    let(:path) { void_api_v3_declaration_path(resource.api_id) }
+    let(:resource_type) { Declaration }
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        declaration_api_id: resource.api_id
+      }
+    end
+    let(:params) { {} }
 
-    it_behaves_like "a token authenticated endpoint", :put
+    context "when the declaration has been paid" do
+      let(:resource) do
+        create_resource(active_lead_provider:, declaration_trait: :paid)
+      end
+      let(:service) { API::Declarations::Clawback }
 
-    it "returns method not allowed" do
-      authenticated_api_put path
-      expect(response).to be_method_not_allowed
+      it_behaves_like "a token authenticated endpoint", :put
+      it_behaves_like "an API update endpoint", accepts_request_body: false
+    end
+
+    context "when the declaration has not been paid" do
+      let(:resource) do
+        create_resource(active_lead_provider:, declaration_trait: :payable)
+      end
+      let(:service) { API::Declarations::Void }
+
+      it_behaves_like "a token authenticated endpoint", :put
+      it_behaves_like "an API update endpoint", accepts_request_body: false
     end
   end
 end
