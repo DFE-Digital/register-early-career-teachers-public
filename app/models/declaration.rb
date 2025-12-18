@@ -71,13 +71,14 @@ class Declaration < ApplicationRecord
   validate :contract_period_consistent_across_associations
   validate :declaration_does_not_already_exist
   validate :declaration_type_started_or_completed_for_mentor_funding_contract_period
+  validate :uplifts_absent_for_mentor, if: :for_mentor?
 
+  # Scopes
   scope :billable_or_changeable, -> {
     where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
   }
-
-  scope :billable_or_changeable, -> {
-    where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
+  scope :billable_or_changeable_for_declaration_type, ->(declaration_type) {
+    billable_or_changeable.where(declaration_type:)
   }
 
   touch -> { self },
@@ -97,14 +98,6 @@ class Declaration < ApplicationRecord
           pupil_premium_uplift
           evidence_type
         ]
-
-  # Scopes
-  scope :billable_or_changeable, -> {
-    where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
-  }
-  scope :billable_or_changeable_for_declaration_type, ->(declaration_type) {
-    billable_or_changeable.where(declaration_type:)
-  }
 
   state_machine :payment_status, initial: :no_payment do
     state :no_payment, :ineligible, :eligible, :payable, :paid, :voided
@@ -222,6 +215,18 @@ private
 
     unless declaration_type_started? || declaration_type_completed?
       errors.add(:declaration_type, "Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.")
+    end
+  end
+
+  def uplifts_absent_for_mentor
+    return unless for_mentor?
+
+    if sparsity_uplift.present?
+      errors.add(:sparsity_uplift, "must be absent for mentor declarations.")
+    end
+
+    if pupil_premium_uplift.present?
+      errors.add(:pupil_premium_uplift, "must be absent for mentor declarations.")
     end
   end
 end

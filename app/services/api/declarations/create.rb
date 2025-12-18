@@ -106,20 +106,6 @@ module API::Declarations
                                  end
     end
 
-    def existing_duplicate_declaration
-      @existing_duplicate_declaration ||= existing_declarations
-        .billable_or_changeable
-        .joins(:lead_provider, :delivery_partner)
-        .find_by(
-          declaration_date:,
-          declaration_type:,
-          evidence_type:,
-          mentorship_period:,
-          lead_provider: { id: lead_provider.id },
-          delivery_partner: { id: delivery_partner.id }
-        )
-    end
-
     def payment_statement
       @payment_statement ||= Statements::Search.new(
         lead_provider_id:,
