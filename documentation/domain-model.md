@@ -19,7 +19,6 @@ erDiagram
     datetime updated_at
     integer ect_at_school_period_id
     integer mentor_at_school_period_id
-    daterange range
     uuid ecf_start_induction_record_id
     uuid ecf_end_induction_record_id
     integer expression_of_interest_id
@@ -30,6 +29,7 @@ erDiagram
     enum withdrawal_reason
     integer schedule_id
     datetime api_transfer_updated_at
+    daterange range
   }
   TrainingPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   TrainingPeriod }o--|| MentorAtSchoolPeriod : belongs_to
@@ -214,9 +214,9 @@ erDiagram
     date finished_on
     datetime created_at
     datetime updated_at
-    daterange range
     uuid ecf_start_induction_record_id
     uuid ecf_end_induction_record_id
+    daterange range
   }
   MentorshipPeriod }o--|| ECTAtSchoolPeriod : belongs_to
   MentorshipPeriod }o--|| MentorAtSchoolPeriod : belongs_to
@@ -228,10 +228,10 @@ erDiagram
     date finished_on
     datetime created_at
     datetime updated_at
-    daterange range
     uuid ecf_start_induction_record_id
     uuid ecf_end_induction_record_id
     citext email
+    daterange range
   }
   MentorAtSchoolPeriod }o--|| School : belongs_to
   MentorAtSchoolPeriod }o--|| Teacher : belongs_to
@@ -261,10 +261,10 @@ erDiagram
     datetime updated_at
     enum induction_programme
     float number_of_terms
-    daterange range
     integer teacher_id
     enum outcome
     enum training_programme
+    daterange range
   }
   InductionPeriod }o--|| AppropriateBody : belongs_to
   InductionPeriod }o--|| Teacher : belongs_to
@@ -284,12 +284,12 @@ erDiagram
     date finished_on
     datetime created_at
     datetime updated_at
-    daterange range
     uuid ecf_start_induction_record_id
     uuid ecf_end_induction_record_id
     enum working_pattern
     citext email
     integer school_reported_appropriate_body_id
+    daterange range
   }
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
@@ -321,6 +321,7 @@ erDiagram
     enum declaration_type
     boolean sparsity_uplift
     boolean pupil_premium_uplift
+    datetime api_updated_at
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| User : belongs_to
@@ -334,10 +335,10 @@ erDiagram
     date started_on
     date finished_on
     boolean enabled
-    daterange range
     datetime payments_frozen_at
     boolean mentor_funding_enabled
     boolean detailed_evidence_types_enabled
+    daterange range
   }
   AppropriateBody {
     integer id

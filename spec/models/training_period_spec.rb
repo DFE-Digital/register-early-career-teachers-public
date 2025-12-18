@@ -916,7 +916,7 @@ describe TrainingPeriod do
 
     let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01") }
     let!(:training_period_1) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: "2022-01-01", finished_on: "2022-06-01") }
-    let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: "2022-06-01", finished_on: "2023-01-01") }
+    let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: "2022-06-02", finished_on: "2023-01-01") }
 
     let!(:unrelated_ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01")

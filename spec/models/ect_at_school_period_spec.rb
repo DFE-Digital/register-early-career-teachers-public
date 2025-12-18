@@ -39,7 +39,7 @@ describe ECTAtSchoolPeriod do
 
       context "when there is a current period and a future period" do
         let!(:training_period) { FactoryBot.create(:training_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, ect_at_school_period:) }
-        let!(:future_training_period) { FactoryBot.create(:training_period, started_on: 2.weeks.from_now, finished_on: nil, ect_at_school_period:) }
+        let!(:future_training_period) { FactoryBot.create(:training_period, started_on: training_period.finished_on.tomorrow, finished_on: nil, ect_at_school_period:) }
 
         it "returns the current ect_at_school_period" do
           expect(ect_at_school_period.current_or_next_training_period).to eql(training_period)
@@ -132,7 +132,7 @@ describe ECTAtSchoolPeriod do
             :ongoing,
             mentee: ect_at_school_period,
             mentor: mentor_at_school_period,
-            started_on: mentorship_finished_on,
+            started_on: mentorship_finished_on.tomorrow,
             finished_on: nil
           )
         end
@@ -361,8 +361,8 @@ describe ECTAtSchoolPeriod do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
     let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-01-01", finished_on: "2023-06-01") }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on.tomorrow, finished_on: "2023-12-11") }
+    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on.tomorrow, finished_on: nil) }
     let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
 
     describe ".for_school" do
@@ -434,8 +434,8 @@ describe ECTAtSchoolPeriod do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
     let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2022-12-01", finished_on: "2023-06-01") }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2024-01-01") }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on.tomorrow, finished_on: "2024-01-01") }
+    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on.tomorrow, finished_on: nil) }
     let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2022-01-01", finished_on: period_1.started_on) }
 

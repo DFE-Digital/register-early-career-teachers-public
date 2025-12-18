@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_16_115735) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -140,10 +140,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.date "started_on"
     t.date "finished_on"
     t.boolean "enabled", default: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.datetime "payments_frozen_at"
     t.boolean "mentor_funding_enabled", default: false, null: false
     t.boolean "detailed_evidence_types_enabled", default: false, null: false
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
@@ -206,12 +206,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.date "finished_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
     t.index ["school_id"], name: "index_ect_at_school_periods_on_school_id"
@@ -335,10 +335,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.datetime "updated_at", null: false
     t.enum "induction_programme", null: false, enum_type: "induction_programme"
     t.float "number_of_terms"
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.bigint "teacher_id"
     t.enum "outcome", enum_type: "induction_outcomes"
     t.enum "training_programme", enum_type: "training_programme"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
@@ -372,10 +372,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.date "finished_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.citext "email"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
@@ -390,9 +390,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.date "finished_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "started_on"], name: "index_mentorship_periods_on_ect_at_school_period_id_started_on", unique: true
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
@@ -849,7 +849,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.datetime "updated_at", null: false
     t.bigint "ect_at_school_period_id"
     t.bigint "mentor_at_school_period_id"
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.bigint "expression_of_interest_id"
@@ -860,6 +859,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
     t.bigint "schedule_id"
     t.datetime "api_transfer_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["api_transfer_updated_at"], name: "index_training_periods_on_api_transfer_updated_at"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true

@@ -24,7 +24,7 @@ describe ContractPeriod do
       before { FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 2, 2)) }
 
       it "allows new records that do not overlap" do
-        non_overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 2, 2), finished_on: Date.new(2024, 3, 3))
+        non_overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 2, 3), finished_on: Date.new(2024, 3, 3))
         expect(non_overlapping).to be_valid
       end
 

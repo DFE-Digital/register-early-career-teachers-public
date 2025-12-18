@@ -20,10 +20,10 @@ describe MentorAtSchoolPeriod do
     subject { mentor.currently_assigned_ects }
 
     let(:mentor)    { FactoryBot.create(:mentor_at_school_period, started_on: 2.years.ago, finished_on: nil) }
-    let(:finished)  { FactoryBot.create(:ect_at_school_period, finished_on: Time.zone.today) }
+    let(:finished)  { FactoryBot.create(:ect_at_school_period, finished_on: Time.zone.yesterday) }
     let(:finishing) { FactoryBot.create(:ect_at_school_period, finished_on: 1.week.from_now) }
     let(:current)   { FactoryBot.create(:ect_at_school_period, finished_on: nil) }
-    let(:upcoming)  { FactoryBot.create(:ect_at_school_period, started_on: 1.week.from_now) }
+    let(:upcoming)  { FactoryBot.create(:ect_at_school_period, started_on: finishing.finished_on.tomorrow) }
 
     before do
       [finished, finishing, current, upcoming].each do |mentee|
@@ -49,7 +49,7 @@ describe MentorAtSchoolPeriod do
 
     context "when there is a current period and a future period" do
       let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.year.ago, finished_on: 2.weeks.from_now, mentor_at_school_period:) }
-      let!(:future_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 2.weeks.from_now, finished_on: nil, mentor_at_school_period:) }
+      let!(:future_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: training_period.finished_on.tomorrow, finished_on: nil, mentor_at_school_period:) }
 
       it "returns the current mentor_at_school_period" do
         expect(mentor_at_school_period.current_or_next_training_period).to eql(training_period)
