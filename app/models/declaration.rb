@@ -9,6 +9,14 @@ class Declaration < ApplicationRecord
   belongs_to :mentorship_period, optional: true
   belongs_to :payment_statement, optional: true, class_name: "Statement"
   belongs_to :clawback_statement, optional: true, class_name: "Statement"
+  has_one :lead_provider, through: :training_period
+  has_one :delivery_partner, through: :training_period
+  has_one :contract_period, through: :training_period
+
+  has_one :ect_at_school_period, through: :training_period
+  has_one :ect_teacher, through: :ect_at_school_period, source: :teacher
+  has_one :mentor_at_school_period, through: :training_period
+  has_one :mentor_teacher, through: :mentor_at_school_period, source: :teacher
 
   enum :payment_status,
        %w[no_payment eligible payable paid voided ineligible].index_by(&:itself),
@@ -59,6 +67,10 @@ class Declaration < ApplicationRecord
   validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
+
+  scope :billable_or_changeable, -> {
+    where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
+  }
 
   touch -> { self },
         timestamp_attribute: :api_updated_at,

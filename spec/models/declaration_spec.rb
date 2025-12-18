@@ -32,6 +32,13 @@ describe Declaration do
     it { is_expected.to belong_to(:mentorship_period).optional }
     it { is_expected.to belong_to(:payment_statement).optional }
     it { is_expected.to belong_to(:clawback_statement).optional }
+    it { is_expected.to have_one(:lead_provider).through(:training_period) }
+    it { is_expected.to have_one(:delivery_partner).through(:training_period) }
+    it { is_expected.to have_one(:contract_period).through(:training_period) }
+    it { is_expected.to have_one(:ect_at_school_period).through(:training_period) }
+    it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
+    it { is_expected.to have_one(:ect_teacher).through(:ect_at_school_period).source(:teacher) }
+    it { is_expected.to have_one(:mentor_teacher).through(:mentor_at_school_period).source(:teacher) }
   end
 
   describe "delegations" do
@@ -191,6 +198,23 @@ describe Declaration do
 
         it { is_expected.to be_valid }
       end
+    end
+  end
+
+  describe "scopes" do
+    let!(:no_payment_declaration) { FactoryBot.create(:declaration, :no_payment) }
+    let!(:eligible_declaration) { FactoryBot.create(:declaration, :eligible) }
+    let!(:payable_declaration) { FactoryBot.create(:declaration, :payable) }
+    let!(:paid_declaration) { FactoryBot.create(:declaration, :paid) }
+    let!(:voided_declaration) { FactoryBot.create(:declaration, :voided) }
+    let!(:ineligible_declaration) { FactoryBot.create(:declaration, :ineligible) }
+    let!(:awaiting_clawback_declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
+    let!(:clawed_back_declaration) { FactoryBot.create(:declaration, :clawed_back) }
+
+    describe ".billable_or_changeable" do
+      subject { described_class.billable_or_changeable }
+
+      it { is_expected.to include(no_payment_declaration, eligible_declaration, payable_declaration, paid_declaration) }
     end
   end
 
