@@ -19,9 +19,21 @@ module Schools
         super.tap do |result|
           next unless result
 
-          ect.use_previous_ect_choices = nil
-          wizard.store[:school_partnership_to_reuse_id] = nil
+          reset_reuse_state!
         end
+      end
+
+    private
+
+      def reset_reuse_state!
+        ect.use_previous_ect_choices = nil
+        wizard.store[:school_partnership_to_reuse_id] = nil
+
+        return if wizard.use_previous_choices_allowed?
+
+        ect.appropriate_body_id = nil
+        ect.training_programme = nil
+        ect.lead_provider_id = nil
       end
     end
   end
