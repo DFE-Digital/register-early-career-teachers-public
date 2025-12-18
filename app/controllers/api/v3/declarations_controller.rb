@@ -1,6 +1,8 @@
 module API
   module V3
     class DeclarationsController < APIController
+      include API::TeacherType
+
       def index
         conditions = {
           contract_period_years: extract_conditions(contract_period_years, integers: true),
@@ -17,7 +19,18 @@ module API
         render json: to_json(declarations_query.declaration_by_api_id(api_id))
       end
 
-      def create = head(:method_not_allowed)
+      def create
+        service = API::Declarations::Create.new({
+          lead_provider_id: current_lead_provider.id,
+          declaration_date: create_declaration_params[:declaration_date],
+          declaration_type: create_declaration_params[:declaration_type],
+          evidence_type: create_declaration_params[:evidence_held],
+          teacher_api_id: create_declaration_params[:participant_id],
+          teacher_type:
+        })
+
+        respond_with_service(service:, action: :create)
+      end
 
       def void
         if declaration.payment_status_paid?
@@ -30,6 +43,10 @@ module API
       end
 
     private
+
+      def create_declaration_params
+        params.require(:data).expect({ attributes: %i[participant_id declaration_type declaration_date course_identifier evidence_held] })
+      end
 
       def declarations_query(conditions: {})
         API::Declarations::Query.new(**(default_query_conditions.merge(conditions)).compact)
