@@ -1,0 +1,152 @@
+DECLARATION = {
+  description: "A participant declaration.",
+  type: :object,
+  required: %i[id type attributes],
+  properties: {
+    id: {
+      "$ref": "#/components/schemas/IDAttribute",
+    },
+    type: {
+      description: "The data type.",
+      type: :string,
+      example: "participant-declaration",
+      enum: %w[
+        participant-declaration
+      ],
+    },
+    attributes: {
+      properties: {
+        participant_id: {
+          description: "The unique identifier of the participant.",
+          type: :string,
+          format: :uuid,
+          nullable: false,
+          example: "7a8fef46-3c43-42c0-b3d5-1ba5904ba562",
+        },
+        declaration_type: {
+          description: "The event declaration type.",
+          type: :string,
+          nullable: false,
+          enum: %w[
+            started
+            retained-1
+            retained-2
+            retained-3
+            retained-4
+            extended-1
+            extended-2
+            extended-3
+            completed
+          ],
+          example: "started",
+        },
+        declaration_date: {
+          description: "The event declaration date.",
+          type: :string,
+          format: :"date-time",
+          nullable: false,
+          example: "2021-05-31T02:22:32.000Z",
+        },
+        course_identifier: {
+          description: "The type of course the participant is enrolled in.",
+          type: :string,
+          nullable: false,
+          enum: %w[ecf-induction ecf-mentor],
+          example: "ecf-induction",
+        },
+        state: {
+          description: "Indicates the state of this payment declaration.",
+          type: :string,
+          nullable: false,
+          enum: %w[
+            submitted
+            eligible
+            payable
+            paid
+            voided
+            ineligible
+            awaiting_clawback
+            clawed_back
+          ],
+          example: "submitted",
+        },
+        updated_at: {
+          description: "The date the declaration was last updated.",
+          type: :string,
+          format: :"date-time",
+          nullable: false,
+          example: "2021-05-31T02:22:32.000Z",
+        },
+        created_at: {
+          description: "The date the declaration was created.",
+          type: :string,
+          format: :"date-time",
+          nullable: false,
+          example: "2021-05-31T02:22:32.000Z",
+        },
+        delivery_partner_id: {
+          description: "Unique ID of the delivery partner associated with the participant at the time the declaration was created.",
+          type: :string,
+          format: :uuid,
+          nullable: false,
+          example: "9e35e998-c63a-4136-89c4-e9e18e72e887",
+        },
+        statement_id: {
+          description: "Unique ID of the statement the declaration will be paid as part of.",
+          type: :string,
+          format: :uuid,
+          nullable: true,
+          example: "cd3a12347-7308-4879-942a-c4a70ced400a",
+        },
+        clawback_statement_id: {
+          description: "Unique id of the statement to which the declaration will be clawed back on, if any.",
+          type: :string,
+          format: :uuid,
+          nullable: true,
+          example: nil,
+        },
+        ineligible_for_funding_reason: {
+          description: "If the declaration is ineligible, the reason why.",
+          type: :string,
+          nullable: true,
+          enum: %w[duplicate],
+          example: nil,
+        },
+        mentor_id: {
+          description: "Unique ID of the ECT’s mentor.",
+          type: :string,
+          format: :uuid,
+          nullable: true,
+          example: nil,
+        },
+        uplift_paid: {
+          description: "If participant is eligible for uplift, whether it has been paid as part of this declaration.",
+          type: :boolean,
+          nullable: false,
+          example: false,
+        },
+        evidence_held: {
+          description: "The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period. For retained-2 declarations, providers will need to confirm if the engagement threshold has been reached and only accept either the ‘75-percent-engagement-met’ or ‘75-percent-engagement-met-reduced-induction’ values.",
+          type: :string,
+          nullable: true,
+          enum: %w[
+            training-event-attended
+            self-study-material-completed
+            materials-engaged-with-offline
+            75-percent-engagement-met
+            75-percent-engagement-met-reduced-induction
+            one-term-induction
+            other
+          ],
+          example: "training-event-attended",
+        },
+        lead_provider_name: {
+          description: "The name of the provider that submitted the declaration.",
+          type: :string,
+          nullable: false,
+          example: "Example Provider",
+        },
+      },
+    },
+  },
+}.freeze
