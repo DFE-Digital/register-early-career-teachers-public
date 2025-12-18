@@ -71,13 +71,25 @@ module API::Declarations
         .left_joins(training_period: %i[ect_at_school_period mentor_at_school_period])
         # Join the latest ECT and mentor training period for the lead provider we are filtering by.
         # This will restrict declarations to only those for teachers associated with the lead provider we are filtering by.
-        .joins(<<-SQL)
-          JOIN metadata_teachers_lead_providers ON metadata_teachers_lead_providers.lead_provider_id = #{lead_provider_id}
-          AND (
-            (metadata_teachers_lead_providers.teacher_id = ect_at_school_periods.teacher_id AND latest_ect_training_period_id IS NOT NULL)
-            OR (metadata_teachers_lead_providers.teacher_id = mentor_at_school_periods.teacher_id AND latest_mentor_training_period_id IS NOT NULL)
+        # The manual sanitisation is needed as Rails does not support binding parameters in JOINs.
+        .joins(
+          ActiveRecord::Base.send(
+            :sanitize_sql_array,
+            [
+              <<~SQL,
+                JOIN metadata_teachers_lead_providers
+                  ON metadata_teachers_lead_providers.lead_provider_id = ?
+                AND (
+                  (metadata_teachers_lead_providers.teacher_id = ect_at_school_periods.teacher_id
+                    AND latest_ect_training_period_id IS NOT NULL)
+                OR (metadata_teachers_lead_providers.teacher_id = mentor_at_school_periods.teacher_id
+                    AND latest_mentor_training_period_id IS NOT NULL)
+                )
+              SQL
+              lead_provider_id
+            ]
           )
-        SQL
+        )
         .joins(<<-SQL)
           LEFT JOIN training_periods latest_mentor_training_period
           ON latest_mentor_training_period.id = metadata_teachers_lead_providers.latest_mentor_training_period_id

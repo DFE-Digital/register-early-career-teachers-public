@@ -1,4 +1,4 @@
-RSpec.describe "Declarations API", type: :request do
+RSpec.describe "Declarations API", :with_metadata, type: :request do
   let(:serializer) { API::DeclarationSerializer }
   let(:serializer_options) { {} }
   let(:query) { API::Declarations::Query }
