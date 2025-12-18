@@ -48,10 +48,7 @@ private
       return
     end
 
-    attrs = { finished_on: }
-    attrs[:reported_leaving_by_school_id] = reported_by_school_id if reported_by_school_id
-
-    period.update!(attrs)
+    period.update!(finish_attrs)
   end
 
   def update_reporting_school!(period)
@@ -68,5 +65,11 @@ private
       school: period.school,
       happened_at: finished_on
     )
+  end
+
+  def finish_attrs
+    { finished_on: }.tap do |attrs|
+      attrs[:reported_leaving_by_school_id] = reported_by_school_id if reported_by_school_id
+    end
   end
 end
