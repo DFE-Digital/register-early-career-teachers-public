@@ -1,0 +1,90 @@
+name: "Refresh Knapsack manifest"
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # 1st day of the month
+  workflow_dispatch: 
+
+permissions:
+  contents: read
+
+jobs:
+  refresh_knapsack_manifest:
+    name: Refresh Knapsack Manifest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      RAILS_ENV: test
+      DB_USERNAME: postgres
+      DB_PASSWORD: "postgres"
+      DB_HOSTNAME: 127.0.0.1
+      DB_PORT: 5432
+      ECF_DB_USERNAME: postgres
+      ECF_DB_PASSWORD: "postgres"
+      ECF_DB_HOSTNAME: 127.0.0.1
+      ECF_DB_PORT: 5432
+      ANALYTICS_DB_USERNAME: postgres
+      ANALYTICS_DB_PASSWORD: "postgres"
+      ANALYTICS_DB_HOSTNAME: 127.0.0.1
+      ANALYTICS_DB_PORT: 5432
+      ENCRYPTION_PRIMARY_KEY: test_primary_key
+      ENCRYPTION_DETERMINISTIC_KEY: test_deterministic_key
+      ENCRYPTION_DERIVATION_SALT: test_derivation_salt
+      CI: true
+      REDIS_CACHE_URL: 'redis://127.0.0.1:6379'
+
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: "postgres"
+          POSTGRES_HOST_AUTH_METHOD: "trust"
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./.github/actions/prepare-app-env
+        id: test
+        with:
+          prepare-test-database: "true"
+          prepare-assets: "true"
+
+      - name: Run tests
+        run: KNAPSACK_GENERATE_REPORT=true bundle exec rake knapsack:rspec
+
+      - uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Create pull request 
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          branch: refresh-knapsack-manifest
+          delete-branch: true
+          add-paths: knapsack_rspec_report.json
+          base: main
+          commit-message: |
+            Refresh Knapsack manifest
+
+            We run the Knapsack manifest generation in CI on a schedule; once complete
+            it raises this commit in a PR so that we can keep our test suite optimal.
+          title: Refresh Knapsack manifest
+          body: |
+            We run the Knapsack manifest generation in CI on a schedule; once complete it raises this commit in a PR so that we can keep our test suite optimal.
