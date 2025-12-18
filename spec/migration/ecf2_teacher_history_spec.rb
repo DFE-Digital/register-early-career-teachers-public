@@ -772,6 +772,10 @@ describe ECF2TeacherHistory do
       let(:contract_period) { FactoryBot.create(:contract_period) }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period_year: contract_period.year) }
+      let!(:lead_provider_delivery_partnership) do
+        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+      end
       let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
       let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
@@ -947,9 +951,123 @@ describe ECF2TeacherHistory do
       end
     end
 
+    describe "when ActiveLeadProvider is not found" do
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      # No ActiveLeadProvider created for this lead_provider + contract_period combo
+      let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+      let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :provider_led,
+          lead_provider_info:,
+          delivery_partner_info:,
+          contract_period_year: contract_period.year,
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records a specific error message about ActiveLeadProvider" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to include("No ActiveLeadProvider found")
+        expect(failure.message).to include(lead_provider.id.to_s)
+        expect(failure.message).to include(contract_period.year.to_s)
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+    end
+
+    describe "when LeadProviderDeliveryPartnership is not found" do
+      let(:contract_period) { FactoryBot.create(:contract_period) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period_year: contract_period.year) }
+      # No LeadProviderDeliveryPartnership created for this active_lead_provider + delivery_partner combo
+      let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
+      let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
+      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
+
+      let(:training_period_row) do
+        ECF2TeacherHistory::TrainingPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          created_at: 1.month.ago,
+          training_programme: :provider_led,
+          lead_provider_info:,
+          delivery_partner_info:,
+          contract_period_year: contract_period.year,
+          ecf_start_induction_record_id:,
+          school_urn: school_a.urn
+        )
+      end
+
+      let(:ect_at_school_period_row) do
+        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          started_on: 1.month.ago.to_date,
+          finished_on: 1.week.ago.to_date,
+          school: school_a_data,
+          email: "a@example.org",
+          mentorship_period_rows: [],
+          training_period_rows: [training_period_row]
+        )
+      end
+
+      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+
+      it "creates a TeacherMigrationFailure record" do
+        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
+      end
+
+      it "records a specific error message about LeadProviderDeliveryPartnership" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.message).to include("No LeadProviderDeliveryPartnership found")
+        expect(failure.message).to include(active_lead_provider.id.to_s)
+        expect(failure.message).to include(delivery_partner.id.to_s)
+      end
+
+      it "sets success? to false" do
+        subject.save_all_ect_data!
+
+        expect(subject.success?).to be(false)
+      end
+    end
+
     describe "when DeliveryPartner is not found" do
       let(:contract_period) { FactoryBot.create(:contract_period) }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period_year: contract_period.year) }
       let(:lead_provider_info) { Types::LeadProviderInfo.new(ecf1_id: lead_provider.ecf_id, name: lead_provider.name) }
       let(:nonexistent_delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: SecureRandom.uuid, name: "Nonexistent DP") }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
