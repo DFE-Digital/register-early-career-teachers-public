@@ -360,5 +360,16 @@ describe MentorAtSchoolPeriod do
         expect(period.leaving_reported_for_school?(reporting_school)).to be false
       end
     end
+
+    context "when reported by the school and finished_on is today" do
+      subject(:period) do
+        FactoryBot.create(:mentor_at_school_period, started_on: 1.year.ago, finished_on: Time.zone.today,
+                                                    reported_leaving_by_school_id: reporting_school.id)
+      end
+
+      it "returns true" do
+        expect(period.leaving_reported_for_school?(reporting_school)).to be true
+      end
+    end
   end
 end
