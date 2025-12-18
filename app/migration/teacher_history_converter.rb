@@ -140,10 +140,33 @@ private
       finished_on: induction_record.end_date,
       school: Types::SchoolData.new(urn: induction_record.school_urn, name: "Thing"),
       email: induction_record.preferred_identity_email,
-      mentorship_period_rows: [],
-      training_period_rows: [],
+      mentorship_period_rows: build_mentorship_period_rows(induction_record),
       appropriate_body: induction_record.appropriate_body
     }
+  end
+
+  def build_mentorship_period_rows(induction_record)
+    return [] if induction_record.mentor_profile_id.blank?
+
+    mentor_teacher = Teacher.find_by(api_mentor_training_record_id: induction_record.mentor_profile_id)
+    return [] if mentor_teacher.nil?
+
+    mentor_data = ECF2TeacherHistory::MentorData.new(
+      trn: mentor_teacher.trn,
+      urn: induction_record.school_urn,
+      started_on: period_started_on(induction_record),
+      finished_on: induction_record.end_date
+    )
+
+    [
+      ECF2TeacherHistory::MentorshipPeriodRow.new(
+        started_on: period_started_on(induction_record),
+        finished_on: induction_record.end_date,
+        ecf_start_induction_record_id: induction_record.induction_record_id,
+        ecf_end_induction_record_id: induction_record.induction_record_id,
+        mentor_data:
+      )
+    ]
   end
 
   def training_period_attributes(induction_record)
