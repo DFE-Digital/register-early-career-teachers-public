@@ -7,6 +7,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
     expect(remove_teacher.has_many_associations).to eq(%i[
       appropriate_bodies
       ect_at_school_periods
+      ect_declarations
       ect_training_periods
       events
       induction_extensions

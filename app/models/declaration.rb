@@ -67,6 +67,12 @@ class Declaration < ApplicationRecord
   validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
+  validate :declaration_does_not_already_exist
+  validate :declaration_type_started_or_completed_for_mentor_funding_contract_period
+
+  scope :billable_or_changeable, -> {
+    where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
+  }
 
   scope :billable_or_changeable, -> {
     where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
@@ -148,6 +154,26 @@ class Declaration < ApplicationRecord
 
   def voidable_payment? = payment_status.in?(VOIDABLE_PAYMENT_STATUSES)
 
+  def teacher
+    training_period&.trainee&.teacher
+  end
+
+  def duplicate_declaration_exists?
+    return unless billable_or_changeable?
+
+    existing_declarations = if training_period.for_ect?
+                              teacher.ect_declarations
+                            else
+                              teacher.mentor_declarations
+                            end
+
+    existing_declarations
+      .billable_or_changeable
+      .where(declaration_type:)
+      .excluding(self)
+      .exists?
+  end
+
 private
 
   def clear_ineligibility_reason
@@ -184,5 +210,20 @@ private
     return unless associated_contract_periods.compact.uniq.many?
 
     errors.add(:training_period, "Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
+  end
+
+  def declaration_does_not_already_exist
+    return unless training_period && declaration_type
+
+    errors.add(:base, "A matching declaration already exists.") if duplicate_declaration_exists?
+  end
+
+  def declaration_type_started_or_completed_for_mentor_funding_contract_period
+    return unless training_period&.for_mentor?
+    return unless training_period&.contract_period&.mentor_funding_enabled?
+
+    unless declaration_type_started? || declaration_type_completed?
+      errors.add(:declaration_type, "Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.")
+    end
   end
 end

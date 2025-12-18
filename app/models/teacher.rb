@@ -23,6 +23,7 @@ class Teacher < ApplicationRecord
   has_many :appropriate_bodies, through: :induction_periods
   has_many :events
   has_many :mentor_declarations, through: :mentor_training_periods, source: :declarations
+  has_many :ect_declarations, through: :ect_training_periods, source: :declarations
 
   has_one :first_induction_period, -> { order(started_on: :asc) }, class_name: "InductionPeriod"
   has_one :last_induction_period, -> { order(started_on: :desc) }, class_name: "InductionPeriod"
