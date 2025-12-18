@@ -4,7 +4,7 @@
     hint: { text: helpers.teacher_induction_date_hint_text }
 %>
 
-<% if appropriate_body_mode? && failed? %>
+<% if failed %>
   <%=
     form.govuk_date_field :written_fail_confirmation_on,
       legend: { text: written_fail_confirm_legend },

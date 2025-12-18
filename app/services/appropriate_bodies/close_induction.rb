@@ -19,7 +19,10 @@ module AppropriateBodies
     validates :number_of_terms, presence: { message: "Enter a number of terms" }
 
     def self.induction_params
-      { model_name.param_key => %i[finished_on number_of_terms written_fail_confirmation_on] }
+      permitted = %i[finished_on number_of_terms]
+      permitted << :written_fail_confirmation_on if self == AppropriateBodies::RecordFail || self == Admin::RecordFail
+
+      { model_name.param_key => permitted }
     end
 
     def outcome = nil
@@ -29,7 +32,6 @@ module AppropriateBodies
 
       pending_induction_submission.assign_attributes(outcome:, **params)
 
-      # binding.pry
       validate!
     end
 

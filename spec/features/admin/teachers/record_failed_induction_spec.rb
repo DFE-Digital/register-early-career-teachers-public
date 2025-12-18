@@ -15,6 +15,7 @@ RSpec.describe "Admin recording a failed induction" do
       then_i_should_be_on_the_record_outcome_page
 
       when_i_enter_the_finish_date
+      when_i_enter_the_written_fail_confirmation_on_date
       and_i_enter_a_terms_value_of("3.5")
 
       when_i_add_a_zendesk_ticket_id("#123456")
@@ -62,9 +63,15 @@ private
   end
 
   def when_i_enter_the_finish_date
-    page.get_by_label("Day", exact: true).fill(today.day.to_s)
-    page.get_by_label("Month", exact: true).fill(today.month.to_s)
-    page.get_by_label("Year", exact: true).fill(today.year.to_s)
+    page.fill "#admin_record_fail_finished_on_3i", today.day.to_s
+    page.fill "#admin_record_fail_finished_on_2i", today.month.to_s
+    page.fill "#admin_record_fail_finished_on_1i", today.year.to_s
+  end
+
+  def when_i_enter_the_written_fail_confirmation_on_date
+    page.fill "#admin_record_fail_written_fail_confirmation_on_3i", today.day.to_s
+    page.fill "#admin_record_fail_written_fail_confirmation_on_2i", today.month.to_s
+    page.fill "#admin_record_fail_written_fail_confirmation_on_1i", today.year.to_s
   end
 
   def and_i_enter_a_terms_value_of(number_of_terms)
