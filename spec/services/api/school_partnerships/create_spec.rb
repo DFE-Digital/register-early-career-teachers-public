@@ -69,15 +69,6 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
       end
     end
 
-    context "when the school is CIP only" do
-      let(:school) { FactoryBot.create(:school, :cip_only) }
-
-      it "is invalid" do
-        expect(service).to be_invalid
-        expect(service.errors[:school_api_id]).to eq(["The school you have entered has not registered to deliver DfE-funded training. Contact the school for more information."])
-      end
-    end
-
     context "when the school is not eligible" do
       let(:school) { FactoryBot.create(:school, :ineligible) }
 

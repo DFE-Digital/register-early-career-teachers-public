@@ -32,7 +32,7 @@ module GIAS
 
     def parse_school_row(row)
       @school_row = GIAS::SchoolRow.new(row)
-      if eligible_for_registration?
+      if eligible?
         import_only? ? import_school! : update_school!
       end
 
@@ -61,7 +61,7 @@ module GIAS
     attr_reader :gias_school, :school_row
 
     delegate :create_school!, :school, to: :gias_school
-    delegate :attributes, :eligible_for_registration?, :open?, :urn, to: :school_row
+    delegate :attributes, :eligible?, :open?, :urn, to: :school_row
 
     # import only doesn't try to work out what has changed and does not include "closed" schools
     # we need to import schools first in an empty DB

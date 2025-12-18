@@ -79,6 +79,7 @@ class School < ApplicationRecord
 
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
+  scope :eligible, -> { in_gias_schools.where(marked_as_eligible: true).or(gias_eligible) }
 
   # Instance Methods
   delegate :address_line1,
@@ -87,8 +88,6 @@ class School < ApplicationRecord
            :administrative_district_name,
            :closed_on,
            :establishment_number,
-           :funding_eligibility,
-           :induction_eligibility,
            :in_england,
            :local_authority_code,
            :local_authority_name,
@@ -169,4 +168,6 @@ class School < ApplicationRecord
       errors.add(:induction_tutor_last_nominated_in, "Cannot be set if induction tutor name or email is blank")
     end
   end
+
+  def eligible? = marked_as_eligible? || gias_school.eligible?
 end

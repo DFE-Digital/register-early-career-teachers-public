@@ -9,7 +9,7 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
     # Set up a school with a provider-led training programme linked to the given active lead provider
     # And a training period within an ongoing ECT at school period so all fields are populated
     lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-    school = FactoryBot.create(:school, :with_induction_tutor)
+    school = FactoryBot.create(:school, :ineligible, :with_induction_tutor)
     school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:)
     ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school:)
     FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period:, school_partnership:)

@@ -30,7 +30,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
   create_enum "evidence_types", ["training-event-attended", "self-study-material-completed", "materials-engaged-with-offline", "75-percent-engagement-met", "75-percent-engagement-met-reduced-induction", "one-term-induction", "other"]
   create_enum "fee_types", ["output", "service"]
-  create_enum "funding_eligibility_status", ["eligible_for_fip", "eligible_for_cip", "ineligible"]
   create_enum "gias_school_statuses", ["open", "closed", "proposed_to_close", "proposed_to_open"]
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
@@ -294,7 +293,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
   create_table "gias_schools", primary_key: "urn", force: :cascade do |t|
     t.string "name", null: false
     t.enum "status", default: "open", null: false, enum_type: "gias_school_statuses"
-    t.enum "funding_eligibility", null: false, enum_type: "funding_eligibility_status"
     t.string "address_line1"
     t.string "address_line2"
     t.string "address_line3"
@@ -314,9 +312,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
     t.string "type_name", null: false
     t.integer "ukprn"
     t.string "website"
-    t.boolean "induction_eligibility", null: false
     t.boolean "in_england", null: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((postcode)::text, ''::text)) || ' '::text) || COALESCE((urn)::text, ''::text)))", stored: true
+    t.boolean "eligible", default: false, null: false
     t.index ["name"], name: "index_gias_schools_on_name"
     t.index ["search"], name: "index_gias_schools_on_search", using: :gin
     t.index ["ukprn"], name: "index_gias_schools_on_ukprn", unique: true
@@ -623,6 +621,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
     t.citext "induction_tutor_email"
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.integer "induction_tutor_last_nominated_in"
+    t.boolean "marked_as_eligible", default: false, null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
