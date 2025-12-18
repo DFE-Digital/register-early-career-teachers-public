@@ -54,6 +54,7 @@ class Event < ApplicationRecord
     teacher_changes_schedule_training_period
     teacher_declaration_voided
     teacher_declaration_clawed_back
+    teacher_declaration_created
     mentor_completion_status_change
     training_period_assigned_to_school_partnership
     dfe_user_created

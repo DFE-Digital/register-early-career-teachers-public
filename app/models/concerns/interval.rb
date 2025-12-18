@@ -20,6 +20,27 @@ module Interval
     scope :overlapping_with, ->(period) { where(*overlapping_with_range(period.started_on, period.finished_on)) }
     scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
     scope :ongoing_on, ->(date) { where(*date_in_range(date)) }
+    scope :closest_to, ->(date) {
+      # this scope orders records by their proximity to the given date.
+      # if a record covers the date, it will be prioritized.
+      # otherwise, it finds the record with the nearest started or finished on date.
+      date = date&.to_date or next all
+
+      order(
+        Arel.sql(
+          <<~SQL
+            CASE
+              WHEN #{table_name}.finished_on IS NULL
+                THEN ABS(#{table_name}.started_on - DATE '#{date}')
+              ELSE LEAST(
+                ABS(#{table_name}.started_on - DATE '#{date}'),
+                ABS(#{table_name}.finished_on - DATE '#{date}')
+              )
+            END
+          SQL
+        )
+      ).limit(1)
+    }
 
     # Date relative scopes
     scope :ongoing_today, -> { ongoing_on(Time.zone.today) }

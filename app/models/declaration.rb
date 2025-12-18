@@ -4,6 +4,7 @@ class Declaration < ApplicationRecord
   BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES = %w[no_payment eligible payable paid].freeze
   VOIDABLE_PAYMENT_STATUSES = %w[no_payment eligible payable ineligible].freeze
 
+  # Associations
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
@@ -12,12 +13,12 @@ class Declaration < ApplicationRecord
   has_one :lead_provider, through: :training_period
   has_one :delivery_partner, through: :training_period
   has_one :contract_period, through: :training_period
-
   has_one :ect_at_school_period, through: :training_period
   has_one :ect_teacher, through: :ect_at_school_period, source: :teacher
   has_one :mentor_at_school_period, through: :training_period
   has_one :mentor_teacher, through: :mentor_at_school_period, source: :teacher
 
+  # Enums
   enum :payment_status,
        %w[no_payment eligible payable paid voided ineligible].index_by(&:itself),
        validate: { message: "Choose a valid payment status" },
@@ -49,13 +50,15 @@ class Declaration < ApplicationRecord
        %w[duplicate].index_by(&:itself),
        validate: { message: "Choose a valid ineligibility reason", allow_nil: true }
 
+  # Delegations
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
 
+  # Validations
   validates :training_period, presence: { message: "Choose a training period" }
   validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_by_user_at
   validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
-  validates :declaration_date, presence: { message: "Declaration date must be specified" }
+  validates :declaration_date, presence: { message: "Declaration date must be specified" }, declaration_date_within_milestone: true
   validates :declaration_type, inclusion: { in: Declaration.declaration_types.keys, message: "Choose a valid declaration type" }
   validates :evidence_type, inclusion: { in: Declaration.evidence_types.keys, message: "Choose a valid evidence type" }, allow_nil: true
   validates :ineligibility_reason, inclusion: { in: Declaration.ineligibility_reasons.keys, message: "Choose a valid ineligibility reason" }, allow_nil: true
@@ -64,18 +67,18 @@ class Declaration < ApplicationRecord
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
   validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_no_payment?
   validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_no_clawback?
-  validate :declaration_date_within_milestone
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
   validate :declaration_does_not_already_exist
   validate :declaration_type_started_or_completed_for_mentor_funding_contract_period
+  validate :uplifts_absent_for_mentor, if: :for_mentor?
 
+  # Scopes
   scope :billable_or_changeable, -> {
     where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
   }
-
-  scope :billable_or_changeable, -> {
-    where(payment_status: BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES, clawback_status: :no_clawback)
+  scope :billable_or_changeable_for_declaration_type, ->(declaration_type) {
+    billable_or_changeable.where(declaration_type:)
   }
 
   touch -> { self },
@@ -174,26 +177,14 @@ class Declaration < ApplicationRecord
       .exists?
   end
 
+  def milestone
+    training_period&.schedule&.milestones&.find_by(declaration_type:)
+  end
+
 private
 
   def clear_ineligibility_reason
     self.ineligibility_reason = nil
-  end
-
-  def declaration_date_within_milestone
-    return unless milestone && declaration_date
-
-    if declaration_date < milestone.start_date.beginning_of_day
-      errors.add(:declaration_date, "Declaration date must be on or after the milestone start date for the same declaration type")
-    end
-
-    if milestone.milestone_date && milestone.milestone_date.end_of_day <= declaration_date
-      errors.add(:declaration_date, "Declaration date must be on or before the milestone date for the same declaration type")
-    end
-  end
-
-  def milestone
-    training_period&.schedule&.milestones&.find_by(declaration_type:)
   end
 
   def mentorship_period_belongs_to_teacher
@@ -224,6 +215,18 @@ private
 
     unless declaration_type_started? || declaration_type_completed?
       errors.add(:declaration_type, "Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.")
+    end
+  end
+
+  def uplifts_absent_for_mentor
+    return unless for_mentor?
+
+    if sparsity_uplift.present?
+      errors.add(:sparsity_uplift, "must be absent for mentor declarations.")
+    end
+
+    if pupil_premium_uplift.present?
+      errors.add(:pupil_premium_uplift, "must be absent for mentor declarations.")
     end
   end
 end

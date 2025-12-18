@@ -6,3 +6,4 @@
 "teacher_api_id": "participant_id"
 "teacher_type": "course_identifier"
 "declaration_api_id": "participant_declaration_id"
+"evidence_type": "evidence_held"
