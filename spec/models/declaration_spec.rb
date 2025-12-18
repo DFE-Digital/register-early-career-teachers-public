@@ -199,6 +199,60 @@ describe Declaration do
         it { is_expected.to be_valid }
       end
     end
+
+    describe "declaration type for mentor funding enabled contract periods" do
+      context "when the contract period has mentor_funding_enabled" do
+        before { training_period.contract_period.update(mentor_funding_enabled: true) }
+
+        let(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
+
+        %w[started completed].each do |allowed_type|
+          context "when the declaration_type is #{allowed_type}" do
+            subject { FactoryBot.build(:declaration, training_period:, declaration_type: allowed_type) }
+
+            it { is_expected.to be_valid }
+          end
+        end
+
+        described_class.declaration_types.keys.excluding("started", "completed").each do |disallowed_type|
+          context "when the declaration_type is #{disallowed_type}" do
+            subject { FactoryBot.build(:declaration, training_period:, declaration_type: disallowed_type) }
+
+            it "is not valid" do
+              expect(subject).not_to be_valid
+              expect(subject.errors[:declaration_type]).to include("Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.")
+            end
+
+            context "when the training period is for an ECT" do
+              let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+              it { is_expected.to be_valid }
+            end
+          end
+        end
+      end
+    end
+
+    describe "existing declarations" do
+      subject { FactoryBot.build(:declaration, :eligible, training_period:, declaration_type: :started) }
+
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+      context "when the declaration duplicates an existing declaration" do
+        before { FactoryBot.create(:declaration, :payable, training_period:, declaration_type: :started) }
+
+        it "is not valid" do
+          expect(subject).not_to be_valid
+          expect(subject.errors[:base]).to include("A matching declaration already exists.")
+        end
+      end
+
+      context "when the declaration does not duplicate an existing declaration" do
+        before { FactoryBot.create(:declaration, :voided, training_period:, declaration_type: :completed) }
+
+        it { is_expected.to be_valid }
+      end
+    end
   end
 
   describe "scopes" do
@@ -214,7 +268,7 @@ describe Declaration do
     describe ".billable_or_changeable" do
       subject { described_class.billable_or_changeable }
 
-      it { is_expected.to include(no_payment_declaration, eligible_declaration, payable_declaration, paid_declaration) }
+      it { is_expected.to contain_exactly(no_payment_declaration, eligible_declaration, payable_declaration, paid_declaration) }
     end
   end
 
@@ -372,7 +426,7 @@ describe Declaration do
     end
   end
 
-  describe ".billable_or_changeable?" do
+  describe "#billable_or_changeable?" do
     context "when clawback_status is `no_clawback`" do
       subject(:declaration) { FactoryBot.build(:declaration, clawback_status: "no_clawback", payment_status:) }
 
@@ -402,7 +456,7 @@ describe Declaration do
     end
   end
 
-  describe ".overall_status" do
+  describe "#overall_status" do
     %i[no_payment eligible payable paid voided ineligible awaiting_clawback clawed_back].each do |status|
       context "when status is `#{status}`" do
         let(:declaration) { FactoryBot.create(:declaration, status) }
@@ -414,7 +468,76 @@ describe Declaration do
     end
   end
 
-  describe ".uplift_paid?" do
+  describe "#teacher" do
+    subject(:teacher) { declaration.teacher }
+
+    let(:declaration) { FactoryBot.create(:declaration) }
+
+    it { is_expected.to eq(declaration.training_period.trainee.teacher) }
+
+    context "when training_period is nil" do
+      before { declaration.training_period = nil }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe "#duplicate_declaration_exists?" do
+    let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+    context "when the declaration is not billable/changeable" do
+      subject { FactoryBot.build(:declaration, :voided, training_period:, declaration_type: :started) }
+
+      it { is_expected.not_to be_duplicate_declaration_exists }
+
+      context "when an existing declaration of the same type and state exists" do
+        before { FactoryBot.create(:declaration, :voided, training_period:, declaration_type: :started) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+    end
+
+    context "when the declaration is billable/changeable" do
+      subject { FactoryBot.build(:declaration, :payable, training_period:, declaration_type: :started) }
+
+      it { is_expected.not_to be_duplicate_declaration_exists }
+
+      context "when an existing, billable/changeable declaration of the same type exists" do
+        before { FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: :started) }
+
+        it { is_expected.to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing, billable/changeable declaration of the same type exists for another teacher" do
+        before { FactoryBot.create(:declaration, :eligible, declaration_type: :started) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing, billable/changeable declaration of the same type exists for the other teacher type" do
+        before { FactoryBot.create(:declaration, :eligible, training_period: other_type_training_period, declaration_type: :started) }
+
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: training_period.trainee.teacher, started_on: 1.month.ago, finished_on: nil) }
+        let(:other_type_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing declaration of a different type exists" do
+        before { FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: :completed) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing declaration of a non-billable/changeable type exists" do
+        before { FactoryBot.create(:declaration, :clawed_back, training_period:, declaration_type: :started) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+    end
+  end
+
+  describe "#uplift_paid?" do
     subject(:declaration) { FactoryBot.build(:declaration, training_period:, declaration_type:, payment_status:, sparsity_uplift:, pupil_premium_uplift:) }
 
     let(:training_period) { FactoryBot.build_stubbed(:training_period) }
