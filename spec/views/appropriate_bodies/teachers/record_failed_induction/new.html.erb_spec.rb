@@ -28,7 +28,7 @@ RSpec.describe "appropriate_bodies/teachers/record_failed_induction/new.html.erb
   end
 
   it "has a date field for the leaving date" do
-    expect(rendered).to have_css("legend", text: "When did they move from #{appropriate_body.name}?")
+    expect(rendered).to have_css("legend", text: "When did their induction end with #{appropriate_body.name}?")
     expect(rendered).to have_css("form label", text: "Day")
     expect(rendered).to have_css("form label", text: "Month")
     expect(rendered).to have_css("form label", text: "Year")

@@ -1,6 +1,6 @@
 RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
   subject(:component) do
-    described_class.new(mode:, form:, appropriate_body:)
+    described_class.new(mode:, form:, appropriate_body:, failed: true)
   end
 
   let(:model) { double("model", number_of_terms: nil, finished_on: nil) }
@@ -22,6 +22,13 @@ RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
       expect(rendered_content).to have_text("When did they complete their induction?")
     end
 
+    it "written_fail_confirmation_on" do
+      expect(rendered_content).to have_field("model_name[written_fail_confirmation_on(1i)]")
+      expect(rendered_content).to have_field("model_name[written_fail_confirmation_on(2i)]")
+      expect(rendered_content).to have_field("model_name[written_fail_confirmation_on(3i)]")
+      expect(rendered_content).to have_text("When did you send written confirmation of their failed induction?")
+    end
+
     it "number_of_terms" do
       expect(rendered_content).to have_field("model_name[number_of_terms]")
       expect(rendered_content).to have_text("How many terms of induction did they complete?")
@@ -36,7 +43,7 @@ RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
       expect(rendered_content).to have_field("model_name[finished_on(1i)]")
       expect(rendered_content).to have_field("model_name[finished_on(2i)]")
       expect(rendered_content).to have_field("model_name[finished_on(3i)]")
-      expect(rendered_content).to have_text("When did they move from OmniCorp?")
+      expect(rendered_content).to have_text("When did their induction end with OmniCorp?")
     end
 
     it "number_of_terms" do

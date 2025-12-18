@@ -40,6 +40,7 @@ RSpec.describe "Appropriate body recording a failed induction outcome for a teac
       {
         appropriate_bodies_record_fail: {
           finished_on: Date.current,
+          written_fail_confirmation_on: Date.current,
           number_of_terms: 3,
         }
       }
@@ -65,6 +66,7 @@ RSpec.describe "Appropriate body recording a failed induction outcome for a teac
           expect(induction_period.reload).to have_attributes(
             outcome: "fail",
             finished_on: Date.current,
+            written_fail_confirmation_on: Date.current,
             number_of_terms: 3
           )
 
@@ -94,6 +96,7 @@ RSpec.describe "Appropriate body recording a failed induction outcome for a teac
           {
             appropriate_bodies_record_fail: {
               finished_on: induction_period.started_on - 1.month,
+              written_fail_confirmation_on: Date.current,
               number_of_terms: 16.99,
             }
           }

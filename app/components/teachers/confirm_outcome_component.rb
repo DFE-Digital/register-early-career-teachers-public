@@ -2,15 +2,13 @@ module Teachers
   class ConfirmOutcomeComponent < ApplicationComponent
     attr_reader :service, :teacher_full_name
 
-    include UserModes
-    
     delegate :appropriate_body,
              :teacher,
              :pending_induction_submission,
              :outcome,
              to: :service
 
-    def initialize(mode:, service:)
+    def initialize(service:)
       @service = service
       @teacher_full_name = ::Teachers::Name.new(teacher).full_name
     end
