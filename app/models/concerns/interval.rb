@@ -21,6 +21,9 @@ module Interval
     scope :containing_period, ->(period) { where(*containing_range(period.started_on, period.finished_on)) }
     scope :ongoing_on, ->(date) { where(*date_in_range(date)) }
     scope :closest_to, ->(date) {
+      # this scope orders records by their proximity to the given date.
+      # if a record covers the date, it will be prioritized.
+      # otherwise, it finds the record with the nearest started or finished on date.
       date = date&.to_date or next all
 
       order(
