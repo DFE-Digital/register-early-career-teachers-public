@@ -24,9 +24,5 @@ module Teachers
     def confirm_appeal
       "Yes, #{teacher_full_name} has been sent written confirmation of their induction outcome, their right to appeal and the appeal process."
     end
-
-    def failed?
-      outcome == :fail
-    end
   end
 end
