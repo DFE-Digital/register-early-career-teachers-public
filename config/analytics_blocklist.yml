@@ -234,10 +234,12 @@
   - corrected_name
   - trs_first_name
   - trs_last_name
+  - mentor_migration_mode
   - mentor_became_ineligible_for_funding_on
   - mentor_became_ineligible_for_funding_reason
   - ect_payments_frozen_year
   - mentor_payments_frozen_year
+  - ect_migration_mode
   - ect_pupil_premium_uplift
   - ect_sparsity_uplift
   - ect_first_became_eligible_for_training_at
