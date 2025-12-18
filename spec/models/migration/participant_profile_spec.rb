@@ -77,4 +77,66 @@ describe Migration::ParticipantProfile, type: :model do
       end
     end
   end
+
+  describe "#more_than_two_induction_records?" do
+    subject { participant_profile.more_than_two_induction_records? }
+
+    let(:participant_profile) { FactoryBot.create(:migration_participant_profile, :ect) }
+
+    context "when the participant has 1 induction record" do
+      before do
+        FactoryBot.create(:migration_induction_record, participant_profile:)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when the participant has 2 induction record" do
+      before do
+        FactoryBot.create_list(:migration_induction_record, 2, participant_profile:)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when the participant has 3 or more induction record" do
+      before do
+        FactoryBot.create_list(:migration_induction_record, 3, participant_profile:)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
+
+  describe "#two_induction_records_that_overlap?" do
+    subject { participant_profile.two_induction_records_that_overlap? }
+
+    let(:participant_profile) { FactoryBot.create(:migration_participant_profile, :ect) }
+
+    context "when the participant does not have two induction records" do
+      before do
+        FactoryBot.create_list(:migration_induction_record, 1, participant_profile:)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when the participant has two induction records with no overlaping start and end dates" do
+      before do
+        FactoryBot.create(:migration_induction_record, participant_profile:, start_date: 1.week.ago, end_date: Date.yesterday)
+        FactoryBot.create(:migration_induction_record, participant_profile:, start_date: Date.current, end_date: Date.tomorrow)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context "when the participant has two induction records with overlaping start and end dates" do
+      before do
+        FactoryBot.create(:migration_induction_record, participant_profile:, start_date: 1.week.ago, end_date: Date.yesterday)
+        FactoryBot.create(:migration_induction_record, participant_profile:, start_date: 3.days.ago, end_date: Date.tomorrow)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+  end
 end

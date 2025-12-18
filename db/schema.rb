@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_17_130947) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -40,6 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
   create_enum "parity_check_run_states", ["pending", "in_progress", "completed", "failed"]
+  create_enum "participant_migration_mode", ["latest_induction_records", "all_induction_records", "not_migrated"]
   create_enum "request_method_types", ["get", "post", "put"]
   create_enum "schedule_identifiers", ["ecf-extended-april", "ecf-extended-january", "ecf-extended-september", "ecf-reduced-april", "ecf-reduced-january", "ecf-reduced-september", "ecf-replacement-april", "ecf-replacement-january", "ecf-replacement-september", "ecf-standard-april", "ecf-standard-january", "ecf-standard-september"]
   create_enum "statement_statuses", ["open", "payable", "paid"]
@@ -828,6 +829,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_083423) do
     t.boolean "trnless", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.enum "ect_migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
+    t.enum "mentor_migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
