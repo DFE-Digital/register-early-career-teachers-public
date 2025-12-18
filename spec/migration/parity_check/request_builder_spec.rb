@@ -52,6 +52,15 @@ RSpec.describe ParityCheck::RequestBuilder do
         it { expect { url }.to raise_error(described_class::IDOptionMissingError, "Path contains ID, but options[:id] is missing") }
       end
 
+      context "when the path contains an ID but method backing the identifier returns `nil`" do
+        let(:path) { "/test-path/:id" }
+        let(:options) { { id: ":example_id" } }
+
+        before { allow(dynamic_request_content).to receive(:fetch).with("example_id").and_return(nil) }
+
+        it { is_expected.to eq("#{ecf_url}/test-path/no-value-for-lead-provider") }
+      end
+
       context "when the path contains an ID and the options specify an identifier" do
         let(:path) { "/test-path/:id" }
         let(:options) { { id: ":example_id" } }

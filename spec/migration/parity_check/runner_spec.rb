@@ -69,6 +69,23 @@ RSpec.describe ParityCheck::Runner, type: :model do
       )
     end
 
+    context "when an endpoint excludes a lead provider" do
+      let(:excluded_lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:endpoints) do
+        [
+          FactoryBot.create(:parity_check_endpoint, method: :get, path: "/test-path", options: { exclude_lead_providers: [excluded_lead_provider.name] }),
+        ]
+      end
+
+      it "does not create a request for the lead providers excluded from an endpoint" do
+        lead_providers = [lead_provider, excluded_lead_provider]
+
+        expect { run }.to change(ParityCheck::Request, :count).by(lead_providers.count - 1)
+
+        expect(ParityCheck::Request.pluck(:lead_provider_id)).to contain_exactly(lead_provider.id)
+      end
+    end
+
     it "calls the run dispatcher" do
       run_dispatcher = instance_double(ParityCheck::RunDispatcher, dispatch: nil)
       allow(ParityCheck::RunDispatcher).to receive(:new).and_return(run_dispatcher)
