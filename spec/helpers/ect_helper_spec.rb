@@ -16,6 +16,10 @@ RSpec.describe ECTHelper, type: :helper do
       it "returns a yellow 'Leaving school' tag" do
         expect(helper.ect_status(ect_at_school_period, current_school: school)).to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
       end
+
+      it "does not show the leaving tag when current_school is not provided" do
+        expect(helper.ect_status(ect_at_school_period)).not_to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
+      end
     end
 
     context "when the ECT has a TRS induction status" do
