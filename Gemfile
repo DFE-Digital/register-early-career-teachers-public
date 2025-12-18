@@ -96,6 +96,7 @@ end
 group :development, :test, :review, :staging, :sandbox do
   gem "factory_bot_rails"
   gem "faker"
+  gem "table_print", require: false
 end
 
 group :nanoc do

@@ -20,6 +20,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "ECT" # Early Career Teacher
   inflect.acronym "ECTs" # Early Career Teachers
   inflect.acronym "GIAS" # Get Information About Schools
+  inflect.acronym "RIAB" # Record Inductions as an Appropriate Body
   inflect.acronym "ITT" # Initial teacher training
   inflect.acronym "OTP" # One-time Password
   inflect.acronym "TRN" # Teacher Reference Number
