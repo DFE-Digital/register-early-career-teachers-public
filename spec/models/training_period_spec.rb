@@ -695,11 +695,11 @@ describe TrainingPeriod do
       end
 
       it "returns training periods for ECTs and Mentors at the school" do
-        expect(TrainingPeriod.at_school(school.id)).to include(ect_training_period, mentor_training_period)
+        expect(TrainingPeriod.at_school(school)).to include(ect_training_period, mentor_training_period)
       end
 
       it "does not return training periods for ECTs and Mentors at other schools" do
-        expect(TrainingPeriod.at_school(school.id)).not_to include(other_training_period)
+        expect(TrainingPeriod.at_school(school)).not_to include(other_training_period)
       end
     end
 
