@@ -81,6 +81,24 @@ class ECF1TeacherHistory
     new(user:, ect:, mentor:, participant_identity_updated_ats:)
   end
 
+  def self.from_hash(teacher_history)
+    user_data = { trn: teacher_history[:trn], full_name: teacher_history[:full_name] }.compact
+    user = FactoryBot.build(:ecf1_teacher_history_user, **user_data)
+
+    ect_data = {
+      participant_profile_id: teacher_history.dig(:ect, :participant_profile_id),
+      induction_records: teacher_history.dig(:ect, :induction_records)&.map do |induction_record|
+        FactoryBot.build(:ecf1_teacher_history_induction_record_row, **induction_record)
+      end
+    }
+    ect = FactoryBot.build(:ecf1_teacher_history_ect, **ect_data)
+
+    mentor = nil
+    participant_identity_updated_ats = []
+
+    new(user:, ect:, mentor:, participant_identity_updated_ats:)
+  end
+
   def self.build_appropriate_body(induction_record:)
     appropriate_body = induction_record.appropriate_body
     return if appropriate_body.blank?

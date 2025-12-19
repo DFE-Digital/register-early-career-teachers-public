@@ -36,6 +36,14 @@ class ECF2TeacherHistory
     !@failed
   end
 
+  def to_hash
+    {
+      teacher: {
+        trn: teacher_row.trn
+      }
+    }
+  end
+
 private
 
   def find_or_create_teacher!
