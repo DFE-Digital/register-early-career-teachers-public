@@ -37,10 +37,10 @@ module Declarations
 
     def create
       ActiveRecord::Base.transaction do
-        declaration = create_declaration
+        declaration = build_declaration
 
+        set_eligibility_and_save!(declaration)
         update_uplifts!(declaration)
-        set_eligibility!(declaration)
         set_payment_statement!(declaration)
         check_mentor_completion!(declaration)
         record_declaration_created_event!(declaration)
@@ -51,13 +51,27 @@ module Declarations
 
   private
 
-    def create_declaration
-      training_period.declarations.create!(
+    def build_declaration
+      training_period.declarations.build(
         declaration_date:,
         declaration_type:,
         evidence_type:,
         mentorship_period:
       )
+    end
+
+    def set_eligibility_and_save!(declaration)
+      if declaration.duplicate_declaration_exists?
+        declaration.mark_as_ineligible!(
+          ineligibility_reason: :duplicate,
+          payment_statement:,
+          superseded_by: declaration.duplicate_declarations.order(created_at: :asc).first
+        )
+      elsif training_period.eligible_for_funding?
+        declaration.mark_as_eligible!(payment_statement:)
+      end
+    ensure
+      declaration.save!
     end
 
     def update_uplifts!(declaration)
@@ -67,12 +81,6 @@ module Declarations
         pupil_premium_uplift: teacher.ect_pupil_premium_uplift,
         sparsity_uplift: teacher.ect_sparsity_uplift
       )
-    end
-
-    def set_eligibility!(declaration)
-      if training_period.eligible_for_funding?
-        declaration.update!(payment_status: :eligible, payment_statement:)
-      end
     end
 
     def set_payment_statement!(declaration)

@@ -10,6 +10,7 @@ class Declaration < ApplicationRecord
   belongs_to :mentorship_period, optional: true
   belongs_to :payment_statement, optional: true, class_name: "Statement"
   belongs_to :clawback_statement, optional: true, class_name: "Statement"
+  belongs_to :superseded_by, class_name: "Declaration", optional: true
   has_one :lead_provider, through: :training_period
   has_one :delivery_partner, through: :training_period
   has_one :contract_period, through: :training_period
@@ -48,7 +49,7 @@ class Declaration < ApplicationRecord
 
   enum :ineligibility_reason,
        %w[duplicate].index_by(&:itself),
-       validate: { message: "Choose a valid ineligibility reason", allow_nil: true }
+       validate: { message: "Choose a valid ineligibility reason", allow_nil: true }, prefix: true
 
   # Delegations
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
@@ -104,6 +105,11 @@ class Declaration < ApplicationRecord
 
     before_transition from: :ineligible, do: :clear_ineligibility_reason
 
+    before_transition on: :mark_as_eligible do |declaration, transition|
+      options = transition.args.extract_options!
+      declaration.assign_attributes(options)
+    end
+
     event :mark_as_eligible do
       transition %i[no_payment] => :eligible
     end
@@ -114,6 +120,11 @@ class Declaration < ApplicationRecord
 
     event :mark_as_paid do
       transition %i[payable] => :paid
+    end
+
+    before_transition on: :mark_as_ineligible do |declaration, transition|
+      options = transition.args.extract_options!
+      declaration.assign_attributes(options)
     end
 
     event :mark_as_ineligible do
@@ -161,9 +172,7 @@ class Declaration < ApplicationRecord
     training_period&.trainee&.teacher
   end
 
-  def duplicate_declaration_exists?
-    return unless billable_or_changeable?
-
+  def duplicate_declarations
     existing_declarations = if training_period.for_ect?
                               teacher.ect_declarations
                             else
@@ -172,9 +181,14 @@ class Declaration < ApplicationRecord
 
     existing_declarations
       .billable_or_changeable
-      .where(declaration_type:)
+      .where(declaration_type:, superseded_by_id: nil)
       .excluding(self)
-      .exists?
+  end
+
+  def duplicate_declaration_exists?
+    return unless billable_or_changeable?
+
+    duplicate_declarations.exists?
   end
 
   def milestone

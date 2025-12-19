@@ -122,6 +122,20 @@ RSpec.describe Declarations::Create do
             )
           )
         end
+
+        context "when a duplicate declaration already exists" do
+          let!(:existing_duplicate_declaration) { FactoryBot.create(:declaration, :eligible, training_period:, declaration_type:, declaration_date:) }
+          let!(:existing_superseded_declaration) { FactoryBot.create(:declaration, :ineligible, training_period:, declaration_type:, declaration_date:, superseded_by: existing_duplicate_declaration) }
+
+          it "marks the new declaration ineligible with duplicate `ineligibility_reason`, sets `superseded_by` and assigns a `payment_statement`" do
+            declaration = create_declaration
+
+            expect(declaration).to be_payment_status_ineligible
+            expect(declaration).to be_ineligibility_reason_duplicate
+            expect(declaration.superseded_by).to eq(existing_duplicate_declaration)
+            expect(declaration.payment_statement).to eq(payment_statement)
+          end
+        end
       end
     end
   end

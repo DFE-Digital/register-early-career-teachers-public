@@ -39,6 +39,7 @@ describe Declaration do
     it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
     it { is_expected.to have_one(:ect_teacher).through(:ect_at_school_period).source(:teacher) }
     it { is_expected.to have_one(:mentor_teacher).through(:mentor_at_school_period).source(:teacher) }
+    it { is_expected.to belong_to(:superseded_by).class_name("Declaration").optional }
   end
 
   describe "delegations" do
@@ -63,10 +64,42 @@ describe Declaration do
     it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
-    context "when payment" do
-      subject { FactoryBot.build(:declaration, :paid) }
+    context "when payment statement status" do
+      context "is no_payment" do
+        subject { FactoryBot.build(:declaration, :no_payment) }
 
-      it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
+        it { is_expected.not_to validate_presence_of(:payment_statement) }
+      end
+
+      context "is eligible" do
+        subject { FactoryBot.build(:declaration, :eligible) }
+
+        it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
+      end
+
+      context "is payable" do
+        subject { FactoryBot.build(:declaration, :payable) }
+
+        it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
+      end
+
+      context "is paid" do
+        subject { FactoryBot.build(:declaration, :paid) }
+
+        it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
+      end
+
+      context "is voided" do
+        subject { FactoryBot.build(:declaration, :voided) }
+
+        it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
+      end
+
+      context "is ineligible" do
+        subject { FactoryBot.build(:declaration, :ineligible) }
+
+        it { is_expected.not_to validate_presence_of(:payment_statement) }
+      end
     end
 
     context "when clawback" do
@@ -396,14 +429,16 @@ describe Declaration do
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: true)
+        .with_prefix
     end
   end
 
   describe "payment_status transitions" do
     context "when transitioning from no_payment to eligible" do
-      let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period) } }
+      let(:declaration) { FactoryBot.create(:declaration) }
+      let(:payment_statement) { FactoryBot.create(:statement, :open, contract_period: declaration.training_period.contract_period) }
 
-      it { expect { declaration.mark_as_eligible! }.to change(declaration, :payment_status).from("no_payment").to("eligible") }
+      it { expect { declaration.mark_as_eligible!(payment_statement:) }.to change(declaration, :payment_status).from("no_payment").to("eligible") }
     end
 
     context "when transitioning from eligible to payable" do
@@ -438,15 +473,11 @@ describe Declaration do
     end
 
     context "when transitioning from no_payment to ineligible" do
-      let(:reason) { described_class.ineligibility_reasons.keys.sample }
-      let(:declaration) do
-        FactoryBot.create(:declaration).tap do
-          it.ineligibility_reason = reason
-          it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period)
-        end
-      end
+      let(:ineligibility_reason) { described_class.ineligibility_reasons.keys.sample }
+      let(:declaration) { FactoryBot.create(:declaration, :no_payment) }
+      let(:payment_statement) { FactoryBot.create(:statement, :open, contract_period: declaration.training_period.contract_period) }
 
-      it { expect { declaration.mark_as_ineligible! }.to change(declaration, :payment_status).from("no_payment").to("ineligible") }
+      it { expect { declaration.mark_as_ineligible!(ineligibility_reason:, payment_statement:) }.to change(declaration, :payment_status).from("no_payment").to("ineligible") }
     end
 
     context "when transitioning to an invalid state" do
@@ -590,6 +621,24 @@ describe Declaration do
 
         it { is_expected.not_to be_duplicate_declaration_exists }
       end
+    end
+  end
+
+  describe "#duplicate_declarations" do
+    let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+    let(:declaration) { FactoryBot.build(:declaration, :eligible, training_period:, declaration_type: :started) }
+
+    it "returns other billable/changeable declarations for the same teacher/training_period and declaration_type" do
+      duplicate = FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: :started)
+      superseded = FactoryBot.create(:declaration, :ineligible, training_period:, declaration_type: :started, superseded_by: FactoryBot.create(:declaration))
+      other_teacher_declaration = FactoryBot.create(:declaration, :eligible, declaration_type: :started)
+
+      result = declaration.duplicate_declarations
+
+      expect(result).to include(duplicate)
+      expect(result).not_to include(declaration)
+      expect(result).not_to include(superseded)
+      expect(result).not_to include(other_teacher_declaration)
     end
   end
 
