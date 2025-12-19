@@ -82,7 +82,9 @@ describe API::DeclarationSerializer, type: :serializer do
 
       it "serializes correctly" do
         expect(attributes["ineligible_for_funding_reason"]).to be_present
-        expect(attributes["ineligible_for_funding_reason"]).to eq(declaration.ineligibility_reason)
+        # Reason `duplicate` should be returned as `duplicate_declaration` to match ECF1
+        expect(declaration.ineligibility_reason).to eq("duplicate")
+        expect(attributes["ineligible_for_funding_reason"]).to eq("duplicate_declaration")
       end
     end
 
