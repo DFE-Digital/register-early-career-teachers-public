@@ -1,6 +1,6 @@
 require "swagger_helper"
 
-RSpec.describe "Declarations endpoint", openapi_spec: "v3/swagger.yaml", type: :request do
+RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml", type: :request do
   include_context "with authorization for api doc request"
 
   let(:school_partnership) do
@@ -24,7 +24,7 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v3/swagger.yaml", type: :
 
   it_behaves_like "an API index endpoint documentation",
                   {
-                    url: "/api/v3/declarations",
+                    url: "/api/v3/participant-declarations",
                     tag: "Declarations",
                     resource_description: "Retrieve multiple declarations",
                     response_description: "A list of declarations",
@@ -34,7 +34,7 @@ RSpec.describe "Declarations endpoint", openapi_spec: "v3/swagger.yaml", type: :
 
   it_behaves_like "an API show endpoint documentation",
                   {
-                    url: "/api/v3/declarations/{id}",
+                    url: "/api/v3/participant-declarations/{id}",
                     tag: "Declarations",
                     resource_description: "Retrieve a single declaration",
                     response_description: "A single declaration",
