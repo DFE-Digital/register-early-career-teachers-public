@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_19_104124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -181,10 +181,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
     t.boolean "sparsity_uplift", default: false, null: false
     t.boolean "pupil_premium_uplift", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.bigint "superseded_by_id"
     t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
     t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
     t.index ["payment_statement_id"], name: "index_declarations_on_payment_statement_id"
+    t.index ["superseded_by_id"], name: "index_declarations_on_superseded_by_id"
     t.index ["training_period_id"], name: "index_declarations_on_training_period_id"
     t.index ["voided_by_user_id"], name: "index_declarations_on_voided_by_user_id"
   end
@@ -891,6 +893,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "declarations", "declarations", column: "superseded_by_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
