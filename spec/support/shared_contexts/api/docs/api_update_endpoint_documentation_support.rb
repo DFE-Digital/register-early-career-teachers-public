@@ -13,13 +13,15 @@ RSpec.shared_context "an API update endpoint documentation", :exceptions_app do 
                   "$ref": "#/components/schemas/IDAttribute",
                 }
 
-      parameter name: :params,
-                in: :body,
-                style: :deepObject,
-                required: false,
-                schema: {
-                  "$ref": params[:request_schema_ref],
-                }
+      if params[:request_schema_ref]
+        parameter name: :params,
+                  in: :body,
+                  style: :deepObject,
+                  required: false,
+                  schema: {
+                    "$ref": params[:request_schema_ref],
+                  }
+      end
 
       let(:id) { resource.api_id }
 
@@ -39,16 +41,19 @@ RSpec.shared_context "an API update endpoint documentation", :exceptions_app do 
         run_test!
       end
 
-      response "400", "Bad request" do
-        let(:params) { { data: {} } }
+      unless params[:accepts_request_body] == false
+        response "400", "Bad request" do
+          let(:params) { { data: {} } }
 
-        schema({ "$ref": "#/components/schemas/BadRequestResponse" })
+          schema({ "$ref": "#/components/schemas/BadRequestResponse" })
 
-        run_test!
+          run_test!
+        end
       end
 
       response "422", "Unprocessable entity" do
         let(:params) { invalid_params }
+        let(:id) { (defined?(invalid_resource) ? invalid_resource : resource).api_id }
 
         schema({ "$ref": "#/components/schemas/UnprocessableContentResponse" })
 
