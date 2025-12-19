@@ -49,13 +49,13 @@ module APISeedData
         next unless declaration_date.past?
 
         payment_status = Declaration.payment_statuses.keys.sample
-        unless payment_status == :no_payment
+        unless payment_status == "no_payment"
           payment_statement = find_random_statement(active_lead_provider)
           next unless payment_statement
         end
 
         clawback_status = clawback_status(payment_status)
-        unless clawback_status == :no_clawback
+        unless clawback_status == "no_clawback"
           clawback_statement = find_random_statement(active_lead_provider, (payment_statement.deadline_date + 1.day)..)
           next unless clawback_statement
         end
@@ -77,9 +77,23 @@ module APISeedData
           **uplifts(training_period:)
         )
 
-        next if declaration.duplicate_declaration_exists?
+        if declaration.duplicate_declaration_exists?
+          if payment_status == "no_payment"
+            payment_statement = find_random_statement(active_lead_provider)
+            next unless payment_statement
 
-        declaration.save!
+            declaration.mark_as_ineligible!(
+              ineligibility_reason: :duplicate,
+              payment_statement:,
+              superseded_by: declaration.duplicate_declarations.order(created_at: :asc).first
+            )
+          else
+            next
+          end
+        else
+          declaration.save!
+        end
+
         log_declaration_info(declaration)
       end
     end
@@ -92,6 +106,9 @@ module APISeedData
 
     def log_declaration_info(declaration)
       log_seed_info("#{declaration.declaration_type} - #{declaration.overall_status} - #{declaration.declaration_date.to_date}", indent: 6)
+      if declaration.superseded_by.present?
+        log_seed_info("(superseded by declaration id #{declaration.superseded_by_id})", indent: 8)
+      end
     end
 
     def find_random_statement(active_lead_provider, deadline_date = :ignore)
@@ -106,7 +123,7 @@ module APISeedData
     end
 
     def clawback_status(payment_status)
-      return :no_clawback unless payment_status == "paid"
+      return "no_clawback" unless payment_status == "paid"
 
       Declaration.clawback_statuses.keys.sample
     end
