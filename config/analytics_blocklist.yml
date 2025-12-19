@@ -412,6 +412,7 @@
   - created_at
   - updated_at
   - api_updated_at
+  - superseded_by_id
   :data_migrations:
   - id
   - model
