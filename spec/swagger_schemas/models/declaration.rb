@@ -27,17 +27,7 @@ DECLARATION = {
           description: "The event declaration type.",
           type: :string,
           nullable: false,
-          enum: %w[
-            started
-            retained-1
-            retained-2
-            retained-3
-            retained-4
-            extended-1
-            extended-2
-            extended-3
-            completed
-          ],
+          enum: Declaration.declaration_types.values,
           example: "started",
         },
         declaration_date: {
@@ -58,16 +48,7 @@ DECLARATION = {
           description: "Indicates the state of this payment declaration.",
           type: :string,
           nullable: false,
-          enum: %w[
-            submitted
-            eligible
-            payable
-            paid
-            voided
-            ineligible
-            awaiting_clawback
-            clawed_back
-          ],
+          enum: %w[submitted] + Declaration.payment_statuses.values.excluding("no_payment") + Declaration.clawback_statuses.values.excluding("no_clawback"),
           example: "submitted",
         },
         updated_at: {
@@ -129,15 +110,7 @@ DECLARATION = {
           description: "The type of evidence the lead provider holds on their platform to demonstrate the participant has met the retention criteria for the current milestone period. For retained-2 declarations, providers will need to confirm if the engagement threshold has been reached and only accept either the ‘75-percent-engagement-met’ or ‘75-percent-engagement-met-reduced-induction’ values.",
           type: :string,
           nullable: true,
-          enum: %w[
-            training-event-attended
-            self-study-material-completed
-            materials-engaged-with-offline
-            75-percent-engagement-met
-            75-percent-engagement-met-reduced-induction
-            one-term-induction
-            other
-          ],
+          enum: Declaration.evidence_types.values,
           example: "training-event-attended",
         },
         lead_provider_name: {
