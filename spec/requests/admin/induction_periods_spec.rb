@@ -1,7 +1,7 @@
 RSpec.describe "Admin::InductionPeriodsController", type: :request do
   include_context "sign in as DfE user"
 
-  let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+  let(:teacher) { FactoryBot.create(:teacher, :with_name, trs_qts_awarded_on: 1.year.ago) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   describe "POST /admin/teachers/:teacher_id/induction-periods" do
@@ -356,7 +356,7 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
     it "returns success" do
       get edit_admin_teacher_induction_period_path(induction_period.teacher, induction_period)
       expect(response).to be_successful
-      expect(response.body).to include("Edit induction period")
+      expect(CGI.unescapeHTML(response.body)).to include("Edit John Keating's current induction period")
     end
   end
 
