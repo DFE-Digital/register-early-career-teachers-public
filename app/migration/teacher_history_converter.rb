@@ -70,17 +70,42 @@ private
 
     induction_records = ecf1_teacher_history.ect.induction_records
 
-    induction_records.each_with_index.map do |induction_record, index|
+    group_induction_records_by_school(induction_records).map do |school_urn, school_induction_records|
+      first_ir = school_induction_records.first
+      last_ir = school_induction_records.last
+      first_index = induction_records.index(first_ir)
+
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-        **ect_induction_record_attributes(induction_record, induction_records, index),
-        training_period_rows: [
-          ECF2TeacherHistory::TrainingPeriodRow.new(
-            **ect_training_period_attributes(induction_record, induction_records, index),
-            is_ect: true
-          )
-        ]
+        started_on: date_corrector.corrected_start_date(first_ir, first_index),
+        finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :ect),
+        school: Types::SchoolData.new(urn: school_urn, name: "Thing"),
+        email: first_ir.preferred_identity_email,
+        mentorship_period_rows: school_induction_records.flat_map { |ir| build_mentorship_period_rows(ir) },
+        appropriate_body: last_ir.appropriate_body,
+        training_period_rows: build_ect_training_period_rows(school_induction_records, induction_records)
       )
     end
+  end
+
+  def build_ect_training_period_rows(school_induction_records, all_induction_records)
+    training_period_rows = []
+    current_training = nil
+
+    school_induction_records.each do |induction_record|
+      index = all_induction_records.index(induction_record)
+
+      if training_changed?(current_training, induction_record)
+        current_training = induction_record
+        training_period_rows << ECF2TeacherHistory::TrainingPeriodRow.new(
+          **ect_training_period_attributes(induction_record, school_induction_records, index),
+          is_ect: true
+        )
+      else
+        update_training_period_end_date(training_period_rows.last, induction_record, school_induction_records, :ect)
+      end
+    end
+
+    training_period_rows
   end
 
   def mentor_at_school_period_rows
@@ -88,46 +113,46 @@ private
 
     induction_records = ecf1_teacher_history.mentor.induction_records
 
-    induction_records.each_with_index.map do |induction_record, index|
+    group_induction_records_by_school(induction_records).map do |school_urn, school_induction_records|
+      first_ir = school_induction_records.first
+      last_ir = school_induction_records.last
+      first_index = induction_records.index(first_ir)
+
       ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
-        **mentor_induction_record_attributes(induction_record, induction_records, index),
-        training_period_rows: build_mentor_training_period_rows(induction_record, induction_records, index)
+        started_on: date_corrector.corrected_start_date(first_ir, first_index),
+        finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :mentor),
+        school: Types::SchoolData.new(urn: school_urn, name: nil),
+        email: first_ir.preferred_identity_email,
+        training_period_rows: build_mentor_training_period_rows_for_school(school_induction_records, induction_records)
       )
     end
   end
 
-  def mentor_induction_record_attributes(induction_record, induction_records, index)
-    {
-      started_on: date_corrector.corrected_start_date(induction_record, index),
-      finished_on: date_corrector.corrected_end_date(induction_record, induction_records, participant_type: :mentor),
-      school: Types::SchoolData.new(urn: induction_record.school_urn, name: nil),
-      email: induction_record.preferred_identity_email
-    }
-  end
+  def build_mentor_training_period_rows_for_school(school_induction_records, all_induction_records)
+    training_period_rows = []
+    current_training = nil
 
-  def build_mentor_training_period_rows(induction_record, induction_records, index)
-    # Mentors only have training periods for provider_led training
-    training_programme = ecf2_training_programme(induction_record.training_programme)
-    return [] unless training_programme == "provider_led"
+    school_induction_records.each do |induction_record|
+      index = all_induction_records.index(induction_record)
 
-    [ECF2TeacherHistory::TrainingPeriodRow.new(**mentor_training_period_attributes(induction_record, induction_records, index))]
+      training_programme = ecf2_training_programme(induction_record.training_programme)
+      next unless training_programme == "provider_led"
+
+      if training_changed?(current_training, induction_record)
+        current_training = induction_record
+        training_period_rows << ECF2TeacherHistory::TrainingPeriodRow.new(
+          **mentor_training_period_attributes(induction_record, school_induction_records, index)
+        )
+      else
+        update_training_period_end_date(training_period_rows.last, induction_record, school_induction_records, :mentor)
+      end
+    end
+
+    training_period_rows
   end
 
   def mentor_training_period_attributes(induction_record, induction_records, index)
-    # training_period_attributes already handles mentor completion date logic via
-    # corrected_training_period_end_date -> date_for_mentors_with_one_ir
     training_period_attributes(induction_record, induction_records, index, participant_type: :mentor)
-  end
-
-  def ect_induction_record_attributes(induction_record, induction_records, index)
-    {
-      started_on: date_corrector.corrected_start_date(induction_record, index),
-      finished_on: date_corrector.corrected_end_date(induction_record, induction_records, participant_type: :ect),
-      school: Types::SchoolData.new(urn: induction_record.school_urn, name: "Thing"),
-      email: induction_record.preferred_identity_email,
-      mentorship_period_rows: build_mentorship_period_rows(induction_record),
-      appropriate_body: induction_record.appropriate_body
-    }
   end
 
   def ect_training_period_attributes(induction_record, induction_records, index)
@@ -207,5 +232,60 @@ private
       withdrawn_at: induction_record.end_date,
       withdrawal_reason: "???"
     }
+  end
+
+  # Groups consecutive induction records by school URN
+  # Returns array of [school_urn, [induction_records]] pairs preserving order
+  def group_induction_records_by_school(induction_records)
+    induction_records.chunk(&:school_urn).to_a
+  end
+
+  # Determines if training has changed between IRs (requiring a new TrainingPeriod)
+  def training_changed?(current_training_ir, induction_record)
+    return true if current_training_ir.nil?
+
+    current_programme = ecf2_training_programme(current_training_ir.training_programme)
+    new_programme = ecf2_training_programme(induction_record.training_programme)
+
+    # Training programme changed
+    return true if current_programme != new_programme
+
+    # Lead provider changed
+    current_lp = current_training_ir.training_provider_info&.lead_provider_info&.ecf1_id
+    new_lp = induction_record.training_provider_info&.lead_provider_info&.ecf1_id
+    return true if current_lp != new_lp
+
+    # Delivery partner changed
+    current_dp = current_training_ir.training_provider_info&.delivery_partner_info&.ecf1_id
+    new_dp = induction_record.training_provider_info&.delivery_partner_info&.ecf1_id
+    return true if current_dp != new_dp
+
+    # Was deferred/withdrawn but now active
+    was_deferred_or_withdrawn = current_training_ir.training_status.in?(%w[deferred withdrawn])
+    now_active = induction_record.training_status == "active"
+    return true if was_deferred_or_withdrawn && now_active
+
+    false
+  end
+
+  def update_training_period_end_date(training_period_row, induction_record, school_induction_records, participant_type)
+    return if training_period_row.nil?
+
+    new_end_date = date_corrector.corrected_training_period_end_date(
+      induction_record,
+      school_induction_records,
+      participant_type:
+    )
+
+    training_period_row.instance_variable_set(:@finished_on, new_end_date)
+    training_period_row.instance_variable_set(:@ecf_end_induction_record_id, induction_record.induction_record_id)
+
+    if induction_record.training_status == "deferred"
+      training_period_row.instance_variable_set(:@deferred_at, induction_record.end_date)
+      training_period_row.instance_variable_set(:@deferral_reason, "???")
+    elsif induction_record.training_status == "withdrawn"
+      training_period_row.instance_variable_set(:@withdrawn_at, induction_record.end_date)
+      training_period_row.instance_variable_set(:@withdrawal_reason, "???")
+    end
   end
 end
