@@ -2,7 +2,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
   include_context "sign in as non-DfE user"
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:teacher) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+  let(:teacher) { FactoryBot.create(:teacher, :with_name, trs_qts_awarded_on: 1.year.ago) }
   let!(:induction_period) do
     FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: 9.months.ago)
   end
@@ -11,7 +11,8 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
     it "returns success" do
       get edit_ab_teacher_induction_period_path(induction_period.teacher, induction_period)
       expect(response).to be_successful
-      expect(response.body).to include("Edit induction period")
+
+      expect(CGI.unescapeHTML(response.body)).to include("Edit John Keating's current induction period")
     end
   end
 
