@@ -49,10 +49,51 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
 
   describe "#create" do
     let(:path) { api_v3_declarations_path }
+    let(:service) { API::Declarations::Create }
+    let(:resource_type) { Declaration }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
+    let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
+    let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
 
-    it "returns method not allowed" do
-      authenticated_api_post path
-      expect(response).to be_method_not_allowed
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        declaration_date: declaration_date.rfc3339,
+        declaration_type: "started",
+        evidence_type: "other",
+        teacher_api_id: teacher.api_id,
+        teacher_type:
+      }
+    end
+
+    let(:params) do
+      {
+        data: {
+          type: "participant-declaration",
+          attributes: {
+            participant_id: teacher.api_id,
+            declaration_type: "started",
+            declaration_date: declaration_date.rfc3339,
+            course_identifier:,
+            evidence_held: "other"
+          }
+        }
+      }
+    end
+
+    %i[ect mentor].each do |teacher_type|
+      context "for #{teacher_type}" do
+        let(:at_school_period) { FactoryBot.create(:"#{teacher_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now, teacher:) }
+        let!(:training_period) { FactoryBot.create(:training_period, :"for_#{teacher_type}", :active, "#{teacher_type}_at_school_period": at_school_period, started_on: at_school_period.started_on.tomorrow, finished_on: at_school_period.finished_on, school_partnership:, schedule:) }
+        let(:course_identifier) { teacher_type == :ect ? "ecf-induction" : "ecf-mentor" }
+        let(:teacher_type) { teacher_type }
+
+        it_behaves_like "a token authenticated endpoint", :post
+        it_behaves_like "an API create endpoint"
+      end
     end
   end
 
