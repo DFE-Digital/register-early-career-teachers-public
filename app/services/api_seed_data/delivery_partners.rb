@@ -1,6 +1,6 @@
 module APISeedData
   class DeliveryPartners < Base
-    NUMBER_OF_RECORDS = 200
+    NUMBER_OF_RECORDS = 100
 
     def plant
       return unless plantable?
