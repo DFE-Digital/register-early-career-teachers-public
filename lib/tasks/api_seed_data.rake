@@ -31,6 +31,6 @@ namespace :api_seed_data do
       end
     end
 
-    Metadata::Manager.refresh_all_metadata!(async: true)
+    Metadata::Manager.refresh_all_metadata!(async: false)
   end
 end

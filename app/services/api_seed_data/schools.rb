@@ -1,6 +1,6 @@
 module APISeedData
   class Schools < Base
-    NUMBER_OF_RECORDS = 100
+    NUMBER_OF_RECORDS = 50
     SCHOOL_TYPES = %i[independent state_funded eligible ineligible].freeze
 
     def plant

@@ -1,6 +1,6 @@
 module APISeedData
   class Declarations < Base
-    MAX_TEACHERS_WITH_DECLARATIONS = 50
+    MAX_TEACHERS_WITH_DECLARATIONS = 25
 
     def plant
       return unless plantable?
