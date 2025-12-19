@@ -90,7 +90,7 @@ DECLARATION = {
           description: "If the declaration is ineligible, the reason why.",
           type: :string,
           nullable: true,
-          enum: %w[duplicate],
+          enum: %w[duplicate_declaration],
           example: nil,
         },
         mentor_id: {

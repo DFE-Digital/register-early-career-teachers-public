@@ -1480,7 +1480,7 @@ components:
               type: string
               nullable: true
               enum:
-              - duplicate
+              - duplicate_declaration
               example:
             mentor_id:
               description: Unique ID of the ECT’s mentor.
