@@ -93,7 +93,10 @@ class TrainingPeriod < ApplicationRecord
   scope :confirmed, -> { where.not(school_partnership_id: nil) }
   scope :at_school, ->(school) {
     left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
-      .merge(ECTAtSchoolPeriod.for_school(school).or(MentorAtSchoolPeriod.for_school(school)))
+      .where(
+        ECTAtSchoolPeriod.arel_table[:school_id].eq(school.id)
+        .or(MentorAtSchoolPeriod.arel_table[:school_id].eq(school.id))
+      )
   }
   scope :including_school_partnership, -> {
     includes(:school_partnership)
