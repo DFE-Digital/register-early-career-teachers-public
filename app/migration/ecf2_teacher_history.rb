@@ -36,10 +36,16 @@ class ECF2TeacherHistory
     !@failed
   end
 
-  def to_hash
+  def to_h
     {
       teacher: {
-        trn: teacher_row.trn
+        trn: teacher_row.trn,
+        api_ect_training_record_id: teacher_row.api_ect_training_record_id,
+        ect_at_school_periods: [
+          # TODO: build this automatically, probably by implementing a #to_h on
+          #       ECF2TeacherHistory::ECTAtSchoolPeriodRow and looping
+          { started_on: Date.new(2024, 1, 2), finished_on: nil }
+        ]
       }
     }
   end

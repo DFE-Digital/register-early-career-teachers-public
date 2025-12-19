@@ -81,6 +81,9 @@ class ECF1TeacherHistory
     new(user:, ect:, mentor:, participant_identity_updated_ats:)
   end
 
+  # TODO: on Monday
+  #   - build a '#smart_compact' refinement for hash so we can compact but convert :ignore
+  #     to nil
   def self.from_hash(teacher_history)
     user_data = { trn: teacher_history[:trn], full_name: teacher_history[:full_name] }.compact
     user = FactoryBot.build(:ecf1_teacher_history_user, **user_data)
