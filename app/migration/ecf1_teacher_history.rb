@@ -1,7 +1,11 @@
 class ECF1TeacherHistory
   class InvalidPeriodType < StandardError; end
 
-  User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at)
+  User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at, keyword_init: true) do
+    def self.from_hash(hash)
+      new(FactoryBot.attributes_for(:ecf1_teacher_history_user, **hash))
+    end
+  end
 
   ECT = Struct.new(:participant_profile_id,
                    :migration_mode,
@@ -13,7 +17,15 @@ class ECF1TeacherHistory
                    :sparsity_uplift,
                    :payments_frozen_cohort_start_year,
                    :states,
-                   :induction_records)
+                   :induction_records,
+                   keyword_init: true) do
+                     def self.from_hash(hash)
+                       hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
+
+                       new(FactoryBot.attributes_for(:ecf1_teacher_history_ect, **hash))
+                     end
+                   end
+
 
   Mentor = Struct.new(:participant_profile_id,
                       :migration_mode,
@@ -23,7 +35,15 @@ class ECF1TeacherHistory
                       :mentor_completion_reason,
                       :payments_frozen_cohort_start_year,
                       :states,
-                      :induction_records)
+                      :induction_records,
+                      keyword_init: true) do
+                        def self.from_hash(hash)
+                          hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
+
+                          new(FactoryBot.attributes_for(:ecf1_teacher_history_mentor, **hash))
+                        end
+                      end
+
 
   ProfileStateRow = Struct.new(:state, :reason, :created_at)
 
@@ -41,7 +61,13 @@ class ECF1TeacherHistory
                                   :induction_status,
                                   :training_programme,
                                   :training_provider_info,
-                                  :appropriate_body)
+                                  :appropriate_body,
+                                  keyword_init: true) do
+                                    def self.from_hash(hash)
+                                      new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
+                                    end
+                                  end
+
 
   TrainingProviderInfo = Struct.new(
     :lead_provider_info,
@@ -84,19 +110,20 @@ class ECF1TeacherHistory
   # TODO: on Monday
   #   - build a '#smart_compact' refinement for hash so we can compact but convert :ignore
   #     to nil
-  def self.from_hash(teacher_history)
-    user_data = { trn: teacher_history[:trn], full_name: teacher_history[:full_name] }.compact
-    user = FactoryBot.build(:ecf1_teacher_history_user, **user_data)
+  #   - add a full example hash here showing all the available keys
+  #   - do we need the array of participant_identity_updated_ats? don't we just want the
+  #     latest?
+  def self.from_hash(hash)
+    user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name).compact)
 
-    ect_data = {
-      participant_profile_id: teacher_history.dig(:ect, :participant_profile_id),
-      induction_records: teacher_history.dig(:ect, :induction_records)&.map do |induction_record|
-        FactoryBot.build(:ecf1_teacher_history_induction_record_row, **induction_record)
-      end
-    }
-    ect = FactoryBot.build(:ecf1_teacher_history_ect, **ect_data)
+    ect = if hash.key?(:ect)
+            ECF1TeacherHistory::ECT.from_hash(hash.fetch(:ect).slice(:participant_profile_id, :induction_records))
+          end
 
-    mentor = nil
+    mentor = if hash.key?(:mentor)
+               ECF1TeacherHistory::Mentor.from_hash(hash.fetch(:mentor).slice(:participant_profile_id, :induction_records))
+             end
+
     participant_identity_updated_ats = []
 
     new(user:, ect:, mentor:, participant_identity_updated_ats:)
