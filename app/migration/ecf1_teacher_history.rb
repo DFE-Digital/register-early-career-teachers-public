@@ -113,6 +113,8 @@ class ECF1TeacherHistory
   #   - add a full example hash here showing all the available keys
   #   - do we need the array of participant_identity_updated_ats? don't we just want the
   #     latest?
+  #   - add a spec for someone who's been an ECT and a mentor
+  #   - deal with lead providers, delivery partners, schools and appropriate bodies in comparison
   def self.from_hash(hash)
     user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name).compact)
 
