@@ -1,4 +1,6 @@
 class ECF1TeacherHistory
+  using Migration::CompactWithIgnore
+
   class InvalidPeriodType < StandardError; end
 
   User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at, keyword_init: true) do
@@ -20,6 +22,8 @@ class ECF1TeacherHistory
                    :induction_records,
                    keyword_init: true) do
                      def self.from_hash(hash)
+                       hash.compact_with_ignore!
+
                        hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
 
                        new(FactoryBot.attributes_for(:ecf1_teacher_history_ect, **hash))
@@ -38,6 +42,8 @@ class ECF1TeacherHistory
                       :induction_records,
                       keyword_init: true) do
                         def self.from_hash(hash)
+                          hash.compact_with_ignore!
+
                           hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
 
                           new(FactoryBot.attributes_for(:ecf1_teacher_history_mentor, **hash))
@@ -64,6 +70,8 @@ class ECF1TeacherHistory
                                   :appropriate_body,
                                   keyword_init: true) do
                                     def self.from_hash(hash)
+                                      hash.compact_with_ignore!
+
                                       new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
                                     end
                                   end
@@ -108,14 +116,14 @@ class ECF1TeacherHistory
   end
 
   # TODO: on Monday
-  #   - build a '#smart_compact' refinement for hash so we can compact but convert :ignore
-  #     to nil
   #   - add a full example hash here showing all the available keys
   #   - do we need the array of participant_identity_updated_ats? don't we just want the
   #     latest?
   #   - add a spec for someone who's been an ECT and a mentor
   #   - deal with lead providers, delivery partners, schools and appropriate bodies in comparison
   def self.from_hash(hash)
+    hash.compact_with_ignore!
+
     user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name).compact)
 
     ect = if hash.key?(:ect)
