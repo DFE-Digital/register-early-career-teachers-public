@@ -33,7 +33,7 @@ module Schedules
     end
 
     def training_periods
-      return teacher.ect_training_periods if teacher.ect_at_school_periods.exists?
+      return teacher.ect_training_periods if teacher.ect_at_school_periods.exists? && period_type_key == :ect_at_school_period
 
       teacher.mentor_training_periods if teacher.mentor_at_school_periods.exists?
     end
