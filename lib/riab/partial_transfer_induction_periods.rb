@@ -11,22 +11,9 @@ module RIAB
       configure_table_print(:csv)
 
       trns = target_inductions.joins(:teacher).pluck(:trn)
-      events = events_for(inductions)
-
-      Rails.logger.debug "-------------------"
-      Rails.logger.debug "Will curtail #{inductions.count} induction periods for current AB"
-      Rails.logger.debug "Will create #{inductions.count} induction periods for new AB"
-      Rails.logger.debug "Will create #{inductions.count} release events for current AB"
-      Rails.logger.debug "Will create #{inductions.count} claim events for new AB"
-      Rails.logger.debug "Will transfer #{events.where.not(event_type: :induction_period_opened).count} events for closed inductions to the new AB"
-
-      total_count
       export_summary_for(inductions.order(:teacher_id), headers: INDUCTION_TABLE_HEADERS)
 
       InductionPeriod.transaction do
-        Rails.logger.debug "-------------------"
-        Rails.logger.debug "Starting transfer..."
-
         inductions.each do |induction_period|
           original_induction_values = induction_period.slice(:finished_on, :induction_programme, :training_programme, :number_of_terms, :outcome)
           induction_period.update!(finished_on: 1.day.before(cut_off_date))
@@ -57,12 +44,8 @@ module RIAB
 
         export_summary_for(edited, headers: INDUCTION_TABLE_HEADERS)
         export_summary_for(migrated, headers: INDUCTION_TABLE_HEADERS)
-        total_count
 
-        if rollback
-          Rails.logger.debug "Rolling back..."
-          raise ActiveRecord::Rollback
-        end
+        raise ActiveRecord::Rollback if rollback
       end
     end
 

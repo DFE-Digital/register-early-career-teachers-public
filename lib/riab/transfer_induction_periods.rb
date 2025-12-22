@@ -60,17 +60,6 @@ module RIAB
       Event.where(induction_period_id: inductions.pluck(:id)).order(:induction_period_id, :id)
     end
 
-    def total_count
-      Rails.logger.debug "-------------------"
-      Rails.logger.debug "Current AB"
-      Rails.logger.debug "Total inductions: #{total_current_ab_induction_count}"
-      Rails.logger.debug "Total events: #{total_current_ab_event_count}"
-      Rails.logger.debug "-------------------"
-      Rails.logger.debug "New AB"
-      Rails.logger.debug "Total inductions: #{total_new_ab_induction_count}"
-      Rails.logger.debug "Total events: #{total_new_ab_event_count}"
-    end
-
     # @return [TablePrint::Returnable]
     def export_summary_for(rows, headers: EVENT_TABLE_HEADERS)
       tp rows, *headers
@@ -93,22 +82,6 @@ module RIAB
 
     def csv_file_name
       "#{self.class.name} from #{current_appropriate_body.name} to #{new_appropriate_body.name} on #{cut_off_date}.csv"
-    end
-
-    def total_new_ab_event_count
-      Event.where(appropriate_body_id: new_appropriate_body.id).count
-    end
-
-    def total_current_ab_event_count
-      Event.where(appropriate_body_id: current_appropriate_body.id).count
-    end
-
-    def total_new_ab_induction_count
-      InductionPeriod.where(appropriate_body_id: new_appropriate_body.id).count
-    end
-
-    def total_current_ab_induction_count
-      InductionPeriod.where(appropriate_body_id: current_appropriate_body.id).count
     end
   end
 end
