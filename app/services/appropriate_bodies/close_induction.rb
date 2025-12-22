@@ -15,12 +15,12 @@ module AppropriateBodies
     attribute :author
 
     validates :finished_on, presence: { message: "Enter a finish date" }
-    validates :written_fail_confirmation_on, presence: { message: "Enter a date written confirmation of failed Induction" }, if: :failed_outcome?
+    validates :fail_confirmation_sent_on, presence: { message: "Enter a date written confirmation of failed Induction" }, if: :failed_outcome?
     validates :number_of_terms, presence: { message: "Enter a number of terms" }
 
     def self.induction_params
       permitted = %i[finished_on number_of_terms]
-      permitted << :written_fail_confirmation_on if self == AppropriateBodies::RecordFail || self == Admin::RecordFail
+      permitted << :fail_confirmation_sent_on if self == AppropriateBodies::RecordFail || self == Admin::RecordFail
 
       { model_name.param_key => permitted }
     end
@@ -45,11 +45,11 @@ module AppropriateBodies
 
     delegate :number_of_terms,
              :finished_on,
-             :written_fail_confirmation_on,
+             :fail_confirmation_sent_on,
              to: :pending_induction_submission
 
     def close_induction_period
-      ongoing_induction_period.update!(number_of_terms:, finished_on:, written_fail_confirmation_on:, outcome:)
+      ongoing_induction_period.update!(number_of_terms:, finished_on:, fail_confirmation_sent_on:, outcome:)
     end
 
     def pending_induction_submission

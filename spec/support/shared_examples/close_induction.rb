@@ -14,7 +14,7 @@ RSpec.shared_context "it closes an induction" do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let(:service_call) do
-    service.call(finished_on: 1.day.ago.to_date, written_fail_confirmation_on: 1.day.ago.to_date, number_of_terms: 6)
+    service.call(finished_on: 1.day.ago.to_date, fail_confirmation_sent_on: 1.day.ago.to_date, number_of_terms: 6)
   end
 
   let!(:induction_period) do
@@ -41,12 +41,12 @@ RSpec.shared_context "it closes an induction" do
 
   context "with invalid values" do
     let(:service_call) do
-      service.call(finished_on: 1.day.from_now.to_date, written_fail_confirmation_on: 1.day.from_now.to_date, number_of_terms: 16.99)
+      service.call(finished_on: 1.day.from_now.to_date, fail_confirmation_sent_on: 1.day.from_now.to_date, number_of_terms: 16.99)
     end
 
     it "does not update the induction period" do
       expect { service_call }.to raise_error(ActiveRecord::RecordInvalid)
-      expect(service.errors.size).to be(3)
+      expect(service.errors.size).to be(4)
     end
   end
 end

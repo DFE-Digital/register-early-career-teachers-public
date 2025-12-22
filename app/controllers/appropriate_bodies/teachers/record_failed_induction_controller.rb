@@ -25,11 +25,11 @@ module AppropriateBodies
         render :new, status: :unprocessable_content
       end
 
-      def confirm_failed_outcome
+      def confirmation
         @record_fail = record_fail
       end
 
-      def confirm_failed_outcome_checked
+      def confirmation_checked
         @record_fail = record_fail
 
         unless params.dig("teacher", "confirm_failed_outcome") == %w[1]
@@ -38,7 +38,7 @@ module AppropriateBodies
             "Confirm if you have told them about their failed induction"
           )
 
-          render :confirm_failed_outcome, status: :unprocessable_content and return
+          render :confirmation, status: :unprocessable_content and return
         end
 
         redirect_to new_ab_teacher_record_failed_outcome_path(@teacher)

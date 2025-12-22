@@ -8,12 +8,12 @@
  govuk_list([
     "they have failed their induction",
     "they have the right to appeal",
-    govuk_link_to("about the appeal process", "https://www.gov.uk/guidance/newly-qualified-teacher-nqt-induction-appeals", no_visited_state: true)
+    govuk_link_to("about the appeal process", "https://www.gov.uk/guidance/newly-qualified-teacher-nqt-induction-appeals", target: "_blank")
   ], type: :bullet)
 %>
 
 
-<%= form_with(model: teacher, url: confirm_failed_outcome_checked_ab_teacher_record_failed_outcome_path(teacher), class: "govuk-!-margin-top-9") do |f| %>
+<%= form_with(model: teacher, url: confirmation_checked_ab_teacher_record_failed_outcome_path(teacher), class: "govuk-!-margin-top-9") do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
   <%= f.govuk_check_box(:confirm_failed_outcome, "1", label: {
