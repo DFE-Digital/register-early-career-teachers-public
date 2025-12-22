@@ -1,6 +1,7 @@
 <% page_data(
     title: "Change induction tutor",
-    error: @wizard.school.errors.present?
+    error: @wizard.school.errors.present?,
+    backlink_href: schools_induction_tutor_path
 ) %>
 
 <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>

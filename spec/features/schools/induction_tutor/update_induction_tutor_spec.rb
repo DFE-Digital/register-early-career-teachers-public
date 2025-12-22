@@ -1,5 +1,7 @@
 RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
-  scenario "the existing details have never been confirmed" do
+  include Features::InductionTutorHelpers
+
+  scenario "changing the existing details" do
     given_there_is_a_school_with_an_induction_tutor_in_the_service
     and_there_are_contract_periods
     and_the_details_are_confirmed_for_the_current_contract_period
@@ -8,6 +10,7 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
     when_i_view_the_current_induction_tutor_details_page
     and_i_click_change_induction_tutor_details
     then_i_am_taken_to_the_wizard_start_page
+    and_there_is_a_back_link
 
     when_i_enter_invalid_details_for_the_induction_tutor
     and_i_click_continue
@@ -16,8 +19,9 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
     when_i_enter_valid_details_for_the_induction_tutor
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
+    and_there_is_a_link_to_cancel_and_go_back
 
-    when_i_click_cancel_and_go_back
+    when_i_click_back
     then_i_am_taken_to_the_wizard_start_page
     and_the_data_i_entered_is_saved
 
@@ -45,6 +49,18 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
 
   def and_i_click_change_induction_tutor_details
     page.get_by_role("link", name: "Change induction tutor details").click
+  end
+
+  def and_there_is_a_back_link
+    expect(page.locator("a.govuk-back-link")).to have_attribute("href", "/school/home/induction-tutor")
+  end
+
+  def when_i_click_back
+    page.locator("a.govuk-back-link").click
+  end
+
+  def and_there_is_a_link_to_cancel_and_go_back
+    expect(page.get_by_role("link", name: "Cancel and go back")).to have_attribute("href", "/school/home/induction-tutor")
   end
 
   def when_i_click_confirm_change
