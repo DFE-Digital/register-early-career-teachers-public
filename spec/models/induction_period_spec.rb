@@ -219,6 +219,44 @@ RSpec.describe InductionPeriod do
       end
     end
 
+    describe "#fail_confirmation_sent_on_not_in_future" do
+      subject { FactoryBot.build(:induction_period, appropriate_body:, fail_confirmation_sent_on:) }
+
+      context "when fail_confirmation_sent_on is today" do
+        let(:fail_confirmation_sent_on) { Date.current }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when fail_confirmation_sent_on is in the past" do
+        let(:fail_confirmation_sent_on) { Date.current - 1.day }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when fail_confirmation_sent_on is in the future" do
+        let(:fail_confirmation_sent_on) { Date.current + 1.day }
+
+        it do
+          expect(subject).not_to be_valid
+          expect(subject.errors[:fail_confirmation_sent_on]).to include("Written fail confirmation date cannot be in the future")
+        end
+      end
+    end
+
+    describe "fail_confirmation_sent_on_not_before_start_date" do
+      context "when fail_confirmation_sent_on date is before start date" do
+        subject { FactoryBot.build(:induction_period, appropriate_body:, fail_confirmation_sent_on:, started_on: Date.current) }
+
+        let(:fail_confirmation_sent_on) { Date.current - 1.day }
+
+        it do
+          expect(subject).not_to be_valid
+          expect(subject.errors[:fail_confirmation_sent_on]).to include("Written fail confirmation date cannot be before start date")
+        end
+      end
+    end
+
     describe "#number_of_terms" do
       context "when finished_on is empty" do
         subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body:) }

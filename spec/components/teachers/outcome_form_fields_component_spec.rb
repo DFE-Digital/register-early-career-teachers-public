@@ -22,10 +22,10 @@ RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
       expect(rendered_content).to have_text("When did they complete their induction?")
     end
 
-    it "written_fail_confirmation_on" do
-      expect(rendered_content).to have_field("model_name[written_fail_confirmation_on(1i)]")
-      expect(rendered_content).to have_field("model_name[written_fail_confirmation_on(2i)]")
-      expect(rendered_content).to have_field("model_name[written_fail_confirmation_on(3i)]")
+    it "fail_confirmation_sent_on" do
+      expect(rendered_content).to have_field("model_name[fail_confirmation_sent_on(1i)]")
+      expect(rendered_content).to have_field("model_name[fail_confirmation_sent_on(2i)]")
+      expect(rendered_content).to have_field("model_name[fail_confirmation_sent_on(3i)]")
       expect(rendered_content).to have_text("When did you send written confirmation of their failed induction?")
     end
 

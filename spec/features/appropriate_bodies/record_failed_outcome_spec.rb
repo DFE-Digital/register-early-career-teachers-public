@@ -12,12 +12,12 @@ RSpec.describe "Recording a failed outcome for an ECT" do
     when_i_click_link("Fail induction")
     then_i_should_be_on_the_fail_confimation_page(teacher)
 
-    when_i_click_checkbox
+    when_i_confirm_written_confirmation_sent
     and_i_click_continue_button
     then_i_should_be_on_the_record_outcome_page(teacher)
 
     when_i_enter_the_finish_date
-    when_i_enter_the_written_fail_confirmation_on_date
+    when_i_enter_the_fail_confirmation_sent_on_date
     and_i_enter_a_terms_value_of(number_of_completed_terms)
     and_i_click_submit
 
@@ -40,10 +40,10 @@ private
   end
 
   def then_i_should_be_on_the_fail_confimation_page(teacher)
-    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirm_failed_outcome")
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirmation")
   end
 
-  def when_i_click_checkbox
+  def when_i_confirm_written_confirmation_sent
     page.click("#teacher-confirm-failed-outcome-1-field")
   end
 
@@ -61,10 +61,10 @@ private
     page.fill "#appropriate_bodies_record_fail_finished_on_1i", today.year.to_s
   end
 
-  def when_i_enter_the_written_fail_confirmation_on_date
-    page.fill "#appropriate_bodies_record_fail_written_fail_confirmation_on_3i", today.day.to_s
-    page.fill "#appropriate_bodies_record_fail_written_fail_confirmation_on_2i", today.month.to_s
-    page.fill "#appropriate_bodies_record_fail_written_fail_confirmation_on_1i", today.year.to_s
+  def when_i_enter_the_fail_confirmation_sent_on_date
+    page.fill "#appropriate_bodies_record_fail_fail_confirmation_sent_on_3i", today.day.to_s
+    page.fill "#appropriate_bodies_record_fail_fail_confirmation_sent_on_2i", today.month.to_s
+    page.fill "#appropriate_bodies_record_fail_fail_confirmation_sent_on_1i", today.year.to_s
   end
 
   def and_i_enter_a_terms_value_of(number)

@@ -2,10 +2,7 @@ module Teachers
   class ConfirmOutcomeComponent < ApplicationComponent
     attr_reader :service, :teacher_full_name
 
-    delegate :appropriate_body,
-             :teacher,
-             :pending_induction_submission,
-             :outcome,
+    delegate :teacher,
              to: :service
 
     def initialize(service:)
