@@ -300,4 +300,67 @@ describe "One induction record" do
       end
     end
   end
+
+  describe "Mentorship period attributes" do
+    let(:ecf1_induction_record_row) { ecf1_teacher_history.ect.induction_records.first }
+    let(:ecf2_ect_at_school_period_row) { subject.ect_at_school_period_rows.first }
+
+    context "when there is no mentor_profile_id" do
+      let(:induction_record) do
+        FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:, mentor_profile_id: nil)
+      end
+
+      it "returns an empty array of mentorship period rows" do
+        expect(ecf2_ect_at_school_period_row.mentorship_period_rows).to be_empty
+      end
+    end
+
+    context "when there is a mentor_profile_id but mentor has not been migrated" do
+      let(:mentor_profile_id) { SecureRandom.uuid }
+      let(:induction_record) do
+        FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:, mentor_profile_id:)
+      end
+
+      it "returns an empty array of mentorship period rows" do
+        expect(ecf2_ect_at_school_period_row.mentorship_period_rows).to be_empty
+      end
+    end
+
+    context "when mentor has been migrated" do
+      let(:mentor_profile_id) { SecureRandom.uuid }
+      let!(:mentor_teacher) { FactoryBot.create(:teacher, api_mentor_training_record_id: mentor_profile_id) }
+      let(:induction_record) do
+        FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:, mentor_profile_id:)
+      end
+      let(:ecf2_mentorship_period_row) { ecf2_ect_at_school_period_row.mentorship_period_rows.first }
+
+      it "creates a mentorship period row" do
+        expect(ecf2_ect_at_school_period_row.mentorship_period_rows.count).to eq(1)
+      end
+
+      it "sets the start date from the induction record" do
+        expect(ecf2_mentorship_period_row.started_on).to eq(ecf1_induction_record_row.start_date)
+      end
+
+      it "sets the end date from the induction record" do
+        expect(ecf2_mentorship_period_row.finished_on).to eq(ecf1_induction_record_row.end_date)
+      end
+
+      it "sets the ecf_start_induction_record_id" do
+        expect(ecf2_mentorship_period_row.ecf_start_induction_record_id).to eq(ecf1_induction_record_row.induction_record_id)
+      end
+
+      it "sets the ecf_end_induction_record_id" do
+        expect(ecf2_mentorship_period_row.ecf_end_induction_record_id).to eq(ecf1_induction_record_row.induction_record_id)
+      end
+
+      it "sets the mentor_data with the mentor's TRN" do
+        expect(ecf2_mentorship_period_row.mentor_data.trn).to eq(mentor_teacher.trn)
+      end
+
+      it "sets the mentor_data with the school URN from the induction record" do
+        expect(ecf2_mentorship_period_row.mentor_data.urn).to eq(ecf1_induction_record_row.school_urn)
+      end
+    end
+  end
 end

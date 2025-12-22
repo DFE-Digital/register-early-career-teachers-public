@@ -316,6 +316,15 @@ RSpec.describe Schedules::Find do
 
               it_behaves_like "no replacement schedule assigned"
             end
+
+            context "when the previous mentor has both ect and mentor periods" do
+              before do
+                FactoryBot.create(:ect_at_school_period, started_on: previous_start_date - 1.year, teacher: previous_mentor.teacher, school:)
+                FactoryBot.create(:training_period, :provider_led, :ongoing, started_on: previous_start_date - 1.year, ect_at_school_period: previous_mentor.teacher.ect_at_school_periods.last, school_partnership:)
+              end
+
+              it_behaves_like "replacement schedule assigned"
+            end
           end
         end
 
