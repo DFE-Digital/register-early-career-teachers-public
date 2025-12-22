@@ -30,7 +30,6 @@ class ECF1TeacherHistory
                      end
                    end
 
-
   Mentor = Struct.new(:participant_profile_id,
                       :migration_mode,
                       :created_at,
@@ -49,7 +48,6 @@ class ECF1TeacherHistory
                           new(FactoryBot.attributes_for(:ecf1_teacher_history_mentor, **hash))
                         end
                       end
-
 
   ProfileStateRow = Struct.new(:state, :reason, :created_at)
 
@@ -75,7 +73,6 @@ class ECF1TeacherHistory
                                       new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
                                     end
                                   end
-
 
   TrainingProviderInfo = Struct.new(
     :lead_provider_info,

@@ -27,6 +27,16 @@ class ECF2TeacherHistory::ECTAtSchoolPeriodRow
     }
   end
 
+  def to_h
+    {
+      started_on:,
+      finished_on:,
+      school:,
+      email:,
+      school_reported_appropriate_body: appropriate_body
+    }
+  end
+
   def real_school
     GIAS::School.find_by!(urn: school.urn).school
   end
