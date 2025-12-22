@@ -33,7 +33,8 @@ class ECF2TeacherHistory::ECTAtSchoolPeriodRow
       finished_on:,
       school:,
       email:,
-      school_reported_appropriate_body: appropriate_body
+      school_reported_appropriate_body: appropriate_body,
+      training_periods: training_period_rows.map(&:to_h)
     }
   end
 

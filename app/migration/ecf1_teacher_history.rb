@@ -70,6 +70,10 @@ class ECF1TeacherHistory
                                     def self.from_hash(hash)
                                       hash.compact_with_ignore!
 
+                                      if training_provider_info = hash[:training_provider_info]
+                                        hash[:training_provider_info] = TrainingProviderInfo.new(training_provider_info)
+                                      end
+
                                       new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
                                     end
                                   end
@@ -77,7 +81,8 @@ class ECF1TeacherHistory
   TrainingProviderInfo = Struct.new(
     :lead_provider_info,
     :delivery_partner_info,
-    :cohort_year
+    :cohort_year,
+    keyword_init: true
   )
 
   attr_accessor :user, :ect, :mentor, :participant_identity_updated_ats

@@ -68,6 +68,8 @@ FactoryBot.define do
       full_name { Faker::FunnyName.two_word_name }
     end
 
+    full_induction_programme
+
     induction_record_id { SecureRandom.uuid }
     cohort_year { Random.rand(2020..2119) }
     start_date { Date.new(cohort_year, 9, 1) }
@@ -80,8 +82,6 @@ FactoryBot.define do
     mentor_profile_id { SecureRandom.uuid }
     training_status { "active" }
     induction_status { "active" }
-    training_programme { "full_induction_programme" }
-    training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:) }
     sequence(:appropriate_body) { |n| Types::AppropriateBodyData.new(ecf1_id: SecureRandom.uuid, name: "History Appropriate body #{n}") }
 
     initialize_with do
@@ -112,6 +112,16 @@ FactoryBot.define do
 
     trait :ongoing do
       end_date { nil }
+    end
+
+    trait :full_induction_programme do
+      training_programme { "full_induction_programme" }
+      training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:) }
+    end
+
+    trait :core_induction_programme do
+      training_programme { "core_induction_programme" }
+      training_provider_info { nil }
     end
   end
 
