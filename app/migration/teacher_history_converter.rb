@@ -70,13 +70,14 @@ private
 
     induction_records = ecf1_teacher_history.ect.induction_records
 
-    group_induction_records_by_school(induction_records).map do |school_urn, school_induction_records|
+    # FIXME: this feels a bit odd, I think we should be manipulating the first/last induction
+    #        records before we start looping
+    group_induction_records_by_school(induction_records).map.with_index do |(school_urn, school_induction_records), i|
       first_ir = school_induction_records.first
       last_ir = school_induction_records.last
-      first_index = induction_records.index(first_ir)
 
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-        started_on: date_corrector.corrected_start_date(first_ir, first_index),
+        started_on: date_corrector.corrected_start_date(first_ir, i),
         finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :ect),
         school: Types::SchoolData.new(urn: school_urn, name: "Thing"),
         email: first_ir.preferred_identity_email,
@@ -113,13 +114,12 @@ private
 
     induction_records = ecf1_teacher_history.mentor.induction_records
 
-    group_induction_records_by_school(induction_records).map do |school_urn, school_induction_records|
+    group_induction_records_by_school(induction_records).map.with_index do |(school_urn, school_induction_records), i|
       first_ir = school_induction_records.first
       last_ir = school_induction_records.last
-      first_index = induction_records.index(first_ir)
 
       ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
-        started_on: date_corrector.corrected_start_date(first_ir, first_index),
+        started_on: date_corrector.corrected_start_date(first_ir, i),
         finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :mentor),
         school: Types::SchoolData.new(urn: school_urn, name: nil),
         email: first_ir.preferred_identity_email,
