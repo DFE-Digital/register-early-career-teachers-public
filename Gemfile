@@ -4,6 +4,9 @@ ruby "3.4.7"
 
 gem "rails", "~> 8.0.4"
 
+# temporary, see https://github.com/mperham/connection_pool/issues/212#issuecomment-3637733716
+gem "connection_pool", "< 3"
+
 gem "blazer"
 gem "bootsnap", require: false
 gem "cssbundling-rails"

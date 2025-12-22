@@ -72,6 +72,44 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/NotFoundResponse"
+  "/api/v3/participant-declarations/{id}/void":
+    put:
+      summary: Void a declaration
+      tags:
+      - Declarations
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: The declaration being voided
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeclarationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnprocessableContentResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v3/delivery-partners":
     get:
       summary: Retrieve multiple delivery partners

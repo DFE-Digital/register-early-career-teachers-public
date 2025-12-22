@@ -270,7 +270,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
 
         registration_store.register!(author:)
 
-        new_training_period = teacher.training_periods.last
+        new_training_period = teacher.mentor_training_periods.last
         expect(new_training_period.schedule.identifier).to eq("ecf-replacement-january")
       end
     end
