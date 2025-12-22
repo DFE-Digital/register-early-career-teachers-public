@@ -1,18 +1,10 @@
 module Schools
-  module ConfirmExistingInductionTutorWizard
+  module InductionTutor
     class Wizard < ApplicationWizard
       attr_accessor :store, :school_id,
                     :induction_tutor_email, :induction_tutor_name,
                     :are_these_details_correct,
                     :author
-
-      steps do
-        [{
-          edit: EditStep,
-          check_answers: CheckAnswersStep,
-          confirmation: ConfirmationStep
-        }]
-      end
 
       def allowed_steps = %i[edit check_answers confirmation]
 

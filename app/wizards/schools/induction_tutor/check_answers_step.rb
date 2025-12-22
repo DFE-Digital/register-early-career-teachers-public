@@ -1,10 +1,6 @@
 module Schools
-  module ConfirmExistingInductionTutorWizard
-    class CheckAnswersStep < ApplicationWizardStep
-      delegate :school, :author, :valid_step?, :current_contract_period, to: :wizard
-
-      def self.permitted_params = []
-
+  module InductionTutor
+    class CheckAnswersStep < InductionTutor::Step
       def previous_step = :edit
 
       def next_step = :confirmation

@@ -1,5 +1,5 @@
-describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schools_interface do
-  let(:school) { FactoryBot.create(:school, induction_tutor_name:, induction_tutor_email:) }
+describe "Schools::InductionTutor::NewInductionTutorWizardController", :enable_schools_interface do
+  let(:school) { FactoryBot.create(:school) }
   let(:params) { {} }
   let(:induction_tutor_name) { "Old Induction Tutor Name" }
   let(:induction_tutor_email) { "old.name@gmail.com" }
@@ -81,24 +81,8 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
         end
       end
 
-      context "when the current details are confirmed" do
-        let(:params) { { edit: { are_these_details_correct: "true" } } }
-
-        it "sets induction_tutor_last_nominated_in but does not change the details" do
-          FactoryBot.create(:contract_period, :current)
-
-          post(path_for_step("edit"), params:)
-
-          expect { school.reload }.to change(school, :induction_tutor_last_nominated_in)
-          expect(school.induction_tutor_name).to eq(induction_tutor_name)
-          expect(school.induction_tutor_email).to eq(induction_tutor_email)
-
-          expect(response).to redirect_to(path_for_step("confirmation"))
-        end
-      end
-
-      context "when the current details changed" do
-        let(:params) { { edit: { are_these_details_correct: "false", induction_tutor_name: "New Name", induction_tutor_email: "new.name@gmail.com" } } }
+      context "when the details are valid" do
+        let(:params) { { edit: { induction_tutor_name: "New Name", induction_tutor_email: "new.name@gmail.com" } } }
 
         it "updates the details" do
           FactoryBot.create(:contract_period, :current)
@@ -120,17 +104,6 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
       end
-
-      context "when the current details are not changed" do
-        let(:params) { { edit: { are_these_details_correct: "false", induction_tutor_name: school.induction_tutor_name, induction_tutor_email: school.induction_tutor_email } } }
-
-        it "is invalid" do
-          post(path_for_step("edit"), params:)
-
-          expect(response).to have_http_status(:ok)
-          expect(response.body).to include("You must change the induction tutor details or confirm they are correct")
-        end
-      end
     end
 
     context "when visiting an invalid step" do
@@ -144,6 +117,6 @@ describe "Schools::ConfirmExistingInductionTutorWizardController", :enable_schoo
 private
 
   def path_for_step(step)
-    "/school/confirm-existing-induction-tutor/#{step}"
+    "/school/induction-tutor/new-induction-tutor/#{step}"
   end
 end
