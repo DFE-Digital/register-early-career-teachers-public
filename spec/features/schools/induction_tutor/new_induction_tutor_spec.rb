@@ -1,4 +1,6 @@
 RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
+  include Features::InductionTutorHelpers
+
   before do
     given_there_is_a_school_with_no_induction_tutor_in_the_service
     and_there_are_contract_periods
