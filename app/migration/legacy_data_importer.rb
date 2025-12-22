@@ -1,4 +1,3 @@
-# TODO: delete this class and use LegacyDataImporterV2 instead
 class LegacyDataImporter
   def prepare!
     migrators.each(&:prepare!)
@@ -25,10 +24,10 @@ class LegacyDataImporter
 private
 
   def migrators
-    Migrators::Base.migrators.reject { |m| m.model.in?(%i[mentor ect]) }
+    Migrators::Base.migrators
   end
 
   def migrators_in_dependency_order
-    Migrators::Base.migrators_in_dependency_order.select { |m| migrators.include?(m) }
+    Migrators::Base.migrators_in_dependency_order
   end
 end
