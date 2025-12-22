@@ -20,7 +20,9 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
       school_partnership:
     )
   end
-  let!(:resource) { FactoryBot.create(:declaration, training_period:) }
+  let(:declaration) { FactoryBot.create(:declaration, training_period:) }
+
+  let(:resource) { declaration }
 
   it_behaves_like "an API index endpoint documentation",
                   {
@@ -40,4 +42,24 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
                     response_description: "A single declaration",
                     response_schema_ref: "#/components/schemas/DeclarationResponse",
                   }
+
+  it_behaves_like "an API update endpoint documentation",
+                  {
+                    url: "/api/v3/participant-declarations/{id}/void",
+                    tag: "Declarations",
+                    resource_description: "Void a declaration",
+                    response_description: "The declaration being voided",
+                    response_schema_ref: "#/components/schemas/DeclarationResponse",
+                    accepts_request_body: false
+                  } do
+    let(:params) { {} }
+    let(:declaration) do
+      FactoryBot.create(:declaration, :payable, training_period:)
+    end
+
+    let(:invalid_params) { {} }
+    let(:invalid_resource) do
+      FactoryBot.create(:declaration, :voided, training_period:)
+    end
+  end
 end
