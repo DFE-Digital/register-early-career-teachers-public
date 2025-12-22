@@ -14,8 +14,22 @@ RSpec.describe "Admin finance statements index", type: :request do
       end
     end
 
-    context "when signed in as a DfE user" do
+    context "when signed in as a non-finance DfE user" do
       include_context "sign in as DfE user"
+
+      it "requires authorisation with the finance access error message" do
+        get "/admin/finance/statements"
+
+        expect(response.status).to eq(401)
+
+        expect(response.body).to include(
+          "This is to access financial information for Register early career teachers. To gain access, contact the product team."
+        )
+      end
+    end
+
+    context "when signed in as a finance DfE user" do
+      include_context "sign in as finance DfE user"
 
       it "displays the finance page" do
         get "/admin/finance/statements"
@@ -48,10 +62,24 @@ RSpec.describe "Admin finance statements index", type: :request do
       end
     end
 
-    context "when signed in as a DfE user" do
+    context "when signed in as a non-finance DfE user" do
+      include_context "sign in as DfE user"
       let!(:statement) { FactoryBot.create(:statement) }
 
-      include_context "sign in as DfE user"
+      it "requires authorisation with the finance access error message" do
+        get "/admin/finance/statements/#{statement.id}"
+
+        expect(response.status).to eq(401)
+
+        expect(response.body).to include(
+          "This is to access financial information for Register early career teachers. To gain access, contact the product team."
+        )
+      end
+    end
+
+    context "when signed in as a DfE finance user" do
+      include_context "sign in as finance DfE user"
+      let!(:statement) { FactoryBot.create(:statement) }
 
       it "displays the finance page" do
         get "/admin/finance/statements/#{statement.id}"

@@ -23,8 +23,8 @@ FactoryBot.define do
     trn { Faker::Number.unique.number(digits: 7) }
     full_name { Faker::FunnyName.two_word_name }
     user_id { SecureRandom.uuid }
-    created_at { Random.rand(12).months.ago }
-    updated_at { Random.rand(30).days.ago }
+    created_at { 12.months.ago }
+    updated_at { 6.months.ago }
 
     initialize_with { new(trn:, full_name:, user_id:, created_at:, updated_at:) }
   end
@@ -32,7 +32,7 @@ FactoryBot.define do
   factory :ecf1_teacher_history_profile_state_row, class: "ECF1TeacherHistory::ProfileStateRow" do
     state { "active" }
     reason { nil }
-    created_at { Random.rand(12).months.ago }
+    created_at { 12.months.ago }
 
     initialize_with { new(state:, reason:, created_at:) }
   end
@@ -73,7 +73,7 @@ FactoryBot.define do
     start_date { Date.new(cohort_year, 9, 1) }
     end_date { Date.new(cohort_year + 2, 6, 1) }
     created_at { start_date }
-    updated_at { Random.rand(30).days.ago }
+    updated_at { 6.months.ago }
     school_urn { Faker::Number.unique.number(digits: 6).to_s }
     schedule_info { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
     preferred_identity_email { Faker::Internet.unique.email(name: full_name) }
@@ -121,15 +121,17 @@ FactoryBot.define do
     end
 
     participant_profile_id { SecureRandom.uuid }
+    migration_mode { "all_induction_records" }
     induction_start_date { Date.new(cohort_year, 9, 1) }
     induction_completion_date { nil }
     created_at { Date.new(cohort_year, 9, 1) }
-    updated_at { Random.rand(30).days.ago }
+    updated_at { 6.months.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
     induction_records { [] }
 
     initialize_with do
       new(participant_profile_id:,
+          migration_mode:,
           induction_start_date:,
           induction_completion_date:,
           created_at:,
@@ -149,15 +151,17 @@ FactoryBot.define do
     end
 
     participant_profile_id { SecureRandom.uuid }
+    migration_mode { "latest_induction_records" }
     mentor_completion_date { nil }
     mentor_completion_reason { nil }
     created_at { Date.new(cohort_year, 9, 1) }
-    updated_at { Random.rand(30).days.ago }
+    updated_at { 6.months.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
     induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)] }
 
     initialize_with do
       new(participant_profile_id:,
+          migration_mode:,
           mentor_completion_date:,
           mentor_completion_reason:,
           created_at:,

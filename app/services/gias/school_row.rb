@@ -16,9 +16,8 @@ module GIAS
         address_line3:,
         administrative_district_name:,
         closed_on:,
+        eligible:,
         establishment_number:,
-        funding_eligibility:,
-        induction_eligibility:,
         in_england:,
         local_authority_code:,
         name:,
@@ -52,27 +51,15 @@ module GIAS
       @administrative_district_name ||= data.fetch("DistrictAdministrative (name)")
     end
 
-    def cip_only_type?
-      @cip_only_type ||= GIAS::Types::CIP_ONLY_EXCEPT_WELSH.include?(type_name)
-    end
-
     def closed_on
       @closed_on ||= data.fetch("CloseDate")
     end
 
-    def eligible_for_cip?
-      funding_eligibility == :eligible_for_cip
+    def eligible
+      @eligible ||= open? && in_england? && (eligible_type? || (independent_school_type? && section_41_approved?))
     end
 
-    def eligible_for_fip?
-      funding_eligibility == :eligible_for_fip
-    end
-
-    def eligible_for_registration?
-      @eligible_for_registration ||= eligible_for_fip? || eligible_for_cip?
-    end
-
-    alias_method :induction_eligibility, :eligible_for_registration?
+    alias_method :eligible?, :eligible
 
     def eligible_type?
       @eligible_type ||= GIAS::Types::ELIGIBLE_TYPES.include?(type_name)
@@ -80,10 +67,6 @@ module GIAS
 
     def establishment_number
       @establishment_number ||= data.fetch("EstablishmentNumber").presence
-    end
-
-    def funding_eligibility
-      @funding_eligibility ||= determine_funding_eligibility
     end
 
     def independent_school_type?
@@ -156,15 +139,6 @@ module GIAS
 
     def website
       @website ||= data.fetch("SchoolWebsite").presence
-    end
-
-  private
-
-    def determine_funding_eligibility
-      return :eligible_for_fip if open? && in_england? && (eligible_type? || (independent_school_type? && section_41_approved?))
-      return :eligible_for_cip if open? && cip_only_type? && !section_41_approved?
-
-      :ineligible
     end
   end
 end

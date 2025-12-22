@@ -4,6 +4,7 @@ class ECF1TeacherHistory
   User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at)
 
   ECT = Struct.new(:participant_profile_id,
+                   :migration_mode,
                    :created_at,
                    :updated_at,
                    :induction_start_date,
@@ -15,6 +16,7 @@ class ECF1TeacherHistory
                    :induction_records)
 
   Mentor = Struct.new(:participant_profile_id,
+                      :migration_mode,
                       :created_at,
                       :updated_at,
                       :mentor_completion_date,
@@ -79,9 +81,19 @@ class ECF1TeacherHistory
     new(user:, ect:, mentor:, participant_identity_updated_ats:)
   end
 
+  def self.build_appropriate_body(induction_record:)
+    appropriate_body = induction_record.appropriate_body
+    return if appropriate_body.blank?
+
+    Types::AppropriateBodyData.new(ecf1_id: appropriate_body.id, name: appropriate_body.name)
+  end
+
   def self.build_ect_data(participant_profile:)
+    migration_mode = migration_mode(participant_profile:)
+
     ECT.new(
       participant_profile_id: participant_profile.id,
+      migration_mode:,
       created_at: participant_profile.created_at,
       updated_at: participant_profile.updated_at,
       induction_start_date: participant_profile.induction_start_date,
@@ -90,20 +102,65 @@ class ECF1TeacherHistory
       sparsity_uplift: participant_profile.sparsity_uplift,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_record_rows(participant_profile:)
+      induction_records: build_induction_record_rows(participant_profile:, migration_mode:)
+    )
+  end
+
+  # Build rows for all the induction records of the participant
+  def self.build_induction_record_rows(participant_profile:, migration_mode:)
+    row_matches = ->(rows, row) do
+      rows.any? do |r|
+        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school_urn, r.cohort_year] ==
+          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school_urn, row.cohort_year]
+      end
+    end
+
+    rows = participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
+      build_induction_record_row(induction_record:)
+    end
+
+    if migration_mode == "latest_induction_records"
+      rows.reverse.each_with_object([]) do |row, result|
+        result.unshift(row) unless row_matches.call(result, row)
+      end
+    else
+      rows
+    end
+  end
+
+  def self.build_induction_record_row(induction_record:)
+    InductionRecordRow.new(
+      induction_record_id: induction_record.id,
+      start_date: induction_record.start_date,
+      end_date: induction_record.end_date,
+      created_at: induction_record.created_at,
+      updated_at: induction_record.updated_at,
+      cohort_year: induction_record.schedule.cohort.start_year,
+      school_urn: induction_record.induction_programme.school_cohort.school.urn,
+      schedule_info: build_schedule_info(schedule: induction_record.schedule),
+      preferred_identity_email: induction_record.preferred_identity.email,
+      mentor_profile_id: induction_record.mentor_profile_id,
+      training_status: induction_record.training_status,
+      induction_status: induction_record.induction_status,
+      training_programme: induction_record.induction_programme.training_programme,
+      training_provider_info: build_training_provider_info(induction_record:),
+      appropriate_body: build_appropriate_body(induction_record:)
     )
   end
 
   def self.build_mentor_data(participant_profile:)
+    migration_mode = migration_mode(participant_profile:)
+
     Mentor.new(
       participant_profile_id: participant_profile.id,
+      migration_mode:,
       created_at: participant_profile.created_at,
       updated_at: participant_profile.updated_at,
       mentor_completion_date: participant_profile.mentor_completion_date,
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_record_rows(participant_profile:)
+      induction_records: build_induction_record_rows(participant_profile:, migration_mode:)
     )
   end
 
@@ -113,26 +170,13 @@ class ECF1TeacherHistory
     end
   end
 
-  def self.build_induction_record_rows(participant_profile:)
-    participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
-      InductionRecordRow.new(
-        induction_record_id: induction_record.id,
-        start_date: induction_record.start_date,
-        end_date: induction_record.end_date,
-        created_at: induction_record.created_at,
-        updated_at: induction_record.updated_at,
-        cohort_year: induction_record.schedule.cohort.start_year,
-        school_urn: induction_record.induction_programme.school_cohort.school.urn,
-        schedule_info: build_schedule_info(schedule: induction_record.schedule),
-        preferred_identity_email: induction_record.preferred_identity.email,
-        mentor_profile_id: induction_record.mentor_profile_id,
-        training_status: induction_record.training_status,
-        induction_status: induction_record.induction_status,
-        training_programme: induction_record.induction_programme.training_programme,
-        training_provider_info: build_training_provider_info(induction_record:),
-        appropriate_body: build_appropriate_body(induction_record:)
-      )
-    end
+  def self.build_schedule_info(schedule:)
+    Types::ScheduleInfo.new(
+      schedule_id: schedule.id,
+      identifier: schedule.schedule_identifier,
+      name: schedule.name,
+      cohort_year: schedule.cohort.start_year
+    )
   end
 
   def self.build_training_provider_info(induction_record:)
@@ -152,19 +196,10 @@ class ECF1TeacherHistory
     )
   end
 
-  def self.build_appropriate_body(induction_record:)
-    appropriate_body = induction_record.appropriate_body
-    return if appropriate_body.blank?
+  def self.migration_mode(participant_profile:)
+    return "latest_induction_records" if participant_profile.more_than_two_induction_records?
+    return "latest_induction_records" if participant_profile.two_induction_records_that_overlap?
 
-    Types::AppropriateBodyData.new(ecf1_id: appropriate_body.id, name: appropriate_body.name)
-  end
-
-  def self.build_schedule_info(schedule:)
-    Types::ScheduleInfo.new(
-      schedule_id: schedule.id,
-      identifier: schedule.schedule_identifier,
-      name: schedule.name,
-      cohort_year: schedule.cohort.start_year
-    )
+    "all_induction_records"
   end
 end

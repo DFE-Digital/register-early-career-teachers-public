@@ -7,6 +7,71 @@ externalDocs:
   description: Find out more about Swagger
   url: https://swagger.io/
 paths:
+  "/api/v3/participant-declarations":
+    get:
+      summary: Retrieve multiple declarations
+      tags:
+      - Declarations
+      security:
+      - api_key: []
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/DeclarationsFilter"
+        style: deepObject
+      - name: page
+        in: query
+        required: false
+        schema:
+          "$ref": "#/components/schemas/PaginationFilter"
+        style: deepObject
+      responses:
+        '200':
+          description: A list of declarations
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeclarationsResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+  "/api/v3/participant-declarations/{id}":
+    get:
+      summary: Retrieve a single declaration
+      tags:
+      - Declarations
+      security:
+      - api_key: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          "$ref": "#/components/schemas/IDAttribute"
+      responses:
+        '200':
+          description: A single declaration
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeclarationResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UnauthorisedResponse"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/NotFoundResponse"
   "/api/v3/delivery-partners":
     get:
       summary: Retrieve multiple delivery partners
@@ -1310,6 +1375,192 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Statement"
+    Declaration:
+      description: A participant declaration.
+      type: object
+      required:
+      - id
+      - type
+      - attributes
+      properties:
+        id:
+          "$ref": "#/components/schemas/IDAttribute"
+        type:
+          description: The data type.
+          type: string
+          example: participant-declaration
+          enum:
+          - participant-declaration
+        attributes:
+          properties:
+            participant_id:
+              description: The unique identifier of the participant.
+              type: string
+              format: uuid
+              nullable: false
+              example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562
+            declaration_type:
+              description: The event declaration type.
+              type: string
+              nullable: false
+              enum:
+              - started
+              - retained-1
+              - retained-2
+              - retained-3
+              - retained-4
+              - extended-1
+              - extended-2
+              - extended-3
+              - completed
+              example: started
+            declaration_date:
+              description: The event declaration date.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            course_identifier:
+              description: The type of course the participant is enrolled in.
+              type: string
+              nullable: false
+              enum:
+              - ecf-induction
+              - ecf-mentor
+              example: ecf-induction
+            state:
+              description: Indicates the state of this payment declaration.
+              type: string
+              nullable: false
+              enum:
+              - submitted
+              - eligible
+              - payable
+              - paid
+              - voided
+              - ineligible
+              - awaiting_clawback
+              - clawed_back
+              example: submitted
+            updated_at:
+              description: The date the declaration was last updated.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            created_at:
+              description: The date the declaration was created.
+              type: string
+              format: date-time
+              nullable: false
+              example: '2021-05-31T02:22:32.000Z'
+            delivery_partner_id:
+              description: Unique ID of the delivery partner associated with the participant
+                at the time the declaration was created.
+              type: string
+              format: uuid
+              nullable: false
+              example: 9e35e998-c63a-4136-89c4-e9e18e72e887
+            statement_id:
+              description: Unique ID of the statement the declaration will be paid
+                as part of.
+              type: string
+              format: uuid
+              nullable: true
+              example: cd3a12347-7308-4879-942a-c4a70ced400a
+            clawback_statement_id:
+              description: Unique ID of the statement to which the declaration will
+                be clawed back on, if any.
+              type: string
+              format: uuid
+              nullable: true
+              example:
+            ineligible_for_funding_reason:
+              description: If the declaration is ineligible, the reason why.
+              type: string
+              nullable: true
+              enum:
+              - duplicate_declaration
+              example:
+            mentor_id:
+              description: Unique ID of the ECT’s mentor.
+              type: string
+              format: uuid
+              nullable: true
+              example:
+            uplift_paid:
+              description: If participant is eligible for uplift, whether it has been
+                paid as part of this declaration.
+              type: boolean
+              nullable: false
+              example: false
+            evidence_held:
+              description: The type of evidence the lead provider holds on their platform
+                to demonstrate the participant has met the retention criteria for
+                the current milestone period. For retained-2 declarations, providers
+                will need to confirm if the engagement threshold has been reached
+                and only accept either the ‘75-percent-engagement-met’ or ‘75-percent-engagement-met-reduced-induction’
+                values.
+              type: string
+              nullable: true
+              enum:
+              - training-event-attended
+              - self-study-material-completed
+              - materials-engaged-with-offline
+              - 75-percent-engagement-met
+              - 75-percent-engagement-met-reduced-induction
+              - one-term-induction
+              - other
+              example: training-event-attended
+            lead_provider_name:
+              description: The name of the provider that submitted the declaration.
+              type: string
+              nullable: false
+              example: Example Provider
+    DeclarationsFilter:
+      description: Refine participant declarations to return.
+      type: object
+      properties:
+        cohort:
+          description: Return participant declarations associated to the specified
+            cohort or cohorts. This is a comma delimited string of years.
+          type: string
+          example: '2021,2022'
+        participant_id:
+          description: Return participant declarations associated to the specified
+            participant ID. This is a comma delimited string where multiple participant
+            IDs can be specified.
+          type: string
+          example: 7a8fef46-3c43-42c0-b3d5-1ba5904ba562,7e727981-db9d-40d7-9e42-27eff7d66a19
+        delivery_partner_id:
+          description: Return participant declarations associated to the specified
+            delivery partner or delivery partners. This is a comma delimited string
+            of delivery partner IDs.
+          type: string
+          example: 42a9ef2f-9059-400a-92ff-4830a629d0c5,92f6e54b-57fe-4a62-89cc-e83d6b0f734b
+        updated_since:
+          description: Return only records that have been updated since this date
+            and time (ISO 8601 date format).
+          type: string
+          example: '2021-05-13T11:21:55Z'
+    DeclarationResponse:
+      description: A participant declaration.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          "$ref": "#/components/schemas/Declaration"
+    DeclarationsResponse:
+      description: A list of participant declarations.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Declaration"
     DeliveryPartner:
       description: A delivery partner.
       type: object

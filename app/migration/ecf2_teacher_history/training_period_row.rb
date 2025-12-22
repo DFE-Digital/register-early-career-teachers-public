@@ -12,7 +12,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
               :withdrawal_reason,
               :created_at,
               :ecf_start_induction_record_id,
-              :is_ect
+              :is_ect,
+              :school_urn
 
   def initialize(started_on:,
                  finished_on:,
@@ -27,7 +28,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
                  withdrawn_at: nil,
                  withdrawal_reason: nil,
                  ecf_start_induction_record_id: nil,
-                 is_ect: false)
+                 is_ect: false,
+                 school_urn: nil)
     @started_on = started_on
     @finished_on = finished_on
     @created_at = created_at
@@ -42,6 +44,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
     @withdrawal_reason = withdrawal_reason
     @ecf_start_induction_record_id = ecf_start_induction_record_id
     @is_ect = is_ect
+    @school_urn = school_urn
   end
 
   def to_hash
@@ -55,12 +58,46 @@ class ECF2TeacherHistory::TrainingPeriodRow
     }
   end
 
-  # FIXME: the school here is from one level up, perhaps there's a nicer way of cross-referencing?
-  def school_partnership(school:)
-    SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
+  def school_partnership
+    validate_active_lead_provider_exists!
+    validate_lead_provider_delivery_partnership_exists!
+
+    partnership = SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
       .school_partnerships
       .first
-      .then { |school_partnership| { school_partnership: } }
+
+    if partnership.nil?
+      raise ActiveRecord::RecordNotFound, "No SchoolPartnership found for training period"
+    end
+
+    { school_partnership: partnership }
+  end
+
+  def validate_active_lead_provider_exists!
+    return if lead_provider.nil?
+
+    active_lead_provider = ActiveLeadProvider.find_by(lead_provider:, contract_period_year:)
+    if active_lead_provider.nil?
+      raise ActiveRecord::RecordNotFound,
+            "No ActiveLeadProvider found for lead_provider_id #{lead_provider.id} and contract_period_year #{contract_period_year}"
+    end
+  end
+
+  def validate_lead_provider_delivery_partnership_exists!
+    return if lead_provider.nil? || delivery_partner.nil?
+
+    active_lead_provider = ActiveLeadProvider.find_by(lead_provider:, contract_period_year:)
+    return if active_lead_provider.nil?
+
+    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.find_by(active_lead_provider:, delivery_partner:)
+    if lead_provider_delivery_partnership.nil?
+      raise ActiveRecord::RecordNotFound,
+            "No LeadProviderDeliveryPartnership found for active_lead_provider_id #{active_lead_provider.id} and delivery_partner_id #{delivery_partner.id}"
+    end
+  end
+
+  def school
+    @school ||= GIAS::School.find_by!(urn: school_urn).school
   end
 
   def ecf2_schedule

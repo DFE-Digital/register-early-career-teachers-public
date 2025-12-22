@@ -23,4 +23,8 @@ class User < ApplicationRecord
 
   # Scopes
   scope :alphabetical, -> { order(name: :asc) }
+
+  def finance_access?
+    finance?
+  end
 end

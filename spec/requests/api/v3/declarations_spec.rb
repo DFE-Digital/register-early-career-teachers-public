@@ -1,45 +1,131 @@
-RSpec.describe "Participant declarations API", type: :request do
-  describe "#create" do
-    let(:path) { api_v3_declarations_path }
+RSpec.describe "Declarations API", :with_metadata, type: :request do
+  let(:serializer) { API::DeclarationSerializer }
+  let(:serializer_options) { { lead_provider_id: lead_provider.id } }
+  let(:query) { API::Declarations::Query }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let(:lead_provider) { active_lead_provider.lead_provider }
 
-    it_behaves_like "a token authenticated endpoint", :post
+  def create_resource(active_lead_provider:, teacher: nil, declaration_trait: :no_payment)
+    lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+    school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+    teacher ||= FactoryBot.create(:teacher)
 
-    it "returns method not allowed" do
-      authenticated_api_post path
-      expect(response).to be_method_not_allowed
-    end
+    ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil, teacher:, school: school_partnership.school)
+    training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:)
+
+    declaration = FactoryBot.create(:declaration, declaration_trait, training_period:)
+    declaration.payment_statement&.update!(active_lead_provider:)
+    declaration
   end
 
   describe "#index" do
     let(:path) { api_v3_declarations_path }
 
-    it_behaves_like "a token authenticated endpoint", :get
-
-    it "returns method not allowed" do
-      authenticated_api_get path
-      expect(response).to be_method_not_allowed
+    def apply_expected_order(resources)
+      resources.sort_by(&:created_at)
     end
+
+    it_behaves_like "a token authenticated endpoint", :get
+    it_behaves_like "an index endpoint"
+    it_behaves_like "a paginated endpoint"
+    it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
+    it_behaves_like "a filter by delivery_partner_id endpoint"
+    it_behaves_like "a filter by participant_id endpoint"
+    it_behaves_like "a filter by updated_since endpoint", updated_at_column: :updated_at
   end
 
   describe "#show" do
-    let(:path) { api_v3_declaration_path(123) }
+    let(:resource) { create_resource(active_lead_provider:) }
+    let(:path_id) { resource.api_id }
+    let(:path) { api_v3_declaration_path(path_id) }
 
     it_behaves_like "a token authenticated endpoint", :get
+    it_behaves_like "a show endpoint"
+    it_behaves_like "a does not filter by cohort endpoint"
+    it_behaves_like "a does not filter by delivery_partner_id endpoint"
+    it_behaves_like "a does not filter by participant_id endpoint"
+    it_behaves_like "a does not filter by updated_since endpoint"
+  end
 
-    it "returns method not allowed" do
-      authenticated_api_get path
-      expect(response).to be_method_not_allowed
+  describe "#create" do
+    let(:path) { api_v3_declarations_path }
+    let(:service) { API::Declarations::Create }
+    let(:resource_type) { Declaration }
+    let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+    let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:schedule) { FactoryBot.create(:schedule, contract_period: school_partnership.contract_period) }
+    let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
+    let(:declaration_date) { Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date) }
+
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        declaration_date: declaration_date.rfc3339,
+        declaration_type: "started",
+        evidence_type: "other",
+        teacher_api_id: teacher.api_id,
+        teacher_type:
+      }
+    end
+
+    let(:params) do
+      {
+        data: {
+          type: "participant-declaration",
+          attributes: {
+            participant_id: teacher.api_id,
+            declaration_type: "started",
+            declaration_date: declaration_date.rfc3339,
+            course_identifier:,
+            evidence_held: "other"
+          }
+        }
+      }
+    end
+
+    %i[ect mentor].each do |teacher_type|
+      context "for #{teacher_type}" do
+        let(:at_school_period) { FactoryBot.create(:"#{teacher_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now, teacher:) }
+        let!(:training_period) { FactoryBot.create(:training_period, :"for_#{teacher_type}", :active, "#{teacher_type}_at_school_period": at_school_period, started_on: at_school_period.started_on.tomorrow, finished_on: at_school_period.finished_on, school_partnership:, schedule:) }
+        let(:course_identifier) { teacher_type == :ect ? "ecf-induction" : "ecf-mentor" }
+        let(:teacher_type) { teacher_type }
+
+        it_behaves_like "a token authenticated endpoint", :post
+        it_behaves_like "an API create endpoint"
+      end
     end
   end
 
   describe "#void" do
-    let(:path) { api_v3_declaration_void_path(123) }
+    let(:path) { void_api_v3_declaration_path(resource.api_id) }
+    let(:resource_type) { Declaration }
+    let(:service_args) do
+      {
+        lead_provider_id: lead_provider.id,
+        declaration_api_id: resource.api_id
+      }
+    end
+    let(:params) { {} }
 
-    it_behaves_like "a token authenticated endpoint", :put
+    context "when the declaration has been paid" do
+      let(:resource) do
+        create_resource(active_lead_provider:, declaration_trait: :paid)
+      end
+      let(:service) { API::Declarations::Clawback }
 
-    it "returns method not allowed" do
-      authenticated_api_put path
-      expect(response).to be_method_not_allowed
+      it_behaves_like "a token authenticated endpoint", :put
+      it_behaves_like "an API update endpoint", accepts_request_body: false
+    end
+
+    context "when the declaration has not been paid" do
+      let(:resource) do
+        create_resource(active_lead_provider:, declaration_trait: :payable)
+      end
+      let(:service) { API::Declarations::Void }
+
+      it_behaves_like "a token authenticated endpoint", :put
+      it_behaves_like "an API update endpoint", accepts_request_body: false
     end
   end
 end
