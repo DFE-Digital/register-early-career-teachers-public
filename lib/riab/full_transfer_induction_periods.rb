@@ -9,30 +9,17 @@ module RIAB
       configure_table_print(:csv)
 
       events = events_for(inductions)
-
-      Rails.logger.debug "-------------------"
-      Rails.logger.debug "Will transfer #{inductions.count} induction periods"
-      Rails.logger.debug "Will transfer #{events.count} events"
-
-      total_count
       export_summary_for(events)
 
       InductionPeriod.transaction do
-        Rails.logger.debug "-------------------"
-        Rails.logger.debug "Starting transfer..."
-
         inductions.each do |induction_period|
           transfer_induction_period(induction_period)
           induction_period.events.each { |event| transfer_event(event) }
         end
 
         export_summary_for(events_for(inductions))
-        total_count
 
-        if rollback
-          Rails.logger.debug "Rolling back..."
-          raise ActiveRecord::Rollback
-        end
+        raise ActiveRecord::Rollback if rollback
       end
     end
 
