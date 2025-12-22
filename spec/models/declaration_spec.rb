@@ -364,10 +364,10 @@ describe Declaration do
           "retained-2": "retained-2",
           "retained-3": "retained-3",
           "retained-4": "retained-4",
+          completed: "completed",
           "extended-1": "extended-1",
           "extended-2": "extended-2",
           "extended-3": "extended-3",
-          completed: "completed"
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: false)
