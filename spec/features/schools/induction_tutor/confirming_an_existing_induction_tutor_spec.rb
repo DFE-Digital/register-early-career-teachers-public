@@ -1,4 +1,6 @@
 RSpec.describe "Confirming an existing induction tutor", :enable_schools_interface do
+  include Features::InductionTutorHelpers
+
   before do
     given_there_is_a_school_in_the_service
     and_there_are_contract_periods
