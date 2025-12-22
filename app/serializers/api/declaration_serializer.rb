@@ -28,7 +28,8 @@ class API::DeclarationSerializer < Blueprinter::Base
 
     field(:ineligible_for_funding_reason) do |declaration|
       if declaration.payment_status_ineligible?
-        declaration.ineligibility_reason
+        reason = declaration.ineligibility_reason
+        reason == "duplicate" ? "duplicate_declaration" : reason
       end
     end
 

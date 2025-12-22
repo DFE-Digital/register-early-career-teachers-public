@@ -1,5 +1,5 @@
 module Admin::Finance
-  class StatementsController < AdminController
+  class StatementsController < Admin::Finance::BaseController
     layout "full"
 
     def index

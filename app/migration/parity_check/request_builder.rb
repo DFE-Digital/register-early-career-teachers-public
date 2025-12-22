@@ -59,7 +59,7 @@ module ParityCheck
     def populate_placeholder(value)
       return value unless PLACEHOLDER_PATTERN.match?(value.to_s)
 
-      dynamic_request_content.fetch(value.delete_prefix(":"))
+      dynamic_request_content.fetch(value.delete_prefix(":")) || "no-value-for-lead-provider"
     end
 
     def formatted_path(app:)

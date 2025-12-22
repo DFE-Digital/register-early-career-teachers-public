@@ -1,9 +1,10 @@
 describe ECTAtSchoolPeriods::Finish do
-  subject { ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:) }
+  subject { ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:, reported_by_school_id:) }
 
   let(:started_on) { 1.year.ago.to_date }
   let(:original_dates) { { started_on:, finished_on: nil } }
   let(:finished_on) { 1.week.from_now.to_date }
+  let(:reported_by_school_id) { nil }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, **original_dates) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **original_dates) }
   let!(:training_period) { FactoryBot.create(:training_period, **original_dates, ect_at_school_period:) }
@@ -26,9 +27,14 @@ describe ECTAtSchoolPeriods::Finish do
       let(:existing_finished_on) { 1.month.ago.to_date }
       let(:original_dates) { { started_on:, finished_on: existing_finished_on } }
       let(:finished_on) { Date.current }
+      let(:reported_by_school_id) { ect_at_school_period.school_id }
 
       it "does not overwrite the existing finished_on" do
         expect { subject.finish! }.not_to(change { ect_at_school_period.reload.finished_on })
+      end
+
+      it "stores the reporting school id" do
+        expect { subject.finish! }.to change { ect_at_school_period.reload.reported_leaving_by_school_id }.to(reported_by_school_id)
       end
     end
 
@@ -38,6 +44,16 @@ describe ECTAtSchoolPeriods::Finish do
       ect_at_school_period.reload
 
       expect(ect_at_school_period.finished_on).to eql(finished_on)
+    end
+
+    context "when reported_by_school_id is provided" do
+      let(:reported_by_school_id) { ect_at_school_period.school_id }
+
+      it "stores the reporting school id" do
+        subject.finish!
+
+        expect(ect_at_school_period.reload.reported_leaving_by_school_id).to eq(reported_by_school_id)
+      end
     end
 
     it "records an event" do
@@ -51,6 +67,50 @@ describe ECTAtSchoolPeriods::Finish do
     end
 
     describe "closing mentorship periods" do
+      context "when the mentorship period has not started yet" do
+        let(:mentorship_start_date) { finished_on + 1.week }
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: mentorship_start_date
+          )
+        end
+
+        it "deletes the mentorship period" do
+          expect { subject.finish! }.to change(MentorshipPeriod, :count).by(-1)
+        end
+
+        it "deletes any events associated with the mentorship period" do
+          FactoryBot.create(:event, mentorship_period:)
+          FactoryBot.create(:event, mentorship_period:)
+          other_event = FactoryBot.create(:event)
+
+          expect(Event.where(mentorship_period:).count).to eq(2)
+
+          subject.finish!
+
+          expect(Event.where(mentorship_period:)).to be_empty
+          expect(Event.exists?(other_event.id)).to be true
+        end
+      end
+
+      context "when the mentorship period starts on the finished_on date" do
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: finished_on
+          )
+        end
+
+        it "deletes the mentorship period" do
+          expect { subject.finish! }.to change(MentorshipPeriod, :count).by(-1)
+        end
+      end
+
       context "when there is an ongoing mentorship_period" do
         let!(:mentorship_period) do
           FactoryBot.create(

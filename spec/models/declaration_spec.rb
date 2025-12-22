@@ -32,6 +32,13 @@ describe Declaration do
     it { is_expected.to belong_to(:mentorship_period).optional }
     it { is_expected.to belong_to(:payment_statement).optional }
     it { is_expected.to belong_to(:clawback_statement).optional }
+    it { is_expected.to have_one(:lead_provider).through(:training_period) }
+    it { is_expected.to have_one(:delivery_partner).through(:training_period) }
+    it { is_expected.to have_one(:contract_period).through(:training_period) }
+    it { is_expected.to have_one(:ect_at_school_period).through(:training_period) }
+    it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
+    it { is_expected.to have_one(:ect_teacher).through(:ect_at_school_period).source(:teacher) }
+    it { is_expected.to have_one(:mentor_teacher).through(:mentor_at_school_period).source(:teacher) }
   end
 
   describe "delegations" do
@@ -109,7 +116,7 @@ describe Declaration do
 
         it "is not valid" do
           expect(declaration).not_to be_valid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or after the milestone start date for the same declaration type")
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or after the milestone start date for the same declaration type.")
         end
       end
 
@@ -118,7 +125,7 @@ describe Declaration do
 
         it "is not valid" do
           expect(declaration).not_to be_valid
-          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type")
+          expect(declaration.errors[:declaration_date]).to include("Declaration date must be on or before the milestone date for the same declaration type.")
         end
       end
 
@@ -190,6 +197,133 @@ describe Declaration do
         let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: training_period.trainee, finished_on: nil) }
 
         it { is_expected.to be_valid }
+      end
+    end
+
+    describe "declaration type for mentor funding enabled contract periods" do
+      context "when the contract period has mentor_funding_enabled" do
+        before { training_period.contract_period.update(mentor_funding_enabled: true) }
+
+        let(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
+
+        %w[started completed].each do |allowed_type|
+          context "when the declaration_type is #{allowed_type}" do
+            subject { FactoryBot.build(:declaration, training_period:, declaration_type: allowed_type) }
+
+            it { is_expected.to be_valid }
+          end
+        end
+
+        described_class.declaration_types.keys.excluding("started", "completed").each do |disallowed_type|
+          context "when the declaration_type is #{disallowed_type}" do
+            subject { FactoryBot.build(:declaration, training_period:, declaration_type: disallowed_type) }
+
+            it "is not valid" do
+              expect(subject).not_to be_valid
+              expect(subject.errors[:declaration_type]).to include("Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.")
+            end
+
+            context "when the training period is for an ECT" do
+              let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+              it { is_expected.to be_valid }
+            end
+          end
+        end
+      end
+    end
+
+    describe "existing declarations" do
+      subject { FactoryBot.build(:declaration, :eligible, training_period:, declaration_type: :started) }
+
+      let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+      context "when the declaration duplicates an existing declaration" do
+        before { FactoryBot.create(:declaration, :payable, training_period:, declaration_type: :started) }
+
+        it "is not valid" do
+          expect(subject).not_to be_valid
+          expect(subject.errors[:base]).to include("A matching declaration already exists.")
+        end
+      end
+
+      context "when the declaration does not duplicate an existing declaration" do
+        before { FactoryBot.create(:declaration, :voided, training_period:, declaration_type: :completed) }
+
+        it { is_expected.to be_valid }
+      end
+    end
+
+    describe "uplifts absent for mentor declarations" do
+      subject(:declaration) { FactoryBot.build(:declaration, training_period:, sparsity_uplift: true, pupil_premium_uplift: true) }
+
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.month.ago) }
+      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on: 1.month.ago) }
+
+      it "is not valid" do
+        expect(declaration).to be_invalid
+        expect(declaration).to have_one_error_per_attribute
+        expect(declaration).to have_error(:sparsity_uplift, "must be absent for mentor declarations.")
+        expect(declaration).to have_error(:pupil_premium_uplift, "must be absent for mentor declarations.")
+      end
+    end
+  end
+
+  describe "scopes" do
+    describe "payment statuses scopes" do
+      let(:declarations) { described_class.payment_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
+
+      describe ".billable_or_changeable" do
+        let(:billable_declarations) { declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) } }
+
+        it "returns declarations with billable or changeable payment statuses" do
+          expect(described_class.billable_or_changeable).to match_array(billable_declarations)
+        end
+
+        Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
+          context "when clawback_status is `#{clawback_status}`" do
+            before do
+              billable_declarations.each do |d|
+                d.update!(
+                  clawback_status:,
+                  clawback_statement: FactoryBot.create(:statement, :open, contract_period: d.training_period.contract_period)
+                )
+              end
+            end
+
+            it "returns no declarations" do
+              expect(described_class.billable_or_changeable).to be_empty
+            end
+          end
+        end
+      end
+
+      describe ".billable_or_changeable_for_declaration_type" do
+        let(:billable_or_changeable_declarations) { declarations.select { |d| described_class::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.include?(d.payment_status) } }
+
+        it "returns declarations with billable or changeable payment statuses for a specific declaration type" do
+          declaration = billable_or_changeable_declarations.sample
+          declaration.update!(declaration_type: "retained-1")
+
+          expect(described_class.billable_or_changeable_for_declaration_type("retained-1")).to contain_exactly(declaration)
+        end
+
+        Declaration.clawback_statuses.values.excluding("no_clawback").each do |clawback_status|
+          context "when clawback_status is `#{clawback_status}`" do
+            before do
+              billable_or_changeable_declarations.each do |d|
+                d.update!(
+                  clawback_status:,
+                  clawback_statement: FactoryBot.create(:statement, :open, contract_period: d.training_period.contract_period)
+                )
+              end
+            end
+
+            it "returns no declarations" do
+              expect(described_class.billable_or_changeable_for_declaration_type("retained-1")).to be_empty
+            end
+          end
+        end
       end
     end
   end
@@ -348,7 +482,7 @@ describe Declaration do
     end
   end
 
-  describe ".billable_or_changeable?" do
+  describe "#billable_or_changeable?" do
     context "when clawback_status is `no_clawback`" do
       subject(:declaration) { FactoryBot.build(:declaration, clawback_status: "no_clawback", payment_status:) }
 
@@ -378,7 +512,7 @@ describe Declaration do
     end
   end
 
-  describe ".overall_status" do
+  describe "#overall_status" do
     %i[no_payment eligible payable paid voided ineligible awaiting_clawback clawed_back].each do |status|
       context "when status is `#{status}`" do
         let(:declaration) { FactoryBot.create(:declaration, status) }
@@ -390,7 +524,76 @@ describe Declaration do
     end
   end
 
-  describe ".uplift_paid?" do
+  describe "#teacher" do
+    subject(:teacher) { declaration.teacher }
+
+    let(:declaration) { FactoryBot.create(:declaration) }
+
+    it { is_expected.to eq(declaration.training_period.trainee.teacher) }
+
+    context "when training_period is nil" do
+      before { declaration.training_period = nil }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe "#duplicate_declaration_exists?" do
+    let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+    context "when the declaration is not billable/changeable" do
+      subject { FactoryBot.build(:declaration, :voided, training_period:, declaration_type: :started) }
+
+      it { is_expected.not_to be_duplicate_declaration_exists }
+
+      context "when an existing declaration of the same type and state exists" do
+        before { FactoryBot.create(:declaration, :voided, training_period:, declaration_type: :started) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+    end
+
+    context "when the declaration is billable/changeable" do
+      subject { FactoryBot.build(:declaration, :payable, training_period:, declaration_type: :started) }
+
+      it { is_expected.not_to be_duplicate_declaration_exists }
+
+      context "when an existing, billable/changeable declaration of the same type exists" do
+        before { FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: :started) }
+
+        it { is_expected.to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing, billable/changeable declaration of the same type exists for another teacher" do
+        before { FactoryBot.create(:declaration, :eligible, declaration_type: :started) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing, billable/changeable declaration of the same type exists for the other teacher type" do
+        before { FactoryBot.create(:declaration, :eligible, training_period: other_type_training_period, declaration_type: :started) }
+
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: training_period.trainee.teacher, started_on: 1.month.ago, finished_on: nil) }
+        let(:other_type_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing declaration of a different type exists" do
+        before { FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: :completed) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+
+      context "when an existing declaration of a non-billable/changeable type exists" do
+        before { FactoryBot.create(:declaration, :clawed_back, training_period:, declaration_type: :started) }
+
+        it { is_expected.not_to be_duplicate_declaration_exists }
+      end
+    end
+  end
+
+  describe "#uplift_paid?" do
     subject(:declaration) { FactoryBot.build(:declaration, training_period:, declaration_type:, payment_status:, sparsity_uplift:, pupil_premium_uplift:) }
 
     let(:training_period) { FactoryBot.build_stubbed(:training_period) }
@@ -440,6 +643,55 @@ describe Declaration do
       before { allow(training_period).to receive(:for_ect?).and_return(false) }
 
       it { expect(declaration.uplift_paid?).to be(false) }
+    end
+  end
+
+  describe "#voidable_payment?" do
+    Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
+      context "when payment_status is `#{status}`" do
+        subject(:declaration) do
+          FactoryBot.build_stubbed(:declaration, payment_status: status)
+        end
+
+        it { is_expected.to be_voidable_payment }
+      end
+    end
+
+    Declaration.payment_statuses.values.excluding(Declaration::VOIDABLE_PAYMENT_STATUSES).each do |status|
+      context "when payment_status is `#{status}`" do
+        subject(:declaration) do
+          FactoryBot.build_stubbed(:declaration, payment_status: status)
+        end
+
+        it { is_expected.not_to be_voidable_payment }
+      end
+    end
+  end
+
+  describe ".milestone" do
+    subject { declaration.milestone }
+
+    context "when there is no training_period" do
+      let(:declaration) { FactoryBot.build(:declaration, :started, training_period: nil) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when schedule exists but no milestone for `declaration_type`" do
+      let(:training_period) { FactoryBot.create(:training_period) }
+      let(:declaration) { FactoryBot.create(:declaration, :started, training_period:) }
+
+      before { FactoryBot.create(:milestone, declaration_type: "retained-1", schedule: training_period.schedule) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when milestone exists for `declaration_type`" do
+      let(:training_period) { FactoryBot.create(:training_period) }
+      let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule: training_period.schedule) }
+      let(:declaration) { FactoryBot.create(:declaration, :started, training_period:, declaration_date: Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)) }
+
+      it { is_expected.to eq(milestone) }
     end
   end
 end

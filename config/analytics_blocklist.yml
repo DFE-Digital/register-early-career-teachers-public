@@ -146,7 +146,6 @@
   - urn
   - name
   - status
-  - funding_eligibility
   - address_line1
   - address_line2
   - address_line3
@@ -166,8 +165,8 @@
   - type_name
   - ukprn
   - website
-  - induction_eligibility
   - in_england
+  - eligible
   :users:
   - id
   - name
@@ -219,6 +218,7 @@
   - induction_tutor_name
   - induction_tutor_email
   - api_id
+  - marked_as_eligible
   :school_partnerships:
   - id
   - created_at
@@ -234,10 +234,12 @@
   - corrected_name
   - trs_first_name
   - trs_last_name
+  - mentor_migration_mode
   - mentor_became_ineligible_for_funding_on
   - mentor_became_ineligible_for_funding_reason
   - ect_payments_frozen_year
   - mentor_payments_frozen_year
+  - ect_migration_mode
   - ect_pupil_premium_uplift
   - ect_sparsity_uplift
   - ect_first_became_eligible_for_training_at
@@ -325,6 +327,7 @@
   - ecf_start_induction_record_id
   - ecf_end_induction_record_id
   - email
+  - reported_leaving_by_school_id
   :lead_providers:
   - id
   - ecf_id
@@ -381,6 +384,7 @@
   - email
   - school_reported_appropriate_body_id
   - training_programme
+  - reported_leaving_by_school_id
   :delivery_partners:
   - id
   - name

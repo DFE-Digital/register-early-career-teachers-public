@@ -33,15 +33,9 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:identifier) { :school_id }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, active_lead_provider:) }
-      let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
+      let!(:school) { FactoryBot.create(:school, :eligible) }
 
-      before do
-        # Ineligible school
-        FactoryBot.create(:school, :ineligible, :not_cip_only)
-          .tap { it.gias_school.update!(funding_eligibility: :ineligible) }
-        # CIP only school
-        FactoryBot.create(:school, :eligible, :cip_only)
-      end
+      before { FactoryBot.create(:school, :ineligible) }
 
       it { is_expected.to eq(school.api_id) }
     end
@@ -74,6 +68,64 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       end
 
       it { is_expected.to eq(ecf_partnership.id) }
+    end
+
+    describe "fetching declarations for voiding" do
+      let(:ecf_cpd_lead_provider) { FactoryBot.create(:migration_cpd_lead_provider, lead_provider: ecf_lead_provider) }
+      let(:ecf_lead_provider) { FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id) }
+      let!(:ecf_participant_declaration) { FactoryBot.create(:migration_participant_declaration, state:, cpd_lead_provider: ecf_cpd_lead_provider) }
+      let!(:ecf_statement) { FactoryBot.create(:migration_statement, output_fee: true, cpd_lead_provider: ecf_cpd_lead_provider, deadline_date: 1.month.from_now) }
+
+      before do
+        # Participant declaration for different lead provider should not be used.
+        FactoryBot.create(:migration_participant_declaration, state:)
+
+        # Participant declaration for same lead provider but different state should not be used.
+        different_state = (%i[paid voided submitted eligible payable ineligible awaiting_clawback clawed_back] - possible_states).sample
+        FactoryBot.create(:migration_participant_declaration, state: different_state, cpd_lead_provider: ecf_cpd_lead_provider)
+      end
+
+      context "when fetching `paid_declaration_for_clawback_id`" do
+        let(:identifier) { :paid_declaration_for_clawback_id }
+        let(:possible_states) { [state] }
+        let(:state) { :paid }
+
+        it { is_expected.to eq(ecf_participant_declaration.id) }
+
+        context "when there is no output fee statement in the future" do
+          before { ecf_statement.update!(deadline_date: 1.month.ago) }
+
+          it { is_expected.to be_nil }
+        end
+      end
+
+      context "when fetching `voidable_declaration_for_voiding_id`" do
+        let(:identifier) { :voidable_declaration_for_voiding_id }
+        let(:possible_states) { %i[submitted eligible payable ineligible] }
+        let(:state) { possible_states.sample }
+
+        it { is_expected.to eq(ecf_participant_declaration.id) }
+
+        context "when there is no output fee statement in the future" do
+          before { ecf_statement.update!(deadline_date: 1.month.ago) }
+
+          it { is_expected.to be_nil }
+        end
+      end
+
+      context "when fetching `already_voided_declaration_for_voiding_id`" do
+        let(:identifier) { :already_voided_declaration_for_voiding_id }
+        let(:possible_states) { [state] }
+        let(:state) { :voided }
+
+        it { is_expected.to eq(ecf_participant_declaration.id) }
+
+        context "when there is no output fee statement in the future" do
+          before { ecf_statement.update!(deadline_date: 1.month.ago) }
+
+          it { is_expected.to be_nil }
+        end
+      end
     end
 
     context "when fetching `teacher_api_id`" do
@@ -185,7 +237,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
     context "when fetching partnership_create_body" do
       let(:identifier) { :partnership_create_body }
       let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-      let!(:school) { FactoryBot.create(:school, :eligible, :not_cip_only) }
+      let!(:school) { FactoryBot.create(:school, :eligible) }
 
       before do
         # Disabled contract period
@@ -196,8 +248,6 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         FactoryBot.create(:lead_provider_delivery_partnership)
         # Ineligible school
         FactoryBot.create(:school, :ineligible)
-        # CIP only school
-        FactoryBot.create(:school, :eligible, :cip_only)
       end
 
       it "returns a partnership create body" do

@@ -695,11 +695,11 @@ describe TrainingPeriod do
       end
 
       it "returns training periods for ECTs and Mentors at the school" do
-        expect(TrainingPeriod.at_school(school.id)).to include(ect_training_period, mentor_training_period)
+        expect(TrainingPeriod.at_school(school)).to include(ect_training_period, mentor_training_period)
       end
 
       it "does not return training periods for ECTs and Mentors at other schools" do
-        expect(TrainingPeriod.at_school(school.id)).not_to include(other_training_period)
+        expect(TrainingPeriod.at_school(school)).not_to include(other_training_period)
       end
     end
 
@@ -979,6 +979,42 @@ describe TrainingPeriod do
         it "returns true" do
           expect(subject).to be_truthy
         end
+      end
+    end
+  end
+
+  describe "#eligible_for_funding?" do
+    subject { training_period.eligible_for_funding? }
+
+    let(:teacher) { training_period.trainee.teacher }
+
+    context "when ECT" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+
+      context "when not eligible for funding" do
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(ect_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
+      end
+    end
+
+    context "when Mentor" do
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor) }
+
+      context "when not eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: nil) }
+
+        it { is_expected.to be(false) }
+      end
+
+      context "when eligible for funding" do
+        before { teacher.update!(mentor_first_became_eligible_for_training_at: Time.zone.now) }
+
+        it { is_expected.to be(true) }
       end
     end
   end

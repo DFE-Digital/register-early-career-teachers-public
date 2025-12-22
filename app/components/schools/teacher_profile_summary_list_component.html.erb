@@ -38,7 +38,7 @@
 
   <% list.with_row do |row| %>
     <% row.with_key { "Status" } %>
-    <% row.with_value { ect_status(@ect) } %>
+    <% row.with_value { ect_status(@ect, current_school: @school) } %>
   <% end %>
 
   <% list.with_row do |row| %>

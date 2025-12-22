@@ -93,7 +93,10 @@ class TrainingPeriod < ApplicationRecord
   scope :confirmed, -> { where.not(school_partnership_id: nil) }
   scope :at_school, ->(school) {
     left_outer_joins(:ect_at_school_period, :mentor_at_school_period)
-      .merge(ECTAtSchoolPeriod.for_school(school).or(MentorAtSchoolPeriod.for_school(school)))
+      .where(
+        ECTAtSchoolPeriod.arel_table[:school_id].eq(school.id)
+        .or(MentorAtSchoolPeriod.arel_table[:school_id].eq(school.id))
+      )
   }
   scope :including_school_partnership, -> {
     includes(:school_partnership)
@@ -144,6 +147,14 @@ class TrainingPeriod < ApplicationRecord
       trainee.teacher.finished_induction_period&.complete?
     else
       trainee.teacher.mentor_became_ineligible_for_funding_on.present?
+    end
+  end
+
+  def eligible_for_funding?
+    if for_ect?
+      trainee.teacher.ect_first_became_eligible_for_training_at.present?
+    else
+      trainee.teacher.mentor_first_became_eligible_for_training_at.present?
     end
   end
 

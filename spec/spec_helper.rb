@@ -1,9 +1,12 @@
+require "knapsack"
 require "capybara/rspec"
 require "view_component/test_helpers"
 require "view_component/system_test_helpers"
 require "playwright"
 require "playwright/test"
 require "webmock/rspec"
+
+Knapsack::Adapters::RSpecAdapter.bind
 
 RSpec.configure do |config|
   config.include ViewComponent::TestHelpers, type: :component

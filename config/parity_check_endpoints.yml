@@ -370,6 +370,19 @@ post:
         - challenged_reason
         - status
 put:
+  - "/api/v3/participant-declarations/:id/void":
+      id: ":paid_declaration_for_clawback_id"
+      exclude_lead_providers:
+        - Capita
+  - "/api/v3/participant-declarations/:id/void":
+      id: ":voidable_declaration_for_voiding_id"
+      exclude_lead_providers:
+        - Capita
+  - "/api/v3/participant-declarations/:id/void":
+      id: ":already_voided_declaration_for_voiding_id"
+      exclude_lead_providers:
+        - Capita
+
   - "/api/v3/partnerships/:id":
       ecf_path: "/api/v3/partnerships/ecf/:id"
       id: ":partnership_id"

@@ -62,6 +62,12 @@ RSpec.configure do |config|
           StatementResponse: STATEMENT_RESPONSE,
           StatementsResponse: STATEMENTS_RESPONSE,
 
+          # Declarations
+          Declaration: DECLARATION,
+          DeclarationsFilter: DECLARATIONS_FILTER,
+          DeclarationResponse: DECLARATION_RESPONSE,
+          DeclarationsResponse: DECLARATIONS_RESPONSE,
+
           # Delivery Partners
           DeliveryPartner: DELIVERY_PARTNER,
           DeliveryPartnersFilter: DELIVERY_PARTNERS_FILTER,

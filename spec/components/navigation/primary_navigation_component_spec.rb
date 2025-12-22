@@ -5,7 +5,7 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
   let(:current_user_type) { nil }
   let(:nav_selector) { "nav.govuk-service-navigation__wrapper" }
   let(:nav_list_selector) { "#{nav_selector} ul#register-early-career-teachers-service-navigation-list" }
-  let(:current_user) { double(school_user?: false, user_type: current_user_type) }
+  let(:current_user) { double(school_user?: false, user_type: current_user_type, finance_access?: true) }
 
   def validate_navigation_items(expected_items)
     expect(rendered_content).to have_css(nav_list_selector)
@@ -44,6 +44,22 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
         ]
 
         validate_navigation_items(expected_items)
+      end
+    end
+
+    context "when in admin section and user does not have finance access" do
+      let(:current_path) { "/admin" }
+      let(:current_user_type) { :dfe_staff_user }
+      let(:current_user) { double(school_user?: false, user_type: current_user_type, finance_access?: false) }
+
+      it "does not render the Finance item" do
+        render_inline(subject)
+
+        expect(rendered_content).to have_link("Teachers", href: "/admin/teachers")
+        expect(rendered_content).to have_link("Schools", href: "/admin/schools")
+        expect(rendered_content).to have_link("Organisations", href: "/admin/organisations")
+        expect(rendered_content).to have_link("Users", href: "/admin/users")
+        expect(rendered_content).not_to have_link("Finance", href: "/admin/finance")
       end
     end
 
@@ -145,8 +161,8 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
       before do
         mock_service = instance_double(Schools::InductionTutorDetails, update_required?: true)
         allow(Schools::InductionTutorDetails).to receive(:new)
-        .with(current_user)
-        .and_return(mock_service)
+          .with(current_user)
+          .and_return(mock_service)
       end
 
       it "renders no navigation items" do

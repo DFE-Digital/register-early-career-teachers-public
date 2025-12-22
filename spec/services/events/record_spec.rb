@@ -1975,6 +1975,72 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_declaration_voided" do
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:)
+    end
+    let(:training_period) do
+      FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
+    end
+    let(:declaration) do
+      FactoryBot.create(:declaration, :voided, training_period:)
+    end
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_declaration_voided!(
+        author:,
+        teacher:,
+        training_period:,
+        declaration:
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :teacher_declaration_voided,
+        heading: "Rhys Ifans’s declaration was voided",
+        teacher:,
+        training_period:,
+        declaration:,
+        happened_at: Time.current,
+        **author_params
+      )
+    end
+  end
+
+  describe ".record_teacher_declaration_clawed_back" do
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:)
+    end
+    let(:training_period) do
+      FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
+    end
+    let(:declaration) do
+      FactoryBot.create(:declaration, :clawed_back, training_period:)
+    end
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_declaration_clawed_back!(
+        author:,
+        teacher:,
+        training_period:,
+        declaration:
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :teacher_declaration_clawed_back,
+        heading: "Rhys Ifans’s declaration was clawed back",
+        teacher:,
+        training_period:,
+        declaration:,
+        happened_at: Time.current,
+        **author_params
+      )
+    end
+  end
+
   describe ".record_school_induction_tutor_confirmed_event!" do
     let(:contract_period_year) { FactoryBot.create(:contract_period, :current).year }
     let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
@@ -2018,6 +2084,29 @@ RSpec.describe Events::Record do
             happened_at: Time.zone.now,
             **author_params
           )
+        )
+      end
+    end
+  end
+
+  describe ".record_declaration_created_event!" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+    let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
+    let(:declaration) { FactoryBot.create(:declaration, training_period:) }
+    let(:lead_provider) { declaration.training_period.lead_provider }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_declaration_created_event!(author:, teacher:, lead_provider:, declaration:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          **author_params,
+          event_type: :teacher_declaration_created,
+          happened_at: Time.zone.now,
+          heading: "A new declaration (started - no_payment) with id #{declaration.id} was created for the teacher: Rhys Ifans (#{lead_provider.name})",
+          teacher:,
+          declaration:,
+          lead_provider:
         )
       end
     end
