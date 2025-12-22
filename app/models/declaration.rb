@@ -105,11 +105,6 @@ class Declaration < ApplicationRecord
 
     before_transition from: :ineligible, do: :clear_ineligibility_reason
 
-    before_transition on: :mark_as_eligible do |declaration, transition|
-      options = transition.args.extract_options!
-      declaration.assign_attributes(options)
-    end
-
     event :mark_as_eligible do
       transition %i[no_payment] => :eligible
     end
@@ -120,11 +115,6 @@ class Declaration < ApplicationRecord
 
     event :mark_as_paid do
       transition %i[payable] => :paid
-    end
-
-    before_transition on: :mark_as_ineligible do |declaration, transition|
-      options = transition.args.extract_options!
-      declaration.assign_attributes(options)
     end
 
     event :mark_as_ineligible do
@@ -172,7 +162,7 @@ class Declaration < ApplicationRecord
     training_period&.trainee&.teacher
   end
 
-  def duplicate_declarations
+  def duplicate_declaration
     existing_declarations = if training_period.for_ect?
                               teacher.ect_declarations
                             else
@@ -183,12 +173,14 @@ class Declaration < ApplicationRecord
       .billable_or_changeable
       .where(declaration_type:, superseded_by_id: nil)
       .excluding(self)
+      .order(created_at: :asc)
+      .first
   end
 
   def duplicate_declaration_exists?
     return unless billable_or_changeable?
 
-    duplicate_declarations.exists?
+    duplicate_declaration.present?
   end
 
   def milestone

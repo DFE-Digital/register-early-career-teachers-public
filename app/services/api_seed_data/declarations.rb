@@ -82,11 +82,10 @@ module APISeedData
             payment_statement = find_random_statement(active_lead_provider)
             next unless payment_statement
 
-            declaration.mark_as_ineligible!(
-              ineligibility_reason: :duplicate,
-              payment_statement:,
-              superseded_by: declaration.duplicate_declarations.order(created_at: :asc).first
-            )
+            declaration.ineligibility_reason = :duplicate
+            declaration.payment_statement = payment_statement
+            declaration.superseded_by = declaration.duplicate_declaration
+            declaration.mark_as_ineligible!
           else
             next
           end

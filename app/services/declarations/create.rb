@@ -39,7 +39,7 @@ module Declarations
       ActiveRecord::Base.transaction do
         declaration = build_declaration
 
-        set_eligibility_and_save!(declaration)
+        set_eligibility_and_persist!(declaration)
         update_uplifts!(declaration)
         set_payment_statement!(declaration)
         check_mentor_completion!(declaration)
@@ -60,18 +60,18 @@ module Declarations
       )
     end
 
-    def set_eligibility_and_save!(declaration)
+    def set_eligibility_and_persist!(declaration)
       if declaration.duplicate_declaration_exists?
-        declaration.mark_as_ineligible!(
-          ineligibility_reason: :duplicate,
-          payment_statement:,
-          superseded_by: declaration.duplicate_declarations.order(created_at: :asc).first
-        )
+        declaration.ineligibility_reason = :duplicate
+        declaration.payment_statement = payment_statement
+        declaration.superseded_by = declaration.duplicate_declaration
+        declaration.mark_as_ineligible!
       elsif training_period.eligible_for_funding?
-        declaration.mark_as_eligible!(payment_statement:)
+        declaration.payment_statement = payment_statement
+        declaration.mark_as_eligible!
+      else
+        declaration.save!
       end
-    ensure
-      declaration.save!
     end
 
     def update_uplifts!(declaration)
