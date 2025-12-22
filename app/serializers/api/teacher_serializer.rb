@@ -43,9 +43,7 @@ class API::TeacherSerializer < Blueprinter::Base
         training_period.for_ect? && teacher.ect_sparsity_uplift
       end
       field(:schedule_identifier) do |(training_period, _, _)|
-        # TODO: remove the optional chaining when the provider-led TP
-        # schedules have validation to make mandatory.
-        training_period.schedule&.identifier
+        training_period.schedule.identifier
       end
       field(:delivery_partner_id) do |(training_period, _, _)|
         training_period
