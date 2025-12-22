@@ -291,7 +291,7 @@
   - confirmed
   - pending_induction_submission_batch_id
   - error_messages
-  - written_fail_confirmation_on
+  - fail_confirmation_sent_on
   :pending_induction_submission_batches:
   - data
   - error_message

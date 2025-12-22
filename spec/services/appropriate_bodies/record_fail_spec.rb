@@ -1,7 +1,7 @@
 RSpec.describe AppropriateBodies::RecordFail do
   it "defines expected induction params" do
     expect(described_class.induction_params).to eq({
-      "appropriate_bodies_record_fail" => %i[finished_on number_of_terms written_fail_confirmation_on]
+      "appropriate_bodies_record_fail" => %i[finished_on number_of_terms fail_confirmation_sent_on]
     })
   end
 

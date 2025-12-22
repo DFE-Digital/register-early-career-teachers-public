@@ -29,7 +29,7 @@ RSpec.describe Teachers::ConfirmOutcomeComponent, type: :component do
         let(:service_class) { AppropriateBodies::RecordFail }
 
         it "targets the appropriate body fail page" do
-          expect(rendered_content).to have_selector("form[action='/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirm_failed_outcome_checked'][method='post']")
+          expect(rendered_content).to have_selector("form[action='/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirmation-checked'][method='post']")
         end
 
         it "renders a checkbox", :aggregate_failures do
@@ -46,7 +46,7 @@ RSpec.describe Teachers::ConfirmOutcomeComponent, type: :component do
         end
 
         it "shows link to the appeal process page" do
-          expect(rendered_content).to have_css("a.govuk-link[href='https://www.gov.uk/guidance/newly-qualified-teacher-nqt-induction-appeals']")
+          expect(rendered_content).to have_link(href: "https://www.gov.uk/guidance/newly-qualified-teacher-nqt-induction-appeals")
         end
       end
     end

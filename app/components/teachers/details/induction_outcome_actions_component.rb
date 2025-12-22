@@ -21,7 +21,7 @@ module Teachers::Details
       if admin_mode?
         new_admin_teacher_record_failed_outcome_path(teacher)
       else
-        confirm_failed_outcome_ab_teacher_record_failed_outcome_path(teacher)
+        confirmation_ab_teacher_record_failed_outcome_path(teacher)
       end
     end
 
