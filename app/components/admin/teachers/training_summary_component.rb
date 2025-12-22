@@ -46,7 +46,8 @@ module Admin
           training_programme_row,
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
-          summary_row("End date", end_date_text)
+          summary_row("End date", end_date_text),
+          summary_row("API response", api_response_text)
         ].compact
       end
 
@@ -129,6 +130,32 @@ module Admin
         return if training_period.for_mentor?
 
         summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
+      end
+
+      # TODO: get formatting of api data correct
+      # Text spills over container, is not in code format, background colour is missing
+      def api_response_text
+        govuk_details(summary_text: "See this participant as they appear over the API for #{lead_provider&.name}") do
+          content_tag(:pre) do
+            content_tag(:code, serialized_teacher)
+          end
+        end
+      end
+
+      def lead_provider
+        return training_period.lead_provider if confirmed_partnership?
+
+        training_period.expression_of_interest_lead_provider
+      end
+
+      def serialized_teacher
+        API::TeacherSerializer.render(teacher, root: "data", **{lead_provider_id: lead_provider.id})
+      end
+
+      def teacher
+        return training_period.ect_at_school_period.teacher if training_period.for_ect?
+
+        training_period.mentor_at_school_period.teacher
       end
 
       def format_date(date)
