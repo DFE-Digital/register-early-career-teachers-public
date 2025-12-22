@@ -43,7 +43,7 @@ module Schedules
     end
 
     def most_recent_schedule
-      most_recent_provider_led_period&.schedule
+      @most_recent_schedule ||= most_recent_provider_led_period&.schedule
     end
 
     def latest_start_date
