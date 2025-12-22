@@ -38,9 +38,7 @@ module Schedules
     end
 
     def schedule_month
-      month = latest_start_date.month
-
-      case month
+      case latest_start_date.month
       when 6..10
         "september"
       when 11, 12, 1, 2
@@ -51,7 +49,7 @@ module Schedules
     end
 
     def contract_period_year
-      if schedule_month == "april"
+      if latest_start_date.month < 6
         latest_start_date.year - 1
       else
         latest_start_date.year
