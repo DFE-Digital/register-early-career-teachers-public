@@ -2,7 +2,7 @@
 RSpec.describe Teachers::SchoolTransfers::History do
   include SchoolTransferHelpers
 
-  describe "#transfers" do
+  describe "transfers" do
     let(:teacher) { FactoryBot.create(:teacher) }
 
     context "when there are no transfers" do
@@ -20,6 +20,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
     end
 
@@ -33,6 +34,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
     end
 
@@ -54,6 +56,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
     end
 
@@ -76,6 +79,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
 
       it "returns an unknown transfer for lead provider #2" do
@@ -93,6 +97,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(transfer).not_to be_for_mentor
         expect(transfer.leaving_training_period).to eq(@training_period3)
         expect(transfer.joining_training_period).to be_nil
+        expect(history).to be_exists
       end
     end
 
@@ -116,6 +121,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
 
       it "returns no transfers for lead provider #2" do
@@ -125,6 +131,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
     end
 
@@ -157,6 +164,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(transfer).not_to be_for_mentor
         expect(transfer.leaving_training_period).to eq(@training_period1)
         expect(transfer.joining_training_period).to eq(@training_period2)
+        expect(history).to be_exists
       end
 
       it "returns no transfers for lead provider #2" do
@@ -166,6 +174,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
     end
 
@@ -199,6 +208,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(transfer).not_to be_for_mentor
         expect(transfer.leaving_training_period).to eq(@training_period1)
         expect(transfer.joining_training_period).to eq(@training_period2)
+        expect(history).to be_exists
       end
 
       it "returns a new_provider transfer for lead provider #2" do
@@ -216,6 +226,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(transfer).not_to be_for_mentor
         expect(transfer.leaving_training_period).to eq(@training_period1)
         expect(transfer.joining_training_period).to eq(@training_period2)
+        expect(history).to be_exists
       end
 
       it "returns no transfers for lead provider #3" do
@@ -225,6 +236,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
     end
 
@@ -254,6 +266,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(transfer).not_to be_for_mentor
         expect(transfer.leaving_training_period).to eq(@training_period1)
         expect(transfer.joining_training_period).to eq(@training_period2)
+        expect(history).to be_exists
       end
     end
 
@@ -283,6 +296,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         expect(transfer).not_to be_for_mentor
         expect(transfer.leaving_training_period).to eq(@training_period1)
         expect(transfer.joining_training_period).to eq(@training_period2)
+        expect(history).to be_exists
       end
     end
 
@@ -305,6 +319,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
         )
 
         expect(history.transfers).to be_empty
+        expect(history).not_to be_exists
       end
     end
   end
