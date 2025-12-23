@@ -18,19 +18,15 @@ module Schedules
 
   private
 
+    delegate :teacher, to: :period
+
     def schedule_for_target_period
       return most_recent_schedule if most_recent_schedule&.contract_period_year == contract_period_year
 
       Schedule.find_by(contract_period_year:, identifier: most_recent_schedule&.identifier) || Schedule.find_by(contract_period_year:, identifier:)
     end
 
-    def provider_led?
-      training_programme == "provider_led"
-    end
-
-    def teacher
-      period.teacher
-    end
+    def provider_led? = training_programme == "provider_led"
 
     def training_periods
       return teacher.ect_training_periods if teacher.ect_at_school_periods.exists? && period_type_key == :ect_at_school_period
@@ -46,14 +42,10 @@ module Schedules
       @most_recent_schedule ||= most_recent_provider_led_period&.schedule
     end
 
-    def latest_start_date
-      [started_on, Time.zone.today].max
-    end
+    def latest_start_date = [started_on, Time.zone.today].max
 
     def schedule_month
-      month = latest_start_date.month
-
-      case month
+      case latest_start_date.month
       when 6..10
         "september"
       when 11, 12, 1, 2
@@ -64,7 +56,7 @@ module Schedules
     end
 
     def contract_period_year
-      if schedule_month == "april"
+      if latest_start_date.month <= 5
         latest_start_date.year - 1
       else
         latest_start_date.year
