@@ -1,6 +1,6 @@
 <%
   page_data(
-    title: "Edit induction period",
+    title: "Edit #{teacher_full_name(@induction_period.teacher)}'s current induction period",
     error: @induction_period.errors.present?,
     backlink_href: admin_teacher_induction_path(@induction_period.teacher)
   )
