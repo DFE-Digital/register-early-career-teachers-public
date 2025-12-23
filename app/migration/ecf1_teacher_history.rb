@@ -1,7 +1,13 @@
 class ECF1TeacherHistory
+  using Migration::CompactWithIgnore
+
   class InvalidPeriodType < StandardError; end
 
-  User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at)
+  User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at, keyword_init: true) do
+    def self.from_hash(hash)
+      new(FactoryBot.attributes_for(:ecf1_teacher_history_user, **hash))
+    end
+  end
 
   ECT = Struct.new(:participant_profile_id,
                    :migration_mode,
@@ -13,7 +19,16 @@ class ECF1TeacherHistory
                    :sparsity_uplift,
                    :payments_frozen_cohort_start_year,
                    :states,
-                   :induction_records)
+                   :induction_records,
+                   keyword_init: true) do
+                     def self.from_hash(hash)
+                       hash.compact_with_ignore!
+
+                       hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
+
+                       new(FactoryBot.attributes_for(:ecf1_teacher_history_ect, **hash))
+                     end
+                   end
 
   Mentor = Struct.new(:participant_profile_id,
                       :migration_mode,
@@ -23,7 +38,16 @@ class ECF1TeacherHistory
                       :mentor_completion_reason,
                       :payments_frozen_cohort_start_year,
                       :states,
-                      :induction_records)
+                      :induction_records,
+                      keyword_init: true) do
+                        def self.from_hash(hash)
+                          hash.compact_with_ignore!
+
+                          hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
+
+                          new(FactoryBot.attributes_for(:ecf1_teacher_history_mentor, **hash))
+                        end
+                      end
 
   ProfileStateRow = Struct.new(:state, :reason, :created_at)
 
@@ -41,12 +65,24 @@ class ECF1TeacherHistory
                                   :induction_status,
                                   :training_programme,
                                   :training_provider_info,
-                                  :appropriate_body)
+                                  :appropriate_body,
+                                  keyword_init: true) do
+                                    def self.from_hash(hash)
+                                      hash.compact_with_ignore!
+
+                                      if (training_provider_info = hash[:training_provider_info])
+                                        hash[:training_provider_info] = TrainingProviderInfo.new(training_provider_info)
+                                      end
+
+                                      new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
+                                    end
+                                  end
 
   TrainingProviderInfo = Struct.new(
     :lead_provider_info,
     :delivery_partner_info,
-    :cohort_year
+    :cohort_year,
+    keyword_init: true
   )
 
   attr_accessor :user, :ect, :mentor, :participant_identity_updated_ats
@@ -201,5 +237,23 @@ class ECF1TeacherHistory
     return "latest_induction_records" if participant_profile.two_induction_records_that_overlap?
 
     "all_induction_records"
+  end
+
+  def self.from_hash(hash)
+    hash.compact_with_ignore!
+
+    user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name).compact)
+
+    ect = if hash.key?(:ect)
+            ECF1TeacherHistory::ECT.from_hash(hash.fetch(:ect).slice(:participant_profile_id, :induction_records))
+          end
+
+    mentor = if hash.key?(:mentor)
+               ECF1TeacherHistory::Mentor.from_hash(hash.fetch(:mentor).slice(:participant_profile_id, :induction_records))
+             end
+
+    participant_identity_updated_ats = []
+
+    new(user:, ect:, mentor:, participant_identity_updated_ats:)
   end
 end
