@@ -11,6 +11,7 @@ module SharedInductionPeriodValidation
     validate :finished_on_not_in_future, if: -> { finished_on.present? }
 
     validate :fail_confirmation_sent_on_not_in_future, if: -> { fail_confirmation_sent_on.present? }
+
     validate :fail_confirmation_sent_on_not_before_start_date, if: -> { fail_confirmation_sent_on.present? }
   end
 
@@ -41,13 +42,13 @@ module SharedInductionPeriodValidation
   def fail_confirmation_sent_on_not_in_future
     return if fail_confirmation_sent_on <= Date.current
 
-    errors.add(:fail_confirmation_sent_on, "Written fail confirmation date cannot be in the future")
+    errors.add(:fail_confirmation_sent_on, "Failure confirmation date cannot be in the future")
   end
 
   def fail_confirmation_sent_on_not_before_start_date
     return if fail_confirmation_sent_on > started_on
 
-    errors.add(:fail_confirmation_sent_on, "Written fail confirmation date cannot be before start date")
+    errors.add(:fail_confirmation_sent_on, "Failure confirmation date cannot be before start date")
   end
 
   def ensure_start_date_after_qts_date(qts_award_date)

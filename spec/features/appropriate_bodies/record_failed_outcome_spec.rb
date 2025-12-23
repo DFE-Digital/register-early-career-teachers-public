@@ -1,24 +1,24 @@
 RSpec.describe "Recording a failed outcome for an ECT" do
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
-  let(:teacher) { FactoryBot.create(:teacher) }
+  let(:teacher) { FactoryBot.create(:teacher, :with_name) }
   let(:today) { Time.zone.today }
   let(:number_of_completed_terms) { 4 }
 
   before { sign_in_as_appropriate_body_user(appropriate_body:) }
 
   scenario "Happy path" do
-    given_i_am_on_the_ect_page(teacher)
+    given_i_am_on_the_ect_page
     when_i_click_link("Fail induction")
-    then_i_should_be_on_the_fail_confimation_page(teacher)
+    then_i_should_be_on_the_confirmation_page
 
     when_i_confirm_written_confirmation_sent
-    and_i_click_continue_button
-    then_i_should_be_on_the_record_outcome_page(teacher)
+    and_i_click_continue
+    then_i_should_be_on_the_record_outcome_page
 
     when_i_enter_the_finish_date
-    when_i_enter_the_fail_confirmation_sent_on_date
-    and_i_enter_a_terms_value_of(number_of_completed_terms)
+    when_i_enter_the_date_confirmation_was_sent
+    and_i_enter_the_number_of_completed_terms
     and_i_click_submit
 
     then_i_should_be_on_the_success_page
@@ -28,7 +28,7 @@ RSpec.describe "Recording a failed outcome for an ECT" do
 
 private
 
-  def given_i_am_on_the_ect_page(teacher)
+  def given_i_am_on_the_ect_page
     path = "/appropriate-body/teachers/#{teacher.id}"
     page.goto(path)
 
@@ -39,43 +39,40 @@ private
     page.get_by_role("link", name: text).click
   end
 
-  def then_i_should_be_on_the_fail_confimation_page(teacher)
-    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirmation")
+  def then_i_should_be_on_the_confirmation_page
+    expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirm")
   end
 
   def when_i_confirm_written_confirmation_sent
-    page.click("#teacher-confirm-failed-outcome-1-field")
+    page.click("#appropriate-bodies-record-fail-confirmed-true-field")
   end
 
-  def and_i_click_continue_button
+  def and_i_click_continue
     page.click(".govuk-button")
   end
 
-  def then_i_should_be_on_the_record_outcome_page(teacher)
+  def then_i_should_be_on_the_record_outcome_page
     expect(page).to have_path("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
   end
 
   def when_i_enter_the_finish_date
-    page.fill "#appropriate_bodies_record_fail_finished_on_3i", today.day.to_s
-    page.fill "#appropriate_bodies_record_fail_finished_on_2i", today.month.to_s
-    page.fill "#appropriate_bodies_record_fail_finished_on_1i", today.year.to_s
+    page.get_by_role("group", name: "When did their induction end").get_by_label("Day", exact: true).fill(today.day.to_s)
+    page.get_by_role("group", name: "When did their induction end").get_by_label("Month", exact: true).fill(today.month.to_s)
+    page.get_by_role("group", name: "When did their induction end").get_by_label("Year", exact: true).fill(today.year.to_s)
   end
 
-  def when_i_enter_the_fail_confirmation_sent_on_date
-    page.fill "#appropriate_bodies_record_fail_fail_confirmation_sent_on_3i", today.day.to_s
-    page.fill "#appropriate_bodies_record_fail_fail_confirmation_sent_on_2i", today.month.to_s
-    page.fill "#appropriate_bodies_record_fail_fail_confirmation_sent_on_1i", today.year.to_s
+  def when_i_enter_the_date_confirmation_was_sent
+    page.get_by_role("group", name: "When did you send written confirmation").get_by_label("Day", exact: true).fill(today.day.to_s)
+    page.get_by_role("group", name: "When did you send written confirmation").get_by_label("Month", exact: true).fill(today.month.to_s)
+    page.get_by_role("group", name: "When did you send written confirmation").get_by_label("Year", exact: true).fill(today.year.to_s)
   end
 
-  def and_i_enter_a_terms_value_of(number)
-    label = "How many terms of induction did they spend with you?"
-
-    page.get_by_label(label).fill(number.to_s)
+  def and_i_enter_the_number_of_completed_terms
+    page.get_by_label("How many terms of induction did they spend with you?").fill(number_of_completed_terms.to_s)
   end
 
   def and_i_click_submit
-    teacher_name = Teachers::Name.new(teacher).full_name
-    page.get_by_role("button", name: "Record failing outcome for #{teacher_name}").click
+    page.get_by_role("button", name: "Record failing outcome for John Keating").click
   end
 
   def then_i_should_be_on_the_success_page

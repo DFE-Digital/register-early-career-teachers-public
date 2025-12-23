@@ -40,7 +40,6 @@ RSpec.describe "Admin recording a failed outcome for a teacher" do
       {
         admin_record_fail: {
           finished_on: Date.current,
-          fail_confirmation_sent_on: Date.current,
           number_of_terms: 3,
           note: "Note from Admin",
           zendesk_ticket_id: "#123456"
@@ -68,7 +67,6 @@ RSpec.describe "Admin recording a failed outcome for a teacher" do
           expect(induction_period.reload).to have_attributes(
             outcome: "fail",
             finished_on: Date.current,
-            fail_confirmation_sent_on: Date.current,
             number_of_terms: 3
           )
 
@@ -101,7 +99,6 @@ RSpec.describe "Admin recording a failed outcome for a teacher" do
           {
             admin_record_fail: {
               finished_on: induction_period.started_on - 1.month,
-              fail_confirmation_sent_on: Date.current,
               number_of_terms: 16.99,
               note: "Reason",
               zendesk_ticket_id: nil
@@ -113,25 +110,6 @@ RSpec.describe "Admin recording a failed outcome for a teacher" do
           expect(response.body).to include("There is a problem")
           expect(response.body).to include("The end date must be later than the start date")
           expect(response.body).to include("Number of terms must be between 0 and 16")
-        end
-      end
-
-      context "invalid dates for written fail confirmation" do
-        let(:params) do
-          {
-            admin_record_fail: {
-              finished_on: induction_period.started_on + 1.month,
-              fail_confirmation_sent_on: induction_period.started_on - 1.day,
-              number_of_terms: 16.99,
-              note: "Reason",
-              zendesk_ticket_id: nil
-            }
-          }
-        end
-
-        it "renders errors" do
-          expect(response.body).to include("There is a problem")
-          expect(response.body).to include("Written fail confirmation date cannot be before start date")
         end
       end
 
