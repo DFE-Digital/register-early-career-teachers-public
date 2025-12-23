@@ -16,7 +16,9 @@ class PersonasController < ApplicationController
       end
     end
 
+    users_emails = User.pluck(:email)
     @personas = YAML.load_file(Rails.root.join("config/personas.yml"))
+                    .select { |p| p["email"].present? && users_emails.include?(p["email"]) }
                     .map { |p| persona_data.new(**p.symbolize_keys) }
   end
 end

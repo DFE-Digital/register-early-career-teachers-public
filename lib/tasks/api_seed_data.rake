@@ -21,6 +21,7 @@ namespace :api_seed_data do
       seeds += [
         APISeedData::APITokens,
         APISeedData::ParityChecks,
+        APISeedData::PersonaUsers
       ]
     end
 
