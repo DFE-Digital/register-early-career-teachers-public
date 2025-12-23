@@ -28,8 +28,8 @@ module Metadata::Handlers
         latest_ect_contract_period = latest_ect_training_period&.contract_period
         latest_mentor_contract_period = latest_mentor_training_period&.contract_period
         api_mentor_id = latest_ect_training_period&.trainee&.latest_mentorship_period&.mentor&.teacher&.api_id
-        involved_in_school_transfer = school_transfers_for(teacher.ect_at_school_periods, lead_provider_id).any? ||
-          school_transfers_for(teacher.mentor_at_school_periods, lead_provider_id).any?
+        involved_in_school_transfer = school_transfers_exist_for(teacher.ect_at_school_periods, lead_provider_id) ||
+          school_transfers_exist_for(teacher.mentor_at_school_periods, lead_provider_id)
 
         changes = {
           teacher_id: teacher.id,
@@ -72,8 +72,8 @@ module Metadata::Handlers
       .index_by { it.lead_provider&.id }
     end
 
-    def school_transfers_for(school_periods, lead_provider_id)
-      ::Teachers::SchoolTransfers::History.transfers_for(school_periods:, lead_provider_id:)
+    def school_transfers_exist_for(school_periods, lead_provider_id)
+      ::Teachers::SchoolTransfers::History.exists_for?(school_periods:, lead_provider_id:)
     end
   end
 end

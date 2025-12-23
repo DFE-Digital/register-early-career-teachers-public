@@ -338,8 +338,8 @@ RSpec.describe Metadata::Handlers::Teacher do
         context "when Teacher has some school transfers" do
           before do
             allow(Teachers::SchoolTransfers::History)
-              .to receive(:transfers_for)
-              .and_return(double(any?: true))
+              .to receive(:exists_for?)
+              .and_return(true)
 
             refresh_metadata
           end
@@ -350,8 +350,8 @@ RSpec.describe Metadata::Handlers::Teacher do
         context "when Teacher has no school transfers" do
           before do
             allow(Teachers::SchoolTransfers::History)
-              .to receive(:transfers_for)
-              .and_return(double(any?: false))
+              .to receive(:exists_for?)
+              .and_return(false)
 
             refresh_metadata
           end
