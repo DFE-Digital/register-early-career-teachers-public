@@ -67,6 +67,26 @@ RSpec.configure do |config|
           DeclarationsFilter: DECLARATIONS_FILTER,
           DeclarationResponse: DECLARATION_RESPONSE,
           DeclarationsResponse: DECLARATIONS_RESPONSE,
+          DeclarationCreateRequest: DECLARATION_CREATE_REQUEST,
+
+          # Declaration Create - Pre-2025 (ECT and Mentor)
+          DeclarationPre2025DataRequest: DECLARATION_PRE2025_DATA_REQUEST,
+          DeclarationPre2025StartedAttributes: DECLARATION_PRE2025_STARTED_ATTRIBUTES,
+          DeclarationPre2025RetainedAttributes: DECLARATION_PRE2025_RETAINED_ATTRIBUTES,
+          DeclarationPre2025CompletedAttributes: DECLARATION_PRE2025_COMPLETED_ATTRIBUTES,
+          DeclarationPre2025ExtendedAttributes: DECLARATION_PRE2025_EXTENDED_ATTRIBUTES,
+
+          # Declaration Create - Post-2024 ECT
+          DeclarationPost2024ECTDataRequest: DECLARATION_POST2024_ECT_DATA_REQUEST,
+          DeclarationPost2024ECTStartedAttributes: DECLARATION_POST2024_ECT_STARTED_ATTRIBUTES,
+          DeclarationPost2024ECTRetainedAttributes: DECLARATION_POST2024_ECT_RETAINED_ATTRIBUTES,
+          DeclarationPost2024ECTCompletedAttributes: DECLARATION_POST2024_ECT_COMPLETED_ATTRIBUTES,
+          DeclarationPost2024ECTExtendedAttributes: DECLARATION_POST2024_ECT_EXTENDED_ATTRIBUTES,
+
+          # Declaration Create - Post-2024 Mentor
+          DeclarationPost2024MentorDataRequest: DECLARATION_POST2024_MENTOR_DATA_REQUEST,
+          DeclarationPost2024MentorStartedAttributes: DECLARATION_POST2024_MENTOR_STARTED_ATTRIBUTES,
+          DeclarationPost2024MentorCompletedAttributes: DECLARATION_POST2024_MENTOR_COMPLETED_ATTRIBUTES,
 
           # Delivery Partners
           DeliveryPartner: DELIVERY_PARTNER,
