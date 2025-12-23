@@ -33,7 +33,7 @@ RSpec.describe Events::Record do
 
     it "assigns and saves attributes correctly" do
       ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.weeks.ago)
-      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.weeks.ago)
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school, started_on: 3.weeks.ago)
 
       attributes = {
         author:,

@@ -96,7 +96,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
     end
 
     context "when the mentee has previously started training with another mentor" do
-      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
+      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school: ect_at_school_period.school, started_on: 1.month.ago, finished_on: 1.day.ago) }
       let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.days.ago, mentor_at_school_period: previous_mentor) }
 
       before do

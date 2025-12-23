@@ -60,7 +60,7 @@ def describe_induction_period(ip)
   if ip.finished_on
     FactoryBot.create(
       :event,
-      event_type: "induction_period_opened",
+      event_type: "induction_period_closed",
       induction_period: ip,
       teacher: ip.teacher,
       appropriate_body: ip.appropriate_body,
@@ -100,7 +100,17 @@ end
 def describe_mentor_at_school_period(sp)
   suffix = "(mentor at school period)"
 
-  print_seed_info("* was a mentor at #{sp.school.name} from #{sp.started_on} #{describe_period_duration(sp)} #{suffix}", indent: 4)
+  print_seed_info("* was a mentor at #{sp.school.name} #{describe_period_duration(sp)} #{suffix}", indent: 4)
+end
+
+def create_same_school_mentorship!(mentor:, mentee:, started_on:, finished_on:)
+  FactoryBot.create(
+    :mentorship_period,
+    mentor:,
+    mentee:,
+    started_on:,
+    finished_on:
+  ).tap { |mp| describe_mentorship_period(mp) }
 end
 
 ambition_institute = LeadProvider.find_by!(name: "Ambition Institute")
@@ -130,10 +140,9 @@ def find_school_partnership(delivery_partner:, lead_provider:, contract_period:)
     )
 end
 
-cp_2022 = ContractPeriod.find_by(year: 2022)
-cp_2023 = ContractPeriod.find_by(year: 2023)
-_cp_2024 = ContractPeriod.find_by(year: 2024)
-cp_2025 = ContractPeriod.find_by(year: 2025)
+cp_2022 = ContractPeriod.find_by!(year: 2022)
+cp_2023 = ContractPeriod.find_by!(year: 2023)
+cp_2025 = ContractPeriod.find_by!(year: 2025)
 
 ambition_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambition_institute)
 ambition_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambition_institute)
@@ -873,50 +882,58 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Adding mentorships:")
 
-FactoryBot.create(:mentorship_period,
-                  mentor: emma_thompson_mentoring_at_abbey_grove,
-                  mentee: hugh_grant_ect_at_abbey_grove,
-                  started_on: Date.new(2023, 9, 1),
-                  finished_on: Date.new(2024, 9, 1)).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: emma_thompson_mentoring_at_abbey_grove,
+  mentee: hugh_grant_ect_at_abbey_grove,
+  started_on: Date.new(2023, 9, 1),
+  finished_on: Date.new(2024, 9, 1)
+)
 
-FactoryBot.create(:mentorship_period,
-                  mentor: hugh_laurie_mentoring_at_abbey_grove,
-                  mentee: hugh_grant_ect_at_abbey_grove,
-                  started_on: Date.new(2024, 9, 1),
-                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: hugh_laurie_mentoring_at_abbey_grove,
+  mentee: hugh_grant_ect_at_abbey_grove,
+  started_on: Date.new(2024, 9, 1),
+  finished_on: nil
+)
 
-FactoryBot.create(:mentorship_period,
-                  mentor: andre_roussimoff_mentoring_at_ackley_bridge,
-                  mentee: kate_winslet_ect_at_ackley_bridge,
-                  started_on: Date.new(2022, 9, 1),
-                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: andre_roussimoff_mentoring_at_ackley_bridge,
+  mentee: kate_winslet_ect_at_ackley_bridge,
+  started_on: Date.new(2022, 9, 1),
+  finished_on: nil
+)
 
-FactoryBot.create(:mentorship_period,
-                  mentor: helen_mirren_mentoring_at_brookfield_school,
-                  mentee: stephen_fry_ect_at_brookfield_school,
-                  started_on: Date.new(2021, 9, 1),
-                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: helen_mirren_mentoring_at_brookfield_school,
+  mentee: stephen_fry_ect_at_brookfield_school,
+  started_on: Date.new(2021, 9, 1),
+  finished_on: nil
+)
 
-FactoryBot.create(:mentorship_period,
-                  mentor: john_withers_mentoring_at_abbey_grove,
-                  mentee: joan_sims_ect_at_abbey_grove_school,
-                  started_on: Date.new(2025, 9, 15),
-                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: john_withers_mentoring_at_abbey_grove,
+  mentee: joan_sims_ect_at_abbey_grove_school,
+  started_on: Date.new(2025, 9, 15),
+  finished_on: nil
+)
 
-FactoryBot.create(:mentorship_period,
-                  mentor: john_withers_mentoring_at_abbey_grove,
-                  mentee: hattie_jacques_ect_at_abbey_grove_school,
-                  started_on: Date.new(2025, 9, 25),
-                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: john_withers_mentoring_at_abbey_grove,
+  mentee: hattie_jacques_ect_at_abbey_grove_school,
+  started_on: Date.new(2025, 9, 25),
+  finished_on: nil
+)
 
-FactoryBot.create(:mentorship_period,
-                  mentor: hugh_laurie_mentoring_at_abbey_grove,
-                  mentee: frankie_howard_at_abbey_grove,
-                  started_on: Date.new(2026, 2, 15),
-                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: hugh_laurie_mentoring_at_abbey_grove,
+  mentee: frankie_howard_at_abbey_grove,
+  started_on: Date.new(2026, 2, 15),
+  finished_on: nil
+)
 
-FactoryBot.create(:mentorship_period,
-                  mentor: george_cole_at_mallory_towers,
-                  mentee: imogen_stubbs_at_malory_towers,
-                  started_on: Date.new(2025, 7, 15),
-                  finished_on: nil).tap { |mp| describe_mentorship_period(mp) }
+create_same_school_mentorship!(
+  mentor: george_cole_at_mallory_towers,
+  mentee: imogen_stubbs_at_malory_towers,
+  started_on: Date.new(2025, 7, 15),
+  finished_on: nil
+)

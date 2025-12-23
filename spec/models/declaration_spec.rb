@@ -179,12 +179,13 @@ describe Declaration do
       subject(:declaration) { FactoryBot.build(:declaration, mentorship_period:, training_period:) }
 
       let(:started_on) { 1.month.ago }
-      let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on:, finished_on: nil) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on:, finished_on: nil) }
+      let(:school) { FactoryBot.create(:school) }
+      let(:mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: nil) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, started_on:, finished_on: nil) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on:, finished_on: nil) }
 
       context "when the mentorship_period does not belong to the trainee" do
-        let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on:, finished_on: nil) }
+        let(:mentee) { FactoryBot.create(:ect_at_school_period, school:, started_on:, finished_on: nil) }
         let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee:, started_on:, finished_on: nil) }
 
         it "is not valid" do
