@@ -53,11 +53,11 @@ module ParityCheck
     end
 
     def declaration_id
-      Declaration
-        .includes(:lead_provider)
-        .where(lead_provider: { id: lead_provider.id })
+      ::Migration::ParticipantDeclaration
+        .joins(cpd_lead_provider: %i[lead_provider])
+        .where(lead_provider: { id: lead_provider.ecf_id })
         .reorder("RANDOM()")
-        .pick(:api_id)
+        .pick(:id)
     end
 
     def declaration_with_output_fee_statement
