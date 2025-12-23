@@ -423,6 +423,23 @@ post:
         - challenged_at
         - challenged_reason
         - status
+  - "/api/v3/participant-declarations":
+      body: pre2025_declaration_create_body
+      exclude:
+        - has_passed
+  - "/api/v3/participant-declarations":
+      body: post2024_declaration_create_body
+      exclude:
+        - has_passed
+  - "/api/v3/participant-declarations":
+      body: declaration_already_exists_create_body
+      exclude:
+        - has_passed
+  - "/api/v3/participant-declarations":
+      body: declaration_complete_create_body
+      exclude:
+        - has_passed
+
 put:
   - "/api/v3/participant-declarations/:id/void":
       id: ":paid_declaration_for_clawback_id"
