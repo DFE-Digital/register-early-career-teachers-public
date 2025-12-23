@@ -58,6 +58,20 @@ class ECF2TeacherHistory::TrainingPeriodRow
     }
   end
 
+  def to_h
+    {
+      started_on:,
+      finished_on:,
+      training_programme:,
+      schedule: schedule_info,
+      created_at:,
+      ecf_start_induction_record_id:,
+      lead_provider_info:,
+      delivery_partner_info:,
+      contract_period_year:
+    }
+  end
+
   def school_partnership
     validate_active_lead_provider_exists!
     validate_lead_provider_delivery_partnership_exists!
