@@ -14,7 +14,7 @@ FactoryBot.define do
         ecf-reduced-april
       ].sample
     end
-    name { Faker::Lorem.words(number: 2) }
+    name { Faker::Lorem.words(number: 2).join(" ") }
 
     trait :replacement do
       schedule_identifier do
