@@ -256,4 +256,94 @@ describe ECF1TeacherHistory do
       end
     end
   end
+
+  describe "#to_h" do
+    subject { described_class.build(teacher_profile:).to_h }
+
+    let(:ect_profile) { FactoryBot.create(:migration_participant_profile, :ect) }
+    let(:induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
+    let(:appropriate_body) { FactoryBot.create(:migration_appropriate_body) }
+    let!(:ect_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: ect_profile, induction_programme:, appropriate_body:) }
+    let(:teacher_profile) { ect_profile.teacher_profile }
+    let!(:user) { teacher_profile.user }
+    let!(:mentor_profile) { FactoryBot.create(:migration_participant_profile, :mentor, teacher_profile:) }
+    let!(:mentor_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: mentor_profile, induction_programme:, appropriate_body:) }
+
+    it "builds a hash" do
+      expect(subject).to be_a(Hash)
+
+      aggregate_failures do
+        expect(subject).to have_key(:trn)
+        expect(subject).to have_key(:ect)
+        expect(subject).to have_key(:mentor)
+      end
+    end
+
+    describe "ECT history" do
+      let(:ect) { subject[:ect] }
+
+      it "converts the ECT data to a hash with correct keys" do
+        aggregate_failures do
+          expect(ect).to have_key(:participant_profile_id)
+          expect(ect).to have_key(:migration_mode)
+          expect(ect).to have_key(:induction_start_date)
+          expect(ect).to have_key(:induction_completion_date)
+        end
+      end
+
+      it "converts the induction records to hashes" do
+        expect(ect[:induction_records]).to all(be_a(Hash))
+      end
+
+      it "converts the schedule info to a hash" do
+        schedule_info = ect.dig(:induction_records, 0, :schedule_info)
+
+        aggregate_failures do
+          expect(schedule_info).to have_key(:schedule_id)
+          expect(schedule_info).to have_key(:identifier)
+          expect(schedule_info).to have_key(:name)
+          expect(schedule_info).to have_key(:cohort_year)
+        end
+      end
+
+      it "converts the training provider info to a hash" do
+        training_provider_info = ect.dig(:induction_records, 0, :training_provider_info)
+
+        aggregate_failures do
+          expect(training_provider_info).to have_key(:lead_provider_info)
+          expect(training_provider_info).to have_key(:delivery_partner_info)
+          expect(training_provider_info).to have_key(:cohort_year)
+        end
+      end
+
+      it "converts the training provider info values to hashes" do
+        training_provider_info = ect.dig(:induction_records, 0, :training_provider_info)
+
+        aggregate_failures do
+          expect(training_provider_info[:lead_provider_info]).to have_key(:ecf1_id)
+          expect(training_provider_info[:lead_provider_info]).to have_key(:name)
+
+          expect(training_provider_info[:delivery_partner_info]).to have_key(:ecf1_id)
+          expect(training_provider_info[:delivery_partner_info]).to have_key(:name)
+        end
+      end
+    end
+
+    describe "Mentor history" do
+      let(:mentor) { subject[:mentor] }
+
+      it "converts the mentor data to a hash with correct keys" do
+        aggregate_failures do
+          expect(mentor).to have_key(:participant_profile_id)
+          expect(mentor).to have_key(:migration_mode)
+          expect(mentor).to have_key(:mentor_completion_date)
+          expect(mentor).to have_key(:mentor_completion_reason)
+        end
+      end
+
+      it "converts the induction records to hashes" do
+        expect(mentor[:induction_records]).to all(be_a(Hash))
+      end
+    end
+  end
 end

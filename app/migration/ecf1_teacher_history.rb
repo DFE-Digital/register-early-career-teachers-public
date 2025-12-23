@@ -70,7 +70,7 @@ class ECF1TeacherHistory
                                     def self.from_hash(hash)
                                       hash.compact_with_ignore!
 
-                                      if training_provider_info = hash[:training_provider_info]
+                                      if (training_provider_info = hash[:training_provider_info])
                                         hash[:training_provider_info] = TrainingProviderInfo.new(training_provider_info)
                                       end
 
@@ -83,7 +83,15 @@ class ECF1TeacherHistory
     :delivery_partner_info,
     :cohort_year,
     keyword_init: true
-  )
+  ) do
+    def to_h
+      {
+        lead_provider_info: lead_provider_info.to_h,
+        delivery_partner_info: delivery_partner_info.to_h,
+        cohort_year:
+      }
+    end
+  end
 
   attr_accessor :user, :ect, :mentor, :participant_identity_updated_ats
 
@@ -139,6 +147,23 @@ class ECF1TeacherHistory
     participant_identity_updated_ats = []
 
     new(user:, ect:, mentor:, participant_identity_updated_ats:)
+  end
+
+  def to_h
+    {
+      trn: user.trn,
+      ect: ect.to_h.tap do |ect_hash|
+        ect_hash[:induction_records] = ect_hash[:induction_records].map(&:to_h).map do |induction_record_hash|
+          induction_record_hash.tap do |ir|
+            ir[:schedule_info] = ir[:schedule_info].to_h
+            ir[:training_provider_info] = ir[:training_provider_info].to_h
+          end
+        end
+      end,
+      mentor: mentor.to_h.tap do |mentor_hash|
+        mentor_hash[:induction_records] = mentor_hash[:induction_records].map(&:to_h)
+      end,
+    }
   end
 
   def self.build_appropriate_body(induction_record:)
