@@ -70,6 +70,20 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       it { is_expected.to eq(ecf_partnership.id) }
     end
 
+    context "when fetching `declaration_id`" do
+      let(:identifier) { :declaration_id }
+      let(:ecf_cpd_lead_provider) { FactoryBot.create(:migration_cpd_lead_provider, lead_provider: ecf_lead_provider) }
+      let(:ecf_lead_provider) { FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id) }
+      let!(:ecf_participant_declaration) { FactoryBot.create(:migration_participant_declaration, cpd_lead_provider: ecf_cpd_lead_provider) }
+
+      before do
+        # Declaration for different lead provider
+        FactoryBot.create(:migration_participant_declaration)
+      end
+
+      it { is_expected.to eq(ecf_participant_declaration.id) }
+    end
+
     describe "fetching declarations for voiding" do
       let(:ecf_cpd_lead_provider) { FactoryBot.create(:migration_cpd_lead_provider, lead_provider: ecf_lead_provider) }
       let(:ecf_lead_provider) { FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id) }
