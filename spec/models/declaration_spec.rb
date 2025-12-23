@@ -39,6 +39,7 @@ describe Declaration do
     it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
     it { is_expected.to have_one(:ect_teacher).through(:ect_at_school_period).source(:teacher) }
     it { is_expected.to have_one(:mentor_teacher).through(:mentor_at_school_period).source(:teacher) }
+    it { is_expected.to belong_to(:superseded_by).class_name("Declaration").optional }
   end
 
   describe "delegations" do
@@ -63,10 +64,20 @@ describe Declaration do
     it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
-    context "when payment" do
-      subject { FactoryBot.build(:declaration, :paid) }
+    context "when payment statement status" do
+      context "is no_payment" do
+        subject { FactoryBot.build(:declaration, :no_payment) }
 
-      it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
+        it { is_expected.not_to validate_presence_of(:payment_statement) }
+      end
+
+      %i[eligible payable paid voided ineligible].each do |status|
+        context "is #{status}" do
+          subject { FactoryBot.build(:declaration, status) }
+
+          it { is_expected.to validate_presence_of(:payment_statement).with_message("Payment statement must be associated for declarations with a payment status") }
+        end
+      end
     end
 
     context "when clawback" do
@@ -396,6 +407,7 @@ describe Declaration do
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: true)
+        .with_prefix
     end
   end
 
@@ -590,6 +602,18 @@ describe Declaration do
 
         it { is_expected.not_to be_duplicate_declaration_exists }
       end
+    end
+  end
+
+  describe "#duplicate_declaration" do
+    let(:training_period) { FactoryBot.create(:training_period, :for_ect) }
+    let(:declaration) { FactoryBot.build(:declaration, :eligible, training_period:, declaration_type: :started) }
+    let!(:duplicate_declaration) { FactoryBot.create(:declaration, :eligible, training_period:, declaration_type: :started) }
+    let!(:superseded_declaration) { FactoryBot.create(:declaration, :ineligible, training_period:, declaration_type: :started, superseded_by: duplicate_declaration) }
+    let!(:other_teacher_declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: :started) }
+
+    it "returns another billable/changeable declaration for the same teacher/training_period and declaration_type" do
+      expect(declaration.duplicate_declaration).to eq(duplicate_declaration)
     end
   end
 
