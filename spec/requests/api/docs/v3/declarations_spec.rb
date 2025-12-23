@@ -24,6 +24,48 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
 
   let(:resource) { declaration }
 
+  it_behaves_like "an API create endpoint documentation",
+                  {
+                    url: "/api/v3/participant-declarations",
+                    tag: "Declarations",
+                    resource_description: "Declare a participant has reached a milestone. Idempotent endpoint - submitting exact copy of a request will return the same response body as submitting it the first time.",
+                    response_description: "The created declaration",
+                    response_schema_ref: "#/components/schemas/DeclarationResponse",
+                    request_schema_ref: "#/components/schemas/DeclarationCreateRequest",
+                  } do
+    let(:schedule) { training_period.schedule }
+    let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
+    let(:teacher) { training_period.trainee.teacher }
+
+    let(:params) do
+      {
+        data: {
+          type: "participant-declaration",
+          attributes: {
+            participant_id: teacher.api_id,
+            declaration_type: "started",
+            declaration_date: milestone.start_date.beginning_of_day.rfc3339,
+            course_identifier: "ecf-induction",
+          },
+        },
+      }
+    end
+
+    let(:invalid_params) do
+      {
+        data: {
+          type: "participant-declaration",
+          attributes: {
+            participant_id: SecureRandom.uuid,
+            declaration_type: "started",
+            declaration_date: Time.zone.now.rfc3339,
+            course_identifier: "ecf-induction",
+          },
+        },
+      }
+    end
+  end
+
   it_behaves_like "an API index endpoint documentation",
                   {
                     url: "/api/v3/participant-declarations",
