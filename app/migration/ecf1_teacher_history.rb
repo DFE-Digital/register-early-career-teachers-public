@@ -134,7 +134,7 @@ class ECF1TeacherHistory
   def self.from_hash(hash)
     hash.compact_with_ignore!
 
-    user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name).compact)
+    user = ECF1TeacherHistory::User.from_hash(hash.fetch(:user).compact)
 
     ect = if hash.key?(:ect)
             ECF1TeacherHistory::ECT.from_hash(hash.fetch(:ect).slice(:participant_profile_id, :induction_records))
@@ -150,25 +150,7 @@ class ECF1TeacherHistory
   end
 
   def to_h
-    {
-      trn: user.trn,
-      ect: ect.to_h.tap do |ect_hash|
-        ect_hash[:induction_records] = ect_hash[:induction_records].map(&:to_h).map do |induction_record_hash|
-          induction_record_hash.tap do |ir|
-            ir[:schedule_info] = ir[:schedule_info].to_h
-            ir[:training_provider_info] = ir[:training_provider_info].to_h
-          end
-        end
-      end,
-      mentor: mentor.to_h.tap do |mentor_hash|
-        mentor_hash[:induction_records] = mentor_hash[:induction_records].map(&:to_h).map do |induction_record_hash|
-          induction_record_hash.tap do |ir|
-            ir[:schedule_info] = ir[:schedule_info].to_h
-            ir[:training_provider_info] = ir[:training_provider_info].to_h
-          end
-        end
-      end,
-    }
+    as_json.deep_symbolize_keys
   end
 
   def self.build_appropriate_body(induction_record:)
