@@ -344,6 +344,39 @@ describe ECF1TeacherHistory do
       it "converts the induction records to hashes" do
         expect(mentor[:induction_records]).to all(be_a(Hash))
       end
+
+      it "converts the schedule info to a hash" do
+        schedule_info = mentor.dig(:induction_records, 0, :schedule_info)
+
+        aggregate_failures do
+          expect(schedule_info).to have_key(:schedule_id)
+          expect(schedule_info).to have_key(:identifier)
+          expect(schedule_info).to have_key(:name)
+          expect(schedule_info).to have_key(:cohort_year)
+        end
+      end
+
+      it "converts the training provider info to a hash" do
+        training_provider_info = mentor.dig(:induction_records, 0, :training_provider_info)
+
+        aggregate_failures do
+          expect(training_provider_info).to have_key(:lead_provider_info)
+          expect(training_provider_info).to have_key(:delivery_partner_info)
+          expect(training_provider_info).to have_key(:cohort_year)
+        end
+      end
+
+      it "converts the training provider info values to hashes" do
+        training_provider_info = mentor.dig(:induction_records, 0, :training_provider_info)
+
+        aggregate_failures do
+          expect(training_provider_info[:lead_provider_info]).to have_key(:ecf1_id)
+          expect(training_provider_info[:lead_provider_info]).to have_key(:name)
+
+          expect(training_provider_info[:delivery_partner_info]).to have_key(:ecf1_id)
+          expect(training_provider_info[:delivery_partner_info]).to have_key(:name)
+        end
+      end
     end
   end
 end

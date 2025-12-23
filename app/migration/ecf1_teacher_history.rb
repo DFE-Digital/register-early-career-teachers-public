@@ -161,7 +161,12 @@ class ECF1TeacherHistory
         end
       end,
       mentor: mentor.to_h.tap do |mentor_hash|
-        mentor_hash[:induction_records] = mentor_hash[:induction_records].map(&:to_h)
+        mentor_hash[:induction_records] = mentor_hash[:induction_records].map(&:to_h).map do |induction_record_hash|
+          induction_record_hash.tap do |ir|
+            ir[:schedule_info] = ir[:schedule_info].to_h
+            ir[:training_provider_info] = ir[:training_provider_info].to_h
+          end
+        end
       end,
     }
   end
