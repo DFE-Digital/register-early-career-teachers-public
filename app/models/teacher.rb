@@ -1,6 +1,8 @@
 class Teacher < ApplicationRecord
   include DeclarativeUpdates
 
+  attr_accessor :confirm_failed_outcome
+
   MIGRATION_MODES = {
     latest_induction_records: "latest_induction_records",
     all_induction_records: "all_induction_records",

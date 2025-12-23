@@ -10,7 +10,10 @@ namespace :appropriate_bodies, path: "appropriate-body", as: :ab do
     scope module: :teachers do
       resource :release_ect, only: %i[new create show], path: "release", controller: :record_released_induction
       resource :record_passed_outcome, only: %i[new create show], path: "record-passed-outcome", controller: :record_passed_induction
-      resource :record_failed_outcome, only: %i[new create show], path: "record-failed-outcome", controller: :record_failed_induction
+      resource :record_failed_outcome, only: %i[new create show], path: "record-failed-outcome", controller: :record_failed_induction do
+        patch :confirmation_checked, on: :member, path: "confirmation-checked"
+        get :confirmation, on: :member
+      end
       resources :extensions, except: :destroy
       resources :initial_teacher_training_records, path: "itt-data", only: :index
     end
