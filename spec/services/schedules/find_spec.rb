@@ -1,3 +1,20 @@
+RSpec.shared_examples "expected schedules by started_on" do |expectations|
+  expectations.each do |date, expected|
+    context "and started_on is #{date}" do
+      let(:started_on) { date }
+
+      around do |example|
+        travel_to(registered_on) { example.run }
+      end
+
+      it "returns the correct schedule" do
+        expect(service.identifier).to include(expected[:identifier])
+        expect(service.contract_period_year).to eq(expected[:contract_period_year])
+      end
+    end
+  end
+end
+
 RSpec.shared_examples "no replacement schedule assigned" do
   it "does not assign a replacement schedule" do
     expect(service.identifier).not_to include("replacement")
@@ -53,7 +70,7 @@ RSpec.describe Schedules::Find do
         let(:period) { send(period_type) }
         let(:started_on) { Date.new(year, 7, 1) }
 
-        context "when the training period is school-led" do
+        context "and the training period is school-led" do
           let(:training_programme) { "school_led" }
 
           it "does not assign a schedule to the current training period" do
@@ -61,73 +78,38 @@ RSpec.describe Schedules::Find do
           end
         end
 
-        context "when the training period is provider-led" do
-          context "when there are no previous training periods" do
-            it "assigns a standard schedule" do
-              expect(service.identifier).to include("standard")
-            end
-
-            context "when they were registered before their start date" do
-              let(:registered_on) { started_on - 1.day }
-
-              around do |example|
-                travel_to(registered_on) do
-                  example.run
-                end
-              end
-
-              context "when the training period started between 1st June and 31st October" do
-                let(:started_on) { Date.new(year, 7, 1) }
-
-                it "assigns the schedule to the current training period" do
-                  expect(service.identifier).to include("september")
-                end
-              end
-
-              context "when the training period started between 1st November and 29th February" do
-                let(:year) { 2024 }
-
-                context "when the year is a leap year" do
-                  let(:started_on) { Date.new(year, 2, 29) }
-
-                  it "assigns the schedule to the current training period" do
-                    expect(service.identifier).to include("january")
-                  end
-                end
-
-                context "when the year is not a leap year" do
-                  let(:year) { 2023 }
-
-                  let(:started_on) { Date.new(year, 1, 15) }
-
-                  it "assigns the schedule to the current training period" do
-                    expect(service.identifier).to include("january")
-                  end
-                end
-              end
-
-              context "when the training period started between 1st March and 31st May" do
-                let(:started_on) { Date.new(year + 1, 4, 10) }
-
-                it "assigns the schedule to the current training period" do
-                  expect(service.identifier).to include("april")
-                end
+        context "and the training period is provider-led" do
+          context "and there are no previous training periods" do
+            before do
+              (2024..2026).each do |year|
+                FactoryBot.create(:contract_period, :with_schedules, year:)
               end
             end
 
-            context "when they were registered after their start date" do
-              let(:registered_on) { Date.new(year, 12, 1) }
-              let(:started_on) { Date.new(year, 7, 1) }
+            context "and the teacher is registered before their start date" do
+              let(:registered_on) { started_on - 1.year }
 
-              around do |example|
-                travel_to(registered_on) do
-                  example.run
-                end
-              end
+              include_examples "expected schedules by started_on", {
+                Date.new(2024, 6, 1) => { contract_period_year: 2024, identifier: "ecf-standard-september" },
+                Date.new(2024, 10, 31) => { contract_period_year: 2024, identifier: "ecf-standard-september" },
+                Date.new(2024, 11, 1) => { contract_period_year: 2024, identifier: "ecf-standard-january" },
+                Date.new(2025, 2, 28) => { contract_period_year: 2024, identifier: "ecf-standard-january" },
+                Date.new(2025, 3, 1) => { contract_period_year: 2024, identifier: "ecf-standard-april" },
+                Date.new(2025, 5, 31) => { contract_period_year: 2024, identifier: "ecf-standard-april" },
+              }
+            end
 
-              it "assigns the schedule based on the registration date to the current training period" do
-                expect(service.identifier).to include("january")
-              end
+            context "and the teacher is registered after their start date" do
+              let(:registered_on) { Date.new(2027, 5, 31) }
+
+              include_examples "expected schedules by started_on", {
+                Date.new(2024, 6, 1) => { contract_period_year: 2026, identifier: "ecf-standard-april" },
+                Date.new(2024, 10, 31) => { contract_period_year: 2026, identifier: "ecf-standard-april" },
+                Date.new(2024, 11, 1) => { contract_period_year: 2026, identifier: "ecf-standard-april" },
+                Date.new(2025, 2, 28) => { contract_period_year: 2026, identifier: "ecf-standard-april" },
+                Date.new(2025, 3, 1) => { contract_period_year: 2026, identifier: "ecf-standard-april" },
+                Date.new(2025, 5, 31) => { contract_period_year: 2026, identifier: "ecf-standard-april" },
+              }
             end
           end
 
