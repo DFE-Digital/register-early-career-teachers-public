@@ -43,6 +43,10 @@ module Teachers
       public_send("#{path_prefix}_teacher_record_#{type}_outcome_path", teacher)
     end
 
+    def failed?
+      outcome == :fail
+    end
+
     def appropriate_body_required?
       appropriate_body_mode? && service.appropriate_body.nil?
     end
@@ -54,10 +58,6 @@ module Teachers
     def unsupported_service?
       !service.is_a?(::AppropriateBodies::RecordPass) &&
         !service.is_a?(::AppropriateBodies::RecordFail)
-    end
-
-    def failed?
-      service.is_a?(::AppropriateBodies::RecordFail)
     end
   end
 end

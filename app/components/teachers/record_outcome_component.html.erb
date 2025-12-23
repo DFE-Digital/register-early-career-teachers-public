@@ -2,9 +2,21 @@
 
   <%= content_for(:error_summary) { form.govuk_error_summary } %>
 
-  <%= render Teachers::OutcomeFormFieldsComponent.new(mode:, form:, appropriate_body:, failed: failed?) %>
+  <%=    
+    if appropriate_body_mode? && failed?
+      form.govuk_date_field(:fail_confirmation_sent_on,
+        legend: { text: "When did you send written confirmation of their failed induction?" },
+        hint: { text: helpers.teacher_induction_date_hint_text }) 
+    end
+  %>
 
-  <%= render Admin::ContextFormFieldsComponent.new(form:) if admin_mode? %>
+  <%= render Teachers::OutcomeFormFieldsComponent.new(mode:, form:, appropriate_body:) %>
+
+  <%= 
+    if admin_mode? 
+      render Admin::ContextFormFieldsComponent.new(form:) 
+    end
+  %>
 
   <%= form.govuk_submit submit_text, warning: failed? %>
 

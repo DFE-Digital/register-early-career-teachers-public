@@ -1,0 +1,40 @@
+<%
+  page_data(
+  	title: "Confirm #{teacher_full_name(@teacher)} has been notified of their failed induction outcome",
+    backlink_href: ab_teacher_path(@teacher)
+  )
+%>
+
+<p class="govuk-body">
+  <%= teacher_full_name(@teacher) %> can appeal this outcome. You must tell them about their right to appeal and the appeal process.
+</p>
+
+<p class="govuk-body">
+  Confirm you have written to them and told them:
+</p>
+
+<%=
+  govuk_list([
+    "they have failed their induction",
+    "they have the right to appeal",
+    govuk_link_to("about the appeal process", "https://www.gov.uk/guidance/newly-qualified-teacher-nqt-induction-appeals", new_tab: true, no_visited_state: true)
+  ], type: :bullet)
+%>
+
+
+<%= form_with(model: @record_fail, url: confirmed_ab_teacher_record_failed_outcome_path(@teacher), method: :patch, class: "govuk-!-margin-top-6") do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= 
+    f.govuk_check_boxes_fieldset(:confirmed, legend: {
+      text: "Confirm they have been notified of their failed induction outcome",
+      hidden: true
+    }) do 
+  %>
+    <%= f.govuk_check_box(:confirmed, true, label: {
+      text: "Yes, #{teacher_full_name(@teacher)} has been sent written confirmation of their induction outcome, their right to appeal and the appeal process." 
+    }) %>
+  <% end %>
+
+  <%= f.govuk_submit "Continue", class: "govuk-!-margin-top-6" %>
+<% end %>
