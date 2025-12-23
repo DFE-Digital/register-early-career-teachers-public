@@ -8,8 +8,9 @@ module ReusablePartnershipHelpers
     keyword_init: true
   )
 
-  def build_school_with_reusable_provider_led_partnership
-    current_year  = Time.zone.today.year
+  def build_school_with_reusable_provider_led_partnership(
+    current_year: Time.zone.today.year
+  )
     previous_year = current_year - 1
 
     current_contract_period  = FactoryBot.create(:contract_period, :with_schedules, year: current_year)
