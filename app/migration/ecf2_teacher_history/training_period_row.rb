@@ -13,7 +13,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
               :created_at,
               :ecf_start_induction_record_id,
               :is_ect,
-              :school_urn
+              :school
 
   def initialize(started_on:,
                  finished_on:,
@@ -29,7 +29,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
                  withdrawal_reason: nil,
                  ecf_start_induction_record_id: nil,
                  is_ect: false,
-                 school_urn: nil)
+                 school: nil)
     @started_on = started_on
     @finished_on = finished_on
     @created_at = created_at
@@ -44,7 +44,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
     @withdrawal_reason = withdrawal_reason
     @ecf_start_induction_record_id = ecf_start_induction_record_id
     @is_ect = is_ect
-    @school_urn = school_urn
+    @school = school
   end
 
   def to_hash
@@ -76,7 +76,7 @@ class ECF2TeacherHistory::TrainingPeriodRow
     validate_active_lead_provider_exists!
     validate_lead_provider_delivery_partnership_exists!
 
-    partnership = SchoolPartnerships::Search.new(school:, contract_period: contract_period_year, lead_provider:, delivery_partner:)
+    partnership = SchoolPartnerships::Search.new(school: school.ecf2_school, contract_period: contract_period_year, lead_provider:, delivery_partner:)
       .school_partnerships
       .first
 
@@ -108,10 +108,6 @@ class ECF2TeacherHistory::TrainingPeriodRow
       raise ActiveRecord::RecordNotFound,
             "No LeadProviderDeliveryPartnership found for active_lead_provider_id #{active_lead_provider.id} and delivery_partner_id #{delivery_partner.id}"
     end
-  end
-
-  def school
-    @school ||= GIAS::School.find_by!(urn: school_urn).school
   end
 
   def ecf2_schedule

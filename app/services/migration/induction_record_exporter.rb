@@ -127,11 +127,11 @@ module Migration
     end
 
     def base_query
-      InductionRecord.eager_load(:participant_profile,
-                                 :preferred_identity,
-                                 schedule: :cohort,
-                                 induction_programme: { school_cohort: :school, partnership: :lead_provider })
-                     .order(start_date: :asc)
+      Migration::InductionRecord.eager_load(:participant_profile,
+                                            :preferred_identity,
+                                            schedule: :cohort,
+                                            induction_programme: { school_cohort: :school, partnership: :lead_provider })
+                                .order(start_date: :asc)
     end
   end
 end

@@ -3,7 +3,6 @@ class ECF2TeacherHistory
 
   MIGRATION_ITEM_TYPE = "Migration::InductionRecord"
 
-  SchoolData = Data.define(:urn, :name)
   AppropriateBodyData = Data.define(:id, :name)
   MentorData = Data.define(:trn, :urn, :started_on, :finished_on)
 

@@ -5,7 +5,7 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
   :created_at,
   :updated_at,
   :cohort_year,
-  :school_urn,
+  :school,
   :schedule_info,
   :preferred_identity_email,
   :mentor_profile_id,
@@ -23,6 +23,10 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
 
     if (training_provider_info = hash[:training_provider_info])
       hash[:training_provider_info] = ECF1TeacherHistory::TrainingProviderInfo.new(training_provider_info)
+    end
+
+    if (school = hash[:school])
+      hash[:school] = Types::SchoolData.new(**school)
     end
 
     new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
