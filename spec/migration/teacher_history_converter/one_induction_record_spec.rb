@@ -68,7 +68,7 @@ describe "One induction record" do
     let(:ecf2_ect_at_school_period_row) { subject.ect_at_school_period_rows.first }
 
     it "sets the URN from the induction record's induction programme" do
-      expect(ecf2_ect_at_school_period_row.school.urn).to eql(ecf1_induction_record_row.school_urn)
+      expect(ecf2_ect_at_school_period_row.school.urn).to eql(ecf1_induction_record_row.school.urn)
     end
 
     it "sets the email address to the email from the induction record's preferred identity" do
@@ -359,7 +359,7 @@ describe "One induction record" do
       end
 
       it "sets the mentor_data with the school URN from the induction record" do
-        expect(ecf2_mentorship_period_row.mentor_data.urn).to eq(ecf1_induction_record_row.school_urn)
+        expect(ecf2_mentorship_period_row.mentor_data.urn).to eq(ecf1_induction_record_row.school.urn)
       end
     end
   end

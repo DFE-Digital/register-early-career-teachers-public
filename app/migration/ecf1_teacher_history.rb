@@ -56,21 +56,21 @@ class ECF1TeacherHistory
       sparsity_uplift: participant_profile.sparsity_uplift,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_record_rows(participant_profile:, migration_mode:)
+      induction_records: build_induction_records(participant_profile:, migration_mode:)
     )
   end
 
   # Build rows for all the induction records of the participant
-  def self.build_induction_record_rows(participant_profile:, migration_mode:)
+  def self.build_induction_records(participant_profile:, migration_mode:)
     row_matches = ->(rows, row) do
       rows.any? do |r|
-        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school_urn, r.cohort_year] ==
-          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school_urn, row.cohort_year]
+        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school.urn, r.cohort_year] ==
+          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school.urn, row.cohort_year]
       end
     end
 
     rows = participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
-      build_induction_record_row(induction_record:)
+      build_induction_record(induction_record:)
     end
 
     if migration_mode == "latest_induction_records"
@@ -82,7 +82,7 @@ class ECF1TeacherHistory
     end
   end
 
-  def self.build_induction_record_row(induction_record:)
+  def self.build_induction_record(induction_record:)
     InductionRecord.new(
       induction_record_id: induction_record.id,
       start_date: induction_record.start_date,
@@ -90,7 +90,7 @@ class ECF1TeacherHistory
       created_at: induction_record.created_at,
       updated_at: induction_record.updated_at,
       cohort_year: induction_record.schedule.cohort.start_year,
-      school_urn: induction_record.induction_programme.school_cohort.school.urn,
+      school: build_school_data(induction_record.induction_programme.school_cohort.school),
       schedule_info: build_schedule_info(schedule: induction_record.schedule),
       preferred_identity_email: induction_record.preferred_identity.email,
       mentor_profile_id: induction_record.mentor_profile_id,
@@ -100,6 +100,10 @@ class ECF1TeacherHistory
       training_provider_info: build_training_provider_info(induction_record:),
       appropriate_body: build_appropriate_body(induction_record:)
     )
+  end
+
+  def self.build_school_data(school)
+    Types::SchoolData.new(urn: school.urn, name: school.name)
   end
 
   def self.build_mentor_data(participant_profile:)
@@ -114,7 +118,7 @@ class ECF1TeacherHistory
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_record_rows(participant_profile:, migration_mode:)
+      induction_records: build_induction_records(participant_profile:, migration_mode:)
     )
   end
 

@@ -16,6 +16,10 @@ describe "One induction record (ongoing - no end date)" do
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year:,
+            school: {
+              name: school.name,
+              urn: school.urn,
+            },
             training_provider_info: {
               lead_provider_info: lead_provider_a,
               delivery_partner_info: delivery_partner_a,
@@ -37,6 +41,7 @@ describe "One induction record (ongoing - no end date)" do
             started_on: Date.new(2024, 1, 2),
             finished_on: nil,
             # TODO: school
+            #
             training_periods: [
               hash_including(
                 started_on: Date.new(2024, 1, 2),
