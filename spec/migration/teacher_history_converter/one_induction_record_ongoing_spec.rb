@@ -1,6 +1,7 @@
 describe "One induction record (ongoing - no end date)" do
   subject(:actual_output) { ecf2_teacher_history.to_h }
 
+  let(:school) { Types::SchoolData.new(name: "School 1", urn: 123_456) }
   let(:lead_provider_a) { Types::LeadProviderInfo.new(name: "Lead provider A", ecf1_id: "11111111-2222-3333-aaaa-cccccccccccc") }
   let(:delivery_partner_a) { Types::DeliveryPartnerInfo.new(name: "DeliveryPartner A", ecf1_id: "11111111-2222-3333-aaaa-dddddddddddd") }
   let(:cohort_year) { 2024 }
@@ -40,8 +41,7 @@ describe "One induction record (ongoing - no end date)" do
           hash_including(
             started_on: Date.new(2024, 1, 2),
             finished_on: nil,
-            # TODO: school
-            #
+            school:,
             training_periods: [
               hash_including(
                 started_on: Date.new(2024, 1, 2),
