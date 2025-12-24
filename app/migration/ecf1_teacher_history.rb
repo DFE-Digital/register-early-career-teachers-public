@@ -164,7 +164,7 @@ class ECF1TeacherHistory
   def self.from_hash(hash)
     hash.compact_with_ignore!
 
-    user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name).compact)
+    user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name, :user_id, :created_at, :updated_at).compact)
 
     ect = if hash.key?(:ect)
             ECF1TeacherHistory::ECT.from_hash(hash.fetch(:ect).slice(:participant_profile_id, :induction_records))
