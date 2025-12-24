@@ -29,7 +29,7 @@ FactoryBot.define do
     initialize_with { new(trn:, full_name:, user_id:, created_at:, updated_at:) }
   end
 
-  factory :ecf1_teacher_history_profile_state_row, class: "ECF1TeacherHistory::ProfileStateRow" do
+  factory :ecf1_teacher_history_profile_state_row, class: "ECF1TeacherHistory::ProfileState" do
     state { "active" }
     reason { nil }
     created_at { 12.months.ago }
@@ -63,7 +63,7 @@ FactoryBot.define do
     end
   end
 
-  factory :ecf1_teacher_history_induction_record_row, class: "ECF1TeacherHistory::InductionRecordRow" do
+  factory :ecf1_teacher_history_induction_record_row, class: "ECF1TeacherHistory::InductionRecord" do
     transient do
       full_name { Faker::FunnyName.two_word_name }
     end

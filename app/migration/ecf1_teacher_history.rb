@@ -3,88 +3,6 @@ class ECF1TeacherHistory
 
   class InvalidPeriodType < StandardError; end
 
-  User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at, keyword_init: true) do
-    def self.from_hash(hash)
-      new(FactoryBot.attributes_for(:ecf1_teacher_history_user, **hash))
-    end
-  end
-
-  ECT = Struct.new(:participant_profile_id,
-                   :migration_mode,
-                   :created_at,
-                   :updated_at,
-                   :induction_start_date,
-                   :induction_completion_date,
-                   :pupil_premium_uplift,
-                   :sparsity_uplift,
-                   :payments_frozen_cohort_start_year,
-                   :states,
-                   :induction_records,
-                   keyword_init: true) do
-                     def self.from_hash(hash)
-                       hash.compact_with_ignore!
-
-                       hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
-
-                       new(FactoryBot.attributes_for(:ecf1_teacher_history_ect, **hash))
-                     end
-                   end
-
-  Mentor = Struct.new(:participant_profile_id,
-                      :migration_mode,
-                      :created_at,
-                      :updated_at,
-                      :mentor_completion_date,
-                      :mentor_completion_reason,
-                      :payments_frozen_cohort_start_year,
-                      :states,
-                      :induction_records,
-                      keyword_init: true) do
-                        def self.from_hash(hash)
-                          hash.compact_with_ignore!
-
-                          hash[:induction_records] = hash[:induction_records].map { InductionRecordRow.from_hash(it) }
-
-                          new(FactoryBot.attributes_for(:ecf1_teacher_history_mentor, **hash))
-                        end
-                      end
-
-  ProfileStateRow = Struct.new(:state, :reason, :created_at)
-
-  InductionRecordRow = Struct.new(:induction_record_id,
-                                  :start_date,
-                                  :end_date,
-                                  :created_at,
-                                  :updated_at,
-                                  :cohort_year,
-                                  :school_urn,
-                                  :schedule_info,
-                                  :preferred_identity_email,
-                                  :mentor_profile_id,
-                                  :training_status,
-                                  :induction_status,
-                                  :training_programme,
-                                  :training_provider_info,
-                                  :appropriate_body,
-                                  keyword_init: true) do
-                                    def self.from_hash(hash)
-                                      hash.compact_with_ignore!
-
-                                      if (training_provider_info = hash[:training_provider_info])
-                                        hash[:training_provider_info] = TrainingProviderInfo.new(training_provider_info)
-                                      end
-
-                                      new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
-                                    end
-                                  end
-
-  TrainingProviderInfo = Struct.new(
-    :lead_provider_info,
-    :delivery_partner_info,
-    :cohort_year,
-    keyword_init: true
-  )
-
   attr_accessor :user, :ect, :mentor, :participant_identity_updated_ats
 
   def initialize(user:, ect: nil, mentor: nil, participant_identity_updated_ats: [])
@@ -165,7 +83,7 @@ class ECF1TeacherHistory
   end
 
   def self.build_induction_record_row(induction_record:)
-    InductionRecordRow.new(
+    InductionRecord.new(
       induction_record_id: induction_record.id,
       start_date: induction_record.start_date,
       end_date: induction_record.end_date,
@@ -202,7 +120,7 @@ class ECF1TeacherHistory
 
   def self.build_profile_states(participant_profile:)
     participant_profile.participant_profile_states.order(:created_at).map do |profile_state|
-      ProfileStateRow.new(state: profile_state.state, reason: profile_state.reason, created_at: profile_state.created_at)
+      ECF1TeacherHistory::ProfileState.new(state: profile_state.state, reason: profile_state.reason, created_at: profile_state.created_at)
     end
   end
 
