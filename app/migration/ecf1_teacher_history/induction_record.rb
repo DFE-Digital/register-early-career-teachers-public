@@ -19,11 +19,17 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
   using Migration::CompactWithIgnore
 
   def self.from_hash(hash)
-    hash.compact_with_ignore!
+    hash[:training_provider_info] = if (training_provider_info = hash[:training_provider_info]) && training_provider_info.present?
+                                      ECF1TeacherHistory::TrainingProviderInfo.new(
+                                        lead_provider_info: Types::LeadProviderInfo.new(**training_provider_info[:lead_provider]),
+                                        delivery_partner_info: Types::DeliveryPartnerInfo.new(**training_provider_info[:delivery_partner]),
+                                        cohort_year: training_provider_info[:cohort_year]
+                                      )
+                                    else
+                                      :ignore
+                                    end
 
-    if (training_provider_info = hash[:training_provider_info])
-      hash[:training_provider_info] = ECF1TeacherHistory::TrainingProviderInfo.new(training_provider_info)
-    end
+    hash.compact_with_ignore!
 
     if (school = hash[:school])
       hash[:school] = Types::SchoolData.new(**school)
