@@ -1,7 +1,9 @@
 class SpecObjectFormatter
-  attr_reader :formatted_object
+  attr_reader :formatted_object, :fake_schools
 
   def initialize(object, indent = 0)
+    @fake_schools = []
+
     @formatted_object = spec_format(object, indent)
   end
 
@@ -19,8 +21,7 @@ private
       return "{}" if object.empty?
 
       pairs = object.map do |k, v|
-        # FIXME: add safety measure here to prevent real TRNs/URNs/names leaking
-        "#{padding}  #{k}: #{spec_format(v, indent + 2)}"
+        "#{padding}  #{k}: #{spec_format(anonymise(k, v), indent + 2)}"
       end
 
       "{\n#{pairs.join(",\n")}\n#{padding}}"
@@ -33,5 +34,41 @@ private
     else
       object.inspect
     end
+  end
+
+  FakeSchool = Struct.new(:urn, :name, :original_urn, :original_name, keyword_init: true) do
+    def to_h
+      { urn:, name: }
+    end
+  end
+
+  def anonymise(key, value)
+    case key
+    when :trn then "1111111"
+    when :full_name then "A Teacher"
+    when :school
+      fake_school(**value)
+    else
+      value
+    end
+  end
+
+  def fake_school(urn:, name:)
+    school = if (matching_school = fake_schools.find { |fs| fs.original_urn == urn.to_s })
+               matching_school
+             else
+               num = fake_schools.count.next
+
+               FakeSchool.new(
+                 original_urn: urn.to_s,
+                 urn: (100_000 + num).to_s,
+                 original_name: name,
+                 name: "School #{num}"
+               ).tap do |new_fake_school|
+                 @fake_schools << new_fake_school
+               end
+             end
+
+    school.to_h
   end
 end
