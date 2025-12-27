@@ -27,7 +27,7 @@ describe SpecObjectFormatter do
 
     expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
       {
-        now: Time.new(#{now.year}, #{now.month}, #{now.day}, #{now.hour}, #{now.min}, #{now.sec})
+        now: Time.zone.local(#{now.year}, #{now.month}, #{now.day}, #{now.hour}, #{now.min}, #{now.sec})
       }
     EXPECTED_OUTPUT
   end
@@ -35,7 +35,7 @@ describe SpecObjectFormatter do
   it "works recursively" do
     input = { outer: { today:, now: } }
 
-    expect(SpecObjectFormatter.new(input).formatted_object).to include("Date.new", "Time.new")
+    expect(SpecObjectFormatter.new(input).formatted_object).to include("Date.new", "Time.zone.local")
   end
 
   it "works with arrays of hashes" do
@@ -44,7 +44,7 @@ describe SpecObjectFormatter do
     formatted_object = SpecObjectFormatter.new(input).formatted_object
 
     expect(formatted_object).to include("Date.new").twice
-    expect(formatted_object).to include("Time.new").once
+    expect(formatted_object).to include("Time.zone.local").once
   end
 
   it "calls inspect on any other objects" do

@@ -2,9 +2,8 @@ describe "One induction record (ongoing - no end date)" do
   subject(:actual_output) { ecf2_teacher_history.to_h }
 
   let(:school) { Types::SchoolData.new(name: "School 1", urn: 123_456) }
-  let(:lead_provider_a) { Types::LeadProviderInfo.new(name: "Lead provider A", ecf1_id: "11111111-2222-3333-aaaa-cccccccccccc") }
-  let(:delivery_partner_a) { Types::DeliveryPartnerInfo.new(name: "DeliveryPartner A", ecf1_id: "11111111-2222-3333-aaaa-dddddddddddd") }
-  let(:cohort_year) { 2024 }
+  let(:lead_provider_a) { { name: "Lead provider A", ecf1_id: "11111111-2222-3333-aaaa-cccccccccccc" } }
+  let(:delivery_partner_a) { { name: "DeliveryPartner A", ecf1_id: "11111111-2222-3333-aaaa-dddddddddddd" } }
 
   let(:input) do
     {
@@ -16,15 +15,15 @@ describe "One induction record (ongoing - no end date)" do
             start_date: Date.new(2024, 1, 2),
             end_date: :ignore,
             training_programme: "full_induction_programme",
-            cohort_year:,
+            cohort_year: 2024,
             school: {
               name: school.name,
               urn: school.urn,
             },
             training_provider_info: {
-              lead_provider_info: lead_provider_a,
-              delivery_partner_info: delivery_partner_a,
-              cohort_year:
+              lead_provider: lead_provider_a,
+              delivery_partner: delivery_partner_a,
+              cohort_year: 2024
             }
           }
         ]
@@ -47,8 +46,8 @@ describe "One induction record (ongoing - no end date)" do
                 started_on: Date.new(2024, 1, 2),
                 finished_on: nil,
                 training_programme: "provider_led",
-                lead_provider_info: lead_provider_a,
-                delivery_partner_info: delivery_partner_a,
+                lead_provider_info: Types::LeadProviderInfo.new(**lead_provider_a),
+                delivery_partner_info: Types::DeliveryPartnerInfo.new(**delivery_partner_a),
                 contract_period_year: 2024
               )
             ]
