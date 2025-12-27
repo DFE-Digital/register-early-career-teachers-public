@@ -14,7 +14,7 @@ private
     when Date
       "Date.new(#{object.year}, #{object.month}, #{object.day})"
     when Time
-      "Time.new(#{object.year}, #{object.month}, #{object.day}, #{object.hour}, #{object.min}, #{object.sec})"
+      "Time.zone.local(#{object.year}, #{object.month}, #{object.day}, #{object.hour}, #{object.min}, #{object.sec})"
     when Hash
       return "{}" if object.empty?
 

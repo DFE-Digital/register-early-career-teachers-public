@@ -12,6 +12,26 @@ class SpecGenerator
   end
 
   def spec
+    <<~SPEC
+      describe "Real data check for user #{user_id}" do
+        subject(:actual_output) { ecf2_teacher_history.to_h }
+
+        let(:input) do
+          #{SpecObjectFormatter.new(ecf1_teacher_history_hash, 4).formatted_object}
+        end
+
+        let(:expected_output) do
+          {}
+        end
+
+        let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
+        let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+
+        it "produces the expected output", skip: "set the expected_output" do
+          expect(actual_output).to include(expected_output)
+        end
+      end
+    SPEC
   end
 
   def ecf1_teacher_history_hash
@@ -80,11 +100,15 @@ private
         cohort_year: ir.cohort_year,
         school: ir.school.to_h,
         training_provider_info: ir.training_provider_info.then do |tpi|
-          {
-            lead_provider: tpi.lead_provider_info.to_h,
-            delivery_partner: tpi.delivery_partner_info.to_h,
-            cohort_year: tpi.cohort_year
-          }
+          if ir.training_programme == "full_induction_programme"
+            {
+              lead_provider: tpi.lead_provider_info.to_h,
+              delivery_partner: tpi.delivery_partner_info.to_h,
+              cohort_year: tpi.cohort_year
+            }
+          else
+            {}
+          end
         end
       }
     end
