@@ -56,4 +56,80 @@ describe SpecObjectFormatter do
       }
     EXPECTED_OUTPUT
   end
+
+  describe "anonymising results" do
+    it "replaces TRNs with a placeholder" do
+      input = { a: "a", trn: "9876543", b: "b" }
+
+      expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
+        {
+          a: "a",
+          trn: "1111111",
+          b: "b"
+        }
+      EXPECTED_OUTPUT
+    end
+
+    it "replaces names with a placeholder" do
+      input = { a: "a", full_name: "Charlie Cox", b: "b" }
+
+      expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
+        {
+          a: "a",
+          full_name: "A Teacher",
+          b: "b"
+        }
+      EXPECTED_OUTPUT
+    end
+
+    it "replaces SchoolData with a fake school and reuses the same information if repeated" do
+      input = {
+        data: [
+          {
+            school: {
+              urn: 111_111,
+              name: "The first school"
+            }
+          },
+          {
+            school: {
+              urn: 222_222,
+              name: "The second school"
+            }
+          },
+          {
+            school: {
+              urn: 111_111,
+              name: "The first school"
+            }
+          }
+        ]
+      }
+
+      expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
+        {
+          data: [
+            {
+              school: {
+                urn: "100001",
+                name: "School 1"
+              }
+            },
+            {
+              school: {
+                urn: "100002",
+                name: "School 2"
+              }
+            },
+            {
+              school: {
+                urn: "100001",
+                name: "School 1"
+              }
+            }
+          ]
+        }
+      EXPECTED_OUTPUT
+    end
+  end
 end
