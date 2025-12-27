@@ -29,7 +29,7 @@ FactoryBot.define do
     initialize_with { new(trn:, full_name:, user_id:, created_at:, updated_at:) }
   end
 
-  factory :ecf1_teacher_history_profile_state_row, class: "ECF1TeacherHistory::ProfileStateRow" do
+  factory :ecf1_teacher_history_profile_state_row, class: "ECF1TeacherHistory::ProfileState" do
     state { "active" }
     reason { nil }
     created_at { 12.months.ago }
@@ -63,7 +63,7 @@ FactoryBot.define do
     end
   end
 
-  factory :ecf1_teacher_history_induction_record_row, class: "ECF1TeacherHistory::InductionRecordRow" do
+  factory :ecf1_teacher_history_induction_record_row, class: "ECF1TeacherHistory::InductionRecord" do
     transient do
       full_name { Faker::FunnyName.two_word_name }
     end
@@ -74,7 +74,7 @@ FactoryBot.define do
     end_date { Date.new(cohort_year + 2, 6, 1) }
     created_at { start_date }
     updated_at { 6.months.ago }
-    school_urn { Faker::Number.unique.number(digits: 6).to_s }
+    sequence(:school) { |n| Types::SchoolData.new(urn: 100_000 + n, name: "School #{n}") }
     schedule_info { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
     preferred_identity_email { Faker::Internet.unique.email(name: full_name) }
     mentor_profile_id { SecureRandom.uuid }
@@ -91,7 +91,7 @@ FactoryBot.define do
           created_at:,
           updated_at:,
           cohort_year:,
-          school_urn:,
+          school:,
           schedule_info:,
           preferred_identity_email:,
           mentor_profile_id:,
