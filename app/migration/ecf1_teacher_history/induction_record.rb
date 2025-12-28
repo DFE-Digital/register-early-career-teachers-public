@@ -29,6 +29,12 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
                                       :ignore
                                     end
 
+    hash[:schedule_info] = if (schedule_info = hash[:schedule_info]) && schedule_info.present?
+                             Types::ScheduleInfo.new(**schedule_info)
+                           else
+                             :ignore
+                           end
+
     hash.compact_with_ignore!
 
     if (school = hash[:school])
