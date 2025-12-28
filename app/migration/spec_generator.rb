@@ -81,11 +81,20 @@ private
   end
 
   def ecf1_ect_data
-    return {} if ecf1_teacher_history.ect.blank?
+    ect = ecf1_teacher_history.ect
+
+    return {} if ect.blank?
 
     {
       ect: {
-        participant_profile_id: ecf1_teacher_history.ect.participant_profile_id,
+        participant_profile_id: ect.participant_profile_id,
+        created_at: ect.created_at,
+        updated_at: ect.updated_at,
+        induction_start_date: ect.induction_start_date,
+        induction_completion_date: ect.induction_completion_date,
+        pupil_premium_uplift: ect.pupil_premium_uplift,
+        sparsity_uplift: ect.sparsity_uplift,
+        payments_frozen_cohort_start_year: ect.payments_frozen_cohort_start_year,
         induction_records: ecf1_ect_induction_records
       }
     }
@@ -99,6 +108,10 @@ private
         training_programme: ir.training_programme,
         cohort_year: ir.cohort_year,
         school: ir.school.to_h,
+        induction_status: ir.induction_status,
+        training_status: ir.training_status,
+        preferred_identity_email: ir.preferred_identity_email,
+        mentor_profile_id: ir.mentor_profile_id,
         training_provider_info: ir.training_provider_info.then do |tpi|
           if ir.training_programme == "full_induction_programme"
             {
@@ -109,7 +122,8 @@ private
           else
             {}
           end
-        end
+        end,
+        schedule_info: ir.schedule_info.to_h
       }
     end
   end

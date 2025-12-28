@@ -165,14 +165,8 @@ class ECF1TeacherHistory
     hash.compact_with_ignore!
 
     user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name, :user_id, :created_at, :updated_at).compact)
-
-    ect = if hash.key?(:ect)
-            ECF1TeacherHistory::ECT.from_hash(hash.fetch(:ect).slice(:participant_profile_id, :induction_records))
-          end
-
-    mentor = if hash.key?(:mentor)
-               ECF1TeacherHistory::Mentor.from_hash(hash.fetch(:mentor).slice(:participant_profile_id, :induction_records))
-             end
+    ect = ECF1TeacherHistory::ECT.from_hash(hash.fetch(:ect)) if hash.key?(:ect)
+    mentor = ECF1TeacherHistory::Mentor.from_hash(hash.fetch(:mentor)) if hash.key?(:mentor)
 
     participant_identity_updated_ats = []
 

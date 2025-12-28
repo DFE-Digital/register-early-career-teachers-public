@@ -3,10 +3,11 @@ describe SpecGenerator do
 
   let(:school_a) { { name: "School A", urn: 123_456 } }
   let(:school_b) { { name: "School B", urn: 123_457 } }
-  let(:lead_provider_a) { Types::LeadProviderInfo.new(name: "Lead provider A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-cccccccccccc") }
-  let(:delivery_partner_a) { Types::DeliveryPartnerInfo.new(name: "DeliveryPartner A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-dddddddddddd") }
-  let(:lead_provider_b) { Types::LeadProviderInfo.new(name: "Lead provider B", ecf1_id: "bbbbbbbb-2222-3333-aaaa-cccccccccccc") }
-  let(:delivery_partner_b) { Types::DeliveryPartnerInfo.new(name: "DeliveryPartner B", ecf1_id: "bbbbbbbb-2222-3333-aaaa-dddddddddddd") }
+  let(:lead_provider_a) { { name: "Lead provider A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-cccccccccccc" } }
+  let(:delivery_partner_a) { { name: "DeliveryPartner A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-dddddddddddd" } }
+  let(:lead_provider_b) { { name: "Lead provider B", ecf1_id: "bbbbbbbb-2222-3333-aaaa-cccccccccccc" } }
+  let(:delivery_partner_b) { { name: "DeliveryPartner B", ecf1_id: "bbbbbbbb-2222-3333-aaaa-dddddddddddd" } }
+
   let(:cohort_year) { 2024 }
 
   let(:original_input) do
@@ -18,6 +19,14 @@ describe SpecGenerator do
       updated_at: 3.weeks.ago,
       ect: {
         participant_profile_id: "11111111-2222-3333-aaaa-bbbbbbbbbbbb",
+        created_at: 1.year.ago,
+        updated_at: 6.months.ago,
+        induction_start_date: 3.years.ago.to_date,
+        induction_completion_date: 3.weeks.ago.to_date,
+        pupil_premium_uplift: true,
+        sparsity_uplift: false,
+        payments_frozen_cohort_start_year: 2023,
+        # TODO: states:
         induction_records: [
           {
             start_date: Date.new(2024, 1, 1),
@@ -26,9 +35,19 @@ describe SpecGenerator do
             cohort_year:,
             school: school_a,
             training_provider_info: {
-              lead_provider_info: lead_provider_a,
-              delivery_partner_info: delivery_partner_a,
+              lead_provider: lead_provider_a,
+              delivery_partner: delivery_partner_a,
               cohort_year:
+            },
+            training_status: "active",
+            induction_status: "active",
+            preferred_identity_email: "test1@account.com",
+            mentor_profile_id: "eeeeeeee-2222-3333-7777-dddddddddddd",
+            schedule_info: {
+              schedule_id: "33333333-4444-5555-eeee-dddddddddddd",
+              identifier: "ecf-standard-september",
+              name: "ECF Standard September",
+              cohort_year: 2024,
             }
           },
           {
@@ -38,9 +57,19 @@ describe SpecGenerator do
             cohort_year:,
             school: school_b,
             training_provider_info: {
-              lead_provider_info: lead_provider_b,
-              delivery_partner_info: delivery_partner_b,
+              lead_provider: lead_provider_b,
+              delivery_partner: delivery_partner_b,
               cohort_year:
+            },
+            training_status: "withdrawn",
+            induction_status: "active",
+            preferred_identity_email: "test2@account.com",
+            mentor_profile_id: "eeeeeeee-2222-3333-8888-dddddddddddd",
+            schedule_info: {
+              schedule_id: "33333333-4444-5555-eeee-ffffffffffff",
+              identifier: "ecf-standard-january",
+              name: "ECF Standard January",
+              cohort_year: 2024,
             }
           }
         ]
@@ -54,16 +83,28 @@ describe SpecGenerator do
     subject(:hash) { spec_generator.ecf1_teacher_history_hash }
 
     it "sets the teacher values" do
-      expect(hash.fetch(:trn)).to eql("1234567")
-      expect(hash.fetch(:full_name)).to eql("A teacher")
-      expect(hash.fetch(:user_id)).to eql("11111111-eeee-dddd-aaaa-bbbbbbbbbbbb")
-      expect(hash.fetch(:created_at)).to be_within(1.second).of(4.weeks.ago)
-      expect(hash.fetch(:updated_at)).to be_within(1.second).of(3.weeks.ago)
+      aggregate_failures do
+        expect(hash.fetch(:trn)).to eql("1234567")
+        expect(hash.fetch(:full_name)).to eql("A teacher")
+        expect(hash.fetch(:user_id)).to eql("11111111-eeee-dddd-aaaa-bbbbbbbbbbbb")
+        expect(hash.fetch(:created_at)).to be_within(1.second).of(4.weeks.ago)
+        expect(hash.fetch(:updated_at)).to be_within(1.second).of(3.weeks.ago)
+      end
     end
 
     describe "ECT data" do
-      it "sets the ECT participant profile id" do
-        expect(hash.dig(:ect, :participant_profile_id)).to eql("11111111-2222-3333-aaaa-bbbbbbbbbbbb")
+      it "sets the ECT data" do
+        aggregate_failures do
+          expect(hash.dig(:ect, :participant_profile_id)).to eql("11111111-2222-3333-aaaa-bbbbbbbbbbbb")
+          expect(hash.dig(:ect, :created_at)).to be_within(1.second).of(1.year.ago)
+          expect(hash.dig(:ect, :updated_at)).to be_within(1.second).of(6.months.ago)
+          expect(hash.dig(:ect, :induction_start_date)).to eql(3.years.ago.to_date)
+          expect(hash.dig(:ect, :induction_completion_date)).to eql(3.weeks.ago.to_date)
+          expect(hash.dig(:ect, :pupil_premium_uplift)).to be(true)
+          expect(hash.dig(:ect, :sparsity_uplift)).to be(false)
+          expect(hash.dig(:ect, :payments_frozen_cohort_start_year)).to be(2023)
+          # :states,
+        end
       end
 
       it "has the right number of induction records" do
@@ -71,7 +112,7 @@ describe SpecGenerator do
       end
 
       describe "first induction record" do
-        subject(:hash) { spec_generator.ecf1_teacher_history_hash.dig(:ect, :induction_records)[0] }
+        subject(:hash) { spec_generator.ecf1_teacher_history_hash.dig(:ect, :induction_records, 0) }
 
         it "sets the correct values" do
           aggregate_failures do
@@ -80,15 +121,25 @@ describe SpecGenerator do
             expect(hash[:training_programme]).to eql("full_induction_programme")
             expect(hash[:cohort_year]).to eql(cohort_year)
             expect(hash[:school]).to eql({ urn: school_a[:urn], name: school_a[:name] })
-            expect(hash.dig(:training_provider_info, :lead_provider)).to eql({ ecf1_id: lead_provider_a.ecf1_id, name: lead_provider_a.name })
-            expect(hash.dig(:training_provider_info, :delivery_partner)).to eql({ ecf1_id: delivery_partner_a.ecf1_id, name: delivery_partner_a.name })
+            expect(hash[:training_status]).to eql("active")
+            expect(hash[:induction_status]).to eql("active")
+            expect(hash[:preferred_identity_email]).to eql("test1@account.com")
+            expect(hash[:mentor_profile_id]).to eql("eeeeeeee-2222-3333-7777-dddddddddddd")
+
+            expect(hash.dig(:training_provider_info, :lead_provider)).to eql(lead_provider_a)
+            expect(hash.dig(:training_provider_info, :delivery_partner)).to eql(delivery_partner_a)
             expect(hash.dig(:training_provider_info, :cohort_year)).to be(2024)
+
+            expect(hash.dig(:schedule_info, :schedule_id)).to eql("33333333-4444-5555-eeee-dddddddddddd")
+            expect(hash.dig(:schedule_info, :identifier)).to eql("ecf-standard-september")
+            expect(hash.dig(:schedule_info, :name)).to eql("ECF Standard September")
+            expect(hash.dig(:schedule_info, :cohort_year)).to be(2024)
           end
         end
       end
 
       describe "second induction record" do
-        subject(:hash) { spec_generator.ecf1_teacher_history_hash.dig(:ect, :induction_records)[1] }
+        subject(:hash) { spec_generator.ecf1_teacher_history_hash.dig(:ect, :induction_records, 1) }
 
         it "sets the correct values" do
           aggregate_failures do
@@ -97,9 +148,19 @@ describe SpecGenerator do
             expect(hash[:training_programme]).to eql("full_induction_programme")
             expect(hash[:cohort_year]).to eql(cohort_year)
             expect(hash[:school]).to eql({ urn: school_b[:urn], name: school_b[:name] })
-            expect(hash.dig(:training_provider_info, :lead_provider)).to eql({ ecf1_id: lead_provider_b.ecf1_id, name: lead_provider_b.name })
-            expect(hash.dig(:training_provider_info, :delivery_partner)).to eql({ ecf1_id: delivery_partner_b.ecf1_id, name: delivery_partner_b.name })
+            expect(hash[:training_status]).to eql("withdrawn")
+            expect(hash[:induction_status]).to eql("active")
+            expect(hash[:preferred_identity_email]).to eql("test2@account.com")
+            expect(hash[:mentor_profile_id]).to eql("eeeeeeee-2222-3333-8888-dddddddddddd")
+
+            expect(hash.dig(:training_provider_info, :lead_provider)).to eql(lead_provider_b)
+            expect(hash.dig(:training_provider_info, :delivery_partner)).to eql(delivery_partner_b)
             expect(hash.dig(:training_provider_info, :cohort_year)).to be(2024)
+
+            expect(hash.dig(:schedule_info, :schedule_id)).to eql("33333333-4444-5555-eeee-ffffffffffff")
+            expect(hash.dig(:schedule_info, :identifier)).to eql("ecf-standard-january")
+            expect(hash.dig(:schedule_info, :name)).to eql("ECF Standard January")
+            expect(hash.dig(:schedule_info, :cohort_year)).to be(2024)
           end
         end
       end
