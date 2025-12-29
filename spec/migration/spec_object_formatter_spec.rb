@@ -70,13 +70,25 @@ describe SpecObjectFormatter do
       EXPECTED_OUTPUT
     end
 
-    it "replaces names with a placeholder" do
+    it "replaces teacher names with a placeholder" do
       input = { a: "a", full_name: "Charlie Cox", b: "b" }
 
       expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
         {
           a: "a",
           full_name: "A Teacher",
+          b: "b"
+        }
+      EXPECTED_OUTPUT
+    end
+
+    it "replaces preferred identity email addresses with a placeholder" do
+      input = { a: "a", preferred_identity_email: "charliec@hotmail.com", b: "b" }
+
+      expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
+        {
+          a: "a",
+          preferred_identity_email: "a.teacher@example.com",
           b: "b"
         }
       EXPECTED_OUTPUT
@@ -125,6 +137,56 @@ describe SpecObjectFormatter do
               school: {
                 urn: "100001",
                 name: "School 1"
+              }
+            }
+          ]
+        }
+      EXPECTED_OUTPUT
+    end
+
+    it "replaces DeliveryPartner with a fake delivery partner and reuses the same information if repeated" do
+      input = {
+        data: [
+          {
+            delivery_partner: {
+              id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
+              name: "Delivery partner A"
+            }
+          },
+          {
+            delivery_partner: {
+              id: "11111111-2222-3333-bbbb-bbbbbbbbbbbb",
+              name: "Delivery partner B"
+            }
+          },
+          {
+            delivery_partner: {
+              id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
+              name: "Delivery partner A"
+            }
+          }
+        ]
+      }
+
+      expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
+        {
+          data: [
+            {
+              delivery_partner: {
+                id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
+                name: "Delivery partner A"
+              }
+            },
+            {
+              delivery_partner: {
+                id: "11111111-2222-3333-bbbb-bbbbbbbbbbbb",
+                name: "Delivery partner B"
+              }
+            },
+            {
+              delivery_partner: {
+                id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
+                name: "Delivery partner A"
               }
             }
           ]

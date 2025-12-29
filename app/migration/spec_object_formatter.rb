@@ -3,6 +3,7 @@ class SpecObjectFormatter
 
   def initialize(object, indent = 0)
     @fake_schools = []
+    @fake_delivery_partner = []
 
     @formatted_object = spec_format(object, indent)
   end
@@ -42,10 +43,17 @@ private
     end
   end
 
+  FakeDeliveryPartner = Struct.new(:id, :name, :original_id, :original_name, keyword_init: true) do
+    def to_h
+      { id:, name: }
+    end
+  end
+
   def anonymise(key, value)
     case key
     when :trn then "1111111"
     when :full_name then "A Teacher"
+    when :preferred_identity_email then "a.teacher@example.com"
     when :school
       fake_school(**value)
     else
@@ -70,5 +78,24 @@ private
              end
 
     school.to_h
+  end
+
+  def fake_delivery_partner(id:, name:)
+    delivery_partner = if (matching_delivery_partner = fake_delivery_partner.find { |fdp| fdp.original_id == id.id })
+                         matching_delivery_partner
+                       else
+                         num = fake_Delivery_partners.count.next
+
+                         FakeDeliveryPartner.new(
+                           original_id: id.to_s,
+                           id: (100_000 + num).to_s,
+                           original_name: name,
+                           name: "School #{num}"
+                         ).tap do |new_fake_delivery_partner|
+                           @fake_Delivery_partners << new_fake_delivery_partner
+                         end
+                       end
+
+    delivery_partner.to_h
   end
 end
