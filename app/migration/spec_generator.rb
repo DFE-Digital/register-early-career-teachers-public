@@ -129,14 +129,49 @@ private
   end
 
   def ecf1_mentor_data
-    # TODO: write this
+    mentor = ecf1_teacher_history.mentor
 
-    {}
+    return {} if mentor.blank?
+
+    {
+      mentor: {
+        participant_profile_id: mentor.participant_profile_id,
+        created_at: mentor.created_at,
+        updated_at: mentor.updated_at,
+        mentor_completion_date: mentor.mentor_completion_date,
+        mentor_completion_reason: mentor.mentor_completion_reason,
+        payments_frozen_cohort_start_year: mentor.payments_frozen_cohort_start_year,
+        induction_records: ecf1_mentor_induction_records
+        # states
+      }
+    }
   end
 
   def ecf1_mentor_induction_records
-    # TODO: write this
-
-    []
+    ecf1_teacher_history.mentor.induction_records.map do |ir|
+      {
+        start_date: ir.start_date,
+        end_date: ir.end_date,
+        training_programme: ir.training_programme,
+        cohort_year: ir.cohort_year,
+        school: ir.school.to_h,
+        induction_status: ir.induction_status,
+        training_status: ir.training_status,
+        preferred_identity_email: ir.preferred_identity_email,
+        mentor_profile_id: ir.mentor_profile_id,
+        training_provider_info: ir.training_provider_info.then do |tpi|
+          if ir.training_programme == "full_induction_programme"
+            {
+              lead_provider: tpi.lead_provider_info.to_h,
+              delivery_partner: tpi.delivery_partner_info.to_h,
+              cohort_year: tpi.cohort_year
+            }
+          else
+            {}
+          end
+        end,
+        schedule_info: ir.schedule_info.to_h
+      }
+    end
   end
 end
