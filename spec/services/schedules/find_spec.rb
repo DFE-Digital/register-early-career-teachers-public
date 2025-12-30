@@ -84,24 +84,34 @@ RSpec.describe Schedules::Find do
                 end
               end
 
-              context "when the training period started between 1st November and 29th February" do
+              context "when the training period started between 1st November and 31st December" do
                 let(:year) { 2024 }
+                let(:started_on) { Date.new(year, 12, 15) }
 
+                it "assigns the schedule to the current training period" do
+                  expect(service.identifier).to include("january")
+                  expect(service.contract_period_year).to eq(year)
+                end
+              end
+
+              context "when the training period started between 1st January and 29th February" do
                 context "when the year is a leap year" do
-                  let(:started_on) { Date.new(year, 2, 29) }
+                  let(:year) { 2023 }
+                  let(:started_on) { Date.new(year + 1, 2, 29) }
 
                   it "assigns the schedule to the current training period" do
                     expect(service.identifier).to include("january")
+                    expect(service.contract_period_year).to eq(2023)
                   end
                 end
 
                 context "when the year is not a leap year" do
-                  let(:year) { 2023 }
-
-                  let(:started_on) { Date.new(year, 1, 15) }
+                  let(:year) { 2022 }
+                  let(:started_on) { Date.new(year + 1, 1, 15) }
 
                   it "assigns the schedule to the current training period" do
                     expect(service.identifier).to include("january")
+                    expect(service.contract_period_year).to eq(2022)
                   end
                 end
               end
@@ -111,6 +121,7 @@ RSpec.describe Schedules::Find do
 
                 it "assigns the schedule to the current training period" do
                   expect(service.identifier).to include("april")
+                  expect(service.contract_period_year).to eq(year)
                 end
               end
             end
