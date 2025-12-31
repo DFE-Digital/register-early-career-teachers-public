@@ -17,7 +17,8 @@ ECF1TeacherHistory::ECT = Struct.new(
   def self.from_hash(hash)
     hash.compact_with_ignore!
 
-    hash[:induction_records] = hash[:induction_records].map { ECF1TeacherHistory::InductionRecord.from_hash(it) }
+    hash[:induction_records] = hash[:induction_records]&.map { ECF1TeacherHistory::InductionRecord.from_hash(it) } || []
+    hash[:states] = hash[:states]&.map { ECF1TeacherHistory::ProfileState.from_hash(it) } || []
 
     new(FactoryBot.attributes_for(:ecf1_teacher_history_ect, **hash))
   end
