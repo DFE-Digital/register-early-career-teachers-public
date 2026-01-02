@@ -95,6 +95,7 @@ private
         pupil_premium_uplift: ect.pupil_premium_uplift,
         sparsity_uplift: ect.sparsity_uplift,
         payments_frozen_cohort_start_year: ect.payments_frozen_cohort_start_year,
+        states: ecf1_ect_states,
         induction_records: ecf1_ect_induction_records
       }
     }
@@ -128,6 +129,12 @@ private
     end
   end
 
+  def ecf1_ect_states
+    ecf1_teacher_history.ect.states.map do |s|
+      { state: s.state, reason: s.reason, created_at: s.created_at }
+    end
+  end
+
   def ecf1_mentor_data
     mentor = ecf1_teacher_history.mentor
 
@@ -141,10 +148,16 @@ private
         mentor_completion_date: mentor.mentor_completion_date,
         mentor_completion_reason: mentor.mentor_completion_reason,
         payments_frozen_cohort_start_year: mentor.payments_frozen_cohort_start_year,
-        induction_records: ecf1_mentor_induction_records
-        # states
+        induction_records: ecf1_mentor_induction_records,
+        states: ecf1_mentor_states,
       }
     }
+  end
+
+  def ecf1_mentor_states
+    ecf1_teacher_history.mentor.states.map do |s|
+      { state: s.state, reason: s.reason, created_at: s.created_at }
+    end
   end
 
   def ecf1_mentor_induction_records

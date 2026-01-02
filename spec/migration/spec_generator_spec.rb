@@ -27,7 +27,10 @@ describe SpecGenerator do
         pupil_premium_uplift: true,
         sparsity_uplift: false,
         payments_frozen_cohort_start_year: 2023,
-        # TODO: states:
+        states: [
+          { state: "active", reason: nil, created_at: 1.year.ago },
+          { state: "withdrawn", reason: "mentor-no-longer-being-mentor", created_at: 6.months.ago }
+        ],
         induction_records: [
           {
             start_date: Date.new(2024, 1, 1),
@@ -82,6 +85,10 @@ describe SpecGenerator do
         mentor_completion_date: Date.new(2025, 1, 2),
         mentor_completion_reason: "completed_declaration_received",
         payments_frozen_cohort_start_year: 2024,
+        states: [
+          { state: "active", reason: nil, created_at: 3.months.ago },
+          { state: "deferred", reason: "long-term-sickness", created_at: 2.months.ago }
+        ],
         induction_records: [
           {
             start_date: Date.new(2025, 3, 3),
@@ -157,7 +164,32 @@ describe SpecGenerator do
           expect(hash.dig(:ect, :pupil_premium_uplift)).to be(true)
           expect(hash.dig(:ect, :sparsity_uplift)).to be(false)
           expect(hash.dig(:ect, :payments_frozen_cohort_start_year)).to be(2023)
-          # TODO: status changes
+        end
+      end
+
+      it "has the right number of status changes" do
+        expect(hash.dig(:ect, :states).count).to be(2)
+      end
+
+      describe "status changes" do
+        it "sets the first status change up correclty" do
+          hash = spec_generator.ecf1_teacher_history_hash.dig(:ect, :states, 0)
+
+          aggregate_failures do
+            expect(hash[:state]).to eql("active")
+            expect(hash[:reason]).to be_nil
+            expect(hash[:created_at]).to be_within(1.second).of(1.year.ago)
+          end
+        end
+
+        it "sets the second status change up correclty" do
+          hash = spec_generator.ecf1_teacher_history_hash.dig(:ect, :states, 1)
+
+          aggregate_failures do
+            expect(hash[:state]).to eql("withdrawn")
+            expect(hash[:reason]).to eql("mentor-no-longer-being-mentor")
+            expect(hash[:created_at]).to be_within(1.second).of(6.months.ago)
+          end
         end
       end
 
@@ -227,8 +259,32 @@ describe SpecGenerator do
           expect(hash.dig(:mentor, :mentor_completion_date)).to eql(Date.new(2025, 1, 2))
           expect(hash.dig(:mentor, :mentor_completion_reason)).to eql("completed_declaration_received")
           expect(hash.dig(:mentor, :payments_frozen_cohort_start_year)).to be(2024)
+        end
+      end
 
-          # TODO: status changes
+      it "has the right number of status changes" do
+        expect(hash.dig(:ect, :states).count).to be(2)
+      end
+
+      describe "status changes" do
+        it "sets the first status change up correclty" do
+          hash = spec_generator.ecf1_teacher_history_hash.dig(:mentor, :states, 0)
+
+          aggregate_failures do
+            expect(hash[:state]).to eql("active")
+            expect(hash[:reason]).to be_nil
+            expect(hash[:created_at]).to be_within(1.second).of(3.months.ago)
+          end
+        end
+
+        it "sets the second status change up correclty" do
+          hash = spec_generator.ecf1_teacher_history_hash.dig(:mentor, :states, 1)
+
+          aggregate_failures do
+            expect(hash[:state]).to eql("deferred")
+            expect(hash[:reason]).to eql("long-term-sickness")
+            expect(hash[:created_at]).to be_within(1.second).of(2.months.ago)
+          end
         end
       end
 
