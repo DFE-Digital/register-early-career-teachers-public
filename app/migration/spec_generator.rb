@@ -39,6 +39,17 @@ class SpecGenerator
     #   trn: "1234567",
     #   ect: {
     #     participant_profile_id: "11111111-2222-3333-aaaa-bbbbbbbbbbbb",
+    #     created_at: 1.year.ago,
+    #     updated_at: 6.months.ago,
+    #     induction_start_date: 3.years.ago.to_date,
+    #     induction_completion_date: 3.weeks.ago.to_date,
+    #     pupil_premium_uplift: true,
+    #     sparsity_uplift: false,
+    #     payments_frozen_cohort_start_year: 2023,
+    #     states: [
+    #       { state: "active", reason: nil, created_at: 1.year.ago },
+    #       { state: "withdrawn", reason: "mentor-no-longer-being-mentor", created_at: 6.months.ago }
+    #     ],
     #     induction_records: [
     #       {
     #         start_date: Date.new(2024, 1, 2),
@@ -47,13 +58,48 @@ class SpecGenerator
     #         cohort_year:,
     #         school:,
     #         training_provider_info: {
-    #           lead_provider_info: lead_provider_a,
-    #           delivery_partner_info: delivery_partner_a,
+    #           lead_provider: { name: "Lead provider A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-cccccccccccc" },
+    #           delivery_partner: { name: "DeliveryPartner A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-dddddddddddd" },
     #           cohort_year:
     #         }
     #       }
     #     ]
     #   },
+    #   mentor: {
+    #     participant_profile_id: "11111111-2222-3333-aaaa-cccccccccccc",
+    #     created_at: 6.months.ago,
+    #     updated_at: 3.months.ago,
+    #     mentor_completion_date: Date.new(2025, 1, 2),
+    #     mentor_completion_reason: "completed_declaration_received",
+    #     payments_frozen_cohort_start_year: 2024,
+    #     states: [
+    #       { state: "active", reason: nil, created_at: 3.months.ago },
+    #       { state: "deferred", reason: "long-term-sickness", created_at: 2.months.ago }
+    #     ],
+    #     induction_records: [
+    #       {
+    #         start_date: Date.new(2025, 3, 3),
+    #         end_date: Date.new(2025, 4, 4),
+    #         training_programme: "full_induction_programme",
+    #         cohort_year: mentor_cohort_year,
+    #         school: school_a,
+    #         training_provider_info: {
+    #           lead_provider: { name: "Lead provider A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-cccccccccccc" },
+    #           delivery_partner: { name: "DeliveryPartner A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-dddddddddddd" },
+    #           cohort_year: mentor_cohort_year
+    #         },
+    #         training_status: "active",
+    #         induction_status: "active",
+    #         preferred_identity_email: "test3@account.com",
+    #         schedule_info: {
+    #           schedule_id: "77777777-4444-5555-eeee-bbbbbbbbbbbb",
+    #           identifier: "ecf-replacement-april",
+    #           name: "ECF Replacement April",
+    #           cohort_year: mentor_cohort_year
+    #         }
+    #       },
+    #     ]
+    #   }
     # }
     {
       **ecf1_teacher_data,
