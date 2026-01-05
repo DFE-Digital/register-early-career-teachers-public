@@ -22,6 +22,15 @@ class ECF2TeacherHistory::MentorAtSchoolPeriodRow
     }
   end
 
+  def to_h
+    {
+      started_on:,
+      finished_on:,
+      school:,
+      email:
+    }
+  end
+
   def real_school
     GIAS::School.find_by!(urn: school.urn).school
   end

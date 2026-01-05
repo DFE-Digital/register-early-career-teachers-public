@@ -16,36 +16,38 @@ class TeacherHistoryConverter::DateCorrector
   # - Otherwise use min of start_date and created_at
   # - For subsequent records: just use start_date
   def corrected_start_date(induction_record, sequence_number)
-    if sequence_number.zero?
-      if induction_record.start_date.to_date == INDUCTION_RECORDS_ADDED_DATE
-        SERVICE_START_DATE
-      else
-        [induction_record.start_date, induction_record.created_at.to_date].min
-      end
-    else
-      induction_record.start_date
-    end
+    date = if sequence_number.zero?
+             if induction_record.start_date.to_date == INDUCTION_RECORDS_ADDED_DATE
+               SERVICE_START_DATE
+             else
+               [induction_record.start_date, induction_record.created_at.to_date].min
+             end
+           else
+             induction_record.start_date
+           end
+
+    date.to_date
   end
 
   # Corrects end dates for school periods (ECTAtSchoolPeriod/MentorAtSchoolPeriod)
   def corrected_end_date(induction_record, induction_records, participant_type:)
     if participant_type == :ect && ect_with_more_than_2_irs_and_completion_date?(induction_records)
       if last_created_induction_record?(induction_record, induction_records)
-        return ect_induction_completion_date
+        return ect_induction_completion_date&.to_date
       end
 
-      return [induction_record.end_date, ect_induction_completion_date].compact.min
+      return [induction_record.end_date&.to_date, ect_induction_completion_date&.to_date].compact.min
     end
 
     return induction_record.updated_at.to_date if last_and_leaving_and_flipping_dates?(induction_record, induction_records)
     return first_created_induction_record(induction_records).updated_at.to_date if two_induction_records_and_last_completed?(induction_records)
 
-    induction_record.end_date
+    induction_record.end_date&.to_date
   end
 
   # Corrects end dates for training periods
   def corrected_training_period_end_date(induction_record, induction_records, participant_type:)
-    candidate_end_date = induction_record.end_date
+    candidate_end_date = induction_record.end_date&.to_date
 
     return first_created_induction_record(induction_records).end_date if two_irs_at_a_school_and_only_last_deferred_or_withdrawn?(induction_records)
     return candidate_end_date if induction_records.count > 1

@@ -9,8 +9,8 @@ describe ECF2TeacherHistory do
 
   let!(:school_a) { FactoryBot.create(:school, urn: 111_111) }
   let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
-  let(:school_a_data) { ECF2TeacherHistory::SchoolData.new(urn: 111_111, name: "School A") }
-  let(:school_b_data) { ECF2TeacherHistory::SchoolData.new(urn: 222_222, name: "School B") }
+  let(:school_a_data) { Types::SchoolData.new(urn: 111_111, name: "School A") }
+  let(:school_b_data) { Types::SchoolData.new(urn: 222_222, name: "School B") }
   let(:mentor_data) { ECF2TeacherHistory::MentorData.new(trn: "1234567", urn: "123456", started_on: 1.week.ago, finished_on: 1.day.ago) }
   let(:created_at) { 1.month.ago.round }
 
@@ -230,7 +230,7 @@ describe ECF2TeacherHistory do
               delivery_partner_info:,
               contract_period_year: contract_period.year,
               schedule_info:,
-              school_urn: school_a.urn
+              school: school_a_data
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -554,7 +554,7 @@ describe ECF2TeacherHistory do
               delivery_partner_info:,
               contract_period_year: contract_period.year,
               schedule_info:,
-              school_urn: school_a.urn
+              school: school_a_data
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -790,7 +790,7 @@ describe ECF2TeacherHistory do
           delivery_partner_info:,
           contract_period_year: contract_period.year,
           ecf_start_induction_record_id:,
-          school_urn: school_a.urn
+          school: school_a_data
         )
       end
 
@@ -841,7 +841,7 @@ describe ECF2TeacherHistory do
     end
 
     describe "when School is not found" do
-      let(:nonexistent_school_data) { ECF2TeacherHistory::SchoolData.new(urn: 999_999, name: "Nonexistent School") }
+      let(:nonexistent_school_data) { Types::SchoolData.new(urn: 999_999, name: "Nonexistent School") }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
 
       let(:training_period_row) do
@@ -909,7 +909,7 @@ describe ECF2TeacherHistory do
           delivery_partner_info:,
           contract_period_year: contract_period.year,
           ecf_start_induction_record_id:,
-          school_urn: school_a.urn
+          school: school_a
         )
       end
 
@@ -970,7 +970,7 @@ describe ECF2TeacherHistory do
           delivery_partner_info:,
           contract_period_year: contract_period.year,
           ecf_start_induction_record_id:,
-          school_urn: school_a.urn
+          school: school_a
         )
       end
 
@@ -1027,7 +1027,7 @@ describe ECF2TeacherHistory do
           delivery_partner_info:,
           contract_period_year: contract_period.year,
           ecf_start_induction_record_id:,
-          school_urn: school_a.urn
+          school: school_a
         )
       end
 
@@ -1082,7 +1082,7 @@ describe ECF2TeacherHistory do
           delivery_partner_info: nonexistent_delivery_partner_info,
           contract_period_year: contract_period.year,
           ecf_start_induction_record_id:,
-          school_urn: school_a.urn
+          school: school_a
         )
       end
 

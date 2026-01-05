@@ -70,7 +70,7 @@ private
 
     induction_records = ecf1_teacher_history.ect.induction_records
 
-    group_induction_records_by_school(induction_records).map do |school_urn, school_induction_records|
+    group_induction_records_by_school(induction_records).map do |school, school_induction_records|
       first_ir = school_induction_records.first
       last_ir = school_induction_records.last
       first_index = induction_records.index(first_ir)
@@ -78,7 +78,7 @@ private
       ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
         started_on: date_corrector.corrected_start_date(first_ir, first_index),
         finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :ect),
-        school: Types::SchoolData.new(urn: school_urn, name: "Thing"),
+        school:,
         email: first_ir.preferred_identity_email,
         mentorship_period_rows: school_induction_records.flat_map { |ir| build_mentorship_period_rows(ir) },
         appropriate_body: last_ir.appropriate_body,
@@ -113,7 +113,7 @@ private
 
     induction_records = ecf1_teacher_history.mentor.induction_records
 
-    group_induction_records_by_school(induction_records).map do |school_urn, school_induction_records|
+    group_induction_records_by_school(induction_records).map do |school, school_induction_records|
       first_ir = school_induction_records.first
       last_ir = school_induction_records.last
       first_index = induction_records.index(first_ir)
@@ -121,7 +121,7 @@ private
       ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
         started_on: date_corrector.corrected_start_date(first_ir, first_index),
         finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :mentor),
-        school: Types::SchoolData.new(urn: school_urn, name: nil),
+        school:,
         email: first_ir.preferred_identity_email,
         training_period_rows: build_mentor_training_period_rows_for_school(school_induction_records, induction_records)
       )
@@ -170,7 +170,7 @@ private
 
     mentor_data = ECF2TeacherHistory::MentorData.new(
       trn: mentor_teacher.trn,
-      urn: induction_record.school_urn,
+      urn: induction_record.school.urn,
       started_on:,
       finished_on:
     )
@@ -204,7 +204,7 @@ private
       contract_period_year: induction_record.cohort_year,
       created_at: induction_record.created_at,
       ecf_start_induction_record_id: induction_record.induction_record_id,
-      school_urn: induction_record.school_urn
+      school: induction_record.school
     }
   end
 
@@ -235,9 +235,9 @@ private
   end
 
   # Groups consecutive induction records by school URN
-  # Returns array of [school_urn, [induction_records]] pairs preserving order
+  # Returns array of [school, [induction_records]] pairs preserving order
   def group_induction_records_by_school(induction_records)
-    induction_records.chunk(&:school_urn).to_a
+    induction_records.chunk(&:school).to_a
   end
 
   # Determines if training has changed between IRs (requiring a new TrainingPeriod)
