@@ -20,7 +20,7 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
     when_i_enter_valid_details_for_the_induction_tutor
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
-    and_there_is_a_link_to_cancel_and_go_back_to_the_start_of_the_wizard
+    and_there_is_a_link_to_cancel_and_go_back_to_the_induction_tutor_details
 
     when_i_click_back
     then_i_am_taken_to_the_wizard_start_page
@@ -61,11 +61,11 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
   end
 
   def and_there_is_a_link_to_cancel_and_go_back
-    expect(page.get_by_role("link", name: "Cancel and go back")).to have_attribute("href", "/school/home/induction-tutor")
+    expect(page.get_by_role("link", name: "Cancel and go back to induction tutor details")).to have_attribute("href", "/school/home/induction-tutor")
   end
 
-  def and_there_is_a_link_to_cancel_and_go_back_to_the_start_of_the_wizard
-    expect(page.get_by_role("link", name: "Cancel and go back")).to have_attribute("href", "#{base_page}/edit")
+  def and_there_is_a_link_to_cancel_and_go_back_to_the_induction_tutor_details
+    expect(page.get_by_role("link", name: "Cancel and go back to induction tutor details")).to have_attribute("href", "/school/home/induction-tutor")
   end
 
   def when_i_click_confirm_change
@@ -73,7 +73,7 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
   end
 
   def and_i_should_see_a_confirmation_message
-    expect(page.get_by_text("You've changed your school’s induction tutor to New Name")).to be_visible
+    expect(page.get_by_text("You’ve changed your school’s induction tutor to New Name")).to be_visible
   end
 
   def then_i_should_see_the_ects_home_page
