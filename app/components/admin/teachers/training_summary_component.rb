@@ -3,13 +3,18 @@ module Admin
     class TrainingSummaryComponent < ApplicationComponent
       class UnexpectedTrainingProgrammeError < StandardError; end
       attr_reader :training_period
+      attr_accessor :show_move_partnership_link
 
-      def initialize(training_period:)
+      def initialize(training_period:, show_move_partnership_link: false)
         @training_period = training_period
+        @show_move_partnership_link = show_move_partnership_link
       end
 
       def call
         govuk_summary_card(title: card_title) do |card|
+          if show_move_partnership_link?
+            card.with_action { helpers.govuk_link_to("Move to a different partnership", move_partnership_path) }
+          end
           card.with_summary_list do |list|
             rows.each do |row|
               list.with_row do |r|
@@ -136,6 +141,19 @@ module Admin
           key: { text: label },
           value: { text: value.presence || not_available_text }
         }
+      end
+
+      def show_move_partnership_link?
+        show_move_partnership_link &&
+          training_period.provider_led_training_programme? &&
+          training_period.finished_on.nil?
+      end
+
+      def move_partnership_path
+        teacher_id = training_period.trainee&.teacher_id
+        return if teacher_id.blank?
+
+        new_admin_teacher_training_period_partnership_path(teacher_id, training_period)
       end
     end
   end
