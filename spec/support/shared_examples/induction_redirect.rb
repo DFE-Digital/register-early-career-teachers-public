@@ -1,7 +1,8 @@
 RSpec.shared_examples "an induction redirectable route" do
   context "induction redirection" do
+    let(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
     let!(:induction_tutor_last_nominated_in) { FactoryBot.create(:contract_period, year:) }
-    let(:year) { Time.zone.now.year }
+    let(:year) { current_contract_period.year }
     let!(:school) { FactoryBot.create(:school, induction_tutor_last_nominated_in:, induction_tutor_name:, induction_tutor_email:) }
     let(:induction_tutor_name) { Faker::Name.name }
     let(:induction_tutor_email) { Faker::Internet.email }
@@ -29,9 +30,9 @@ RSpec.shared_examples "an induction redirectable route" do
         end
 
         context "when the school's induction tutor needs to update information" do
-          let(:year) { 2024 }
+          let(:year) { current_contract_period.year - 1 }
 
-          before { FactoryBot.create(:contract_period, year: Time.zone.now.year) }
+          before { current_contract_period }
 
           it_behaves_like "redirects to confirmation wizard"
         end
@@ -67,9 +68,9 @@ RSpec.shared_examples "an induction redirectable route" do
         end
 
         context "when the school's induction tutor needs to update information" do
-          let(:year) { 2024 }
+          let(:year) { current_contract_period.year - 1 }
 
-          before { FactoryBot.create(:contract_period, year: Time.zone.now.year) }
+          before { current_contract_period }
 
           it_behaves_like "does not redirect to wizard"
         end
@@ -101,9 +102,9 @@ RSpec.shared_examples "an induction redirectable route" do
         end
 
         context "when the school's induction tutor needs to update information" do
-          let(:year) { 2024 }
+          let(:year) { current_contract_period.year - 1 }
 
-          before { FactoryBot.create(:contract_period, year: Time.zone.now.year) }
+          before { current_contract_period }
 
           it_behaves_like "does not redirect to wizard"
         end

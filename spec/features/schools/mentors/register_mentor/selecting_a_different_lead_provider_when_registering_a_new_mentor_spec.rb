@@ -53,7 +53,7 @@ RSpec.describe "Selecting a different lead provider", :enable_schools_interface 
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    contract_period = FactoryBot.create(:contract_period, year: Date.current.year)
+    contract_period = @contract_period
 
     @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
     FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period:)

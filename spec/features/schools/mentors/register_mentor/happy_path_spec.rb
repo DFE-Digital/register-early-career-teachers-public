@@ -89,6 +89,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   def and_the_school_is_in_a_partnership_with_a_lead_provider
     @contract_period = FactoryBot.create(:contract_period, :current, :with_schedules)
     @school_partnership = make_partnership_for(@school, @contract_period)
+    @lead_provider = @school_partnership.lead_provider_delivery_partnership.lead_provider
   end
 
   def and_i_sign_in_as_that_school_user
@@ -96,7 +97,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    contract_period = FactoryBot.create(:contract_period, year: Date.current.year)
+    contract_period = @contract_period
     @ect = FactoryBot.create(:ect_at_school_period, :with_training_period, :ongoing, lead_provider: @lead_provider, contract_period:, school: @school)
     @training_period = FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: @ect, school_partnership: @school_partnership)
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
