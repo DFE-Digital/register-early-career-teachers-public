@@ -3,6 +3,10 @@ FactoryBot.define do
     association :active_lead_provider
     association :delivery_partner
 
+    initialize_with do
+      LeadProviderDeliveryPartnership.find_or_initialize_by(active_lead_provider:, delivery_partner:)
+    end
+
     trait :for_year do
       transient do
         year { 2025 }
