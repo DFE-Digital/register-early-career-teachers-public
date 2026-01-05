@@ -14,7 +14,7 @@ RSpec.describe TrainingPeriods::Create do
   include_context "safe_schedules"
 
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
-  let(:started_on) { Date.new(2025, 9, 1) }
+  let(:started_on) { mid_year }
   let(:finished_on) { mid_year + 1.day }
   let(:year) { started_on.year }
   let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year:) }
