@@ -1,0 +1,28 @@
+<%
+  page_data(
+    title: 'Check and confirm change',
+    backlink_href: @wizard.previous_step_path
+  )
+%>
+
+<%= govuk_summary_list do |list| %>
+  <% list.with_row do |row| %>
+    <% row.with_key { 'Induction tutor' } %>
+    <% row.with_value { @wizard.store.induction_tutor_name } %>
+  <% end %>
+
+  <% list.with_row do |row| %>
+    <% row.with_key { 'Induction tutor email' } %>
+    <% row.with_value { @wizard.store.induction_tutor_email } %>
+  <% end %>
+<% end %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_submit 'Confirm change' %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to "Cancel and go back to induction tutor details", schools_induction_tutor_path %>
+</p>

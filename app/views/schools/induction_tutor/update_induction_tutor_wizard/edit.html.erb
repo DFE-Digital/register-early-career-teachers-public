@@ -1,0 +1,29 @@
+<% page_data(
+    title: "Change induction tutor",
+    error: @wizard.school.errors.present?,
+    backlink_href: schools_induction_tutor_path
+) %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+    <h2 class="govuk-heading-m">Enter induction tutor details</h2>
+    <%= f.govuk_text_field :induction_tutor_name,
+                            label: {
+                              text: "Full name"
+                            }
+                          %>
+    <%= f.govuk_text_field :induction_tutor_email,
+                            label: {
+                              text: "Email"
+                            },
+                            hint: {
+                              text: "Do not use a generic email like headteacher@school.com"
+                            } %>
+
+  <%= f.govuk_submit 'Continue' %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to "Cancel and go back to induction tutor details", schools_induction_tutor_path %>
+</p>
