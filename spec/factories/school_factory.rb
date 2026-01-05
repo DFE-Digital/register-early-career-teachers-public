@@ -3,6 +3,10 @@ FactoryBot.define do
     urn { Faker::Number.unique.number(digits: 6) }
     independent
 
+    initialize_with do
+      School.find_or_initialize_by(urn:)
+    end
+
     trait :independent do
       gias_school { association :gias_school, :independent_school_type, :section_41, urn: }
     end

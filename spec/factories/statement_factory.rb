@@ -16,6 +16,10 @@ FactoryBot.define do
     payment_date { Faker::Date.forward(days: 30) }
     output_fee
 
+    initialize_with do
+      Statement.find_or_initialize_by(active_lead_provider:, month:, year:)
+    end
+
     trait :open do
       status { :open }
     end
