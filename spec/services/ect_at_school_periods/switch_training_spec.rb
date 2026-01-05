@@ -178,7 +178,7 @@ module ECTAtSchoolPeriods
 
     describe ".to_provider_led" do
       let!(:contract_period) do
-        FactoryBot.create(:contract_period, :with_schedules, year: Date.current.year)
+        FactoryBot.create(:contract_period, :with_schedules, :current)
       end
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let!(:active_lead_provider) do
@@ -388,7 +388,7 @@ module ECTAtSchoolPeriods
               expect(new_training_period.school_partnership).to be_nil
               expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
               expect(new_training_period.started_on).to eq(Date.current)
-              expect(new_training_period.schedule.contract_period.year).to eq(Date.current.year)
+              expect(new_training_period.schedule.contract_period.year).to eq(contract_period.year)
             end
 
             it "records a `new_training_period_for_mentor` event" do
@@ -437,7 +437,7 @@ module ECTAtSchoolPeriods
               expect(new_training_period.school_partnership).to eq(school_partnership)
               expect(new_training_period.expression_of_interest).to be_nil
               expect(new_training_period.started_on).to eq(Date.current)
-              expect(new_training_period.schedule.contract_period.year).to eq(Date.current.year)
+              expect(new_training_period.schedule.contract_period.year).to eq(contract_period.year)
             end
           end
 
