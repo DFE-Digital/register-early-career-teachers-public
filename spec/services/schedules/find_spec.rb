@@ -45,6 +45,8 @@ RSpec.describe Schedules::Find do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-april")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-reduced-september")
+        FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-january")
+        FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-april")
       end
 
       let(:period_type_key) { period_type }
