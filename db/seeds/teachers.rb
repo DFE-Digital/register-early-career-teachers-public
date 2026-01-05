@@ -81,7 +81,14 @@ teachers = [
 ]
 
 teachers.each do |attrs|
-  FactoryBot.create(:teacher, *attrs[:traits], attrs.excluding(:traits)).tap do |teacher|
-    describe_teacher(teacher)
-  end
+  trn = attrs.fetch(:trn)
+
+  teacher = Teacher.find_or_initialize_by(trn:)
+
+  teacher.assign_attributes(
+    attrs.excluding(:traits, :id_changed_from_trn).except(:trn)
+  )
+
+  teacher.save!
+  describe_teacher(teacher)
 end
