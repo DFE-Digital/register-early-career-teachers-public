@@ -64,15 +64,7 @@ module Schedules
     end
 
     def contract_period_year
-      ContractPeriod.containing_date(latest_start_date)&.year || fallback_contract_period_year
-    end
-
-    def fallback_contract_period_year
-      if schedule_month == "april"
-        latest_start_date.year - 1
-      else
-        latest_start_date.year
-      end
+      ContractPeriod.containing_date(latest_start_date).year
     end
 
     def identifier
