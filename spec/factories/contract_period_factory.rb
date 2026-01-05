@@ -1,10 +1,8 @@
+START_MONTH_AND_DAY = [6, 1].freeze
+FINISH_MONTH_AND_DAY = [5, 31].freeze
+
 FactoryBot.define do
   sequence(:base_contract_period, 2021)
-
-  # rubocop:disable Lint/ConstantDefinitionInBlock
-  START_MONTH_AND_DAY = [6, 1].freeze
-  FINISH_MONTH_AND_DAY = [5, 31].freeze
-  # rubocop:enable Lint/ConstantDefinitionInBlock
 
   factory(:contract_period) do
     transient do
