@@ -10,13 +10,16 @@ def describe_school_partnership(sp)
   print_seed_info("🤝 contract period: #{contract_period_year}", indent: 4)
 end
 
-def find_lead_provider_delivery_partnership(lead_provider:, delivery_partner:, contract_period:)
-  LeadProviderDeliveryPartnership
-    .joins(active_lead_provider: %i[contract_period lead_provider])
-    .find_by(
-      delivery_partner:,
-      active_lead_provider: { lead_provider:, contract_period: }
-    )
+def find_or_create_lead_provider_delivery_partnership(lead_provider:, delivery_partner:, contract_period:)
+  active_lead_provider = ActiveLeadProvider.find_by!(
+    lead_provider:,
+    contract_period:
+  )
+
+  LeadProviderDeliveryPartnership.find_or_create_by!(
+    active_lead_provider:,
+    delivery_partner:
+  )
 end
 
 abbey_grove_school = School.find_by!(urn: 1_759_427)
@@ -24,11 +27,11 @@ ackley_bridge = School.find_by!(urn: 3_375_958)
 mallory_towers = School.find_by!(urn: 5_279_293)
 brookfield_school = School.find_by!(urn: 2_976_163)
 
-rp2021 = ContractPeriod.find_by(year: 2021)
-rp2022 = ContractPeriod.find_by(year: 2022)
-rp2023 = ContractPeriod.find_by(year: 2023)
-rp2024 = ContractPeriod.find_by(year: 2024)
-rp2025 = ContractPeriod.find_by(year: 2025)
+rp2021 = ContractPeriod.find_by!(year: 2021)
+rp2022 = ContractPeriod.find_by!(year: 2022)
+rp2023 = ContractPeriod.find_by!(year: 2023)
+rp2024 = ContractPeriod.find_by!(year: 2024)
+rp2025 = ContractPeriod.find_by!(year: 2025)
 
 ambition_institute = LeadProvider.find_by!(name: "Ambition Institute")
 teach_first = LeadProvider.find_by!(name: "Teach First")
@@ -38,16 +41,75 @@ artisan = DeliveryPartner.find_by!(name: "Artisan Education Group")
 grain = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
 capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partner")
 
-ambition_institute__artisan__2021 = find_lead_provider_delivery_partnership(delivery_partner: artisan, lead_provider: ambition_institute, contract_period: rp2021)
-ambition_institute__artisan__2022 = find_lead_provider_delivery_partnership(delivery_partner: artisan, lead_provider: ambition_institute, contract_period: rp2022)
-ambition_institute__artisan__2023 = find_lead_provider_delivery_partnership(delivery_partner: artisan, lead_provider: ambition_institute, contract_period: rp2023)
-ambition_institute__artisan__2025 = find_lead_provider_delivery_partnership(delivery_partner: artisan, lead_provider: ambition_institute, contract_period: rp2025)
-teach_first__grain__2021 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_first, contract_period: rp2021)
-teach_first__grain__2022 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_first, contract_period: rp2022)
-teach_first__grain__2023 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_first, contract_period: rp2023)
-teach_first__grain__2024 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_first, contract_period: rp2024)
-teach_first__grain__2025 = find_lead_provider_delivery_partnership(delivery_partner: grain, lead_provider: teach_first, contract_period: rp2025)
-capita__delivery_partner__2022 = find_lead_provider_delivery_partnership(delivery_partner: capita_delivery_partner, lead_provider: capita, contract_period: rp2022)
+ambition_institute__artisan__2021 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: artisan,
+    lead_provider: ambition_institute,
+    contract_period: rp2021
+  )
+
+ambition_institute__artisan__2022 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: artisan,
+    lead_provider: ambition_institute,
+    contract_period: rp2022
+  )
+
+ambition_institute__artisan__2023 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: artisan,
+    lead_provider: ambition_institute,
+    contract_period: rp2023
+  )
+
+ambition_institute__artisan__2025 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: artisan,
+    lead_provider: ambition_institute,
+    contract_period: rp2025
+  )
+
+teach_first__grain__2021 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: grain,
+    lead_provider: teach_first,
+    contract_period: rp2021
+  )
+
+teach_first__grain__2022 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: grain,
+    lead_provider: teach_first,
+    contract_period: rp2022
+  )
+
+teach_first__grain__2023 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: grain,
+    lead_provider: teach_first,
+    contract_period: rp2023
+  )
+
+teach_first__grain__2024 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: grain,
+    lead_provider: teach_first,
+    contract_period: rp2024
+  )
+
+teach_first__grain__2025 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: grain,
+    lead_provider: teach_first,
+    contract_period: rp2025
+  )
+
+capita__delivery_partner__2022 =
+  find_or_create_lead_provider_delivery_partnership(
+    delivery_partner: capita_delivery_partner,
+    lead_provider: capita,
+    contract_period: rp2022
+  )
 
 [
   { school: abbey_grove_school, lead_provider_delivery_partnership: ambition_institute__artisan__2022 },
@@ -62,22 +124,28 @@ capita__delivery_partner__2022 = find_lead_provider_delivery_partnership(deliver
   { school: mallory_towers, lead_provider_delivery_partnership: teach_first__grain__2022 },
   { school: brookfield_school, lead_provider_delivery_partnership: teach_first__grain__2022 },
   { school: brookfield_school, lead_provider_delivery_partnership: capita__delivery_partner__2022 },
-].each { |kwargs| FactoryBot.create(:school_partnership, **kwargs).tap { |sp| describe_school_partnership(sp) } }
+].each do |kwargs|
+  SchoolPartnership.find_or_create_by!(**kwargs).tap do |sp|
+    describe_school_partnership(sp)
+  end
+end
 
 # Create 3 school partnerships for each lead provider and contract period
 ActiveLeadProvider.find_each do |active_lead_provider|
   3.times do
     delivery_partner = DeliveryPartner.order("RANDOM()").first
-    lead_provider_delivery_partnership = LeadProviderDeliveryPartnership.find_by(active_lead_provider:, delivery_partner:)
-    lead_provider_delivery_partnership ||= FactoryBot.create(:lead_provider_delivery_partnership,
-                                                             active_lead_provider:,
-                                                             delivery_partner:)
+
+    lead_provider_delivery_partnership =
+      LeadProviderDeliveryPartnership.find_or_create_by!(
+        active_lead_provider:,
+        delivery_partner:
+      )
 
     school = School.order("RANDOM()").first
-    next if SchoolPartnership.where(school:, lead_provider_delivery_partnership:).exists?
 
-    FactoryBot.create(:school_partnership,
-                      school:,
-                      lead_provider_delivery_partnership:)
+    SchoolPartnership.find_or_create_by!(
+      school:,
+      lead_provider_delivery_partnership:
+    )
   end
 end

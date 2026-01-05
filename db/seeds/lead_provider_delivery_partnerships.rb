@@ -63,9 +63,12 @@ lead_provider_delivery_partnerships = []
   { active_lead_provider: best_practice_network_2024, delivery_partner: rising_minds },
   { active_lead_provider: capita_2022, delivery_partner: capita_delivery_partner }
 ].each do |data|
-  FactoryBot.create(:lead_provider_delivery_partnership,
-                    active_lead_provider: data[:active_lead_provider],
-                    delivery_partner: data[:delivery_partner]).tap { lead_provider_delivery_partnerships << it }
+  LeadProviderDeliveryPartnership
+    .find_or_create_by!(
+      active_lead_provider: data[:active_lead_provider],
+      delivery_partner: data[:delivery_partner]
+    )
+    .tap { lead_provider_delivery_partnerships << it }
 end
 
 # These are additional delivery partnerships useful for testing.
@@ -76,8 +79,11 @@ ActiveLeadProvider.find_each do |active_lead_provider|
   all_delivery_partners.sample(rand(1..3)).each do |delivery_partner|
     next if LeadProviderDeliveryPartnership.exists?(active_lead_provider:, delivery_partner:)
 
-    FactoryBot
-      .create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:)
+    LeadProviderDeliveryPartnership
+      .create!(
+        active_lead_provider:,
+        delivery_partner:
+      )
       .tap { lead_provider_delivery_partnerships << it }
   end
 end
