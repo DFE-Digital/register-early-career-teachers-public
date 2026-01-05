@@ -145,24 +145,26 @@ describe SpecObjectFormatter do
     end
 
     it "replaces DeliveryPartner with a fake delivery partner and reuses the same information if repeated" do
+      allow(SecureRandom).to receive(:uuid).and_return("11111111-2222-3333-aaaa-aaaaaaaaaaaa", "11111111-2222-3333-bbbb-bbbbbbbbbbbb")
+
       input = {
         data: [
           {
             delivery_partner: {
-              id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
-              name: "Delivery partner A"
+              id: "aaaaaaaa-2222-3333-aaaa-aaaaaaaaaaaa",
+              name: "The first delivery partner"
             }
           },
           {
             delivery_partner: {
-              id: "11111111-2222-3333-bbbb-bbbbbbbbbbbb",
-              name: "Delivery partner B"
+              id: "bbbbbbbb-2222-3333-bbbb-bbbbbbbbbbbb",
+              name: "The second delivery partner"
             }
           },
           {
             delivery_partner: {
-              id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
-              name: "Delivery partner A"
+              id: "aaaaaaaa-2222-3333-aaaa-aaaaaaaaaaaa",
+              name: "The first delivery partner"
             }
           }
         ]
@@ -174,19 +176,19 @@ describe SpecObjectFormatter do
             {
               delivery_partner: {
                 id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
-                name: "Delivery partner A"
+                name: "Delivery partner 1"
               }
             },
             {
               delivery_partner: {
                 id: "11111111-2222-3333-bbbb-bbbbbbbbbbbb",
-                name: "Delivery partner B"
+                name: "Delivery partner 2"
               }
             },
             {
               delivery_partner: {
                 id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
-                name: "Delivery partner A"
+                name: "Delivery partner 1"
               }
             }
           ]

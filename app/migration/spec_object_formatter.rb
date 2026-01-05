@@ -1,9 +1,9 @@
 class SpecObjectFormatter
-  attr_reader :formatted_object, :fake_schools
+  attr_reader :formatted_object, :fake_schools, :fake_delivery_partners
 
   def initialize(object, indent = 0)
     @fake_schools = []
-    @fake_delivery_partner = []
+    @fake_delivery_partners = []
 
     @formatted_object = spec_format(object, indent)
   end
@@ -54,10 +54,10 @@ private
     when :trn then "1111111"
     when :full_name then "A Teacher"
     when :preferred_identity_email then "a.teacher@example.com"
-    when :school
-      fake_school(**value)
-    else
-      value
+    when :school then fake_school(**value)
+    when :delivery_partner
+      fake_delivery_partner(**value)
+    else value
     end
   end
 
@@ -81,18 +81,18 @@ private
   end
 
   def fake_delivery_partner(id:, name:)
-    delivery_partner = if (matching_delivery_partner = fake_delivery_partner.find { |fdp| fdp.original_id == id.id })
+    delivery_partner = if (matching_delivery_partner = fake_delivery_partners.find { |fdp| fdp.original_id == id })
                          matching_delivery_partner
                        else
-                         num = fake_Delivery_partners.count.next
+                         num = fake_delivery_partners.count.next
 
                          FakeDeliveryPartner.new(
-                           original_id: id.to_s,
-                           id: (100_000 + num).to_s,
+                           original_id: id,
+                           id: SecureRandom.uuid,
                            original_name: name,
-                           name: "School #{num}"
+                           name: "Delivery partner #{num}"
                          ).tap do |new_fake_delivery_partner|
-                           @fake_Delivery_partners << new_fake_delivery_partner
+                           @fake_delivery_partners << new_fake_delivery_partner
                          end
                        end
 
