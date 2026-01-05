@@ -1,53 +1,7 @@
 class ECF1TeacherHistory
+  using Migration::CompactWithIgnore
+
   class InvalidPeriodType < StandardError; end
-
-  User = Struct.new(:trn, :full_name, :user_id, :created_at, :updated_at)
-
-  ECT = Struct.new(:participant_profile_id,
-                   :migration_mode,
-                   :created_at,
-                   :updated_at,
-                   :induction_start_date,
-                   :induction_completion_date,
-                   :pupil_premium_uplift,
-                   :sparsity_uplift,
-                   :payments_frozen_cohort_start_year,
-                   :states,
-                   :induction_records)
-
-  Mentor = Struct.new(:participant_profile_id,
-                      :migration_mode,
-                      :created_at,
-                      :updated_at,
-                      :mentor_completion_date,
-                      :mentor_completion_reason,
-                      :payments_frozen_cohort_start_year,
-                      :states,
-                      :induction_records)
-
-  ProfileStateRow = Struct.new(:state, :reason, :created_at)
-
-  InductionRecordRow = Struct.new(:induction_record_id,
-                                  :start_date,
-                                  :end_date,
-                                  :created_at,
-                                  :updated_at,
-                                  :cohort_year,
-                                  :school_urn,
-                                  :schedule_info,
-                                  :preferred_identity_email,
-                                  :mentor_profile_id,
-                                  :training_status,
-                                  :induction_status,
-                                  :training_programme,
-                                  :training_provider_info,
-                                  :appropriate_body)
-
-  TrainingProviderInfo = Struct.new(
-    :lead_provider_info,
-    :delivery_partner_info,
-    :cohort_year
-  )
 
   attr_accessor :user, :ect, :mentor, :participant_identity_updated_ats
 
@@ -102,21 +56,21 @@ class ECF1TeacherHistory
       sparsity_uplift: participant_profile.sparsity_uplift,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_record_rows(participant_profile:, migration_mode:)
+      induction_records: build_induction_records(participant_profile:, migration_mode:)
     )
   end
 
   # Build rows for all the induction records of the participant
-  def self.build_induction_record_rows(participant_profile:, migration_mode:)
+  def self.build_induction_records(participant_profile:, migration_mode:)
     row_matches = ->(rows, row) do
       rows.any? do |r|
-        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school_urn, r.cohort_year] ==
-          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school_urn, row.cohort_year]
+        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school.urn, r.cohort_year] ==
+          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school.urn, row.cohort_year]
       end
     end
 
     rows = participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
-      build_induction_record_row(induction_record:)
+      build_induction_record(induction_record:)
     end
 
     if migration_mode == "latest_induction_records"
@@ -128,15 +82,15 @@ class ECF1TeacherHistory
     end
   end
 
-  def self.build_induction_record_row(induction_record:)
-    InductionRecordRow.new(
+  def self.build_induction_record(induction_record:)
+    InductionRecord.new(
       induction_record_id: induction_record.id,
       start_date: induction_record.start_date,
       end_date: induction_record.end_date,
       created_at: induction_record.created_at,
       updated_at: induction_record.updated_at,
       cohort_year: induction_record.schedule.cohort.start_year,
-      school_urn: induction_record.induction_programme.school_cohort.school.urn,
+      school: build_school_data(induction_record.induction_programme.school_cohort.school),
       schedule_info: build_schedule_info(schedule: induction_record.schedule),
       preferred_identity_email: induction_record.preferred_identity.email,
       mentor_profile_id: induction_record.mentor_profile_id,
@@ -146,6 +100,10 @@ class ECF1TeacherHistory
       training_provider_info: build_training_provider_info(induction_record:),
       appropriate_body: build_appropriate_body(induction_record:)
     )
+  end
+
+  def self.build_school_data(school)
+    Types::SchoolData.new(urn: school.urn, name: school.name)
   end
 
   def self.build_mentor_data(participant_profile:)
@@ -160,13 +118,13 @@ class ECF1TeacherHistory
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_record_rows(participant_profile:, migration_mode:)
+      induction_records: build_induction_records(participant_profile:, migration_mode:)
     )
   end
 
   def self.build_profile_states(participant_profile:)
     participant_profile.participant_profile_states.order(:created_at).map do |profile_state|
-      ProfileStateRow.new(state: profile_state.state, reason: profile_state.reason, created_at: profile_state.created_at)
+      ECF1TeacherHistory::ProfileState.new(state: profile_state.state, reason: profile_state.reason, created_at: profile_state.created_at)
     end
   end
 
@@ -201,5 +159,17 @@ class ECF1TeacherHistory
     return "latest_induction_records" if participant_profile.two_induction_records_that_overlap?
 
     "all_induction_records"
+  end
+
+  def self.from_hash(hash)
+    hash.compact_with_ignore!
+
+    user = ECF1TeacherHistory::User.from_hash(hash.slice(:trn, :full_name, :user_id, :created_at, :updated_at).compact)
+    ect = ECF1TeacherHistory::ECT.from_hash(hash.fetch(:ect)) if hash.key?(:ect)
+    mentor = ECF1TeacherHistory::Mentor.from_hash(hash.fetch(:mentor)) if hash.key?(:mentor)
+
+    participant_identity_updated_ats = []
+
+    new(user:, ect:, mentor:, participant_identity_updated_ats:)
   end
 end

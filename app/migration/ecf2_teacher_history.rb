@@ -3,7 +3,6 @@ class ECF2TeacherHistory
 
   MIGRATION_ITEM_TYPE = "Migration::InductionRecord"
 
-  SchoolData = Data.define(:urn, :name)
   AppropriateBodyData = Data.define(:id, :name)
   MentorData = Data.define(:trn, :urn, :started_on, :finished_on)
 
@@ -34,6 +33,17 @@ class ECF2TeacherHistory
 
   def success?
     !@failed
+  end
+
+  def to_h
+    {
+      teacher: {
+        trn: teacher_row.trn,
+        api_ect_training_record_id: teacher_row.api_ect_training_record_id,
+        ect_at_school_periods: ect_at_school_period_rows.map(&:to_h),
+        mentor_at_school_periods: mentor_at_school_period_rows.map(&:to_h)
+      }
+    }
   end
 
 private

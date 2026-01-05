@@ -4,7 +4,7 @@ module Migration
 
     attr_reader :query
 
-    InductionRecordRow = Struct.new(
+    InductionRecord = Struct.new(
       :induction_record_id,
       :start_date,
       :end_date,
@@ -82,7 +82,7 @@ module Migration
     end
 
     def row(induction_record)
-      InductionRecordRow.new(
+      InductionRecord.new(
         induction_record_id: induction_record.id,
         start_date: induction_record.start_date.to_date,
         end_date: induction_record.end_date&.to_date,
@@ -127,11 +127,11 @@ module Migration
     end
 
     def base_query
-      InductionRecord.eager_load(:participant_profile,
-                                 :preferred_identity,
-                                 schedule: :cohort,
-                                 induction_programme: { school_cohort: :school, partnership: :lead_provider })
-                     .order(start_date: :asc)
+      Migration::InductionRecord.eager_load(:participant_profile,
+                                            :preferred_identity,
+                                            schedule: :cohort,
+                                            induction_programme: { school_cohort: :school, partnership: :lead_provider })
+                                .order(start_date: :asc)
     end
   end
 end

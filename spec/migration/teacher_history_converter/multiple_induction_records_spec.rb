@@ -1,14 +1,14 @@
 RSpec.describe "Multiple induction records" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
-  let(:school_urn_1) { "123456" }
-  let(:school_urn_2) { "789012" }
+  let(:school_1) { Types::SchoolData.new(urn: "123456", name: "School 1") }
+  let(:school_2) { Types::SchoolData.new(urn: "789012", name: "School 2") }
   let(:lead_provider_1) { Types::LeadProviderInfo.new(ecf1_id: SecureRandom.uuid, name: "Lead Provider A") }
   let(:lead_provider_2) { Types::LeadProviderInfo.new(ecf1_id: SecureRandom.uuid, name: "Lead Provider B") }
   let(:delivery_partner_1) { Types::DeliveryPartnerInfo.new(ecf1_id: SecureRandom.uuid, name: "Delivery Partner A") }
   let(:delivery_partner_2) { Types::DeliveryPartnerInfo.new(ecf1_id: SecureRandom.uuid, name: "Delivery Partner B") }
 
-  def build_induction_record(school_urn:, start_date:, end_date:, lead_provider_info: nil, delivery_partner_info: nil, training_programme: :full_induction_programme, training_status: "active")
+  def build_induction_record(school:, start_date:, end_date:, lead_provider_info: nil, delivery_partner_info: nil, training_programme: :full_induction_programme, training_status: "active")
     training_provider_info = if lead_provider_info || delivery_partner_info
                                FactoryBot.build(:ecf1_teacher_history_training_provider_info,
                                                 lead_provider_info:,
@@ -17,7 +17,7 @@ RSpec.describe "Multiple induction records" do
 
     FactoryBot.build(
       :ecf1_teacher_history_induction_record_row,
-      school_urn:,
+      school:,
       start_date:,
       end_date:,
       training_programme:,
@@ -34,14 +34,14 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31),
                 lead_provider_info: lead_provider_1,
                 delivery_partner_info: delivery_partner_1
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31),
                 lead_provider_info: lead_provider_1,
@@ -81,12 +81,12 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31)
               ),
               build_induction_record(
-                school_urn: school_urn_2,
+                school: school_2,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31)
               )
@@ -101,7 +101,7 @@ RSpec.describe "Multiple induction records" do
 
       it "assigns correct schools to each period" do
         urns = subject.ect_at_school_period_rows.map { |row| row.school.urn }
-        expect(urns).to eq([school_urn_1, school_urn_2])
+        expect(urns).to eq([school_1.urn, school_2.urn])
       end
     end
 
@@ -111,17 +111,17 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31)
               ),
               build_induction_record(
-                school_urn: school_urn_2,
+                school: school_2,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 6, 30)
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 9, 1),
                 end_date: Date.new(2025, 8, 31)
               )
@@ -136,7 +136,7 @@ RSpec.describe "Multiple induction records" do
 
       it "maintains chronological order" do
         urns = subject.ect_at_school_period_rows.map { |row| row.school.urn }
-        expect(urns).to eq([school_urn_1, school_urn_2, school_urn_1])
+        expect(urns).to eq([school_1.urn, school_2.urn, school_1.urn])
       end
     end
   end
@@ -148,14 +148,14 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31),
                 lead_provider_info: lead_provider_1,
                 delivery_partner_info: delivery_partner_1
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31),
                 lead_provider_info: lead_provider_2,
@@ -187,14 +187,14 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31),
                 lead_provider_info: lead_provider_1,
                 delivery_partner_info: delivery_partner_1
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31),
                 lead_provider_info: lead_provider_1,
@@ -216,13 +216,13 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31),
                 training_programme: :full_induction_programme
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31),
                 training_programme: :core_induction_programme
@@ -249,14 +249,14 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31),
                 lead_provider_info: lead_provider_1,
                 training_status: "deferred"
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31),
                 lead_provider_info: lead_provider_1,
@@ -283,14 +283,14 @@ RSpec.describe "Multiple induction records" do
           history.ect = FactoryBot.build(:ecf1_teacher_history_ect) do |ect|
             ect.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31),
                 lead_provider_info: lead_provider_1,
                 training_status: "withdrawn"
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31),
                 lead_provider_info: lead_provider_1,
@@ -319,14 +319,14 @@ RSpec.describe "Multiple induction records" do
           history.mentor = FactoryBot.build(:ecf1_teacher_history_mentor) do |mentor|
             mentor.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 1, 31),
                 lead_provider_info: lead_provider_1,
                 training_programme: :full_induction_programme
               ),
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2024, 2, 1),
                 end_date: Date.new(2024, 8, 31),
                 lead_provider_info: lead_provider_1,
@@ -352,7 +352,7 @@ RSpec.describe "Multiple induction records" do
           history.mentor = FactoryBot.build(:ecf1_teacher_history_mentor) do |mentor|
             mentor.induction_records = [
               build_induction_record(
-                school_urn: school_urn_1,
+                school: school_1,
                 start_date: Date.new(2023, 9, 1),
                 end_date: Date.new(2024, 8, 31),
                 training_programme: :core_induction_programme
