@@ -5,6 +5,10 @@ FactoryBot.define do
     dfe_sign_in_organisation_id { SecureRandom.uuid }
     teaching_school_hub
 
+    initialize_with do
+      AppropriateBody.find_or_initialize_by(name:)
+    end
+
     trait :istip do
       body_type { "national" }
       name { AppropriateBodies::Search::ISTIP }

@@ -3,5 +3,10 @@ FactoryBot.define do
     association :lead_provider
     description { "A token used for test purposes" }
     last_used_at { Faker::Time.between(from: 1.month.ago, to: 1.day.ago) }
+    token { SecureRandom.base58(32) }
+
+    initialize_with do
+      API::Token.find_or_initialize_by(lead_provider:, token:)
+    end
   end
 end

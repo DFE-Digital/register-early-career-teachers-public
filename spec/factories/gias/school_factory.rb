@@ -10,6 +10,10 @@ FactoryBot.define do
     urn { Faker::Number.unique.within(range: 10_000..9_999_999) }
     ukprn { Faker::Number.unique.within(range: 1_000_000..99_999_999).to_s }
 
+    initialize_with do
+      GIAS::School.find_or_initialize_by(urn:)
+    end
+
     # eligibility to be registered in the service
     trait(:eligible) do
       open
@@ -76,7 +80,7 @@ FactoryBot.define do
     end
 
     trait(:with_school) do
-      school { build_school }
+      school { build(:school, urn:) }
     end
   end
 end
