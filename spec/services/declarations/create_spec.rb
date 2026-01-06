@@ -38,8 +38,20 @@ RSpec.describe Declarations::Create do
         let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
         let!(:mentorship_period) do
           if trainee_type == :ect
-            mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
-            FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
+            mentor = FactoryBot.create(
+              :mentor_at_school_period,
+              school: at_school_period.school,
+              started_on: at_school_period.started_on,
+              finished_on: at_school_period.finished_on
+            )
+
+            FactoryBot.create(
+              :mentorship_period,
+              mentee: at_school_period,
+              mentor:,
+              started_on: at_school_period.started_on,
+              finished_on: at_school_period.finished_on
+            )
           end
         end
 
