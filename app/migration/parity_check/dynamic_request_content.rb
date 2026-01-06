@@ -450,23 +450,28 @@ module ParityCheck
         .where(state: %w[submitted eligible payable paid])
         .select(:participant_profile_id)
 
-      participant_profile_id = Migration::ParticipantProfile
-        .where(id: profiles_with_declarations)
-        .joins(induction_records: { induction_programme: { partnership: :cohort } })
-        .where(
-          partnerships: {
-            lead_provider_id: lead_provider.ecf_id,
-            challenged_at: nil,
-            challenge_reason: nil,
-            cohorts: { start_year: cohort_start_years },
-          }
-        )
-        .distinct
-        .limit(20)
-        .pluck(:id)
-        .sample
+      @teacher_api_id_for_declaration_already_exists_create_action ||= {}
+      @teacher_api_id_for_declaration_already_exists_create_action[cohort_start_years] ||= begin
+        participant_profile_id = Migration::ParticipantProfile
+          .where(id: profiles_with_declarations)
+          .joins(induction_records: { induction_programme: { partnership: :cohort } })
+          .where(
+            partnerships: {
+              lead_provider_id: lead_provider.ecf_id,
+              challenged_at: nil,
+              challenge_reason: nil,
+              cohorts: { start_year: cohort_start_years },
+            }
+          )
+          .distinct
+          .limit(20)
+          .pluck(:id)
+          .sample
 
-      Migration::ParticipantProfile.find(participant_profile_id).participant_identity.user_id
+        return unless participant_profile_id
+
+        Migration::ParticipantProfile.find(participant_profile_id).participant_identity.user_id
+      end
     end
 
     def declaration_already_exists_create_body
@@ -537,6 +542,8 @@ module ParityCheck
     end
 
     def latest_training_period(participant)
+      return unless participant
+
       metadata = participant.lead_provider_metadata.find_by(lead_provider_id: lead_provider.id)
       return unless metadata
 
