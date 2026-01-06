@@ -185,7 +185,7 @@ module ECTAtSchoolPeriods
             end
 
             let!(:current_mentorship) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee: ect_at_school_period, mentor: previous_mentor) }
-            let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
+            let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school: ect_at_school_period.school, started_on: 1.month.ago, finished_on: 1.day.ago) }
             let(:mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.weeks.ago, mentor_at_school_period: previous_mentor) }
 
             context "when the previous mentor had not started training" do

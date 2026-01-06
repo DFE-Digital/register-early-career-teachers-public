@@ -59,22 +59,32 @@ end
     name: "Greyfriars School",
     type: :state_school_type
   }
-].map do |data|
-  FactoryBot.create(
+].uniq { |h| h[:urn] }.map do |data|
+  type = data[:type]
+
+  # If a School with this URN already exists (e.g. created by earlier seed files),
+  # reuse it rather than trying to create again
+  school = School.find_by(urn: data[:urn])
+
+  school ||= FactoryBot.create(
     :gias_school,
     :with_school,
     :eligible_type,
     :in_england,
-    data.delete(:type),
+    type,
     **data.merge(
       establishment_number: data[:urn],
       section_41_approved: false
     ).except(
       :induction_tutor_name,
-      :induction_tutor_email
+      :induction_tutor_email,
+      :type
     )
-  ).school.tap do |s|
-    s.update!(**data.except(:name))
-    describe_school(s)
-  end
+  ).school
+
+  # Update School-specific attributes separately
+  school.update!(**data.except(:name, :type))
+
+  describe_school(school)
+  school
 end

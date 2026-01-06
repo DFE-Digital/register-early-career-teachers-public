@@ -8,7 +8,7 @@ describe MentorshipPeriods::Finish do
   let(:finished_on) { 1.week.ago.to_date }
   let(:author) { FactoryBot.build(:school_user, school_urn: ect_at_school_period.school.urn) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **existing_dates) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, **existing_dates) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: ect_at_school_period.school, **existing_dates) }
   let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect_at_school_period, **existing_dates) }
 
   describe "initialization" do
