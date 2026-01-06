@@ -1,4 +1,6 @@
 class TeacherHistoryConverter
+  include TeacherHistoryConverter::CalculatedAttributes
+
   attr_reader :ecf1_teacher_history
 
   def initialize(ecf1_teacher_history:)
@@ -31,7 +33,7 @@ private
       api_id: ecf1_teacher_history.user.user_id,
       api_ect_training_record_id: ecf1_teacher_history.ect&.participant_profile_id,
       api_mentor_training_record_id: ecf1_teacher_history.mentor&.participant_profile_id,
-      api_updated_at: calculate_api_updated_at,
+      api_updated_at: participant_api_updated_at(ecf1_teacher_history:),
       ect_migration_mode: migration_mode,
       ect_pupil_premium_uplift: ecf1_teacher_history.ect&.pupil_premium_uplift,
       ect_sparsity_uplift: ecf1_teacher_history.ect&.sparsity_uplift,
@@ -41,28 +43,6 @@ private
       created_at: ecf1_teacher_history.user.created_at,
       updated_at: ecf1_teacher_history.user.updated_at
     )
-  end
-
-  # Calculates the api_updated_at timestamp using ECF's ParticipantSerializer logic:
-  # The max of participant_profiles.updated_at, user.updated_at,
-  # participant_identities.updated_at, and induction_records.updated_at
-  def calculate_api_updated_at
-    timestamps = [ecf1_teacher_history.user.updated_at]
-
-    if ecf1_teacher_history.ect.present?
-      timestamps << ecf1_teacher_history.ect.updated_at
-      timestamps.concat(ecf1_teacher_history.ect.induction_records.map(&:updated_at))
-    end
-
-    if ecf1_teacher_history.mentor.present?
-      timestamps << ecf1_teacher_history.mentor.updated_at
-      timestamps.concat(ecf1_teacher_history.mentor.induction_records.map(&:updated_at))
-    end
-
-    # participant_identities.updated_at is captured in user if needed
-    timestamps.concat(ecf1_teacher_history.participant_identity_updated_ats || [])
-
-    timestamps.compact.max
   end
 
   def ect_at_school_period_rows
