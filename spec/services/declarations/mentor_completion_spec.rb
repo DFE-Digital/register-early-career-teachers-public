@@ -16,6 +16,11 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
   describe "#perform" do
     context "when declaration is billable or changeable" do
       context "when mentor training is completed" do
+        before do
+          # Voided declaration with a later declaration_date should be ignored.
+          FactoryBot.create(:declaration, :voided, declaration_type: "completed", training_period:, declaration_date: 1.week.ago)
+        end
+
         let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date: 2.weeks.ago) }
 
         it "mentor is now ineligible for funding" do

@@ -11,7 +11,7 @@ module Declarations
       return false unless mentor_completion_event?
 
       ActiveRecord::Base.transaction do
-        if latest_completed_declaration.billable_or_changeable?
+        if latest_billable_completed_declaration
           mentor_completed_training!
           finish_training_period!
         else
@@ -74,7 +74,7 @@ module Declarations
 
     def mentor_completed_training!
       teacher.update!(
-        mentor_became_ineligible_for_funding_on: latest_completed_declaration.declaration_date,
+        mentor_became_ineligible_for_funding_on: latest_billable_completed_declaration.declaration_date,
         mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
       )
     end
@@ -86,12 +86,13 @@ module Declarations
       )
     end
 
-    def latest_completed_declaration
-      @latest_completed_declaration ||= teacher
+    def latest_billable_completed_declaration
+      @latest_billable_completed_declaration ||= teacher
         .mentor_declarations
         .declaration_type_completed
+        .billable_or_changeable
         .order(declaration_date: :desc)
-        .first!
+        .first
     end
 
     def record_completion_change_event!
