@@ -121,7 +121,6 @@ FactoryBot.define do
     end
 
     participant_profile_id { SecureRandom.uuid }
-    migration_mode { "all_induction_records" }
     induction_start_date { Date.new(cohort_year, 9, 1) }
     induction_completion_date { nil }
     created_at { Date.new(cohort_year, 9, 1) }
@@ -129,15 +128,21 @@ FactoryBot.define do
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
     induction_records { [] }
 
+    pupil_premium_uplift { false }
+    sparsity_uplift { false }
+    payments_frozen_cohort_start_year { nil }
+
     initialize_with do
       new(participant_profile_id:,
-          migration_mode:,
           induction_start_date:,
           induction_completion_date:,
           created_at:,
           updated_at:,
           states:,
-          induction_records:)
+          induction_records:,
+          pupil_premium_uplift:,
+          sparsity_uplift:,
+          payments_frozen_cohort_start_year:)
     end
 
     trait :one_induction_record do
@@ -151,7 +156,6 @@ FactoryBot.define do
     end
 
     participant_profile_id { SecureRandom.uuid }
-    migration_mode { "latest_induction_records" }
     mentor_completion_date { nil }
     mentor_completion_reason { nil }
     created_at { Date.new(cohort_year, 9, 1) }
@@ -159,15 +163,17 @@ FactoryBot.define do
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
     induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)] }
 
+    payments_frozen_cohort_start_year { nil }
+
     initialize_with do
       new(participant_profile_id:,
-          migration_mode:,
           mentor_completion_date:,
           mentor_completion_reason:,
           created_at:,
           updated_at:,
           states:,
-          induction_records:)
+          induction_records:,
+          payments_frozen_cohort_start_year:)
     end
   end
 end
