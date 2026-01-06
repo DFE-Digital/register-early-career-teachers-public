@@ -59,11 +59,13 @@ module APISeedData
 
     def create_unfunded_mentors(mentee_lp, mentor_lp, mentee_partnerships, mentor_partnerships)
       mentee_partnerships_cycle = mentee_partnerships.cycle
-      mentor_partnerships_cycle = mentor_partnerships.cycle
 
       MIN_UNFUNDED_MENTORS_PER_LP.times do |i|
         mentee_school_partnership = mentee_partnerships_cycle.next
-        mentor_school_partnership = mentor_partnerships_cycle.next
+        mentor_lpdp = mentor_partnerships.first.lead_provider_delivery_partnership
+        mentor_school_partnership = FactoryBot.create(:school_partnership,
+                                                      school: mentee_school_partnership.school,
+                                                      lead_provider_delivery_partnership: mentor_lpdp)
 
         random_date = rand(1..100).days.ago
 

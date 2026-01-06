@@ -19,11 +19,12 @@ describe MentorAtSchoolPeriod do
   describe "#currently_assigned_ects" do
     subject { mentor.currently_assigned_ects }
 
-    let(:mentor)    { FactoryBot.create(:mentor_at_school_period, started_on: 2.years.ago, finished_on: nil) }
-    let(:finished)  { FactoryBot.create(:ect_at_school_period, finished_on: Time.zone.today) }
-    let(:finishing) { FactoryBot.create(:ect_at_school_period, finished_on: 1.week.from_now) }
-    let(:current)   { FactoryBot.create(:ect_at_school_period, finished_on: nil) }
-    let(:upcoming)  { FactoryBot.create(:ect_at_school_period, started_on: 1.week.from_now) }
+    let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 2.years.ago, finished_on: nil) }
+
+    let(:finished)  { FactoryBot.create(:ect_at_school_period, school: mentor.school, finished_on: Time.zone.today) }
+    let(:finishing) { FactoryBot.create(:ect_at_school_period, school: mentor.school, finished_on: 1.week.from_now) }
+    let(:current)   { FactoryBot.create(:ect_at_school_period, school: mentor.school, finished_on: nil) }
+    let(:upcoming)  { FactoryBot.create(:ect_at_school_period, school: mentor.school, started_on: 1.week.from_now) }
 
     before do
       [finished, finishing, current, upcoming].each do |mentee|
