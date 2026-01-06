@@ -52,11 +52,6 @@ module MentorshipPeriodHelpers
       )
     end
 
-    # Ensure teachers have api_ids so metadata-backed queries (used by API endpoints)
-    # can correctly identify and return them.
-    mentor.update_columns(api_id: SecureRandom.uuid) if mentor.api_id.blank?
-    mentee.update_columns(api_id: SecureRandom.uuid) if mentee.api_id.blank?
-
     mentorship_period = FactoryBot.create(
       :mentorship_period,
       :ongoing,

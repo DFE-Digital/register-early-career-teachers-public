@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory(:teacher) do
+    api_id { SecureRandom.uuid }
     sequence(:trn, 1_000_000)
     sequence(:trs_first_name) { |n| "First name #{n}" }
     sequence(:trs_last_name) { |n| "Last name #{n}" }
