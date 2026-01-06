@@ -157,11 +157,7 @@ cp_2025 = ContractPeriod.find_by!(year: 2025)
 
 ambition_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambition_institute)
 ambition_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambition_institute)
-ambition_artisan_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: ambition_institute)
-
-teach_first_grain_2021 = ActiveLeadProvider.find_by!(contract_period: cp_2021, lead_provider: teach_first)
 teach_first_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: teach_first)
-teach_first_grain_2024 = ActiveLeadProvider.find_by!(contract_period: cp_2024, lead_provider: teach_first)
 teach_first_grain_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: teach_first)
 
 # Abbey Grove — Ambition / Artisan
@@ -179,13 +175,6 @@ teach_first_artisan_abbey_grove_2022 = find_or_create_school_partnership!(
   contract_period: cp_2022
 )
 
-ambition_artisan_abbey_grove_2023 = find_or_create_school_partnership!(
-  school: abbey_grove_school,
-  lead_provider: ambition_institute,
-  delivery_partner: artisan_education_group,
-  contract_period: cp_2023
-)
-
 ambition_artisan_abbey_grove_2025 = find_or_create_school_partnership!(
   school: abbey_grove_school,
   lead_provider: ambition_institute,
@@ -194,26 +183,6 @@ ambition_artisan_abbey_grove_2025 = find_or_create_school_partnership!(
 )
 
 # Abbey Grove — Teach First / Grain
-teach_first_grain_abbey_grove_2022 = find_or_create_school_partnership!(
-  school: abbey_grove_school,
-  lead_provider: teach_first,
-  delivery_partner: grain_teaching_school_hub,
-  contract_period: cp_2022
-)
-
-teach_first_grain_abbey_grove_2023 = find_or_create_school_partnership!(
-  school: abbey_grove_school,
-  lead_provider: teach_first,
-  delivery_partner: grain_teaching_school_hub,
-  contract_period: cp_2023
-)
-
-teach_first_grain_abbey_grove_2024 = find_or_create_school_partnership!(
-  school: abbey_grove_school,
-  lead_provider: teach_first,
-  delivery_partner: grain_teaching_school_hub,
-  contract_period: cp_2024
-)
 
 teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
   school: abbey_grove_school,
@@ -223,15 +192,9 @@ teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
 )
 
 # Ackley Bridge — Ambition / Artisan
-ambition_artisan_ackley_bridge_2021 = find_or_create_school_partnership!(
-  school: ackley_bridge,
-  lead_provider: ambition_institute,
-  delivery_partner: artisan_education_group,
-  contract_period: cp_2021
-)
 
-ambition_artisan_ackley_bridge_2023 = find_or_create_school_partnership!(
-  school: ackley_bridge,
+ambition_artisan_brookfield_2023 = find_or_create_school_partnership!(
+  school: brookfield_school,
   lead_provider: ambition_institute,
   delivery_partner: artisan_education_group,
   contract_period: cp_2023
@@ -245,22 +208,9 @@ teach_first_grain_ackley_bridge_2022 = find_or_create_school_partnership!(
   contract_period: cp_2022
 )
 
-# Malory Towers — Teach First / Grain
-teach_first_grain_malory_towers_2021 = find_or_create_school_partnership!(
-  school: mallory_towers,
-  lead_provider: teach_first,
-  delivery_partner: grain_teaching_school_hub,
-  contract_period: cp_2021
-)
+# Mallory Towers — Teach First / Grain
 
-teach_first_grain_malory_towers_2022 = find_or_create_school_partnership!(
-  school: mallory_towers,
-  lead_provider: teach_first,
-  delivery_partner: grain_teaching_school_hub,
-  contract_period: cp_2022
-)
-
-teach_first_grain_malory_towers_2024 = find_or_create_school_partnership!(
+teach_first_grain_mallory_towers_2024 = find_or_create_school_partnership!(
   school: mallory_towers,
   lead_provider: teach_first,
   delivery_partner: grain_teaching_school_hub,
@@ -559,22 +509,22 @@ FactoryBot.create(:induction_period,
                   training_programme: "school_led",
                   number_of_terms: nil).tap { |ip| describe_induction_period(ip) }
 
-imogen_stubbs_at_malory_towers = FactoryBot.create(:ect_at_school_period,
-                                                   teacher: imogen_stubbs,
-                                                   school: mallory_towers,
-                                                   email: "imogen.stubbs@eriktheviking.com",
-                                                   started_on: Date.new(2024, 9, 1),
-                                                   finished_on: nil,
-                                                   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-                                                   working_pattern: "full_time").tap { |sp| describe_ect_at_school_period(sp) }
+imogen_stubbs_at_mallory_towers = FactoryBot.create(:ect_at_school_period,
+                                                    teacher: imogen_stubbs,
+                                                    school: mallory_towers,
+                                                    email: "imogen.stubbs@eriktheviking.com",
+                                                    started_on: Date.new(2024, 9, 1),
+                                                    finished_on: nil,
+                                                    school_reported_appropriate_body: golden_leaf_teaching_school_hub,
+                                                    working_pattern: "full_time").tap { |sp| describe_ect_at_school_period(sp) }
 
 FactoryBot.create(:training_period,
                   :for_ect,
                   :with_schedule,
-                  ect_at_school_period: imogen_stubbs_at_malory_towers,
+                  ect_at_school_period: imogen_stubbs_at_mallory_towers,
                   started_on: Date.new(2024, 12, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_malory_towers_2024,
+                  school_partnership: teach_first_grain_mallory_towers_2024,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_extension,
@@ -593,14 +543,14 @@ FactoryBot.create(:induction_period,
                   training_programme: "provider_led",
                   number_of_terms: nil).tap { |ip| describe_induction_period(ip) }
 
-gemma_jones_at_malory_towers = FactoryBot.create(:ect_at_school_period,
-                                                 teacher: gemma_jones,
-                                                 school: mallory_towers,
-                                                 email: "gemma.jones@rocketman.com",
-                                                 started_on: Date.new(2024, 8, 1),
-                                                 finished_on: nil,
-                                                 school_reported_appropriate_body: golden_leaf_teaching_school_hub,
-                                                 working_pattern: "part_time").tap { |sp| describe_ect_at_school_period(sp) }
+gemma_jones_at_mallory_towers = FactoryBot.create(:ect_at_school_period,
+                                                  teacher: gemma_jones,
+                                                  school: mallory_towers,
+                                                  email: "gemma.jones@rocketman.com",
+                                                  started_on: Date.new(2024, 8, 1),
+                                                  finished_on: nil,
+                                                  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
+                                                  working_pattern: "part_time").tap { |sp| describe_ect_at_school_period(sp) }
 
 mallory_towers.update!(last_chosen_lead_provider: best_practice_network,
                        last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
@@ -609,10 +559,10 @@ mallory_towers.update!(last_chosen_lead_provider: best_practice_network,
 FactoryBot.create(:training_period,
                   :for_ect,
                   :with_schedule,
-                  ect_at_school_period: gemma_jones_at_malory_towers,
+                  ect_at_school_period: gemma_jones_at_mallory_towers,
                   started_on: Date.new(2024, 9, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_malory_towers_2024,
+                  school_partnership: teach_first_grain_mallory_towers_2024,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_extension,
@@ -759,7 +709,7 @@ dominic_west = Teacher.find_by!(trs_first_name: "Dominic", trs_last_name: "West"
 dominic_west_ect_at_brookfield_school = FactoryBot.create(:ect_at_school_period,
                                                           teacher: dominic_west,
                                                           school: brookfield_school,
-                                                          email: "harriet-walter@history.com",
+                                                          email: "dominic-west@history.com",
                                                           started_on: Date.new(2023, 9, 1),
                                                           finished_on: nil,
                                                           school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
@@ -770,7 +720,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: dominic_west_ect_at_brookfield_school,
                   started_on: Date.new(2023, 9, 1),
                   finished_on: nil,
-                  school_partnership: ambition_artisan_abbey_grove_2023,
+                  school_partnership: ambition_artisan_brookfield_2023,
                   expression_of_interest: ambition_artisan_2023,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
@@ -1025,7 +975,7 @@ create_same_school_mentorship!(
 
 create_same_school_mentorship!(
   mentor: george_cole_at_mallory_towers,
-  mentee: imogen_stubbs_at_malory_towers,
+  mentee: imogen_stubbs_at_mallory_towers,
   started_on: Date.new(2025, 7, 15),
   finished_on: nil
 )
