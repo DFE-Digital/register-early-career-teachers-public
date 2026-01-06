@@ -7,7 +7,7 @@ module TeacherHistoryConverter::CalculatedAttributes
 
     if ecf1_teacher_history.ect.present?
       timestamps << ecf1_teacher_history.ect.updated_at
-      timestamps.concat(ecf1_teacher_history.ect.induction_records.map(&:updated_at))
+      timestamps.concat(ecf1_teacher_history.ect.induction_records(migration_mode: ect_migration_mode).map(&:updated_at))
     end
 
     if ecf1_teacher_history.mentor.present?
