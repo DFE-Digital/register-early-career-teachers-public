@@ -1,7 +1,6 @@
 module ECTAtSchoolPeriods
   class IncorrectTrainingProgrammeError < StandardError; end
   class NoTrainingPeriodError < StandardError; end
-  class NoMentorAtSchoolPeriodError < StandardError; end
 
   class SwitchTraining
     include TrainingPeriodSources
@@ -16,8 +15,6 @@ module ECTAtSchoolPeriods
       @ect_at_school_period = ect_at_school_period
 
       @mentor_at_school_period = mentor_at_school_period
-
-      raise NoMentorAtSchoolPeriodError unless @mentor_at_school_period
 
       @training_period = ect_at_school_period.current_or_next_training_period
 
@@ -93,6 +90,7 @@ module ECTAtSchoolPeriods
     end
 
     def create_provider_led_training_period_for_mentor_at_school_period!
+      return unless mentor_at_school_period
       return if mentor_ineligible_for_funding?
       return if previous_provider_led_training_periods_for_mentor?
 
