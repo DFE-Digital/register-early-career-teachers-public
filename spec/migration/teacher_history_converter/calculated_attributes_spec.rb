@@ -1,6 +1,12 @@
+class FakeTeacherHistoryConverter
+  include TeacherHistoryConverter::CalculatedAttributes
+
+  def migration_mode = :latest_induction_records
+end
+
 describe TeacherHistoryConverter::CalculatedAttributes do
   describe "#participant_api_updated_at" do
-    subject { Class.new { extend TeacherHistoryConverter::CalculatedAttributes }.participant_api_updated_at(ecf1_teacher_history:) }
+    subject { FakeTeacherHistoryConverter.new.participant_api_updated_at(ecf1_teacher_history:) }
 
     let(:short_time_ago) { 3.months.ago }
     let(:long_time_ago) { 6.months.ago }
