@@ -25,6 +25,7 @@ ECF is a framework of standards to help early career teachers succeed at the sta
 * [API tokens](./documentation/api-tokens.md)
 * [Environments](./documentation/environments.md)
 * [Time travelling middleware](./documentation/time-travelling-middleware.md)
+* [Training period logic](./documentation/training_period_logic/)
 
 ## Repository setup
 
