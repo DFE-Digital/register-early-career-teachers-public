@@ -183,7 +183,6 @@ ambition_artisan_abbey_grove_2025 = find_or_create_school_partnership!(
 )
 
 # Abbey Grove — Teach First / Grain
-
 teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
   school: abbey_grove_school,
   lead_provider: teach_first,
@@ -192,7 +191,6 @@ teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
 )
 
 # Ackley Bridge — Ambition / Artisan
-
 ambition_artisan_brookfield_2023 = find_or_create_school_partnership!(
   school: brookfield_school,
   lead_provider: ambition_institute,
@@ -209,7 +207,6 @@ teach_first_grain_ackley_bridge_2022 = find_or_create_school_partnership!(
 )
 
 # Mallory Towers — Teach First / Grain
-
 teach_first_grain_mallory_towers_2024 = find_or_create_school_partnership!(
   school: mallory_towers,
   lead_provider: teach_first,
