@@ -536,10 +536,18 @@ module ECTAtSchoolPeriods
         context "when the mentee has no mentor" do
           let(:mentorship_period) { nil }
 
-          it "raises an error" do
-            expect {
-              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
-            }.to raise_error(NoMentorAtSchoolPeriodError)
+          it "does not create a new training period for the mentor" do
+            expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+              .to change(TrainingPeriod, :count).by(1)
+
+            expect(mentor_at_school_period.training_periods).to be_empty
+          end
+
+          it "does not record a `new_training_period_for_mentor` event" do
+            expect(Events::Record)
+              .not_to receive(:record_teacher_starts_training_period_event!)
+
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
           end
         end
       end
