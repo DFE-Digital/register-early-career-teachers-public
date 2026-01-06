@@ -68,23 +68,18 @@ private
   def ect_at_school_period_rows
     return [] if ecf1_teacher_history.ect.blank?
 
-    induction_records = ecf1_teacher_history.ect.induction_records
+    induction_records = ecf1_teacher_history.ect.induction_records(migration_mode:)
 
-    group_induction_records_by_school(induction_records).map do |school, school_induction_records|
-      first_ir = school_induction_records.first
-      last_ir = school_induction_records.last
-      first_index = induction_records.index(first_ir)
-
-      ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-        started_on: date_corrector.corrected_start_date(first_ir, first_index),
-        finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :ect),
-        school:,
-        email: first_ir.preferred_identity_email,
-        mentorship_period_rows: school_induction_records.flat_map { |ir| build_mentorship_period_rows(ir) },
-        appropriate_body: last_ir.appropriate_body,
-        training_period_rows: build_ect_training_period_rows(school_induction_records, induction_records)
-      )
+    case migration_mode
+    when :latest_induction_records
+      TeacherHistoryConverter::ECT::LatestInductionRecords.new(induction_records)
+    when :all_induction_records
+      TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records)
     end
+  end
+
+  def migration_mode
+    :latest_induction_records
   end
 
   def build_ect_training_period_rows(school_induction_records, all_induction_records)
@@ -111,20 +106,13 @@ private
   def mentor_at_school_period_rows
     return [] if ecf1_teacher_history.mentor.blank?
 
-    induction_records = ecf1_teacher_history.mentor.induction_records
+    induction_records = ecf1_teacher_history.mentor.induction_records(migration_mode:)
 
-    group_induction_records_by_school(induction_records).map do |school, school_induction_records|
-      first_ir = school_induction_records.first
-      last_ir = school_induction_records.last
-      first_index = induction_records.index(first_ir)
-
-      ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
-        started_on: date_corrector.corrected_start_date(first_ir, first_index),
-        finished_on: date_corrector.corrected_end_date(last_ir, induction_records, participant_type: :mentor),
-        school:,
-        email: first_ir.preferred_identity_email,
-        training_period_rows: build_mentor_training_period_rows_for_school(school_induction_records, induction_records)
-      )
+    case migration_mode
+    when :latest_induction_records
+      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records)
+    when :all_induction_records
+      TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records)
     end
   end
 

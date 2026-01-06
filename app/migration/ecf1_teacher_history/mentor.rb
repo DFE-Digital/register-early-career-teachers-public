@@ -9,9 +9,8 @@ class ECF1TeacherHistory::Mentor
               :payments_frozen_cohort_start_year,
               :states
 
-  def initialize(participant_profile_id:, migration_mode:, created_at:, updated_at:, mentor_completion_date:, mentor_completion_reason:, payments_frozen_cohort_start_year:, states:, induction_records:)
+  def initialize(participant_profile_id:, created_at:, updated_at:, mentor_completion_date:, mentor_completion_reason:, payments_frozen_cohort_start_year:, states:, induction_records:)
     @participant_profile_id = participant_profile_id
-    @migration_mode = migration_mode
     @created_at = created_at
     @updated_at = updated_at
     @mentor_completion_date = mentor_completion_date
@@ -32,19 +31,19 @@ class ECF1TeacherHistory::Mentor
 
 private
 
-  def induction_records(migration_mode: :economy)
+  def induction_records(migration_mode: :latest_induction_records)
     case migration_mode
-    when :premium then premium_induction_records
-    when :economy then economy_induction_records
+    when :all_induction_records then all_induction_records
+    when :latest_induction_records then latest_induction_records
     else fail "Invalid mode"
     end
   end
 
-  def premium_induction_records
+  def all_induction_records
     @induction_records
   end
 
-  def economy_induction_records
+  def latest_induction_records
     @induction_records
   end
 end
