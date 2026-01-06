@@ -1,5 +1,7 @@
 # Lead provider changes
 
+Source: `app/services/concerns/teachers/lead_provider_changer.rb`
+
 ```mermaid
 flowchart TD
   A[Change lead provider] --> B{Current/next training period exists?}
