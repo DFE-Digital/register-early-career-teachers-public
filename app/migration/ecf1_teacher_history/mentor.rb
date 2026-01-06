@@ -9,6 +9,8 @@ class ECF1TeacherHistory::Mentor
               :payments_frozen_cohort_start_year,
               :states
 
+  attr_writer :induction_records
+
   def initialize(participant_profile_id:, created_at:, updated_at:, mentor_completion_date:, mentor_completion_reason:, payments_frozen_cohort_start_year:, states:, induction_records:)
     @participant_profile_id = participant_profile_id
     @created_at = created_at
@@ -29,8 +31,6 @@ class ECF1TeacherHistory::Mentor
     new(**FactoryBot.attributes_for(:ecf1_teacher_history_mentor, **hash))
   end
 
-private
-
   def induction_records(migration_mode: :latest_induction_records)
     case migration_mode
     when :all_induction_records then all_induction_records
@@ -38,6 +38,8 @@ private
     else fail "Invalid mode"
     end
   end
+
+private
 
   def all_induction_records
     @induction_records
