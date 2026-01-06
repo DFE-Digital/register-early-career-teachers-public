@@ -129,6 +129,13 @@ runs:
       run: |
         echo "Running default seeds..."
         make ci review get-cluster-credentials
-        kubectl exec -n cpd-development deployment/cpd-ec2-review-${{ inputs.pull-request-number }}-web -- sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=${{ inputs.environment }} /usr/local/bin/bundle exec rails db:seed"
+
+        if [[ "${{ steps.check_label.outputs.has_label }}" == "true" || "${{ steps.check_author.outputs.api_author }}" == "true" ]]; then
+          COMMAND="rails db:seed"
+        else
+          COMMAND="rails db:seed:replant"
+        fi
+
+        kubectl exec -n cpd-development deployment/cpd-ec2-review-${{ inputs.pull-request-number }}-web -- sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=${{ inputs.environment }} /usr/local/bin/bundle exec $COMMAND"
       env:
         PULL_REQUEST_NUMBER: ${{ inputs.pull-request-number }}
