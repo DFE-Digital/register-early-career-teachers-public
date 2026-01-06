@@ -12,7 +12,9 @@ FactoryBot.define do
     end
 
     association :mentee, factory: :ect_at_school_period
-    association :mentor, factory: :mentor_at_school_period
+    mentor do
+      association(:mentor_at_school_period, school: mentee.school)
+    end
 
     started_on { default_start_date }
 

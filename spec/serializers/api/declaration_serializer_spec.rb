@@ -113,7 +113,7 @@ describe API::DeclarationSerializer, type: :serializer do
     describe "mentor_id" do
       let(:mentee) { FactoryBot.create(:ect_at_school_period, :ongoing) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period: mentee) }
-      let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing) }
+      let(:mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: mentee.school) }
       let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor:) }
       let(:declaration) { FactoryBot.create(:declaration, mentorship_period:, training_period:) }
 
