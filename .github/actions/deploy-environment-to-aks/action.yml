@@ -130,7 +130,7 @@ runs:
         echo "Running default seeds..."
         make ci review get-cluster-credentials
 
-        if [[ "${{ steps.check_author.outputs.api_author }}" == "true" ]]; then
+        if [[ "${{ steps.check_label.outputs.has_label }}" == "true" || "${{ steps.check_author.outputs.api_author }}" == "true" ]]; then
           COMMAND="rails db:seed"
         else
           COMMAND="rails db:seed:replant"
