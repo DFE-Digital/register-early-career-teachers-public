@@ -32,11 +32,11 @@ private
       api_ect_training_record_id: ecf1_teacher_history.ect&.participant_profile_id,
       api_mentor_training_record_id: ecf1_teacher_history.mentor&.participant_profile_id,
       api_updated_at: calculate_api_updated_at,
-      ect_migration_mode: ecf1_teacher_history.ect&.migration_mode || "not_migrated",
+      ect_migration_mode: migration_mode,
       ect_pupil_premium_uplift: ecf1_teacher_history.ect&.pupil_premium_uplift,
       ect_sparsity_uplift: ecf1_teacher_history.ect&.sparsity_uplift,
       ect_payments_frozen_year: ecf1_teacher_history.ect&.payments_frozen_cohort_start_year,
-      mentor_migration_mode: ecf1_teacher_history.mentor&.migration_mode || "not_migrated",
+      mentor_migration_mode: migration_mode,
       mentor_payments_frozen_year: ecf1_teacher_history.mentor&.payments_frozen_cohort_start_year,
       created_at: ecf1_teacher_history.user.created_at,
       updated_at: ecf1_teacher_history.user.updated_at
