@@ -33,21 +33,21 @@ class ECF1TeacherHistory::ECT
     new(**FactoryBot.attributes_for(:ecf1_teacher_history_ect, **hash))
   end
 
-  def induction_records(migration_mode: :economy)
+  def induction_records(migration_mode: :latest_induction_records)
     case migration_mode
-    when :premium then premium_induction_records
-    when :economy then economy_induction_records
+    when :all_induction_records then all_induction_records
+    when :latest_induction_records then latest_induction_records
     else fail "Invalid mode"
     end
   end
 
 private
 
-  def premium_induction_records
+  def all_induction_records
     @induction_records
   end
 
-  def economy_induction_records
+  def latest_induction_records
     @induction_records
 
     # row_matches = ->(rows, row) do
