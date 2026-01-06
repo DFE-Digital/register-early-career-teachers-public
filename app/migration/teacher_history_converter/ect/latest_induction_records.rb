@@ -24,13 +24,24 @@ private
     # - create a new ECT at school period?
     # - do nothing
     #
+    if ect_at_school_periods.empty?
+      ect_at_school_periods << ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+        started_on: induction_record.start_date.to_date,
+        finished_on: induction_record.end_date&.to_date,
+        school: induction_record.school,
+        email: induction_record.preferred_identity_email,
+        mentorship_period_rows: [],
+        training_period_rows: []
+      )
+    end
     # Step 2:
     #
     # Training period - do we:
     # - extend an existing training period?
     # - create a new training period
     # - do nothing
-    []
+
+    ect_at_school_periods
   end
 
   def build_training_period_rows(school_induction_records, all_induction_records)
