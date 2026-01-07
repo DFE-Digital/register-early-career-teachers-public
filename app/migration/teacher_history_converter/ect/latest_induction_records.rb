@@ -45,9 +45,9 @@ private
         if school_period.present?
           # check if returning to a school that the participant had left
           # i.e. this is not the same school period now it should be a new one
-          # 
+          #
           # otherwise
-          # 
+          #
           # handle changes to:
           # - training
           # - mentor
@@ -56,6 +56,7 @@ private
         else
           # add a new school period
         end
+      end
     end
     # Step 2:
     #
