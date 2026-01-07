@@ -27,16 +27,35 @@ private
     # - do nothing
     #
     if ect_at_school_periods.empty?
-      ect_at_school_periods << ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-        started_on: induction_record.start_date.to_date,
-        finished_on: induction_record.end_date&.to_date,
-        school: induction_record.school,
-        email: induction_record.preferred_identity_email,
-        mentorship_period_rows: [],
-        training_period_rows: [
-          build_new_training_period_from_induction_record(induction_record)
-        ]
-      )
+      ect_at_school_periods << build_new_school_period_from_induction_record(induction_record)
+    else
+      # Need to handle:
+      # - induction record at same school as last added period
+      # - induction record at different school from last added period
+      # - induction record at different school from last but matching a previously added period
+      last_school_period = ect_at_school_periods.last
+      if induction_record.school.urn == last_school_period.school.urn
+        # handle changes to:
+        # - training
+        # - mentor
+        # - cohort/schedule
+        # - email address
+      else
+        school_period = ect_at_school_periods.find { |period| period.school.urn == induction_record.school.urn }
+        if school_period.present?
+          # check if returning to a school that the participant had left
+          # i.e. this is not the same school period now it should be a new one
+          # 
+          # otherwise
+          # 
+          # handle changes to:
+          # - training
+          # - mentor
+          # - cohort/schedule
+          # - email address
+        else
+          # add a new school period
+        end
     end
     # Step 2:
     #
@@ -46,6 +65,19 @@ private
     # - do nothing
 
     ect_at_school_periods
+  end
+
+  def build_new_school_period_from_induction_record(induction_record)
+    ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      started_on: induction_record.start_date.to_date,
+      finished_on: induction_record.end_date&.to_date,
+      school: induction_record.school,
+      email: induction_record.preferred_identity_email,
+      mentorship_period_rows: [],
+      training_period_rows: [
+        build_new_training_period_from_induction_record(induction_record)
+      ]
+    )
   end
 
   def build_new_training_period_from_induction_record(induction_record)
