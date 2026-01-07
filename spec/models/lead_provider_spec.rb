@@ -20,6 +20,7 @@ describe LeadProvider do
     it { is_expected.to have_many(:lead_provider_delivery_partnerships).through(:active_lead_providers) }
     it { is_expected.to have_many(:school_partnerships).through(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
+    it { is_expected.to have_many(:declarations).through(:training_periods) }
     it { is_expected.to have_many(:api_tokens).class_name("API::Token") }
   end
 
