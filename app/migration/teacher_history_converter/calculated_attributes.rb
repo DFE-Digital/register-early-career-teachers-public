@@ -20,4 +20,16 @@ module TeacherHistoryConverter::CalculatedAttributes
 
     timestamps.compact.max
   end
+
+  # FIXME: this conversion logic also exists in: app/migration/mappers/training_programme_mapper
+  # we should refactor/remove that one (or this one) once the approach is done
+  def convert_training_programme_name(ecf1_training_programme_name)
+    case ecf1_training_programme_name.to_s
+    when "full_induction_programme" then "provider_led"
+    when "core_induction_programme" then "school_led"
+    when "design_our_own" then "school_led"
+    when "school_funded_fip" then "provider_led"
+    else fail "Invalid ECF1 training programme name"
+    end
+  end
 end
