@@ -43,7 +43,7 @@ RSpec.describe AppropriateBodies::RecordFail do
         teacher:,
         induction_period:,
         author:,
-        body: "Confirmation sent on #{Date.current.to_fs(:govuk)}"
+        body: "ECT notified on #{Date.current.to_fs(:govuk)}"
       )
     end
 
@@ -77,18 +77,18 @@ RSpec.describe AppropriateBodies::RecordFail do
       end
     end
 
-    context "when a confirmation date is before the start date" do
+    context "when a confirmation date is before the end date" do
       let(:service_call) do
         service.call(
           finished_on: 1.day.ago.to_date,
           number_of_terms: 6,
-          fail_confirmation_sent_on: 1.week.before(induction_period.started_on)
+          fail_confirmation_sent_on: 2.days.ago.to_date
         )
       end
 
       it do
         expect { service_call }.to raise_error(ActiveRecord::RecordInvalid,
-                                               "Validation failed: Fail confirmation sent on Failure confirmation date cannot be before start date")
+                                               "Validation failed: Fail confirmation sent on Failure confirmation date cannot be before end date")
       end
     end
 

@@ -22,7 +22,7 @@
 %>
 
 
-<%= form_with(model: @record_fail, url: confirmed_ab_teacher_record_failed_outcome_path(@teacher), method: :patch, class: "govuk-!-margin-top-6") do |f| %>
+<%= form_with(model: @record_fail, url: confirmed_ab_teacher_record_failed_outcome_path(@teacher), method: :patch) do |f| %>
   <%= content_for(:error_summary) { f.govuk_error_summary } %>
 
   <%= 
@@ -36,5 +36,5 @@
     }) %>
   <% end %>
 
-  <%= f.govuk_submit "Continue", class: "govuk-!-margin-top-6" %>
+  <%= f.govuk_submit "Continue" %>
 <% end %>
