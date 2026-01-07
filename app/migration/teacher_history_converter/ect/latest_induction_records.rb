@@ -29,6 +29,7 @@ private
     if ect_at_school_periods.empty?
       ect_at_school_periods << build_new_school_period_from_induction_record(induction_record)
     else
+      # I'm not sure if we need to differentiate from the "last" added and any previously added?
       # Need to handle:
       # - induction record at same school as last added period
       # - induction record at different school from last added period
@@ -55,10 +56,11 @@ private
           # - email address
         else
           # add a new school period
+          ect_at_school_periods << build_new_school_period_from_induction_record(induction_record)
         end
       end
     end
-    # Step 2:
+    # Step 2: <- this maybe incorporated into the above?
     #
     # Training period - do we:
     # - extend an existing training period?
