@@ -49,6 +49,27 @@ describe "School user can change ECTs training programme", :enable_schools_inter
     then_i_see_the_provider_led_confirmation_message
   end
 
+  it "changes the training programme from school-led to provider-led without a mentor" do
+    given_there_is_a_school
+    and_there_is_an_ect
+    and_there_is_a_contract_period
+    and_there_is_an_active_lead_provider
+    with_school_led_training
+    and_i_am_logged_in_as_a_school_user
+
+    when_i_visit_the_ect_page
+    then_i_can_change_the_training_programme
+    and_i_can_change_the_training_programme_to_provider_led
+
+    when_i_change_the_training_programme
+    and_i_choose_the_lead_provider
+    and_i_continue
+    then_i_am_asked_to_check_and_confirm_the_change
+
+    and_i_confirm_the_change
+    then_i_see_the_provider_led_confirmation_message
+  end
+
 private
 
   def given_there_is_a_school
