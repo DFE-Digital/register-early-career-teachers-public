@@ -257,13 +257,13 @@ RSpec.describe InductionPeriod do
       end
     end
 
-    describe "# fail_confirmation_sent_on_not_before_start_date" do
-      context "when confirmation date is before start date" do
-        subject { FactoryBot.build(:induction_period, :fail, appropriate_body:, fail_confirmation_sent_on: 13.months.ago) }
+    describe "#fail_confirmation_sent_on_not_before_end_date" do
+      context "when confirmation date is before end date" do
+        subject { FactoryBot.build(:induction_period, :fail, appropriate_body:, fail_confirmation_sent_on: 2.months.ago) }
 
         it do
           expect(subject).not_to be_valid(:record_outcome)
-          expect(subject.errors[:fail_confirmation_sent_on]).to include("Failure confirmation date cannot be before start date")
+          expect(subject.errors[:fail_confirmation_sent_on]).to include("Failure confirmation date cannot be before end date")
         end
       end
     end
