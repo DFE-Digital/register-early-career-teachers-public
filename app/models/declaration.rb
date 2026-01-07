@@ -29,6 +29,7 @@ class Declaration < ApplicationRecord
        validate: { message: "Choose a valid clawback status" },
        prefix: true
 
+  # Declaration types are in specific order used for validation to maintain submission order
   enum :declaration_type,
        %w[
          started

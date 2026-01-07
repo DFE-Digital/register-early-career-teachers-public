@@ -1486,10 +1486,10 @@ components:
               - retained-2
               - retained-3
               - retained-4
+              - completed
               - extended-1
               - extended-2
               - extended-3
-              - completed
               example: started
             declaration_date:
               description: The event declaration date.
