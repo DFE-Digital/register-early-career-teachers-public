@@ -778,5 +778,144 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
       it { is_expected.to eq(transfer_teacher.api_id) }
     end
+
+    describe "create declaration request bodies" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
+      let(:teacher) { training_period.trainee.teacher }
+
+      context "when fetching `pre2025_declaration_create_body`" do
+        let(:identifier) { :pre2025_declaration_create_body }
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+
+        before do
+          allow(Declaration).to receive(:declaration_types).and_return({ "started" => "started" })
+          milestone = FactoryBot.create(:milestone, declaration_type: "started", schedule: training_period.schedule)
+          allow(Faker::Date).to receive(:between).with(from: milestone.start_date, to: milestone.milestone_date).and_return(Date.new(2024, 9, 9))
+        end
+
+        it "returns a declaration create body with correct attributes" do
+          expect(fetch).to eq({
+            data: {
+              type: "participant-declaration",
+              attributes: {
+                participant_id: teacher.api_id,
+                declaration_type: "started",
+                course_identifier: "ecf-induction",
+                declaration_date: "2024-09-09T00:00:00+00:00",
+              }
+            },
+          })
+        end
+      end
+
+      context "when fetching `post2024_declaration_create_body`" do
+        let(:identifier) { :post2024_declaration_create_body }
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025) }
+
+        before do
+          allow(Declaration).to receive(:declaration_types).and_return({ "completed" => "completed" })
+          milestone = FactoryBot.create(:milestone, declaration_type: "completed", schedule: training_period.schedule)
+          allow(Faker::Date).to receive(:between).with(from: milestone.start_date, to: milestone.milestone_date).and_return(Date.new(2024, 9, 9))
+        end
+
+        it "returns a declaration create body with correct attributes" do
+          expect(fetch).to eq({
+            data: {
+              type: "participant-declaration",
+              attributes: {
+                participant_id: teacher.api_id,
+                declaration_type: "completed",
+                course_identifier: "ecf-induction",
+                declaration_date: "2024-09-09T00:00:00+00:00",
+                evidence_held: "other"
+              }
+            },
+          })
+        end
+      end
+
+      context "when fetching `declaration_already_exists_create_body`" do
+        let(:identifier) { :declaration_already_exists_create_body }
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025) }
+
+        before do
+          allow(Declaration).to receive(:declaration_types).and_return({ "started" => "started" })
+          milestone = FactoryBot.create(:milestone, declaration_type: "started", schedule: training_period.schedule)
+          allow(Faker::Date).to receive(:between).with(from: milestone.start_date, to: milestone.milestone_date).and_return(Date.new(2024, 9, 9))
+
+          # Create support data in ECF migration tables
+          ecf_cpd_lead_provider = FactoryBot.create(:migration_cpd_lead_provider)
+          ecf_lead_provider = FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id, cpd_lead_provider: ecf_cpd_lead_provider)
+          ecf_partnership = FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider)
+
+          # Participant that belongs to lead provider with applicable declaration should be used
+          ecf_induction_record_with_declarations = FactoryBot.create(:migration_induction_record)
+          ecf_induction_record_with_declarations.induction_programme.update!(partnership: ecf_partnership)
+          FactoryBot.create(:migration_participant_declaration, cpd_lead_provider: ecf_cpd_lead_provider, participant_profile: ecf_induction_record_with_declarations.participant_profile)
+          teacher.update!(api_id: ecf_induction_record_with_declarations.preferred_identity.external_identifier)
+
+          # Participant without declarations for different lead provider should not be used
+          FactoryBot.create(:migration_participant_declaration, state: "submitted")
+        end
+
+        it "returns a declaration create body with correct attributes" do
+          expect(fetch).to eq({
+            data: {
+              type: "participant-declaration",
+              attributes: {
+                participant_id: teacher.api_id,
+                declaration_type: "started",
+                course_identifier: "ecf-induction",
+                declaration_date: "2024-09-09T00:00:00+00:00",
+                evidence_held: "training-event-attended"
+              }
+            },
+          })
+        end
+      end
+
+      context "when fetching `declaration_complete_create_body`" do
+        let(:identifier) { :declaration_complete_create_body }
+        let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025) }
+
+        before do
+          allow(Declaration).to receive(:declaration_types).and_return({ "completed" => "completed" })
+          milestone = FactoryBot.create(:milestone, declaration_type: "completed", schedule: training_period.schedule)
+          allow(Faker::Date).to receive(:between).with(from: milestone.start_date, to: milestone.milestone_date).and_return(Date.new(2024, 9, 9))
+
+          # Create support data in ECF migration tables
+          ecf_cpd_lead_provider = FactoryBot.create(:migration_cpd_lead_provider)
+          ecf_lead_provider = FactoryBot.create(:migration_lead_provider, id: lead_provider.ecf_id, cpd_lead_provider: ecf_cpd_lead_provider)
+          ecf_partnership = FactoryBot.create(:migration_partnership, lead_provider: ecf_lead_provider)
+
+          # Participant that belongs to lead provider with applicable declaration should be used
+          ecf_induction_record_with_declarations = FactoryBot.create(:migration_induction_record)
+          ecf_induction_record_with_declarations.induction_programme.update!(partnership: ecf_partnership)
+          FactoryBot.create(:migration_participant_declaration, cpd_lead_provider: ecf_cpd_lead_provider, participant_profile: ecf_induction_record_with_declarations.participant_profile)
+          teacher.update!(api_id: ecf_induction_record_with_declarations.preferred_identity.external_identifier)
+
+          # Participant without declarations for different lead provider should not be used
+          FactoryBot.create(:migration_participant_declaration, state: "submitted")
+        end
+
+        it "returns a declaration create body with correct attributes" do
+          expect(fetch).to eq({
+            data: {
+              type: "participant-declaration",
+              attributes: {
+                participant_id: teacher.api_id,
+                declaration_type: "completed",
+                course_identifier: "ecf-induction",
+                declaration_date: "2024-09-09T00:00:00+00:00",
+                evidence_held: "75-percent-engagement-met"
+              }
+            },
+          })
+        end
+      end
+    end
   end
 end

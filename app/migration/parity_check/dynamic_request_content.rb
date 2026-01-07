@@ -145,6 +145,16 @@ module ParityCheck
         .pick(:api_id)
     end
 
+    def active_teacher_api_id_for_declaration_action(contract_period_years: nil)
+      API::Teachers::Query.new(lead_provider_id: lead_provider.id,
+                               training_status: "active",
+                               contract_period_years:)
+        .teachers
+        .distinct(false)
+        .reorder("RANDOM()")
+        .pick(:api_id)
+    end
+
     # Request body methods
 
     def partnership_create_body
@@ -386,6 +396,118 @@ module ParityCheck
       )
     end
 
+    def declaration_payload(participant:, declaration_type:, declaration_date:, course_identifier:, evidence_held: nil)
+      {
+        data: {
+          type: "participant-declaration",
+          attributes: {
+            participant_id: participant.api_id,
+            declaration_type:,
+            declaration_date:,
+            course_identifier:,
+            evidence_held:
+          }.compact
+        }
+      }
+    end
+
+    def pre2025_declaration_create_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_declaration_action(contract_period_years: (2023..2024).to_a))
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      milestone = training_period.schedule.milestones.sample
+      return unless milestone
+
+      declaration_type = milestone.declaration_type
+      declaration_date = Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date).rfc3339
+      evidence_held = "other"
+      course_identifier = course_identifier_for(participant)
+
+      declaration_payload(participant:, declaration_type:, declaration_date:, course_identifier:, evidence_held: declaration_type != "started" ? evidence_held : nil)
+    end
+
+    def post2024_declaration_create_body
+      participant = Teacher.find_by(api_id: active_teacher_api_id_for_declaration_action(contract_period_years: [2025]))
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      milestone = training_period.schedule.milestones.where(declaration_type: %w[started completed]).sample
+      return unless milestone
+
+      declaration_type = milestone.declaration_type
+      declaration_date = Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date.presence || Time.zone.today).rfc3339
+      evidence_held = "other"
+      course_identifier = course_identifier_for(participant)
+
+      declaration_payload(participant:, declaration_type:, declaration_date:, course_identifier:, evidence_held:)
+    end
+
+    def teacher_api_id_for_declaration_already_exists_create_action(cohort_start_years:)
+      profiles_with_declarations = Migration::ParticipantDeclaration
+        .where(state: %w[submitted eligible payable paid])
+        .select(:participant_profile_id)
+
+      @teacher_api_id_for_declaration_already_exists_create_action ||= {}
+      @teacher_api_id_for_declaration_already_exists_create_action[cohort_start_years] ||= begin
+        participant_profile_id = Migration::ParticipantProfile
+          .where(id: profiles_with_declarations)
+          .joins(induction_records: { induction_programme: { partnership: :cohort } })
+          .where(
+            partnerships: {
+              lead_provider_id: lead_provider.ecf_id,
+              challenged_at: nil,
+              challenge_reason: nil,
+              cohorts: { start_year: cohort_start_years },
+            }
+          )
+          .distinct
+          .limit(20)
+          .pluck(:id)
+          .sample
+
+        return unless participant_profile_id
+
+        Migration::ParticipantProfile.find(participant_profile_id).participant_identity.user_id
+      end
+    end
+
+    def declaration_already_exists_create_body
+      participant = Teacher.find_by(api_id: teacher_api_id_for_declaration_already_exists_create_action(cohort_start_years: [2025]))
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      milestone = training_period.schedule.milestones.where(declaration_type: "started").sample
+      return unless milestone
+
+      declaration_type = milestone.declaration_type
+      declaration_date = Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date.presence || Time.zone.today).rfc3339
+      evidence_held = random_evidence_held(declaration_type:, training_period:)
+      course_identifier = course_identifier_for(participant)
+
+      declaration_payload(participant:, declaration_type:, declaration_date:, course_identifier:, evidence_held:)
+    end
+
+    def declaration_complete_create_body
+      participant = Teacher.find_by(api_id: teacher_api_id_for_declaration_already_exists_create_action(cohort_start_years: (2023..2025).to_a))
+
+      training_period = latest_training_period(participant)
+      return unless training_period
+
+      milestone = training_period.schedule.milestones.where(declaration_type: "completed").sample
+      return unless milestone
+
+      declaration_type = milestone.declaration_type
+      declaration_date = Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date.presence || Time.zone.today).rfc3339
+      evidence_held = random_evidence_held(declaration_type:, training_period:)
+      course_identifier = course_identifier_for(participant)
+
+      declaration_payload(participant:, declaration_type:, declaration_date:, course_identifier:, evidence_held:)
+    end
+
     # Helpers
 
     def random_school_partnership
@@ -420,6 +542,8 @@ module ParityCheck
     end
 
     def latest_training_period(participant)
+      return unless participant
+
       metadata = participant.lead_provider_metadata.find_by(lead_provider_id: lead_provider.id)
       return unless metadata
 
@@ -435,6 +559,22 @@ module ParityCheck
         Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS.excluding(excluding_schedule.identifier).sample
       else
         Schedule.identifiers.values.excluding(Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS).excluding(excluding_schedule.identifier).sample
+      end
+    end
+
+    def random_evidence_held(declaration_type:, training_period:)
+      detailed_evidence_types_enabled = training_period.contract_period.detailed_evidence_types_enabled
+      if declaration_type != "started" || detailed_evidence_types_enabled
+        if detailed_evidence_types_enabled
+          case declaration_type
+          when "completed", "retained-2"
+            "75-percent-engagement-met"
+          else
+            "training-event-attended"
+          end
+        else
+          "other"
+        end
       end
     end
   end
