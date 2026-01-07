@@ -26,39 +26,21 @@ private
     # - create a new ECT at school period?
     # - do nothing
     #
-    if ect_at_school_periods.empty?
-      ect_at_school_periods << build_new_school_period_from_induction_record(induction_record)
+    school_period = ect_at_school_periods.find { |period| period.school.urn == induction_record.school.urn }
+    if school_period.present?
+      # check if returning to a school that the participant had left
+      # i.e. this is not the same school period now it should be a new one
+      #
+      # otherwise
+      #
+      # handle changes to:
+      # - training
+      # - mentor
+      # - cohort/schedule
+      # - email address
     else
-      # I'm not sure if we need to differentiate from the "last" added and any previously added?
-      # Need to handle:
-      # - induction record at same school as last added period
-      # - induction record at different school from last added period
-      # - induction record at different school from last but matching a previously added period
-      last_school_period = ect_at_school_periods.last
-      if induction_record.school.urn == last_school_period.school.urn
-        # handle changes to:
-        # - training
-        # - mentor
-        # - cohort/schedule
-        # - email address
-      else
-        school_period = ect_at_school_periods.find { |period| period.school.urn == induction_record.school.urn }
-        if school_period.present?
-          # check if returning to a school that the participant had left
-          # i.e. this is not the same school period now it should be a new one
-          #
-          # otherwise
-          #
-          # handle changes to:
-          # - training
-          # - mentor
-          # - cohort/schedule
-          # - email address
-        else
-          # add a new school period
-          ect_at_school_periods << build_new_school_period_from_induction_record(induction_record)
-        end
-      end
+      # add a new school period
+      ect_at_school_periods << build_new_school_period_from_induction_record(induction_record)
     end
     # Step 2: <- this maybe incorporated into the above?
     #
