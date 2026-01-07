@@ -219,145 +219,174 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
         end
 
-        # Mentors can only submit declarations that are started or completed
-        # after June 2025
-        if trainee_type == :ect
-          context "when declaration dates are not in sequence" do
-            let(:active_lead_provider) do
-              FactoryBot.create(
-                :active_lead_provider,
-                :for_year,
-                year: contract_period_year
-              )
-            end
-            let(:lead_provider_delivery_partnership) do
-              FactoryBot.create(
-                :lead_provider_delivery_partnership,
-                active_lead_provider:
-              )
-            end
-            let(:school_partnership) do
-              FactoryBot.create(
-                :school_partnership,
-                lead_provider_delivery_partnership:,
-                school: at_school_period.school
-              )
-            end
-            let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :active,
-                "#{trainee_type}_at_school_period": at_school_period,
-                school_partnership:,
-                started_on: at_school_period.started_on,
-                finished_on: 1.week.from_now
-              )
-            end
+        context "validate declaration types are in sequence order" do
+          let(:school_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              :for_year,
+              year: contract_period_year,
+              school: at_school_period.school
+            )
+          end
+          let!(:training_period) do
+            FactoryBot.create(
+              :training_period,
+              :"for_#{trainee_type}",
+              :active,
+              "#{trainee_type}_at_school_period": at_school_period,
+              school_partnership:,
+              started_on: at_school_period.started_on,
+              finished_on: 1.week.from_now
+            )
+          end
 
-            let!(:existing_declaration) do
-              FactoryBot.create(
-                :declaration,
-                declaration_type: :started,
-                evidence_type: "training-event-attended",
-                declaration_date: milestone.start_date.rfc3339,
-                training_period:
-              )
-            end
-            let!(:another_existing_declaration) do
-              FactoryBot.create(
-                :declaration,
-                declaration_type: "retained-2",
-                evidence_type: "75-percent-engagement-met",
-                declaration_date: (milestone.start_date + 1.month).rfc3339,
-                training_period:
-              )
-            end
+          context "when contract period is 2025" do
+            let(:contract_period_year) { 2025 }
 
-            let(:declaration_type) { "retained-3" }
-            let(:declaration_date) { (another_existing_declaration.declaration_date - 1.week).rfc3339 }
+            context "when `completed` is submitted before `started` declaration date" do
+              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
-            context "when contract period is for 2025" do
-              let(:contract_period_year) { 2025 }
+              # Existing `started` declaration
+              let!(:started_declaration) do
+                FactoryBot.create(
+                  :declaration,
+                  declaration_type: :started,
+                  evidence_type: "training-event-attended",
+                  declaration_date: (started_milestone.start_date + 1.month).rfc3339,
+                  training_period:
+                )
+              end
+
+              # New declaration with declaration date set 1 week before `started`
+              let(:declaration_date) { (started_declaration.declaration_date - 1.week).rfc3339 }
+              let(:declaration_type) { "completed" }
+              let(:evidence_type) { "75-percent-engagement-met" }
 
               it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:declaration_date, "This declaration_date does not align with previously submitted declarations. Please contact the DfE for support") }
+              it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
             end
 
-            context "when contract period is after 2025" do
-              let(:contract_period_year) { 2026 }
+            context "when `started` is submitted after `completed` declaration date" do
+              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+
+              # Existing `completed` declaration
+              let!(:completed_declaration) do
+                FactoryBot.create(
+                  :declaration,
+                  declaration_type: :completed,
+                  evidence_type: "75-percent-engagement-met",
+                  declaration_date: (completed_milestone.start_date + 2.months).rfc3339,
+                  training_period:
+                )
+              end
+
+              # New declaration with declaration date set 1 week before `completed`
+              let(:declaration_date) { (completed_declaration.declaration_date + 1.week).rfc3339 }
+              let(:declaration_type) { "started" }
+              let(:evidence_type) { "training-event-attended" }
 
               it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:declaration_date, "This declaration_date does not align with previously submitted declarations. Please contact the DfE for support") }
+              it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
             end
 
-            context "when contract period is before 2025" do
-              let(:contract_period_year) { 2024 }
+            # Mentor has `started` and `completed` only, for ECT we do outside of existing declaration date test
+            if trainee_type == :ect
+              context "when `retained-1` is submitted outside of `started` and `completed` declaration dates" do
+                let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "retained-1", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+                let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+                let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+
+                # Existing `started` declaration
+                let!(:started_declaration) do
+                  FactoryBot.create(
+                    :declaration,
+                    declaration_type: :started,
+                    evidence_type: "training-event-attended",
+                    declaration_date: Date.new(contract_period_year, 2, 1).rfc3339,
+                    training_period:
+                  )
+                end
+
+                # Existing `completed` declaration
+                let!(:completed_declaration) do
+                  FactoryBot.create(
+                    :declaration,
+                    declaration_type: :completed,
+                    evidence_type: "75-percent-engagement-met",
+                    declaration_date: Date.new(contract_period_year, 6, 1).rfc3339,
+                    training_period:
+                  )
+                end
+
+                let(:declaration_type) { "retained-1" }
+                let(:evidence_type) { "training-event-attended" }
+
+                context "when declaration date is before started" do
+                  # New declaration with declaration date set 1 day before `started`
+                  let(:declaration_date) { (started_declaration.declaration_date - 1.day).rfc3339 }
+
+                  it { is_expected.to have_one_error_per_attribute }
+                  it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
+                end
+
+                context "when declaration date is after completed" do
+                  # New declaration with declaration date set 1 day after `completed`
+                  let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
+
+                  it { is_expected.to have_one_error_per_attribute }
+                  it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
+                end
+              end
+            end
+          end
+
+          context "when contract period is 2024" do
+            let(:contract_period_year) { 2024 }
+
+            context "when `completed` is submitted before `started` declaration date" do
+              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+
+              # Existing `started` declaration
+              let!(:started_declaration) do
+                FactoryBot.create(
+                  :declaration,
+                  declaration_type: :started,
+                  evidence_type: "training-event-attended",
+                  declaration_date: Date.new(contract_period_year, 6, 1).rfc3339,
+                  training_period:
+                )
+              end
+
+              # New declaration with declaration date set 1 month before `started`
+              let(:declaration_date) { (started_declaration.declaration_date - 1.month).rfc3339 }
+              let(:declaration_type) { "completed" }
+              let(:evidence_type) { "75-percent-engagement-met" }
 
               it { is_expected.to be_valid }
             end
-          end
-        else
-          context "when declaration dates are not in sequence" do
-            let(:active_lead_provider) do
-              FactoryBot.create(
-                :active_lead_provider,
-                :for_year,
-                year: contract_period_year
-              )
-            end
-            let(:lead_provider_delivery_partnership) do
-              FactoryBot.create(
-                :lead_provider_delivery_partnership,
-                active_lead_provider:
-              )
-            end
-            let(:school_partnership) do
-              FactoryBot.create(
-                :school_partnership,
-                lead_provider_delivery_partnership:,
-                school: at_school_period.school
-              )
-            end
-            let!(:training_period) do
-              FactoryBot.create(
-                :training_period,
-                :"for_#{trainee_type}",
-                :active,
-                "#{trainee_type}_at_school_period": at_school_period,
-                school_partnership:,
-                started_on: at_school_period.started_on,
-                finished_on: 1.week.from_now
-              )
-            end
 
-            let!(:existing_declaration) do
-              FactoryBot.create(
-                :declaration,
-                declaration_type: :completed,
-                declaration_date: milestone.start_date.rfc3339
-              )
-            end
+            context "when `started` is submitted after `completed` declaration date" do
+              let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+              let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
-            let(:declaration_type) { "started" }
-            let(:declaration_date) { (existing_declaration.declaration_date + 1.week).rfc3339 }
+              # Existing `started` declaration
+              let!(:completed_declaration) do
+                FactoryBot.create(
+                  :declaration,
+                  declaration_type: :completed,
+                  evidence_type: "75-percent-engagement-met",
+                  declaration_date: Date.new(contract_period_year, 3, 1).rfc3339,
+                  training_period:
+                )
+              end
 
-            context "when contract period is for 2025" do
-              let(:contract_period_year) { 2025 }
-
-              it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:declaration_date, "This declaration_date does not align with previously submitted declarations. Please contact the DfE for support") }
-            end
-
-            context "when contract period is after 2025" do
-              let(:contract_period_year) { 2026 }
-
-              it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:declaration_date, "This declaration_date does not align with previously submitted declarations. Please contact the DfE for support") }
-            end
-
-            context "when contract period is before 2025" do
-              let(:contract_period_year) { 2024 }
+              # New declaration with declaration date set 1 month before `completed`
+              let(:declaration_date) { (completed_declaration.declaration_date + 1.month).rfc3339 }
+              let(:declaration_type) { "started" }
+              let(:evidence_type) { "training-event-attended" }
 
               it { is_expected.to be_valid }
             end

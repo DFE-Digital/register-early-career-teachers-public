@@ -30,8 +30,7 @@ module API::Declarations
     validate :validate_milestone_exists
     validate :validates_billable_slot_available
     validate :payment_statement_available
-    validate :declaration_in_sequence,
-             if: -> { contract_period && contract_period.year >= 2025 }
+    validate :declaration_in_sequence
 
     def create
       return false unless valid?
@@ -175,68 +174,36 @@ module API::Declarations
     end
 
     def declaration_in_sequence
-      return if errors[:declaration_date].any?
-      return unless existing_declarations.any?
+      return if errors[:declaration_date].any? || errors[:declaration_type].any?
+      return if declaration_date.blank? || declaration_type.blank?
+      return unless contract_period && contract_period.year >= 2025
 
-      error_message = <<~TXT.squish
-        This declaration_date does not align with previously submitted
-        declarations. Please contact the DfE for support
-      TXT
+      ordered_types = Declaration.declaration_types.values
+      index = ordered_types.index(declaration_type)
+      before_declaration_types = ordered_types[0...index]
+      after_declaration_types = ordered_types[(index + 1)..]
 
-      ordered_declaration_types = Declaration.declaration_types.keys
-      existing_declaration_types = existing_declarations.map(&:declaration_type)
-      existing_ordered_declaration_types = ordered_declaration_types.select do
-        it.in?(existing_declaration_types)
+      from_declaration_date = existing_declarations
+        .billable_or_changeable_for_declaration_type(before_declaration_types)
+        .maximum(:declaration_date)
+
+      to_declaration_date = existing_declarations
+        .billable_or_changeable_for_declaration_type(after_declaration_types)
+        .minimum(:declaration_date)
+
+      if from_declaration_date && parsed_declaration_date.before?(from_declaration_date)
+        errors.add(
+          :declaration_date,
+          "must be on or after #{from_declaration_date.to_fs(:long)}"
+        )
+      elsif to_declaration_date && parsed_declaration_date.after?(to_declaration_date)
+        errors.add(
+          :declaration_date,
+          "must be on or before #{to_declaration_date.to_fs(:long)}"
+        )
       end
-
-      ordered_declaration_types_with_index = ordered_declaration_types.map.with_index.to_h
-      declaration_type_index = ordered_declaration_types_with_index[declaration_type]
-
-      # Find the first existing declaration type that comes after this declaration type
-      position = existing_ordered_declaration_types.bsearch_index do
-        ordered_declaration_types_with_index[it] > declaration_type_index
-      end
-
-      if position.nil?
-        # This declaration type is the next in sequence
-        previous_declaration_type = existing_ordered_declaration_types.last
-        _next_declaration_type = nil
-        previous_declaration = existing_declarations.find do
-          it.declaration_type == previous_declaration_type
-        end
-
-        unless parsed_declaration_date.after?(previous_declaration.declaration_date)
-          errors.add(:declaration_date, error_message)
-        end
-      elsif position.zero?
-        # This declaration type is the first in sequence
-        previous_declaration_type = nil
-        next_declaration_type = existing_ordered_declaration_types.first
-        next_declaration = existing_declarations.find do
-          it.declaration_type == next_declaration_type
-        end
-
-        unless parsed_declaration_date.before?(next_declaration.declaration_date)
-          errors.add(:declaration_date, error_message)
-        end
-      else
-        previous_declaration_type = existing_ordered_declaration_types[position - 1]
-        next_declaration_type = existing_ordered_declaration_types[position]
-        previous_declaration = existing_declarations.find do
-          it.declaration_type == previous_declaration_type
-        end
-        next_declaration = existing_declarations.find do
-          it.declaration_type == next_declaration_type
-        end
-
-        unless parsed_declaration_date.between?(previous_declaration.declaration_date, next_declaration.declaration_date)
-          errors.add(:declaration_date, error_message)
-        end
-      end
-
-      errors.add(:declaration_date, error_message)
     end
 
-    def parsed_declaration_date = Date.parse(declaration_date)
+    def parsed_declaration_date = Time.zone.parse(declaration_date)
   end
 end
