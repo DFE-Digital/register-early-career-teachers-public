@@ -90,7 +90,7 @@ module ECTAtSchoolPeriods
     end
 
     def create_provider_led_training_period_for_mentor_at_school_period!
-      return unless mentor_at_school_period
+      return unless @mentor_at_school_period
       return if mentor_ineligible_for_funding?
       return if previous_provider_led_training_periods_for_mentor?
 
