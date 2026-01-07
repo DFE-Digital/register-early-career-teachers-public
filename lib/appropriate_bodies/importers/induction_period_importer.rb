@@ -1,55 +1,51 @@
-require 'csv'
+require "csv"
 
 module AppropriateBodies::Importers
   class InductionPeriodImporter
-    IMPORT_ERROR_LOG = 'log/induction_period_error.log'.freeze
+    IMPORT_ERROR_LOG = "log/induction_period_error.log"
     ECF_CUTOFF = Date.new(2021, 9, 1).freeze
 
-    attr_accessor :csv, :data
+    attr_accessor :csv, :data, :logger
 
-    ClaimEvent = Struct.new(:appropriate_body_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
-      def event_type = :appropriate_body_claims_teacher
-
+    ClaimEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
       def to_h
         {
-          appropriate_body_id:,
-          author_type: 'system',
+          author_type: "system",
+          heading: "placeholder",
+          event_type: "induction_period_opened",
           body: nil,
-          event_type:,
-          happened_at:,
-          heading: 'placeholder',
+          appropriate_body_period_id:,
           induction_period_id:,
-          metadata:,
           teacher_id:,
+          metadata:,
+          happened_at:,
         }
       end
     end
 
-    ReleaseEvent = Struct.new(:appropriate_body_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
-      def event_type = :appropriate_body_releases_teacher
-
+    ReleaseEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
       def to_h
         {
-          appropriate_body_id:,
-          author_type: 'system',
+          author_type: "system",
+          heading: "placeholder",
+          event_type: "induction_period_closed",
           body: nil,
-          event_type:,
-          happened_at:,
-          heading: 'placeholder',
+          appropriate_body_period_id:,
           induction_period_id:,
-          metadata:,
           teacher_id:,
+          metadata:,
+          happened_at:,
         }
       end
     end
 
-    ImportEvent = Struct.new(:appropriate_body_id, :induction_period_id, :teacher_id, :metadata, :heading, :body, keyword_init: true) do
+    ImportEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :metadata, :heading, :body, keyword_init: true) do
       def event_type = :import_from_dqt
 
       def to_h
         {
-          appropriate_body_id:,
-          author_type: 'system',
+          appropriate_body_period_id:,
+          author_type: "system",
           body:,
           event_type:,
           happened_at: Time.zone.now,
@@ -61,7 +57,7 @@ module AppropriateBodies::Importers
       end
     end
 
-    Row = Struct.new(:legacy_appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, :teacher_id, :appropriate_body_id, :id, keyword_init: true) do
+    Row = Struct.new(:legacy_appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, :teacher_id, :appropriate_body_period_id, :id, keyword_init: true) do
       def range
         started_on...finished_on
       end
@@ -85,15 +81,15 @@ module AppropriateBodies::Importers
 
       # used for comparisons in tests
       def to_hash
-        { appropriate_body_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
+        { appropriate_body_period_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
       end
 
       def to_record
-        { teacher_id:, appropriate_body_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
+        { teacher_id:, appropriate_body_period_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
       end
 
       def events
-        common_values = { teacher_id:, appropriate_body_id:, induction_period_id: id }
+        common_values = { teacher_id:, appropriate_body_period_id:, induction_period_id: id }
 
         import_events = notes.map { |n| ImportEvent.new(**common_values, metadata: n[:data], heading: n[:heading], body: n[:body]) }
 
@@ -125,11 +121,12 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, cutoff_csv_filename, csv: nil, cutoff_csv: nil)
+    def initialize(filename, dqt_csv_filename, csv: nil, dqt_csv: nil, logger: nil)
       @csv = csv || CSV.read(filename, headers: true)
-      @cutoff_csv = cutoff_csv || CSV.read(cutoff_csv_filename, headers: true)
+      @dqt_csv = dqt_csv || CSV.read(dqt_csv_filename, headers: true)
 
-      File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
+      File.open(IMPORT_ERROR_LOG, "w") { |f| f.truncate(0) }
+      @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
     def rows
@@ -137,19 +134,19 @@ module AppropriateBodies::Importers
     end
 
     def old_abs
-      @old_abs ||= @cutoff_csv.map { |r| r['dqt_id'].downcase }
+      @old_abs ||= @dqt_csv.map { |r| r["dqt_id"].downcase }
     end
 
     def build(row)
       {
-        legacy_appropriate_body_id: row['appropriate_body_id']&.downcase,
-        started_on: extract_date(row['started_on']),
-        finished_on: extract_date(row['finished_on']),
-        induction_programme: row['induction_programme_choice'],
-        number_of_terms: row['number_of_terms'].to_i,
-        trn: row['trn'],
+        legacy_appropriate_body_id: row["appropriate_body_id"]&.downcase,
+        started_on: extract_date(row["started_on"]),
+        finished_on: extract_date(row["finished_on"]),
+        induction_programme: row["induction_programme_choice"],
+        number_of_terms: row["number_of_terms"].to_i,
+        trn: row["trn"],
         notes: [],
-        appropriate_body_id: nil,
+        appropriate_body_period_id: nil,
         teacher_id: nil
       }
     end
@@ -178,7 +175,7 @@ module AppropriateBodies::Importers
           end
         }
         .group_by(&:trn)
-        .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_id] } }
+        .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_period_id] } }
         .each_with_object({}) do |(trn, rows), h|
           keep = []
 
@@ -369,10 +366,6 @@ module AppropriateBodies::Importers
       periods_by_trn.transform_values { |v| v.map(&:to_hash) }
     end
 
-    def logger
-      @logger ||= Logger.new(IMPORT_ERROR_LOG, File::CREAT)
-    end
-
   private
 
     def log_error(message, trn:, legacy_appropriate_body_id:)
@@ -380,7 +373,7 @@ module AppropriateBodies::Importers
         [
           message,
           ("trn: #{trn}" if trn),
-          ("appropriate_body_id: #{legacy_appropriate_body_id}" if legacy_appropriate_body_id)
+          ("appropriate_body_period_id: #{legacy_appropriate_body_id}" if legacy_appropriate_body_id)
         ].compact.join(" ")
       )
     end
@@ -390,7 +383,7 @@ module AppropriateBodies::Importers
 
       date = datetime.first(10)
 
-      Date.strptime(date, '%m/%d/%Y')
+      Date.strptime(date, "%m/%d/%Y")
     end
   end
 end
