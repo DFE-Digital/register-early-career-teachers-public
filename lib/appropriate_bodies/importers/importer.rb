@@ -31,14 +31,14 @@ module AppropriateBodies::Importers
     end
 
     def ab_legacy_id_to_id
-      @ab_legacy_id_to_id ||= AppropriateBody.all.select(:id, :legacy_id).each_with_object({}) do |ab, h|
-        h[ab[:legacy_id]] = ab[:id]
+      @ab_legacy_id_to_id ||= AppropriateBody.all.select(:id, :dqt_id).each_with_object({}) do |ab, h|
+        h[ab[:dqt_id]] = ab[:id]
       end
     end
 
     def import_ab_rows
       Rails.logger.info("Active appropriate bodies: #{@active_abs.count}")
-      AppropriateBody.insert_all!(@ab_importer_rows.select { |r| r.legacy_id.in?(@active_abs) }.map(&:to_h))
+      AppropriateBody.insert_all!(@ab_importer_rows.select { |r| r.dqt_id.in?(@active_abs) }.map(&:to_h))
       Rails.logger.info("Appropriate bodies inserted: #{AppropriateBody.count}")
     end
 
@@ -76,7 +76,7 @@ module AppropriateBodies::Importers
 
       # FIXME: how do we set titles?
       #        can do it by executing a single line of SQL after insert
-      induction_period_rows.each_with_index { |row, i| row.id = induction_period_ids[i]['id'] }
+      induction_period_rows.each_with_index { |row, i| row.id = induction_period_ids[i]["id"] }
 
       events = induction_period_rows.flat_map(&:events).flatten
 
@@ -100,24 +100,24 @@ module AppropriateBodies::Importers
         update events e
         set heading = t.trs_first_name || ' ' || t.trs_last_name || ' was claimed by ' || ab.name
         from teachers t, appropriate_bodies ab
-        where e.event_type = 'appropriate_body_claims_teacher'
+        where e.event_type = 'induction_period_opened'
         and e.teacher_id = t.id
         and e.appropriate_body_id = ab.id;
       CLAIM
         update events e
         set heading = t.trs_first_name || ' ' || t.trs_last_name || ' was released by ' || ab.name
         from teachers t, appropriate_bodies ab
-        where e.event_type = 'appropriate_body_releases_teacher'
+        where e.event_type = 'induction_period_closed'
         and e.teacher_id = t.id
         and e.appropriate_body_id = ab.id;
       RELEASE
 
-      ActiveRecord::Base.connection.execute(statements.join(';'))
+      ActiveRecord::Base.connection.execute(statements.join(";"))
     end
 
     def insert_admins
       @admin_csv.each do |admin|
-        User.create(email: admin['email'], name: admin['name'])
+        User.create(email: admin["email"], name: admin["name"])
       end
     end
   end

@@ -1,28 +1,36 @@
-require 'csv'
+require "csv"
 
 module AppropriateBodies::Importers
   class AppropriateBodyImporter
-    IMPORT_ERROR_LOG = 'tmp/appropriate_body_import.log'.freeze
+    IMPORT_ERROR_LOG = "tmp/appropriate_body_import.log"
 
-    Row = Struct.new(:legacy_id, :name, :dfe_sign_in_organisation_id, :local_authority_code, :establishment_number) do
+    Row = Struct.new(:dqt_id, :name, :dfe_sign_in_organisation_id, :local_authority_code, :establishment_number) do
       def to_h
-        { name:, legacy_id:, establishment_number:, local_authority_code:, dfe_sign_in_organisation_id: }
+        {
+          name:,
+          dqt_id:,
+          # establishment_number:,
+          # local_authority_code:,
+          dfe_sign_in_organisation_id:
+        }
       end
     end
 
-    def initialize(filename, wanted_legacy_ids, dfe_sign_in_mapping_filename, csv: nil, dfe_sign_in_mapping_csv: nil)
+    attr_accessor :logger
+
+    def initialize(filename, wanted_legacy_ids, dfe_sign_in_mapping_filename, csv: nil, dfe_sign_in_mapping_csv: nil, logger: nil)
       @csv = csv || CSV.read(filename, headers: true)
       @wanted_legacy_ids = wanted_legacy_ids
 
       @mapping_csv = dfe_sign_in_mapping_csv || CSV.read(dfe_sign_in_mapping_filename, headers: true)
 
-      File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
-      @import_error_log = Logger.new(IMPORT_ERROR_LOG, File::CREAT)
+      File.open(IMPORT_ERROR_LOG, "w") { |f| f.truncate(0) }
+      @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
     def rows
       @csv.map { |row|
-        next unless row['id'].in?(@wanted_legacy_ids)
+        next unless row["id"].in?(@wanted_legacy_ids)
 
         Row.new(**build(row))
       }.compact
@@ -38,36 +46,36 @@ module AppropriateBodies::Importers
       {
         name: select_name(row).strip,
         dfe_sign_in_organisation_id: select_dfe_sign_in_organsation_id(row),
-        legacy_id: row['id'],
+        dqt_id: row["id"],
 
-        **extract_local_authority_code_and_establishment_number(row)
+        # **extract_local_authority_code_and_establishment_number(row)
       }
     end
 
     def select_name(row)
-      if mappings_by_legacy_id.key?(row['id'])
-        mappings_by_legacy_id[row['id']].fetch('appropriate_body_name')
+      if mappings_by_legacy_id.key?(row["id"])
+        mappings_by_legacy_id[row["id"]].fetch("appropriate_body_name")
       else
-        row['name']
+        row["name"]
       end
     end
 
     def select_dfe_sign_in_organsation_id(row)
-      if mappings_by_legacy_id.key?(row['id'])
-        mappings_by_legacy_id[row['id']].fetch('dfe_sign_in_organisation_id')
+      if mappings_by_legacy_id.key?(row["id"])
+        mappings_by_legacy_id[row["id"]].fetch("dfe_sign_in_organisation_id")
       end
     end
 
     def mappings_by_legacy_id
-      @mappings_by_legacy_id ||= @mapping_csv.map(&:to_h).index_by { |r| r['dqt_id'] }
+      @mappings_by_legacy_id ||= @mapping_csv.map(&:to_h).index_by { |r| r["dqt_id"] }
     end
 
     def mappings_by_ab_name
-      @mappings_by_ab_name ||= @mapping_csv.map(&:to_h).index_by { |r| r['appropriate_body_name'] }
+      @mappings_by_ab_name ||= @mapping_csv.map(&:to_h).index_by { |r| r["appropriate_body_name"] }
     end
 
     def extract_local_authority_code_and_establishment_number(row)
-      local_authority_code = row['local_authority_code']
+      local_authority_code = row["local_authority_code"]
 
       # the local authority code contains a mix of data in various
       # formats, e.g.,: # 51, 052, 101//101, 202, 885/5403
@@ -101,9 +109,9 @@ module AppropriateBodies::Importers
                    establishment_number: local_authority_code[3..7]
                  }
                else
-                 @import_error_log.error "#########################"
-                 @import_error_log.error "Invalid local authority code"
-                 @import_error_log.error "Value: #{local_authority_code}"
+                 logger.error "#########################"
+                 logger.error "Invalid local authority code"
+                 logger.error "Value: #{local_authority_code}"
 
                  {}
                end
