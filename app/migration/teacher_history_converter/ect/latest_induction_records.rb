@@ -1,4 +1,6 @@
 class TeacherHistoryConverter::ECT::LatestInductionRecords
+  include TeacherHistoryConverter::CalculatedAttributes
+
   attr_reader :induction_records
 
   def initialize(induction_records)
@@ -31,7 +33,9 @@ private
         school: induction_record.school,
         email: induction_record.preferred_identity_email,
         mentorship_period_rows: [],
-        training_period_rows: []
+        training_period_rows: [
+          build_new_training_period_from_induction_record(induction_record)
+        ]
       )
     end
     # Step 2:
@@ -42,6 +46,21 @@ private
     # - do nothing
 
     ect_at_school_periods
+  end
+
+  def build_new_training_period_from_induction_record(induction_record)
+    ECF2TeacherHistory::TrainingPeriodRow.new(
+      started_on: induction_record.start_date.to_date,
+      finished_on: induction_record.end_date&.to_date,
+      created_at: induction_record.created_at,
+      school: induction_record.school,
+      training_programme: convert_training_programme_name(induction_record.training_programme),
+      lead_provider_info: induction_record.training_provider_info.lead_provider_info,
+      delivery_partner_info: induction_record.training_provider_info.delivery_partner_info,
+      contract_period_year: induction_record.cohort_year,
+      is_ect: true,
+      ecf_start_induction_record_id: induction_record.induction_record_id
+    )
   end
 
   def build_training_period_rows(school_induction_records, all_induction_records)
