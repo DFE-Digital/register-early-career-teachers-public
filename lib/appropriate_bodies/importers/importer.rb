@@ -76,7 +76,7 @@ module AppropriateBodies::Importers
 
       # FIXME: how do we set titles?
       #        can do it by executing a single line of SQL after insert
-      induction_period_rows.each_with_index { |row, i| row.id = induction_period_ids[i]['id'] }
+      induction_period_rows.each_with_index { |row, i| row.id = induction_period_ids[i]["id"] }
 
       events = induction_period_rows.flat_map(&:events).flatten
 
@@ -112,12 +112,12 @@ module AppropriateBodies::Importers
         and e.appropriate_body_id = ab.id;
       RELEASE
 
-      ActiveRecord::Base.connection.execute(statements.join(';'))
+      ActiveRecord::Base.connection.execute(statements.join(";"))
     end
 
     def insert_admins
       @admin_csv.each do |admin|
-        User.create(email: admin['email'], name: admin['name'])
+        User.create(email: admin["email"], name: admin["name"])
       end
     end
   end

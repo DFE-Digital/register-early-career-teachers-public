@@ -1,11 +1,11 @@
-require 'csv'
+require "csv"
 
 module AppropriateBodies::Importers
   class InductionPeriodImporter
-    IMPORT_ERROR_LOG = 'log/induction_period_error.log'.freeze
+    IMPORT_ERROR_LOG = "log/induction_period_error.log"
     ECF_CUTOFF = Date.new(2021, 9, 1).freeze
 
-    attr_accessor :csv, :data
+    attr_accessor :csv, :data, :logger
 
     ClaimEvent = Struct.new(:appropriate_body_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
       def event_type = :appropriate_body_claims_teacher
@@ -13,11 +13,11 @@ module AppropriateBodies::Importers
       def to_h
         {
           appropriate_body_id:,
-          author_type: 'system',
+          author_type: "system",
           body: nil,
           event_type:,
           happened_at:,
-          heading: 'placeholder',
+          heading: "placeholder",
           induction_period_id:,
           metadata:,
           teacher_id:,
@@ -31,11 +31,11 @@ module AppropriateBodies::Importers
       def to_h
         {
           appropriate_body_id:,
-          author_type: 'system',
+          author_type: "system",
           body: nil,
           event_type:,
           happened_at:,
-          heading: 'placeholder',
+          heading: "placeholder",
           induction_period_id:,
           metadata:,
           teacher_id:,
@@ -49,7 +49,7 @@ module AppropriateBodies::Importers
       def to_h
         {
           appropriate_body_id:,
-          author_type: 'system',
+          author_type: "system",
           body:,
           event_type:,
           happened_at: Time.zone.now,
@@ -125,11 +125,12 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, cutoff_csv_filename, csv: nil, cutoff_csv: nil)
+    def initialize(filename, cutoff_csv_filename, csv: nil, cutoff_csv: nil, logger: nil)
       @csv = csv || CSV.read(filename, headers: true)
       @cutoff_csv = cutoff_csv || CSV.read(cutoff_csv_filename, headers: true)
 
-      File.open(IMPORT_ERROR_LOG, 'w') { |f| f.truncate(0) }
+      File.open(IMPORT_ERROR_LOG, "w") { |f| f.truncate(0) }
+      @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
     def rows
@@ -137,17 +138,17 @@ module AppropriateBodies::Importers
     end
 
     def old_abs
-      @old_abs ||= @cutoff_csv.map { |r| r['dqt_id'].downcase }
+      @old_abs ||= @cutoff_csv.map { |r| r["dqt_id"].downcase }
     end
 
     def build(row)
       {
-        legacy_appropriate_body_id: row['appropriate_body_id']&.downcase,
-        started_on: extract_date(row['started_on']),
-        finished_on: extract_date(row['finished_on']),
-        induction_programme: row['induction_programme_choice'],
-        number_of_terms: row['number_of_terms'].to_i,
-        trn: row['trn'],
+        legacy_appropriate_body_id: row["appropriate_body_id"]&.downcase,
+        started_on: extract_date(row["started_on"]),
+        finished_on: extract_date(row["finished_on"]),
+        induction_programme: row["induction_programme_choice"],
+        number_of_terms: row["number_of_terms"].to_i,
+        trn: row["trn"],
         notes: [],
         appropriate_body_id: nil,
         teacher_id: nil
@@ -369,10 +370,6 @@ module AppropriateBodies::Importers
       periods_by_trn.transform_values { |v| v.map(&:to_hash) }
     end
 
-    def logger
-      @logger ||= Logger.new(IMPORT_ERROR_LOG, File::CREAT)
-    end
-
   private
 
     def log_error(message, trn:, legacy_appropriate_body_id:)
@@ -390,7 +387,7 @@ module AppropriateBodies::Importers
 
       date = datetime.first(10)
 
-      Date.strptime(date, '%m/%d/%Y')
+      Date.strptime(date, "%m/%d/%Y")
     end
   end
 end
