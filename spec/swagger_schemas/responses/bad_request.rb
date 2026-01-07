@@ -13,7 +13,7 @@ BAD_REQUEST_RESPONSE = {
           },
           detail: {
             type: :string,
-            example: "correct json data structure required. See API docs for reference",
+            example: "Correct JSON data structure required. See API docs for reference.",
           },
         },
       },
