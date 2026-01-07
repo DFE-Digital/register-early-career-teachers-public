@@ -1,5 +1,5 @@
 DECLARATION_POST2024_MENTOR_STARTED_ATTRIBUTES = {
-  description: "An ECF started participant declaration",
+  description: "A mentor started declaration",
   type: :object,
   required: %i[participant_id declaration_type declaration_date course_identifier],
   additionalProperties: false,
@@ -38,7 +38,7 @@ DECLARATION_POST2024_MENTOR_STARTED_ATTRIBUTES = {
 }.freeze
 
 DECLARATION_POST2024_MENTOR_COMPLETED_ATTRIBUTES = {
-  description: "An ECF completed participant declaration",
+  description: "A mentor completed declaration",
   type: :object,
   required: %i[participant_id declaration_type declaration_date course_identifier evidence_held],
   additionalProperties: false,

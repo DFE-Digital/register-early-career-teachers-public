@@ -1193,7 +1193,7 @@ components:
                 example: Bad request
               detail:
                 type: string
-                example: correct json data structure required. See API docs for reference
+                example: Correct JSON data structure required. See API docs for reference.
     UnprocessableContentResponse:
       description: The payload was not valid. See the errors for more information.
       type: object
@@ -1861,7 +1861,7 @@ components:
           - "$ref": "#/components/schemas/DeclarationPost2024ECTCompletedAttributes"
           - "$ref": "#/components/schemas/DeclarationPost2024ECTExtendedAttributes"
     DeclarationPost2024ECTStartedAttributes:
-      description: An ECF started participant declaration
+      description: An ECT started declaration
       type: object
       required:
       - participant_id
@@ -1904,7 +1904,7 @@ components:
           - other
           example: training-event-attended
     DeclarationPost2024ECTRetainedAttributes:
-      description: An ECF participant retained declaration
+      description: An ECT retained declaration
       type: object
       required:
       - participant_id
@@ -1956,7 +1956,7 @@ components:
           - 75-percent-engagement-met-reduced-induction
           example: training-event-attended
     DeclarationPost2024ECTCompletedAttributes:
-      description: An ECF completed participant declaration
+      description: An ECT completed declaration
       type: object
       required:
       - participant_id
@@ -1999,7 +1999,7 @@ components:
           - one-term-induction
           example: 75-percent-engagement-met
     DeclarationPost2024ECTExtendedAttributes:
-      description: An ECF extended participant declaration
+      description: An ECT extended declaration
       type: object
       required:
       - participant_id
@@ -2059,7 +2059,7 @@ components:
           - "$ref": "#/components/schemas/DeclarationPost2024MentorStartedAttributes"
           - "$ref": "#/components/schemas/DeclarationPost2024MentorCompletedAttributes"
     DeclarationPost2024MentorStartedAttributes:
-      description: An ECF started participant declaration
+      description: A mentor started declaration
       type: object
       required:
       - participant_id
@@ -2102,7 +2102,7 @@ components:
           - other
           example: training-event-attended
     DeclarationPost2024MentorCompletedAttributes:
-      description: An ECF completed participant declaration
+      description: A mentor completed declaration
       type: object
       required:
       - participant_id
