@@ -57,10 +57,6 @@ describe ECF1TeacherHistory do
             ]
           end
 
-          # it "sets the mode to 'latest_induction_records'" do
-          #   expect(history.ect.migration_mode).to eq("latest_induction_records")
-          # end
-
           it "creates only one induction record per lead_provider, school, contract year combo" do
             expect(history.ect.induction_records(migration_mode: :latest_induction_records).count).to eq(1)
           end
@@ -104,10 +100,6 @@ describe ECF1TeacherHistory do
               FactoryBot.create(:migration_induction_record, participant_profile: ect_profile, induction_programme: induction_programme_2, appropriate_body:, start_date: Date.yesterday, end_date: nil),
             ]
           end
-
-          # it "sets the mode to 'latest_induction_records'" do
-          #   expect(history.ect.migration_mode).to eq("latest_induction_records")
-          # end
 
           it "creates only one induction record per lead_provider, school, contract year combo" do
             expect(history.ect.induction_records.count).to eq 2
