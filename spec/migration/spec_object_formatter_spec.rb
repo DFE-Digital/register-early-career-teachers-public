@@ -151,19 +151,19 @@ describe SpecObjectFormatter do
         data: [
           {
             delivery_partner: {
-              id: "aaaaaaaa-2222-3333-aaaa-aaaaaaaaaaaa",
+              ecf1_id: "aaaaaaaa-2222-3333-aaaa-aaaaaaaaaaaa",
               name: "The first delivery partner"
             }
           },
           {
             delivery_partner: {
-              id: "bbbbbbbb-2222-3333-bbbb-bbbbbbbbbbbb",
+              ecf1_id: "bbbbbbbb-2222-3333-bbbb-bbbbbbbbbbbb",
               name: "The second delivery partner"
             }
           },
           {
             delivery_partner: {
-              id: "aaaaaaaa-2222-3333-aaaa-aaaaaaaaaaaa",
+              ecf1_id: "aaaaaaaa-2222-3333-aaaa-aaaaaaaaaaaa",
               name: "The first delivery partner"
             }
           }
@@ -175,19 +175,19 @@ describe SpecObjectFormatter do
           data: [
             {
               delivery_partner: {
-                id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
+                ecf1_id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
                 name: "Delivery partner 1"
               }
             },
             {
               delivery_partner: {
-                id: "11111111-2222-3333-bbbb-bbbbbbbbbbbb",
+                ecf1_id: "11111111-2222-3333-bbbb-bbbbbbbbbbbb",
                 name: "Delivery partner 2"
               }
             },
             {
               delivery_partner: {
-                id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
+                ecf1_id: "11111111-2222-3333-aaaa-aaaaaaaaaaaa",
                 name: "Delivery partner 1"
               }
             }
