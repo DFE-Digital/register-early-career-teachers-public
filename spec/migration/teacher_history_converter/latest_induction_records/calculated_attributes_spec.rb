@@ -83,4 +83,40 @@ describe TeacherHistoryConverter::CalculatedAttributes do
       end
     end
   end
+
+  describe "#convert_training_programme_name" do
+    subject { FakeTeacherHistoryConverter.new.convert_training_programme_name(training_programme) }
+
+    context "when the ecf1 training programme is full_induction_programme" do
+      let(:training_programme) { "full_induction_programme" }
+
+      it "returns 'provider_led'" do
+        expect(subject).to eq "provider_led"
+      end
+    end
+
+    context "when the ecf1 training programme is core_induction_programme" do
+      let(:training_programme) { "core_induction_programme" }
+
+      it "returns 'school_led'" do
+        expect(subject).to eq "school_led"
+      end
+    end
+
+    context "when the ecf1 training programme is design_our_own" do
+      let(:training_programme) { "design_our_own" }
+
+      it "returns 'school_led'" do
+        expect(subject).to eq "school_led"
+      end
+    end
+
+    context "when the ecf1 training programme is school_funded_fip" do
+      let(:training_programme) { "school_funded_fip" }
+
+      it "returns 'provider_led'" do
+        expect(subject).to eq "provider_led"
+      end
+    end
+  end
 end

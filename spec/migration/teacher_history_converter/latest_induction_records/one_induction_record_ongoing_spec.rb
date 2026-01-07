@@ -41,16 +41,16 @@ describe "One induction record (ongoing - no end date)" do
             started_on: Date.new(2024, 1, 2),
             finished_on: nil,
             school:,
-            # training_periods: [
-            #   hash_including(
-            #     started_on: Date.new(2024, 1, 2),
-            #     finished_on: nil,
-            #     training_programme: "provider_led",
-            #     lead_provider_info: Types::LeadProviderInfo.new(**lead_provider_a),
-            #     delivery_partner_info: Types::DeliveryPartnerInfo.new(**delivery_partner_a),
-            #     contract_period_year: 2024
-            #   )
-            # ]
+            training_periods: [
+              hash_including(
+                started_on: Date.new(2024, 1, 2),
+                finished_on: nil,
+                training_programme: "provider_led",
+                lead_provider_info: Types::LeadProviderInfo.new(**lead_provider_a),
+                delivery_partner_info: Types::DeliveryPartnerInfo.new(**delivery_partner_a),
+                contract_period_year: 2024
+              )
+            ]
           )
         ]
       ),
