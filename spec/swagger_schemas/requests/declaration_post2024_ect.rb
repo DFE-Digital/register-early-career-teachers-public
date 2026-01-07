@@ -1,5 +1,5 @@
 DECLARATION_POST2024_ECT_STARTED_ATTRIBUTES = {
-  description: "An ECF started participant declaration",
+  description: "An ECT started declaration",
   type: :object,
   required: %i[participant_id declaration_type declaration_date course_identifier],
   additionalProperties: false,
@@ -38,7 +38,7 @@ DECLARATION_POST2024_ECT_STARTED_ATTRIBUTES = {
 }.freeze
 
 DECLARATION_POST2024_ECT_RETAINED_ATTRIBUTES = {
-  description: "An ECF participant retained declaration",
+  description: "An ECT retained declaration",
   type: :object,
   required: %i[participant_id declaration_type declaration_date course_identifier evidence_held],
   additionalProperties: false,
@@ -77,7 +77,7 @@ DECLARATION_POST2024_ECT_RETAINED_ATTRIBUTES = {
 }.freeze
 
 DECLARATION_POST2024_ECT_COMPLETED_ATTRIBUTES = {
-  description: "An ECF completed participant declaration",
+  description: "An ECT completed declaration",
   type: :object,
   required: %i[participant_id declaration_type declaration_date course_identifier evidence_held],
   additionalProperties: false,
@@ -116,7 +116,7 @@ DECLARATION_POST2024_ECT_COMPLETED_ATTRIBUTES = {
 }.freeze
 
 DECLARATION_POST2024_ECT_EXTENDED_ATTRIBUTES = {
-  description: "An ECF extended participant declaration",
+  description: "An ECT extended declaration",
   type: :object,
   required: %i[participant_id declaration_type declaration_date course_identifier evidence_held],
   additionalProperties: false,
