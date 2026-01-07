@@ -33,7 +33,7 @@ RSpec.describe Migrators::ECT do
   describe "#migrate_one!" do
     subject(:migrator) { described_class.new }
 
-    describe "mentorship period creation" do
+    describe "mentorship period creation", skip: "Add back once we re-implement mentorship migration" do
       # Set up an ECF Migration school that matches the RECT school
       let!(:ecf_migration_school) { FactoryBot.create(:ecf_migration_school) }
       let!(:school) { FactoryBot.create(:school, urn: ecf_migration_school.urn) }

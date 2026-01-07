@@ -100,7 +100,7 @@ describe ECF2TeacherHistory do
       let(:api_id) { SecureRandom.uuid }
       let(:api_ect_training_record_id) { SecureRandom.uuid }
       let(:api_mentor_training_record_id) { SecureRandom.uuid }
-      let(:ect_migration_mode) { "latest_induction_records" }
+      let(:migration_mode) { "latest_induction_records" }
       let(:ect_pupil_premium_uplift) { true }
       let(:ect_sparsity_uplift) { true }
       let(:ect_first_became_eligible_for_training_at) { 3.years.ago.round(2) }
@@ -117,7 +117,8 @@ describe ECF2TeacherHistory do
           api_ect_training_record_id:,
           api_mentor_training_record_id:,
 
-          ect_migration_mode:,
+          migration_mode:,
+
           ect_pupil_premium_uplift:,
           ect_sparsity_uplift:,
           ect_first_became_eligible_for_training_at:,
@@ -140,7 +141,7 @@ describe ECF2TeacherHistory do
           expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
           expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
 
-          expect(teacher.ect_migration_mode).to eql(ect_migration_mode)
+          expect(teacher.migration_mode).to eql(migration_mode)
           expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
           expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
           expect(teacher.ect_first_became_eligible_for_training_at).to eql(ect_first_became_eligible_for_training_at)
@@ -179,7 +180,7 @@ describe ECF2TeacherHistory do
 
           aggregate_failures do
             expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
-            expect(teacher.ect_migration_mode).to eql(ect_migration_mode)
+            expect(teacher.migration_mode).to eql(migration_mode)
             expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
             expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
           end
@@ -422,7 +423,7 @@ describe ECF2TeacherHistory do
       let(:api_id) { SecureRandom.uuid }
       let(:api_ect_training_record_id) { SecureRandom.uuid }
       let(:api_mentor_training_record_id) { SecureRandom.uuid }
-      let(:mentor_migration_mode) { "all_induction_records" }
+      let(:migration_mode) { "all_induction_records" }
       let(:mentor_became_ineligible_for_funding_on) { 2.years.ago.to_date }
       let(:mentor_became_ineligible_for_funding_reason) { "completed_declaration_received" }
       let(:mentor_first_became_eligible_for_training_at) { 2.years.ago.round(2) }
@@ -439,7 +440,8 @@ describe ECF2TeacherHistory do
           api_ect_training_record_id:,
           api_mentor_training_record_id:,
 
-          mentor_migration_mode:,
+          migration_mode:,
+
           mentor_became_ineligible_for_funding_on:,
           mentor_became_ineligible_for_funding_reason:,
           mentor_first_became_eligible_for_training_at:,
@@ -465,7 +467,7 @@ describe ECF2TeacherHistory do
           expect(teacher.ect_pupil_premium_uplift).to be(false)
           expect(teacher.ect_sparsity_uplift).to be(false)
 
-          expect(teacher.mentor_migration_mode).to eql(mentor_migration_mode)
+          expect(teacher.migration_mode).to eql(migration_mode)
           expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)
           expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
           expect(teacher.mentor_first_became_eligible_for_training_at).to eql(mentor_first_became_eligible_for_training_at)
@@ -504,7 +506,7 @@ describe ECF2TeacherHistory do
 
           aggregate_failures do
             expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
-            expect(teacher.mentor_migration_mode).to eql(mentor_migration_mode)
+            expect(teacher.migration_mode).to eql(migration_mode)
             expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)
             expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
           end
