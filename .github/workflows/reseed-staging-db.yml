@@ -29,7 +29,25 @@ jobs:
         azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
-    - name: Reseed Staging
+    - name: Seed API data
       run: |
+        echo "Running API seeds..."
         make ci staging get-cluster-credentials
-        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rails db:seed:replant"
+        kubectl exec -n cpd-development \
+          deployment/cpd-ec2-staging-web \
+          -- sh -c '
+            cd /app &&
+            DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
+            RAILS_ENV=staging \
+            /usr/local/bin/bundle exec rails db:truncate_all &&
+            DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
+            RAILS_ENV=staging \
+            /usr/local/bin/bundle exec rake api_seed_data:generate
+          '
+
+    - name: Seed default data
+      shell: bash
+      run: |
+        echo "Running default seeds..."
+        make ci staging get-cluster-credentials
+        kubectl exec -n cpd-development deployment/cpd-ec2-staging-web -- /bin/sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 /usr/local/bin/bundle exec rails db:seed"
