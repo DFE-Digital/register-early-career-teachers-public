@@ -4,19 +4,19 @@ describe InductionPeriods::CreateInductionPeriod do
   subject { described_class.new(author:, teacher:, params:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:started_on) { 3.weeks.ago.to_date }
   let(:induction_programme) { "cip" }
   let(:params) do
     {
       started_on:,
-      appropriate_body_id: appropriate_body.id,
+      appropriate_body_period_id: appropriate_body_period.id,
       induction_programme:
     }
   end
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+                      dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
   end
 
   describe "#initialize" do
@@ -56,7 +56,7 @@ describe InductionPeriods::CreateInductionPeriod do
         perform_enqueued_jobs
 
         last_event = Event.find_by(event_type: "induction_period_opened")
-        expect(last_event.appropriate_body).to eql(appropriate_body)
+        expect(last_event.appropriate_body_period).to eql(appropriate_body_period)
         expect(last_event.teacher).to eql(teacher)
         expect(last_event.happened_at.to_date).to eql(started_on)
       end
@@ -80,7 +80,7 @@ describe InductionPeriods::CreateInductionPeriod do
         FactoryBot.create(
           :induction_period,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           started_on: Date.parse("2024-1-1"),
           finished_on: Date.parse("2024-6-1"),
           number_of_terms: 2
@@ -93,7 +93,7 @@ describe InductionPeriods::CreateInductionPeriod do
         {
           started_on:,
           finished_on:,
-          appropriate_body_id: appropriate_body.id,
+          appropriate_body_period_id: appropriate_body_period.id,
           induction_programme:,
           number_of_terms: 2
         }
@@ -120,7 +120,7 @@ describe InductionPeriods::CreateInductionPeriod do
         FactoryBot.create(
           :induction_period,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           started_on: Date.parse("2024-1-1"),
           finished_on: Date.parse("2024-6-1"),
           number_of_terms: 2
@@ -137,7 +137,7 @@ describe InductionPeriods::CreateInductionPeriod do
           "finished_on(1i)" => finished_on.year.to_s,
           "finished_on(2i)" => finished_on.month.to_s,
           "finished_on(3i)" => finished_on.day.to_s,
-          appropriate_body_id: appropriate_body.id,
+          appropriate_body_period_id: appropriate_body_period.id,
           induction_programme:,
           number_of_terms: 2
         }
@@ -155,7 +155,7 @@ describe InductionPeriods::CreateInductionPeriod do
         FactoryBot.create(
           :induction_period,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           started_on: Date.parse("2024-1-1"),
           finished_on: Date.parse("2024-6-1"),
           number_of_terms: 2
@@ -168,7 +168,7 @@ describe InductionPeriods::CreateInductionPeriod do
         {
           started_on:,
           finished_on:,
-          appropriate_body_id: appropriate_body.id,
+          appropriate_body_period_id: appropriate_body_period.id,
           induction_programme:,
           number_of_terms: 2
         }
@@ -185,7 +185,7 @@ describe InductionPeriods::CreateInductionPeriod do
         FactoryBot.create(
           :induction_period,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           started_on: Date.parse("2023-1-1"),
           finished_on: Date.parse("2023-6-1"),
           outcome: "pass",

@@ -11,7 +11,7 @@ RSpec.describe AppropriateBodyValidator, type: :model do
       validates :appropriate_body, appropriate_body: true
 
       def appropriate_body
-        @appropriate_body ||= AppropriateBody.find_by_id(appropriate_body_id) if appropriate_body_id
+        @appropriate_body ||= AppropriateBodyPeriod.find_by_id(appropriate_body_id) if appropriate_body_id
       end
     end
   end
