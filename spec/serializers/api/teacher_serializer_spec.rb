@@ -35,12 +35,29 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
     subject(:attributes) { response["attributes"] }
 
     it "serializes correctly" do
-      expect(attributes["full_name"]).to be_present
-      expect(attributes["full_name"]).to eq(Teachers::Name.new(teacher).full_name_in_trs)
       expect(attributes["updated_at"]).to be_present
       expect(attributes["updated_at"]).to eq(api_updated_at.utc.rfc3339)
       expect(attributes["teacher_reference_number"]).to be_present
       expect(attributes["teacher_reference_number"]).to eq(teacher.trn)
+    end
+
+    describe "`full_name`" do
+      subject(:full_name) { attributes["full_name"] }
+
+      it { is_expected.to be_present }
+      it { is_expected.to eq(Teachers::Name.new(teacher).full_name) }
+
+      context "when teacher has a `corrected_name`" do
+        let(:teacher) { FactoryBot.create(:teacher, :with_corrected_name) }
+
+        it { is_expected.to eq(teacher.corrected_name) }
+      end
+
+      context "when teacher has a `full_name_in_trs`" do
+        let(:teacher) { FactoryBot.create(:teacher, :with_realistic_name) }
+
+        it { is_expected.to eq([teacher.trs_first_name, teacher.trs_last_name].join(" ")) }
+      end
     end
 
     describe "participant_id_changes" do
