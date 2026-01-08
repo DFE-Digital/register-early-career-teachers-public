@@ -60,9 +60,5 @@ private
     all_induction_records.reverse.each_with_object([]) do |row, result|
       result.unshift(row) unless row_matches.call(result, row)
     end
-
-    # TODO: reorder:
-    #       * make sure the induction record with no end date is first
-    #       * order the rest by start_date, created_at descending
   end
 end
