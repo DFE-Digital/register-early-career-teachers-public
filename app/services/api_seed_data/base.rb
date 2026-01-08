@@ -17,7 +17,7 @@ module APISeedData
     end
 
     def plantable?
-      %w[development review sandbox].include?(Rails.env)
+      %w[development review sandbox staging].include?(Rails.env)
     end
 
   private

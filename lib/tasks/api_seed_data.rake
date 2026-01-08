@@ -17,7 +17,7 @@ namespace :api_seed_data do
       APISeedData::Declarations,
     ]
 
-    if Rails.env.development? || Rails.env.review?
+    if Rails.env.development? || Rails.env.review? || Rails.env.staging?
       seeds += [
         APISeedData::APITokens,
         APISeedData::ParityChecks,
