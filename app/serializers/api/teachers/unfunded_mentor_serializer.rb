@@ -2,7 +2,7 @@ class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 
-    field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name_in_trs }
+    field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name }
     field(:email) do |teacher, _options|
       teacher.latest_mentor_at_school_period.email
     end
