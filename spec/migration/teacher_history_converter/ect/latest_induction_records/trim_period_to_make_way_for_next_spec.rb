@@ -7,12 +7,12 @@ describe "Trim period to make way for next" do
   # that start sequentially and overlap, we trim the start of the later
   # one.
   #
-  # ┌──────────────────────┐
-  # │                      │
-  # └──────────────────────┘
-  #                   ┌────┐─────────────────┐
-  #                   │ ✂️ │                 │
-  #                   └────┘─────────────────┘
+  # ┌─────────────────┌────┐
+  # │                 │ ✂️ │
+  # └─────────────────└────┘
+  #                   ┌────────────────┐
+  #                   │                │
+  #                   └────────────────┘
 
   let(:cohort_year) { 2024 }
   let(:lead_provider_a) { { name: "Lead provider A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-cccccccccccc" } }
