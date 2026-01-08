@@ -46,6 +46,7 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
             declaration_type: "started",
             declaration_date: milestone.start_date.beginning_of_day.rfc3339,
             course_identifier: "ecf-induction",
+            evidence_held: "other",
           },
         },
       }
@@ -60,6 +61,7 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
             declaration_type: "started",
             declaration_date: Time.zone.now.rfc3339,
             course_identifier: "ecf-induction",
+            evidence_held: "invalid"
           },
         },
       }

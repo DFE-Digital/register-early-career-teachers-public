@@ -1868,6 +1868,7 @@ components:
       - declaration_type
       - declaration_date
       - course_identifier
+      - evidence_held
       additionalProperties: false
       properties:
         participant_id:
