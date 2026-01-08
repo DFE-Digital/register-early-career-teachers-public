@@ -83,8 +83,6 @@ class School < ApplicationRecord
 
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another school" }
 
-  # validate :lead_school_region_limit, if: -> { led_teaching_school_hub.present? }
-
   # Scopes
   scope :search, ->(q) { includes(:gias_school).merge(GIAS::School.search(q)) }
   scope :eligible, -> { in_gias_schools.where(marked_as_eligible: true).or(gias_eligible) }
@@ -144,12 +142,6 @@ class School < ApplicationRecord
   end
 
   def last_programme_choices? = last_chosen_appropriate_body_id.present? && last_chosen_training_programme.present?
-
-  # def lead_school_region_limit
-  #   if led_teaching_school_hub.regions.count >= 3
-  #     errors.add(:base, "has reached the maximum of 3 teaching school hub regions")
-  #   end
-  # end
 
   def to_param = urn
 
