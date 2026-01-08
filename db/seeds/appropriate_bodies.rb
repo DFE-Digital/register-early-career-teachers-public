@@ -251,19 +251,16 @@ appropriate_bodies.each do |data|
   next if dfe_sign_in_organisation_id.blank?
 
   # Teaching School Hubs
-  if appropriate_body_period.teaching_school_hub?
+  if appropriate_body_period.teaching_school_hub? && appropriate_body_period.teaching_school_hub.blank?
     school_name = data.dig(:lead_school, :name)
     urn = data.dig(:lead_school, :urn)
     regions = data[:regions]
 
-    # If the AB is a TSH there will be a school acting as its lead school
-    gias_school = FactoryBot.create(:gias_school, :with_school, :eligible_type, :in_england,
-                                    name: school_name,
-                                    urn:)
+    gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england, name: school_name, urn:)
 
-    teaching_school_hub = FactoryBot.create(:teaching_school_hub,
-                                            lead_school: gias_school.school,
-                                            name:)
+    lead_school = FactoryBot.create(:school, :eligible, urn:, gias_school:)
+
+    teaching_school_hub = FactoryBot.create(:teaching_school_hub, lead_school:, name:)
 
     regions.each do |region|
       FactoryBot.create(:region,
@@ -272,10 +269,7 @@ appropriate_bodies.each do |data|
                         teaching_school_hub:)
     end
 
-    appropriate_body_period.update!(
-      lead_school: gias_school.school,
-      teaching_school_hub:
-    )
+    appropriate_body_period.update!(lead_school:, teaching_school_hub:)
 
     # Delivery Partner role for TSH
     FactoryBot.create(:delivery_partner,
@@ -283,7 +277,7 @@ appropriate_bodies.each do |data|
   end
 
   # National Bodies
-  if appropriate_body_period.national?
+  if appropriate_body_period.national? && appropriate_body_period.national_body.blank?
     national_body = FactoryBot.create(:national_body, name:)
     appropriate_body_period.update!(national_body:)
   end
