@@ -26,8 +26,8 @@ describe "Trim period to make way for next" do
         participant_profile_id: "11111111-2222-3333-aaaa-bbbbbbbbbbbb",
         induction_records: [
           {
-            start_date: Date.new(2024, 1, 1),
-            end_date: Date.new(2024, 5, 5),
+            start_date: Time.zone.local(2024, 1, 1, 0, 0, 0),
+            end_date: Time.zone.local(2024, 5, 5, 0, 0, 0),
             training_provider_info: {
               lead_provider: lead_provider_a,
               delivery_partner: delivery_partner_a,
@@ -35,8 +35,8 @@ describe "Trim period to make way for next" do
             }
           },
           {
-            start_date: Date.new(2024, 5, 1),
-            end_date: Date.new(2024, 8, 1),
+            start_date: Time.zone.local(2024, 5, 1, 0, 0, 0),
+            end_date: Time.zone.local(2024, 8, 8, 0, 0, 0),
             training_provider_info: {
               lead_provider: lead_provider_b,
               delivery_partner: delivery_partner_a,
@@ -54,6 +54,21 @@ describe "Trim period to make way for next" do
     expect(subject.ect_at_school_period_rows.count).to be(2)
   end
 
-  it "starts and finishes the first one with the dates from the first induction record"
-  it "starts the second one when the first finishes and leaves its original end date intact"
+  it "starts and finishes the first one with the dates from the first induction record", pending: "Implement overlap trim behaviour" do
+    first_ect_at_school_period = subject.ect_at_school_period_rows[0]
+
+    aggregate_failures do
+      expect(first_ect_at_school_period.started_on).to eql(Date.new(2024, 1, 1))
+      expect(first_ect_at_school_period.finished_on).to eql(Date.new(2024, 5, 1))
+    end
+  end
+
+  it "starts the second one when the first finishes and leaves its original end date intact" do
+    second_ect_at_school_period = subject.ect_at_school_period_rows[1]
+
+    aggregate_failures do
+      expect(second_ect_at_school_period.started_on).to eql(Date.new(2024, 5, 1))
+      expect(second_ect_at_school_period.finished_on).to eql(Date.new(2024, 8, 8))
+    end
+  end
 end
