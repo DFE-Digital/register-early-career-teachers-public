@@ -243,7 +243,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           context "when contract period is 2025" do
             let(:contract_period_year) { 2025 }
 
-            context "when `completed` is submitted before `started` declaration date" do
+            context "when theres existing `started` declaration" do
               let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
               let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
@@ -258,16 +258,27 @@ RSpec.describe API::Declarations::Create, type: :model do
                 )
               end
 
-              # New declaration with declaration date set 1 week before `started`
-              let(:declaration_date) { (started_declaration.declaration_date - 1.week).rfc3339 }
+              # New declaration
               let(:declaration_type) { "completed" }
               let(:evidence_type) { "75-percent-engagement-met" }
 
-              it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
+              context "when `completed` is submitted before `started` declaration date" do
+                # New declaration with declaration date set 1 week before `started`
+                let(:declaration_date) { (started_declaration.declaration_date - 1.week).rfc3339 }
+
+                it { is_expected.to have_one_error_per_attribute }
+                it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
+              end
+
+              context "when `completed` is submitted after `started` declaration date" do
+                # New declaration with declaration date set 2 weeks after `started`
+                let(:declaration_date) { (started_declaration.declaration_date + 2.weeks).rfc3339 }
+
+                it { is_expected.to be_valid }
+              end
             end
 
-            context "when `started` is submitted after `completed` declaration date" do
+            context "when theres existing `completed` declaration" do
               let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
               let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
 
@@ -282,18 +293,29 @@ RSpec.describe API::Declarations::Create, type: :model do
                 )
               end
 
-              # New declaration with declaration date set 1 week before `completed`
-              let(:declaration_date) { (completed_declaration.declaration_date + 1.week).rfc3339 }
+              # New declaration
               let(:declaration_type) { "started" }
               let(:evidence_type) { "training-event-attended" }
 
-              it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
+              context "when `started` is submitted after `completed` declaration date" do
+                # New declaration with declaration date set 1 week after `completed`
+                let(:declaration_date) { (completed_declaration.declaration_date + 1.week).rfc3339 }
+
+                it { is_expected.to have_one_error_per_attribute }
+                it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
+              end
+
+              context "when `started` is submitted before `completed` declaration date" do
+                # New declaration with declaration date set 2 weeks before `completed`
+                let(:declaration_date) { (completed_declaration.declaration_date - 2.weeks).rfc3339 }
+
+                it { is_expected.to be_valid }
+              end
             end
 
             # Mentor has `started` and `completed` only, for ECT we do outside of existing declaration date test
             if trainee_type == :ect
-              context "when `retained-1` is submitted outside of `started` and `completed` declaration dates" do
+              context "when theres existing `started` and `completed` declarations" do
                 let!(:milestone) { FactoryBot.create(:milestone, declaration_type: "retained-1", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
                 let!(:started_milestone) { FactoryBot.create(:milestone, declaration_type: "started", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
                 let!(:completed_milestone) { FactoryBot.create(:milestone, declaration_type: "completed", schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
@@ -323,20 +345,29 @@ RSpec.describe API::Declarations::Create, type: :model do
                 let(:declaration_type) { "retained-1" }
                 let(:evidence_type) { "training-event-attended" }
 
-                context "when declaration date is before started" do
-                  # New declaration with declaration date set 1 day before `started`
-                  let(:declaration_date) { (started_declaration.declaration_date - 1.day).rfc3339 }
+                context "when `retained-1` is submitted outside of `started` and `completed` declaration dates" do
+                  context "when declaration date is before started" do
+                    # New declaration with declaration date set 1 day before `started`
+                    let(:declaration_date) { (started_declaration.declaration_date - 1.day).rfc3339 }
 
-                  it { is_expected.to have_one_error_per_attribute }
-                  it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
+                    it { is_expected.to have_one_error_per_attribute }
+                    it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
+                  end
+
+                  context "when declaration date is after completed" do
+                    # New declaration with declaration date set 1 day after `completed`
+                    let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
+
+                    it { is_expected.to have_one_error_per_attribute }
+                    it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
+                  end
                 end
 
-                context "when declaration date is after completed" do
-                  # New declaration with declaration date set 1 day after `completed`
-                  let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
+                context "when `retained-1` is submitted within `started` and `completed` declaration dates" do
+                  # New declaration with declaration date set 1 day after `started`
+                  let(:declaration_date) { (started_declaration.declaration_date + 1.day).rfc3339 }
 
-                  it { is_expected.to have_one_error_per_attribute }
-                  it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
+                  it { is_expected.to be_valid }
                 end
               end
             end
