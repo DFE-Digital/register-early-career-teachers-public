@@ -36,4 +36,14 @@ RSpec.shared_examples "an API create endpoint" do
     expect(response.content_type).to eql("application/json; charset=utf-8")
     expect(response.body).to eq({ errors: [{ title: "Bad request", detail: "Correct json data structure required. See API docs for reference." }] }.to_json)
   end
+
+  context "when extra params are sent" do
+    it "calls the service with the correct arguments" do
+      allow(service).to receive(:new).and_call_original
+
+      authenticated_api_post(path, params: params.deep_merge(data: { attributes: { any_param1: "test", any_param2: "test" } }))
+
+      expect(service).to have_received(:new).with(service_args)
+    end
+  end
 end
