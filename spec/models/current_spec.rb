@@ -1,5 +1,5 @@
 RSpec.describe Current, type: :model do
-  let(:current_user) { FactoryBot.create(:dfe_user, name: "Admin User", role: "super_admin") }
+  let(:current_user) { FactoryBot.create(:dfe_user, name: "Admin user", role: "admin") }
 
   it "has a version number" do
     expect(described_class).to respond_to(:user)
@@ -23,14 +23,14 @@ RSpec.describe Current, type: :model do
     it "is derived from user and can be retrieved" do
       Current.user = current_user
       expect(Current.administrator).to eq(current_user.user)
-      expect(Current.administrator.name).to eq("Admin User")
+      expect(Current.administrator.name).to eq("Admin user")
     end
   end
 
   describe "role" do
     it "is derived from user and can be retrieved" do
       Current.user = current_user
-      expect(Current.role).to eq("Super admin")
+      expect(Current.role).to eq("admin")
     end
   end
 
