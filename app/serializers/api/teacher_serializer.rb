@@ -79,8 +79,24 @@ class API::TeacherSerializer < Blueprinter::Base
 
         earliest_school_period.created_at.utc.rfc3339
       end
-      field(:induction_end_date) { |(_, teacher, _)| teacher.finished_induction_period&.finished_on&.rfc3339 }
-      field(:overall_induction_start_date) { |(_, teacher, _)| teacher.started_induction_period&.started_on&.rfc3339 }
+      field(:induction_end_date) do |(training_period, teacher, _)|
+        if training_period.for_ect?
+          if teacher.finished_induction_period.present?
+            teacher.finished_induction_period.finished_on.rfc3339
+          else
+            teacher.trs_induction_completed_date&.rfc3339
+          end
+        end
+      end
+      field(:overall_induction_start_date) do |(training_period, teacher, _)|
+        if training_period.for_ect?
+          if teacher.started_induction_period.present?
+            teacher.started_induction_period.started_on.rfc3339
+          else
+            teacher.trs_induction_start_date&.rfc3339
+          end
+        end
+      end
       field(:mentor_funding_end_date) { |(training_period, teacher, _)| teacher.mentor_became_ineligible_for_funding_on&.rfc3339 if training_period.for_mentor? }
       field(:cohort_changed_after_payments_frozen) do |(training_period, teacher, _)|
         if training_period.for_ect?
