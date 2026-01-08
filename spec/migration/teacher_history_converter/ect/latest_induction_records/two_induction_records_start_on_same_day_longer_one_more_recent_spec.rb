@@ -88,5 +88,10 @@ describe "Two induction records start on the same day, the longer one was create
     end
   end
 
-  it "creates training periods that span the entire ECT at school period"
+  it "creates training periods that span the entire ECT at school period" do
+    subject.ect_at_school_periods.each do |school_period|
+      expect(school_period.started_on).to eq school_period.training_periods.first.started_on
+      expect(school_period.finished_on).to eq school_period.training_periods.first.finished_on
+    end
+  end
 end
