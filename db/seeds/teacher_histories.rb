@@ -877,7 +877,7 @@ jane_smith_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                          teacher: jane_smith,
                                                          school: abbey_grove_school,
                                                          email: "jane.smith@st-trinians.org.uk",
-                                                         started_on: Date.new(2025, 9, 5),
+                                                         started_on: Date.new(2024, 9, 5),
                                                          finished_on: nil,
                                                          school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
 FactoryBot.create(:training_period,
