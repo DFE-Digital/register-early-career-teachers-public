@@ -68,7 +68,13 @@ describe "Ongoing induction record starts before previous one finishes" do
     expect(subject.ect_at_school_period_rows.count).to be(2)
   end
 
-  it "cuts the earlier ECT at school period off when the later one starts"
+  it "cuts the earlier ECT at school period off when the later one starts" do
+    earliest_ect_at_school_period = subject.ect_at_school_period_rows.first
+
+    expect(earliest_ect_at_school_period.started_on).to eql(Date.new(2024, 1, 1))
+    expect(earliest_ect_at_school_period.finished_on).to eql(Date.new(2024, 4, 4))
+  end
+
   it "creates training periods that span the entire ECT at school period" do
     subject.ect_at_school_period_rows.each do |school_period|
       expect(school_period.started_on).to eq school_period.training_period_rows.first.started_on

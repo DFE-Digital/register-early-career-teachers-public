@@ -38,7 +38,7 @@ describe "Earlier induction record starts before previous one finishes" do
         participant_profile_id: "11111111-2222-3333-aaaa-bbbbbbbbbbbb",
         induction_records: [
           {
-            start_date: Time.zone.local(2024, 1, 1, 0, 0, 0),
+            start_date: Time.zone.local(2024, 2, 2, 0, 0, 0),
             end_date: Time.zone.local(2024, 5, 5, 0, 0, 0),
             school: school_a,
             training_provider_info: {
@@ -68,7 +68,13 @@ describe "Earlier induction record starts before previous one finishes" do
     expect(subject.ect_at_school_period_rows.count).to be(2)
   end
 
-  it "cuts the earlier ECT at school period off when the later one starts"
+  it "cuts the earlier ECT at school period off when the later one starts" do
+    earliest_ect_at_school_period = subject.ect_at_school_period_rows.first
+
+    expect(earliest_ect_at_school_period.started_on).to eql(Date.new(2024, 2, 2))
+    expect(earliest_ect_at_school_period.finished_on).to eql(Date.new(2024, 4, 4))
+  end
+
   it "creates training periods that span the entire ECT at school period" do
     subject.ect_at_school_period_rows.each do |school_period|
       expect(school_period.started_on).to eq school_period.training_period_rows.first.started_on

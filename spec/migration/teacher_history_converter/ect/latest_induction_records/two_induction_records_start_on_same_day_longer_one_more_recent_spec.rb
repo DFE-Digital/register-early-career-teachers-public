@@ -1,8 +1,9 @@
 describe "Two induction records start on the same day, the longer one was created more recently" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
-  # When there are two induction records and the one which started latest
-  # is ongoing.
+  # When there are two induction records that started on the same date,
+  # and the one created most recently is longer
+  #
   #      ┌───────────────────────────────────┐
   #      │ (created_at later)                │
   #      └───────────────────────────────────┘
@@ -70,7 +71,7 @@ describe "Two induction records start on the same day, the longer one was create
     expect(subject.ect_at_school_period_rows.count).to be(2)
   end
 
-  it "creates a 'stub' ECT at school period that lasts 1 day, immediately before the ongoing period", skip: "Implement behaviour" do
+  it "creates a 'stub' ECT at school period that lasts 1 day, immediately before the ongoing period" do
     stub_ect_at_school_period = subject.ect_at_school_period_rows[0]
 
     aggregate_failures do
@@ -79,7 +80,7 @@ describe "Two induction records start on the same day, the longer one was create
     end
   end
 
-  it "creates a finished ECT at school period that starts on the day the ongoing induction record started", skip: "Implement behaviour" do
+  it "creates a finished ECT at school period that starts on the day the ongoing induction record started" do
     finished_ect_at_school_period = subject.ect_at_school_period_rows[1]
 
     aggregate_failures do
