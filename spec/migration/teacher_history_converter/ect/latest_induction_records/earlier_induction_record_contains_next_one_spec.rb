@@ -87,9 +87,9 @@ describe "Earlier induction record contains next one" do
   end
 
   it "creates training periods that span the entire ECT at school period" do
-    subject.ect_at_school_periods.each do |school_period|
-      expect(school_period.started_on).to eq school_period.training_periods.first.started_on
-      expect(school_period.finished_on).to eq school_period.training_periods.first.finished_on
+    subject.ect_at_school_period_rows.each do |school_period|
+      expect(school_period.started_on).to eq school_period.training_period_rows.first.started_on
+      expect(school_period.finished_on).to eq school_period.training_period_rows.first.finished_on
     end
   end
 end
