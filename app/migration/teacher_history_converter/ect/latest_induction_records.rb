@@ -76,7 +76,8 @@ private
       delivery_partner_info: induction_record.training_provider_info.delivery_partner_info,
       contract_period_year: induction_record.cohort_year,
       is_ect: true,
-      ecf_start_induction_record_id: induction_record.induction_record_id
+      ecf_start_induction_record_id: induction_record.induction_record_id,
+      schedule_info: induction_record.schedule_info
     )
   end
 
