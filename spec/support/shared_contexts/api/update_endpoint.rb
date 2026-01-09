@@ -50,4 +50,14 @@ RSpec.shared_examples "an API update endpoint" do |example_options|
       expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
     end
   end
+
+  context "when extra params are sent" do
+    it "calls the service with the correct arguments" do
+      allow(service).to receive(:new).and_call_original
+
+      authenticated_api_put(path, params: params.deep_merge(data: { attributes: { any_param1: "test", any_param2: "test" } }))
+
+      expect(service).to have_received(:new).with(service_args)
+    end
+  end
 end
