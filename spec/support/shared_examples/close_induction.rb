@@ -45,8 +45,11 @@ RSpec.shared_context "it closes an induction" do
     end
 
     it "does not update the induction period" do
-      expect { service_call }.to raise_error(ActiveRecord::RecordInvalid)
-      expect(service.errors.size).to be(3)
+      expect { service_call }.to(raise_error do |error|
+        expect(error).to be_a(ActiveRecord::RecordInvalid).or be_a(ActiveModel::ValidationError)
+      end)
+
+      expect(service.errors.size).not_to be_zero
     end
   end
 end

@@ -1,4 +1,4 @@
-RSpec.describe "appropriate_bodies/teachers/record_failed_induction/new.html.erb" do
+RSpec.describe "appropriate_bodies/teachers/record_failed_induction/confirm.html.erb" do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
@@ -27,18 +27,7 @@ RSpec.describe "appropriate_bodies/teachers/record_failed_induction/new.html.erb
     expect(rendered).to have_css("form")
   end
 
-  it "has a date field for the leaving date" do
-    expect(rendered).to have_css("legend", text: "When did their induction end with #{appropriate_body.name}?")
-    expect(rendered).to have_css("form label", text: "Day")
-    expect(rendered).to have_css("form label", text: "Month")
-    expect(rendered).to have_css("form label", text: "Year")
-  end
-
-  it "has a date field for the extension length" do
-    expect(rendered).to have_css("label", text: "How many terms of induction did they spend with you?")
-  end
-
-  it "has a warning submit button" do
-    expect(rendered).to have_css("button.govuk-button--warning")
+  it "links to appeal documentation" do
+    expect(rendered).to have_link("about the appeal process (opens in new tab)", href: "https://www.gov.uk/guidance/newly-qualified-teacher-nqt-induction-appeals")
   end
 end
