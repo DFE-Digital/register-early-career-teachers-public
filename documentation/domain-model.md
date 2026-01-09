@@ -327,12 +327,14 @@ erDiagram
     boolean sparsity_uplift
     boolean pupil_premium_uplift
     datetime api_updated_at
+    integer superseded_by_id
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| User : belongs_to
   Declaration }o--|| MentorshipPeriod : belongs_to
   Declaration }o--|| Statement : belongs_to
   Declaration }o--|| Statement : belongs_to
+  Declaration }o--|| Declaration : belongs_to
   ContractPeriod {
     integer year
     datetime created_at
