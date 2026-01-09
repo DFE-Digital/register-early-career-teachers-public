@@ -68,7 +68,7 @@ describe "Ongoing induction record contains next one" do
     expect(subject.ect_at_school_period_rows.count).to be(2)
   end
 
-  it "creates a 'stub' ECT at school period that lasts 1 day, immediately before the ongoing period", skip: "Implement behaviour" do
+  it "creates a 'stub' ECT at school period that lasts 1 day, immediately before the ongoing period" do
     stub_ect_at_school_period = subject.ect_at_school_period_rows[0]
 
     aggregate_failures do
@@ -77,7 +77,7 @@ describe "Ongoing induction record contains next one" do
     end
   end
 
-  it "creates an ongoing ECT at school period that starts on the day the ongoing induction record started", skip: "Implement behaviour" do
+  it "creates an ongoing ECT at school period that starts on the day the ongoing induction record started" do
     ongoing_ect_at_school_period = subject.ect_at_school_period_rows[1]
 
     aggregate_failures do

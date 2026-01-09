@@ -43,4 +43,16 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
 
     new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
   end
+
+  def range
+    start_date.to_date..end_date&.to_date
+  end
+
+  def range_covers_finish_but_not_start?(start, finish)
+    range.cover?(finish) && !range.cover?(start)
+  end
+
+  def ongoing?
+    end_date.nil?
+  end
 end

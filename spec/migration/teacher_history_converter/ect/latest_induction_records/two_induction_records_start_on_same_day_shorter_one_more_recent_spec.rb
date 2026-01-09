@@ -1,17 +1,18 @@
 describe "Two induction records start on the same day, the shorter one was created more recently" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
-  # When there are two induction records and the one which started latest
-  # is ongoing.
-  #      ┌───────────────────────────────────┐
-  #      │                                   │
-  #      └───────────────────────────────────┘
+  # When there are two induction records that started on the same date,
+  # and the one created most recently is shorter
+  #
   #      ┌────────────────────────┐
   #      │ (created_at later)     │
   #      └────────────────────────┘
+  #      ┌───────────────────────────────────┐
+  #      │                                   │
+  #      └───────────────────────────────────┘
   #
-  # We want to convert the shorter one into a stub and place it before the
-  # longer (more recently created one)
+  # We want to convert the most recently created one (shorter) one into a stub
+  # and place it before the longer (more recently created one)
   #
   #      ┌────────────────────────┐
   #      │ (created_at later)     │
@@ -39,23 +40,23 @@ describe "Two induction records start on the same day, the shorter one was creat
         induction_records: [
           {
             start_date: Time.zone.local(2024, 3, 3, 0, 0, 0),
+            end_date: Time.zone.local(2024, 7, 7, 0, 0, 0),
+            created_at: Time.zone.local(2025, 2, 2, 0, 0, 0),
+            school: school_b,
+            training_provider_info: {
+              lead_provider: lead_provider_b,
+              delivery_partner: delivery_partner_b,
+              cohort_year:
+            }
+          },
+          {
+            start_date: Time.zone.local(2024, 3, 3, 0, 0, 0),
             end_date: Time.zone.local(2024, 9, 9, 0, 0, 0),
             created_at: Time.zone.local(2022, 1, 1, 0, 0, 0),
             school: school_a,
             training_provider_info: {
               lead_provider: lead_provider_a,
               delivery_partner: delivery_partner_a,
-              cohort_year:
-            }
-          },
-          {
-            start_date: Time.zone.local(2024, 3, 3, 0, 0, 0),
-            end_date: Time.zone.local(2024, 7, 7, 0, 0, 0),
-            created_at: Time.zone.local(2025, 1, 1, 0, 0, 0),
-            school: school_b,
-            training_provider_info: {
-              lead_provider: lead_provider_b,
-              delivery_partner: delivery_partner_b,
               cohort_year:
             }
           }
@@ -70,7 +71,7 @@ describe "Two induction records start on the same day, the shorter one was creat
     expect(subject.ect_at_school_period_rows.count).to be(2)
   end
 
-  it "creates a 'stub' ECT at school period that lasts 1 day, immediately before the ongoing period", skip: "Implement behaviour" do
+  it "creates a 'stub' ECT at school period that lasts 1 day, immediately before the ongoing period" do
     stub_ect_at_school_period = subject.ect_at_school_period_rows[0]
 
     aggregate_failures do
@@ -79,7 +80,7 @@ describe "Two induction records start on the same day, the shorter one was creat
     end
   end
 
-  it "creates a finished ECT at school period that starts on the day the ongoing induction record started", skip: "Implement behaviour" do
+  it "creates a finished ECT at school period that starts on the day the ongoing induction record started" do
     finished_ect_at_school_period = subject.ect_at_school_period_rows[1]
 
     aggregate_failures do
