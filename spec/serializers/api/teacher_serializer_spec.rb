@@ -207,19 +207,39 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          context "when there is finished induction period" do
-            let!(:finished_induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
+          describe "`induction_end_date`" do
+            context "when a finished induction period is present" do
+              let!(:finished_induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
 
-            it "serializes `induction_end_date`" do
-              expect(ect_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
+              it "serializes `induction_end_date` from finished induction period" do
+                expect(ect_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
+              end
+            end
+
+            context "when a finished induction period is not present" do
+              before { teacher.update!(trs_induction_completed_date: Date.new(2024, 9, 18)) }
+
+              it "serializes `induction_end_date` from TRS induction completed date" do
+                expect(ect_enrolment["induction_end_date"]).to eq(teacher.trs_induction_completed_date.rfc3339)
+              end
             end
           end
 
-          context "when there is started induction period" do
-            let!(:started_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+          describe "`overall_induction_start_date`" do
+            context "when a started induction period is present" do
+              let!(:started_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
-            it "serializes `overall_induction_start_date`" do
-              expect(ect_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
+              it "serializes `overall_induction_start_date` from started induction period" do
+                expect(ect_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
+              end
+            end
+
+            context "when a started induction period is not present" do
+              before { teacher.update!(trs_induction_start_date: Date.new(2024, 9, 18)) }
+
+              it "serializes `overall_induction_start_date` from TRS induction start date" do
+                expect(ect_enrolment["overall_induction_start_date"]).to eq(teacher.trs_induction_start_date.rfc3339)
+              end
             end
           end
 
@@ -306,22 +326,6 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
             it "serializes `eligible_for_funding`" do
               expect(mentor_enrolment["eligible_for_funding"]).to be(false)
-            end
-          end
-
-          context "when there is finished induction period" do
-            let!(:finished_induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
-
-            it "serializes `induction_end_date`" do
-              expect(mentor_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
-            end
-          end
-
-          context "when there is no started induction period" do
-            let!(:started_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
-
-            it "serializes `overall_induction_start_date`" do
-              expect(mentor_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
             end
           end
 
