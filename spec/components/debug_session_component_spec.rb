@@ -4,7 +4,7 @@ RSpec.describe DebugSessionComponent, type: :component do
   let(:current_user) do
     FactoryBot.create(:dfe_user,
                       name: "Patch Adams",
-                      role: "super_admin")
+                      role: "user_manager")
   end
 
   let(:current_session) do
@@ -46,7 +46,7 @@ RSpec.describe DebugSessionComponent, type: :component do
         expect(rendered_content).to have_text("Last active at")
         expect(rendered_content).to have_text("1999-01-01 00:00:01 +0100")
         expect(rendered_content).to have_text("Role")
-        expect(rendered_content).to have_text("Super admin")
+        expect(rendered_content).to have_text("User manager")
         expect(rendered_content).to have_text("Administrator")
         expect(rendered_content).to have_text("Patch Adams")
       end
