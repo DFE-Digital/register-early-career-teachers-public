@@ -193,9 +193,36 @@ capita__delivery_partner__2022 = find_school_partnership(
   delivery_partner: capita_delivery_partner
 )
 
+# NB: define teachers in ./db/seeds/teachers.rb
+alan_rickman = Teacher.find_by!(trn: "0000006")
+alastair_sim = Teacher.find_by!(trn: "0000024")
+andre_roussimoff = Teacher.find_by!(trn: "0000015")
+anthony_hopkins = Teacher.find_by!(trn: "0000018")
+colin_firth = Teacher.find_by!(trn: "0000007")
+dominic_west = Teacher.find_by!(trn: "0000014")
+emma_thompson = Teacher.find_by!(trn: "0000004")
+frankie_howard = Teacher.find_by!(trn: "0000032")
+gemma_jones = Teacher.find_by!(trn: "0000017")
+george_cole = Teacher.find_by!(trn: "0000031")
+harriet_walter = Teacher.find_by!(trn: "0000010")
+hattie_jacques = Teacher.find_by!(trn: "0000029")
+helen_mirren = Teacher.find_by!(trn: "0000020")
+hugh_grant = Teacher.find_by!(trn: "0000012")
+hugh_laurie = Teacher.find_by!(trn: "0000011")
+imogen_stubbs = Teacher.find_by!(trn: "0000016")
+joan_sims = Teacher.find_by!(trn: "0000028")
+john_withers = Teacher.find_by!(trn: "0000019")
+joyce_grenfell = Teacher.find_by!(trn: "0000030")
+kate_winslet = Teacher.find_by!(trn: "0000005")
+margaret_rutherford = Teacher.find_by!(trn: "0000025")
+naruto_uzumaki = Teacher.find_by!(trn: "0000033")
+peter_davison = Teacher.find_by!(trn: "0000021")
+sid_james = Teacher.find_by!(trn: "0000027")
+stephen_fry = Teacher.find_by!(trn: "0000013")
+terry_thomas = Teacher.find_by!(trn: "0000026")
+
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
-emma_thompson = Teacher.find_by!(trs_first_name: "Emma", trs_last_name: "Thompson")
 emma_thompson_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
                                                            teacher: emma_thompson,
                                                            school: abbey_grove_school,
@@ -226,7 +253,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Kate Winslet (ECT)", indent: 2, colour: ECT_COLOUR)
 
-kate_winslet = Teacher.find_by!(trs_first_name: "Kate", trs_last_name: "Winslet")
 kate_winslet_ect_at_ackley_bridge = FactoryBot.create(:ect_at_school_period,
                                                       teacher: kate_winslet,
                                                       school: ackley_bridge,
@@ -265,7 +291,6 @@ FactoryBot.create(:induction_period,
 
 print_seed_info("Hugh Laurie (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
-hugh_laurie = Teacher.find_by!(trs_first_name: "Hugh", trs_last_name: "Laurie")
 hugh_laurie_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
                                                          teacher: hugh_laurie,
                                                          school: teach_first_grain_partnership_2022.school,
@@ -285,7 +310,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Alan Rickman (ECT)", indent: 2, colour: ECT_COLOUR)
 
-alan_rickman = Teacher.find_by!(trs_first_name: "Alan", trs_last_name: "Rickman")
 alan_rickman_ect_at_ackley_bridge = FactoryBot.create(:ect_at_school_period,
                                                       teacher: alan_rickman,
                                                       school: teach_first_grain_partnership_2022.school,
@@ -334,7 +358,6 @@ end
 
 print_seed_info("Hugh Grant (ECT)", indent: 2, colour: ECT_COLOUR)
 
-hugh_grant = Teacher.find_by!(trs_first_name: "Hugh", trs_last_name: "Grant")
 hugh_grant_ect_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
                                                   teacher: hugh_grant,
                                                   school: abbey_grove_school,
@@ -372,7 +395,6 @@ FactoryBot.create(:induction_extension,
 
 print_seed_info("Colin Firth (ECT)", indent: 2, colour: ECT_COLOUR)
 
-colin_firth = Teacher.find_by!(trs_first_name: "Colin", trs_last_name: "Firth")
 colin_firth_ect_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
                                                    teacher: colin_firth,
                                                    school: ambition_artisan_partnership_2022.school,
@@ -414,7 +436,6 @@ FactoryBot.create(:induction_extension,
 
 print_seed_info("Harriet Walter (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
-harriet_walter = Teacher.find_by!(trs_first_name: "Harriet", trs_last_name: "Walter")
 FactoryBot.create(:induction_period,
                   appropriate_body: umber_teaching_school_hub,
                   teacher: harriet_walter,
@@ -443,7 +464,6 @@ FactoryBot.create(:induction_extension,
 
 print_seed_info("Imogen Stubbs (ECT)", indent: 2, colour: ECT_COLOUR)
 
-imogen_stubbs = Teacher.find_by!(trs_first_name: "Imogen", trs_last_name: "Stubbs")
 FactoryBot.create(:induction_period,
                   appropriate_body: golden_leaf_teaching_school_hub,
                   teacher: imogen_stubbs,
@@ -486,7 +506,6 @@ FactoryBot.create(:induction_extension,
 
 print_seed_info("Gemma Jones (ECT)", indent: 2, colour: ECT_COLOUR)
 
-gemma_jones = Teacher.find_by!(trs_first_name: "Gemma", trs_last_name: "Jones")
 FactoryBot.create(:induction_period,
                   appropriate_body: umber_teaching_school_hub,
                   teacher: gemma_jones,
@@ -524,7 +543,6 @@ FactoryBot.create(:induction_extension,
 
 print_seed_info("André Roussimoff (ECT)", indent: 2, colour: ECT_COLOUR)
 
-andre_roussimoff = Teacher.find_by!(trs_first_name: "André", trs_last_name: "Roussimoff")
 andre_roussimoff_mentoring_at_ackley_bridge = FactoryBot.create(:mentor_at_school_period,
                                                                 teacher: andre_roussimoff,
                                                                 school: teach_first_grain_partnership_2022.school,
@@ -543,7 +561,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Anthony Hopkins (ECT)", indent: 2, colour: ECT_COLOUR)
 
-anthony_hopkins = Teacher.find_by!(trs_first_name: "Anthony", trs_last_name: "Hopkins")
 anthony_hopkins_ect_at_brookfield_school = FactoryBot.create(:ect_at_school_period,
                                                              teacher: anthony_hopkins,
                                                              school: teach_first_grain_partnership_2022.school,
@@ -563,7 +580,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Stephen Fry (ECT)", indent: 2, colour: ECT_COLOUR)
 
-stephen_fry = Teacher.find_by!(trs_first_name: "Stephen", trs_last_name: "Fry")
 stephen_fry_ect_at_brookfield_school = FactoryBot.create(:ect_at_school_period,
                                                          teacher: stephen_fry,
                                                          school: ambition_artisan_partnership_2021.school,
@@ -607,7 +623,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
-helen_mirren = Teacher.find_by!(trs_first_name: "Helen", trs_last_name: "Mirren")
 helen_mirren_mentoring_at_brookfield_school = FactoryBot.create(:mentor_at_school_period,
                                                                 teacher: helen_mirren,
                                                                 school: teach_first_grain_partnership_2021.school,
@@ -625,7 +640,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
-john_withers = Teacher.find_by!(trs_first_name: "John", trs_last_name: "Withers")
 john_withers_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
                                                           teacher: john_withers,
                                                           school: teach_first_grain_partnership_2023.school,
@@ -657,7 +671,6 @@ FactoryBot.create(:mentor_at_school_period,
 
 print_seed_info("Dominic West (ECT)", indent: 2, colour: ECT_COLOUR)
 
-dominic_west = Teacher.find_by!(trs_first_name: "Dominic", trs_last_name: "West")
 dominic_west_ect_at_brookfield_school = FactoryBot.create(:ect_at_school_period,
                                                           teacher: dominic_west,
                                                           school: ambition_artisan_partnership_2023.school,
@@ -678,7 +691,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Peter Davison (ECT)", indent: 2, colour: ECT_COLOUR)
 
-peter_davison = Teacher.find_by!(trs_first_name: "Peter", trs_last_name: "Davison")
 peter_davison_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                         teacher: peter_davison,
                                                         school: teach_first_grain_partnership_2025.school,
@@ -698,12 +710,6 @@ FactoryBot.create(:training_period,
                   expression_of_interest: teach_first_grain_2025).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Naruto Uzumaki (ECT, invalid LP)", indent: 2, colour: ECT_COLOUR)
-
-naruto_uzumaki = Teacher.find_or_create_by!(
-  trs_first_name: "Naruto",
-  trs_last_name: "Uzumaki",
-  trn: "9300999"
-)
 
 naruto_ect_at_brookfield = FactoryBot.create(
   :ect_at_school_period,
@@ -728,7 +734,6 @@ FactoryBot.create(
 
 print_seed_info("Alastair Sim (ECT) school-led with no schedule", indent: 2, colour: ECT_COLOUR)
 
-alastair_sim = Teacher.find_by!(trs_first_name: "Alastair", trs_last_name: "Sim")
 alastair_sim_ect_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
                                                     teacher: alastair_sim,
                                                     school: abbey_grove_school,
@@ -748,7 +753,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Margaret Rutherford (ECT) school-led with no schedule", indent: 2, colour: ECT_COLOUR)
 
-margaret_rutherford = Teacher.find_by!(trs_first_name: "Margaret", trs_last_name: "Rutherford")
 margaret_rutherford_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                                   teacher: margaret_rutherford,
                                                                   school: abbey_grove_school,
@@ -768,7 +772,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Terry Thomas (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
 
-terry_thomas = Teacher.find_by!(trs_first_name: "Terry", trs_last_name: "Thomas")
 terry_thomas_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                            teacher: terry_thomas,
                                                            school: abbey_grove_school,
@@ -788,7 +791,6 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Sid James (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
 
-sid_james = Teacher.find_by!(trs_first_name: "Sid", trs_last_name: "James")
 sid_james_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                         teacher: sid_james,
                                                         school: abbey_grove_school,
@@ -805,8 +807,8 @@ FactoryBot.create(:training_period,
                   finished_on: nil,
                   school_partnership: teach_first_grain_partnership_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
 print_seed_info("Joyce Grenfell (mentor)", indent: 2, colour: MENTOR_COLOUR)
-joyce_grenfell = Teacher.find_by!(trs_first_name: "Joyce", trs_last_name: "Grenfell")
 
 FactoryBot.create(:mentor_at_school_period,
                   teacher: joyce_grenfell,
@@ -816,7 +818,6 @@ FactoryBot.create(:mentor_at_school_period,
                   finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
 
 print_seed_info("George Cole (mentor)", indent: 2, colour: MENTOR_COLOUR)
-george_cole = Teacher.find_by!(trs_first_name: "George", trs_last_name: "Cole")
 
 george_cole_at_mallory_towers = FactoryBot.create(:mentor_at_school_period,
                                                   teacher: george_cole,
@@ -826,7 +827,6 @@ george_cole_at_mallory_towers = FactoryBot.create(:mentor_at_school_period,
                                                   finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
 
 print_seed_info("Frankie Howard (ECT)", indent: 2, colour: ECT_COLOUR)
-frankie_howard = Teacher.find_by!(trs_first_name: "Frankie", trs_last_name: "Howard")
 
 frankie_howard_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
                                                   teacher: frankie_howard,
@@ -836,7 +836,7 @@ frankie_howard_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
                                                   finished_on: nil).tap { |sp| describe_ect_at_school_period(sp) }
 
 print_seed_info("Joan Sims (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
-joan_sims = Teacher.find_by!(trs_first_name: "Joan", trs_last_name: "Sims")
+
 joan_sims_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                         teacher: joan_sims,
                                                         school: abbey_grove_school,
@@ -854,7 +854,7 @@ FactoryBot.create(:training_period,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Hattie Jacques (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
-hattie_jacques = Teacher.find_by!(trs_first_name: "Hattie", trs_last_name: "Jacques")
+
 hattie_jacques_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                              teacher: hattie_jacques,
                                                              school: abbey_grove_school,
