@@ -38,6 +38,7 @@ private
       trnless: ecf1_teacher_history.user.trn.blank?,
       trs_first_name: parsed_name.first_name,
       trs_last_name: parsed_name.last_name,
+      corrected_name: ecf1_teacher_history.user.full_name,
       api_id: ecf1_teacher_history.user.user_id,
       api_ect_training_record_id: ecf1_teacher_history.ect&.participant_profile_id,
       api_mentor_training_record_id: ecf1_teacher_history.mentor&.participant_profile_id,
