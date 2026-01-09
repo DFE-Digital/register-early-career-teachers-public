@@ -48,7 +48,7 @@ class School < ApplicationRecord
   refresh_metadata -> { self }, on_event: %i[create]
 
   # Scopes
-  scope :lead_schools, -> { joins(:led_teaching_school_hubs).distinct }
+  scope :lead_schools, -> { joins(:led_teaching_school_hub).distinct }
 
   # Validations
   validates :last_chosen_lead_provider_id,
