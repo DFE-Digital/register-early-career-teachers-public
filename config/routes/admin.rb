@@ -43,6 +43,11 @@ namespace :admin do
       resource :induction, only: %i[show]
       resource :school, only: %i[show]
       resource :training, only: %i[show]
+      resources :training_periods, only: [], path: "training-periods" do
+        resource :partnership, only: %i[new create], controller: :training_partnerships do
+          get :no_other_partnerships, path: "no-other-partnerships"
+        end
+      end
     end
     resources :induction_periods, only: %i[new create edit update destroy], path: "induction-periods" do
       member do

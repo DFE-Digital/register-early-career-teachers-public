@@ -114,6 +114,14 @@ class TrainingPeriod < ApplicationRecord
     mentor_at_school_period_id.present?
   end
 
+  def partnership_change_requires_replacement?
+    started_on.present? && started_on < Date.current && finished_on.blank?
+  end
+
+  def partnership_change_eligible?
+    provider_led_training_programme? && finished_on.blank?
+  end
+
   def trainee
     ect_at_school_period || mentor_at_school_period
   end
