@@ -191,16 +191,12 @@ module API::Declarations
         .billable_or_changeable_for_declaration_type(after_declaration_types)
         .minimum(:declaration_date)
 
+      error_message = "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant."
+
       if from_declaration_date && parsed_declaration_date.before?(from_declaration_date)
-        errors.add(
-          :declaration_date,
-          "must be on or after #{from_declaration_date.to_fs(:long)}"
-        )
+        errors.add(:declaration_date, error_message)
       elsif to_declaration_date && parsed_declaration_date.after?(to_declaration_date)
-        errors.add(
-          :declaration_date,
-          "must be on or before #{to_declaration_date.to_fs(:long)}"
-        )
+        errors.add(:declaration_date, error_message)
       end
     end
 

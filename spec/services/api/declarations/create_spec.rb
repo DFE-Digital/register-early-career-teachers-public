@@ -267,7 +267,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 let(:declaration_date) { (started_declaration.declaration_date - 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_per_attribute }
-                it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
+                it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
               end
 
               context "when `completed` is submitted after `started` declaration date" do
@@ -302,7 +302,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 let(:declaration_date) { (completed_declaration.declaration_date + 1.week).rfc3339 }
 
                 it { is_expected.to have_one_error_per_attribute }
-                it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
+                it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
               end
 
               context "when `started` is submitted before `completed` declaration date" do
@@ -351,7 +351,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                     let(:declaration_date) { (started_declaration.declaration_date - 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_per_attribute }
-                    it { is_expected.to have_error(:declaration_date, "must be on or after #{started_declaration.declaration_date.to_fs(:long)}") }
+                    it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
                   end
 
                   context "when declaration date is after completed" do
@@ -359,7 +359,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                     let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
 
                     it { is_expected.to have_one_error_per_attribute }
-                    it { is_expected.to have_error(:declaration_date, "must be on or before #{completed_declaration.declaration_date.to_fs(:long)}") }
+                    it { is_expected.to have_error(:declaration_date, "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant.") }
                   end
                 end
 
