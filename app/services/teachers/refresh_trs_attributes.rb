@@ -11,14 +11,19 @@ module Teachers
       @api_client = api_client
     end
 
-    # In some environments (e.g. sandbox) we don't want to allow data in TRS to
+    # In the sandbox environment we don't want to allow data in TRS to
     # overwrite existing teacher data, so we skip the refresh.
     #
-    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated
+    # In some environments we use seeded teachers, which should not use
+    # TRNs found in TRS, so we update only their status to mimic the real behaviour.
+    #
+    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :fake_teacher_updated
     def refresh!
       return :refresh_disabled unless enabled?
 
       update!
+    rescue TRS::Errors::TeacherNotFound
+      update_seeded!
     rescue TRS::Errors::TeacherDeactivated
       deactivate!
     end
@@ -30,6 +35,7 @@ module Teachers
 
   private
 
+    # @raise [TRS::Errors::TeacherDeactivated, TRS::Errors::TeacherNotFound]
     # @return [TRS::Teacher]
     def trs_teacher
       @trs_teacher ||= api_client.find_teacher(trn: teacher.trn)
@@ -52,6 +58,19 @@ module Teachers
         mark_teacher_as_deactivated!
 
         :teacher_deactivated
+      end
+    end
+
+    def update_seeded!
+      Teacher.transaction do
+        induction = teacher.finished_induction_period
+        teacher.update!(
+          trs_induction_status: { pass: "Passed", fail: "Failed" }[induction.outcome.to_sym],
+          trs_induction_start_date: induction.started_on,
+          trs_induction_completed_date: induction.finished_on
+        )
+
+        :fake_teacher_updated
       end
     end
   end
