@@ -94,7 +94,7 @@ class API::TeacherSerializer < Blueprinter::Base
 
     exclude :id
 
-    field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name_in_trs }
+    field(:full_name) { |teacher| Teachers::Name.new(teacher).full_name }
     field(:trn, name: :teacher_reference_number)
     field(:api_updated_at, name: :updated_at)
 

@@ -32,8 +32,6 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
     subject(:attributes) { response["attributes"] }
 
     it "serializes correctly" do
-      expect(attributes["full_name"]).to be_present
-      expect(attributes["full_name"]).to eq(Teachers::Name.new(unfunded_mentor_teacher).full_name_in_trs)
       expect(attributes["email"]).to be_present
       expect(attributes["email"]).to eq(unfunded_mentor_teacher.latest_mentor_at_school_period.email)
       expect(attributes["email"]).to eq("test1@test.com")
@@ -43,6 +41,25 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
       expect(attributes["created_at"]).to eq(created_at.utc.rfc3339)
       expect(attributes["updated_at"]).to be_present
       expect(attributes["updated_at"]).to eq(api_unfunded_mentor_updated_at.utc.rfc3339)
+    end
+
+    describe "`full_name`" do
+      subject(:full_name) { attributes["full_name"] }
+
+      it { is_expected.to be_present }
+      it { is_expected.to eq(Teachers::Name.new(unfunded_mentor_teacher).full_name) }
+
+      context "when unfunded mentor teacher has a `corrected_name`" do
+        let(:unfunded_mentor_teacher) { FactoryBot.create(:teacher, :with_corrected_name) }
+
+        it { is_expected.to eq(unfunded_mentor_teacher.corrected_name) }
+      end
+
+      context "when unfunded mentor teacher has a `full_name_in_trs`" do
+        let(:unfunded_mentor_teacher) { FactoryBot.create(:teacher, :with_realistic_name) }
+
+        it { is_expected.to eq([unfunded_mentor_teacher.trs_first_name, unfunded_mentor_teacher.trs_last_name].join(" ")) }
+      end
     end
   end
 end
