@@ -82,10 +82,12 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         context "when the training period started today" do
           let(:started_on) { Date.current }
 
-          it "destroys the training period", pending: "Work out how to deal with 0 day training periods" do
-            subject
+          it "updates the training period in place" do
+            expect { subject }.not_to change(TrainingPeriod, :count)
 
-            expect { training_period.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            training_period.reload
+            expect(training_period.finished_on).to be_nil
+            expect(training_period.school_partnership).to eq(school_partnership)
           end
         end
       end
