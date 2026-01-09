@@ -42,6 +42,11 @@ class Teachers::Manage
       teacher.assign_attributes(trs_first_name:, trs_last_name:)
       new_name = full_name
 
+      # Clear `corrected_name` if new trs name matches it
+      if teacher.corrected_name.to_s.squish == new_name.to_s.squish
+        teacher.assign_attributes(corrected_name: nil)
+      end
+
       record_name_change_event(old_name, new_name)
       teacher.save!
     end
