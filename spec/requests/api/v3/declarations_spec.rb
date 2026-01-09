@@ -127,5 +127,33 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
       it_behaves_like "a token authenticated endpoint", :put
       it_behaves_like "an API update endpoint", accepts_request_body: false
     end
+
+    context "when the declaration is a previous declaration for a different lead provider" do
+      let(:resource) { create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) }
+
+      before do
+        # Close training periods for other lead providers.
+        resource.teacher.ect_at_school_periods.update!(finished_on: 1.month.from_now)
+        resource.teacher.ect_training_periods.update!(finished_on: 1.month.from_now)
+
+        # Create a training period with the new lead provider in the future.
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.months.from_now, finished_on: nil, teacher: resource.teacher)
+        school_partnership = FactoryBot.create(:school_partnership, :for_year, lead_provider:)
+        FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: nil, school_partnership:)
+      end
+
+      it "returns a 404 response" do
+        # Ensure it is classed as a previous declaration.
+        query = API::Declarations::Query.new(lead_provider_id: lead_provider.id)
+        expect(query.declaration_by_api_id(resource.api_id)).not_to be_nil
+        expect(resource.lead_provider).not_to eq(lead_provider)
+
+        authenticated_api_put(path, params:)
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.content_type).to eql("application/json; charset=utf-8")
+        expect(response.body).to eq({ errors: [{ title: "Resource not found", detail: "Nothing could be found for the provided details" }] }.to_json)
+      end
+    end
   end
 end

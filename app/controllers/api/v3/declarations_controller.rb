@@ -73,7 +73,10 @@ module API
       end
 
       def declaration
-        declarations_query.declaration_by_api_id(api_id)
+        # We don't use the declarations query here as that will also return previous
+        # declarations for other lead providers and we only want to let the lead
+        # provider void on their own declarations.
+        current_lead_provider.declarations.find_by!(api_id:)
       end
 
       def api_id
