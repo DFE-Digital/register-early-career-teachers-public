@@ -6,6 +6,8 @@ require "playwright"
 require "playwright/test"
 require "webmock/rspec"
 
+Knapsack.tracker.config({ enable_time_offset_warning: ENV.fetch("ENABLE_KNAPSACK_TIME_OFFSET_WARNING", false) })
+
 Knapsack::Adapters::RSpecAdapter.bind
 
 RSpec.configure do |config|
