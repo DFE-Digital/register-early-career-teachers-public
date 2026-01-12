@@ -265,15 +265,18 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
 
     it "creates a new ECT at the given school" do
-      expect(Teacher.find_by_trn(registration_store.trn)).to be_nil
+      travel_to Date.new(2026, 1, 12) do
+        FactoryBot.create(:contract_period, year: 2025)
+        expect(Teacher.find_by_trn(registration_store.trn)).to be_nil
 
-      registration_store.register!(school, author:, store:)
+        registration_store.register!(school, author:, store:)
 
-      expect(teacher.trn).to eq(registration_store.trn)
-      expect(ect_at_school_period.school_id).to eq(school.id)
-      expect(ect_at_school_period.started_on).to eq(Date.parse("January 2025"))
-      expect(ect_at_school_period.email).to eq("dusty@rhodes.com")
-      expect(ect_at_school_period.school_reported_appropriate_body_type).to eq("national")
+        expect(teacher.trn).to eq(registration_store.trn)
+        expect(ect_at_school_period.school_id).to eq(school.id)
+        expect(ect_at_school_period.started_on).to eq(Date.parse("January 2025"))
+        expect(ect_at_school_period.email).to eq("dusty@rhodes.com")
+        expect(ect_at_school_period.school_reported_appropriate_body_type).to eq("national")
+      end
     end
   end
 
@@ -486,7 +489,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     end
 
     describe "#lead_providers_within_contract_period" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let!(:lp_in) { FactoryBot.create(:lead_provider) }
       let!(:lp_out) { FactoryBot.create(:lead_provider) }
 

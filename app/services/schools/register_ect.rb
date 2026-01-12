@@ -83,21 +83,22 @@ module Schools
     end
 
     def create_training_period!
-      @training_period = case training_programme
-                         when "school_led"
-                           ::TrainingPeriods::Create.school_led(
-                             period: ect_at_school_period,
-                             started_on: ect_at_school_period.started_on
-                           ).call
-                         when "provider_led"
-                           ::TrainingPeriods::Create.provider_led(
-                             period: ect_at_school_period,
-                             started_on: ect_at_school_period.started_on,
-                             school_partnership:,
-                             expression_of_interest:,
-                             author:
-                           ).call
-                         end
+      @training_period =
+        case training_programme
+        when "school_led"
+          ::TrainingPeriods::Create.school_led(
+            period: ect_at_school_period,
+            started_on: training_period_started_on
+          ).call
+        when "provider_led"
+          ::TrainingPeriods::Create.provider_led(
+            period: ect_at_school_period,
+            started_on: training_period_started_on,
+            school_partnership:,
+            expression_of_interest:,
+            author:
+          ).call
+        end
     end
 
     def school_partnership
@@ -153,8 +154,22 @@ module Schools
           previous_school_partnership_id: previous_id,
           school:,
           author:,
-          current_contract_period_year: contract_period.year
+          current_contract_period_year: registration_contract_period.year
         )
+    end
+
+    def training_period_started_on
+      # If an ECT is backdated before the start of the registration CP,
+      # we still register them in the registration CP for programme/schedule purposes
+      [ect_at_school_period.started_on, registration_contract_period.started_on].max
+    end
+
+    def contract_period
+      @contract_period ||= registration_contract_period
+    end
+
+    def registration_contract_period
+      @registration_contract_period ||= ContractPeriod.current
     end
   end
 end
