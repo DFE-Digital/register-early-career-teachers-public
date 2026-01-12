@@ -12,7 +12,7 @@ describe Admin::CurrentTeachers do
           :induction_period,
           :ongoing,
           teacher: teacher_1,
-          appropriate_body: appropriate_body_1,
+          appropriate_body_period: appropriate_body_1,
           started_on: 1.month.ago.to_date,
           induction_programme: "fip"
         )
@@ -20,14 +20,14 @@ describe Admin::CurrentTeachers do
           :induction_period,
           :ongoing,
           teacher: teacher_2,
-          appropriate_body: appropriate_body_2,
+          appropriate_body_period: appropriate_body_2,
           started_on: 1.month.ago.to_date,
           induction_programme: "fip"
         )
         FactoryBot.create(
           :induction_period,
           teacher: teacher_3,
-          appropriate_body: appropriate_body_1,
+          appropriate_body_period: appropriate_body_1,
           started_on: 2.months.ago.to_date,
           finished_on: 1.month.ago.to_date,
           induction_programme: "fip"
@@ -75,7 +75,7 @@ describe Admin::CurrentTeachers do
           :induction_period,
           :ongoing,
           teacher: teacher_1,
-          appropriate_body: appropriate_body_1,
+          appropriate_body_period: appropriate_body_1,
           started_on: 1.month.ago.to_date,
           induction_programme: "fip"
         )
@@ -83,7 +83,7 @@ describe Admin::CurrentTeachers do
         FactoryBot.create(
           :induction_period,
           teacher: teacher_1,
-          appropriate_body: appropriate_body_1,
+          appropriate_body_period: appropriate_body_1,
           started_on: 3.months.ago.to_date,
           finished_on: 2.months.ago.to_date,
           induction_programme: "fip"

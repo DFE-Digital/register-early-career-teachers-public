@@ -336,7 +336,7 @@ module APISeedData
     end
 
     def random_appropriate_body
-      AppropriateBody.order(Arel.sql("RANDOM()")).first
+      AppropriateBodyPeriod.order(Arel.sql("RANDOM()")).first
     end
 
     def log_ect_at_school_period(ect_at_school_period:)

@@ -3,13 +3,13 @@
 class InductionExtensions::Manage
   attr_reader :author,
               :teacher,
-              :appropriate_body,
+              :appropriate_body_period,
               :induction_extension
 
-  def initialize(author:, teacher:, appropriate_body:)
+  def initialize(author:, teacher:, appropriate_body_period:)
     @author = author
     @teacher = teacher
-    @appropriate_body = appropriate_body
+    @appropriate_body_period = appropriate_body_period
   end
 
   def create_or_update!(number_of_terms:, id: nil)
@@ -51,7 +51,7 @@ private
   def record_delete_event!(number_of_terms:)
     Events::Record.record_induction_extension_deleted_event!(
       author:,
-      appropriate_body:,
+      appropriate_body_period:,
       teacher:,
       number_of_terms:
     )
@@ -60,7 +60,7 @@ private
   def event_params
     {
       author:,
-      appropriate_body:,
+      appropriate_body_period:,
       teacher:,
       induction_extension:,
       modifications: induction_extension.changes

@@ -3,9 +3,9 @@ module Admin
     class DetailsComponent < ApplicationComponent
       attr_reader :appropriate_body
 
-      # @param appropriate_body [AppropriateBody]
-      def initialize(appropriate_body:)
-        @appropriate_body = appropriate_body
+      # @param appropriate_body_period [AppropriateBodyPeriod]
+      def initialize(appropriate_body_period:)
+        @appropriate_body = appropriate_body_period
       end
 
       # @return [Boolean]
@@ -25,7 +25,7 @@ module Admin
 
       # @return [Integer]
       def bulk_upload_count
-        ::PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body).count
+        ::PendingInductionSubmissionBatch.for_appropriate_body_period(appropriate_body).count
       end
     end
   end

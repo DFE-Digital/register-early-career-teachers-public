@@ -6,11 +6,11 @@ module Sessions
       USER_TYPE = :appropriate_body_user
       PROVIDER = :dfe_sign_in
 
-      attr_reader :appropriate_body, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id, :name, :dfe_sign_in_roles, :last_active_role
+      attr_reader :appropriate_body_period, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id, :name, :dfe_sign_in_roles, :last_active_role
 
       def initialize(email:, name:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles: nil, school_urn: nil, last_active_role: self.class.name.demodulize, **)
         @name = name
-        @appropriate_body = appropriate_body_from(dfe_sign_in_organisation_id)
+        @appropriate_body_period = appropriate_body_period_from(dfe_sign_in_organisation_id)
         @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
         @dfe_sign_in_user_id = dfe_sign_in_user_id
         @dfe_sign_in_roles = dfe_sign_in_roles
@@ -19,7 +19,7 @@ module Sessions
         super(email:, **)
       end
 
-      delegate :id, to: :appropriate_body, prefix: true, allow_nil: true
+      delegate :id, to: :appropriate_body_period, prefix: true, allow_nil: true
 
       def dfe_sign_in_authorisable? = true
       def appropriate_body_user? = true
@@ -35,9 +35,9 @@ module Sessions
       # @return [String]
       def organisation_name
         if has_multiple_roles?
-          appropriate_body.name + " (appropriate body)"
+          appropriate_body_period.name + " (appropriate body)"
         else
-          appropriate_body.name
+          appropriate_body_period.name
         end
       end
 
@@ -75,9 +75,9 @@ module Sessions
 
     private
 
-      def appropriate_body_from(dfe_sign_in_organisation_id)
-        ::AppropriateBody.find_by(dfe_sign_in_organisation_id:).tap do |appropriate_body|
-          raise(UnknownOrganisationId, dfe_sign_in_organisation_id) unless appropriate_body
+      def appropriate_body_period_from(dfe_sign_in_organisation_id)
+        ::AppropriateBodyPeriod.find_by(dfe_sign_in_organisation_id:).tap do |appropriate_body_period|
+          raise(UnknownOrganisationId, dfe_sign_in_organisation_id) unless appropriate_body_period
         end
       end
     end
