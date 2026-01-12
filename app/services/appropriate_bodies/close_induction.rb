@@ -41,6 +41,7 @@ module AppropriateBodies
 
     delegate :number_of_terms,
              :finished_on,
+             :fail_confirmation_sent_on,
              to: :pending_induction_submission
 
     def close_induction_period

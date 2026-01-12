@@ -1,17 +1,29 @@
 module AppropriateBodies
   module Teachers
     class RecordFailedInductionController < CloseInductionController
-      def new
-        @record_fail = record_fail
+      before_action :record_fail, except: [:show]
 
-        super
+      def confirm
+      end
+
+      def confirmed
+        if confirmation_sent?
+          redirect_to new_ab_teacher_record_failed_outcome_path(@teacher)
+        else
+          record_fail.errors.add(:confirmed, "Confirm if you have told them about their failed induction")
+          render :confirm, status: :unprocessable_content
+        end
+      end
+
+      def new
+      end
+
+      def show
       end
 
       def create
         if @teacher.ongoing_induction_period.present?
-          @record_fail = record_fail
-
-          if @record_fail.call(induction_params)
+          if record_fail.call(induction_params)
             redirect_to ab_teacher_record_failed_outcome_path(@teacher)
           else
             render :new, status: :unprocessable_content
@@ -28,7 +40,7 @@ module AppropriateBodies
     private
 
       def record_fail
-        RecordFail.new(
+        @record_fail = RecordFail.new(
           teacher: @teacher,
           appropriate_body: @appropriate_body,
           author: current_user
@@ -37,6 +49,10 @@ module AppropriateBodies
 
       def induction_params
         params.expect(RecordFail.induction_params)
+      end
+
+      def confirmation_sent?
+        params.dig(:appropriate_bodies_record_fail, :confirmed)&.pop.present?
       end
     end
   end
