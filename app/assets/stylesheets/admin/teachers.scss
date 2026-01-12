@@ -1,0 +1,14 @@
+.app-code {
+  padding: 2px 5px;
+  font-family: monospace;
+  background-color: $govuk-template-background-colour;
+  white-space: pre-wrap;
+  font-size: 0.8em;
+}
+
+.govuk-summary-list__value .app-code--full-width {
+  display: block;
+  width: 100%;
+  padding: 1em;
+  box-sizing: border-box;
+}
