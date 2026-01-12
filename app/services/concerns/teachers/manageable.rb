@@ -49,5 +49,12 @@ module Teachers
         trs_data_last_refreshed_at: Time.zone.now
       )
     end
+
+    # @return [Boolean]
+    def mark_teacher_as_not_found!
+      manage_teacher.mark_teacher_as_not_found!(
+        trs_data_last_refreshed_at: Time.zone.now
+      )
+    end
   end
 end

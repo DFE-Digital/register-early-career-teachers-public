@@ -19,13 +19,13 @@ module Teachers
     # In some environments we use seeded teachers, which should not use
     # TRNs found in TRS, so we update only their status to mimic the real behaviour.
     #
-    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :seed_teacher_updated
+    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :teacher_not_found
     def refresh!
       return :refresh_disabled unless enabled?
 
       update!
     rescue TRS::Errors::TeacherNotFound
-      update_seeded!
+      update_not_found!
     rescue TRS::Errors::TeacherDeactivated
       deactivate!
     end
@@ -66,16 +66,11 @@ module Teachers
     end
 
     # @return [Symbol]
-    def update_seeded!
+    def update_not_found!
       Teacher.transaction do
-        induction = teacher.finished_induction_period
-        teacher.update!(
-          trs_induction_status: INDUCTION_OUTCOMES[induction.outcome.to_sym],
-          trs_induction_start_date: induction.started_on,
-          trs_induction_completed_date: induction.finished_on
-        )
+        mark_teacher_as_not_found!
 
-        :seed_teacher_updated
+        :teacher_not_found
       end
     end
   end

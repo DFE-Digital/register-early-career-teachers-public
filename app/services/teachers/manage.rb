@@ -93,6 +93,20 @@ class Teachers::Manage
     end
   end
 
+  def mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+    Teacher.transaction do
+      induction = teacher.finished_induction_period
+
+      teacher.update!(
+        trs_data_last_refreshed_at:,
+        trs_not_found: true,
+        trs_induction_status: INDUCTION_OUTCOMES[induction&.outcome&.to_sym],
+        trs_induction_start_date: induction&.started_on,
+        trs_induction_completed_date: induction&.finished_on
+      )
+    end
+  end
+
 private
 
   def full_name
