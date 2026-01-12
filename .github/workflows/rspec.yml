@@ -36,6 +36,7 @@ jobs:
       ENCRYPTION_DERIVATION_SALT: test_derivation_salt
       CI: true
       REDIS_CACHE_URL: 'redis://127.0.0.1:6379'
+      ENABLE_KNAPSACK_TIME_OFFSET_WARNING: true
 
     services:
       postgres:
