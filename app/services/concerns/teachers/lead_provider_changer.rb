@@ -37,7 +37,7 @@ module Teachers
       raise LeadProviderNotChangedError unless lead_provider_changed?
 
       ActiveRecord::Base.transaction do
-        if update_training_period_in_place?
+        if current_or_future_training_period?
           update_training_period_in_place!
         else
           finish_or_destroy_training_period!
@@ -96,7 +96,7 @@ module Teachers
     end
 
     def date_of_transition
-      return training_period.started_on if update_training_period_in_place?
+      return training_period.started_on if current_or_future_training_period?
 
       [period.started_on, Date.current].max
     end
@@ -105,7 +105,7 @@ module Teachers
       period.current_or_next_training_period
     end
 
-    def update_training_period_in_place?
+    def current_or_future_training_period?
       training_period.present? && training_period.started_on >= Date.current
     end
 
