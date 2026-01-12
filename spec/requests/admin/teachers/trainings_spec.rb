@@ -1,6 +1,17 @@
 RSpec.describe "Admin::Teachers::Training", type: :request do
   let(:teacher) { FactoryBot.create(:teacher) }
 
+  before do
+    allow(API::TeacherSerializer)
+    .to receive(:render)
+    .with(
+      teacher,
+      root: "data",
+      lead_provider_id: anything
+    )
+    .and_return('{"data":{"id":123}}')
+  end
+
   describe "GET /admin/teachers/:teacher_id/training" do
     it "redirects to sign in path" do
       get admin_teacher_training_path(teacher)
