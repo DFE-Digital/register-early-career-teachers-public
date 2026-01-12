@@ -162,6 +162,7 @@ erDiagram
     datetime api_updated_at
     datetime api_unfunded_mentor_updated_at
     enum migration_mode
+    boolean trs_not_found
   }
   PendingInductionSubmission {
     integer id

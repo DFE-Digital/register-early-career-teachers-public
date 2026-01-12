@@ -99,12 +99,58 @@ describe Teachers::RefreshTRSAttributes do
                  mark_teacher_as_deactivated!: true)
         end
 
-        it "marks the teacher as deactivated when the TRS reports the teacher as 'gone'" do
+        it "marks the teacher as deactivated when the TRS reports the teacher as 'Gone'" do
           freeze_time do
             expect(service.refresh!).to eq(:teacher_deactivated)
             expect(fake_manage).to have_received(:mark_teacher_as_deactivated!).once.with(
               trs_data_last_refreshed_at: Time.zone.now
             )
+          end
+        end
+      end
+
+      context "when the teacher is not found in TRS" do
+        include_context "test trs api client that finds nothing"
+
+        let(:fake_manage) do
+          double(Teachers::Manage,
+                 mark_teacher_as_not_found!: true)
+        end
+
+        it "marks the teacher as not found when the TRS reports the teacher as 'Not Found'" do
+          freeze_time do
+            expect(service.refresh!).to eq(:teacher_not_found)
+            expect(fake_manage).to have_received(:mark_teacher_as_not_found!).once.with(
+              trs_data_last_refreshed_at: Time.zone.now
+            )
+          end
+        end
+      end
+    end
+
+    context "when the teacher is not found in TRS" do
+      include_context "test trs api client that finds nothing"
+
+      context "and the teacher has an induction outcome" do
+        before do
+          FactoryBot.create(:induction_period, :fail, teacher:)
+        end
+
+        it "ensures the induction status indicator is correct" do
+          freeze_time do
+            service.refresh!
+
+            teacher.reload
+
+            expect(teacher.trs_induction_status).to eq("Failed")
+            expect(teacher.trs_induction_start_date).to be_present
+            expect(teacher.trs_induction_completed_date).to be_present
+            expect(teacher.trs_data_last_refreshed_at).to be_present
+
+            expect(teacher.trs_qts_awarded_on).to be_blank
+            expect(teacher.trs_qts_status_description).to be_blank
+            expect(teacher.trs_initial_teacher_training_provider_name).to be_blank
+            expect(teacher.trs_initial_teacher_training_end_date).to be_blank
           end
         end
       end
@@ -117,31 +163,6 @@ describe Teachers::RefreshTRSAttributes do
         expect(service).not_to be_enabled
         expect { service.refresh! }.not_to(change { teacher.reload.attributes })
         expect(service.refresh!).to eq(:refresh_disabled)
-      end
-    end
-
-    context "when a seeded teacher is not found in TRS" do
-      include_context "test trs api client that finds nothing"
-
-      before do
-        FactoryBot.create(:induction_period, :fail, teacher:)
-      end
-
-      it "ensures the induction status indicator is correct" do
-        freeze_time do
-          expect { service.refresh! }.to(change { teacher.reload.attributes })
-          expect(service.refresh!).to eq(:seed_teacher_updated)
-
-          expect(teacher.trs_induction_status).to eq("Failed")
-          expect(teacher.trs_induction_start_date).to be_present
-          expect(teacher.trs_induction_completed_date).to be_present
-
-          expect(teacher.trs_qts_awarded_on).to be_blank
-          expect(teacher.trs_qts_status_description).to be_blank
-          expect(teacher.trs_initial_teacher_training_provider_name).to be_blank
-          expect(teacher.trs_initial_teacher_training_end_date).to be_blank
-          expect(teacher.trs_data_last_refreshed_at).to be_blank
-        end
       end
     end
   end

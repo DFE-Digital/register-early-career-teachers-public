@@ -415,6 +415,22 @@ describe Teacher do
         expect(Teacher.active_in_trs.to_sql).to end_with(expected_clause)
       end
     end
+
+    describe ".not_found_in_trs" do
+      it "only includes records where trs_not_found = TRUE" do
+        expected_clause = %("teachers"."trs_not_found" = TRUE)
+
+        expect(Teacher.not_found_in_trs.to_sql).to end_with(expected_clause)
+      end
+    end
+
+    describe ".found_in_trs" do
+      it "only includes records where trs_not_found = FALSE" do
+        expected_clause = %("teachers"."trs_not_found" = FALSE)
+
+        expect(Teacher.found_in_trs.to_sql).to end_with(expected_clause)
+      end
+    end
   end
 
   describe "normalizing" do

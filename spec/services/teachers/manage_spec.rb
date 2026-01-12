@@ -274,4 +274,18 @@ RSpec.describe Teachers::Manage do
       end
     end
   end
+
+  describe "#mark_teacher_as_not_found!" do
+    let(:trs_data_last_refreshed_at) { 2.minutes.ago }
+
+    it "sets the trs_not_found flag to true" do
+      expect(teacher.trs_not_found).to be(false)
+
+      service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+      teacher.reload
+
+      expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+      expect(teacher.trs_not_found).to be(true)
+    end
+  end
 end
