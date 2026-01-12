@@ -47,7 +47,7 @@ module Admin
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
           summary_row("End date", end_date_text),
-          summary_row("API response", api_response_text)
+          api_response_row
         ].compact
       end
 
@@ -132,12 +132,16 @@ module Admin
         summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
       end
 
-      # TODO: get formatting of api data correct
-      # Text spills over container, is not in code format, background colour is missing
+      def api_response_row
+        return unless serialized_teacher
+
+        summary_row("API response", api_response_text)
+      end
+
       def api_response_text
         govuk_details(summary_text: "See this participant as they appear over the API for #{lead_provider&.name}") do
-          content_tag(:pre) do
-            content_tag(:code, serialized_teacher)
+          content_tag(:pre, class: "app-code app-code--full-width") do
+            content_tag(:code, formatted_teacher)
           end
         end
       end
@@ -149,7 +153,12 @@ module Admin
       end
 
       def serialized_teacher
-        API::TeacherSerializer.render(teacher, root: "data", **{lead_provider_id: lead_provider.id})
+        API::TeacherSerializer.render(teacher, root: "data", **{ lead_provider_id: lead_provider.id })
+      end
+
+      def formatted_teacher
+        parsed = JSON.parse(serialized_teacher)
+        JSON.pretty_generate(parsed)
       end
 
       def teacher

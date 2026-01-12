@@ -1,11 +1,11 @@
 RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
   subject(:rendered) { render_inline(described_class.new(training_period:)) }
 
-
   describe "provider-led training periods" do
     let(:serialized_teacher) { '{"data":{"id":123}}' }
+    let(:formatted_teacher) { JSON.pretty_generate(JSON.parse(serialized_teacher)) }
 
-    before do 
+    before do
       allow(API::TeacherSerializer)
       .to receive(:render)
       .with(
@@ -18,6 +18,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
     context "when the period is for an ECT" do
       let(:teacher) { training_period.ect_at_school_period.teacher }
+
       before { rendered }
 
       context "when the partnership is confirmed" do
@@ -70,14 +71,13 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
         it "shows the API data row" do
           expect(rendered_content).to have_css("dt", text: "API response")
-          expect(rendered_content).to have_css("dd", text: serialized_teacher)
+          expect(rendered_content).to have_css("dd", text: formatted_teacher)
         end
       end
 
       context "when there is only an expression of interest" do
         let(:training_period) { FactoryBot.create(:training_period, :provider_led, :with_only_expression_of_interest) }
         let(:lead_provider_id) { training_period.expression_of_interest_lead_provider.id }
-
 
         it "uses the expression of interest lead provider as the title" do
           expect(rendered_content).to have_css(".govuk-summary-card__title", text: training_period.expression_of_interest_lead_provider.name)
@@ -101,13 +101,24 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
         it "shows the API data row" do
           expect(rendered_content).to have_css("dt", text: "API response")
-          expect(rendered_content).to have_css("dd", text: serialized_teacher)
+          expect(rendered_content).to have_css("dd", text: formatted_teacher)
+        end
+      end
+
+      context "when there is no API response" do
+        let(:serialized_teacher) { nil }
+        let(:training_period) { FactoryBot.create(:training_period, :provider_led, :with_only_expression_of_interest) }
+        let(:lead_provider_id) { training_period.expression_of_interest_lead_provider.id }
+
+        it "does not show the API data row" do
+          expect(rendered_content).not_to have_css("dt", text: "API response")
         end
       end
     end
 
     context "when the period is for a mentor" do
       let(:teacher) { training_period.mentor_at_school_period.teacher }
+
       before { rendered }
 
       context "when the partnership is confirmed" do
@@ -125,14 +136,13 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
         it "shows the API data row" do
           expect(rendered_content).to have_css("dt", text: "API response")
-          expect(rendered_content).to have_css("dd", text: serialized_teacher)
+          expect(rendered_content).to have_css("dd", text: formatted_teacher)
         end
       end
 
       context "expression of interest" do
         let(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_only_expression_of_interest) }
         let(:lead_provider_id) { training_period.expression_of_interest_lead_provider.id }
-
 
         it "uses the expression of interest lead provider as the title" do
           expect(rendered_content).to have_css(".govuk-summary-card__title", text: training_period.expression_of_interest_lead_provider.name)
@@ -151,7 +161,17 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
         it "shows the API data row" do
           expect(rendered_content).to have_css("dt", text: "API response")
-          expect(rendered_content).to have_css("dd", text: serialized_teacher)
+          expect(rendered_content).to have_css("dd", text: formatted_teacher)
+        end
+      end
+
+      context "when there is no API response" do
+        let(:serialized_teacher) { nil }
+        let(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_only_expression_of_interest) }
+        let(:lead_provider_id) { training_period.expression_of_interest_lead_provider.id }
+
+        it "does not show the API data row" do
+          expect(rendered_content).not_to have_css("dt", text: "API response")
         end
       end
     end
