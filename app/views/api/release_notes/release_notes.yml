@@ -21,6 +21,38 @@
 #
 #     **bold** and _italic_ text
 
+- title: Declaration endpoints added, completing the RECT API in the sandbox
+  date: 2025-01-12
+  tags:
+    - sandbox-release
+    - api-update
+  body: |
+    We have added declaration endpoints to the Register Early Career Teachers (RECT) API.
+
+    As a result, all RECT API endpoints are now available in the Register ECTs sandbox, allowing lead providers to test their full integration. We will continue to fix bugs and respond to lead provider feedback up to April to improve the API.
+
+    ## Declaration endpoints now available
+
+    The following declaration endpoints are available in the Register ECTs sandbox:
+
+    * `GET /api/v3/participant-declarations`
+    * `POST /api/v3/participant-declarations`
+    * `GET /api/v3/participant-declarations/{id}`
+    * `PUT /api/v3/participant-declarations/{id}/void`
+
+    ## Changes to declaration behaviour
+
+    We have made the following changes to declaration validation:
+
+    * removed the `has_passed` field, as it was only relevant to NPQ declarations
+    * for participants in the 2025 cohort and later, declarations must be submitted in date order based on `declaration_date`
+    * for participants in the 2025 cohort and later, a started declaration must include `evidence_held`
+    * updated error messages for voiding declarations to be consistent with other endpoints
+
+    ## Impact on lead providers
+
+    Lead providers should test their integrations in the sandbox and make sure declarations for participants in the 2025 cohort and later follow the new validation rules.
+
 - title: Change schedules endpoint released to the Register ECTs sandbox with updated validation rules
   date: 2026-01-19
   tags:
