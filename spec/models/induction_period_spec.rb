@@ -172,20 +172,20 @@ RSpec.describe InductionPeriod do
     describe "#started_on_not_in_future" do
       subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body:, started_on:) }
 
-      context "when started_on is today" do
+      context "when start date is today" do
         let(:started_on) { Date.current }
 
         it { is_expected.to be_valid }
       end
 
-      context "when started_on is in the past" do
-        let(:started_on) { Date.current - 1.day }
+      context "when start date is in the past" do
+        let(:started_on) { 1.day.ago.to_date }
 
         it { is_expected.to be_valid }
       end
 
-      context "when started_on is in the future" do
-        let(:started_on) { Date.current + 1.day }
+      context "when start date is in the future" do
+        let(:started_on) { 1.day.from_now.to_date }
 
         it do
           expect(subject).not_to be_valid
@@ -197,24 +197,73 @@ RSpec.describe InductionPeriod do
     describe "#finished_on_not_in_future" do
       subject { FactoryBot.build(:induction_period, appropriate_body:, finished_on:) }
 
-      context "when finished_on is today" do
+      context "when end date is today" do
         let(:finished_on) { Date.current }
 
         it { is_expected.to be_valid }
       end
 
-      context "when finished_on is in the past" do
-        let(:finished_on) { Date.current - 1.day }
+      context "when end date is in the past" do
+        let(:finished_on) { 1.day.ago.to_date }
 
         it { is_expected.to be_valid }
       end
 
-      context "when finished_on is in the future" do
-        let(:finished_on) { Date.current + 1.day }
+      context "when end date is in the future" do
+        let(:finished_on) { 1.day.from_now.to_date }
 
         it do
           expect(subject).not_to be_valid
           expect(subject.errors[:finished_on]).to include("End date cannot be in the future")
+        end
+      end
+    end
+
+    describe "#fail_confirmation_sent_on_not_in_future" do
+      subject do
+        FactoryBot.build(:induction_period, :fail, appropriate_body:, fail_confirmation_sent_on:)
+      end
+
+      context "when confirmation date is today" do
+        let(:fail_confirmation_sent_on) { Date.current }
+
+        it { is_expected.to be_valid(:record_outcome) }
+      end
+
+      context "when confirmation date is in the past" do
+        let(:fail_confirmation_sent_on) { 1.day.ago.to_date }
+
+        it { is_expected.to be_valid(:record_outcome) }
+      end
+
+      context "when confirmation date is in the future" do
+        let(:fail_confirmation_sent_on) { 1.day.from_now.to_date }
+
+        it do
+          expect(subject).not_to be_valid(:record_outcome)
+          expect(subject.errors[:fail_confirmation_sent_on]).to include("Failure confirmation date cannot be in the future")
+        end
+      end
+
+      context "when outcome is not a fail" do
+        subject do
+          FactoryBot.build(:induction_period, :pass, appropriate_body:)
+        end
+
+        it "a confirmation date is not required" do
+          expect(subject).to be_valid(:record_outcome)
+          expect(subject.errors[:fail_confirmation_sent_on]).to be_blank
+        end
+      end
+    end
+
+    describe "#fail_confirmation_sent_on_not_before_end_date" do
+      context "when confirmation date is before end date" do
+        subject { FactoryBot.build(:induction_period, :fail, appropriate_body:, fail_confirmation_sent_on: 2.months.ago) }
+
+        it do
+          expect(subject).not_to be_valid(:record_outcome)
+          expect(subject.errors[:fail_confirmation_sent_on]).to include("Failure confirmation date cannot be before end date")
         end
       end
     end

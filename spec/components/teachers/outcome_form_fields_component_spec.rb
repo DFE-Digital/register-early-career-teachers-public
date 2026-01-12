@@ -36,7 +36,7 @@ RSpec.describe Teachers::OutcomeFormFieldsComponent, type: :component do
       expect(rendered_content).to have_field("model_name[finished_on(1i)]")
       expect(rendered_content).to have_field("model_name[finished_on(2i)]")
       expect(rendered_content).to have_field("model_name[finished_on(3i)]")
-      expect(rendered_content).to have_text("When did they move from OmniCorp?")
+      expect(rendered_content).to have_text("When did their induction end with OmniCorp?")
     end
 
     it "number_of_terms" do

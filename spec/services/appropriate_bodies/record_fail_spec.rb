@@ -1,18 +1,27 @@
 RSpec.describe AppropriateBodies::RecordFail do
   it "defines expected induction params" do
     expect(described_class.induction_params).to eq({
-      "appropriate_bodies_record_fail" => %i[finished_on number_of_terms]
+      "appropriate_bodies_record_fail" => %i[finished_on number_of_terms fail_confirmation_sent_on]
     })
   end
 
   it_behaves_like "it closes an induction" do
+    let(:service_call) do
+      service.call(
+        finished_on: 1.day.ago.to_date,
+        number_of_terms: 6,
+        fail_confirmation_sent_on: Date.current
+      )
+    end
+
     it "closes with fail outcome" do
       service_call
 
       expect(induction_period.reload).to have_attributes(
         outcome: "fail",
         finished_on: 1.day.ago.to_date,
-        number_of_terms: 6
+        number_of_terms: 6,
+        fail_confirmation_sent_on: Date.current
       )
     end
 
@@ -33,8 +42,54 @@ RSpec.describe AppropriateBodies::RecordFail do
         appropriate_body:,
         teacher:,
         induction_period:,
-        author:
+        author:,
+        body: "ECT notified on #{Date.current.to_fs(:govuk)}"
       )
+    end
+
+    context "when a confirmation date is not provided" do
+      let(:service_call) do
+        service.call(
+          finished_on: 1.day.ago.to_date,
+          number_of_terms: 6,
+          fail_confirmation_sent_on: nil
+        )
+      end
+
+      it do
+        expect { service_call }.to raise_error(ActiveModel::ValidationError,
+                                               "Validation failed: Fail confirmation sent on Enter the date you sent them written confirmation of their failed induction")
+      end
+    end
+
+    context "when a confirmation date is in the future" do
+      let(:service_call) do
+        service.call(
+          finished_on: 1.day.ago.to_date,
+          number_of_terms: 6,
+          fail_confirmation_sent_on: 1.day.from_now.to_date
+        )
+      end
+
+      it do
+        expect { service_call }.to raise_error(ActiveRecord::RecordInvalid,
+                                               "Validation failed: Fail confirmation sent on Failure confirmation date cannot be in the future")
+      end
+    end
+
+    context "when a confirmation date is before the end date" do
+      let(:service_call) do
+        service.call(
+          finished_on: 1.day.ago.to_date,
+          number_of_terms: 6,
+          fail_confirmation_sent_on: 2.days.ago.to_date
+        )
+      end
+
+      it do
+        expect { service_call }.to raise_error(ActiveRecord::RecordInvalid,
+                                               "Validation failed: Fail confirmation sent on Failure confirmation date cannot be before end date")
+      end
     end
 
     context "when ongoing induction period only has a mappable legacy programme type" do

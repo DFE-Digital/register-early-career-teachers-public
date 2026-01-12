@@ -40,7 +40,7 @@ RSpec.describe Teachers::Details::InductionOutcomeActionsComponent, type: :compo
       let(:mode) { :appropriate_body }
 
       it "displays fail link" do
-        expect(page).to have_link("Fail induction", href: "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
+        expect(page).to have_link("Fail induction", href: "/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/confirm")
       end
 
       it "displays pass link" do

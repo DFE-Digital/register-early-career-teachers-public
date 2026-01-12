@@ -2,6 +2,10 @@ module Admin
   class RecordFail < ::AppropriateBodies::RecordFail
     include Auditable
 
+    def self.induction_params
+      { model_name.param_key => %i[finished_on number_of_terms] }
+    end
+
   private
 
     def update_event_history
