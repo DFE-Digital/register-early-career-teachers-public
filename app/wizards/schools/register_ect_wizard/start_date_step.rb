@@ -68,7 +68,6 @@ module Schools
 
       def persist
         ect.update!(start_date: start_date_formatted)
-        store[:start_date_as_date] = start_date_as_date
       end
 
       def pre_populate_attributes
@@ -88,7 +87,7 @@ module Schools
       end
 
       def start_date_contract_period
-        @start_date_contract_period ||= ContractPeriod.ongoing_on(start_date_as_date).first
+        @start_date_contract_period ||= ContractPeriod.containing_date(start_date_as_date)
       end
 
       def start_date_obj
