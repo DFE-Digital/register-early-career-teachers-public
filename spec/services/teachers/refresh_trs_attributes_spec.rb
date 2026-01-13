@@ -131,7 +131,18 @@ describe Teachers::RefreshTRSAttributes do
     context "when the teacher is not found in TRS" do
       include_context "test trs api client that finds nothing"
 
-      context "and the teacher has an induction outcome" do
+      it "does not refresh QTS or ITT attributes" do
+        service.refresh!
+
+        teacher.reload
+
+        expect(teacher.trs_qts_awarded_on).to be_blank
+        expect(teacher.trs_qts_status_description).to be_blank
+        expect(teacher.trs_initial_teacher_training_provider_name).to be_blank
+        expect(teacher.trs_initial_teacher_training_end_date).to be_blank
+      end
+
+      context "but the teacher has an induction outcome" do
         before do
           FactoryBot.create(:induction_period, :fail, teacher:)
         end
@@ -145,12 +156,58 @@ describe Teachers::RefreshTRSAttributes do
             expect(teacher.trs_induction_status).to eq("Failed")
             expect(teacher.trs_induction_start_date).to be_present
             expect(teacher.trs_induction_completed_date).to be_present
-            expect(teacher.trs_data_last_refreshed_at).to be_present
+            expect(teacher.trs_data_last_refreshed_at).to eq(Time.zone.now)
+          end
+        end
 
-            expect(teacher.trs_qts_awarded_on).to be_blank
-            expect(teacher.trs_qts_status_description).to be_blank
-            expect(teacher.trs_initial_teacher_training_provider_name).to be_blank
-            expect(teacher.trs_initial_teacher_training_end_date).to be_blank
+        context "and the teacher records already contains TRS data" do
+          let(:teacher) do
+            FactoryBot.create(:teacher,
+                              trs_qts_awarded_on: 3.years.ago.to_date,
+                              trs_qts_status_description: "Passed",
+                              trs_initial_teacher_training_provider_name: "Example Provider Ltd.",
+                              trs_initial_teacher_training_end_date: Date.new(2021, 4, 5),
+                              trs_induction_status: "None",
+                              trs_induction_start_date: Date.current,
+                              trs_induction_completed_date: nil,
+                              trs_data_last_refreshed_at: 1.week.ago.to_date)
+          end
+
+          before do
+            service.refresh!
+            teacher.reload
+          end
+
+          it "updates TRS induction dates and status using in-service data not TRS data" do
+            expect(teacher.trs_induction_status).to eq("Failed")
+            expect(teacher.trs_induction_start_date).to eq(1.year.ago.to_date)
+            expect(teacher.trs_induction_completed_date).to eq(1.month.ago.to_date)
+          end
+
+          it "leaves TRS attributes unchanged" do
+            expect(teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date)
+            expect(teacher.trs_qts_status_description).to eql("Passed")
+            expect(teacher.trs_initial_teacher_training_provider_name).to eql("Example Provider Ltd.")
+            expect(teacher.trs_initial_teacher_training_end_date).to eql(Date.new(2021, 4, 5))
+          end
+        end
+      end
+
+      context "and the teacher has an ongoing induction" do
+        before do
+          FactoryBot.create(:induction_period, :ongoing, teacher:)
+        end
+
+        it "ensures the induction status indicator is correct" do
+          freeze_time do
+            service.refresh!
+
+            teacher.reload
+
+            expect(teacher.trs_induction_status).to eq("InProgress")
+            expect(teacher.trs_induction_start_date).to be_present
+            expect(teacher.trs_induction_completed_date).to be_blank
+            expect(teacher.trs_data_last_refreshed_at).to eq(Time.zone.now)
           end
         end
       end

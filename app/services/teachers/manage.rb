@@ -93,17 +93,15 @@ class Teachers::Manage
     end
   end
 
+  # FIXME: TRS induction values are populated using in-service data to preserve status indicators but we flag the teacher for investigation
+  # TODO: "Teacher Not Found" event? or already flagged guard?
   def mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
-    Teacher.transaction do
-      induction = teacher.finished_induction_period
+    trs_induction_status = INDUCTION_OUTCOMES.fetch(teacher.finished_induction_period&.outcome&.to_sym, "InProgress")
+    trs_induction_start_date = teacher.started_induction_period&.started_on
+    trs_induction_completed_date = teacher.finished_induction_period&.finished_on
 
-      teacher.update!(
-        trs_data_last_refreshed_at:,
-        trs_not_found: true,
-        trs_induction_status: INDUCTION_OUTCOMES[induction&.outcome&.to_sym],
-        trs_induction_start_date: induction&.started_on,
-        trs_induction_completed_date: induction&.finished_on
-      )
+    Teacher.transaction do
+      teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:, trs_induction_status:, trs_induction_start_date:, trs_induction_completed_date:)
     end
   end
 
