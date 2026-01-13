@@ -2,8 +2,7 @@ module Admin
   module Teachers
     class TrainingSummaryComponent < ApplicationComponent
       class UnexpectedTrainingProgrammeError < StandardError; end
-      attr_reader :training_period
-      attr_accessor :show_move_partnership_link
+      attr_reader :training_period, :show_move_partnership_link
 
       def initialize(training_period:, show_move_partnership_link: false)
         @training_period = training_period
