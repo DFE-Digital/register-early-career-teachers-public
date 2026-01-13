@@ -566,3 +566,14 @@
   - ecf_id
   - created_at
   - updated_at
+  :support_queries:
+  - id
+  - state
+  - zendesk_id
+  - name
+  - email
+  - school_name
+  - school_urn
+  - message
+  - created_at
+  - updated_at
