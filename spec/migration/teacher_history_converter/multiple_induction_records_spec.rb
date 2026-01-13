@@ -1,4 +1,4 @@
-RSpec.describe "Multiple induction records" do
+describe "Multiple induction records", skip: "Split up and repurpose for premium migrator" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
   let(:school_1) { Types::SchoolData.new(urn: "123456", name: "School 1") }

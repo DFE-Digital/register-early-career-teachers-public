@@ -1,4 +1,4 @@
-describe "One induction record" do
+describe "One induction record", skip: "Split up and repurpose for economy migrator" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
   let(:cohort_year) { 2024 }

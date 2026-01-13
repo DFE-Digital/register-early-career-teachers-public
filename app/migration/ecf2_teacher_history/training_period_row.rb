@@ -1,6 +1,5 @@
 class ECF2TeacherHistory::TrainingPeriodRow
   attr_reader :started_on,
-              :finished_on,
               :training_programme,
               :lead_provider_info,
               :delivery_partner_info,
@@ -14,6 +13,8 @@ class ECF2TeacherHistory::TrainingPeriodRow
               :ecf_start_induction_record_id,
               :is_ect,
               :school
+
+  attr_accessor :finished_on
 
   def initialize(started_on:,
                  finished_on:,

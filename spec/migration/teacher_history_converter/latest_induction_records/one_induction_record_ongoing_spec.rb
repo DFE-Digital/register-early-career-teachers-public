@@ -58,7 +58,7 @@ describe "One induction record (ongoing - no end date)" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode: :latest_induction_records).convert_to_ecf2! }
 
   it "produces the expected output" do
     expect(actual_output).to include(expected_output)
