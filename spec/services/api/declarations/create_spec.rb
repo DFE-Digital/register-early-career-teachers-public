@@ -369,6 +369,16 @@ RSpec.describe API::Declarations::Create, type: :model do
 
                   it { is_expected.to be_valid }
                 end
+
+                context "when `extended-1` is submitted after `completed` declaration dates" do
+                  let(:declaration_type) { "extended-1" }
+                  let!(:milestone) { FactoryBot.create(:milestone, declaration_type:, schedule:, start_date: Date.new(contract_period_year, 1, 1), milestone_date: Date.new(contract_period_year, 12, 1)) }
+
+                  # New declaration with declaration date set 1 day after `completed`
+                  let(:declaration_date) { (completed_declaration.declaration_date + 1.day).rfc3339 }
+
+                  it { is_expected.to be_valid }
+                end
               end
             end
           end
