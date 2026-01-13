@@ -1,0 +1,32 @@
+<% page_data(
+  title: "Select a partnership for #{teacher_full_name(@teacher)}",
+  backlink_href: admin_teacher_training_path,
+  error: @form.errors.present?
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= form_with model: @form,
+                  url: admin_teacher_training_period_partnership_path,
+                  method: :post do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= f.govuk_collection_radio_buttons :school_partnership_id,
+            @partnership_options,
+            :id,
+            :name,
+            legend: nil %>
+
+      <%= govuk_inset_text do %>
+        If you need to add a new partnership, go to
+        <%= govuk_link_to("school partnerships", admin_school_partnerships_path(@school.urn)) %>.
+      <% end %>
+
+      <%= f.govuk_submit "Confirm partnership" %>
+
+      <div class='govuk-body'>
+        <%= govuk_link_to("Cancel and go back to #{teacher_full_name(@teacher)}", admin_teacher_training_path(@teacher)) %>
+      </div>
+    <% end %>
+  </div>
+</div>
