@@ -1,6 +1,14 @@
 RSpec.describe SupportQuery do
   let(:support_query) { FactoryBot.create(:support_query) }
 
+  before do
+    stub_const("ENV", {
+      "ZENDESK_URL" => "https://example.com",
+      "ZENDESK_USERNAME" => "test",
+      "ZENDESK_TOKEN" => "test",
+    })
+  end
+
   describe "#send_to_zendesk_now" do
     context "when Zendesk works as expected" do
       let(:zendesk_ticket_id) { 123_456 }
