@@ -128,7 +128,28 @@ module Schools
 
         if school.last_programme_choices? && use_previous_choices_allowed?
           steps << :use_previous_ect_choices
-          return steps if ect.use_previous_ect_choices.nil?
+
+          if ect.use_previous_ect_choices.nil?
+            if can_reach_check_answers?
+              steps << :check_answers
+
+              steps << :change_email_address
+              return steps + %i[cant_use_changed_email] if ect.email_taken?
+
+              steps << (school.independent? ? :change_independent_school_appropriate_body : :change_state_school_appropriate_body)
+
+              steps << :change_training_programme
+              steps << :training_programme_change_lead_provider if ect.provider_led? && (ect.was_school_led? || ect.lead_provider_id.nil?)
+
+              steps << :change_lead_provider if ect.provider_led?
+              steps << :change_review_ect_details
+              steps << :change_start_date
+              steps << :change_use_previous_ect_choices if school.last_programme_choices? && use_previous_choices_allowed?
+              steps << :change_working_pattern
+            end
+
+            return steps
+          end
         end
 
         unless school.last_programme_choices? && ect.use_previous_ect_choices && use_previous_choices_allowed?
@@ -151,7 +172,6 @@ module Schools
         steps += %i[check_answers]
 
         # Only allow change steps if user has reached check_answers step
-        # This prevents direct access to change steps without completing the flow
         steps << :change_email_address
         return steps + %i[cant_use_changed_email] if ect.email_taken?
 
