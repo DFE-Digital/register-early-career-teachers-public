@@ -22,10 +22,10 @@
         <%= govuk_link_to("school partnerships", admin_school_partnerships_path(@school.urn)) %>.
       <% end %>
 
-      <div class="govuk-button-group">
-        <%= f.govuk_submit "Confirm partnership" %>
-        <%= govuk_link_to("Cancel and go back to #{teacher_full_name(@teacher)} page",
-                          admin_teacher_training_path(@teacher, page: params[:page], q: params[:q])) %>
+      <%= f.govuk_submit "Confirm partnership" %>
+
+      <div class='govuk-body'>
+        <%= govuk_link_to("Cancel and go back to #{teacher_full_name(@teacher)}", admin_teacher_training_path(@teacher)) %>
       </div>
     <% end %>
   </div>
