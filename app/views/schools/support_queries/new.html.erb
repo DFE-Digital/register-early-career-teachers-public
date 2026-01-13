@@ -1,0 +1,39 @@
+<%
+  page_data(
+    title: "Get help with registering early career teachers",
+    backlink_href: request.referer || schools_ects_home_path
+  )
+%>
+
+<%= form_with model: [:schools, @support_query] do |form| %>
+  <p>Send us a message if you have a question or are having problems using this service.</p>
+
+  <p>We'll automatically include the following in your message:</p>
+
+  <%=
+    govuk_summary_list(actions: false) do |summary_list|
+      summary_list.with_row do |row|
+        row.with_key { "Your name" }
+        row.with_value { current_user.name }
+      end
+      summary_list.with_row do |row|
+        row.with_key { "Your email address" }
+        row.with_value { current_user.email }
+      end
+      summary_list.with_row do |row|
+        row.with_key { "Your school" }
+        row.with_value { current_user.school.name }
+      end
+      summary_list.with_row do |row|
+        row.with_key { "Your school's URN" }
+        row.with_value { current_user.school.urn.to_s }
+      end
+    end
+  %>
+
+  <p>We'll reply by email as soon we can. We normally reply within 5 working days.</p>
+
+  <%= form.govuk_text_area :message, label: { size: "s", text: "Your message" }, hint: { text: "Include as much detail as you can" } %>
+
+  <%= form.govuk_submit "Send" %>
+<% end %>
