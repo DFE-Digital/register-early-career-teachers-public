@@ -74,7 +74,7 @@ module ECTAtSchoolPeriods
         end
       end
 
-      context "when the date of transition is today" do
+      context "when the training period started in the past with a confirmed partnership" do
         it "finishes the existing training period" do
           freeze_time
 
@@ -114,7 +114,27 @@ module ECTAtSchoolPeriods
         end
       end
 
-      context "when the date of transition is in the future" do
+      context "when the training period starts today with EOI only" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            started_on: Date.current
+          )
+        end
+
+        it "updates the existing training period in place" do
+          expect { change_lead_provider }.not_to change(TrainingPeriod, :count)
+
+          training_period.reload
+          expect(training_period.finished_on).to be_nil
+          expect(training_period.school_partnership).to be_nil
+          expect(training_period.expression_of_interest.lead_provider)
+            .to eq(lead_provider)
+        end
+      end
+
+      context "when the training period starts in the future" do
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
@@ -123,21 +143,13 @@ module ECTAtSchoolPeriods
           )
         end
 
-        it "destroys the existing training period" do
-          freeze_time
+        it "updates the existing training period in place" do
+          expect { change_lead_provider }.not_to change(TrainingPeriod, :count)
 
-          change_lead_provider
-
-          expect { training_period.reload }
-            .to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "creates a new training period" do
-          change_lead_provider
-
-          new_training_period = ect_at_school_period.reload.current_or_next_training_period
-          expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
-          expect(new_training_period.expression_of_interest.lead_provider)
+          training_period.reload
+          expect(training_period.started_on).to eq(ect_at_school_period.started_on)
+          expect(training_period.school_partnership).to be_nil
+          expect(training_period.expression_of_interest.lead_provider)
             .to eq(lead_provider)
         end
 
@@ -176,7 +188,7 @@ module ECTAtSchoolPeriods
         )
       end
 
-      context "when the date of transition is today" do
+      context "when the training period started in the past with EOI only" do
         it "destroys the existing training period" do
           freeze_time
 
@@ -216,7 +228,7 @@ module ECTAtSchoolPeriods
         end
       end
 
-      context "when the date of transition is in the future" do
+      context "when the training period starts in the future with EOI only" do
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
@@ -225,21 +237,13 @@ module ECTAtSchoolPeriods
           )
         end
 
-        it "destroys the existing training period" do
-          freeze_time
+        it "updates the existing training period in place" do
+          expect { change_lead_provider }.not_to change(TrainingPeriod, :count)
 
-          change_lead_provider
-
-          expect { training_period.reload }
-            .to raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "creates a new training period" do
-          change_lead_provider
-
-          new_training_period = ect_at_school_period.reload.current_or_next_training_period
-          expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
-          expect(new_training_period.expression_of_interest.lead_provider)
+          training_period.reload
+          expect(training_period.started_on).to eq(ect_at_school_period.started_on)
+          expect(training_period.school_partnership).to be_nil
+          expect(training_period.expression_of_interest.lead_provider)
             .to eq(lead_provider)
         end
 
