@@ -57,6 +57,42 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
         end
       end
 
+      context "when the latest training period is provider-led" do
+        let(:older_started_on) { 2.years.ago.to_date }
+        let(:newer_started_on) { 1.year.ago.to_date }
+        let!(:older_training_period) do
+          ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: older_started_on + 1.day)
+          FactoryBot.create(:training_period, ect_at_school_period: ect_period, started_on: older_started_on, finished_on: older_started_on + 1.day)
+        end
+        let!(:newer_training_period) do
+          ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: newer_started_on, finished_on: nil)
+          FactoryBot.create(:training_period, ect_at_school_period: ect_period, started_on: newer_started_on, finished_on: nil)
+        end
+
+        it "shows the move partnership link once" do
+          get admin_teacher_training_path(teacher)
+          expect(response.body.scan("Move to a different partnership").count).to eq(1)
+        end
+      end
+
+      context "when the latest training period is school-led" do
+        let(:older_started_on) { 2.years.ago.to_date }
+        let(:newer_started_on) { 1.year.ago.to_date }
+        let!(:older_training_period) do
+          ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: older_started_on + 1.day)
+          FactoryBot.create(:training_period, ect_at_school_period: ect_period, started_on: older_started_on, finished_on: older_started_on + 1.day)
+        end
+        let!(:newer_training_period) do
+          ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: newer_started_on, finished_on: nil)
+          FactoryBot.create(:training_period, :school_led, ect_at_school_period: ect_period, started_on: newer_started_on, finished_on: nil)
+        end
+
+        it "does not show the move partnership link" do
+          get admin_teacher_training_path(teacher)
+          expect(response.body).not_to include("Move to a different partnership")
+        end
+      end
+
       context "when the teacher has a mentor training period" do
         let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor) }
         let(:teacher) { mentor_training_period.mentor_at_school_period.teacher }
