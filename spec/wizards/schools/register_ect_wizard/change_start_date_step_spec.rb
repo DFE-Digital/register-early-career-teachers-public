@@ -67,9 +67,8 @@ RSpec.describe Schools::RegisterECTWizard::ChangeStartDateStep, type: :model do
       expect(store[:school_partnership_to_reuse_id]).to be_nil
     end
 
-    it "clears use_previous_ect_choices on the ect" do
-      step.save!
-      expect(wizard.ect.use_previous_ect_choices).to be_nil
+    it "does not clear use_previous_ect_choices on the ect" do
+      expect { step.save! }.not_to change(wizard.ect, :use_previous_ect_choices)
     end
 
     context "when programme choices are already set" do

@@ -13,10 +13,7 @@ module Schools
 
       def persist
         super
-
-        ect.update!(use_previous_ect_choices: nil)
         store[:school_partnership_to_reuse_id] = nil
-
         true
       end
     end
