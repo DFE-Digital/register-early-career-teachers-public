@@ -7,7 +7,7 @@ describe "Migrating a teacher record" do
   let(:appropriate_body) { nil }
   let(:lead_provider_info) { nil }
   let(:delivery_partner_info) { nil }
-  let(:training_programme) { nil }
+  let(:training_programme) { "full_induction_programme" }
   let(:schedule_info) { nil }
   let(:training_provider_info) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:, lead_provider_info:, delivery_partner_info:) }
 

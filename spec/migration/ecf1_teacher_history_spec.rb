@@ -57,12 +57,8 @@ describe ECF1TeacherHistory do
             ]
           end
 
-          it "sets the mode to 'latest_induction_records'" do
-            expect(history.ect.migration_mode).to eq("latest_induction_records")
-          end
-
           it "creates only one induction record per lead_provider, school, contract year combo" do
-            expect(history.ect.induction_records.count).to eq(1)
+            expect(history.ect.induction_records(migration_mode: :latest_induction_records).count).to eq(1)
           end
 
           it "populates the right attributes" do
@@ -103,10 +99,6 @@ describe ECF1TeacherHistory do
               FactoryBot.create(:migration_induction_record, participant_profile: ect_profile, induction_programme:, appropriate_body:, start_date: 3.weeks.ago, end_date: Date.yesterday),
               FactoryBot.create(:migration_induction_record, participant_profile: ect_profile, induction_programme: induction_programme_2, appropriate_body:, start_date: Date.yesterday, end_date: nil),
             ]
-          end
-
-          it "sets the mode to 'latest_induction_records'" do
-            expect(history.ect.migration_mode).to eq("latest_induction_records")
           end
 
           it "creates only one induction record per lead_provider, school, contract year combo" do
@@ -187,13 +179,13 @@ describe ECF1TeacherHistory do
 
         describe "ECT induction records" do
           it "creates the right number" do
-            expect(history.ect.induction_records.count).to eq ect_induction_records.count
+            expect(history.ect.induction_records(migration_mode: :all_induction_records).count).to eq ect_induction_records.count
           end
 
           it "populates the right attributes" do
             aggregate_failures "ECT induction records results" do
               ect_induction_records.each do |induction_record|
-                historic_record = history.ect.induction_records.find { |hir| hir.induction_record_id == induction_record.id }
+                historic_record = history.ect.induction_records(migration_mode: :all_induction_records).find { |hir| hir.induction_record_id == induction_record.id }
                 expect(historic_record.start_date.to_date).to eq(induction_record.start_date.to_date)
                 expect(historic_record.end_date&.to_date).to eq(induction_record&.end_date&.to_date)
                 expect(historic_record.created_at).to be_within(1.second).of(induction_record.created_at)
