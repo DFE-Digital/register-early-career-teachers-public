@@ -64,9 +64,9 @@ private
 
   def zendesk
     @zendesk ||= ZendeskAPI::Client.new do |config|
-      config.url = ENV["ZENDESK_URL"]
-      config.username = ENV["ZENDESK_USERNAME"]
-      config.token = ENV["ZENDESK_TOKEN"]
+      config.url = ENV.fetch("ZENDESK_URL")
+      config.username = ENV.fetch("ZENDESK_USERNAME")
+      config.token = ENV.fetch("ZENDESK_TOKEN")
       config.raise_error_when_rate_limited = true
     end
   end
