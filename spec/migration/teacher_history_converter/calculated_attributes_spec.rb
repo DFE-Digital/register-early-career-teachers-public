@@ -5,6 +5,101 @@ class FakeTeacherHistoryConverter
 end
 
 describe TeacherHistoryConverter::CalculatedAttributes do
+  describe "#latest_induction_records" do
+    subject { FakeTeacherHistoryConverter.new.latest_induction_records(induction_records:) }
+
+    let(:school_10) { Types::SchoolData.new(urn: 111_111, name: "School 1") }
+    let(:school_20) { Types::SchoolData.new(urn: 222_222, name: "School 2") }
+    let(:school_30) { Types::SchoolData.new(urn: 333_333, name: "School 3") }
+    let(:school_100) { Types::SchoolData.new(urn: 100_100, name: "School 100") }
+    let(:provider_1) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year: 2022) }
+
+    let(:ir_10) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_10,
+                       training_provider_info: provider_1,
+                       cohort_year: 2022,
+                       start_date: Date.new(2022, 9, 1),
+                       end_date:   Date.new(2022, 10, 1),
+                       created_at: Time.new(2022, 9, 1))
+    end
+
+    let(:ir_11) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_10,
+                       training_provider_info: provider_1,
+                       cohort_year: 2022,
+                       start_date: Date.new(2022, 9, 1),
+                       end_date:   Date.new(2022, 11, 1),
+                       created_at: Time.new(2022, 10, 1))
+    end
+
+    let(:ir_20) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_20,
+                       training_provider_info: provider_2,
+                       cohort_year: 2022,
+                       start_date: Date.new(2022, 8, 30),
+                       end_date:   Date.new(2022, 12, 1),
+                       created_at: Time.new(2022, 11, 1))
+    end
+
+    let(:ir_21) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_20,
+                       training_provider_info: provider_2,
+                       cohort_year: 2022,
+                       start_date: Date.new(2022, 12, 1),
+                       end_date:   Date.new(2023, 3, 1),
+                       created_at: Time.new(2022, 12, 1))
+    end
+
+    let(:ir_30) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_3,
+                       training_provider_info: provider_2,
+                       cohort_year: 2022,
+                       start_date: Date.new(2023, 1, 1),
+                       end_date:   Date.new(2023, 2, 1),
+                       created_at: Time.new(2023, 1, 1))
+    end
+
+    let(:ir_31) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_3,
+                       training_provider_info: provider_3,
+                       cohort_year: 2022,
+                       start_date: Date.new(2023, 2, 1),
+                       end_date:   Date.new(2025, 10, 1),
+                       created_at: Time.new(2023, 2, 1))
+    end
+
+    let(:ir_22) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_20,
+                       training_provider_info: provider_2,
+                       cohort_year: 2022,
+                       start_date: Date.new(2023, 3, 1),
+                       end_date:   Date.new(2023, 1, 1),
+                       created_at: Time.new(2023, 3, 1))
+    end
+
+    let(:ir_32) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_3,
+                       training_provider_info: provider_3,
+                       cohort_year: 2024,
+                       start_date: Date.new(2025, 10, 1),
+                       end_date:   nil,
+                       created_at: Time.new(2025, 10, 1))
+    end
+
+    let(:induction_records) { [ir_10, ir_11, ir_20, ir_21, ir_22, ir_30, ir_31, ir_32] }
+
+    it { is_expected.to match_array([ir_11, ir_21, ir_30, ir_22, ir_31, ir_32]) }
+  end
+
+
   describe "#participant_api_updated_at" do
     subject { FakeTeacherHistoryConverter.new.participant_api_updated_at(ecf1_teacher_history:) }
 
