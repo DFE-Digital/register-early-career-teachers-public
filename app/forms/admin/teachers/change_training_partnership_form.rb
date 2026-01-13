@@ -27,7 +27,7 @@ module Admin
       def school_partnership_available
         return if school_partnership.present?
 
-        errors.add(:school_partnership_id, "Select a partnership")
+        errors.add(:school_partnership_id, "Select a partnership that belongs to this school")
       end
     end
   end
