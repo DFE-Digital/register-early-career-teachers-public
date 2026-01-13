@@ -90,5 +90,24 @@ teachers.each do |attrs|
   )
 
   teacher.save!
+
+  if attrs[:traits]&.include?(:with_teacher_id_change)
+    from_trn = attrs.fetch(:id_changed_from_trn)
+
+    from_teacher =
+      Teacher.find_by(trn: from_trn) ||
+      Teacher.create!(
+        trn: from_trn,
+        trs_first_name: teacher.trs_first_name,
+        trs_last_name: teacher.trs_last_name
+      )
+
+    TeacherIdChange.find_or_create_by!(
+      teacher_id: teacher.id,
+      api_from_teacher_id: from_teacher.api_id,
+      api_to_teacher_id: teacher.api_id
+    )
+  end
+
   describe_teacher(teacher)
 end
