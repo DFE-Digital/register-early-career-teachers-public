@@ -65,7 +65,8 @@ FactoryBot.define do
         FactoryBot.create(
           :teacher_id_change,
           teacher:,
-          api_from_teacher_id: Teacher.find_by_trn(evaluator.id_changed_from_trn).api_id
+          api_from_teacher_id: Teacher.find_by_trn(evaluator.id_changed_from_trn).api_id,
+          api_to_teacher_id: teacher.api_id
         )
       end
     end
