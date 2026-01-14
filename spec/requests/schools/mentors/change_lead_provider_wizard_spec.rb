@@ -130,6 +130,17 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
             )
         end
 
+        it "keeps the same contract period and schedule" do
+          subject
+
+          follow_redirect!
+
+          post(path_for_step("check-answers"))
+
+          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          expect(new_training_period.schedule.identifier).to eq(training_period.schedule.identifier)
+        end
+
         it "updates the lead provider only after confirmation" do
           subject
 
@@ -169,46 +180,6 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
           expect(response).to have_http_status(:unprocessable_content)
         end
       end
-
-      context "contract period year" do
-        let(:params) { { edit: { lead_provider_id: lead_provider.id } } }
-
-        let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
-        let(:current_contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current, year: 2025) }
-        let(:old_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: old_active_lead_provider, contract_period:) }
-        let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: old_lead_provider, contract_period:) }
-        let(:old_school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: old_lead_provider_delivery_partnership) }
-        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
-
-        let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period: current_contract_period) }
-        let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: new_lead_provider, contract_period: current_contract_period) }
-        
-        around do |example|
-          travel_to(started_on) do
-            example.run
-          end
-        end
-
-        it 'does something' do
-          expect(mentor_at_school_period.training_periods.last.schedule.contract_period_year).to eq(2024)
-          subject
-
-          follow_redirect!
-
-          post(path_for_step("check-answers"))
-
-          # binding.break
-
-          expect(mentor_at_school_period.training_periods.last.reload.schedule.contract_period_year).to eq(2024)
-
-          
-
-
-        end
-
-
-      end
-
     end
   end
 
