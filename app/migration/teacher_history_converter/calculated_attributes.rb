@@ -1,5 +1,4 @@
 module TeacherHistoryConverter::CalculatedAttributes
-
   INDUCTION_RECORD_GROUPS_SORTING = ->(records) { records.sort_by { [it.end_date.present? ? 0 : 1, it.start_date, it.created_at] } }
   GROUP_INDUCTION_RECORDS_SORTING = ->(records) { records.sort_by { [it.end_date.present? ? 0 : 1, it.created_at] } }
 
