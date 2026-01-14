@@ -164,5 +164,6 @@ RSpec.describe "Registering an ECT - backdated start date", :enable_schools_inte
     expect(ect_at_school_period.started_on).to eq(@entered_start_date)
     expect(training_period.started_on).to eq(@current_contract_period.started_on)
     expect(training_period.schedule.contract_period_year).to eq(@current_contract_period.year)
+    expect(ect_at_school_period.started_on).not_to eq(training_period.started_on)
   end
 end
