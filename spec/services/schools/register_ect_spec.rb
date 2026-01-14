@@ -83,6 +83,14 @@ RSpec.describe Schools::RegisterECT do
           it "raises an exception" do
             expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
           end
+
+          it "does not enqueue a confirmation email" do
+            ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+            expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+
+            expect(ActiveJob::Base.queue_adapter.enqueued_jobs).to be_empty
+          end
         end
 
         context "when a Teacher record with the same TRN exists and has multiple ect records at different schools" do
