@@ -1,5 +1,5 @@
 module Schools
-  class SupportQueriesController < ApplicationController
+  class SupportQueriesController < SchoolsController
     def new
       @support_query = SupportQuery.new
     end

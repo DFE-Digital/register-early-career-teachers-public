@@ -1,6 +1,6 @@
 class SupportQuery < ApplicationRecord
   validates :name, presence: true
-  validates :email, presence: true
+  validates :email, notify_email: true
   validates :school_name, presence: true
   validates :school_urn, numericality: { only_integer: true }
   validates :message, presence: { message: "Enter your message" }
