@@ -3,17 +3,15 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
   describe "provider-led training periods" do
     let(:teacher) { metadata.teacher }
-    let(:lead_provider) { metadata.lead_provider }
-    let(:lead_provider_id) { lead_provider.id }
-
-    before do
-      training_period.update!(finished_on: 1.week.ago)
-      rendered
-    end
 
     context "when the period is for an ECT" do
       let!(:metadata) { FactoryBot.create(:teacher_lead_provider_metadata, :with_latest_ect_training_period) }
       let(:training_period) { metadata.latest_ect_training_period }
+
+      before do
+        training_period.update!(finished_on: 1.week.ago)
+        rendered
+      end
 
       context "when the partnership is confirmed" do
         it "shows the combined card title" do
@@ -115,6 +113,11 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       let!(:metadata) { FactoryBot.create(:teacher_lead_provider_metadata, :with_latest_mentor_training_period) }
       let(:training_period) { metadata.latest_mentor_training_period }
 
+      before do
+        training_period.update!(finished_on: 1.week.ago)
+        rendered
+      end
+
       context "when the partnership is confirmed" do
         it "shows the mentor school name in the school row" do
           expect(rendered_content).to have_css("dt", text: "School")
@@ -176,10 +179,11 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         allow(API::TeacherSerializer)
         .to receive(:render)
         .and_raise(Enumerable::SoleItemExpectedError)
+
         rendered
       end
 
-      let(:training_period) { FactoryBot.create(:training_period) }
+      let(:training_period) { FactoryBot.create(:training_period, :provider_led) }
 
       it "shows a generic error message" do
         expect(rendered_content).to have_css("dt", text: "API response")
