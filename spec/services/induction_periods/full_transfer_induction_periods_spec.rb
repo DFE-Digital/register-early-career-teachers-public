@@ -1,4 +1,4 @@
-RSpec.describe RIAB::FullTransferInductionPeriods, :aggregate_failures do
+RSpec.describe InductionPeriods::FullTransferInductionPeriods, :aggregate_failures do
   include_context "it transfers an induction"
 
   describe "full transfer of induction periods and events" do
@@ -19,6 +19,8 @@ RSpec.describe RIAB::FullTransferInductionPeriods, :aggregate_failures do
 
       service.call
 
+      expect(InductionPeriod.count).to be 5
+
       # transfers inductions
       expect(InductionPeriod.all.map(&:appropriate_body)).to eq([
         current_appropriate_body,
@@ -35,6 +37,15 @@ RSpec.describe RIAB::FullTransferInductionPeriods, :aggregate_failures do
         "partial_in_progress_induction: Current AB",
         "full_completed_induction: New AB",
         "full_in_progress_induction: New AB",
+      ])
+
+      # provides context in body
+      expect(Event.order(:happened_at).map(&:body)).to eq([
+        nil,
+        nil,
+        nil,
+        "Automated correction from Current AB to New AB on #{Date.current}",
+        "Automated correction from Current AB to New AB on #{Date.current}",
       ])
     end
   end
