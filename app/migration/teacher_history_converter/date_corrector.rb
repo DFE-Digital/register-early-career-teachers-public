@@ -26,7 +26,8 @@ class TeacherHistoryConverter::DateCorrector
              induction_record.start_date
            end
 
-    date.to_date
+    # Ensure date is never earlier than SERVICE_START_DATE
+    [date.to_date, SERVICE_START_DATE].max
   end
 
   # Corrects end dates for school periods (ECTAtSchoolPeriod/MentorAtSchoolPeriod)
