@@ -3,11 +3,11 @@
 # 2. amend induction event history
 # 3. output useful summary of alterations
 #
-module RIAB
+module InductionPeriods
   class FullTransferInductionPeriods < TransferInductionPeriods
-    def call(rollback: false)
-      configure_table_print(:csv)
+    TRANSFER_TYPE = :full
 
+    def call(rollback: false)
       events = events_for(inductions)
       export_summary_for(events)
 
@@ -39,7 +39,7 @@ module RIAB
       event.update!(
         appropriate_body: new_appropriate_body,
         heading: event.heading.gsub(current_appropriate_body.name, new_appropriate_body.name),
-        body: "Event transferred from #{current_appropriate_body.name} to #{new_appropriate_body.name} on #{Date.current}"
+        body: event_body_context
       )
     end
 

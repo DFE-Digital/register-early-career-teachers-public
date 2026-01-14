@@ -5,18 +5,19 @@
 # 4. generate missing events for the transfer
 # 5. output useful summary of alterations
 #
-module RIAB
+module InductionPeriods
   class PartialTransferInductionPeriods < TransferInductionPeriods
-    def call(rollback: false)
-      configure_table_print(:csv)
+    TRANSFER_TYPE = :partial
 
+    def call(rollback: false)
       trns = target_inductions.joins(:teacher).pluck(:trn)
       export_summary_for(inductions.order(:teacher_id), headers: INDUCTION_TABLE_HEADERS)
 
       InductionPeriod.transaction do
         inductions.each do |induction_period|
           original_induction_values = induction_period.slice(:finished_on, :induction_programme, :training_programme, :number_of_terms, :outcome)
-          induction_period.update!(finished_on: 1.day.before(cut_off_date))
+          terms_in_first_half = original_induction_values[:number_of_terms] || 0.1 # required but unknown value requiring manual edit after
+          induction_period.update!(finished_on: 1.day.before(cut_off_date), number_of_terms: terms_in_first_half)
 
           new_induction_period = InductionPeriod.create!(
             appropriate_body: new_appropriate_body,
@@ -33,7 +34,7 @@ module RIAB
               appropriate_body: new_appropriate_body,
               induction_period: new_induction_period,
               heading: event.heading.gsub(current_appropriate_body.name, new_appropriate_body.name),
-              body: "Event transferred from #{current_appropriate_body.name} to #{new_appropriate_body.name} on #{Date.current}"
+              body: event_body_context
             )
           end
         end
@@ -53,10 +54,8 @@ module RIAB
 
     # @return [InductionPeriod::ActiveRecord_Relation] inductions that span cut off date
     def target_inductions
-      InductionPeriod
-        .for_appropriate_body(current_appropriate_body)
-        .started_before(cut_off_date)
-        .finished_on_or_after(cut_off_date)
+      inductions_before_cut_off = InductionPeriod.for_appropriate_body(current_appropriate_body).started_before(cut_off_date)
+      inductions_before_cut_off.finished_on_or_after(cut_off_date).or(inductions_before_cut_off.ongoing)
     end
 
     # @param trns [Array<String>]
@@ -79,7 +78,7 @@ module RIAB
         heading: "#{teacher_full_name(induction_period.teacher)} was released by #{current_appropriate_body.name}",
         event_type: "induction_period_closed",
         author_type: "system",
-        body: "Induction period curtailed because it finished after appropriate body status lost"
+        body: event_body_context
       )
     end
 
@@ -94,7 +93,7 @@ module RIAB
         heading: "#{teacher_full_name(induction_period.teacher)} was claimed by #{new_appropriate_body.name}",
         event_type: "induction_period_opened",
         author_type: "system",
-        body: "Induction period started when transferred from #{current_appropriate_body.name}"
+        body: event_body_context
       )
     end
 

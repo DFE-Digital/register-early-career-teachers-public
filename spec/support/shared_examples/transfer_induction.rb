@@ -70,4 +70,11 @@ RSpec.shared_context "it transfers an induction" do
                       teacher: full_in_progress_induction.teacher,
                       heading: "full_in_progress_induction: #{current_appropriate_body.name}")
   end
+
+  describe "debugging" do
+    it "outputs tabular data" do
+      expect(service.debug).to be_an(Array)
+      expect(service.debug.size).to be(2)
+    end
+  end
 end

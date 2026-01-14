@@ -1,8 +1,6 @@
 # Utility base class to select and amend inductions associated to the wrong appropriate body
 #
-require "table_print"
-
-module RIAB
+module InductionPeriods
   class TransferInductionPeriods
     # @return [Array<String>]
     INDUCTION_TABLE_HEADERS = %w[
@@ -45,8 +43,6 @@ module RIAB
     end
 
     def debug
-      configure_table_print(:screen)
-
       export_summary_for(inductions, headers: INDUCTION_TABLE_HEADERS)
     end
 
@@ -60,28 +56,35 @@ module RIAB
       Event.where(induction_period_id: inductions.pluck(:id)).order(:induction_period_id, :id)
     end
 
-    # @return [TablePrint::Returnable]
-    def export_summary_for(rows, headers: EVENT_TABLE_HEADERS)
-      tp rows, *headers
+    def event_body_context
+      "Automated correction from #{current_appropriate_body.name} to #{new_appropriate_body.name} on #{Date.current}"
     end
 
-    # Console and exported changes
-    def configure_table_print(format)
-      tp.set :capitalize_headers, false
-      case format
-      when :screen
-        tp.clear :max_width
-        tp.clear :separator
-        tp.clear :io
-      when :csv
-        tp.set :max_width, 100
-        tp.set :separator, ","
-        tp.set :io, File.open(Rails.root.join("tmp/#{csv_file_name}"), "w")
+    def export_summary_for(records, headers: EVENT_TABLE_HEADERS)
+      FileUtils.mkdir_p(csv_file_path)
+      tabular_data = []
+
+      CSV.open(csv_file_name, "w", headers:, write_headers: true) do |csv|
+        records.map do |record|
+          row = headers.map { |attr| fetch_value(record, attr) }
+          csv << row
+          tabular_data << row
+        end
       end
+
+      tabular_data
+    end
+
+    def csv_file_path
+      Rails.root.join("tmp/transferred_induction_periods/#{self.class::TRANSFER_TYPE}")
     end
 
     def csv_file_name
-      "#{self.class.name} from #{current_appropriate_body.name} to #{new_appropriate_body.name} on #{cut_off_date}.csv"
+      "#{csv_file_path}/#{current_appropriate_body.name} to #{new_appropriate_body.name} on #{cut_off_date}.csv"
+    end
+
+    def fetch_value(record, attr)
+      attr.split(".").inject(record) { |obj, method| obj&.public_send(method) }
     end
   end
 end
