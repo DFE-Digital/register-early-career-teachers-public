@@ -154,6 +154,11 @@ RSpec.describe Schools::RegisterECT do
           expect(ect_at_school_period.school_reported_appropriate_body_id).to eq(school_reported_appropriate_body.id)
         end
 
+        it "sends a provider-led confirmation email to the early career teacher" do
+          expect { service.register! }
+            .to have_enqueued_mail(Schools::ECTRegistrationMailer, :provider_led_confirmation)
+        end
+
         describe "recording an event" do
           before { allow(Events::Record).to receive(:record_teacher_registered_as_ect_event!).with(any_args).and_call_original }
 
@@ -238,6 +243,11 @@ RSpec.describe Schools::RegisterECT do
 
       it "creates a TrainingPeriod" do
         expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+      end
+
+      it "sends a school-led confirmation email to the early career teacher" do
+        expect { service.register! }
+          .to have_enqueued_mail(Schools::ECTRegistrationMailer, :school_led_confirmation)
       end
 
       it "has no expression of interest or school partnership" do
