@@ -210,7 +210,7 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-follow_redirects (0.4.0)
+    faraday-follow_redirects (0.5.0)
       faraday (>= 1, < 3)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
@@ -302,6 +302,7 @@ GEM
       rexml (~> 3.0)
     hashdiff (1.2.1)
     hashie (5.0.0)
+    herb (0.8.5)
     herb (0.8.5-aarch64-linux-gnu)
     herb (0.8.5-aarch64-linux-musl)
     herb (0.8.5-arm-linux-gnu)
@@ -784,7 +785,7 @@ GEM
     uber (0.1.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
-    unicode-emoji (4.1.0)
+    unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
     validate_url (1.0.15)
@@ -902,7 +903,7 @@ DEPENDENCIES
   with_advisory_lock
 
 RUBY VERSION
-   ruby 3.4.7p58
+   ruby 4.0.1p0
 
 BUNDLED WITH
    2.6.9
