@@ -789,7 +789,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
     t.text "message", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["zendesk_id"], name: "index_support_queries_on_zendesk_id", unique: true
   end
 
   create_table "teacher_id_changes", force: :cascade do |t|

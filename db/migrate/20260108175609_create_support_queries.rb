@@ -11,7 +11,5 @@ class CreateSupportQueries < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-
-    add_index :support_queries, :zendesk_id, unique: true
   end
 end
