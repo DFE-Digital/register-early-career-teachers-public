@@ -19,14 +19,16 @@ module Teachers
     # In some environments we use seeded teachers, which should not use
     # TRNs found in TRS, so we update only their status to mimic the real behaviour.
     #
+    # TODO: permit update_not_found! in production once TeacherDeactivated error is possible
+    #
     # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :teacher_not_found
     def refresh!
       return :refresh_disabled unless enabled?
 
       update!
     rescue TRS::Errors::TeacherNotFound
-      update_not_found!
-    rescue TRS::Errors::TeacherDeactivated
+      update_not_found! if Rails.application.config.enable_test_guidance
+    rescue TRS::Errors::TeacherDeactivated # NB: unreleased in production
       deactivate!
     end
 
