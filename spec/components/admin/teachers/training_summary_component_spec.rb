@@ -7,7 +7,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
     let(:lead_provider_id) { lead_provider.id }
 
     before do
-      training_period.update(finished_on: 1.week.ago)
+      training_period.update!(finished_on: 1.week.ago)
       rendered
     end
 
