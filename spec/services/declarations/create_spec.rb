@@ -134,6 +134,29 @@ RSpec.describe Declarations::Create do
             )
           )
         end
+
+        context "when a duplicate declaration exists" do
+          let!(:existing_declaration) { service.create }
+
+          it "returns the existing declaration with correct attributes" do
+            declaration = nil
+            expect { declaration = create_declaration }.not_to change(Declaration, :count)
+
+            expect(declaration).to eq(existing_declaration)
+            expect(declaration.payment_statement).to be_nil
+            if trainee_type == :ect
+              expect(declaration.mentorship_period).to eq(mentorship_period)
+            end
+            expect(declaration.evidence_type).to eq(evidence_type)
+            expect(declaration).not_to be_payment_status_eligible
+          end
+
+          it "acquires a lock on the run" do
+            expect(Declaration).to receive(:with_advisory_lock).with("lock_#{training_period.id}_#{declaration_type}").and_call_original
+
+            create_declaration
+          end
+        end
       end
     end
   end

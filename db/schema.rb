@@ -185,7 +185,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
     t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
     t.index ["payment_statement_id"], name: "index_declarations_on_payment_statement_id"
-    t.index ["training_period_id", "declaration_type", "payment_status"], name: "idx_on_training_period_id_declaration_type_payment__56d5a31273", unique: true, where: "((payment_status = ANY (ARRAY['no_payment'::declaration_payment_statuses, 'eligible'::declaration_payment_statuses, 'payable'::declaration_payment_statuses, 'paid'::declaration_payment_statuses])) AND (clawback_status = 'no_clawback'::declaration_clawback_statuses))"
+    t.index ["training_period_id", "declaration_type", "payment_status"], name: "idx_unique_declarations", unique: true, where: "((payment_status = ANY (ARRAY['no_payment'::declaration_payment_statuses, 'eligible'::declaration_payment_statuses, 'payable'::declaration_payment_statuses, 'paid'::declaration_payment_statuses])) AND (clawback_status = 'no_clawback'::declaration_clawback_statuses))"
     t.index ["training_period_id"], name: "index_declarations_on_training_period_id"
     t.index ["voided_by_user_id"], name: "index_declarations_on_voided_by_user_id"
   end

@@ -36,20 +36,36 @@ module Declarations
     end
 
     def create
-      ActiveRecord::Base.transaction do
-        declaration = create_declaration
+      # LPs making multiple same POST /declarations requests in a very quick succession may sometimes bypass the model validations
+      # So we wrap creation in an advisory lock to dedupe concurrent requests for the same training period and declaration type
+      # And return the existing declaration if found
+      Declaration.with_advisory_lock("lock_#{training_period.id}_#{declaration_type}") do
+        return existing_declaration if existing_declaration.present?
 
-        update_uplifts!(declaration)
-        set_eligibility!(declaration)
-        set_payment_statement!(declaration)
-        check_mentor_completion!(declaration)
-        record_declaration_created_event!(declaration)
+        ActiveRecord::Base.transaction do
+          declaration = create_declaration
 
-        declaration
+          update_uplifts!(declaration)
+          set_eligibility!(declaration)
+          set_payment_statement!(declaration)
+          check_mentor_completion!(declaration)
+          record_declaration_created_event!(declaration)
+
+          declaration
+        end
       end
     end
 
   private
+
+    def existing_declaration
+      @existing_declaration ||= Declaration
+                                  .billable_or_changeable
+                                  .find_by(
+                                    training_period:,
+                                    declaration_type:
+                                  )
+    end
 
     def create_declaration
       training_period.declarations.create!(
