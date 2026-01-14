@@ -41,10 +41,8 @@ module TRS
       return TRS::Teacher.new(JSON.parse(response.body)) if response.success?
 
       case Rack::Utils::HTTP_STATUS_CODES.fetch(response.status)
-      when "Not Found"
-        raise(TRS::Errors::TeacherNotFound)
-      when "Gone"
-        raise(TRS::Errors::TeacherDeactivated)
+      when "Not Found" then raise(TRS::Errors::TeacherNotFound)
+      when "Gone" then raise(TRS::Errors::TeacherDeactivated) # NB: unreleased in production
       else
         fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
       end

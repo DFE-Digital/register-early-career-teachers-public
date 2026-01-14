@@ -112,6 +112,10 @@ describe Teachers::RefreshTRSAttributes do
       context "when the teacher is not found in TRS" do
         include_context "test trs api client that finds nothing"
 
+        before do
+          allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
+        end
+
         let(:fake_manage) do
           double(Teachers::Manage,
                  mark_teacher_as_not_found!: true)
@@ -131,9 +135,30 @@ describe Teachers::RefreshTRSAttributes do
     context "when the teacher is not found in TRS" do
       include_context "test trs api client that finds nothing"
 
+      before do
+        allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
+      end
+
+      it "flags the teacher" do
+        service.refresh!
+        teacher.reload
+
+        expect(teacher).to be_trs_not_found
+      end
+
+      it "adds a teacher_trs_not_found event" do
+        expect(teacher.events).to be_empty
+
+        service.refresh!
+        perform_enqueued_jobs
+
+        expect(teacher.events.map(&:event_type)).to contain_exactly(
+          "teacher_trs_not_found"
+        )
+      end
+
       it "does not refresh QTS or ITT attributes" do
         service.refresh!
-
         teacher.reload
 
         expect(teacher.trs_qts_awarded_on).to be_blank
@@ -150,7 +175,6 @@ describe Teachers::RefreshTRSAttributes do
         it "ensures the induction status indicator is correct" do
           freeze_time do
             service.refresh!
-
             teacher.reload
 
             expect(teacher.trs_induction_status).to eq("Failed")
@@ -201,7 +225,6 @@ describe Teachers::RefreshTRSAttributes do
         it "ensures the induction status indicator is correct" do
           freeze_time do
             service.refresh!
-
             teacher.reload
 
             expect(teacher.trs_induction_status).to eq("InProgress")
@@ -210,6 +233,42 @@ describe Teachers::RefreshTRSAttributes do
             expect(teacher.trs_data_last_refreshed_at).to eq(Time.zone.now)
           end
         end
+      end
+
+      context "and the API version does not distinguish DEACTIVATED accounts" do
+        before do
+          allow(Rails.application.config).to receive(:enable_test_guidance).and_return(false)
+        end
+
+        it "does not update the teacher record" do
+          service.refresh!
+          teacher.reload
+
+          expect(teacher.trs_data_last_refreshed_at).to be_blank
+          expect(teacher.trs_not_found).to be_blank
+        end
+      end
+    end
+
+    context "when the teacher has been deactivated in TRS" do
+      include_context "test trs api client deactivated teacher"
+
+      it "flags the teacher" do
+        service.refresh!
+        teacher.reload
+
+        expect(teacher).to be_trs_deactivated
+      end
+
+      it "adds a teacher_trs_deactivated event" do
+        expect(teacher.events).to be_empty
+
+        service.refresh!
+        perform_enqueued_jobs
+
+        expect(teacher.events.map(&:event_type)).to contain_exactly(
+          "teacher_trs_deactivated"
+        )
       end
     end
 
