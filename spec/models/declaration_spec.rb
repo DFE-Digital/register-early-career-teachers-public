@@ -695,4 +695,61 @@ describe Declaration do
       it { is_expected.to eq(milestone) }
     end
   end
+
+  describe "unique index" do
+    let(:declaration) { FactoryBot.create(:declaration) }
+    let(:training_period) { declaration.training_period }
+    let(:declaration_type) { declaration.declaration_type }
+    let(:payment_status) { declaration.payment_status }
+    let(:declaration_date) { declaration.declaration_date }
+    let(:clawback_status) { declaration.clawback_status }
+    let(:payment_statement) { FactoryBot.create(:statement, contract_period: training_period.contract_period) }
+    let(:clawback_statement) { FactoryBot.create(:statement, contract_period: training_period.contract_period) }
+
+    let(:attributes) do
+      {
+        training_period:,
+        declaration_type:,
+        payment_status:,
+        declaration_date:,
+        clawback_status:,
+        payment_statement:,
+        clawback_statement:
+      }
+    end
+
+    before do
+      # LPs making multiple same POST /declarations requests in a very quick succession
+      # may sometimes bypass the model validation, so we mock it here to simulate that scenario
+      allow_any_instance_of(Declaration).to receive(:duplicate_declaration_exists?).and_return(false)
+    end
+
+    it "raises `RecordNotUnique` error" do
+      expect { described_class.create!(**attributes) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    context "when the declaration payment status is voided" do
+      let(:payment_status) { :voided }
+
+      it "does not raise `RecordNotUnique` error" do
+        expect { described_class.create!(**attributes) }.not_to raise_error
+      end
+    end
+
+    context "when the declaration clawback status is `awaiting_clawback`" do
+      let(:clawback_status) { :awaiting_clawback }
+
+      it "does not raise `RecordNotUnique` error" do
+        expect { described_class.create!(**attributes) }.not_to raise_error
+      end
+    end
+
+    context "when the declaration clawback status is `clawed_back`" do
+      let(:clawback_status) { :clawed_back }
+
+      it "does not raise `RecordNotUnique` error" do
+        expect { described_class.create!(**attributes) }.not_to raise_error
+      end
+    end
+  end
 end
