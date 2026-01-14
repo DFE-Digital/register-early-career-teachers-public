@@ -47,7 +47,7 @@ module Admin
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
           summary_row("End date", end_date_text),
-          api_response_row
+          summary_row("API response", api_response_text)
         ].compact
       end
 
@@ -132,12 +132,6 @@ module Admin
         summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
       end
 
-      def api_response_row
-        return unless serialized_teacher
-
-        summary_row("API response", api_response_text)
-      end
-
       def api_response_text
         govuk_details(summary_text: "See this participant as they appear over the API for #{lead_provider&.name}") do
           content_tag(:pre, class: "app-code app-code--full-width") do
@@ -154,11 +148,14 @@ module Admin
 
       def serialized_teacher
         API::TeacherSerializer.render(teacher, root: "data", **{ lead_provider_id: lead_provider.id })
+      rescue Enumerable::SoleItemExpectedError
+        nil
       end
 
       def formatted_teacher
-        parsed = JSON.parse(serialized_teacher)
-        JSON.pretty_generate(parsed)
+        return "API returned no response" if serialized_teacher.nil?
+
+        @formatted_teacher ||= JSON.pretty_generate(JSON.parse(serialized_teacher))
       end
 
       def teacher
