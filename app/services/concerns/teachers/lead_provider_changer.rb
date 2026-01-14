@@ -53,9 +53,10 @@ module Teachers
     def create_training_period!
       TrainingPeriods::Create.provider_led(
         period:,
-        started_on: date_of_transition,
+        started_on:,
         school_partnership:,
         expression_of_interest:,
+        schedule: existing_schedule,
         author:
       ).call
     end
@@ -75,6 +76,14 @@ module Teachers
 
     def active_lead_provider
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
+    end
+
+    def contract_period
+      @contract_period ||= existing_schedule&.contract_period || ContractPeriod.containing_date(date_of_transition)
+    end
+
+    def existing_schedule
+      training_period&.schedule
     end
 
     def school_partnership
@@ -100,6 +109,7 @@ module Teachers
 
       [period.started_on, Date.current].max
     end
+    alias_method :started_on, :date_of_transition
 
     def training_period
       period.current_or_next_training_period
@@ -125,7 +135,5 @@ module Teachers
     def lead_provider
       new_lead_provider
     end
-
-    alias_method :started_on, :date_of_transition
   end
 end
