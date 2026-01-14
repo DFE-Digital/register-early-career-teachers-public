@@ -261,22 +261,20 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
   end
 
   describe "#register!" do
-    let(:teacher) { Teacher.first }
+    let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:teacher) { Teacher.find_by!(trn: registration_store.trn) }
     let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
 
     it "creates a new ECT at the given school" do
-      travel_to Date.new(2026, 1, 12) do
-        FactoryBot.create(:contract_period, year: 2025)
-        expect(Teacher.find_by_trn(registration_store.trn)).to be_nil
+      expect(Teacher.find_by_trn(registration_store.trn)).to be_nil
 
-        registration_store.register!(school, author:, store:)
+      registration_store.register!(school, author:, store:)
 
-        expect(teacher.trn).to eq(registration_store.trn)
-        expect(ect_at_school_period.school_id).to eq(school.id)
-        expect(ect_at_school_period.started_on).to eq(Date.parse("January 2025"))
-        expect(ect_at_school_period.email).to eq("dusty@rhodes.com")
-        expect(ect_at_school_period.school_reported_appropriate_body_type).to eq("national")
-      end
+      expect(teacher.trn).to eq(registration_store.trn)
+      expect(ect_at_school_period.school_id).to eq(school.id)
+      expect(ect_at_school_period.started_on).to eq(Date.parse("January 2025"))
+      expect(ect_at_school_period.email).to eq("dusty@rhodes.com")
+      expect(ect_at_school_period.school_reported_appropriate_body_type).to eq("national")
     end
   end
 
