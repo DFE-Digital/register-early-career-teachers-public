@@ -47,13 +47,14 @@ describe Declaration do
   end
 
   describe "validation" do
-    it { expect(FactoryBot.build(:declaration)).to be_valid }
+    subject { FactoryBot.build(:declaration) }
 
+    it { is_expected.to be_valid }
     it { is_expected.to validate_presence_of(:training_period).with_message("Choose a training period") }
     it { is_expected.to validate_presence_of(:declaration_date).with_message("Declaration date must be specified") }
     it { is_expected.to validate_absence_of(:ineligibility_reason).with_message("Ineligibility reason must not be set unless the declaration is ineligible") }
-    it { is_expected.to validate_inclusion_of(:declaration_type).in_array(described_class.declaration_types.keys).with_message("Choose a valid declaration type") }
-    it { is_expected.to validate_inclusion_of(:payment_status).in_array(described_class.payment_statuses.keys).with_message("Choose a valid payment status") }
+    it { is_expected.to allow_values(*described_class.declaration_types.keys).for(:declaration_type) }
+    it { is_expected.to allow_values(*described_class.payment_statuses.keys).for(:payment_status) }
     it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }
     it { is_expected.to validate_inclusion_of(:evidence_type).in_array(described_class.evidence_types.keys).with_message("Choose a valid evidence type").allow_nil }
     it { is_expected.to validate_inclusion_of(:ineligibility_reason).in_array(described_class.ineligibility_reasons.keys).with_message("Choose a valid ineligibility reason").allow_nil }
@@ -62,6 +63,30 @@ describe Declaration do
     it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
     it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
+
+    context "training period unique index" do
+      subject { FactoryBot.create(:declaration) }
+
+      it { is_expected.to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status).with_message("A billable declaration with the same type already exists for this training period") }
+
+      context "when the declaration payment status is voided" do
+        subject { FactoryBot.create(:declaration, :voided) }
+
+        it { is_expected.not_to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status) }
+      end
+
+      context "when the declaration clawback status is `awaiting_clawback`" do
+        subject { FactoryBot.create(:declaration, :awaiting_clawback) }
+
+        it { is_expected.not_to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status) }
+      end
+
+      context "when the declaration clawback status is `clawed_back`" do
+        subject { FactoryBot.create(:declaration, :clawed_back) }
+
+        it { is_expected.not_to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status) }
+      end
+    end
 
     context "when payment" do
       subject { FactoryBot.build(:declaration, :paid) }
@@ -693,63 +718,6 @@ describe Declaration do
       let(:declaration) { FactoryBot.create(:declaration, :started, training_period:, declaration_date: Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date)) }
 
       it { is_expected.to eq(milestone) }
-    end
-  end
-
-  describe "unique index" do
-    let(:declaration) { FactoryBot.create(:declaration) }
-    let(:training_period) { declaration.training_period }
-    let(:declaration_type) { declaration.declaration_type }
-    let(:payment_status) { declaration.payment_status }
-    let(:declaration_date) { declaration.declaration_date }
-    let(:clawback_status) { declaration.clawback_status }
-    let(:payment_statement) { FactoryBot.create(:statement, contract_period: training_period.contract_period) }
-    let(:clawback_statement) { FactoryBot.create(:statement, contract_period: training_period.contract_period) }
-
-    let(:attributes) do
-      {
-        training_period:,
-        declaration_type:,
-        payment_status:,
-        declaration_date:,
-        clawback_status:,
-        payment_statement:,
-        clawback_statement:
-      }
-    end
-
-    before do
-      # LPs making multiple same POST /declarations requests in a very quick succession
-      # may sometimes bypass the model validation, so we mock it here to simulate that scenario
-      allow_any_instance_of(Declaration).to receive(:duplicate_declaration_exists?).and_return(false)
-    end
-
-    it "raises `RecordNotUnique` error" do
-      expect { described_class.create!(**attributes) }.to raise_error(ActiveRecord::RecordNotUnique)
-    end
-
-    context "when the declaration payment status is voided" do
-      let(:payment_status) { :voided }
-
-      it "does not raise `RecordNotUnique` error" do
-        expect { described_class.create!(**attributes) }.not_to raise_error
-      end
-    end
-
-    context "when the declaration clawback status is `awaiting_clawback`" do
-      let(:clawback_status) { :awaiting_clawback }
-
-      it "does not raise `RecordNotUnique` error" do
-        expect { described_class.create!(**attributes) }.not_to raise_error
-      end
-    end
-
-    context "when the declaration clawback status is `clawed_back`" do
-      let(:clawback_status) { :clawed_back }
-
-      it "does not raise `RecordNotUnique` error" do
-        expect { described_class.create!(**attributes) }.not_to raise_error
-      end
     end
   end
 end
