@@ -60,16 +60,29 @@ module APISeedData
   private
 
     def schools_with_participants_with_lead_provider_as_expression_of_interest(count:)
-      ActiveLeadProvider.find_each do |active_lead_provider|
+      LeadProvider.find_each do |lead_provider|
+        # Find a contract period that is not frozen and has an active lead provider (randomly chosen)
+        active_lead_provider = ActiveLeadProvider
+          .joins(:contract_period)
+          .where(lead_provider:)
+          .where(contract_periods: { payments_frozen_at: nil })
+          .order("RANDOM()")
+          .first
+
+        next unless active_lead_provider
+
         # Count schools with participants linked via expression_of_interest (not school_partnership)
+        # Check against ALL active_lead_providers for this lead_provider
+        active_lead_provider_ids = lead_provider.active_lead_providers.pluck(:id)
+
         schools_with_ects = School
           .joins(ect_at_school_periods: :training_periods)
-          .where(training_periods: { expression_of_interest_id: active_lead_provider.id, school_partnership_id: nil })
+          .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
           .pluck(:id)
 
         schools_with_mentors = School
           .joins(mentor_at_school_periods: :training_periods)
-          .where(training_periods: { expression_of_interest_id: active_lead_provider.id, school_partnership_id: nil })
+          .where(training_periods: { expression_of_interest_id: active_lead_provider_ids, school_partnership_id: nil })
           .pluck(:id)
 
         existing_count = School.where(id: schools_with_ects + schools_with_mentors).count
@@ -93,7 +106,7 @@ module APISeedData
             expression_of_interest: active_lead_provider
           )
 
-          log_seed_info("Created school with #{type} via expression of interest with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+          log_seed_info("Created school with #{type} via expression of interest with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
         end
       end
     end
@@ -267,12 +280,12 @@ module APISeedData
       LeadProvider.find_each do |lead_provider|
         active_lead_provider_2024 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2024)
 
-        # Count schools with ECTs that have both school_partnership and expression_of_interest in 2024
+        # Count schools with ECTs that have school_partnership
+        # Having partnership makes EOI to be true for API
         existing_count = School
           .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
           .where(schedules: { contract_period_year: 2024 })
           .where(active_lead_providers: { lead_provider_id: lead_provider.id })
-          .where.not(training_periods: { expression_of_interest_id: nil })
           .distinct
           .count
 
@@ -313,34 +326,12 @@ module APISeedData
     end
 
     def schools_with_school_led_participants_only(count:)
-      # Find schools that have school_led training via ect/mentor periods
-      schools_with_ect_school_led = School
-        .joins(ect_at_school_periods: :training_periods)
-        .where(training_periods: { training_programme: "school_led" })
+      # Find schools that have school_led training but NOT provider_led training
+      schools_with_school_led = schools_with_programme(programme: "school_led")
+      schools_with_provider_led = schools_with_programme(programme: "provider_led")
 
-      schools_with_mentor_school_led = School
-        .joins(mentor_at_school_periods: :training_periods)
-        .where(training_periods: { training_programme: "school_led" })
-
-      schools_with_school_led_training = School.where(id: schools_with_ect_school_led.select(:id))
-                                               .or(School.where(id: schools_with_mentor_school_led.select(:id)))
-                                               .distinct
-
-      # Exclude schools that ALSO have provider_led training (via ect/mentor periods)
-      schools_with_ect_provider_led = School
-        .joins(ect_at_school_periods: :training_periods)
-        .where(training_periods: { training_programme: "provider_led" })
-
-      schools_with_mentor_provider_led = School
-        .joins(mentor_at_school_periods: :training_periods)
-        .where(training_periods: { training_programme: "provider_led" })
-
-      schools_with_provider_led = School.where(id: schools_with_ect_provider_led.select(:id))
-                                        .or(School.where(id: schools_with_mentor_provider_led.select(:id)))
-                                        .select(:id)
-
-      existing_count = schools_with_school_led_training
-        .where.not(id: schools_with_provider_led)
+      existing_count = schools_with_school_led
+        .where.not(id: schools_with_provider_led.select(:id))
         .count
 
       missing_count = [count - existing_count, 0].max
@@ -362,7 +353,7 @@ module APISeedData
     end
 
     def schools_with_provider_led_participants(count:)
-      existing_count = School.left_joins(:training_periods).where(training_periods: { training_programme: "provider_led" }).count
+      existing_count = schools_with_programme(programme: "provider_led").count
 
       missing_count = [count - existing_count, 0].max
       missing_count.times do
@@ -480,22 +471,19 @@ module APISeedData
     end
 
     def schools_with_ects_and_mentors_training_with_lead_provider(count:)
-      ActiveLeadProvider.find_each do |active_lead_provider|
-        lead_provider = active_lead_provider.lead_provider
+      LeadProvider.find_each do |lead_provider|
+        # Randomly choose an available ActiveLeadProvider
+        active_lead_provider = ActiveLeadProvider
+          .where(lead_provider:)
+          .order("RANDOM()")
+          .first
+
+        next unless active_lead_provider
 
         # Check by lead_provider_id since add_training_period creates partnerships based on date
         # (which may use a different active_lead_provider than the one being iterated)
-        schools_with_ects = School
-          .joins(ect_at_school_periods: { training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } } })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
-          .where(training_periods: { training_programme: "provider_led" })
-          .distinct
-
-        schools_with_mentors = School
-          .joins(mentor_at_school_periods: { training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } } })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
-          .where(training_periods: { training_programme: "provider_led" })
-          .distinct
+        schools_with_ects = schools_with_provider_led_ongoing_training(lead_provider:, type: :ect)
+        schools_with_mentors = schools_with_provider_led_ongoing_training(lead_provider:, type: :mentor)
 
         existing_count = schools_with_ects.where(id: schools_with_mentors.select(:id)).count
 
@@ -520,10 +508,16 @@ module APISeedData
     end
 
     def schools_with_multiple_partnerships_with_lead_provider(count:)
-      ActiveLeadProvider.find_each do |active_lead_provider|
-        lead_provider = active_lead_provider.lead_provider
+      LeadProvider.find_each do |lead_provider|
+        # Randomly choose an available ActiveLeadProvider
+        active_lead_provider = ActiveLeadProvider
+          .where(lead_provider:)
+          .order("RANDOM()")
+          .first
 
-        # Count schools that have multiple partnerships with this active_lead_provider (different delivery partners)
+        next unless active_lead_provider
+
+        # Count schools that have multiple partnerships with this lead_provider (different delivery partners)
         # but no partnerships with any other lead provider
         schools_with_other_lp = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
@@ -532,7 +526,7 @@ module APISeedData
 
         existing_count = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
-          .where(active_lead_providers: { id: active_lead_provider.id })
+          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .where.not(id: schools_with_other_lp)
           .group(:id)
           .having("COUNT(DISTINCT lead_provider_delivery_partnerships.delivery_partner_id) > 1")
@@ -557,16 +551,23 @@ module APISeedData
     end
 
     def schools_with_multiple_partnerships_with_lead_provider_and_with_another_lead_provider(count:)
-      active_lead_providers = ActiveLeadProvider.all.to_a
+      lead_providers = LeadProvider.all.to_a
 
-      ActiveLeadProvider.find_each do |active_lead_provider|
-        lead_provider = active_lead_provider.lead_provider
-        other_active_lead_providers = active_lead_providers.reject { |alp| alp.lead_provider_id == lead_provider.id }
+      LeadProvider.find_each do |lead_provider|
+        # Randomly choose an available ActiveLeadProvider
+        active_lead_provider = ActiveLeadProvider
+          .where(lead_provider:)
+          .order("RANDOM()")
+          .first
 
-        # Count schools that have multiple partnerships with this active_lead_provider AND at least one with another LP
-        schools_with_multiple_partnerships_for_alp = School
+        next unless active_lead_provider
+
+        other_lead_providers = lead_providers.reject { |lp| lp.id == lead_provider.id }
+
+        # Count schools that have multiple partnerships with this lead_provider AND at least one with another LP
+        schools_with_multiple_partnerships_for_lp = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
-          .where(active_lead_providers: { id: active_lead_provider.id })
+          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
           .group(:id)
           .having("COUNT(DISTINCT lead_provider_delivery_partnerships.delivery_partner_id) > 1")
           .select(:id)
@@ -577,7 +578,7 @@ module APISeedData
           .select(:id)
 
         existing_count = School
-          .where(id: schools_with_multiple_partnerships_for_alp)
+          .where(id: schools_with_multiple_partnerships_for_lp)
           .where(id: schools_also_with_other_lp)
           .count
 
@@ -594,7 +595,10 @@ module APISeedData
           end
 
           # Create 1 partnership with another lead provider
-          other_active_lead_provider = other_active_lead_providers.sample
+          other_lead_provider = other_lead_providers.sample
+          other_active_lead_provider = ActiveLeadProvider.where(lead_provider: other_lead_provider).order("RANDOM()").first
+          next unless other_active_lead_provider
+
           other_delivery_partner = find_or_create_delivery_partner(active_lead_provider: other_active_lead_provider)
           other_lpdp = find_or_create_lead_provider_delivery_partnership(active_lead_provider: other_active_lead_provider, delivery_partner: other_delivery_partner)
           FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership: other_lpdp)
@@ -665,6 +669,25 @@ module APISeedData
         .where(schedules: { contract_period_year: year })
         .where(active_lead_providers: { lead_provider_id: lead_provider.id })
         .select(:id)
+    end
+
+    def schools_with_programme(programme:)
+      School
+        .left_joins(:ect_at_school_periods, :mentor_at_school_periods)
+        .joins("LEFT JOIN training_periods AS ect_tp ON ect_tp.ect_at_school_period_id = ect_at_school_periods.id")
+        .joins("LEFT JOIN training_periods AS mentor_tp ON mentor_tp.mentor_at_school_period_id = mentor_at_school_periods.id")
+        .where("ect_tp.training_programme = :programme OR mentor_tp.training_programme = :programme", programme:)
+        .distinct
+    end
+
+    def schools_with_provider_led_ongoing_training(lead_provider:, type:)
+      school_period_join = type == :ect ? :ect_at_school_periods : :mentor_at_school_periods
+
+      School
+        .joins(school_period_join => { training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } } })
+        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+        .where(training_periods: { training_programme: "provider_led", finished_on: nil })
+        .distinct
     end
   end
 end
