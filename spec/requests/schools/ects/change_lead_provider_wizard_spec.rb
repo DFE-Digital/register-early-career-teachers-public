@@ -169,15 +169,63 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           expect(response).to redirect_to(path_for_step("confirmation"))
         end
 
-        it "keeps the same contract period and schedule" do
-          subject
+        context "when the original training period is in a different contract period" do
+          let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
 
-          follow_redirect!
+          it "keeps the same contract period and schedule" do
+            FactoryBot.create(:contract_period, :current, :with_schedules)
+            subject
 
-          post(path_for_step("check-answers"))
+            follow_redirect!
 
-          new_training_period = current_training_for(ect_at_school_period.reload).current_or_next_training_period
-          expect(new_training_period.schedule.identifier).to eq(training_period.schedule.identifier)
+            post(path_for_step("check-answers"))
+
+            new_training_period = current_training_for(ect_at_school_period.reload).current_or_next_training_period
+            expect(new_training_period.schedule).to eq(training_period.schedule)
+          end
+        end
+
+        context "when the original training period is in the same contract period" do
+          context "when the training period has only an EOI" do
+            it "assigns a new schedule" do
+              subject
+
+              follow_redirect!
+
+              post(path_for_step("check-answers"))
+
+              new_training_period = current_training_for(ect_at_school_period.reload).current_or_next_training_period
+              expect(new_training_period.schedule.identifier).not_to eq(training_period.schedule.identifier)
+            end
+          end
+
+          context "when there is a school partnership" do
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :ongoing,
+                :for_ect,
+                :provider_led,
+                ect_at_school_period:,
+                started_on: ect_at_school_period.started_on,
+                school_partnership:
+              )
+            end
+
+            let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, contract_period:) }
+            let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+
+            it "keeps the same contract period and schedule" do
+              subject
+
+              follow_redirect!
+
+              post(path_for_step("check-answers"))
+
+              new_training_period = current_training_for(ect_at_school_period.reload).current_or_next_training_period
+              expect(new_training_period.schedule).to eq(training_period.schedule)
+            end
+          end
         end
 
         it "creates an event only after confirmation" do
