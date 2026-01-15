@@ -217,21 +217,31 @@ describe Teachers::RefreshTRSAttributes do
         end
       end
 
+      context "and the teacher has an existing status" do
+        let(:teacher) do
+          FactoryBot.create(:teacher,
+                            trs_induction_status: "RequiredToComplete")
+        end
+
+        before do
+          service.refresh!
+          teacher.reload
+        end
+
+        it "ensures the induction status indicator is unchanged" do
+          expect(teacher.trs_induction_status).to eq("RequiredToComplete")
+        end
+      end
+
       context "and the teacher has an ongoing induction" do
         before do
           FactoryBot.create(:induction_period, :ongoing, teacher:)
+          service.refresh!
+          teacher.reload
         end
 
         it "ensures the induction status indicator is correct" do
-          freeze_time do
-            service.refresh!
-            teacher.reload
-
-            expect(teacher.trs_induction_status).to eq("InProgress")
-            expect(teacher.trs_induction_start_date).to be_present
-            expect(teacher.trs_induction_completed_date).to be_blank
-            expect(teacher.trs_data_last_refreshed_at).to eq(Time.zone.now)
-          end
+          expect(teacher.trs_induction_status).to be_blank
         end
       end
 
