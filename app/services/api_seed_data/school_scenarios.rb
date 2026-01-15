@@ -1,13 +1,13 @@
 require Rails.root.join("db/seeds/support/school_transfer_helpers")
 
 module APISeedData
-  class Scenarios < Base
+  class SchoolScenarios < Base
     include SchoolTransferHelpers
 
     def plant
       return unless plantable?
 
-      log_plant_info("api teachers seed scenarios")
+      log_plant_info("api school seed scenarios")
 
       # 5x schools that have minimum 1 participant registered with the lead provider as training them,
       # but without any partnership created yet

@@ -15,7 +15,11 @@ namespace :api_seed_data do
       APISeedData::TeachersWithChangeSchedule,
       APISeedData::Teachers::SchoolTransfers,
       APISeedData::Declarations,
-      APISeedData::Scenarios,
+    ]
+
+    # These need to run last to avoid earlier seeds messing up the specific scenarios.
+    seeds += [
+      APISeedData::SchoolScenarios
     ]
 
     if Rails.env.development? || Rails.env.review? || Rails.env.staging?

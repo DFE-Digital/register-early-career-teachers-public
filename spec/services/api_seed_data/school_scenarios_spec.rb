@@ -1,4 +1,4 @@
-RSpec.describe APISeedData::Scenarios do
+RSpec.describe APISeedData::SchoolScenarios do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
@@ -34,7 +34,7 @@ RSpec.describe APISeedData::Scenarios do
 
       expect(logger).to have_received("level=").with(Logger::INFO)
       expect(logger).to have_received("formatter=").with(Rails.logger.formatter)
-      expect(logger).to have_received(:info).with(/Planting api teachers seed scenarios/).once
+      expect(logger).to have_received(:info).with(/Planting api school seed scenarios/).once
     end
 
     context "when in the production environment" do
