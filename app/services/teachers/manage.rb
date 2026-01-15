@@ -101,11 +101,7 @@ class Teachers::Manage
     Teacher.transaction do
       teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:)
       record_teacher_not_found_event
-
-      trs_induction_status = INDUCTION_OUTCOMES.fetch(teacher.finished_induction_period&.outcome&.to_sym, "InProgress")
-      trs_induction_start_date = teacher.started_induction_period&.started_on
-      trs_induction_completed_date = teacher.finished_induction_period&.finished_on
-      teacher.update!(trs_induction_status:, trs_induction_start_date:, trs_induction_completed_date:)
+      update_induction_status_indicator
     end
   end
 
@@ -113,6 +109,15 @@ private
 
   def full_name
     ::Teachers::Name.new(teacher).full_name_in_trs
+  end
+
+  def update_induction_status_indicator
+    return if teacher.finished_induction_period.blank?
+
+    trs_induction_status = INDUCTION_OUTCOMES.fetch(teacher.finished_induction_period.outcome&.to_sym, "InProgress")
+    trs_induction_start_date = teacher.started_induction_period.started_on
+    trs_induction_completed_date = teacher.finished_induction_period.finished_on
+    teacher.update!(trs_induction_status:, trs_induction_start_date:, trs_induction_completed_date:)
   end
 
   # Events ---------------------------------------------------------------------
