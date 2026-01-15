@@ -70,7 +70,7 @@ RSpec.describe APISeedData::SchoolScenarios do
     end
 
     it "creates schools with participants linked via expression of interest" do
-      expect(schools_with_eoi.count).to eq(2 * active_lead_provider_count)
+      expect(schools_with_eoi.count).to eq(2 * lead_provider_count)
     end
   end
 
@@ -243,7 +243,7 @@ RSpec.describe APISeedData::SchoolScenarios do
     end
 
     it "creates schools with multiple partnerships" do
-      expect(schools_with_multiple_partnerships.count.size).to eq(2 * active_lead_provider_count)
+      expect(schools_with_multiple_partnerships.count.size).to eq(2 * lead_provider_count)
     end
   end
 
@@ -258,7 +258,7 @@ RSpec.describe APISeedData::SchoolScenarios do
     end
 
     it "creates schools with partnerships from multiple lead providers" do
-      expect(schools_with_multiple_lp_partnerships.count.size).to eq(2 * active_lead_provider_count)
+      expect(schools_with_multiple_lp_partnerships.count.size).to eq(2 * lead_provider_count)
     end
   end
 end
