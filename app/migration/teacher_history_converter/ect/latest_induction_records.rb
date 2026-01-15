@@ -47,54 +47,6 @@ private
     )
   end
 
-  # def process(ect_at_school_periods, induction_record)
-  #   ect_at_school_periods << if (latest_ect_at_school_period = ect_at_school_periods&.last)
-  #                              case
-  #                              when induction_record.range_covers_finish_but_not_start?(*latest_ect_at_school_period.dates)
-  #                                latest_ect_at_school_period.finished_on = induction_record.start_date.to_date
-  #
-  #                                build_new_school_period_from_induction_record(induction_record)
-  #                              else
-  #                                build_stub_school_period_prior_to(latest_ect_at_school_period, induction_record)
-  #                              end
-  #                            else
-  #                              build_new_school_period_from_induction_record(induction_record)
-  #                            end
-  #
-  #   ect_at_school_periods.sort_by(&:started_on)
-  # end
-
-  # def build_new_school_period_from_induction_record(induction_record)
-  #   ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-  #     started_on: induction_record.start_date.to_date,
-  #     finished_on: induction_record.end_date&.to_date,
-  #     school: induction_record.school,
-  #     email: induction_record.preferred_identity_email,
-  #     mentorship_period_rows: [],
-  #     training_period_rows: [
-  #       build_new_training_period_from_induction_record(induction_record)
-  #     ]
-  #   )
-  # end
-
-  # def build_stub_school_period_prior_to(school_period, induction_record)
-  #   started_on = [school_period.started_on - 2.days, induction_record.start_date.to_date].min
-  #   finished_on = school_period.started_on - 1.day
-  #
-  #   training_period = build_new_training_period_from_induction_record(induction_record, { started_on:, finished_on: })
-  #
-  #   ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
-  #     started_on:,
-  #     finished_on:,
-  #     school: induction_record.school,
-  #     email: induction_record.preferred_identity_email,
-  #     mentorship_period_rows: [],
-  #     training_period_rows: [
-  #       training_period
-  #     ]
-  #   )
-  # end
-
   def build_new_training_period_from_induction_record(induction_record, overrides = {})
     training_attrs = {
       started_on: induction_record.start_date.to_date,
