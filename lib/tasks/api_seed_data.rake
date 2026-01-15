@@ -15,6 +15,7 @@ namespace :api_seed_data do
       APISeedData::TeachersWithChangeSchedule,
       APISeedData::Teachers::SchoolTransfers,
       APISeedData::Declarations,
+      APISeedData::Scenarios,
     ]
 
     if Rails.env.development? || Rails.env.review? || Rails.env.staging?
