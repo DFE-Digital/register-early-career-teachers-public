@@ -61,12 +61,6 @@ FactoryBot.define do
       payment_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
     end
 
-    trait :ineligible do
-      payment_status { :ineligible }
-      payment_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
-      ineligibility_reason { Declaration.ineligibility_reasons.keys.sample }
-    end
-
     trait :awaiting_clawback do
       paid
       clawback_status { :awaiting_clawback }
