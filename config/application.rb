@@ -53,6 +53,7 @@ module RegisterEarlyCareerTeachers
     config.enable_migration_testing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_MIGRATION_TESTING", false))
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SCHOOLS_INTERFACE", false))
     config.enable_induction_tutor_prompt = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INDUCTION_TUTOR_PROMPT", false))
+    config.enable_teaching_school_hubs = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_HUBS", false))
     config.enable_incident_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INCIDENT_BANNER", false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))
