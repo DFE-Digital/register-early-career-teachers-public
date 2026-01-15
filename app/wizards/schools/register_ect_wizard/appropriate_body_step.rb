@@ -16,9 +16,11 @@ module Schools
       def next_step = :training_programme
 
       def previous_step
-        return :use_previous_ect_choices if school.last_programme_choices?
-
-        :working_pattern
+        if school.last_programme_choices? && wizard.use_previous_choices_allowed?
+          :use_previous_ect_choices
+        else
+          :working_pattern
+        end
       end
     end
   end

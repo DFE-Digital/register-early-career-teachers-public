@@ -6,9 +6,11 @@ module Schools
       end
 
       def previous_step
-        return :use_previous_ect_choices if ect.use_previous_ect_choices
-
-        ect.provider_led? ? :lead_provider : :training_programme
+        if ect.use_previous_ect_choices && wizard.use_previous_choices_allowed?
+          :use_previous_ect_choices
+        else
+          ect.provider_led? ? :lead_provider : :training_programme
+        end
       end
 
       def show_previous_programme_choices_row?
