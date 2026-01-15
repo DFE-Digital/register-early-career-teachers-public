@@ -1,24 +1,25 @@
-describe "Earlier induction record contains next one" do
+describe "Earlier created induction record contains next one" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
-  # When there are two induction records and the one which started latest
-  # is ongoing.
-  #      ┌───────────────────────────────────┐
-  #      │                                   │
-  #      └───────────────────────────────────┘
-  #         ┌───────────────────────┐
-  #         │                       │
-  #         └───────────────────────┘
+  # When there are two induction records and the earlier starting one
+  # contains the later starting one
+  #
+  #   ┌──────────────────────────────────────┐
+  #   │                                      │
+  #   └──────────────────────────────────────┘
+  #                   ┌──────────────┐
+  #                   │              │
+  #                   └──────────────┘
   #
   # We want to create a 'stub' ECT at school period that lasts for one
   # day, immediately before the original earlier one starts
   #
-  #      ┌───────────────────────────────────┐
-  #      │                                   │
-  #      └───────────────────────────────────┘
-  # ┌────┐
-  # │ 🗜️ │
-  # └────┘
+  #   ┌───────────────┐──────────────────────┐
+  #   │               │         ✂️           │
+  #   └───────────────┘──────────────────────┘
+  #                   ┌──────────────┐
+  #                   │              │
+  #                   └──────────────┘
 
   let(:cohort_year) { 2024 }
 
@@ -72,8 +73,8 @@ describe "Earlier induction record contains next one" do
     stub_ect_at_school_period = subject.ect_at_school_period_rows[0]
 
     aggregate_failures do
-      expect(stub_ect_at_school_period.started_on).to eql(Date.new(2024, 3, 1))
-      expect(stub_ect_at_school_period.finished_on).to eql(Date.new(2024, 3, 2))
+      expect(stub_ect_at_school_period.started_on).to eql(Date.new(2024, 3, 3))
+      expect(stub_ect_at_school_period.finished_on).to eql(Date.new(2024, 4, 3))
     end
   end
 
@@ -81,8 +82,8 @@ describe "Earlier induction record contains next one" do
     ongoing_ect_at_school_period = subject.ect_at_school_period_rows[1]
 
     aggregate_failures do
-      expect(ongoing_ect_at_school_period.started_on).to eql(Date.new(2024, 3, 3))
-      expect(ongoing_ect_at_school_period.finished_on).to eql(Date.new(2024, 6, 6))
+      expect(ongoing_ect_at_school_period.started_on).to eql(Date.new(2024, 4, 4))
+      expect(ongoing_ect_at_school_period.finished_on).to eql(Date.new(2024, 5, 5))
     end
   end
 

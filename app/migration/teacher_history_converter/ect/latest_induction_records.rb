@@ -4,12 +4,12 @@ class TeacherHistoryConverter::ECT::LatestInductionRecords
   attr_reader :induction_records
 
   def initialize(induction_records)
-    @induction_records = latest_induction_records(induction_records:)
+    @induction_records = induction_records
     @ect_at_school_periods = [] # ECF2TeacherHistory::ECTAtSchoolPeriodRow[]
   end
 
   def ect_at_school_periods
-    induction_records.reverse.each_with_index do |induction_record, _i|
+    induction_records.each do |induction_record|
       @ect_at_school_periods = process(@ect_at_school_periods, induction_record)
     end
 

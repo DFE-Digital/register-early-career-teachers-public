@@ -56,12 +56,16 @@ private
   def ect_at_school_period_rows
     return [] if ecf1_teacher_history.ect.blank?
 
-    induction_records = ecf1_teacher_history.ect.induction_records(migration_mode:)
-
     case migration_mode
     when :latest_induction_records
+      induction_records = latest_induction_records(
+        induction_records: ecf1_teacher_history.ect.induction_records(migration_mode:)
+      ).reverse
+
       TeacherHistoryConverter::ECT::LatestInductionRecords.new(induction_records).ect_at_school_periods
     when :all_induction_records
+      induction_records = ecf1_teacher_history.ect.induction_records(migration_mode:)
+
       TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records).ect_at_school_periods
     end
   end

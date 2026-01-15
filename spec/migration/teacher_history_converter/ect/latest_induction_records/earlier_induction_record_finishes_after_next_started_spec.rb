@@ -72,7 +72,7 @@ describe "Earlier induction record starts before previous one finishes" do
     earliest_ect_at_school_period = subject.ect_at_school_period_rows.first
 
     expect(earliest_ect_at_school_period.started_on).to eql(Date.new(2024, 2, 2))
-    expect(earliest_ect_at_school_period.finished_on).to eql(Date.new(2024, 4, 4))
+    expect(earliest_ect_at_school_period.finished_on).to eql(Date.new(2024, 4, 3))
   end
 
   it "creates training periods that span the entire ECT at school period" do
