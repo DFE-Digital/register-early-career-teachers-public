@@ -25,14 +25,6 @@ class API::DeclarationSerializer < Blueprinter::Base
     field(:delivery_partner_id) { |declaration| declaration.training_period.delivery_partner.api_id }
     field(:statement_id) { |declaration| declaration.payment_statement&.api_id }
     field(:clawback_statement_id) { |declaration| declaration.clawback_statement&.api_id }
-
-    field(:ineligible_for_funding_reason) do |declaration|
-      if declaration.payment_status_ineligible?
-        reason = declaration.ineligibility_reason
-        reason == "duplicate" ? "duplicate_declaration" : reason
-      end
-    end
-
     field(:mentor_id) { |declaration| declaration.mentorship_period&.mentor&.teacher&.api_id }
     field(:uplift_paid?, name: :uplift_paid)
     field(:evidence_type, name: :evidence_held)
