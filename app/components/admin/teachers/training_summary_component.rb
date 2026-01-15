@@ -47,7 +47,7 @@ module Admin
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
           summary_row("End date", end_date_text),
-          summary_row("API response", api_response_text)
+          api_response_row,
         ].compact
       end
 
@@ -130,6 +130,12 @@ module Admin
         return if training_period.for_mentor?
 
         summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
+      end
+
+      def api_response_row
+        return unless confirmed_partnership?
+
+        summary_row("API response", api_response_text)
       end
 
       def api_response_text

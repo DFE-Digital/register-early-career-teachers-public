@@ -88,9 +88,8 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
           expect(rendered_content).to have_css("dd", text: training_period.expression_of_interest_contract_period.year)
         end
 
-        it "shows the API data row" do
-          expect(rendered_content).to have_css("dt", text: "API response")
-          expect(rendered_content).to include("data")
+        it "does not show the API data row" do
+          expect(rendered_content).not_to have_css("dt", text: "API response")
         end
       end
 
@@ -153,9 +152,8 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
           expect(rendered_content).to have_css("dd", text: "No delivery partner confirmed")
         end
 
-        it "shows the API data row" do
-          expect(rendered_content).to have_css("dt", text: "API response")
-          expect(rendered_content).to include("data")
+        it "does not show the API data row" do
+          expect(rendered_content).not_to have_css("dt", text: "API response")
         end
       end
 
