@@ -406,7 +406,6 @@
   - evidence_type
   - payment_status
   - clawback_status
-  - ineligibility_reason
   - sparsity_uplift
   - pupil_premium_uplift
   - created_at
