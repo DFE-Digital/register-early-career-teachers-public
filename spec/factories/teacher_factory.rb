@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory(:teacher) do
-    sequence(:trn, 1_000_000)
     sequence(:trs_first_name) { |n| "First name #{n}" }
     sequence(:trs_last_name) { |n| "Last name #{n}" }
+
+    trn { Faker::Number.unique.between(from: 1_000_000, to: 9_999_999) }
 
     initialize_with do
       Teacher.find_or_initialize_by(trn:)
