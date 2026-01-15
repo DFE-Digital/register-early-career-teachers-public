@@ -65,15 +65,14 @@ module APISeedData
         schools_with_ects = School
           .joins(ect_at_school_periods: :training_periods)
           .where(training_periods: { expression_of_interest_id: active_lead_provider.id, school_partnership_id: nil })
+          .pluck(:id)
 
         schools_with_mentors = School
           .joins(mentor_at_school_periods: :training_periods)
           .where(training_periods: { expression_of_interest_id: active_lead_provider.id, school_partnership_id: nil })
+          .pluck(:id)
 
-        existing_count = School.where(id: schools_with_ects.select(:id))
-                               .or(School.where(id: schools_with_mentors.select(:id)))
-                               .distinct
-                               .count
+        existing_count = School.where(id: schools_with_ects + schools_with_mentors).count
 
         missing_count = [count - existing_count, 0].max
         missing_count.times do
@@ -109,17 +108,8 @@ module APISeedData
         active_lead_provider_2025 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2025)
 
         # Find Teachers (participants) that have training in BOTH 2024 AND 2025 with this lead provider
-        teachers_with_2024 = Teacher
-          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
-          .where(schedules: { contract_period_year: 2024 })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
-          .select(:id)
-
-        teachers_with_2025 = Teacher
-          .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
-          .where(schedules: { contract_period_year: 2025 })
-          .where(active_lead_providers: { lead_provider_id: lead_provider.id })
-          .select(:id)
+        teachers_with_2024 = teachers_with_training_in_year(year: 2024, lead_provider:)
+        teachers_with_2025 = teachers_with_training_in_year(year: 2025, lead_provider:)
 
         # Schools with teachers who rolled over (same participant trained in both years with same LP)
         existing_count = School
@@ -667,6 +657,14 @@ module APISeedData
     def find_or_create_active_lead_provider(lead_provider:, contract_period:)
       ActiveLeadProvider.find_by(lead_provider:, contract_period:) ||
         FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+    end
+
+    def teachers_with_training_in_year(year:, lead_provider:)
+      Teacher
+        .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+        .where(schedules: { contract_period_year: year })
+        .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+        .select(:id)
     end
   end
 end
