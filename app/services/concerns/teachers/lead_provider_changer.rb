@@ -56,7 +56,7 @@ module Teachers
         started_on:,
         school_partnership:,
         expression_of_interest:,
-        schedule: existing_schedule,
+        schedule:,
         author:
       ).call
     end
@@ -79,7 +79,25 @@ module Teachers
     end
 
     def contract_period
-      @contract_period ||= existing_schedule&.contract_period || ContractPeriod.containing_date(date_of_transition)
+      return contract_period_at_transition if existing_schedule_in_same_contract_period?
+
+      existing_schedule.contract_period
+    end
+
+    def schedule
+      return nil if existing_schedule_in_same_contract_period?
+
+      existing_schedule
+    end
+
+    def existing_schedule_in_same_contract_period?
+      return true unless existing_schedule
+
+      existing_schedule.contract_period == contract_period_at_transition
+    end
+
+    def contract_period_at_transition
+      @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
     end
 
     def existing_schedule

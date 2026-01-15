@@ -130,15 +130,58 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_
             )
         end
 
-        it "keeps the same contract period and schedule" do
-          subject
+        context "when the original training period is in a different contract period" do
+          let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
 
-          follow_redirect!
+          it "keeps the same contract period and schedule" do
+            FactoryBot.create(:contract_period, :current, :with_schedules)
+            subject
 
-          post(path_for_step("check-answers"))
+            follow_redirect!
 
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
-          expect(new_training_period.schedule.identifier).to eq(training_period.schedule.identifier)
+            post(path_for_step("check-answers"))
+
+            new_training_period = mentor_at_school_period.training_periods.ongoing.first
+            expect(new_training_period.schedule).to eq(training_period.schedule)
+          end
+        end
+
+        context "when the original training period is in the same contract period" do
+          context "when the training period has only an EOI" do
+            let!(:training_period) do
+              FactoryBot.create(:training_period,
+                                :for_mentor,
+                                :ongoing,
+                                :with_only_expression_of_interest,
+                                mentor_at_school_period:,
+                                started_on:,
+                                expression_of_interest: active_lead_provider)
+            end
+
+            it "assigns a new schedule" do
+              subject
+
+              follow_redirect!
+
+              post(path_for_step("check-answers"))
+
+              new_training_period = mentor_at_school_period.training_periods.ongoing.first
+              expect(new_training_period.schedule.identifier).not_to eq(training_period.schedule.identifier)
+            end
+          end
+
+          context "when there is a school partnership" do
+            it "keeps the same contract period and schedule" do
+              subject
+
+              follow_redirect!
+
+              post(path_for_step("check-answers"))
+
+              new_training_period = mentor_at_school_period.training_periods.ongoing.first
+              expect(new_training_period.schedule).to eq(training_period.schedule)
+            end
+          end
         end
 
         it "updates the lead provider only after confirmation" do
