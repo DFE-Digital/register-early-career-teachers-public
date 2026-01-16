@@ -2,11 +2,11 @@ module Admin
   module Teachers
     class TrainingSummaryComponent < ApplicationComponent
       class UnexpectedTrainingProgrammeError < StandardError; end
-      attr_reader :training_period, :show_move_partnership_link
+      attr_reader :training_period, :index
 
-      def initialize(training_period:, show_move_partnership_link: false)
+      def initialize(training_period:, index: 0)
         @training_period = training_period
-        @show_move_partnership_link = show_move_partnership_link
+        @index = index
       end
 
       def call
@@ -133,7 +133,7 @@ module Admin
       end
 
       def api_response_row
-        return unless confirmed_partnership?
+        return unless show_api_row?
 
         summary_row("API response", api_response_text)
       end
@@ -159,7 +159,7 @@ module Admin
       end
 
       def formatted_teacher
-        return "API returned no response" if serialized_teacher.nil?
+        return "No API data for this participant" if serialized_teacher.nil?
 
         @formatted_teacher ||= JSON.pretty_generate(JSON.parse(serialized_teacher))
       end
@@ -174,17 +174,21 @@ module Admin
         date&.to_fs(:govuk)
       end
 
+      def show_move_partnership_link?
+        @show_move_partnership_link ||= index.zero? &&
+          training_period.provider_led_training_programme? &&
+          training_period.finished_on.nil?
+      end
+
+      def show_api_row?
+        @show_api_row ||= index.zero? && confirmed_partnership?
+      end
+
       def summary_row(label, value)
         {
           key: { text: label },
           value: { text: value.presence || not_available_text }
         }
-      end
-
-      def show_move_partnership_link?
-        show_move_partnership_link &&
-          training_period.provider_led_training_programme? &&
-          training_period.finished_on.nil?
       end
 
       def move_partnership_path

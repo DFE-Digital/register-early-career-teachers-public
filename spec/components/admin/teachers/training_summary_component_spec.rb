@@ -102,7 +102,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
         it "shows the latest data" do
           expect(teacher.ect_at_school_periods.first.training_periods.count).to eq(2)
-          expect(rendered_content).to have_css("dt", text: "API response")
+          expect(rendered_content).to have_css("dt", text: "API response").once
           expect(rendered_content).to include(teacher.trn).once
         end
       end
@@ -112,12 +112,9 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       let!(:metadata) { FactoryBot.create(:teacher_lead_provider_metadata, :with_latest_mentor_training_period) }
       let(:training_period) { metadata.latest_mentor_training_period }
 
-      before do
-        training_period.update!(finished_on: 1.week.ago)
-        rendered
-      end
-
       context "when the partnership is confirmed" do
+        before { rendered }
+
         it "shows the mentor school name in the school row" do
           expect(rendered_content).to have_css("dt", text: "School")
           expect(rendered_content).to have_css("dd", text: training_period.mentor_at_school_period.school.name)
@@ -136,6 +133,8 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       context "expression of interest" do
         let!(:metadata) { FactoryBot.create(:teacher_lead_provider_metadata, :with_latest_mentor_training_period, :with_eoi_only) }
         let(:lead_provider_id) { training_period.expression_of_interest_lead_provider.id }
+
+        before { rendered }
 
         it "uses the expression of interest lead provider as the title" do
           expect(rendered_content).to have_css(".govuk-summary-card__title", text: training_period.expression_of_interest_lead_provider.name)
@@ -158,10 +157,13 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
       end
 
       context "when there are multiple training periods" do
-        let!(:more_metadata) do
+        before do
+          training_period.update!(finished_on: 1.week.ago)
+
           FactoryBot.create(:training_period, :for_mentor, :provider_led, :with_expression_of_interest,
                             started_on: 5.days.ago,
                             mentor_at_school_period: training_period.mentor_at_school_period)
+          rendered
         end
 
         it "shows the latest data" do
@@ -169,6 +171,35 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
           expect(rendered_content).to have_css("dt", text: "API response")
           expect(rendered_content).to include(teacher.trn).once
         end
+      end
+
+      it "shows the move partnership link" do
+        rendered
+
+        expect(rendered_content).to have_css("a", text: "Move to a different partnership")
+      end
+
+      context "when the training period has finished" do
+        before do
+          training_period.update!(finished_on: 1.week.ago)
+          rendered
+        end
+
+        it "does not show the move partnership link" do
+          expect(rendered_content).not_to have_css("a", text: "Move to a different partnership")
+        end
+      end
+    end
+
+    context "when the component is rendering a subsequent row" do
+      subject(:rendered) { render_inline(described_class.new(training_period:, index: 1)) }
+
+      it "does not show the API data row" do
+        expect(rendered_content).not_to have_css("dt", text: "API response")
+      end
+
+      it "does not show the move partnership link" do
+        expect(rendered_content).not_to have_css("a", text: "Move to a different partnership")
       end
     end
 
@@ -185,7 +216,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       it "shows a generic error message" do
         expect(rendered_content).to have_css("dt", text: "API response")
-        expect(rendered_content).to have_css("dd", text: "API returned no response")
+        expect(rendered_content).to have_css("dd", text: "No API data for this participant")
       end
     end
   end
@@ -217,6 +248,14 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
     it "shows the end date row" do
       expect(rendered_content).to have_css("dt", text: "End date")
       expect(rendered_content).to have_css("dd", text: training_period.finished_on.to_fs(:govuk))
+    end
+
+    it "does not show the move partnership link" do
+      expect(rendered_content).not_to have_css("a", text: "Move to a different partnership")
+    end
+
+    it "does not show the API data row" do
+      expect(rendered_content).not_to have_css("dt", text: "API response")
     end
   end
 
