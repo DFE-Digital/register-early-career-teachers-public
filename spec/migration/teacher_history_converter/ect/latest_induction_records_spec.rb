@@ -83,28 +83,28 @@ describe "Latest induction records mode conversion" do
       #                                             ┌────────────────────┐
       #                                             │        A           │
       #                                             └────────────────────┘
-      #                            ┌────────────────────┐
-      #                            │         B          │
-      #                            └────────────────────┘
+      #                            ┌──────────────────────────┐
+      #                            │            B             │
+      #                            └──────────────────────────┘
       # ------------------------------------------------------------------------------------------
       #  To these ECT at school periods:
-      #                       ┌───┐
-      #                       │ A │
-      #                       └───┘
-      #                            ┌────────────────────┐
-      #                            │         B          │
-      #                            └────────────────────┘
+      #                            ┌───────────────┐┌─────────┐
+      #                            │       B       ││   ✂️    │
+      #                            └───────────────┘└─────────┘
+      #                                             ┌────────────────────┐
+      #                                             │         A          │
+      #                                             └────────────────────┘
       induction_records: [
         { urn: 111_111,  start_date: "2024-4-4", end_date: "2024-6-6" },
         { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-5-5" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-5-5" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-4-3" },
+        { urn: 111_111,  started_on: "2024-4-4", finished_on: "2024-6-6" },
       ]
     },
 
-    "two IRs. The second one starts and end before the first one starts" => {
+    "two IRs. The second one starts and ends before the first one starts" => {
       #  From these induction records:
       #                                     ┌────────────────────┐
       #                                     │        A           │
@@ -114,19 +114,19 @@ describe "Latest induction records mode conversion" do
       #           └────────────────────┘
       # ------------------------------------------------------------------------------------------
       #  To these ECT at school periods:
-      #      ┌───┐
-      #      │ A │
-      #      └───┘
       #           ┌────────────────────┐
       #           │         B          │
       #           └────────────────────┘
+      #                                     ┌────────────────────┐
+      #                                     │        A           │
+      #                                     └────────────────────┘
       induction_records: [
         { urn: 111_111,  start_date: "2024-5-5", end_date: "2024-6-6" },
         { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-4-4" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
         { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-4-4" },
+        { urn: 111_111,  started_on: "2024-5-5", finished_on: "2024-6-6" },
       ]
     },
 
@@ -316,7 +316,7 @@ describe "Latest induction records mode conversion" do
       let(:induction_records) do
         data[:induction_records].map do |induction_record|
           {
-            start_date: (induction_record[:start_date] == :ignore ? :ignore : Time.zone.parse(induction_record[:start_date])),
+            start_date: Time.zone.parse(induction_record[:start_date]),
             end_date: (induction_record[:end_date] == :ignore ? :ignore : Time.zone.parse(induction_record[:end_date])),
             school: schools.find { |school| school[:urn] == induction_record[:urn] },
             training_provider_info: {
@@ -335,7 +335,7 @@ describe "Latest induction records mode conversion" do
       it "produces the expected ECT at school periods" do
         aggregate_failures do
           data[:at_school_periods].each_with_index do |at_school_period, i|
-            started_on = Date.parse(at_school_period[:started_on]) if at_school_period[:started_on].present?
+            started_on = Date.parse(at_school_period[:started_on])
             finished_on = Date.parse(at_school_period[:finished_on]) if at_school_period[:finished_on].present?
 
             expect(subject.ect_at_school_period_rows[i].started_on).to eql(started_on)
