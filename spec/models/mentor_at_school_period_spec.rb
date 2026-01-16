@@ -32,7 +32,7 @@ describe MentorAtSchoolPeriod do
       end
     end
 
-    it { is_expected.to match_array [current, finishing] }
+    it { is_expected.to match_array [current, upcoming, finishing] }
   end
 
   describe ".current_or_next_training_period" do
