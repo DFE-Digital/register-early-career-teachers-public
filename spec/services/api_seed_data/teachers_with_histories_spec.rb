@@ -140,6 +140,17 @@ RSpec.describe APISeedData::TeachersWithHistories do
       end
 
       it { expect { plant }.to change(MentorshipPeriod, :count).by(5) }
+
+      it "only creates mentorship periods where mentor and mentee school periods are for the same school" do
+        plant
+
+        cross_school_count = MentorshipPeriod
+          .joins(:mentee, :mentor)
+          .where("mentor_at_school_periods.school_id <> ect_at_school_periods.school_id")
+          .count
+
+        expect(cross_school_count).to eq(0)
+      end
     end
 
     context "when creating TrainingPeriod records without a finished_on" do

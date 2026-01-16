@@ -108,15 +108,19 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
       context "when there are ECT/mentor training periods for the lead provider" do
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, lead_provider:) }
+        let(:school_partnership) do
+          FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+        end
+        let(:school) { school_partnership.school }
 
-        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: 2.months.ago, finished_on: nil) }
-        let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, lead_provider_delivery_partnership:) }
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 2.months.ago, finished_on: nil) }
+        let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, school_partnership:) }
 
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.months.ago, finished_on: nil) }
-        let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period:, lead_provider_delivery_partnership:) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, teacher:, started_on: 2.months.ago, finished_on: nil) }
+        let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period:, school_partnership:) }
 
-        let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 2.months.ago, finished_on: nil) }
-        let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: other_mentor_at_school_period, lead_provider_delivery_partnership:) }
+        let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 2.months.ago, finished_on: nil) }
+        let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, started_on: 1.month.ago, mentor_at_school_period: other_mentor_at_school_period, school_partnership:) }
 
         let!(:latest_mentorship_period) do
           FactoryBot.create(

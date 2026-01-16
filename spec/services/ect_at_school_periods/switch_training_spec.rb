@@ -516,7 +516,7 @@ module ECTAtSchoolPeriods
         context "when the mentor is ineligible for funding" do
           let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
           let(:mentor_at_school_period) do
-            FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: ect_at_school_period.started_on)
+            FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school, teacher:, started_on: ect_at_school_period.started_on)
           end
 
           it "does not create a new training period for the mentor" do

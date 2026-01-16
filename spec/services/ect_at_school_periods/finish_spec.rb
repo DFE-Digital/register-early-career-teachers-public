@@ -5,7 +5,7 @@ describe ECTAtSchoolPeriods::Finish do
   let(:original_dates) { { started_on:, finished_on: nil } }
   let(:finished_on) { 1.week.from_now.to_date }
   let(:reported_by_school_id) { nil }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, **original_dates) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: ect_at_school_period.school, **original_dates) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, **original_dates) }
   let!(:training_period) { FactoryBot.create(:training_period, **original_dates, ect_at_school_period:) }
   let(:author) { FactoryBot.build(:school_user, school_urn: ect_at_school_period.school.urn) }
@@ -151,6 +151,7 @@ describe ECTAtSchoolPeriods::Finish do
         let(:finished_on) { 1.week.from_now.to_date }
 
         it "leaves the mentorship period finished_on untouched" do
+          subject.finish!
           expect(mentorship_period.reload.finished_on).to eql(existing_finished_on)
         end
       end
@@ -168,7 +169,7 @@ describe ECTAtSchoolPeriods::Finish do
         end
         let(:finished_on) { 1.week.ago.to_date }
 
-        it "brings the menorship period finished_on forward" do
+        it "brings the mentorship period finished_on forward" do
           subject.finish!
           expect(mentorship_period.reload.finished_on).to eql(finished_on)
         end
@@ -210,6 +211,7 @@ describe ECTAtSchoolPeriods::Finish do
         let(:finished_on) { 1.week.from_now.to_date }
 
         it "leaves the training period finished_on untouched" do
+          subject.finish!
           expect(training_period.reload.finished_on).to eql(existing_finished_on)
         end
       end

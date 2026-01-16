@@ -93,7 +93,12 @@ private
   end
 
   def with_a_mentor
-    mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: @ect.started_on)
+    mentor_at_school_period = FactoryBot.create(
+      :mentor_at_school_period,
+      :ongoing,
+      school: @school,
+      started_on: @ect.started_on
+    )
     FactoryBot.create(:mentorship_period, mentee: @ect, mentor: mentor_at_school_period)
   end
 
