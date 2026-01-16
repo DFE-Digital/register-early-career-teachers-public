@@ -1,10 +1,11 @@
 RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
+  let(:school) { FactoryBot.create(:school) }
   let(:mentee_teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "Kakarot", trs_last_name: "SSJ") }
   let(:mentor_teacher) { FactoryBot.create(:teacher, trn: "987654", trs_first_name: "Naruto", trs_last_name: "Ninetails") }
-  let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.years.ago) }
-  let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher, started_on: 3.years.ago) }
+  let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: 3.years.ago) }
+  let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: mentor_teacher, started_on: 3.years.ago) }
   let(:mentee) do
-    FactoryBot.create(:ect_at_school_period, :ongoing, teacher: mentee_teacher, started_on: Date.new(2021, 9, 1),
+    FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: mentee_teacher, started_on: Date.new(2021, 9, 1),
                                                        email: "foobarect@madeup.com", working_pattern: "full_time")
   end
 

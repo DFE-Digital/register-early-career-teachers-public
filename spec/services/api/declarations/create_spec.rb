@@ -459,7 +459,12 @@ RSpec.describe API::Declarations::Create, type: :model do
           let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
           let!(:mentorship_period) do
             if trainee_type == :ect
-              mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
+              mentor = FactoryBot.create(
+                :mentor_at_school_period,
+                school: at_school_period.school,
+                started_on: at_school_period.started_on,
+                finished_on: at_school_period.finished_on
+              )
               FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
             end
           end

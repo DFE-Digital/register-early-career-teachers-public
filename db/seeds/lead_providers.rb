@@ -19,10 +19,11 @@ lead_providers_data = [
 ]
 
 lead_providers_data.each do |data|
-  lead_provider = FactoryBot.create(:lead_provider, name: data[:name])
+  lead_provider = LeadProvider.find_or_create_by!(name: data[:name])
+
   data[:years].each do |year|
     contract_period = ContractPeriod.find_by!(year:)
-    FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
+    ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
   end
 
   describe_lead_provider(lead_provider, data[:years])
