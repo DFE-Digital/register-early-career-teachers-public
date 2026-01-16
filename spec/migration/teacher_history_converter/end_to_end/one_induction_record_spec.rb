@@ -21,43 +21,84 @@ describe "One induction record (end to end)" do
 
   # Conversion objects
   let(:ecf1_teacher_history) { ECF1TeacherHistory.build(teacher_profile: ecf1_teacher_profile) }
-  let(:teacher_history_converter) { TeacherHistoryConverter.new(ecf1_teacher_history:) }
+  let(:teacher_history_converter) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:) }
 
   before do
     ecf2_teacher_history = teacher_history_converter.convert_to_ecf2!
     ecf2_teacher_history.save_all_ect_data!
   end
 
-  it "creates the teacher record" do
-    expect(teacher).to be_persisted
-  end
+  context "when in latest_induction_records mode (economy)" do
+    let(:migration_mode) { :latest_induction_records }
 
-  it "creates a single ect_at_school_period linked to the teacher at the right school" do
-    ect_at_school_periods = teacher.ect_at_school_periods
-    ect_at_school_period = ect_at_school_periods.first
+    it "creates the teacher record" do
+      expect(teacher).to be_persisted
+    end
 
-    aggregate_failures do
-      expect(ect_at_school_periods.count).to be(1)
+    it "creates a single ect_at_school_period linked to the teacher at the right school" do
+      ect_at_school_periods = teacher.ect_at_school_periods
+      ect_at_school_period = ect_at_school_periods.first
 
-      expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+      aggregate_failures do
+        expect(ect_at_school_periods.count).to be(1)
+
+        expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+      end
+    end
+
+    it "creates a single training_period for the teacher linked to the right schedule and school partnership" do
+      training_periods = teacher.ect_at_school_periods.first.training_periods
+      training_period = training_periods.first
+
+      aggregate_failures do
+        expect(training_periods.count).to be(1)
+
+        expect(training_period.school_partnership.contract_period.year).to eql(ecf1_induction_programme.partnership.cohort.start_year)
+        expect(training_period.school_partnership.lead_provider.name).to eql(ecf1_induction_programme.partnership.lead_provider.name)
+        expect(training_period.school_partnership.delivery_partner.name).to eql(ecf1_induction_programme.partnership.delivery_partner.name)
+
+        expect(training_period.schedule.identifier).to eql(ecf1_induction_record.schedule.schedule_identifier)
+        expect(training_period.schedule.contract_period_year).to eql(ecf1_induction_record.schedule.cohort.start_year)
+
+        expect(training_period.created_at).to eql(ecf1_induction_record.created_at)
+      end
     end
   end
 
-  it "creates a single training_period for the teacher linked to the right schedule and school partnership" do
-    training_periods = teacher.ect_at_school_periods.first.training_periods
-    training_period = training_periods.first
+  context "when in all_induction_records mode (premium)", pending: "re-enable once we've implemented premium mode" do
+    let(:migration_mode) { :all_induction_records }
 
-    aggregate_failures do
-      expect(training_periods.count).to be(1)
+    it "creates the teacher record" do
+      expect(teacher).to be_persisted
+    end
 
-      expect(training_period.school_partnership.contract_period.year).to eql(ecf1_induction_programme.partnership.cohort.start_year)
-      expect(training_period.school_partnership.lead_provider.name).to eql(ecf1_induction_programme.partnership.lead_provider.name)
-      expect(training_period.school_partnership.delivery_partner.name).to eql(ecf1_induction_programme.partnership.delivery_partner.name)
+    it "creates a single ect_at_school_period linked to the teacher at the right school" do
+      ect_at_school_periods = teacher.ect_at_school_periods
+      ect_at_school_period = ect_at_school_periods.first
 
-      expect(training_period.schedule.identifier).to eql(ecf1_induction_record.schedule.schedule_identifier)
-      expect(training_period.schedule.contract_period_year).to eql(ecf1_induction_record.schedule.cohort.start_year)
+      aggregate_failures do
+        expect(ect_at_school_periods.count).to be(1)
 
-      expect(training_period.created_at).to eql(ecf1_induction_record.created_at)
+        expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+      end
+    end
+
+    it "creates a single training_period for the teacher linked to the right schedule and school partnership" do
+      training_periods = teacher.ect_at_school_periods.first.training_periods
+      training_period = training_periods.first
+
+      aggregate_failures do
+        expect(training_periods.count).to be(1)
+
+        expect(training_period.school_partnership.contract_period.year).to eql(ecf1_induction_programme.partnership.cohort.start_year)
+        expect(training_period.school_partnership.lead_provider.name).to eql(ecf1_induction_programme.partnership.lead_provider.name)
+        expect(training_period.school_partnership.delivery_partner.name).to eql(ecf1_induction_programme.partnership.delivery_partner.name)
+
+        expect(training_period.schedule.identifier).to eql(ecf1_induction_record.schedule.schedule_identifier)
+        expect(training_period.schedule.contract_period_year).to eql(ecf1_induction_record.schedule.cohort.start_year)
+
+        expect(training_period.created_at).to eql(ecf1_induction_record.created_at)
+      end
     end
   end
 end

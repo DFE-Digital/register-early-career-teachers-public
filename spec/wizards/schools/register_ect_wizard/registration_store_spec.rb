@@ -261,7 +261,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
   end
 
   describe "#register!" do
-    let(:teacher) { Teacher.first }
+    let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:teacher) { Teacher.find_by!(trn: registration_store.trn) }
     let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
 
     it "creates a new ECT at the given school" do
@@ -486,7 +487,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     end
 
     describe "#lead_providers_within_contract_period" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
       let!(:lp_in) { FactoryBot.create(:lead_provider) }
       let!(:lp_out) { FactoryBot.create(:lead_provider) }
 

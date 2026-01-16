@@ -2,80 +2,24 @@ describe TeacherHistoryConverter do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
   describe "Teacher" do
-    describe "setting api_updated_at" do
-      let(:short_time_ago) { 3.months.ago }
-      let(:long_time_ago) { 6.months.ago }
+    describe "setting trs names" do
+      let(:ecf1_teacher_history_user) { FactoryBot.build(:ecf1_teacher_history_user, full_name: "Ms Test User") }
+      let(:ecf1_teacher_history) { FactoryBot.build(:ecf1_teacher_history, user: ecf1_teacher_history_user) }
 
-      let(:user_updated_at) { long_time_ago }
-      let(:ect_updated_at) { long_time_ago }
-      let(:ect_induction_record_updated_at) { long_time_ago }
-      let(:mentor_updated_at) { long_time_ago }
-      let(:mentor_induction_record_updated_at) { long_time_ago }
-      let(:participant_identity_updated_ats) { [long_time_ago, long_time_ago] }
-
-      let(:ecf1_teacher_history_user) { FactoryBot.build(:ecf1_teacher_history_user, updated_at: user_updated_at) }
-
-      let(:ecf1_teacher_history) do
-        FactoryBot.build(:ecf1_teacher_history, user: ecf1_teacher_history_user, participant_identity_updated_ats:) do |history|
-          history.ect = FactoryBot.build(:ecf1_teacher_history_ect, updated_at: ect_updated_at) do |ect|
-            ect.induction_records = [
-              FactoryBot.build(:ecf1_teacher_history_induction_record_row, updated_at: ect_induction_record_updated_at)
-            ]
-          end
-          history.mentor = FactoryBot.build(:ecf1_teacher_history_mentor, updated_at: mentor_updated_at) do |mentor|
-            mentor.induction_records = [
-              FactoryBot.build(:ecf1_teacher_history_induction_record_row, updated_at: mentor_induction_record_updated_at)
-            ]
-          end
-        end
+      it "sets trs_first_name and trs_last_name" do
+        expect(subject.teacher_row.trs_first_name).to eql("Test")
+        expect(subject.teacher_row.trs_last_name).to eql("User")
       end
+    end
 
-      context "when the user record was updated most recently" do
-        let(:user_updated_at) { short_time_ago }
+    describe "setting corrected_name" do
+      let(:ecf1_teacher_history_user) { FactoryBot.build(:ecf1_teacher_history_user, full_name: "Test User") }
+      let(:ecf1_teacher_history) { FactoryBot.build(:ecf1_teacher_history, user: ecf1_teacher_history_user) }
 
-        it "selects the user updated at timestamp" do
-          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(user_updated_at) }
-        end
-      end
-
-      context "when the ECT participant profile was updated most recently" do
-        let(:ect_updated_at) { short_time_ago }
-
-        it "selects the ECT participant profile timestamp" do
-          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(ect_updated_at) }
-        end
-      end
-
-      context "when an ECT induction record was updated most recently" do
-        let(:ect_induction_record_updated_at) { short_time_ago }
-
-        it "selects the ECT induction record timestamp" do
-          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(ect_induction_record_updated_at) }
-        end
-      end
-
-      context "when the mentor participant profile was most recently" do
-        let(:mentor_updated_at) { short_time_ago }
-
-        it "selects the mentor participant profile timestamp" do
-          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(mentor_updated_at) }
-        end
-      end
-
-      context "when the mentor induction record was most recently" do
-        let(:mentor_induction_record_updated_at) { short_time_ago }
-
-        it "selects the mentor induction record timestamp" do
-          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(mentor_induction_record_updated_at) }
-        end
-      end
-
-      context "when a participant identity was updated most recently" do
-        let(:participant_identity_updated_ats) { [long_time_ago, short_time_ago] }
-
-        it "selects the mentor induction record timestamp" do
-          freeze_time { expect(subject.teacher_row.api_updated_at).to eql(short_time_ago) }
-        end
+      it "sets corrected_name" do
+        expect(subject.teacher_row.trs_first_name).to eql("Test")
+        expect(subject.teacher_row.trs_last_name).to eql("User")
+        expect(subject.teacher_row.corrected_name).to eql("Test User")
       end
     end
   end

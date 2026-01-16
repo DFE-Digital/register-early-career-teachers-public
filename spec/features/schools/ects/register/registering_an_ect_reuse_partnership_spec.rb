@@ -2,6 +2,10 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
   include_context "test trs api client"
   include ReusablePartnershipHelpers
 
+  around do |example|
+    travel_to(Date.new(2025, 9, 1)) { example.run }
+  end
+
   scenario "reuses a previous partnership (provider-led)" do
     given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
     and_i_am_on_the_schools_ects_index_page

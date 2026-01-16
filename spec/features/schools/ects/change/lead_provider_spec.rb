@@ -3,7 +3,7 @@ describe "School user can change ECT's lead provider", :enable_schools_interface
 
   it "changes the lead provider" do
     given_there_is_a_school
-    and_there_is_an_ect
+    and_there_is_an_ect(started_on: 1.week.ago)
     and_there_is_a_contract_period
     and_there_is_an_active_lead_provider
     with_provider_led_training
@@ -15,7 +15,7 @@ describe "School user can change ECT's lead provider", :enable_schools_interface
     and_i_see_the_change_lead_provider_form
     and_the_current_lead_provider_is_not_an_option
 
-    when_i_choose_a_lead_provider
+    when_i_choose_lead_provider("Other Lead Provider")
     and_i_continue
     then_i_am_asked_to_check_and_confirm_the_change
 
@@ -28,13 +28,37 @@ describe "School user can change ECT's lead provider", :enable_schools_interface
     then_i_see_the_confirmation_message
   end
 
+  it "allows changing the lead provider twice on the same day" do
+    given_there_is_a_school
+    and_there_is_an_ect(started_on: Date.current)
+    and_there_is_a_contract_period
+    and_there_is_an_active_lead_provider
+    with_confirmed_provider_led_training
+    and_there_is_another_active_lead_provider
+    and_there_is_a_third_active_lead_provider
+    and_i_am_logged_in_as_a_school_user
+
+    when_i_visit_the_ect_page
+    then_i_can_change_the_assigned_lead_provider
+
+    when_i_submit_lead_provider_change_to("Other Lead Provider")
+    then_i_see_the_confirmation_message
+
+    when_i_visit_the_ect_page
+    then_i_can_change_the_assigned_lead_provider
+    and_i_see_the_change_lead_provider_form
+
+    when_i_submit_lead_provider_change_to("A Third Testing Provider")
+    then_i_see_the_confirmation_message
+  end
+
 private
 
   def given_there_is_a_school
     @school = FactoryBot.create(:school)
   end
 
-  def and_there_is_an_ect
+  def and_there_is_an_ect(started_on:)
     @teacher = FactoryBot.create(
       :teacher,
       trs_first_name: "John",
@@ -46,7 +70,7 @@ private
       teacher: @teacher,
       school: @school,
       email: "ect@example.com",
-      started_on: 1.week.ago
+      started_on:
     )
   end
 
@@ -55,7 +79,7 @@ private
   end
 
   def and_there_is_an_active_lead_provider
-    lead_provider = FactoryBot.create(:lead_provider, name: "Testing Provider")
+    lead_provider = FactoryBot.create(:lead_provider, name: "Current Lead Provider")
     @active_lead_provider = FactoryBot.create(
       :active_lead_provider,
       contract_period: @contract_period,
@@ -76,9 +100,41 @@ private
     )
   end
 
+  def with_confirmed_provider_led_training
+    lead_provider_delivery_partnership = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: @active_lead_provider,
+      contract_period: @contract_period
+    )
+    school_partnership = FactoryBot.create(
+      :school_partnership,
+      lead_provider_delivery_partnership:,
+      school: @school
+    )
+    @provider_led_training_period = FactoryBot.create(
+      :training_period,
+      :ongoing,
+      :for_ect,
+      :provider_led,
+      :with_school_partnership,
+      ect_at_school_period: @ect,
+      started_on: @ect.started_on,
+      school_partnership:
+    )
+  end
+
   def and_there_is_another_active_lead_provider
     lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
     @other_active_lead_provider = FactoryBot.create(
+      :active_lead_provider,
+      contract_period: @contract_period,
+      lead_provider:
+    )
+  end
+
+  def and_there_is_a_third_active_lead_provider
+    lead_provider = FactoryBot.create(:lead_provider, name: "A Third Testing Provider")
+    @third_active_lead_provider = FactoryBot.create(
       :active_lead_provider,
       contract_period: @contract_period,
       lead_provider:
@@ -104,11 +160,19 @@ private
   end
 
   def and_the_current_lead_provider_is_not_an_option
-    expect(page.get_by_label("Testing Provider")).not_to be_visible
+    expect(page.get_by_label(@active_lead_provider.lead_provider.name)).not_to be_visible
   end
 
-  def when_i_choose_a_lead_provider
-    page.get_by_label("Other Lead Provider").check
+  def when_i_choose_lead_provider(name)
+    page.get_by_label(name).check
+    @selected_lead_provider_name = name
+  end
+
+  def when_i_submit_lead_provider_change_to(name)
+    when_i_choose_lead_provider(name)
+    and_i_continue
+    then_i_am_asked_to_check_and_confirm_the_change
+    and_i_confirm_the_change
   end
 
   def and_i_continue
@@ -127,7 +191,7 @@ private
   end
 
   def then_the_lead_provider_is_selected
-    lead_provider_radio = page.get_by_label("Other Lead Provider")
+    lead_provider_radio = page.get_by_label(@selected_lead_provider_name)
     expect(lead_provider_radio).to be_checked
   end
 
@@ -138,7 +202,7 @@ private
   def then_i_see_the_confirmation_message
     success_panel = page.locator(".govuk-panel")
     expect(success_panel).to have_text(
-      "You have chosen Other Lead Provider as the new lead provider for John Doe"
+      "You have chosen #{@selected_lead_provider_name} as the new lead provider for John Doe"
     )
   end
 end

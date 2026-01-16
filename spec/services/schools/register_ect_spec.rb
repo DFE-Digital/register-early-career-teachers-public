@@ -190,6 +190,21 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
+        context "when the ECT start date is backdated before the registration contract period" do
+          let(:started_on) { contract_period.started_on - 1.day }
+
+          it "keeps the ECTAtSchoolPeriod started_on backdated, but normalises TrainingPeriod started_on to the registration contract period start" do
+            expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+            training_period = ect_at_school_period.training_periods.order(:created_at).last
+
+            expect(ect_at_school_period.started_on).to eq(started_on)
+            expect(training_period.started_on).to eq(contract_period.started_on)
+            expect(training_period.schedule.contract_period_year).to eq(contract_period.year)
+            expect(training_period.started_on).not_to eq(ect_at_school_period.started_on)
+          end
+        end
+
         context "when a SchoolPartnership exists" do
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }

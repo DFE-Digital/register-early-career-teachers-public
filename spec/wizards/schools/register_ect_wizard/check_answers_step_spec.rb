@@ -23,11 +23,39 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
     end
 
     describe "#previous_step" do
-      context "when school choices have been used" do
+      context "when school choices have been used and reuse is still allowed" do
         let(:use_previous_ect_choices) { true }
 
-        it "returns :use_previous_ect_choices" do
+        before do
+          allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
+        end
+
+        it "goes back to :use_previous_ect_choices" do
           expect(step.previous_step).to eq(:use_previous_ect_choices)
+        end
+      end
+
+      context "when school choices have been used but reuse is no longer allowed" do
+        let(:use_previous_ect_choices) { true }
+
+        before do
+          allow(wizard).to receive(:use_previous_choices_allowed?).and_return(false)
+        end
+
+        context "when the ect training_programme is school_led" do
+          let(:training_programme) { "school_led" }
+
+          it "falls back to :training_programme" do
+            expect(step.previous_step).to eq(:training_programme)
+          end
+        end
+
+        context "when the ect training_programme is provider_led" do
+          let(:training_programme) { "provider_led" }
+
+          it "falls back to :lead_provider" do
+            expect(step.previous_step).to eq(:lead_provider)
+          end
         end
       end
 
