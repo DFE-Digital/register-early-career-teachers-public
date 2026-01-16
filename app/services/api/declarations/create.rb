@@ -88,7 +88,7 @@ module API::Declarations
     def mentorship_period
       return unless training_period.for_ect?
 
-      @mentorship_period ||= training_period.trainee.mentorship_periods.closest_to(declaration_date).first
+      @mentorship_period ||= training_period.mentorship_periods.closest_to(declaration_date).first
     end
 
     def delivery_partner

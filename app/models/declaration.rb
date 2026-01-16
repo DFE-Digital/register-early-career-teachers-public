@@ -169,7 +169,7 @@ class Declaration < ApplicationRecord
   def voidable_payment? = payment_status.in?(VOIDABLE_PAYMENT_STATUSES)
 
   def teacher
-    training_period&.trainee&.teacher
+    training_period&.teacher
   end
 
   def duplicate_declaration_exists?
@@ -201,7 +201,7 @@ private
   def mentorship_period_belongs_to_teacher
     return unless mentorship_period && training_period
 
-    unless mentorship_period.in?(training_period.trainee.mentorship_periods)
+    unless mentorship_period.in?(training_period.mentorship_periods)
       errors.add(:mentorship_period, "Mentorship period must belong to the trainee")
     end
   end

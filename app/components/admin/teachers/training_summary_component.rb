@@ -149,7 +149,7 @@ module Admin
       end
 
       def move_partnership_path
-        teacher_id = training_period.trainee&.teacher_id
+        teacher_id = training_period.teacher_id
         return if teacher_id.blank?
 
         new_admin_teacher_training_period_partnership_path(teacher_id, training_period)

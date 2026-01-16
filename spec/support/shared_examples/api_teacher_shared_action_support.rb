@@ -1,7 +1,7 @@
 RSpec.shared_examples "an API teacher shared action", :with_metadata do
   let(:lead_provider) { training_period.lead_provider }
   let(:lead_provider_id) { lead_provider.id }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
   let(:teacher_api_id) { teacher.api_id }
 
   describe "validations" do

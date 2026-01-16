@@ -6,7 +6,7 @@ describe API::DeclarationSerializer, type: :serializer do
   end
 
   let(:declaration) { FactoryBot.create(:declaration) }
-  let(:teacher) { declaration.training_period.trainee.teacher }
+  let(:teacher) { declaration.training_period.teacher }
   let(:delivery_partner) { declaration.training_period.delivery_partner }
   let(:lead_provider) { declaration.training_period.lead_provider }
   let(:payment_statement) { declaration.payment_statement }
