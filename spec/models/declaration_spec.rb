@@ -195,7 +195,7 @@ describe Declaration do
       end
 
       context "when the mentorship_period does belong to the trainee" do
-        let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: training_period.trainee, finished_on: nil) }
+        let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: training_period.at_school_period, finished_on: nil) }
 
         it { is_expected.to be_valid }
       end
@@ -530,7 +530,7 @@ describe Declaration do
 
     let(:declaration) { FactoryBot.create(:declaration) }
 
-    it { is_expected.to eq(declaration.training_period.trainee.teacher) }
+    it { is_expected.to eq(declaration.training_period.teacher) }
 
     context "when training_period is nil" do
       before { declaration.training_period = nil }
@@ -574,7 +574,7 @@ describe Declaration do
       context "when an existing, billable/changeable declaration of the same type exists for the other teacher type" do
         before { FactoryBot.create(:declaration, :eligible, training_period: other_type_training_period, declaration_type: :started) }
 
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: training_period.trainee.teacher, started_on: 1.month.ago, finished_on: nil) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: training_period.teacher, started_on: 1.month.ago, finished_on: nil) }
         let(:other_type_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago) }
 
         it { is_expected.not_to be_duplicate_declaration_exists }

@@ -2,7 +2,7 @@ RSpec.describe Teachers::Withdraw do
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
   let(:lead_provider) { training_period.lead_provider }
   let(:reason) { TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).freeze.sample }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
 
   let(:service) do
     described_class.new(

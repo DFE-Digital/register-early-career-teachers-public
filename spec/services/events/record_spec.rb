@@ -1108,7 +1108,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_teacher_training_period_withdrawn_event" do
-    let(:teacher) { training_period.trainee.teacher }
+    let(:teacher) { training_period.teacher }
     let(:lead_provider) { training_period.lead_provider }
     let(:reason) { "left_teaching_profession" }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }

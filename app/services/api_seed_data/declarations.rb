@@ -37,7 +37,7 @@ module APISeedData
     end
 
     def create_declarations!(active_lead_provider, training_periods)
-      teacher = training_periods.first.trainee.teacher
+      teacher = training_periods.first.teacher
       log_seed_info(::Teachers::Name.new(teacher).full_name, indent: 4)
 
       training_period = training_periods.sample
@@ -61,7 +61,7 @@ module APISeedData
         end
 
         ineligibility_reason = Declaration.ineligibility_reasons.keys.sample if payment_status == "ineligible"
-        mentorship_period = training_period.trainee.mentorship_periods.sample if training_period.for_ect?
+        mentorship_period = training_period.mentorship_periods.sample if training_period.for_ect?
 
         declaration = FactoryBot.build(
           :declaration,

@@ -37,7 +37,7 @@ RSpec.describe Declarations::Void do
         .to receive(:record_teacher_declaration_voided!)
         .with(
           author:,
-          teacher: declaration.training_period.trainee.teacher,
+          teacher: declaration.training_period.teacher,
           training_period: declaration.training_period,
           declaration:
         )

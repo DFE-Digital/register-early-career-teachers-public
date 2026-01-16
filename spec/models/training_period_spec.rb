@@ -9,7 +9,7 @@ describe TrainingPeriod do
       when :school_partnership_id
         active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
         lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-        school = instance.trainee.school
+        school = instance.school
         FactoryBot.create(:school_partnership, id: new_value, school:, lead_provider_delivery_partnership:)
       when :expression_of_interest_id
         FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period, id: new_value)
@@ -53,21 +53,21 @@ describe TrainingPeriod do
     let(:instance) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
 
     context "target teacher" do
-      let(:target) { instance.trainee.teacher }
+      let(:target) { instance.teacher }
 
       def will_change_attribute(attribute_to_change:, new_value:)
         case attribute_to_change
         when :school_partnership_id
           active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period)
           lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-          school = instance.trainee.school
+          school = instance.school
           FactoryBot.create(:school_partnership, id: new_value, lead_provider_delivery_partnership:, school:)
         when :schedule_id
           FactoryBot.create(:schedule, id: new_value)
         when :ect_at_school_period_id
-          FactoryBot.create(:ect_at_school_period, id: new_value, teacher: instance.trainee.teacher)
+          FactoryBot.create(:ect_at_school_period, id: new_value, teacher: instance.teacher)
         when :mentor_at_school_period_id
-          FactoryBot.create(:mentor_at_school_period, id: new_value, teacher: instance.trainee.teacher)
+          FactoryBot.create(:mentor_at_school_period, id: new_value, teacher: instance.teacher)
         end
       end
 
@@ -185,7 +185,7 @@ describe TrainingPeriod do
 
         it "add an error" do
           subject.valid?
-          expect(subject.errors.messages[:base]).to include("Id of trainee missing")
+          expect(subject.errors.messages[:base]).to include("Either an ECT at school period or mentor at school period is required")
         end
       end
 
@@ -194,9 +194,11 @@ describe TrainingPeriod do
           FactoryBot.build(:training_period, ect_at_school_period_id: 200, mentor_at_school_period_id: 300)
         end
 
-        it "add an error" do
+        it "adds an error" do
           subject.valid?
-          expect(subject.errors.messages).to include(base: ["Only one id of trainee required. Two given"])
+          expect(subject.errors.messages).to include(base: [
+            "Can belong to either an ECT at school period or a mentor at school period, not both"
+          ])
         end
       end
     end
@@ -619,9 +621,9 @@ describe TrainingPeriod do
             "[Data integrity] Attempt to assign school partnership to a different school from the school period",
             level: :error,
             extra: {
-              teacher_id: training_period.trainee.teacher.id,
+              teacher_id: training_period.teacher_id,
               school_partnership_id: school_partnership.id,
-              trainee_school_id: training_period.trainee.school_id
+              trainee_school_id: training_period.school_id
             }
           )
           training_period.valid?
@@ -942,7 +944,7 @@ describe TrainingPeriod do
   describe "#teacher_completed_training?" do
     subject { training_period.teacher_completed_training? }
 
-    let(:teacher) { training_period.trainee.teacher }
+    let(:teacher) { training_period.teacher }
 
     context "when ECT" do
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect) }
@@ -986,7 +988,7 @@ describe TrainingPeriod do
   describe "#eligible_for_funding?" do
     subject { training_period.eligible_for_funding? }
 
-    let(:teacher) { training_period.trainee.teacher }
+    let(:teacher) { training_period.teacher }
 
     context "when ECT" do
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect) }

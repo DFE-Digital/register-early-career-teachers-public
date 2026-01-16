@@ -35,7 +35,7 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
                   } do
     let(:schedule) { training_period.schedule }
     let(:milestone) { FactoryBot.create(:milestone, declaration_type: :started, schedule:) }
-    let(:teacher) { training_period.trainee.teacher }
+    let(:teacher) { training_period.teacher }
 
     let(:params) do
       {

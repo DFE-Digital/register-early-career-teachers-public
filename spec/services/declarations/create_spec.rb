@@ -1,7 +1,7 @@
 RSpec.describe Declarations::Create do
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
   let(:lead_provider) { training_period.lead_provider }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
   let(:declaration_type) { "started" }
   let(:evidence_type) { "training-event-attended" }
   let(:schedule) { training_period.schedule }

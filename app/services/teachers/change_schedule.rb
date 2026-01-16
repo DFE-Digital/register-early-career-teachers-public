@@ -56,7 +56,7 @@ module Teachers
     def determine_finished_on
       [
         training_period.finished_on,
-        training_period.trainee.finished_on
+        training_period.at_school_period_finished_on
       ].compact.reject(&:past?).min
     end
 
@@ -67,14 +67,14 @@ module Teachers
         TrainingPeriods::Finish.ect_training(
           author:,
           training_period:,
-          ect_at_school_period: training_period.trainee,
+          ect_at_school_period: training_period.at_school_period,
           finished_on:
         ).finish!
       elsif training_period.for_mentor?
         TrainingPeriods::Finish.mentor_training(
           author:,
           training_period:,
-          mentor_at_school_period: training_period.trainee,
+          mentor_at_school_period: training_period.at_school_period,
           finished_on:
         ).finish!
       end
@@ -82,7 +82,7 @@ module Teachers
 
     def create_new_training_period_with!(finished_on:)
       TrainingPeriods::Create.provider_led(
-        period: training_period.trainee,
+        period: training_period.at_school_period,
         started_on: Time.zone.today,
         finished_on:,
         school_partnership:,

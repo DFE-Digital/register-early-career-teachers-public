@@ -2,7 +2,7 @@ class API::DeclarationSerializer < Blueprinter::Base
   class AttributesSerializer < Blueprinter::Base
     exclude :id
 
-    field(:participant_id) { |declaration| declaration.training_period.trainee.teacher.api_id }
+    field(:participant_id) { |declaration| declaration.training_period.teacher.api_id }
     field(:declaration_type)
     field(:declaration_date) { |declaration| declaration.declaration_date.rfc3339 }
 
