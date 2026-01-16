@@ -277,8 +277,26 @@ RSpec.describe API::Declarations::Query, :with_metadata do
           expect(query.declarations).to contain_exactly(declaration1, declaration2)
         end
 
-        it "returns empty if no declarations are found for the given `teacher_api_ids`" do
+        it "returns empty if no declarations are found for an existing teacher `api_id`" do
           query = described_class.new(teacher_api_ids: FactoryBot.create(:teacher).api_id)
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for random UUID" do
+          query = described_class.new(teacher_api_ids: SecureRandom.uuid)
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for invalid UUID" do
+          query = described_class.new(teacher_api_ids: "XXX123")
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for empty array" do
+          query = described_class.new(teacher_api_ids: [])
 
           expect(query.declarations).to be_empty
         end
