@@ -21,7 +21,7 @@
 #
 #     **bold** and _italic_ text
 
-- title: Declaration endpoints added, completing the RECT API in the sandbox
+- title: Declaration endpoints added, completing the RECT API in sandbox
   date: 2025-01-16
   tags:
     - sandbox-release
@@ -46,13 +46,13 @@
     We have made the following changes to declaration validation:
 
     * removed the `has_passed` field, as it was only relevant to NPQ declarations
-    * for participants in the 2025 cohort and later, declaration_dates must be in sequence based on the declaration_type. For example, if you have submitted a started declaration, the declaration_date of any subsequent declaration must be later than the started declaration
+    * for participants in the 2025 cohort and later, declaration_dates must be in sequence based on the `declaration_type`. For example, if you have submitted a started declaration, the `declaration_date` of any subsequent declaration must be later than the started declaration
     * for participants in the 2025 cohort and later, a started declaration must include `evidence_held`
     * updated error messages for voiding declarations to be consistent with other endpoints
 
     ## Impact on lead providers
 
-    Lead providers should test their integrations in the sandbox and make sure declarations for participants in the 2025 cohort and later follow the new validation rules.
+    Lead providers should test their integrations in sandbox and make sure declarations for participants in the 2025 cohort and later follow the new validation rules.
 
 - title: Change schedules endpoint released to the Register ECTs sandbox with updated validation rules
   date: 2026-01-19
