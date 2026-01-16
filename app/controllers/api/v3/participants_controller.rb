@@ -5,7 +5,7 @@ module API
 
       def index
         conditions = {
-          contract_period_years: extract_conditions(contract_period_years, integers: true),
+          contract_period_years: extract_conditions(contract_period_years, type: :integer),
           updated_since:,
           training_status:,
           api_from_teacher_id:,
