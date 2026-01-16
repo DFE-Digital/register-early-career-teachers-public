@@ -1,3 +1,7 @@
+# From all the induction records of a participant received in the converter, the latest induction records mode will
+# group them by (school, lead provider, cohort) and select the one unfinished or the most recently created one.
+# The resulting list will be sorted by start_date, created_at, unfinished last and them converted to ect at school periods.
+# See TeacherHistoryConverter::CalculatedFields
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
