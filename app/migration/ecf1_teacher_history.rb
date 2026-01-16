@@ -43,11 +43,8 @@ class ECF1TeacherHistory
   end
 
   def self.build_ect_data(participant_profile:)
-    migration_mode = migration_mode(participant_profile:)
-
     ECT.new(
       participant_profile_id: participant_profile.id,
-      migration_mode:,
       created_at: participant_profile.created_at,
       updated_at: participant_profile.updated_at,
       induction_start_date: participant_profile.induction_start_date,
@@ -56,29 +53,14 @@ class ECF1TeacherHistory
       sparsity_uplift: participant_profile.sparsity_uplift,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_records(participant_profile:, migration_mode:)
+      induction_records: build_induction_records(participant_profile:)
     )
   end
 
   # Build rows for all the induction records of the participant
-  def self.build_induction_records(participant_profile:, migration_mode:)
-    row_matches = ->(rows, row) do
-      rows.any? do |r|
-        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school.urn, r.cohort_year] ==
-          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school.urn, row.cohort_year]
-      end
-    end
-
-    rows = participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
+  def self.build_induction_records(participant_profile:)
+    participant_profile.induction_records.order(:start_date, :created_at).map do |induction_record|
       build_induction_record(induction_record:)
-    end
-
-    if migration_mode == "latest_induction_records"
-      rows.reverse.each_with_object([]) do |row, result|
-        result.unshift(row) unless row_matches.call(result, row)
-      end
-    else
-      rows
     end
   end
 
@@ -107,18 +89,15 @@ class ECF1TeacherHistory
   end
 
   def self.build_mentor_data(participant_profile:)
-    migration_mode = migration_mode(participant_profile:)
-
     Mentor.new(
       participant_profile_id: participant_profile.id,
-      migration_mode:,
       created_at: participant_profile.created_at,
       updated_at: participant_profile.updated_at,
       mentor_completion_date: participant_profile.mentor_completion_date,
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_records(participant_profile:, migration_mode:)
+      induction_records: build_induction_records(participant_profile:)
     )
   end
 
@@ -152,13 +131,6 @@ class ECF1TeacherHistory
       ),
       cohort_year: partnership.cohort.start_year
     )
-  end
-
-  def self.migration_mode(participant_profile:)
-    return "latest_induction_records" if participant_profile.more_than_two_induction_records?
-    return "latest_induction_records" if participant_profile.two_induction_records_that_overlap?
-
-    "all_induction_records"
   end
 
   def self.from_hash(hash)

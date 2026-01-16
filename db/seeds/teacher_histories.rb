@@ -919,6 +919,32 @@ FactoryBot.create(:training_period,
                   school_partnership: ambition_artisan_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
+print_seed_info("Jane Smith (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
+jane_smith = Teacher.find_by!(trs_first_name: "Jane", trs_last_name: "Smith")
+jane_smith_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
+                                                         teacher: jane_smith,
+                                                         school: abbey_grove_school,
+                                                         email: "jane.smith@st-trinians.org.uk",
+                                                         started_on: Date.new(2024, 9, 5),
+                                                         finished_on: nil,
+                                                         school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
+FactoryBot.create(:training_period,
+                  :for_ect,
+                  :with_schedule,
+                  ect_at_school_period: jane_smith_ect_at_abbey_grove_school,
+                  started_on: Date.new(2024, 9, 5),
+                  finished_on: Date.new(2025, 9, 5),
+                  school_partnership: teach_first_grain_partnership_2024,
+                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+FactoryBot.create(:training_period,
+                  :for_ect,
+                  :with_schedule,
+                  ect_at_school_period: jane_smith_ect_at_abbey_grove_school,
+                  started_on: Date.new(2025, 9, 5),
+                  finished_on: nil,
+                  school_partnership: ambition_artisan_partnership_2025,
+                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
 print_seed_info("Adding mentorships:")
 
 create_same_school_mentorship!(

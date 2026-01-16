@@ -1,0 +1,16 @@
+<% page_data(
+  title: "There are no other partnerships set up",
+  backlink_href: admin_teacher_training_path
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <p class="govuk-body">
+      You need to add another partnership for <%= @school.name %> before you can move <%= teacher_full_name(@teacher) %>.
+    </p>
+
+    <p class="govuk-body">
+      <%= govuk_link_to("Add another partnership for #{@school.name}", admin_school_partnerships_path(@school.urn)) %>
+    </p>
+  </div>
+</div>

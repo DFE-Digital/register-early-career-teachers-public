@@ -49,23 +49,49 @@ RSpec.describe Teachers::Manage do
   end
 
   describe "#update_name!" do
-    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+    describe "teacher.corrected_name" do
+      subject(:service) { described_class.system_update(teacher:) }
 
-    it "records a name change event" do
-      freeze_time do
-        service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
+      let(:teacher) { FactoryBot.create(:teacher, corrected_name: "Test User") }
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          appropriate_body:,
-          author_email: "christopher.biggins@education.gov.uk",
-          author_id: author.id,
-          author_name: "Christopher Biggins",
-          author_type: :dfe_staff_user,
-          event_type: :teacher_name_updated_by_trs,
-          happened_at: Time.zone.now,
-          heading: "Name changed from 'Barry Allen' to 'John Doe'",
-          teacher:
-        )
+      context "when TRS name matches `corrected_name`" do
+        it "clears `corrected_name` on teacher" do
+          expect(teacher.corrected_name).to eq("Test User")
+
+          service.update_name!(trs_first_name: "Test", trs_last_name: "User")
+          expect(teacher.reload.corrected_name).to be_nil
+        end
+      end
+
+      context "when TRS name does not match `corrected_name`" do
+        it "does not change `corrected_name` on teacher" do
+          expect(teacher.corrected_name).to eq("Test User")
+
+          service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
+          expect(teacher.reload.corrected_name).to eq("Test User")
+        end
+      end
+    end
+
+    context "when name has changed" do
+      before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+
+      it "records a name change event" do
+        freeze_time do
+          service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            appropriate_body:,
+            author_email: "christopher.biggins@education.gov.uk",
+            author_id: author.id,
+            author_name: "Christopher Biggins",
+            author_type: :dfe_staff_user,
+            event_type: :teacher_name_updated_by_trs,
+            happened_at: Time.zone.now,
+            heading: "Name changed from 'Barry Allen' to 'John Doe'",
+            teacher:
+          )
+        end
       end
     end
   end

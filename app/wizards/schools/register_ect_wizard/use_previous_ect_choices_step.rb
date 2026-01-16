@@ -12,7 +12,9 @@ module Schools
 
       def self.permitted_params = %i[use_previous_ect_choices]
 
-      def allowed? = reusable_available?
+      def allowed?
+        reusable_available?
+      end
 
       def next_step
         use_previous_ect_choices ? :check_answers : fallback_step
@@ -25,13 +27,15 @@ module Schools
       end
 
       def reusable_partnership_preview
+        return unless reusable_available?
+
         SchoolPartnership.find_by(id: reusable_partnership_id)
       end
 
       def reusable_available?
         provider_led_programme_chosen? &&
           last_chosen_lead_provider_present? &&
-          current_contract_year.present? &&
+          current_contract_period.present? &&
           reusable_partnership_id.present?
       end
 
@@ -39,8 +43,10 @@ module Schools
         @reusable_partnership_id ||= find_previous_year_reusable_id
       end
 
-      def current_contract_year
-        @current_contract_year ||= ect.normalized_start_date&.year
+      # Reuse is evaluated against the current registration contract period
+      # Backdated start dates map to the current contract period
+      def current_contract_period
+        @current_contract_period ||= ContractPeriod.current
       end
 
     private
@@ -59,12 +65,14 @@ module Schools
       end
 
       def find_previous_year_reusable_id
+        contract_period = current_contract_period
+
         SchoolPartnerships::FindPreviousReusable
           .new
           .call(
             school:,
             last_lead_provider: school.last_chosen_lead_provider,
-            current_contract_period: current_contract_year
+            current_contract_period: contract_period
           )
           &.id
       end

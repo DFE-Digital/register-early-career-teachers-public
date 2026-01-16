@@ -8,6 +8,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     context "when ECT is already registered" do
       before do
         wizard.ect.update!(ect_at_school_period_id: 123)
+        allow(wizard.ect).to receive(:registered?).and_return(true)
       end
 
       it "returns only confirmation step" do
@@ -275,49 +276,77 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     end
 
     context "when the school has previous programme choices" do
-      before do
-        previous_contract_year = 2023
-        current_contract_year  = 2024
+      around do |example|
+        travel_to(Date.new(2024, 9, 15)) { example.run } # inside CP 2024
+      end
 
-        previous_contract_period = FactoryBot.create(:contract_period, year: previous_contract_year)
-        current_contract_period  = FactoryBot.create(:contract_period, year: current_contract_year)
+      let!(:previous_contract_period) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2023,
+          started_on: Date.new(2023, 6, 1),
+          finished_on: Date.new(2024, 5, 31),
+          enabled: true
+        )
+      end
 
-        lead_provider = FactoryBot.create(:lead_provider, name: "Spec Lead Provider")
-        delivery_partner = FactoryBot.create(:delivery_partner, name: "Spec Delivery Partner")
+      let!(:current_contract_period) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2024,
+          started_on: Date.new(2024, 6, 1),
+          finished_on: Date.new(2025, 5, 31),
+          enabled: true
+        )
+      end
 
-        previous_active_lead_provider = FactoryBot.create(
+      let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Spec Lead Provider") }
+      let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Spec Delivery Partner") }
+
+      let!(:previous_active_lead_provider) do
+        FactoryBot.create(
           :active_lead_provider,
           lead_provider:,
           contract_period: previous_contract_period
         )
+      end
 
-        current_active_lead_provider = FactoryBot.create(
+      let!(:current_active_lead_provider) do
+        FactoryBot.create(
           :active_lead_provider,
           lead_provider:,
           contract_period: current_contract_period
         )
+      end
 
-        previous_lead_provider_delivery_partnership = FactoryBot.create(
+      let!(:previous_lead_provider_delivery_partnership) do
+        FactoryBot.create(
           :lead_provider_delivery_partnership,
           active_lead_provider: previous_active_lead_provider,
           delivery_partner:
         )
+      end
 
+      let!(:current_lead_provider_delivery_partnership) do
         FactoryBot.create(
           :lead_provider_delivery_partnership,
           active_lead_provider: current_active_lead_provider,
           delivery_partner:
         )
+      end
 
-        school.update!(
-          last_chosen_training_programme: "provider_led",
-          last_chosen_lead_provider: lead_provider
-        )
-
+      let!(:previous_school_partnership) do
         FactoryBot.create(
           :school_partnership,
           school:,
           lead_provider_delivery_partnership: previous_lead_provider_delivery_partnership
+        )
+      end
+
+      before do
+        school.update!(
+          last_chosen_training_programme: "provider_led",
+          last_chosen_lead_provider: lead_provider
         )
 
         wizard.ect.update!(
@@ -551,6 +580,12 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
   end
 
   describe "contract period validation" do
+    around do |example|
+      travel_to(Date.new(2024, 9, 15)) { example.run }
+    end
+
+    let(:future_start_date) { Date.new(2025, 7, 1) } # future relative to 2024-09-15
+
     before do
       wizard.ect.update!(
         trn: "1234567",
@@ -559,16 +594,29 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         trs_date_of_birth: "1990-01-01",
         change_name: "no",
         email: "test@example.com",
-        start_date: future_date.strftime("%Y-%m-%d")
+        start_date: start_date_value
       )
-      allow(wizard.ect).to receive_messages(in_trs?: true, matches_trs_dob?: true, active_at_school?: false, email_taken?: false, previously_registered?: false)
+
+      allow(wizard.ect).to receive_messages(
+        in_trs?: true,
+        matches_trs_dob?: true,
+        active_at_school?: false,
+        email_taken?: false,
+        previously_registered?: false
+      )
     end
 
-    let(:future_date) { 1.month.from_now }
-
     context "when start date is in future and contract period is not enabled" do
-      before do
-        allow(wizard).to receive_messages(past_start_date?: false, start_date_contract_period: double(enabled?: false))
+      let(:start_date_value) { future_start_date.strftime("%Y-%m-%d") }
+
+      let!(:contract_period_2025) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          started_on: Date.new(2025, 6, 1),
+          finished_on: Date.new(2026, 5, 31),
+          enabled: false
+        )
       end
 
       it "includes cannot_register_ect_yet step" do
@@ -581,8 +629,16 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     end
 
     context "when start date is in past" do
-      before do
-        allow(wizard).to receive(:past_start_date?).and_return(true)
+      let(:start_date_value) { Date.new(2024, 1, 1).strftime("%Y-%m-%d") }
+
+      let!(:contract_period_2024) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2024,
+          started_on: Date.new(2024, 6, 1),
+          finished_on: Date.new(2025, 5, 31),
+          enabled: false
+        )
       end
 
       it "includes working_pattern step" do
@@ -595,8 +651,16 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
     end
 
     context "when start date is in future but contract period is enabled" do
-      before do
-        allow(wizard).to receive_messages(past_start_date?: false, start_date_contract_period: double(enabled?: true))
+      let(:start_date_value) { future_start_date.strftime("%Y-%m-%d") }
+
+      let!(:contract_period_2025) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          started_on: Date.new(2025, 6, 1),
+          finished_on: Date.new(2026, 5, 31),
+          enabled: true
+        )
       end
 
       it "includes working_pattern step" do
