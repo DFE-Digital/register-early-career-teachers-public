@@ -104,6 +104,8 @@ class Event < ApplicationRecord
 
   scope :earliest_first, -> { order(happened_at: "asc") }
   scope :latest_first, -> { order(happened_at: "desc") }
+  scope :happened_on_or_before, ->(date) { where(happened_at: ..date) }
+  scope :happened_on_or_after, ->(date) { where(happened_at: date..) }
 
 private
 

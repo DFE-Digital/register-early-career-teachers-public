@@ -21,12 +21,13 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "ECTs" # Early Career Teachers
   inflect.acronym "GIAS" # Get Information About Schools
   inflect.acronym "ITT" # Initial teacher training
+  inflect.acronym "OmniAuth"
+  inflect.acronym "OpenID"
   inflect.acronym "OTP" # One-time Password
+  inflect.acronym "RIAB" # Record Inductions as an Appropriate Body
   inflect.acronym "TRN" # Teacher Reference Number
   inflect.acronym "TRS" # Teaching Record System
   inflect.acronym "URN" # Unique Reference Number
-  inflect.acronym "OmniAuth"
-  inflect.acronym "OpenID"
 
   inflect.irregular "was", "were"
 end
