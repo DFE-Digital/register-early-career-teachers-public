@@ -79,21 +79,21 @@ module Teachers
     end
 
     def contract_period
-      return contract_period_at_transition if existing_schedule_in_same_contract_period?
-
-      existing_schedule.contract_period
+      if reuse_existing_schedule?
+        existing_schedule.contract_period
+      else
+        contract_period_at_transition
+      end
     end
 
     def schedule
-      return nil if existing_schedule_in_same_contract_period?
-
-      existing_schedule
+      existing_schedule if reuse_existing_schedule?
     end
 
-    def existing_schedule_in_same_contract_period?
-      return true unless existing_schedule
+    def reuse_existing_schedule?
+      return false unless existing_schedule
 
-      existing_schedule.contract_period == contract_period_at_transition
+      existing_schedule.contract_period != contract_period_at_transition
     end
 
     def contract_period_at_transition
