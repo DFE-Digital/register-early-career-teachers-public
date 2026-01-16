@@ -1,6 +1,14 @@
 describe "Latest induction records mode conversion" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
+  let(:cohort_year) { 2024 }
+
+  let(:lead_provider_a) { { name: "Lead provider A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-cccccccccccc" } }
+  let(:lead_provider_b) { { name: "Lead provider B", ecf1_id: "bbbbbbbb-2222-3333-aaaa-cccccccccccc" } }
+
+  let(:delivery_partner_a) { { name: "DeliveryPartner A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-dddddddddddd" } }
+  let(:delivery_partner_b) { { name: "DeliveryPartner B", ecf1_id: "bbbbbbbb-2222-3333-aaaa-dddddddddddd" } }
+
   let(:school_a) { { name: "School A", urn: 111_111 } }
   let(:school_b) { { name: "School B", urn: 222_222 } }
   let(:schools) { [school_a, school_b] }
@@ -35,12 +43,12 @@ describe "Latest induction records mode conversion" do
       #                                             │       B       │
       #                                             └───────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-3-3", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-5-5" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-5-5" },
+        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-5-5" },
       ]
     },
 
@@ -61,12 +69,12 @@ describe "Latest induction records mode conversion" do
       #                                             │       B       │
       #                                             └───────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-3-3", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -87,12 +95,12 @@ describe "Latest induction records mode conversion" do
       #                            │         B          │
       #                            └────────────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-4-4", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 111_111,  start_date: "2024-4-4", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-5-5" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-5-5" },
+        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-5-5" },
       ]
     },
 
@@ -113,12 +121,12 @@ describe "Latest induction records mode conversion" do
       #           │         B          │
       #           └────────────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-5-5", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-4-4" },
+        { urn: 111_111,  start_date: "2024-5-5", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-4-4" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-4-4" },
+        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-4-4" },
       ]
     },
 
@@ -139,12 +147,12 @@ describe "Latest induction records mode conversion" do
       #           │         B          │
       #           └────────────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-3-3", end_date: "2024-5-5" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -165,12 +173,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B          │
       #                       └────────────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-1-1", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-5-5" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-5-5" },
+        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-5-5" },
       ]
     },
 
@@ -191,12 +199,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B          │
       #                       └────────────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-1-1", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -217,12 +225,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B          │
       #                       └────────────────────┘
       induction_records: [
-        { urn: "111_111",  start_date: "2024-1-1", end_date: "2024-5-5" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-5-5" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -243,12 +251,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B
       #                       └────────────────────>
       induction_records: [
-        { urn: "111_111",  start_date: "2024-1-1", end_date: "2024-5-5" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: :ignore },
+        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-5-5" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: :ignore },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: :ignore },
+        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: :ignore },
       ]
     },
 
@@ -269,12 +277,12 @@ describe "Latest induction records mode conversion" do
       #           │           B
       #           └────────────────────────────>
       induction_records: [
-        { urn: "111_111",  start_date: "2024-3-3", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: :ignore },
+        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: :ignore },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: :ignore },
+        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: :ignore },
       ]
     },
 
@@ -295,12 +303,12 @@ describe "Latest induction records mode conversion" do
       #           │                 B
       #           └────────────────────────────────────>
       induction_records: [
-        { urn: "111_111",  start_date: "2024-4-4", end_date: "2024-6-6" },
-        { urn: "222_222",  start_date: "2024-3-3", end_date: :ignore },
+        { urn: 111_111,  start_date: "2024-4-4", end_date: "2024-6-6" },
+        { urn: 222_222,  start_date: "2024-3-3", end_date: :ignore },
       ],
       at_school_periods: [
-        { urn: "111_111",  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: "222_222",  started_on: "2024-3-3", finished_on: :ignore },
+        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: :ignore },
       ]
     }
   }.each do |description, data|
@@ -310,7 +318,12 @@ describe "Latest induction records mode conversion" do
           {
             start_date: (induction_record[:start_date] == :ignore ? :ignore : Time.zone.parse(induction_record[:start_date])),
             end_date: (induction_record[:end_date] == :ignore ? :ignore : Time.zone.parse(induction_record[:end_date])),
-            school: schools.find { |school| school[:urn] == induction_record[:urn].to_i }
+            school: schools.find { |school| school[:urn] == induction_record[:urn] },
+            training_provider_info: {
+              lead_provider: lead_provider_a,
+              delivery_partner: delivery_partner_a,
+              cohort_year:
+            }
           }
         end
       end
@@ -322,8 +335,8 @@ describe "Latest induction records mode conversion" do
       it "produces the expected ECT at school periods" do
         aggregate_failures do
           data[:at_school_periods].each_with_index do |at_school_period, i|
-            started_on = at_school_period[:started_on] == :ignore ? :ignore : Time.zone.parse(at_school_period[:started_on])
-            finished_on = at_school_period[:finished_on] == :ignore ? :ignore : Time.zone.parse(at_school_period[:finished_on])
+            started_on = at_school_period[:started_on] == :ignore ? :ignore : Date.parse(at_school_period[:started_on])
+            finished_on = at_school_period[:finished_on] == :ignore ? :ignore : Date.parse(at_school_period[:finished_on])
 
             expect(subject.ect_at_school_period_rows[i].started_on).to eql(started_on)
             expect(subject.ect_at_school_period_rows[i].finished_on).to eql(finished_on)
