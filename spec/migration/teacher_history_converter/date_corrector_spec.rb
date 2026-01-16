@@ -44,6 +44,15 @@ RSpec.describe TeacherHistoryConverter::DateCorrector do
           expect(date_corrector.corrected_start_date(induction_record, sequence_number)).to eq(Date.new(2023, 9, 1))
         end
       end
+
+      context "when calculated date would be before SERVICE_START_DATE (2021-09-01)" do
+        let(:start_date) { Date.new(2021, 6, 1) }
+        let(:created_at) { Time.zone.local(2021, 5, 15, 12, 0, 0) }
+
+        it "returns SERVICE_START_DATE instead" do
+          expect(date_corrector.corrected_start_date(induction_record, sequence_number)).to eq(Date.new(2021, 9, 1))
+        end
+      end
     end
 
     context "for subsequent induction records (sequence_number > 0)" do
@@ -59,6 +68,15 @@ RSpec.describe TeacherHistoryConverter::DateCorrector do
 
         it "still returns start_date" do
           expect(date_corrector.corrected_start_date(induction_record, sequence_number)).to eq(start_date)
+        end
+      end
+
+      context "when start_date is before SERVICE_START_DATE (2021-09-01)" do
+        let(:start_date) { Date.new(2021, 3, 15) }
+        let(:created_at) { Time.zone.local(2021, 3, 10, 12, 0, 0) }
+
+        it "returns SERVICE_START_DATE instead" do
+          expect(date_corrector.corrected_start_date(induction_record, sequence_number)).to eq(Date.new(2021, 9, 1))
         end
       end
     end
