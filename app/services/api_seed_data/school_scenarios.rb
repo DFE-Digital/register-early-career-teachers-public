@@ -686,7 +686,9 @@ module APISeedData
       School
         .joins(school_period_join => { training_periods: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } } })
         .where(active_lead_providers: { lead_provider_id: lead_provider.id })
-        .where(training_periods: { training_programme: "provider_led", finished_on: nil })
+        .where(training_periods: { training_programme: "provider_led" })
+        .where(training_periods: { started_on: ..Time.zone.now })
+        .where(training_periods: { finished_on: [nil, Time.zone.now..] })
         .distinct
     end
   end
