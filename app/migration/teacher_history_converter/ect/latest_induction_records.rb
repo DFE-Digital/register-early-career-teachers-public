@@ -8,7 +8,7 @@ class TeacherHistoryConverter::ECT::LatestInductionRecords
   attr_reader :induction_records
 
   def initialize(induction_records)
-    @induction_records = latest_induction_records(induction_records)
+    @induction_records = latest_induction_records(induction_records:)
   end
 
   # Returns ECF2TeacherHistory::ECTAtSchoolPeriodRow[]
