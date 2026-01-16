@@ -256,7 +256,7 @@ describe "Latest induction records mode conversion" do
       ],
       at_school_periods: [
         { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: :ignore },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: nil },
       ]
     },
 
@@ -282,7 +282,7 @@ describe "Latest induction records mode conversion" do
       ],
       at_school_periods: [
         { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: :ignore },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: nil },
       ]
     },
 
@@ -308,7 +308,7 @@ describe "Latest induction records mode conversion" do
       ],
       at_school_periods: [
         { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: :ignore },
+        { urn: 222_222,  started_on: "2024-3-3", finished_on: nil },
       ]
     }
   }.each do |description, data|
@@ -335,8 +335,8 @@ describe "Latest induction records mode conversion" do
       it "produces the expected ECT at school periods" do
         aggregate_failures do
           data[:at_school_periods].each_with_index do |at_school_period, i|
-            started_on = at_school_period[:started_on] == :ignore ? :ignore : Date.parse(at_school_period[:started_on])
-            finished_on = at_school_period[:finished_on] == :ignore ? :ignore : Date.parse(at_school_period[:finished_on])
+            started_on = Date.parse(at_school_period[:started_on]) if at_school_period[:started_on].present?
+            finished_on = Date.parse(at_school_period[:finished_on]) if at_school_period[:finished_on].present?
 
             expect(subject.ect_at_school_period_rows[i].started_on).to eql(started_on)
             expect(subject.ect_at_school_period_rows[i].finished_on).to eql(finished_on)
