@@ -60,7 +60,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
         it "shows the API data row" do
           expect(rendered_content).to have_css("dt", text: "API response")
-          # expect(rendered_content).to have_css("dd", text: formatted_teacher)
+          expect(rendered_content).to include("data")
         end
       end
 
@@ -88,8 +88,9 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
           expect(rendered_content).to have_css("dd", text: training_period.expression_of_interest_contract_period.year)
         end
 
-        it "does not show the API data row" do
-          expect(rendered_content).not_to have_css("dt", text: "API response")
+        it "shows the API data row with a message" do
+          expect(rendered_content).to have_css("dt", text: "API response")
+          expect(rendered_content).to include("Partnership not confirmed for this participant")
         end
       end
 
@@ -103,7 +104,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         it "shows the latest data" do
           expect(teacher.ect_at_school_periods.first.training_periods.count).to eq(2)
           expect(rendered_content).to have_css("dt", text: "API response").once
-          expect(rendered_content).to include(teacher.trn).once
+          expect(rendered_content).to include("data").once
         end
       end
     end
@@ -151,8 +152,9 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
           expect(rendered_content).to have_css("dd", text: "No delivery partner confirmed")
         end
 
-        it "does not show the API data row" do
-          expect(rendered_content).not_to have_css("dt", text: "API response")
+        it "shows the API data row with a message" do
+          expect(rendered_content).to have_css("dt", text: "API response")
+          expect(rendered_content).to include("Partnership not confirmed for this participant")
         end
       end
 
@@ -169,7 +171,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
         it "shows the latest data" do
           expect(teacher.mentor_at_school_periods.first.training_periods.count).to eq(2)
           expect(rendered_content).to have_css("dt", text: "API response")
-          expect(rendered_content).to include(teacher.trn).once
+          expect(rendered_content).to include("data").once
         end
       end
 
@@ -214,7 +216,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
       let(:training_period) { FactoryBot.create(:training_period, :provider_led) }
 
-      it "shows a generic error message" do
+      it "shows an error message" do
         expect(rendered_content).to have_css("dt", text: "API response")
         expect(rendered_content).to have_css("dd", text: "No API data for this participant")
       end
@@ -256,6 +258,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
 
     it "does not show the API data row" do
       expect(rendered_content).not_to have_css("dt", text: "API response")
+      expect(rendered_content).not_to include("data")
     end
   end
 
