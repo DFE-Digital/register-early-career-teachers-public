@@ -1,0 +1,29 @@
+<%
+  title = "Select the delivery partner for #{@wizard.selected_lead_provider.name} in #{@wizard.selected_contract_period.year}"
+
+  page_data(
+    title:,
+    error: @wizard.current_step.errors.present?,
+    backlink_href: @wizard.previous_step_path
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= f.govuk_collection_select(
+        :delivery_partner_id,
+        @wizard.delivery_partners,
+        :id,
+        :name,
+        label: { text: title, hidden: true },
+        options: { include_blank: true },
+        class: "autocomplete"
+      ) %>
+
+      <%= f.govuk_submit "Continue" %>
+    <% end %>
+  </div>
+</div>

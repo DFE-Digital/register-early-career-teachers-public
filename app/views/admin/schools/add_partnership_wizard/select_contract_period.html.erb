@@ -1,0 +1,29 @@
+<% page_data(
+  title: "Select the contract period",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: admin_school_partnerships_path(@school.urn)
+) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= f.govuk_radio_buttons_fieldset(
+        :contract_period_year,
+        legend: { text: "Select the contract period", hidden: true }
+      ) do %>
+        <% @wizard.contract_periods.each_with_index do |contract_period, index| %>
+          <%= f.govuk_radio_button(
+            :contract_period_year,
+            contract_period.year,
+            label: { text: contract_period.year.to_s },
+            link_errors: index.zero?
+          ) %>
+        <% end %>
+      <% end %>
+
+      <%= f.govuk_submit "Continue" %>
+    <% end %>
+  </div>
+</div>
