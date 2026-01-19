@@ -1,4 +1,18 @@
 module TeacherHistoryConverter::CalculatedAttributes
+  INDUCTION_RECORD_GROUPS_SORTING = ->(records) { records.sort_by { [it.end_date.present? ? 0 : 1, it.start_date, it.created_at] } }
+  GROUP_INDUCTION_RECORDS_SORTING = ->(records) { records.sort_by { [it.end_date.present? ? 0 : 1, it.created_at] } }
+
+  # 1. Split a list of teacher's induction records by (school, lead_provider, cohort)
+  # 2. Sort each group by end_date.present?, created_at
+  # 3. Take only the last induction record from each group
+  # 4. Return the resulting list ordered by end_date.present?, start_date, created_at.
+  def latest_induction_records(induction_records:)
+    induction_records
+      .group_by { [it.school, it.training_provider_info.lead_provider_info, it.cohort_year] }
+      .then { it.transform_values! { GROUP_INDUCTION_RECORDS_SORTING.call(it).last } }
+      .then { INDUCTION_RECORD_GROUPS_SORTING.call(it.values) }
+  end
+
   # Calculates the api_updated_at timestamp using ECF's ParticipantSerializer logic:
   # The max of participant_profiles.updated_at, user.updated_at,
   # participant_identities.updated_at, and induction_records.updated_at

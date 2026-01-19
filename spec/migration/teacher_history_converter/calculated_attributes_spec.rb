@@ -5,6 +5,123 @@ class FakeTeacherHistoryConverter
 end
 
 describe TeacherHistoryConverter::CalculatedAttributes do
+  describe "#latest_induction_records" do
+    subject { FakeTeacherHistoryConverter.new.latest_induction_records(induction_records:) }
+
+    let(:school_1) { Types::SchoolData.new(urn: 111_111, name: "School 1") }
+    let(:school_2) { Types::SchoolData.new(urn: 222_222, name: "School 2") }
+    let(:school_3) { Types::SchoolData.new(urn: 333_333, name: "School 3") }
+    let(:provider_1_2022) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year: 2022) }
+    let(:provider_2_2022) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year: 2022) }
+    let(:provider_3_2022) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year: 2022) }
+    let(:provider_3_2024) { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year: 2024) }
+
+    let(:ir_school_1_registration) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_1,
+                       training_provider_info: provider_1_2022,
+                       cohort_year: 2022,
+                       start_date: Date.new(2023, 5, 1),
+                       end_date: Date.new(2022, 10, 1),
+                       created_at: Time.zone.local(2022, 9, 1))
+    end
+
+    let(:ir_school_1_start_date_update) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_1,
+                       training_provider_info: provider_1_2022,
+                       cohort_year: 2022,
+                       start_date: Date.new(2022, 9, 1),
+                       end_date: Date.new(2022, 11, 1),
+                       created_at: Time.zone.local(2022, 10, 1))
+    end
+
+    let(:ir_school_2_transfer) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_2,
+                       training_provider_info: provider_2_2022,
+                       cohort_year: 2022,
+                       start_date: Date.new(2022, 8, 1),
+                       end_date: Date.new(2022, 12, 1),
+                       created_at: Time.zone.local(2022, 11, 1))
+    end
+
+    let(:ir_school_2_leaving_2023_1_1) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_2,
+                       training_provider_info: provider_2_2022,
+                       cohort_year: 2022,
+                       start_date: Date.new(2022, 12, 1),
+                       end_date: Date.new(2023, 3, 1),
+                       created_at: Time.zone.local(2022, 12, 1))
+    end
+
+    let(:ir_school_3_transfer) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_3,
+                       training_provider_info: provider_2_2022,
+                       cohort_year: 2022,
+                       start_date: Date.new(2023, 1, 1),
+                       end_date: Date.new(2023, 2, 1),
+                       created_at: Time.zone.local(2023, 1, 1))
+    end
+
+    let(:ir_school_3_provider_change) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_3,
+                       training_provider_info: provider_3_2022,
+                       cohort_year: 2022,
+                       start_date: Date.new(2023, 2, 1),
+                       end_date: Date.new(2025, 10, 1),
+                       created_at: Time.zone.local(2023, 2, 1))
+    end
+
+    let(:ir_school_2_provider_2_withdrawal) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_2,
+                       training_provider_info: provider_2_2022,
+                       cohort_year: 2022,
+                       start_date: Date.new(2023, 3, 1),
+                       end_date: Date.new(2023, 1, 1),
+                       created_at: Time.zone.local(2023, 3, 1))
+    end
+
+    let(:ir_school_3_cohort_change_ongoing) do
+      FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                       school: school_3,
+                       training_provider_info: provider_3_2024,
+                       cohort_year: 2024,
+                       start_date: Date.new(2025, 10, 1),
+                       end_date: nil,
+                       created_at: Time.zone.local(2025, 10, 1))
+    end
+
+    let(:induction_records) do
+      [
+        ir_school_1_registration,
+        ir_school_1_start_date_update,
+        ir_school_2_transfer,
+        ir_school_2_leaving_2023_1_1,
+        ir_school_2_provider_2_withdrawal,
+        ir_school_3_transfer,
+        ir_school_3_provider_change,
+        ir_school_3_cohort_change_ongoing
+      ]
+    end
+
+    let(:result) do
+      [
+        ir_school_1_start_date_update,
+        ir_school_3_transfer,
+        ir_school_3_provider_change,
+        ir_school_2_provider_2_withdrawal,
+        ir_school_3_cohort_change_ongoing
+      ]
+    end
+
+    it { is_expected.to match_array(result) }
+  end
+
   describe "#participant_api_updated_at" do
     subject { FakeTeacherHistoryConverter.new.participant_api_updated_at(ecf1_teacher_history:) }
 

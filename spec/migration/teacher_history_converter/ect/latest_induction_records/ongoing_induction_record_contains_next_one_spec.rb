@@ -1,8 +1,9 @@
 describe "Ongoing induction record contains next one" do
   subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
-  # When there are two induction records and the one which started latest
+  # When there are two induction records and the one which started earliest
   # is ongoing.
+  #
   #      ┌──────────────────────────────────────>
   #      │
   #      └──────────────────────────────────────>
