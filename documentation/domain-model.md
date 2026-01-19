@@ -161,8 +161,7 @@ erDiagram
     boolean trnless
     datetime api_updated_at
     datetime api_unfunded_mentor_updated_at
-    enum ect_migration_mode
-    enum mentor_migration_mode
+    enum migration_mode
   }
   PendingInductionSubmission {
     integer id
@@ -196,6 +195,7 @@ erDiagram
     boolean trs_prohibited_from_teaching
     date trs_induction_completed_date
     date trs_date_of_birth
+    date fail_confirmation_sent_on
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
@@ -269,6 +269,7 @@ erDiagram
     integer teacher_id
     enum outcome
     enum training_programme
+    date fail_confirmation_sent_on
   }
   InductionPeriod }o--|| AppropriateBody : belongs_to
   InductionPeriod }o--|| Teacher : belongs_to
