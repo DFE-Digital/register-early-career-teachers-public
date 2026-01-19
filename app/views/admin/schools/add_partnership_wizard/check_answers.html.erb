@@ -1,0 +1,41 @@
+<% page_data(
+  title: "Add partnership",
+  error: @wizard.current_step.errors.present?,
+  backlink_href: @wizard.previous_step_path
+) %>
+
+<p class="govuk-body">You want to add this partnership:</p>
+
+<%= govuk_summary_list do |list| %>
+  <%= list.with_row do |row| %>
+    <%= row.with_key { "School" } %>
+    <%= row.with_value { @wizard.school.name } %>
+  <% end %>
+
+  <%= list.with_row do |row| %>
+    <%= row.with_key { "Contract period" } %>
+    <%= row.with_value { @wizard.selected_contract_period_label } %>
+  <% end %>
+
+  <%= list.with_row do |row| %>
+    <%= row.with_key { "Lead provider" } %>
+    <%= row.with_value { @wizard.selected_lead_provider.name } %>
+  <% end %>
+
+  <%= list.with_row do |row| %>
+    <%= row.with_key { "Delivery partner" } %>
+    <%= row.with_value { @wizard.selected_delivery_partner.name } %>
+  <% end %>
+<% end %>
+
+<%= form_with(model: @wizard.current_step, url: @wizard.current_step_path) do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+  <%= f.govuk_submit "Confirm" %>
+<% end %>
+
+<p class="govuk-body">
+  <%= govuk_link_to(
+    "Cancel and go back to #{@wizard.school.name}",
+    admin_school_partnerships_path(@wizard.school.urn)
+  ) %>
+</p>
