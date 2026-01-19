@@ -159,6 +159,7 @@ module Admin
       end
 
       def formatted_teacher
+        return "Partnership not confirmed for this participant" unless confirmed_partnership?
         return "No API data for this participant" if serialized_teacher.nil?
 
         @formatted_teacher ||= JSON.pretty_generate(JSON.parse(serialized_teacher))
@@ -181,7 +182,7 @@ module Admin
       end
 
       def show_api_row?
-        @show_api_row ||= index.zero? && confirmed_partnership?
+        index.zero?
       end
 
       def summary_row(label, value)
