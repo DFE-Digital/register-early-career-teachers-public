@@ -58,6 +58,8 @@ module Schools
         record_event!
       end
 
+      send_confirmation_email!
+
       @ect_at_school_period
     end
 
@@ -139,6 +141,17 @@ module Schools
         teacher:,
         author:
       ).set!
+    end
+
+    def send_confirmation_email!
+      return if email.blank?
+
+      case training_programme
+      when "school_led"
+        Schools::ECTRegistrationMailer.with(ect_at_school_period:).school_led_confirmation.deliver_later
+      when "provider_led"
+        Schools::ECTRegistrationMailer.with(ect_at_school_period:).provider_led_confirmation.deliver_later
+      end
     end
 
     def record_event!
