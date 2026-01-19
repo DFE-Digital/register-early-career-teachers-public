@@ -29,6 +29,15 @@ RSpec.describe Schools::RegisterMentor do
   let(:finish_existing_at_school_periods) { false }
 
   describe "#register!" do
+    context "when the mentor is not registered" do
+      it "does not enqueue a confirmation email" do
+        ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+        expect { service.register! }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(ActiveJob::Base.queue_adapter.enqueued_jobs).to be_empty
+      end
+    end
+
     context "when no ActiveLeadProvider exists for the registration period" do
       it "raises an error" do
         expect { service.register! }.to raise_error(ActiveRecord::RecordNotFound)
