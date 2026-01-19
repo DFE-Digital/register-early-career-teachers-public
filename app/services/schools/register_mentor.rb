@@ -52,6 +52,8 @@ module Schools
         record_event!
       end
 
+      send_confirmation_email!
+
       mentor_at_school_period
     end
 
@@ -111,6 +113,12 @@ module Schools
         teacher:,
         author:
       ).set!
+    end
+
+    def send_confirmation_email!
+      return if email.blank?
+
+      Schools::MentorRegistrationMailer.with(mentor_at_school_period:).confirmation.deliver_later
     end
 
     def record_event!

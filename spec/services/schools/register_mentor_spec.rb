@@ -54,6 +54,11 @@ RSpec.describe Schools::RegisterMentor do
           expect(mentor_at_school_period.started_on).to eq(started_on)
           expect(mentor_at_school_period.email).to eq(email)
         end
+
+        it "sends a confirmation email to the mentor" do
+          expect { service.register! }
+            .to have_enqueued_mail(Schools::MentorRegistrationMailer, :confirmation)
+        end
       end
 
       context "when a Teacher record with the same trn exists" do
@@ -199,6 +204,11 @@ RSpec.describe Schools::RegisterMentor do
 
       it "does not create a TrainingPeriod" do
         expect { service.register! }.not_to change(TrainingPeriod, :count)
+      end
+
+      it "sends a confirmation email to the mentor" do
+        expect { service.register! }
+          .to have_enqueued_mail(Schools::MentorRegistrationMailer, :confirmation)
       end
     end
   end
