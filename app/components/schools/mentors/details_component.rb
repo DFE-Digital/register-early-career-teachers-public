@@ -71,7 +71,7 @@ module Schools
       end
 
       def assigned_ects
-        @assigned_ects ||= @mentor.currently_assigned_ects
+        @assigned_ects ||= @mentor.current_or_future_ects
       end
     end
   end

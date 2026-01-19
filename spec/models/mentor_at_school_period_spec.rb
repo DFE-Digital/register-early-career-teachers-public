@@ -13,11 +13,11 @@ describe MentorAtSchoolPeriod do
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:declarations).through(:training_periods) }
     it { is_expected.to have_many(:events) }
-    it { is_expected.to have_many(:currently_assigned_ects).through(:mentorship_periods).source(:mentee) }
+    it { is_expected.to have_many(:current_or_future_ects).through(:mentorship_periods).source(:mentee) }
   end
 
-  describe "#currently_assigned_ects" do
-    subject { mentor.currently_assigned_ects }
+  describe "#current_or_future_ects" do
+    subject { mentor.current_or_future_ects }
 
     let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 2.years.ago, finished_on: nil) }
 
@@ -32,7 +32,7 @@ describe MentorAtSchoolPeriod do
       end
     end
 
-    it { is_expected.to match_array [current, finishing] }
+    it { is_expected.to match_array [current, upcoming, finishing] }
   end
 
   describe ".current_or_next_training_period" do
