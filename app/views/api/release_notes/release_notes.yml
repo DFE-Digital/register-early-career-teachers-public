@@ -21,6 +21,73 @@
 #
 #     **bold** and _italic_ text
 
+- title: Change schedules endpoint released to the Register ECTs sandbox with updated validation rules
+  date: 2026-01-19
+  tags:
+    - sandbox-release
+  body: |
+    The `PUT /participants/{id}/change-schedule` endpoint is now available in the Register ECTs sandbox. We have also updated the validation rules for when lead providers can change a participant’s schedule or cohort.
+
+    These changes are defined in sections 19.1, 19.2 and 19.3 of the API specification.
+
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API?
+
+    ### Only the current lead provider can update a participant’s schedule or cohort
+    Lead providers can now only update schedules or cohorts when they are the current lead provider training the participant. If you are not the current lead provider, the request will return a validation error.
+    
+    If a participant has a future start date with a different lead provider, the current lead provider will no longer be able to change the schedule or cohort.
+    
+    The new lead provider will not be able to change the schedule or cohort until the participant has started training with them (their start date has elapsed).
+    
+    Previously, any lead provider could update a schedule or cohort as long as there were no billable declarations.
+
+    ### You can now change schedules or cohorts even when there are billable declarations
+    Lead providers can now move participants between schedules or cohorts when billable declarations exist, as long as they are the current lead provider for that participant.
+
+    Previously, billable declarations prevented any further changes.
+
+    ### Schedule and cohort changes are restricted after a declaration is submitted
+    If you submit a declaration for a participant on a given day, you cannot make any further schedule or cohort changes for that participant until the next day. You can make multiple changes on the same day before you submit a declaration.
+
+    Previously, multiple cohort changes could be made on the same day as a declaration.
+
+    ## Why we’ve made these changes
+    These changes are intended to avoid participants having multiple schedules or cohorts at the same time, and to ensure declarations can be reliably attached to the correct cohort.
+
+    ## Impact on lead providers
+    These changes may affect how you manage schedules and cohorts in some scenarios:
+    
+    * you will not be able to update schedules or cohorts for participants you are no longer training
+    * you have more flexibility to move participants even when billable declarations exist
+    * you may need to wait until the next day to make further cohort changes if you submit a declaration on the same day
+
+    ## Example validation errors
+
+    **Not the current lead provider**
+    ```
+    You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.
+    ```
+
+    **Participant is due to start with another lead provider**
+    ```
+    You cannot change this participant’s schedule as they are due to start with another lead provider in the future.
+    ```
+
+    **Moving a participant to a payments frozen cohort they were not previously part of**
+    ```
+    You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.
+    ```
+
+    **Schedule change would invalidate declarations**
+    ```
+    The change of schedule cannot be applied because a previous change of schedule and a declaration were made on the same day. Applying another change of schedule would invalidate existing declarations. Please contact DfE for assistance.
+    ```
+
+    **Participant has completed training or induction**
+    ```
+    You cannot change this participant’s schedule as they have completed their training or induction.
+    ```
+
 - title: Unfunded mentors endpoint now available in the Register ECTs sandbox
   date: 2025-12-17
   tags:
