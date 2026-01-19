@@ -42,7 +42,7 @@ module Schools
       end
 
       def assigned_ects
-        @assigned_ects ||= (mentor_period_for_school&.currently_assigned_ects).to_a
+        @assigned_ects ||= (mentor_period_for_school&.current_or_future_ects).to_a
       end
 
       def assigned_ects_summary

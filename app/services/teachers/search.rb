@@ -78,7 +78,7 @@ module Teachers
       return if school == :ignore
 
       @scope = @scope
-        .eager_load(mentor_at_school_periods: { currently_assigned_ects: :teacher })
+        .eager_load(mentor_at_school_periods: { current_or_future_ects: :teacher })
         .where(mentor_at_school_periods: { school_id: school.id })
         .merge(MentorAtSchoolPeriod.current_or_future)
         .distinct

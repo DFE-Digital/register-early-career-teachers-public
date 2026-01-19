@@ -9,8 +9,8 @@ class MentorAtSchoolPeriod < ApplicationRecord
   has_many :training_periods, inverse_of: :mentor_at_school_period, dependent: :destroy
   has_many :declarations, through: :training_periods
   has_many :events
-  has_many :currently_assigned_ects,
-           -> { ongoing_today.includes(:teacher) },
+  has_many :current_or_future_ects,
+           -> { current_or_future.includes(:teacher) },
            through: :mentorship_periods,
            source: :mentee
   has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"
