@@ -1,5 +1,4 @@
 class ECF1TeacherHistory::Mentor
-  include TeacherHistoryConverter::CalculatedAttributes
   using Migration::CompactWithIgnore
 
   attr_reader :participant_profile_id,
@@ -10,7 +9,7 @@ class ECF1TeacherHistory::Mentor
               :payments_frozen_cohort_start_year,
               :states
 
-  attr_writer :induction_records
+  attr_accessor :induction_records
 
   def initialize(participant_profile_id:, created_at:, updated_at:, mentor_completion_date:, mentor_completion_reason:, payments_frozen_cohort_start_year:, states:, induction_records:)
     @participant_profile_id = participant_profile_id
@@ -30,19 +29,5 @@ class ECF1TeacherHistory::Mentor
     hash[:states] = hash[:states]&.map { ECF1TeacherHistory::ProfileState.from_hash(it) } || []
 
     new(**FactoryBot.attributes_for(:ecf1_teacher_history_mentor, **hash))
-  end
-
-  def induction_records(migration_mode: :latest_induction_records)
-    case migration_mode
-    when :all_induction_records then all_induction_records
-    when :latest_induction_records then latest_induction_records(induction_records: @induction_records)
-    else fail "Invalid mode"
-    end
-  end
-
-private
-
-  def all_induction_records
-    @induction_records
   end
 end

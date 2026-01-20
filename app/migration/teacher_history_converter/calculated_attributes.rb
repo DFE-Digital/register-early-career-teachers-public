@@ -21,12 +21,12 @@ module TeacherHistoryConverter::CalculatedAttributes
 
     if ecf1_teacher_history.ect.present?
       timestamps << ecf1_teacher_history.ect.updated_at
-      timestamps.concat(ecf1_teacher_history.ect.induction_records(migration_mode:).map(&:updated_at))
+      timestamps.concat(ecf1_teacher_history.ect.induction_records.map(&:updated_at))
     end
 
     if ecf1_teacher_history.mentor.present?
       timestamps << ecf1_teacher_history.mentor.updated_at
-      timestamps.concat(ecf1_teacher_history.mentor.induction_records(migration_mode:).map(&:updated_at))
+      timestamps.concat(ecf1_teacher_history.mentor.induction_records.map(&:updated_at))
     end
 
     # participant_identities.updated_at is captured in user if needed

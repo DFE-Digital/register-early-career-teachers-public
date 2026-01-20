@@ -5,7 +5,7 @@ class TeacherHistoryConverter::ECT::AllInductionRecords
   end
 
   def convert
-    ecf1_teacher_history.induction_records(migration_mode: :latest_induction_records).each_with_index do |induction_record, _i|
+    ecf1_teacher_history.induction_records.each_with_index do |induction_record, _i|
       add_induction_record_to_ecf2_teacher_history(induction_record)
     end
   end
