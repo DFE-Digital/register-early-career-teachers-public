@@ -12,9 +12,7 @@ module Schools
 
       def self.permitted_params = %i[use_previous_ect_choices]
 
-      def allowed?
-        reusable_available?
-      end
+      def allowed? = reusable_available?
 
       def next_step
         use_previous_ect_choices ? :check_answers : fallback_step
@@ -27,24 +25,31 @@ module Schools
       end
 
       def reusable_partnership_preview
-        return unless reusable_available?
+        return if reusable_partnership_id.blank?
 
         SchoolPartnership.find_by(id: reusable_partnership_id)
       end
 
       def reusable_available?
-        provider_led_programme_chosen? &&
-          last_chosen_lead_provider_present? &&
-          current_contract_period.present? &&
-          reusable_partnership_id.present?
+        return false if current_contract_period.blank?
+
+        provider_led_reusable? || school_led_reusable?
+      end
+
+      def provider_led_reusable?
+        school.provider_led_training_programme_chosen? &&
+          school.last_chosen_lead_provider.present?
+      end
+
+      def school_led_reusable?
+        school.school_led_training_programme_chosen? &&
+          school.last_chosen_appropriate_body_id.present?
       end
 
       def reusable_partnership_id
-        @reusable_partnership_id ||= find_previous_year_reusable_id
+        @reusable_partnership_id ||= find_reusable_partnership_id
       end
 
-      # Reuse is evaluated against the current registration contract period
-      # Backdated start dates map to the current contract period
       def current_contract_period
         @current_contract_period ||= ContractPeriod.current
       end
@@ -54,25 +59,41 @@ module Schools
       def persist
         return false unless ect.update(use_previous_ect_choices:, **choices)
 
-        store[:school_partnership_to_reuse_id] =
-          (reusable_available? && use_previous_ect_choices) ? reusable_partnership_id : nil
+        store[:school_partnership_to_reuse_id] = nil
+
+        apply_partnership_reuse! if use_previous_ect_choices
 
         true
+      end
+
+      def apply_partnership_reuse!
+        return if reusable_partnership_id.blank?
+        return if reusable_partnership_in_current_year?
+
+        store[:school_partnership_to_reuse_id] = reusable_partnership_id
+      end
+
+      def reusable_partnership_in_current_year?
+        SchoolPartnership
+          .joins(lead_provider_delivery_partnership: :active_lead_provider)
+          .where(id: reusable_partnership_id)
+          .where(active_lead_providers: { contract_period_year: current_contract_period.year })
+          .exists?
       end
 
       def choices
         use_previous_ect_choices ? school.last_programme_choices : {}
       end
 
-      def find_previous_year_reusable_id
-        contract_period = current_contract_period
+      def find_reusable_partnership_id
+        return if school.school_led_training_programme_chosen?
 
-        SchoolPartnerships::FindPreviousReusable
+        SchoolPartnerships::FindReusablePartnership
           .new
           .call(
             school:,
-            last_lead_provider: school.last_chosen_lead_provider,
-            current_contract_period: contract_period
+            lead_provider: school.last_chosen_lead_provider,
+            contract_period: current_contract_period
           )
           &.id
       end

@@ -95,9 +95,9 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
   end
 
   def stub_reuse_finder_to_return(previous_partnership)
-    reuse_finder = instance_double(SchoolPartnerships::FindPreviousReusable)
+    reuse_finder = instance_double(SchoolPartnerships::FindReusablePartnership)
 
-    allow(SchoolPartnerships::FindPreviousReusable).to receive(:new)
+    allow(SchoolPartnerships::FindReusablePartnership).to receive(:new)
       .and_return(reuse_finder)
 
     allow(reuse_finder).to receive(:call)
