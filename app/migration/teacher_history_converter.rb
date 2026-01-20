@@ -71,16 +71,16 @@ private
   end
 
   def mentor_at_school_period_rows
-     return [] if ecf1_teacher_history.mentor.blank?
-    
-     induction_records = ecf1_teacher_history.mentor.induction_records(migration_mode:)
-    
-     case migration_mode
-     when :latest_induction_records
-       TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records)
-     when :all_induction_records
-       TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records)
-     end
+    return [] if ecf1_teacher_history.mentor.blank?
+
+    induction_records = ecf1_teacher_history.mentor.induction_records(migration_mode:)
+
+    case migration_mode
+    when :latest_induction_records
+      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records).mentor_at_school_periods
+    when :all_induction_records
+      TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
+    end
   end
 
   # def build_mentorship_period_rows(induction_record)

@@ -22,7 +22,7 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
 
 private
 
-  # Add a new school_period period to the beginning of ect_at_school_periods with:
+  # Add a new school_period period to the beginning of mentor_at_school_periods with:
   #  - start_date: the earliest of the induction_record.start_date and the first school_period start_date - 2.days
   #  - end_date: the earliest of the induction_record.end_date and the first school_period start_date - 1.day
   #
@@ -45,7 +45,6 @@ private
         finished_on:,
         school: induction_record.school,
         email: induction_record.preferred_identity_email,
-        mentorship_period_rows: [],
         training_period_rows: [training_period].compact
       )
     )
