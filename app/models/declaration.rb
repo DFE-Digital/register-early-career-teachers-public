@@ -65,7 +65,13 @@ class Declaration < ApplicationRecord
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
 
   # Validations
-  validates :training_period, presence: { message: "Choose a training period" }
+  validates :training_period,
+            presence: { message: "Choose a training period" },
+            uniqueness: {
+              scope: %i[declaration_type payment_status],
+              conditions: -> { billable_or_changeable },
+              message: "A billable declaration with the same type already exists for this training period"
+            }
   validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_by_user_at
   validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
