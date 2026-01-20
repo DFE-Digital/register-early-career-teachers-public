@@ -1,7 +1,6 @@
 class Schools::InductionTutorConfirmationMailer < ApplicationMailer
   SUBJECT_PREFIX = "You are the induction tutor for"
   SETUP_ECTE_GUIDANCE_URL = "https://www.gov.uk/guidance/set-up-and-manage-the-early-career-teacher-entitlement"
-  PRIVACY_NOTICE_URL = "https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers"
   REGISTER_ECT_SERVICE_URL = "https://www.register-early-career-teachers.education.gov.uk/"
   DFE_SIGN_IN_URL = "https://services.signin.education.gov.uk/"
   DFE_SIGN_IN_HELP_URL = "https://help.signin.education.gov.uk/contact-us"
