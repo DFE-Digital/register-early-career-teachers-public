@@ -215,13 +215,13 @@ describe ECF1TeacherHistory do
 
         describe "Mentor induction records" do
           it "creates the right number" do
-            expect(history.mentor.induction_records.count).to eq mentor_induction_records.count
+            expect(history.mentor.induction_records(migration_mode: :all_induction_records).count).to eq mentor_induction_records.count
           end
 
           it "populates the right attributes" do
             aggregate_failures "mentor induction records results" do
               mentor_induction_records.each do |induction_record|
-                historic_record = history.mentor.induction_records.find { |ir| ir.induction_record_id == induction_record.id }
+                historic_record = history.mentor.induction_records(migration_mode: :all_induction_records).find { |ir| ir.induction_record_id == induction_record.id }
                 expect(historic_record.start_date.to_date).to eq(induction_record.start_date.to_date)
                 expect(historic_record.end_date&.to_date).to eq(induction_record.end_date&.to_date)
                 expect(historic_record.created_at).to be_within(1.second).of(induction_record.created_at)

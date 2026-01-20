@@ -71,50 +71,18 @@ private
   end
 
   def mentor_at_school_period_rows
-    # return [] if ecf1_teacher_history.mentor.blank?
-    #
-    # induction_records = ecf1_teacher_history.mentor.induction_records(migration_mode:)
-    #
-    # case migration_mode
-    # when :latest_induction_records
-    #   TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records)
-    # when :all_induction_records
-    #   TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records)
-    # end
-    []
+    return [] if ecf1_teacher_history.mentor.blank?
+
+    induction_records = ecf1_teacher_history.mentor.induction_records(migration_mode:)
+
+    case migration_mode
+    when :latest_induction_records
+      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records).mentor_at_school_periods
+    when :all_induction_records
+      TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
+    end
   end
 
-  # def build_mentor_training_period_rows_for_school(school_induction_records, all_induction_records)
-  #   training_period_rows = []
-  #   current_training = nil
-  #
-  #   school_induction_records.each do |induction_record|
-  #     index = all_induction_records.index(induction_record)
-  #
-  #     training_programme = ecf2_training_programme(induction_record.training_programme)
-  #     next unless training_programme == "provider_led"
-  #
-  #     if training_changed?(current_training, induction_record)
-  #       current_training = induction_record
-  #       training_period_rows << ECF2TeacherHistory::TrainingPeriodRow.new(
-  #         **mentor_training_period_attributes(induction_record, school_induction_records, index)
-  #       )
-  #     else
-  #       update_training_period_end_date(training_period_rows.last, induction_record, school_induction_records, :mentor)
-  #     end
-  #   end
-  #
-  #   training_period_rows
-  # end
-
-  # def mentor_training_period_attributes(induction_record, induction_records, index)
-  #   training_period_attributes(induction_record, induction_records, index, participant_type: :mentor)
-  # end
-  #
-  # def ect_training_period_attributes(induction_record, induction_records, index)
-  #   training_period_attributes(induction_record, induction_records, index, participant_type: :ect)
-  # end
-  #
   # def build_mentorship_period_rows(induction_record)
   #   return [] if induction_record.mentor_profile_id.blank?
   #
@@ -147,26 +115,6 @@ private
   #   [induction_record.start_date, induction_record.created_at.to_date].min
   # end
   #
-  # def training_period_attributes(induction_record, induction_records, index, participant_type:)
-  #   {
-  #     started_on: date_corrector.corrected_start_date(induction_record, index),
-  #     finished_on: date_corrector.corrected_training_period_end_date(induction_record, induction_records, participant_type:),
-  #     training_programme: ecf2_training_programme(induction_record.training_programme),
-  #     **deferral_attributes(induction_record),
-  #     **withdrawal_attributes(induction_record),
-  #     lead_provider_info: induction_record.training_provider_info&.lead_provider_info,
-  #     delivery_partner_info: induction_record.training_provider_info&.delivery_partner_info,
-  #     schedule_info: induction_record.schedule_info,
-  #     contract_period_year: induction_record.cohort_year,
-  #     created_at: induction_record.created_at,
-  #     ecf_start_induction_record_id: induction_record.induction_record_id,
-  #     school: induction_record.school
-  #   }
-  # end
-  #
-  # def ecf2_training_programme(ecf1_training_programme)
-  #   Mappers::TrainingProgrammeMapper.new(ecf1_training_programme.to_s).mapped_value
-  # end
   #
   # def deferral_attributes(induction_record)
   #   return {} unless induction_record.training_status == "deferred"

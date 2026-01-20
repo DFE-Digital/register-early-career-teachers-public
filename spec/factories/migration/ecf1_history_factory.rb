@@ -161,7 +161,7 @@ FactoryBot.define do
     created_at { Date.new(cohort_year, 9, 1) }
     updated_at { 6.months.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
-    induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)] }
+    induction_records { [] }
 
     payments_frozen_cohort_start_year { nil }
 
