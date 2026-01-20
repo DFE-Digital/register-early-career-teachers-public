@@ -46,6 +46,15 @@ private
   end
 
   def latest_induction_records
-    @induction_records
+    row_matches = ->(rows, row) do
+      rows.any? do |r|
+        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school.urn, r.cohort_year] ==
+          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school.urn, row.cohort_year]
+      end
+    end
+
+    all_induction_records.reverse.each_with_object([]) do |row, result|
+      result.unshift(row) unless row_matches.call(result, row)
+    end
   end
 end
