@@ -9,7 +9,7 @@ module APISeedData
 
       contract_periods = ContractPeriod.all.index_by(&:year)
 
-      schedule_and_milestone_data.sort_by { |sd| [sd[:contract_period_year], sd[:identifier]] }.map do |schedule_data|
+      schedule_and_milestone_data.select { |sd| sd[:contract_period_year].in?(contract_periods.keys) }.sort_by { |sd| [sd[:contract_period_year], sd[:identifier]] }.map do |schedule_data|
         FactoryBot.create(
           :schedule,
           identifier: schedule_data[:identifier],
