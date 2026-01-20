@@ -60,6 +60,14 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
         expect(rendered).to have_css("dd", text: "Delta Partner")
       end
     end
+
+    describe "API ID row" do
+      it "renders" do
+        expect(rendered).to have_css("dt", text: "Partnership API ID")
+        expect(rendered).to have_css("dd", text: partnership_2024.api_id)
+        expect(rendered).to have_css("dd", text: partnership_2023.api_id)
+      end
+    end
   end
 
   context "with teacher rows" do
