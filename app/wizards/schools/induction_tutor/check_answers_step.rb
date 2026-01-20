@@ -6,6 +6,9 @@ module Schools
       def next_step = :confirmation
 
       def save!
+        old_email = school.induction_tutor_email
+        old_name = school.induction_tutor_name
+
         ActiveRecord::Base.transaction do
           record_event!
 
@@ -16,9 +19,21 @@ module Schools
           )
           true
         end
+
+        send_confirmation_email_if_details_different!(old_email:, old_name:)
       end
 
     private
+
+      def send_confirmation_email_if_details_different!(old_email:, old_name:)
+        return if details_unchanged?(old_email:, old_name:)
+
+        Schools::InductionTutorConfirmationMailer.with(school:).confirmation.deliver_later
+      end
+
+      def details_unchanged?(old_email:, old_name:)
+        old_email == school.induction_tutor_email && old_name == school.induction_tutor_name
+      end
 
       def record_event!
         Events::Record.record_school_induction_tutor_updated_event!(
