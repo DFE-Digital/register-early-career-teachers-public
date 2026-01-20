@@ -22,7 +22,7 @@ module Admin
           flash[:alert] = "Partnership updated"
           redirect_to admin_teacher_training_path(@teacher)
         else
-          render :new, status: :unprocessable_entity
+          render :new, status: :unprocessable_content
         end
       end
 

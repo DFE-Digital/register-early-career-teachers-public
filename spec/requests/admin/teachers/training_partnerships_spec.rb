@@ -54,7 +54,7 @@ RSpec.describe "Admin::Teachers::TrainingPartnerships", type: :request do
       post admin_teacher_training_period_partnership_path(teacher, training_period),
            params: { admin_teachers_change_training_partnership_form: { school_partnership_id: "" } }
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("Select a partnership")
     end
 
