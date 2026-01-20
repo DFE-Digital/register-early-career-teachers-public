@@ -1,4 +1,5 @@
 class ECF1TeacherHistory::Mentor
+  include TeacherHistoryConverter::CalculatedAttributes
   using Migration::CompactWithIgnore
 
   attr_reader :participant_profile_id,
@@ -34,7 +35,7 @@ class ECF1TeacherHistory::Mentor
   def induction_records(migration_mode: :latest_induction_records)
     case migration_mode
     when :all_induction_records then all_induction_records
-    when :latest_induction_records then latest_induction_records
+    when :latest_induction_records then latest_induction_records(induction_records: @induction_records)
     else fail "Invalid mode"
     end
   end
@@ -43,18 +44,5 @@ private
 
   def all_induction_records
     @induction_records
-  end
-
-  def latest_induction_records
-    row_matches = ->(rows, row) do
-      rows.any? do |r|
-        [r.training_provider_info&.lead_provider_info&.ecf1_id, r.school.urn, r.cohort_year] ==
-          [row.training_provider_info&.lead_provider_info&.ecf1_id, row.school.urn, row.cohort_year]
-      end
-    end
-
-    all_induction_records.reverse.each_with_object([]) do |row, result|
-      result.unshift(row) unless row_matches.call(result, row)
-    end
   end
 end
