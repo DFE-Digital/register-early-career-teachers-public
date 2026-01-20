@@ -24,6 +24,11 @@
             <% row.with_key(text: "Mentors") %>
             <% row.with_value { teacher_values(teacher_links(school_partnership, role: :mentor)) } %>
           <% end %>
+
+          <% list.with_row do |row| %>
+            <% row.with_key(text: "Partnership API ID") %>
+            <% row.with_value { school_partnership.api_id } %>
+          <% end %>
         <% end %>
       <% end %>
     <% end %>
