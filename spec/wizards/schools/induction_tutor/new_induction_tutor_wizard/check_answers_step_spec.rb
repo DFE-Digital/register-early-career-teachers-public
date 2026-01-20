@@ -63,5 +63,7 @@ describe Schools::InductionTutor::NewInductionTutorWizard::CheckAnswersStep do
 
       current_step.save!
     end
+
+    include_examples "induction tutor confirmation email"
   end
 end
