@@ -124,7 +124,7 @@ erDiagram
   Region {
     integer id
     string code
-    jsonb districts
+    array[string] districts
     integer teaching_school_hub_id
     datetime created_at
     datetime updated_at
