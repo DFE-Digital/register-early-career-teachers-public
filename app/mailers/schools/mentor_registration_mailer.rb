@@ -1,7 +1,6 @@
 class Schools::MentorRegistrationMailer < ApplicationMailer
   SUBJECT_PREFIX = "You’ve been registered as a mentor for early career teachers at"
   MENTORS_GUIDANCE_URL = "https://www.gov.uk/government/publications/early-career-teacher-entitlement-roles-and-responsibilities/mentors-responsibilities-for-early-career-teacher-entitlement"
-  PRIVACY_NOTICE_URL = "https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers"
 
   def confirmation
     mentor_at_school_period = params.fetch(:mentor_at_school_period)

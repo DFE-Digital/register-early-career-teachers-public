@@ -1,7 +1,6 @@
 class Schools::ECTRegistrationMailer < ApplicationMailer
   SUBJECT = "You’ve been registered for early career teacher training and support"
   ECT_GUIDANCE_URL = "https://www.gov.uk/government/publications/early-career-teachers-your-training-and-support-entitlement"
-  PRIVACY_NOTICE_URL = "https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers"
 
   def school_led_confirmation
     ect_at_school_period = params.fetch(:ect_at_school_period)
