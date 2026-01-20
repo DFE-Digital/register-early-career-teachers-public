@@ -7,6 +7,7 @@ RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
     let!(:teacher4) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 2.days.ago) }
     let!(:teacher5) { FactoryBot.create(:teacher, trs_data_last_refreshed_at: 1.day.ago) }
     let!(:teacher6) { FactoryBot.create(:teacher, :deactivated_in_trs, trs_data_last_refreshed_at: 0.days.ago) }
+    let!(:teacher7) { FactoryBot.create(:teacher, :not_found_in_trs, trs_data_last_refreshed_at: 0.days.ago) }
 
     it "schedules sync jobs for teachers ordered by trs_data_last_refreshed_at" do
       [

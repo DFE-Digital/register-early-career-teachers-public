@@ -503,6 +503,23 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_trs_not_found_event!" do
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_trs_not_found_event!(author:, teacher:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Rhys Ifans was not found in TRS",
+          event_type: :teacher_trs_not_found,
+          happened_at: Time.zone.now,
+          body: "TRS API returned 404 so the record was marked as not found",
+          **author_params
+        )
+      end
+    end
+  end
+
   describe "record_teacher_induction_status_reset_event!" do
     let(:event_type) { :teacher_induction_status_reset }
     let(:happened_at) { Time.zone.now }

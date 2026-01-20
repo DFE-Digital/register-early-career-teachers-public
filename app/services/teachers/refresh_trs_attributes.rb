@@ -1,6 +1,8 @@
 module Teachers
   # Service run after passing, failing, or reopening inductions,
   # and periodically, to sync attributes from TRS
+  #
+  # Teacher records not found in TRS, like seed data, are also refreshed.
   class RefreshTRSAttributes
     include Manageable
 
@@ -11,15 +13,22 @@ module Teachers
       @api_client = api_client
     end
 
-    # In some environments (e.g. sandbox) we don't want to allow data in TRS to
+    # In the sandbox environment we don't want to allow data in TRS to
     # overwrite existing teacher data, so we skip the refresh.
     #
-    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated
+    # In some environments we use seeded teachers, which should not use
+    # TRNs found in TRS, so we update only their status to mimic the real behaviour.
+    #
+    # TODO: permit update_not_found! in production once TeacherDeactivated error is possible
+    #
+    # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :teacher_not_found
     def refresh!
       return :refresh_disabled unless enabled?
 
       update!
-    rescue TRS::Errors::TeacherDeactivated
+    rescue TRS::Errors::TeacherNotFound
+      update_not_found! if Rails.application.config.enable_test_guidance
+    rescue TRS::Errors::TeacherDeactivated # NB: unreleased in production
       deactivate!
     end
 
@@ -30,6 +39,7 @@ module Teachers
 
   private
 
+    # @raise [TRS::Errors::TeacherDeactivated, TRS::Errors::TeacherNotFound]
     # @return [TRS::Teacher]
     def trs_teacher
       @trs_teacher ||= api_client.find_teacher(trn: teacher.trn)
@@ -37,6 +47,7 @@ module Teachers
 
     alias_method :trs_data, :trs_teacher
 
+    # @return [Symbol]
     def update!
       Teacher.transaction do
         update_name!
@@ -47,11 +58,21 @@ module Teachers
       end
     end
 
+    # @return [Symbol]
     def deactivate!
       Teacher.transaction do
         mark_teacher_as_deactivated!
 
         :teacher_deactivated
+      end
+    end
+
+    # @return [Symbol]
+    def update_not_found!
+      Teacher.transaction do
+        mark_teacher_as_not_found!
+
+        :teacher_not_found
       end
     end
   end
