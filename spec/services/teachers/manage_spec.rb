@@ -252,17 +252,17 @@ RSpec.describe Teachers::Manage do
   describe "#mark_teacher_as_deactivated!" do
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
 
-    context "when the teacher is already deactivated" do
+    context "when the teacher is already flagged" do
       let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs) }
 
       it do
         expect {
           service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
-        }.to raise_error(Teachers::Manage::AlreadyDeactivated)
+        }.to raise_error(Teachers::Manage::AlreadyFlagged)
       end
     end
 
-    context "when the teacher is active" do
+    context "when the teacher is not yet flagged" do
       it "sets the trs_deactivated flag to true" do
         expect(teacher.trs_deactivated).to be(false)
 
@@ -271,6 +271,59 @@ RSpec.describe Teachers::Manage do
 
         expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
         expect(teacher.trs_deactivated).to be(true)
+      end
+    end
+  end
+
+  describe "#mark_teacher_as_not_found!" do
+    let(:trs_data_last_refreshed_at) { 2.minutes.ago }
+
+    context "when the teacher is already flagged" do
+      let(:teacher) { FactoryBot.create(:teacher, :not_found_in_trs) }
+
+      it do
+        expect {
+          service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+        }.to raise_error(Teachers::Manage::AlreadyFlagged)
+      end
+    end
+
+    context "when the teacher is not yet flagged" do
+      it "sets the trs_not_found flag to true" do
+        expect(teacher.trs_not_found).to be(false)
+
+        service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+        teacher.reload
+
+        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+        expect(teacher.trs_not_found).to be(true)
+      end
+    end
+
+    context "when the teacher has an existing status and no induction" do
+      let(:teacher) { FactoryBot.create(:teacher, trs_induction_status: "Exempt") }
+
+      context "and no induction" do
+        before do
+          service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+          teacher.reload
+        end
+
+        it "does not overwrite the status" do
+          expect(teacher.trs_induction_status).to eq("Exempt")
+        end
+      end
+
+      context "and an induction" do
+        before do
+          FactoryBot.create(:induction_period, :pass, teacher:)
+          service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+          teacher.reload
+        end
+
+        it "overwrites the status" do
+          expect(teacher.trs_induction_status).to eq("Passed")
+        end
       end
     end
   end
