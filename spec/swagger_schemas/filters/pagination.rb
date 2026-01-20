@@ -9,7 +9,7 @@ PAGINATION_FILTER = {
     },
     per_page: {
       type: :integer,
-      description: "The number items to display on a page. Defaults to 100. Maximum is 3000, if the value is greater that the maximum allowed it will fallback to 3000.",
+      description: "The number of items to display on a page. Defaults to 100. Maximum is 3000, if the value is greater that the maximum allowed it will fallback to 3000.",
       example: 10,
     },
   },
