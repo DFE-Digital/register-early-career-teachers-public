@@ -638,11 +638,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
 
   create_table "regions", force: :cascade do |t|
     t.string "code", null: false
-    t.jsonb "districts", default: [], null: false
+    t.string "districts", null: false, array: true
     t.bigint "teaching_school_hub_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_regions_on_code", unique: true
+    t.index ["districts"], name: "index_regions_on_districts", using: :gin
     t.index ["teaching_school_hub_id"], name: "index_regions_on_teaching_school_hub_id"
   end
 
