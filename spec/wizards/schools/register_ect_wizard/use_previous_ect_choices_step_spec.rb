@@ -1,31 +1,100 @@
 RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :model do
-  subject { wizard.current_step }
+  subject(:step) { wizard.current_step }
 
   let(:use_previous_ect_choices) { true }
   let(:step_params) { {} }
   let(:school) { FactoryBot.create(:school) }
   let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:) }
+
   let(:wizard) do
-    FactoryBot.build(:register_ect_wizard,
-                     current_step: :use_previous_ect_choices,
-                     school:,
-                     store:,
-                     step_params:)
+    FactoryBot.build(
+      :register_ect_wizard,
+      current_step: :use_previous_ect_choices,
+      school:,
+      store:,
+      step_params:
+    )
   end
 
   describe "#initialize" do
-    subject { described_class.new(wizard:, **params) }
+    subject(:new_step) { described_class.new(wizard:, **params) }
 
     context "when use_previous_ect_choices is provided" do
       let(:params) { { use_previous_ect_choices: false } }
 
-      it { expect(subject.use_previous_ect_choices).to be(false) }
+      it { expect(new_step.use_previous_ect_choices).to be(false) }
     end
 
     context "when no use_previous_ect_choices is provided" do
       let(:params) { {} }
 
-      it { expect(subject.use_previous_ect_choices).to be(true) }
+      it { expect(new_step.use_previous_ect_choices).to be(true) }
+    end
+  end
+
+  describe "#allowed?" do
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+
+    before do
+      allow(ContractPeriod).to receive(:current).and_return(current_contract_period)
+    end
+
+    context "when provider-led is chosen and last chosen lead provider is present" do
+      before do
+        allow(school).to receive_messages(
+          provider_led_training_programme_chosen?: true,
+          school_led_training_programme_chosen?: false,
+          last_chosen_lead_provider: FactoryBot.create(:lead_provider)
+        )
+      end
+
+      it "is allowed" do
+        expect(step.allowed?).to be(true)
+      end
+    end
+
+    context "when provider-led is chosen but last chosen lead provider is missing" do
+      before do
+        allow(school).to receive_messages(
+          provider_led_training_programme_chosen?: true,
+          school_led_training_programme_chosen?: false,
+          last_chosen_lead_provider: nil
+        )
+      end
+
+      it "is not allowed" do
+        expect(step.allowed?).to be(false)
+      end
+    end
+
+    context "when school-led is chosen and last chosen appropriate body is present" do
+      let!(:appropriate_body) { FactoryBot.create(:appropriate_body, :national) }
+
+      before do
+        allow(school).to receive_messages(
+          provider_led_training_programme_chosen?: false,
+          school_led_training_programme_chosen?: true,
+          last_chosen_appropriate_body_id: appropriate_body.id
+        )
+      end
+
+      it "is allowed (product expectation for school-led)" do
+        expect(step.allowed?).to be(true)
+      end
+    end
+
+    context "when school-led is chosen but last chosen appropriate body is missing" do
+      before do
+        allow(school).to receive_messages(
+          provider_led_training_programme_chosen?: false,
+          school_led_training_programme_chosen?: true,
+          last_chosen_appropriate_body_id: nil
+        )
+      end
+
+      it "is not allowed" do
+        expect(step.allowed?).to be(false)
+      end
     end
   end
 
@@ -33,7 +102,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     context "when use_previous_ect_choices is true" do
       let(:use_previous_ect_choices) { true }
 
-      it { expect(subject.next_step).to eq(:check_answers) }
+      it { expect(step.next_step).to eq(:check_answers) }
     end
 
     context "when use_previous_ect_choices is false" do
@@ -42,31 +111,164 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
       context "for independent schools" do
         let(:school) { FactoryBot.create(:school, :independent) }
 
-        it { expect(subject.next_step).to eq(:independent_school_appropriate_body) }
+        it { expect(step.next_step).to eq(:independent_school_appropriate_body) }
       end
 
       context "for state-funded schools" do
         let(:school) { FactoryBot.create(:school, :state_funded) }
 
-        it { expect(subject.next_step).to eq(:state_school_appropriate_body) }
+        it { expect(step.next_step).to eq(:state_school_appropriate_body) }
       end
     end
   end
 
   describe "#previous_step" do
-    it { expect(subject.previous_step).to eq(:working_pattern) }
+    it { expect(step.previous_step).to eq(:working_pattern) }
   end
 
   describe "#save!" do
+    let!(:current_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+
     let(:step_params) do
       ActionController::Parameters.new(
         "use_previous_ect_choices" => { "use_previous_ect_choices" => "0" }
       )
     end
 
+    before do
+      allow(ContractPeriod).to receive(:current).and_return(current_contract_period)
+    end
+
     it "updates the wizard ect use_previous_ect_choices" do
-      expect { subject.save! }
-        .to change(subject.ect, :use_previous_ect_choices).from(true).to(false)
+      expect { step.save! }
+        .to change(step.ect, :use_previous_ect_choices).from(true).to(false)
+    end
+
+    it "clears school_partnership_to_reuse_id when saving" do
+      store[:school_partnership_to_reuse_id] = 123
+
+      expect { step.save! }
+        .to change { store[:school_partnership_to_reuse_id] }.from(123).to(nil)
+    end
+
+    context "when provider-led and user says yes and a reusable partnership is from a previous year" do
+      let(:use_previous_ect_choices) { true }
+
+      let(:step_params) do
+        ActionController::Parameters.new(
+          "use_previous_ect_choices" => { "use_previous_ect_choices" => "1" }
+        )
+      end
+
+      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+
+      let!(:reusable_previous_year_partnership) do
+        FactoryBot.create(
+          :school_partnership,
+          :for_year,
+          year: 2024,
+          school:,
+          lead_provider:,
+          delivery_partner:
+        )
+      end
+
+      before do
+        allow(step.ect).to receive(:update).and_return(true)
+
+        allow(school).to receive_messages(
+          provider_led_training_programme_chosen?: true,
+          school_led_training_programme_chosen?: false,
+          last_chosen_lead_provider: lead_provider
+        )
+
+        finder = instance_double(SchoolPartnerships::FindReusablePartnership)
+        allow(SchoolPartnerships::FindReusablePartnership).to receive(:new).and_return(finder)
+        allow(finder).to receive(:call).and_return(reusable_previous_year_partnership)
+      end
+
+      it "stores school_partnership_to_reuse_id" do
+        expect { step.save! }
+          .to change { store[:school_partnership_to_reuse_id] }.from(nil).to(reusable_previous_year_partnership.id)
+      end
+    end
+
+    context "when provider-led and user says yes but reusable partnership is already in current year" do
+      let(:use_previous_ect_choices) { true }
+
+      let(:step_params) do
+        ActionController::Parameters.new(
+          "use_previous_ect_choices" => { "use_previous_ect_choices" => "1" }
+        )
+      end
+
+      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let!(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+
+      let!(:active_lead_provider_2025) do
+        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+      end
+
+      let!(:lpdp_2025) do
+        FactoryBot.create(
+          :lead_provider_delivery_partnership,
+          active_lead_provider: active_lead_provider_2025,
+          delivery_partner:
+        )
+      end
+
+      let!(:reusable_current_year_partnership) do
+        FactoryBot.create(
+          :school_partnership,
+          school:,
+          lead_provider_delivery_partnership: lpdp_2025
+        )
+      end
+
+      before do
+        allow(step.ect).to receive(:update).and_return(true)
+
+        allow(school).to receive_messages(
+          provider_led_training_programme_chosen?: true,
+          school_led_training_programme_chosen?: false,
+          last_chosen_lead_provider: lead_provider
+        )
+
+        finder = instance_double(SchoolPartnerships::FindReusablePartnership)
+        allow(SchoolPartnerships::FindReusablePartnership).to receive(:new).and_return(finder)
+        allow(finder).to receive(:call).and_return(reusable_current_year_partnership)
+      end
+
+      it "does not store school_partnership_to_reuse_id" do
+        expect { step.save! }
+          .not_to change { store[:school_partnership_to_reuse_id] }.from(nil)
+      end
+    end
+
+    context "when school-led and user says yes" do
+      let(:use_previous_ect_choices) { true }
+
+      let(:step_params) do
+        ActionController::Parameters.new(
+          "use_previous_ect_choices" => { "use_previous_ect_choices" => "1" }
+        )
+      end
+
+      before do
+        allow(step.ect).to receive(:update).and_return(true)
+
+        allow(school).to receive_messages(
+          provider_led_training_programme_chosen?: false,
+          school_led_training_programme_chosen?: true,
+          last_chosen_appropriate_body_id: FactoryBot.create(:appropriate_body, :national).id
+        )
+      end
+
+      it "does not set school_partnership_to_reuse_id" do
+        expect { step.save! }
+          .not_to change { store[:school_partnership_to_reuse_id] }.from(nil)
+      end
     end
   end
 end
