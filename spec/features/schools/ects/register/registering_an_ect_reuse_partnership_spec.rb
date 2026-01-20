@@ -76,6 +76,34 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     then_i_am_on_the_confirmation_page
   end
 
+  scenario "reuses previous choices when no partnership exists but an EOI exists (provider-led)" do
+    given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
+    and_i_am_on_the_schools_ects_index_page
+    and_i_start_adding_an_ect
+    and_i_click_continue
+    and_i_submit_the_find_ect_form
+    and_i_choose_that_the_details_are_correct
+    and_i_click_confirm_and_continue
+    then_i_am_on_the_email_address_page
+
+    and_i_enter_the_ect_email_address
+    and_i_click_continue
+    then_i_am_on_the_start_date_page
+
+    and_i_enter_a_valid_start_date
+    and_i_click_continue
+    then_i_am_on_the_working_pattern_page
+
+    and_i_select_full_time
+    and_i_click_continue
+    then_i_am_on_the_use_previous_choices_page
+
+    and_i_choose_to_reuse_previous_choices
+    and_i_click_continue
+    then_i_am_on_the_check_answers_page
+    and_i_see_previous_programme_choices_summary_when_reusing
+  end
+
   def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
     context = build_school_with_reusable_provider_led_partnership
 
@@ -92,6 +120,50 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     stub_reuse_finder_to_return(@previous_school_partnership)
 
     sign_in_as_school_user(school: @current_school)
+  end
+
+  def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
+    context = build_school_with_reusable_provider_led_partnership
+
+    @current_school               = context.school
+    @current_contract_period      = context.current_contract_period
+    @last_chosen_lead_provider    = context.last_chosen_lead_provider
+
+    @appropriate_body_name = "Golden Leaf Teaching Hub"
+    FactoryBot.create(:appropriate_body, name: @appropriate_body_name)
+
+    stub_reuse_finder_to_return(nil) # <-- THIS is the point of the scenario
+
+    create_provider_led_eoi_at_school_for_registration_contract_period!
+
+    sign_in_as_school_user(school: @current_school)
+  end
+
+  def create_provider_led_eoi_at_school_for_registration_contract_period!
+    active_lead_provider =
+      FactoryBot.create(
+        :active_lead_provider,
+        lead_provider: @last_chosen_lead_provider,
+        contract_period: @current_contract_period
+      )
+
+    ect_at_school_period =
+      FactoryBot.create(
+        :ect_at_school_period,
+        school: @current_school,
+        started_on: @current_contract_period.started_on,
+        finished_on: nil
+      )
+
+    FactoryBot.create(
+      :training_period,
+      ect_at_school_period:,
+      training_programme: "provider_led",
+      expression_of_interest: active_lead_provider,
+      school_partnership: nil,
+      started_on: @current_contract_period.started_on,
+      finished_on: nil
+    )
   end
 
   def stub_reuse_finder_to_return(previous_partnership)

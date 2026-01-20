@@ -35,21 +35,109 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
   describe "#allowed?" do
     let!(:current_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
 
+    let(:store) do
+      FactoryBot.build(
+        :session_repository,
+        use_previous_ect_choices:,
+        start_date: "3 September 2025"
+      )
+    end
+
     before do
       allow(ContractPeriod).to receive(:current).and_return(current_contract_period)
     end
 
-    context "when provider-led is chosen and last chosen lead provider is present" do
+    context "when provider-led is chosen" do
+      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+
       before do
         allow(school).to receive_messages(
           provider_led_training_programme_chosen?: true,
           school_led_training_programme_chosen?: false,
-          last_chosen_lead_provider: FactoryBot.create(:lead_provider)
+          last_chosen_lead_provider: lead_provider,
+          last_chosen_lead_provider_id: lead_provider.id
         )
       end
 
-      it "is allowed" do
-        expect(step.allowed?).to be(true)
+      context "and a reusable partnership exists for the registration contract period" do
+        let!(:active_lead_provider_2025) do
+          FactoryBot.create(
+            :active_lead_provider,
+            lead_provider:,
+            contract_period: current_contract_period
+          )
+        end
+
+        let!(:lpdp_2025) do
+          FactoryBot.create(
+            :lead_provider_delivery_partnership,
+            active_lead_provider: active_lead_provider_2025
+          )
+        end
+
+        let!(:reusable_partnership) do
+          FactoryBot.create(
+            :school_partnership,
+            school:,
+            lead_provider_delivery_partnership: lpdp_2025
+          )
+        end
+
+        before do
+          finder = instance_double(SchoolPartnerships::FindReusablePartnership)
+          allow(SchoolPartnerships::FindReusablePartnership).to receive(:new).and_return(finder)
+          allow(finder).to receive(:call).and_return(reusable_partnership)
+        end
+
+        it "is allowed" do
+          expect(step.allowed?).to be(true)
+        end
+      end
+
+      context "and no partnership is reusable but an EOI exists for the registration contract period" do
+        let!(:active_lead_provider) do
+          FactoryBot.create(
+            :active_lead_provider,
+            lead_provider:,
+            contract_period: current_contract_period
+          )
+        end
+
+        let!(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2025, 9, 1), finished_on: nil)
+        end
+
+        before do
+          finder = instance_double(SchoolPartnerships::FindReusablePartnership)
+          allow(SchoolPartnerships::FindReusablePartnership).to receive(:new).and_return(finder)
+          allow(finder).to receive(:call).and_return(nil)
+
+          FactoryBot.create(
+            :training_period,
+            ect_at_school_period:,
+            training_programme: "provider_led",
+            expression_of_interest: active_lead_provider,
+            school_partnership: nil,
+            started_on: Date.new(2025, 9, 1),
+            finished_on: nil
+          )
+        end
+
+        it "is allowed" do
+          expect(step.allowed?).to be(true)
+        end
+      end
+
+      context "but there is no reusable partnership and no EOI" do
+        before do
+          finder = instance_double(SchoolPartnerships::FindReusablePartnership)
+          allow(SchoolPartnerships::FindReusablePartnership).to receive(:new).and_return(finder)
+          allow(finder).to receive(:call).and_return(nil)
+        end
+
+        it "is not allowed" do
+          expect(step.allowed?).to be(false)
+        end
       end
     end
 
