@@ -65,6 +65,21 @@ RSpec.describe APISeedData::Statements do
       expect { instance.plant }.not_to change(Statement, :count)
     end
 
+    context "when payments are frozen for the contract period" do
+      let(:contract_period) do
+        FactoryBot.create(
+          :contract_period,
+          year: Time.zone.now.year - 1,
+          payments_frozen_at: 1.month.ago
+        )
+      end
+
+      it "does not create any output fee statements" do
+        instance.plant
+        expect(active_lead_provider.statements.output_fee).not_to exist
+      end
+    end
+
     context "when in the production environment" do
       let(:environment) { "production" }
 
