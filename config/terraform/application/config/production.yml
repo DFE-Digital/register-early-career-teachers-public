@@ -18,6 +18,6 @@ DFE_SIGN_IN_SIGN_OUT_REDIRECT_URI: "https://www.register-early-career-teachers.e
 SERVICE_URL: "https://www.register-early-career-teachers.education.gov.uk"
 DFE_ANALYTICS_ENABLED: true
 TRS_API_BASE_URL: "https://teacher-qualifications-api.education.gov.uk"
-TRS_API_VERSION: "20250203"
+TRS_API_VERSION: "20250905"
 RAILS_ENV: production
 MAX_SESSION_IDLE_TIME: 7200
