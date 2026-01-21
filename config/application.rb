@@ -94,7 +94,7 @@ module RegisterEarlyCareerTeachers
 
     config.trs_api_base_url = ENV["TRS_API_BASE_URL"]
     config.trs_api_key = ENV["TRS_API_KEY"]
-    config.trs_api_version = ENV.fetch("TRS_API_VERSION", "20250203")
+    config.trs_api_version = ENV.fetch("TRS_API_VERSION", "20250905")
 
     config.after_initialize do
       ActionView::Base.default_form_builder = GOVUKDesignSystemFormBuilder::FormBuilder

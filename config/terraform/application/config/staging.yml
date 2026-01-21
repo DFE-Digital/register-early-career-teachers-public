@@ -24,7 +24,7 @@ DFE_SIGN_IN_SIGN_OUT_REDIRECT_URI: "https://staging.register-early-career-teache
 SERVICE_URL: "https://staging.register-early-career-teachers.education.gov.uk"
 DFE_ANALYTICS_ENABLED: true
 TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
-TRS_API_VERSION: "20250203"
+TRS_API_VERSION: "20250905"
 RAILS_ENV: staging
 ENABLE_TIME_TRAVEL: true
 MAX_SESSION_IDLE_TIME: 7200

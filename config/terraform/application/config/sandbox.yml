@@ -22,7 +22,7 @@ DFE_SIGN_IN_SIGN_OUT_REDIRECT_URI: "https://sandbox.register-early-career-teache
 SERVICE_URL: "https://sandbox.register-early-career-teachers.education.gov.uk"
 DFE_ANALYTICS_ENABLED: true
 TRS_API_BASE_URL: "https://preprod.teacher-qualifications-api.education.gov.uk"
-TRS_API_VERSION: "20250203"
+TRS_API_VERSION: "20250905"
 RAILS_ENV: sandbox
 ENABLE_TRS_TEACHER_REFRESH: false
 ENABLE_TIME_TRAVEL: true
