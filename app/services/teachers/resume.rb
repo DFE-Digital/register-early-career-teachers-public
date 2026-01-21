@@ -12,9 +12,9 @@ module Teachers
     def resume
       ActiveRecord::Base.transaction do
         new_training_period = TrainingPeriods::Create.provider_led(
-          period: training_period.trainee,
+          period: training_period.at_school_period,
           started_on: Time.zone.today,
-          finished_on: training_period.trainee.finished_on,
+          finished_on: training_period.at_school_period_finished_on,
           school_partnership: training_period.school_partnership,
           expression_of_interest: nil,
           schedule: training_period.schedule,

@@ -26,8 +26,7 @@ module Declarations
   private
 
     delegate :training_period, to: :declaration
-    delegate :trainee, to: :training_period
-    delegate :teacher, to: :trainee
+    delegate :teacher, to: :training_period
 
     def mentor_completion_event?
       training_period.for_mentor? && declaration.declaration_type_completed?

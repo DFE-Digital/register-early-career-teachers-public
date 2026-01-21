@@ -1,7 +1,7 @@
 RSpec.describe Teachers::Resume do
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
   let(:lead_provider) { training_period.lead_provider }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
 
   let(:service) do
     described_class.new(
@@ -55,9 +55,9 @@ RSpec.describe Teachers::Resume do
             created_training_period = TrainingPeriod.last
             expect(created_training_period).to be_ongoing
             expect(created_training_period.deferred_at).to be_nil
-            expect(created_training_period.trainee).to eq(training_period.trainee)
+            expect(created_training_period.at_school_period).to eq(training_period.at_school_period)
             expect(created_training_period.started_on).to eq(Time.zone.today)
-            expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
+            expect(created_training_period.finished_on).to eq(training_period.at_school_period_finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
@@ -77,9 +77,9 @@ RSpec.describe Teachers::Resume do
             created_training_period = TrainingPeriod.last
             expect(created_training_period.finished_on).to eq(at_school_period.finished_on)
             expect(created_training_period.deferred_at).to be_nil
-            expect(created_training_period.trainee).to eq(training_period.trainee)
+            expect(created_training_period.at_school_period).to eq(training_period.at_school_period)
             expect(created_training_period.started_on).to eq(Time.zone.today)
-            expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
+            expect(created_training_period.finished_on).to eq(training_period.at_school_period_finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
@@ -98,9 +98,9 @@ RSpec.describe Teachers::Resume do
             created_training_period = TrainingPeriod.last
             expect(created_training_period).to be_ongoing
             expect(created_training_period.withdrawn_at).to be_nil
-            expect(created_training_period.trainee).to eq(training_period.trainee)
+            expect(created_training_period.at_school_period).to eq(training_period.at_school_period)
             expect(created_training_period.started_on).to eq(Time.zone.today)
-            expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
+            expect(created_training_period.finished_on).to eq(training_period.at_school_period_finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
@@ -120,9 +120,9 @@ RSpec.describe Teachers::Resume do
             created_training_period = TrainingPeriod.last
             expect(created_training_period.finished_on).to eq(at_school_period.finished_on)
             expect(created_training_period.withdrawn_at).to be_nil
-            expect(created_training_period.trainee).to eq(training_period.trainee)
+            expect(created_training_period.at_school_period).to eq(training_period.at_school_period)
             expect(created_training_period.started_on).to eq(Time.zone.today)
-            expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
+            expect(created_training_period.finished_on).to eq(training_period.at_school_period_finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end
@@ -145,9 +145,9 @@ RSpec.describe Teachers::Resume do
             created_training_period = TrainingPeriod.last
             expect(created_training_period.finished_on).to eq(training_period_new.started_on)
             expect(created_training_period.withdrawn_at).to be_nil
-            expect(created_training_period.trainee).to eq(training_period.trainee)
+            expect(created_training_period.at_school_period).to eq(training_period.at_school_period)
             expect(created_training_period.started_on).to eq(Time.zone.today)
-            expect(created_training_period.finished_on).to eq(training_period.trainee.finished_on)
+            expect(created_training_period.finished_on).to eq(training_period.at_school_period_finished_on)
             expect(created_training_period.school_partnership).to eq(training_period.school_partnership)
             expect(created_training_period.schedule).to eq(training_period.schedule)
           end

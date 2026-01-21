@@ -38,12 +38,12 @@ module Admin
       def set_training_period
         @training_period = TrainingPeriod.find(params[:training_period_id])
 
-        raise ActiveRecord::RecordNotFound unless @training_period.trainee.teacher_id == @teacher.id
+        raise ActiveRecord::RecordNotFound unless @training_period.teacher_id == @teacher.id
         raise ActionController::BadRequest, "Training period is not eligible for partnership change" unless @training_period.partnership_change_eligible?
       end
 
       def set_school
-        @school = @training_period.trainee.school
+        @school = @training_period.school
       end
 
       def set_available_partnerships

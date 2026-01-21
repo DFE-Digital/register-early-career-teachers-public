@@ -10,7 +10,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
   end
 
   let(:lead_provider) { training_period.lead_provider }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
   let(:school_partnership) { training_period.school_partnership }
   let(:contract_period) { training_period.contract_period }
   let(:contract_period_year) { contract_period.year }

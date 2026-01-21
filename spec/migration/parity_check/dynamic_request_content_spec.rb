@@ -147,7 +147,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Participants for different lead providers should not be used.
@@ -163,7 +163,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
       let(:from_teacher) { FactoryBot.create(:teacher) }
 
       before do
@@ -171,9 +171,9 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         FactoryBot.create(:teacher_id_change, teacher:, api_from_teacher_id: from_teacher.api_id)
 
         # Participants with teacher_id_change for different lead providers should not be used.
-        unused_teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing).trainee.teacher
+        unused_teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing).teacher
         FactoryBot.create(:teacher_id_change, teacher: unused_teacher1)
-        unused_teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing).trainee.teacher
+        unused_teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing).teacher
         FactoryBot.create(:teacher_id_change, teacher: unused_teacher2)
       end
 
@@ -185,7 +185,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :active, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Deferred participant for current lead provider
@@ -204,7 +204,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Active participant for current lead provider
@@ -223,7 +223,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :deferred, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Active participant for current lead provider
@@ -344,7 +344,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Active participant for current lead provider
@@ -377,7 +377,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Active participant for current lead provider
@@ -410,7 +410,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :active, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Deferred participant for current lead provider
@@ -441,7 +441,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :deferred, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Active participant for current lead provider
@@ -472,7 +472,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :withdrawn, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Active participant for current lead provider
@@ -505,7 +505,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :deferred, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Active participant for current lead provider
@@ -538,7 +538,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       before do
         # Deferred participant for current lead provider
@@ -607,7 +607,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
         let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
         let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-        let(:teacher) { training_period.trainee.teacher }
+        let(:teacher) { training_period.teacher }
 
         let(:change_to_year) { active_lead_provider.contract_period_year + 1 }
         let(:change_to_contract_period) { FactoryBot.create(:contract_period, year: change_to_year) }
@@ -653,7 +653,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
         let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
         let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-        let(:teacher) { training_period.trainee.teacher }
+        let(:teacher) { training_period.teacher }
 
         let(:change_to_year) { active_lead_provider.contract_period_year + 1 }
         let(:change_to_contract_period) { FactoryBot.create(:contract_period, year: change_to_year) }
@@ -688,7 +688,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
         let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
         let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-        let(:teacher) { training_period.trainee.teacher }
+        let(:teacher) { training_period.teacher }
 
         before do
           allow(Schedule).to receive(:identifiers).and_return({ "ecf-extended-january" => "ecf-extended-january", "ecf-replacement-september" => "ecf-replacement-september" })
@@ -718,7 +718,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
         let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
         let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
         let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-        let(:teacher) { training_period.trainee.teacher }
+        let(:teacher) { training_period.teacher }
 
         it "returns a participant change schedule body with wrong course identifier" do
           expect(Teacher)
@@ -799,7 +799,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, school_partnership:) }
-      let(:teacher) { training_period.trainee.teacher }
+      let(:teacher) { training_period.teacher }
 
       context "when fetching `pre2025_declaration_create_body`" do
         let(:identifier) { :pre2025_declaration_create_body }

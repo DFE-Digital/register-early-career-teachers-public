@@ -1,6 +1,6 @@
 RSpec.describe Teachers::ChangeSchedule do
   let(:lead_provider) { training_period.lead_provider }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: new_contract_period) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
   let(:new_contract_period) { FactoryBot.create(:contract_period) }
@@ -38,7 +38,7 @@ RSpec.describe Teachers::ChangeSchedule do
           expect(training_period.school_partnership).not_to eq(new_training_period.school_partnership)
           expect(training_period.contract_period.year).not_to eq(new_training_period.contract_period.year)
 
-          expect(new_training_period.trainee).to eq(at_school_period)
+          expect(new_training_period.at_school_period).to eq(at_school_period)
           expect(new_training_period.started_on).to eq(Time.zone.today)
           expect(new_training_period.finished_on).to be_nil
           expect(new_training_period.schedule).to eq(new_schedule)
@@ -138,7 +138,7 @@ RSpec.describe Teachers::ChangeSchedule do
           it "updates the existing training period with the new schedule/partnership/contract period" do
             expect { service.change_schedule }.not_to change(TrainingPeriod, :count)
 
-            expect(training_period.trainee).to eq(at_school_period)
+            expect(training_period.at_school_period).to eq(at_school_period)
             expect(training_period.started_on).to eq(school_period_started_on)
             expect(training_period.finished_on).to be_nil
             expect(training_period.schedule).to eq(new_schedule)
