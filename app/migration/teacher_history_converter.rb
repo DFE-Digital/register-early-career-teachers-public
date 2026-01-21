@@ -56,7 +56,8 @@ private
   def ect_at_school_period_rows
     return [] if ecf1_teacher_history.ect.blank?
 
-    induction_records = ecf1_teacher_history.ect.induction_records
+    raw_induction_records = ecf1_teacher_history.ect.induction_records
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
 
     case migration_mode
     when :latest_induction_records
