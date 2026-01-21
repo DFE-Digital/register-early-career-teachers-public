@@ -196,4 +196,18 @@ describe SpecObjectFormatter do
       EXPECTED_OUTPUT
     end
   end
+
+  describe "nil" do
+    it "replaces nil with :ignore" do
+      input = { a: "a", a_date: nil, b: "b" }
+
+      expect(SpecObjectFormatter.new(input).formatted_object).to eql(<<~EXPECTED_OUTPUT.strip)
+        {
+          a: "a",
+          a_date: :ignore,
+          b: "b"
+        }
+      EXPECTED_OUTPUT
+    end
+  end
 end
