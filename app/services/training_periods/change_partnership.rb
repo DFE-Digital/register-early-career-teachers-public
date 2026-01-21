@@ -57,7 +57,7 @@ module TrainingPeriods
 
     def create_replacement_training_period!
       TrainingPeriods::Create.provider_led(
-        period: training_period.trainee,
+        period: training_period.at_school_period,
         started_on: Date.current,
         school_partnership:,
         expression_of_interest: nil,
@@ -72,7 +72,7 @@ module TrainingPeriods
         training_period: period,
         ect_at_school_period: period.ect_at_school_period,
         mentor_at_school_period: period.mentor_at_school_period,
-        teacher: period.trainee.teacher,
+        teacher: period.teacher,
         school_partnership:,
         lead_provider: school_partnership.lead_provider,
         delivery_partner: school_partnership.delivery_partner,

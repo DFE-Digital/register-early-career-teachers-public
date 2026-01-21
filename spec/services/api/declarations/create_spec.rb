@@ -12,7 +12,7 @@ RSpec.describe API::Declarations::Create, type: :model do
 
   let(:lead_provider) { training_period.lead_provider }
   let(:lead_provider_id) { lead_provider.id }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
   let(:teacher_api_id) { teacher.api_id }
   let(:school_partnership) { training_period.school_partnership }
   let(:contract_period) { training_period.contract_period }

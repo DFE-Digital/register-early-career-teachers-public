@@ -32,7 +32,7 @@ module Declarations
     def record_void_event!
       Events::Record.record_teacher_declaration_voided!(
         author:,
-        teacher: declaration.training_period.trainee.teacher,
+        teacher: declaration.training_period.teacher,
         training_period: declaration.training_period,
         declaration:
       )
