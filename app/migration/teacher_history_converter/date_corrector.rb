@@ -43,12 +43,12 @@ class TeacherHistoryConverter::DateCorrector
     return induction_record.updated_at.to_date if last_and_leaving_and_flipping_dates?(induction_record, induction_records)
     return first_created_induction_record(induction_records).updated_at.to_date if two_induction_records_and_last_completed?(induction_records)
 
-    end_date_corrected_for_pre_service_start(induction_record, induction_records)
+    induction_record.end_date&.to_date
   end
 
   # Corrects end dates for training periods
   def corrected_training_period_end_date(induction_record, induction_records, participant_type:)
-    candidate_end_date = end_date_corrected_for_pre_service_start(induction_record, induction_records)
+    candidate_end_date = induction_record.end_date&.to_date
 
     return first_created_induction_record(induction_records).end_date if two_irs_at_a_school_and_only_last_deferred_or_withdrawn?(induction_records)
     return candidate_end_date if induction_records.count > 1
@@ -141,27 +141,5 @@ private
     return false if induction_record.start_date.blank? || induction_record.end_date.blank?
 
     induction_record.start_date > induction_record.end_date
-  end
-
-  # Corrects end dates that fall before SERVICE_START_DATE (2021-09-01)
-  # - First IR: use start_date of next IR
-  # - Subsequent IRs: use created_at of that IR
-  def end_date_corrected_for_pre_service_start(induction_record, induction_records)
-    return induction_record.end_date&.to_date unless end_date_before_service_start?(induction_record)
-
-    index = induction_records.index { |ir| ir.induction_record_id == induction_record.induction_record_id }
-    return induction_record.end_date&.to_date if index.nil?
-
-    if index.zero? && induction_records.size > 1
-      induction_records[1].start_date.to_date
-    else
-      induction_record.created_at.to_date
-    end
-  end
-
-  def end_date_before_service_start?(induction_record)
-    return false if induction_record.end_date.blank?
-
-    induction_record.end_date.to_date < SERVICE_START_DATE
   end
 end
