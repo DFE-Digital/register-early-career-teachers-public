@@ -187,6 +187,74 @@ RSpec.describe TeacherHistoryConverter::DateCorrector do
           expect(date_corrector.corrected_end_date(induction_record, induction_records, participant_type:)).to eq(end_date)
         end
       end
+
+      context "when end_date is before SERVICE_START_DATE (prewash rule)" do
+        context "for the first IR with a subsequent IR available" do
+          let(:first_ir) do
+            FactoryBot.build(
+              :ecf1_teacher_history_induction_record_row,
+              start_date: Date.new(2020, 9, 1),
+              end_date: Date.new(2021, 3, 15), # invalid end_date
+              created_at: Time.zone.local(2020, 9, 1, 12, 0, 0)
+            )
+          end
+          let(:second_ir) do
+            FactoryBot.build(
+              :ecf1_teacher_history_induction_record_row,
+              start_date: Date.new(2021, 9, 1),
+              end_date: Date.new(2022, 8, 31),
+              created_at: Time.zone.local(2021, 9, 1, 12, 0, 0)
+            )
+          end
+          let(:induction_records) { [first_ir, second_ir] }
+          let(:induction_record) { first_ir }
+
+          it "uses the start_date of the next IR" do
+            expect(date_corrector.corrected_end_date(induction_record, induction_records, participant_type:)).to eq(Date.new(2021, 9, 1))
+          end
+        end
+
+        context "for a subsequent IR (not first)" do
+          let(:first_ir) do
+            FactoryBot.build(
+              :ecf1_teacher_history_induction_record_row,
+              start_date: Date.new(2020, 9, 1),
+              end_date: Date.new(2020, 12, 31),
+              created_at: Time.zone.local(2020, 9, 1, 12, 0, 0)
+            )
+          end
+          let(:second_ir) do
+            FactoryBot.build(
+              :ecf1_teacher_history_induction_record_row,
+              start_date: Date.new(2021, 1, 1),
+              end_date: Date.new(2021, 3, 15), # invalid end_date
+              created_at: Time.zone.local(2021, 6, 1, 12, 0, 0)
+            )
+          end
+          let(:induction_records) { [first_ir, second_ir] }
+          let(:induction_record) { second_ir }
+
+          it "uses the created_at date of that IR" do
+            expect(date_corrector.corrected_end_date(induction_record, induction_records, participant_type:)).to eq(Date.new(2021, 6, 1))
+          end
+        end
+
+        context "for the first and only IR" do
+          let(:induction_record) do
+            FactoryBot.build(
+              :ecf1_teacher_history_induction_record_row,
+              start_date: Date.new(2020, 9, 1),
+              end_date: Date.new(2021, 3, 15), # invalid end_date
+              created_at: Time.zone.local(2020, 9, 1, 12, 0, 0)
+            )
+          end
+          let(:induction_records) { [induction_record] }
+
+          it "uses the created_at date since there is no next IR" do
+            expect(date_corrector.corrected_end_date(induction_record, induction_records, participant_type:)).to eq(Date.new(2020, 9, 1))
+          end
+        end
+      end
     end
 
     context "for mentors" do
