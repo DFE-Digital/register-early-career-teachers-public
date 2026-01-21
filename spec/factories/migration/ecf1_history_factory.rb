@@ -17,6 +17,10 @@ FactoryBot.define do
     trait :ect_with_one_induction_record do
       ect { FactoryBot.build(:ecf1_teacher_history_ect, :one_induction_record, cohort_year:) }
     end
+
+    trait :ect_with_two_induction_record do
+      ect { FactoryBot.build(:ecf1_teacher_history_ect, :two_induction_record, cohort_year:) }
+    end
   end
 
   factory :ecf1_teacher_history_user, class: "ECF1TeacherHistory::User" do
@@ -147,6 +151,17 @@ FactoryBot.define do
 
     trait :one_induction_record do
       induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)] }
+    end
+
+    trait :two_induction_record do
+      induction_records do
+        ir1 = FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)
+        ir2 = FactoryBot.build(:ecf1_teacher_history_induction_record_row,
+                               cohort_year:,
+                               start_date: ir1.start_date + 90.days,
+                               end_date: ir1.end_date + 90.days)
+        [ir1, ir2]
+      end
     end
   end
 
