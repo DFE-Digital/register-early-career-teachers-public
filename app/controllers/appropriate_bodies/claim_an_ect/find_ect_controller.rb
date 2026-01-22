@@ -13,18 +13,18 @@ module AppropriateBodies
         else
           render :new
         end
+      rescue TRS::Errors::TeacherNotFound,
+             TRS::Errors::TeacherDeactivated,
+             TRS::Errors::TeacherMerged
 
-      # Not in TRS
-      rescue TRS::Errors::TeacherNotFound, TRS::Errors::TeacherDeactivated
         @pending_induction_submission.errors.add(:base, "No teacher with this TRN and date of birth was found")
         render :new
+      rescue TRS::Errors::InductionAlreadyCompleted,
+             TRS::Errors::QTSNotAwarded,
+             TRS::Errors::ProhibitedFromTeaching
 
-      # Not claimable
-      rescue TRS::Errors::InductionAlreadyCompleted, TRS::Errors::QTSNotAwarded, TRS::Errors::ProhibitedFromTeaching
         @pending_induction_submission.save!
         redirect_to edit_ab_claim_an_ect_check_path(@pending_induction_submission)
-
-      # Already claimed by current AB
       rescue FindECT::TeacherHasOngoingInductionPeriodWithCurrentAB
         teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
         full_name = ::Teachers::Name.new(teacher).full_name

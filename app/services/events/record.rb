@@ -226,6 +226,15 @@ module Events
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end
 
+    def self.record_teacher_trs_merged_event!(author:, teacher:, body:, happened_at: Time.zone.now)
+      event_type = :teacher_trs_merged
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} was merged into another TRS record"
+      body = "TRS API returned 308 so the record was marked as not found. #{body}"
+
+      new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
+    end
+
     def self.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_start_date_updated
       teacher_name = Teachers::Name.new(teacher).full_name
