@@ -9,10 +9,12 @@
 
 <h2 class="govuk-heading-m">Training</h2>
 
-<% if @ect_training_periods.any? %>
+<% if @ect_at_school_periods.any? %>
   <h3 class="govuk-heading-s">ECT history</h3>
-  <% @ect_training_periods.each_with_index do |training_period, index| %>
-    <%= render Admin::Teachers::TrainingSummaryComponent.new(training_period:, index:) %>
+  <% @ect_training_periods.each do |lpdp, training_periods| %>
+    <% training_periods.each_with_index do |training_period, index| %>
+      <%= render Admin::Teachers::TrainingSummaryComponent.new(training_period:, index:) %>
+    <% end %>
   <% end %>
 <% end %>
 
