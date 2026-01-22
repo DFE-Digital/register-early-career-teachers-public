@@ -130,7 +130,7 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
         let(:newer_started_on) { 1.year.ago.to_date }
         let!(:older_training_period) do
           ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: older_started_on + 1.year)
-          FactoryBot.create(:training_period, ect_at_school_period: ect_period, started_on: older_started_on, finished_on: older_started_on + 1.year)
+          FactoryBot.create(:training_period, ect_at_school_period: ect_period, started_on: older_started_on, finished_on: older_started_on + 6.months)
         end
         let!(:newer_training_period) do
           ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: newer_started_on, finished_on: newer_started_on + 1.year)
@@ -143,6 +143,37 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
           expect(response.body).to include(newer_started_on.to_fs(:govuk))
           expect(response.body).to include(older_started_on.to_fs(:govuk))
           expect(response.body.index(newer_started_on.to_fs(:govuk))).to be < body.index(older_started_on.to_fs(:govuk))
+        end
+
+        it "shows an API response for each period with a different partnership" do
+          get admin_teacher_training_path(teacher)
+
+          expect(SchoolPartnership.count).to eq(2)
+          expect(response.body).to include("API response").twice
+        end
+
+        context "with multiple training periods under the same partnership" do
+          let(:newer_started_on) { 18.months.ago.to_date }
+          let(:newer_finshed_on) { newer_started_on + 6.months }
+          let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: newer_finshed_on) }
+          let!(:older_training_period) { FactoryBot.create(:training_period, ect_at_school_period: ect_period, started_on: older_started_on, finished_on: newer_started_on - 1.day) }
+          let!(:newer_training_period) { FactoryBot.build(:training_period, :with_no_school_partnership, ect_at_school_period: ect_period, started_on: newer_started_on, finished_on: newer_finshed_on) }
+
+          before do
+            newer_training_period.school_partnership = older_training_period.school_partnership
+            newer_training_period.save!
+          end
+
+          it "shows both periods, ordered by date, but only shows an API response for the most recent period" do
+            get admin_teacher_training_path(teacher)
+
+            expect(SchoolPartnership.count).to eq(1)
+            expect(response.body).to include(older_started_on.to_fs(:govuk))
+            expect(response.body).to include(newer_started_on.to_fs(:govuk))
+            expect(response.body.index(newer_started_on.to_fs(:govuk))).to be < body.index(older_started_on.to_fs(:govuk))
+            expect(response.body).to include("API response").once
+            expect(response.body.index("API response")).to be < response.body.index(older_started_on.to_fs(:govuk))
+          end
         end
       end
     end
