@@ -1,11 +1,11 @@
 describe ECF2TeacherHistory do
-  subject { ECF2TeacherHistory.new(teacher_row:, **other_arguments) }
+  subject { ECF2TeacherHistory.new(teacher: teacher_data, **other_arguments) }
 
   let(:trn) { "2345678" }
   let(:trs_first_name) { "Colin" }
   let(:trs_last_name) { "Jeavons" }
   let(:corrected_name) { "Colin Abel Jeavons" }
-  let(:teacher_row) { ECF2TeacherHistory::TeacherRow.new(trn:, trs_first_name:, trs_last_name:, corrected_name:) }
+  let(:teacher_data) { ECF2TeacherHistory::Teacher.new(trn:, trs_first_name:, trs_last_name:, corrected_name:) }
 
   let!(:school_a) { FactoryBot.create(:school, urn: 111_111) }
   let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
@@ -14,9 +14,9 @@ describe ECF2TeacherHistory do
   let(:mentor_data) { ECF2TeacherHistory::MentorData.new(trn: "1234567", urn: "123456", started_on: 1.week.ago, finished_on: 1.day.ago) }
   let(:created_at) { 1.month.ago.round }
 
-  let(:mentorship_period_rows) do
+  let(:mentorship_periods) do
     [
-      ECF2TeacherHistory::MentorshipPeriodRow.new(
+      ECF2TeacherHistory::MentorshipPeriod.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
         ecf_start_induction_record_id: SecureRandom.uuid,
@@ -26,9 +26,9 @@ describe ECF2TeacherHistory do
     ]
   end
 
-  let(:training_period_rows) do
+  let(:training_periods) do
     [
-      ECF2TeacherHistory::TrainingPeriodRow.new(
+      ECF2TeacherHistory::TrainingPeriod.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
         created_at:,
@@ -37,27 +37,27 @@ describe ECF2TeacherHistory do
     ]
   end
 
-  let(:ect_at_school_period_rows) do
+  let(:ect_at_school_periods) do
     [
-      ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      ECF2TeacherHistory::ECTAtSchoolPeriod.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
         school: school_a_data,
         email: "a@example.org",
-        mentorship_period_rows:,
-        training_period_rows:
+        mentorship_periods:,
+        training_periods:
       )
     ]
   end
 
-  let(:mentor_at_school_period_rows) do
+  let(:mentor_at_school_periods) do
     [
-      ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
+      ECF2TeacherHistory::MentorAtSchoolPeriod.new(
         started_on: 1.month.ago.to_date,
         finished_on: 1.week.ago.to_date,
         school: school_a_data,
         email: "a@example.org",
-        training_period_rows:
+        training_periods:
       )
     ]
   end
@@ -65,28 +65,28 @@ describe ECF2TeacherHistory do
   let(:other_arguments) { {} }
 
   describe "#initialize" do
-    it "is initialized with a teacher row" do
+    it "is initialized with a teacher" do
       aggregate_failures do
-        expect(subject.teacher_row.trn).to eql(trn)
-        expect(subject.teacher_row.trs_first_name).to eql(trs_first_name)
-        expect(subject.teacher_row.trs_last_name).to eql(trs_last_name)
-        expect(subject.teacher_row.corrected_name).to eql(corrected_name)
+        expect(subject.teacher.trn).to eql(trn)
+        expect(subject.teacher.trs_first_name).to eql(trs_first_name)
+        expect(subject.teacher.trs_last_name).to eql(trs_last_name)
+        expect(subject.teacher.corrected_name).to eql(corrected_name)
       end
     end
 
-    context "when ect_at_school_period_rows are present" do
-      let(:other_arguments) { { ect_at_school_period_rows: } }
+    context "when ect_at_school_periods are present" do
+      let(:other_arguments) { { ect_at_school_periods: } }
 
-      it "can be initialized with ect_at_school_period_rows" do
-        expect(subject.ect_at_school_period_rows).to eql(ect_at_school_period_rows)
+      it "can be initialized with ect_at_school_periods" do
+        expect(subject.ect_at_school_periods).to eql(ect_at_school_periods)
       end
     end
 
-    context "when mentor_at_school_period_rows are present" do
-      let(:other_arguments) { { mentor_at_school_period_rows: } }
+    context "when mentor_at_school_periods are present" do
+      let(:other_arguments) { { mentor_at_school_periods: } }
 
-      it "can be initialized with mentor_at_school_period_rows" do
-        expect(subject.mentor_at_school_period_rows).to eql(mentor_at_school_period_rows)
+      it "can be initialized with mentor_at_school_periods" do
+        expect(subject.mentor_at_school_periods).to eql(mentor_at_school_periods)
       end
     end
   end
@@ -106,8 +106,8 @@ describe ECF2TeacherHistory do
       let(:ect_first_became_eligible_for_training_at) { 3.years.ago.round(2) }
       let(:ect_payments_frozen_year) { contract_period.year }
 
-      let(:teacher_row) do
-        ECF2TeacherHistory::TeacherRow.new(
+      let(:teacher_data) do
+        ECF2TeacherHistory::Teacher.new(
           trn:,
           trs_first_name:,
           trs_last_name:,
@@ -188,7 +188,7 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher has ECT at school periods" do
-        let(:other_arguments) { { ect_at_school_period_rows: } }
+        let(:other_arguments) { { ect_at_school_periods: } }
         let(:teacher) { subject.save_all_ect_data! }
 
         let(:appropriate_body_a) { FactoryBot.create(:appropriate_body) }
@@ -221,8 +221,8 @@ describe ECF2TeacherHistory do
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
-          let(:first_training_period_row) do
-            ECF2TeacherHistory::TrainingPeriodRow.new(
+          let(:first_training_period) do
+            ECF2TeacherHistory::TrainingPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               created_at:,
@@ -240,20 +240,20 @@ describe ECF2TeacherHistory do
             )
           end
 
-          let(:first_ect_at_school_period_row) do
-            ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          let(:first_ect_at_school_period) do
+            ECF2TeacherHistory::ECTAtSchoolPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               school: school_a_data,
               email: "a@example.org",
               appropriate_body: appropriate_body_a_data,
-              training_period_rows: [first_training_period_row],
-              mentorship_period_rows: []
+              training_periods: [first_training_period],
+              mentorship_periods: []
             )
           end
 
-          let(:second_training_period_row) do
-            ECF2TeacherHistory::TrainingPeriodRow.new(
+          let(:second_training_period) do
+            ECF2TeacherHistory::TrainingPeriod.new(
               started_on: 1.month.ago.to_date,
               finished_on: 1.week.ago.to_date,
               created_at:,
@@ -261,20 +261,20 @@ describe ECF2TeacherHistory do
             )
           end
 
-          let(:second_ect_at_school_period_row) do
-            ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          let(:second_ect_at_school_period) do
+            ECF2TeacherHistory::ECTAtSchoolPeriod.new(
               started_on: 1.month.ago.to_date,
               finished_on: 1.week.ago.to_date,
               school: school_b_data,
               email: "b@example.org",
               appropriate_body: appropriate_body_b_data,
-              training_period_rows: [second_training_period_row],
-              mentorship_period_rows: []
+              training_periods: [second_training_period],
+              mentorship_periods: []
             )
           end
 
-          let(:ect_at_school_period_rows) do
-            [first_ect_at_school_period_row, second_ect_at_school_period_row]
+          let(:ect_at_school_periods) do
+            [first_ect_at_school_period, second_ect_at_school_period]
           end
 
           it "saves the right number of ECT at school periods" do
@@ -358,8 +358,8 @@ describe ECF2TeacherHistory do
             )
           end
 
-          let(:mentorship_period_row) do
-            ECF2TeacherHistory::MentorshipPeriodRow.new(
+          let(:mentorship_period) do
+            ECF2TeacherHistory::MentorshipPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               ecf_start_induction_record_id: SecureRandom.uuid,
@@ -368,19 +368,19 @@ describe ECF2TeacherHistory do
             )
           end
 
-          let(:ect_at_school_period_row) do
-            ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+          let(:ect_at_school_period) do
+            ECF2TeacherHistory::ECTAtSchoolPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               appropriate_body: appropriate_body_a_data,
               school: school_a_data,
               email: "a@example.org",
-              mentorship_period_rows: [mentorship_period_row],
-              training_period_rows: []
+              mentorship_periods: [mentorship_period],
+              training_periods: []
             )
           end
 
-          let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+          let(:ect_at_school_periods) { [ect_at_school_period] }
 
           it "saves the right number of ECT at school periods" do
             expect(teacher.ect_at_school_periods.count).to be(1)
@@ -403,8 +403,8 @@ describe ECF2TeacherHistory do
                   expect(p1_mp.started_on).to eql(1.year.ago.to_date)
                   expect(p1_mp.finished_on).to eql(1.month.ago.to_date)
                   expect(p1_mp.mentor).to eql(existing_mentor_at_school_period)
-                  expect(p1_mp.ecf_start_induction_record_id).to eql(mentorship_period_row.ecf_start_induction_record_id)
-                  expect(p1_mp.ecf_end_induction_record_id).to eql(mentorship_period_row.ecf_end_induction_record_id)
+                  expect(p1_mp.ecf_start_induction_record_id).to eql(mentorship_period.ecf_start_induction_record_id)
+                  expect(p1_mp.ecf_end_induction_record_id).to eql(mentorship_period.ecf_end_induction_record_id)
                 end
               end
             end
@@ -429,8 +429,8 @@ describe ECF2TeacherHistory do
       let(:mentor_first_became_eligible_for_training_at) { 2.years.ago.round(2) }
       let(:mentor_payments_frozen_year) { contract_period.year }
 
-      let(:teacher_row) do
-        ECF2TeacherHistory::TeacherRow.new(
+      let(:teacher_data) do
+        ECF2TeacherHistory::Teacher.new(
           trn:,
           trs_first_name:,
           trs_last_name:,
@@ -514,7 +514,7 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher has mentor at school periods" do
-        let(:other_arguments) { { mentor_at_school_period_rows: } }
+        let(:other_arguments) { { mentor_at_school_periods: } }
         let(:teacher) { subject.save_all_mentor_data! }
 
         let(:appropriate_body_a) { FactoryBot.create(:appropriate_body) }
@@ -546,8 +546,8 @@ describe ECF2TeacherHistory do
 
           let!(:school_partnership) { FactoryBot.create(:school_partnership, school: school_a, lead_provider_delivery_partnership:) }
 
-          let(:first_training_period_row) do
-            ECF2TeacherHistory::TrainingPeriodRow.new(
+          let(:first_training_period) do
+            ECF2TeacherHistory::TrainingPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               created_at:,
@@ -565,18 +565,18 @@ describe ECF2TeacherHistory do
             )
           end
 
-          let(:first_mentor_at_school_period_row) do
-            ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
+          let(:first_mentor_at_school_period) do
+            ECF2TeacherHistory::MentorAtSchoolPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               school: school_a_data,
               email: "a@example.org",
-              training_period_rows: [first_training_period_row]
+              training_periods: [first_training_period]
             )
           end
 
-          let(:mentor_at_school_period_rows) do
-            [first_mentor_at_school_period_row]
+          let(:mentor_at_school_periods) do
+            [first_mentor_at_school_period]
           end
 
           it "saves the right number of ECT at school periods" do
@@ -619,7 +619,7 @@ describe ECF2TeacherHistory do
   end
 
   describe "failure recording" do
-    let(:other_arguments) { { ect_at_school_period_rows: } }
+    let(:other_arguments) { { ect_at_school_periods: } }
 
     describe "when Mentor Teacher is not found" do
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
@@ -633,8 +633,8 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:mentorship_period_row) do
-        ECF2TeacherHistory::MentorshipPeriodRow.new(
+      let(:mentorship_period) do
+        ECF2TeacherHistory::MentorshipPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           ecf_start_induction_record_id:,
@@ -643,18 +643,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: school_a_data,
           email: "a@example.org",
-          mentorship_period_rows: [mentorship_period_row],
-          training_period_rows: []
+          mentorship_periods: [mentorship_period],
+          training_periods: []
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
@@ -708,8 +708,8 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:mentorship_period_row) do
-        ECF2TeacherHistory::MentorshipPeriodRow.new(
+      let(:mentorship_period) do
+        ECF2TeacherHistory::MentorshipPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           ecf_start_induction_record_id:,
@@ -718,18 +718,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: school_a_data,
           email: "a@example.org",
-          mentorship_period_rows: [mentorship_period_row],
-          training_period_rows: []
+          mentorship_periods: [mentorship_period],
+          training_periods: []
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
@@ -782,8 +782,8 @@ describe ECF2TeacherHistory do
       let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
 
-      let(:training_period_row) do
-        ECF2TeacherHistory::TrainingPeriodRow.new(
+      let(:training_period) do
+        ECF2TeacherHistory::TrainingPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           created_at: 1.month.ago,
@@ -796,18 +796,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: school_a_data,
           email: "a@example.org",
-          mentorship_period_rows: [],
-          training_period_rows: [training_period_row]
+          mentorship_periods: [],
+          training_periods: [training_period]
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
@@ -846,8 +846,8 @@ describe ECF2TeacherHistory do
       let(:nonexistent_school_data) { Types::SchoolData.new(urn: 999_999, name: "Nonexistent School") }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
 
-      let(:training_period_row) do
-        ECF2TeacherHistory::TrainingPeriodRow.new(
+      let(:training_period) do
+        ECF2TeacherHistory::TrainingPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           created_at: 1.month.ago,
@@ -856,18 +856,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: nonexistent_school_data,
           email: "a@example.org",
-          mentorship_period_rows: [],
-          training_period_rows: [training_period_row]
+          mentorship_periods: [],
+          training_periods: [training_period]
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
@@ -901,8 +901,8 @@ describe ECF2TeacherHistory do
       let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
 
-      let(:training_period_row) do
-        ECF2TeacherHistory::TrainingPeriodRow.new(
+      let(:training_period) do
+        ECF2TeacherHistory::TrainingPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           created_at: 1.month.ago,
@@ -915,18 +915,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: school_a_data,
           email: "a@example.org",
-          mentorship_period_rows: [],
-          training_period_rows: [training_period_row]
+          mentorship_periods: [],
+          training_periods: [training_period]
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
@@ -962,8 +962,8 @@ describe ECF2TeacherHistory do
       let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
 
-      let(:training_period_row) do
-        ECF2TeacherHistory::TrainingPeriodRow.new(
+      let(:training_period) do
+        ECF2TeacherHistory::TrainingPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           created_at: 1.month.ago,
@@ -976,18 +976,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: school_a_data,
           email: "a@example.org",
-          mentorship_period_rows: [],
-          training_period_rows: [training_period_row]
+          mentorship_periods: [],
+          training_periods: [training_period]
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
@@ -1019,8 +1019,8 @@ describe ECF2TeacherHistory do
       let(:delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: delivery_partner.api_id, name: delivery_partner.name) }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
 
-      let(:training_period_row) do
-        ECF2TeacherHistory::TrainingPeriodRow.new(
+      let(:training_period) do
+        ECF2TeacherHistory::TrainingPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           created_at: 1.month.ago,
@@ -1033,18 +1033,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: school_a_data,
           email: "a@example.org",
-          mentorship_period_rows: [],
-          training_period_rows: [training_period_row]
+          mentorship_periods: [],
+          training_periods: [training_period]
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
@@ -1074,8 +1074,8 @@ describe ECF2TeacherHistory do
       let(:nonexistent_delivery_partner_info) { Types::DeliveryPartnerInfo.new(ecf1_id: SecureRandom.uuid, name: "Nonexistent DP") }
       let(:ecf_start_induction_record_id) { SecureRandom.uuid }
 
-      let(:training_period_row) do
-        ECF2TeacherHistory::TrainingPeriodRow.new(
+      let(:training_period) do
+        ECF2TeacherHistory::TrainingPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           created_at: 1.month.ago,
@@ -1088,18 +1088,18 @@ describe ECF2TeacherHistory do
         )
       end
 
-      let(:ect_at_school_period_row) do
-        ECF2TeacherHistory::ECTAtSchoolPeriodRow.new(
+      let(:ect_at_school_period) do
+        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
           started_on: 1.month.ago.to_date,
           finished_on: 1.week.ago.to_date,
           school: school_a_data,
           email: "a@example.org",
-          mentorship_period_rows: [],
-          training_period_rows: [training_period_row]
+          mentorship_periods: [],
+          training_periods: [training_period]
         )
       end
 
-      let(:ect_at_school_period_rows) { [ect_at_school_period_row] }
+      let(:ect_at_school_periods) { [ect_at_school_period] }
 
       it "creates a TeacherMigrationFailure record" do
         expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)

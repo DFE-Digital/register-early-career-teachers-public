@@ -1,4 +1,4 @@
-class ECF2TeacherHistory::TrainingPeriodRow
+class ECF2TeacherHistory::TrainingPeriod
   attr_reader :started_on,
               :training_programme,
               :lead_provider_info,

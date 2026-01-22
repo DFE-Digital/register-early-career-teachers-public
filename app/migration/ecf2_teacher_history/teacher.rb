@@ -1,4 +1,4 @@
-class ECF2TeacherHistory::TeacherRow
+class ECF2TeacherHistory::Teacher
   attr_reader :trn,
               :trnless,
               :trs_first_name,

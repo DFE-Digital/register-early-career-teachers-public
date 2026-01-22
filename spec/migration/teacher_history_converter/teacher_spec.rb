@@ -33,26 +33,26 @@ describe "Migrating a teacher record" do
 
   describe "teacher attributes" do
     it "sets the TRN from the teacher profile" do
-      expect(subject.teacher_row.trn).to eql(ecf1_teacher_history.user.trn)
+      expect(subject.teacher.trn).to eql(ecf1_teacher_history.user.trn)
     end
 
     it "sets the first and last name from the user" do
       first_name, last_name = *ecf1_teacher_history.user.full_name.split
 
       aggregate_failures do
-        expect(subject.teacher_row.trs_first_name).to eql(first_name)
-        expect(subject.teacher_row.trs_last_name).to eql(last_name)
+        expect(subject.teacher.trs_first_name).to eql(first_name)
+        expect(subject.teacher.trs_last_name).to eql(last_name)
       end
     end
 
     it "sets the api_id to the user_id" do
-      expect(subject.teacher_row.api_id).to eql(ecf1_teacher_history.user.user_id)
+      expect(subject.teacher.api_id).to eql(ecf1_teacher_history.user.user_id)
     end
 
     it "set the created and updated timestamps from the user" do
       aggregate_failures do
-        expect(subject.teacher_row.created_at).to be_within(1.second).of(ecf1_teacher_history.user.created_at)
-        expect(subject.teacher_row.updated_at).to be_within(1.second).of(ecf1_teacher_history.user.updated_at)
+        expect(subject.teacher.created_at).to be_within(1.second).of(ecf1_teacher_history.user.created_at)
+        expect(subject.teacher.updated_at).to be_within(1.second).of(ecf1_teacher_history.user.updated_at)
       end
     end
 
@@ -63,7 +63,7 @@ describe "Migrating a teacher record" do
         *ecf1_teacher_history.ect.induction_records.map(&:updated_at),
       ].max
 
-      expect(subject.teacher_row.api_updated_at).to be_within(1.second).of(latest_updated_at)
+      expect(subject.teacher.api_updated_at).to be_within(1.second).of(latest_updated_at)
     end
   end
 end
