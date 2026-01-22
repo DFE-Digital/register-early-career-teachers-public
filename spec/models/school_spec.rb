@@ -424,4 +424,58 @@ describe School do
       it { is_expected.to be(true) }
     end
   end
+
+  describe "#blocked_from_registering_new_ects?" do
+    let(:gias_school) { FactoryBot.create(:gias_school, :independent_school_type, :not_section_41) }
+    let(:school) { FactoryBot.create(:school, urn: gias_school.urn, gias_school:) }
+
+    context "when the school is independent, section 41 is not approved, and has an ongoing ect training period" do
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+      it { expect(school.blocked_from_registering_new_ects?).to be(true) }
+    end
+
+    context "when the school is independent and section 41 is not approved with no ongoing training periods" do
+      it { expect(school.blocked_from_registering_new_ects?).to be(false) }
+    end
+
+    context "when the school is independent, section 41 is not approved, and has an ongoing mentor training period" do
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
+
+      it { expect(school.blocked_from_registering_new_ects?).to be(true) }
+    end
+
+    context "when the school is independent, section 41 is not approved, and only has finished training periods" do
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :finished, ect_at_school_period:) }
+
+      it { expect(school.blocked_from_registering_new_ects?).to be(false) }
+    end
+
+    context "when the school is independent, section 41 is not approved, and training is at another school" do
+      let(:other_school) { FactoryBot.create(:school, :state_funded) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school: other_school) }
+      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+      it { expect(school.blocked_from_registering_new_ects?).to be(false) }
+    end
+
+    context "when the school is independent and section 41 is approved" do
+      let(:school) { FactoryBot.create(:school, :independent, :section_41) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+      it { expect(school.blocked_from_registering_new_ects?).to be(false) }
+    end
+
+    context "when the school is state-funded" do
+      let(:school) { FactoryBot.create(:school, :state_funded) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+      it { expect(school.blocked_from_registering_new_ects?).to be(false) }
+    end
+  end
 end
