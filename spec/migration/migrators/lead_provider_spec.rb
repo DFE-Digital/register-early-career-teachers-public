@@ -9,7 +9,7 @@ RSpec.describe Migrators::LeadProvider do
 
     def setup_failure_state
       lp = FactoryBot.create(:migration_lead_provider)
-      FactoryBot.create(:lead_provider, name: lp.name, ecf_id: SecureRandom.uuid)
+      FactoryBot.create(:lead_provider, name: "Superduper Provider", ecf_id: lp.id)
     end
 
     describe "#migrate!" do
