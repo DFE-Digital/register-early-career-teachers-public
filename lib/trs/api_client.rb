@@ -38,11 +38,15 @@ module TRS
       params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: include.join(",") }.compact
       response = @connection.get(persons_path(trn), params)
 
-      return TRS::Teacher.new(JSON.parse(response.body)) if response.success?
+      return trs_teacher(response) if response.success?
 
       case Rack::Utils::HTTP_STATUS_CODES.fetch(response.status)
-      when "Not Found" then raise(TRS::Errors::TeacherNotFound)
-      when "Gone" then raise(TRS::Errors::TeacherDeactivated)
+      when "Not Found"
+        raise(TRS::Errors::TeacherNotFound)
+      when "Gone"
+        raise(TRS::Errors::TeacherDeactivated)
+      when "Permanent Redirect"
+        raise(TRS::Errors::TeacherMerged, "TRN #{trn} redirects to TRN #{trs_redirected_trn(response)}")
       else
         fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
       end
@@ -98,6 +102,18 @@ module TRS
     end
 
   private
+
+    # @param response [Faraday::Response]
+    # @return [TRS::Teacher]
+    def trs_teacher(response)
+      TRS::Teacher.new(JSON.parse(response.body))
+    end
+
+    # @param response [Faraday::Response]
+    # @return [String]
+    def trs_redirected_trn(response)
+      response.headers[:location].match(%r{/v3/persons/(\d*)})[1]
+    end
 
     def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
       payload = { "status" => status,

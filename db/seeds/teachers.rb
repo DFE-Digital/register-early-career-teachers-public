@@ -47,6 +47,7 @@ uplift_attrs = {
 teachers = [
   # Edge cases where TRS records change after a teacher record exists in the database
   { trn: "3002962", trs_first_name: "Maxx", trs_last_name: "Test", trs_induction_status: "None", corrected_name: "Maximus Testicus (deactivated)" },
+  { trn: "3013021", trs_first_name: "Dave", trs_last_name: "Teacher", trs_induction_status: "None", corrected_name: "Substitutus Magister (merged)" },
 
   # NB: DO NOT use TRNs from TRS because attributes like name will change when refreshed
   { trn: "0000001", trs_first_name: "Stephen", trs_last_name: "Griddle", trs_induction_status: "InProgress" },

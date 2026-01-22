@@ -56,5 +56,13 @@ module Teachers
         trs_data_last_refreshed_at: Time.zone.now
       )
     end
+
+    # @return [Boolean]
+    def mark_teacher_as_merged!(event_body:)
+      manage_teacher.mark_teacher_as_merged!(
+        event_body:,
+        trs_data_last_refreshed_at: Time.zone.now
+      )
+    end
   end
 end

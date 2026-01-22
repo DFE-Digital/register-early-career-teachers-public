@@ -10,13 +10,19 @@ RSpec.shared_context "test trs api client that finds nothing" do
   end
 end
 
+RSpec.shared_context "test trs api client permanently moved teacher" do
+  before do
+    allow(TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_merged: true))
+  end
+end
+
 RSpec.shared_context "test trs api client deactivated teacher" do
   before do
     allow(TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_deactivated: true))
   end
 end
 
-RSpec.shared_context "test trs api client returns 200 then 400" do
+RSpec.shared_context "test trs api client that finds a teacher and nothing" do
   before do
     allow(TRS::APIClient).to receive(:new).and_return(
       TRS::TestAPIClient.new,

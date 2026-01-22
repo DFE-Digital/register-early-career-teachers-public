@@ -132,6 +132,28 @@ describe Teachers::RefreshTRSAttributes do
       end
     end
 
+    context "when the TRN or DoB in TRS have changed" do
+      include_context "test trs api client permanently moved teacher"
+
+      it "flags the teacher" do
+        expect(service.refresh!).to eq(:teacher_merged)
+        teacher.reload
+
+        expect(teacher).to be_trs_not_found
+      end
+
+      it "adds a teacher_trs_merged event" do
+        expect(teacher.events).to be_empty
+
+        service.refresh!
+        perform_enqueued_jobs
+
+        expect(teacher.events.map(&:event_type)).to contain_exactly(
+          "teacher_trs_merged"
+        )
+      end
+    end
+
     context "when the teacher is not found in TRS" do
       include_context "test trs api client that finds nothing"
 
@@ -246,7 +268,7 @@ describe Teachers::RefreshTRSAttributes do
       include_context "test trs api client deactivated teacher"
 
       it "flags the teacher" do
-        service.refresh!
+        expect(service.refresh!).to eq(:teacher_deactivated)
         teacher.reload
 
         expect(teacher).to be_trs_deactivated
