@@ -3,7 +3,7 @@ module API
     class PartnershipsController < APIController
       def index
         conditions = {
-          contract_period_years: extract_conditions(contract_period_years, integers: true),
+          contract_period_years: extract_conditions(contract_period_years, type: :integer),
           updated_since:,
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids),
           sort:

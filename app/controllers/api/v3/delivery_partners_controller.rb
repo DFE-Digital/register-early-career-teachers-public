@@ -3,7 +3,7 @@ module API
     class DeliveryPartnersController < APIController
       def index
         conditions = {
-          contract_period_years: extract_conditions(contract_period_years, integers: true),
+          contract_period_years: extract_conditions(contract_period_years, type: :integer),
           sort:
         }
         paginated_delivery_partners = delivery_partners_query(conditions:).delivery_partners { paginate(it) }

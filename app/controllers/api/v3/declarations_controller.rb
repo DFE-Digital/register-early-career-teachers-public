@@ -5,9 +5,9 @@ module API
 
       def index
         conditions = {
-          contract_period_years: extract_conditions(contract_period_years, integers: true),
-          teacher_api_ids: extract_conditions(teacher_api_ids, uuids: true),
-          delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids, uuids: true),
+          contract_period_years: extract_conditions(contract_period_years, type: :integer),
+          teacher_api_ids: extract_conditions(teacher_api_ids, type: :uuid),
+          delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids, type: :uuid),
           updated_since:,
         }
         paginated_declarations = declarations_query(conditions:).declarations { paginate(it) }
