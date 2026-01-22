@@ -5,7 +5,7 @@ module Schools
     include Schools::InductionRedirectable
 
     def index
-      search = Teachers::Search.new(ect_at_school: school, query_string: params[:q]).search
+      search = Teachers::Search.new(ect_at_school: school, in_progress: true, query_string: params[:q]).search
       @pagy, @teachers = pagy(search)
 
       @number_of_teachers = Teachers::Search.new(ect_at_school: school).count
