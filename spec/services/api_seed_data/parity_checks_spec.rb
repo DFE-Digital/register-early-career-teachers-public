@@ -51,8 +51,8 @@ RSpec.describe APISeedData::ParityChecks do
         expect(logger).to have_received(:info).with(/#{Regexp.escape(endpoint.description)}/).at_least(:once)
       end
 
-      expect(logger).to have_received(:info).with(/Concurrent, *\d+ requests, -?\d.\dx performance gain, \d+% match rate/).at_least(:once)
-      expect(logger).to have_received(:info).with(/Sequential, *\d+ requests, -?\d.\dx performance gain, \d+% match rate/).at_least(:once)
+      expect(logger).to have_received(:info).with(/Concurrent, *\d+ requests, -?\d+\.?\d*x performance gain, \d+% match rate/).at_least(:once)
+      expect(logger).to have_received(:info).with(/Sequential, *\d+ requests, -?\d+\.?\d*x performance gain, \d+% match rate/).at_least(:once)
     end
 
     context "when in the production environment" do
