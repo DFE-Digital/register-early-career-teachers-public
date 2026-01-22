@@ -233,6 +233,34 @@ describe ECTAtSchoolPeriods::Finish do
           expect(training_period.reload.finished_on).to eql(finished_on)
         end
       end
+
+      context "when the training period has not started yet" do
+        let(:training_start_date) { finished_on + 1.week }
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            ect_at_school_period:,
+            started_on: training_start_date
+          )
+        end
+
+        it "deletes the training period" do
+          expect { subject.finish! }.to change(TrainingPeriod, :count).by(-1)
+        end
+
+        it "deletes any events associated with the training period" do
+          FactoryBot.create(:event, training_period:)
+          FactoryBot.create(:event, training_period:)
+          other_event = FactoryBot.create(:event)
+
+          expect(Event.where(training_period:).count).to eq(2)
+
+          subject.finish!
+
+          expect(Event.where(training_period:)).to be_empty
+          expect(Event.exists?(other_event.id)).to be true
+        end
+      end
     end
   end
 end
