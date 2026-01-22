@@ -1,20 +1,20 @@
-class ECF2TeacherHistory::ECTAtSchoolPeriodRow
+class ECF2TeacherHistory::ECTAtSchoolPeriod
   attr_reader :started_on,
               :finished_on,
               :school,
               :email,
               :appropriate_body,
-              :mentorship_period_rows,
-              :training_period_rows
+              :mentorship_periods,
+              :training_periods
 
-  def initialize(started_on:, finished_on:, school:, email:, mentorship_period_rows:, training_period_rows:, appropriate_body: nil)
+  def initialize(started_on:, finished_on:, school:, email:, mentorship_periods:, training_periods:, appropriate_body: nil)
     @started_on = started_on
     @finished_on = finished_on
     @school = school
     @email = email
     @appropriate_body = appropriate_body
-    @mentorship_period_rows = mentorship_period_rows
-    @training_period_rows = training_period_rows
+    @mentorship_periods = mentorship_periods
+    @training_periods = training_periods
   end
 
   def to_hash
@@ -34,19 +34,19 @@ class ECF2TeacherHistory::ECTAtSchoolPeriodRow
       school: school.to_h,
       email:,
       school_reported_appropriate_body: appropriate_body,
-      training_periods: training_period_rows.map(&:to_h)
+      training_periods: training_periods.map(&:to_h)
     }
   end
 
-  # if we update a ect_at_school_period_row's finished_on after creation
+  # if we update a ect_at_school_period's finished_on after creation
   # we need to adjust any training_period that matches it too
   def finished_on=(date)
     original_finished_on = @finished_on
 
     @finished_on = date
 
-    training_period_rows.select { it.finished_on == original_finished_on }
-                        .each { |tp| tp.finished_on = date }
+    training_periods.select { it.finished_on == original_finished_on }
+                    .each { |tp| tp.finished_on = date }
   end
 
   def real_school

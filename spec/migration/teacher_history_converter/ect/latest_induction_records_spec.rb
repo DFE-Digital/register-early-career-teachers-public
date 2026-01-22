@@ -329,7 +329,7 @@ describe "Latest induction records mode conversion" do
       end
 
       it "creates the right expected number of ECT at school periods" do
-        expect(subject.ect_at_school_period_rows.size).to eq(data[:at_school_periods].size)
+        expect(subject.ect_at_school_periods.size).to eq(data[:at_school_periods].size)
       end
 
       it "produces the expected ECT at school periods" do
@@ -338,18 +338,18 @@ describe "Latest induction records mode conversion" do
             started_on = Date.parse(at_school_period[:started_on])
             finished_on = Date.parse(at_school_period[:finished_on]) if at_school_period[:finished_on].present?
 
-            expect(subject.ect_at_school_period_rows[i].started_on).to eql(started_on)
-            expect(subject.ect_at_school_period_rows[i].finished_on).to eql(finished_on)
-            expect(subject.ect_at_school_period_rows[i].school.urn).to eql(at_school_period[:urn])
+            expect(subject.ect_at_school_periods[i].started_on).to eql(started_on)
+            expect(subject.ect_at_school_periods[i].finished_on).to eql(finished_on)
+            expect(subject.ect_at_school_periods[i].school.urn).to eql(at_school_period[:urn])
           end
         end
       end
 
       it "creates training periods that span the entire ECT at school period" do
         aggregate_failures do
-          subject.ect_at_school_period_rows.each do |school_period|
-            expect(school_period.started_on).to eq school_period.training_period_rows.first.started_on
-            expect(school_period.finished_on).to eq school_period.training_period_rows.first.finished_on
+          subject.ect_at_school_periods.each do |school_period|
+            expect(school_period.started_on).to eq school_period.training_periods.first.started_on
+            expect(school_period.finished_on).to eq school_period.training_periods.first.finished_on
           end
         end
       end

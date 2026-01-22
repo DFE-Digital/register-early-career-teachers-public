@@ -11,9 +11,9 @@ class TeacherHistoryConverter
 
   def convert_to_ecf2!
     ECF2TeacherHistory.new(
-      teacher_row:,
-      ect_at_school_period_rows:,
-      mentor_at_school_period_rows:
+      teacher:,
+      ect_at_school_periods:,
+      mentor_at_school_periods:
     )
   end
 
@@ -32,8 +32,8 @@ private
     )
   end
 
-  def teacher_row
-    ECF2TeacherHistory::TeacherRow.new(
+  def teacher
+    ECF2TeacherHistory::Teacher.new(
       trn: ecf1_teacher_history.user.trn,
       trnless: ecf1_teacher_history.user.trn.blank?,
       trs_first_name: parsed_name.first_name,
@@ -53,7 +53,7 @@ private
     )
   end
 
-  def ect_at_school_period_rows
+  def ect_at_school_periods
     return [] if ecf1_teacher_history.ect.blank?
 
     induction_records = ecf1_teacher_history.ect.induction_records
@@ -70,7 +70,7 @@ private
     @parsed_name ||= Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
   end
 
-  def mentor_at_school_period_rows
+  def mentor_at_school_periods
     return [] if ecf1_teacher_history.mentor.blank?
 
     induction_records = ecf1_teacher_history.mentor.induction_records
@@ -83,7 +83,7 @@ private
     end
   end
 
-  # def build_mentorship_period_rows(induction_record)
+  # def build_mentorship_periods(induction_record)
   #   return [] if induction_record.mentor_profile_id.blank?
   #
   #   mentor_teacher = Teacher.find_by(api_mentor_training_record_id: induction_record.mentor_profile_id)
@@ -100,7 +100,7 @@ private
   #   )
   #
   #   [
-  #     ECF2TeacherHistory::MentorshipPeriodRow.new(
+  #     ECF2TeacherHistory::MentorshipPeriod.new(
   #       started_on:,
   #       finished_on:,
   #       ecf_start_induction_record_id: induction_record.induction_record_id,
@@ -168,8 +168,8 @@ private
   #   false
   # end
   #
-  # def update_training_period_end_date(training_period_row, induction_record, school_induction_records, participant_type)
-  #   return if training_period_row.nil?
+  # def update_training_period_end_date(training_period, induction_record, school_induction_records, participant_type)
+  #   return if training_period.nil?
   #
   #   new_end_date = date_corrector.corrected_training_period_end_date(
   #     induction_record,
@@ -177,15 +177,15 @@ private
   #     participant_type:
   #   )
   #
-  #   training_period_row.instance_variable_set(:@finished_on, new_end_date)
-  #   training_period_row.instance_variable_set(:@ecf_end_induction_record_id, induction_record.induction_record_id)
+  #   training_period.instance_variable_set(:@finished_on, new_end_date)
+  #   training_period.instance_variable_set(:@ecf_end_induction_record_id, induction_record.induction_record_id)
   #
   #   if induction_record.training_status == "deferred"
-  #     training_period_row.instance_variable_set(:@deferred_at, induction_record.end_date)
-  #     training_period_row.instance_variable_set(:@deferral_reason, "???")
+  #     training_period.instance_variable_set(:@deferred_at, induction_record.end_date)
+  #     training_period.instance_variable_set(:@deferral_reason, "???")
   #   elsif induction_record.training_status == "withdrawn"
-  #     training_period_row.instance_variable_set(:@withdrawn_at, induction_record.end_date)
-  #     training_period_row.instance_variable_set(:@withdrawal_reason, "???")
+  #     training_period.instance_variable_set(:@withdrawn_at, induction_record.end_date)
+  #     training_period.instance_variable_set(:@withdrawal_reason, "???")
   #   end
   # end
 end
