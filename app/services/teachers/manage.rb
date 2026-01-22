@@ -94,13 +94,22 @@ class Teachers::Manage
     end
   end
 
-  # FIXME: TRS induction values are populated using in-service data to preserve status indicators but we flag the teacher for investigation
   def mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
     fail(AlreadyFlagged) if teacher.trs_not_found?
 
     Teacher.transaction do
       teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:)
       record_teacher_not_found_event
+      update_induction_status_indicator
+    end
+  end
+
+  def mark_teacher_as_merged!(trs_data_last_refreshed_at:, event_body:)
+    fail(AlreadyFlagged) if teacher.trs_not_found?
+
+    Teacher.transaction do
+      teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:)
+      record_teacher_merged_event(event_body)
       update_induction_status_indicator
     end
   end
@@ -145,5 +154,9 @@ private
 
   def record_teacher_not_found_event
     Events::Record.record_teacher_trs_not_found_event!(author:, teacher:)
+  end
+
+  def record_teacher_merged_event(body)
+    Events::Record.record_teacher_trs_merged_event!(author:, teacher:, body:)
   end
 end

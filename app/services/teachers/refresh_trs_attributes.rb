@@ -24,6 +24,8 @@ module Teachers
       update!
     rescue TRS::Errors::TeacherNotFound
       update_not_found!
+    rescue TRS::Errors::TeacherMerged => e
+      update_merged!(e.message)
     rescue TRS::Errors::TeacherDeactivated
       deactivate!
     end
@@ -35,7 +37,7 @@ module Teachers
 
   private
 
-    # @raise [TRS::Errors::TeacherDeactivated, TRS::Errors::TeacherNotFound]
+    # @raise [TRS::Errors::TeacherDeactivated, TRS::Errors::TeacherNotFound, TRS::Errors::TeacherMerged]
     # @return [TRS::Teacher]
     def trs_teacher
       @trs_teacher ||= api_client.find_teacher(trn: teacher.trn)
@@ -69,6 +71,16 @@ module Teachers
         mark_teacher_as_not_found!
 
         :teacher_not_found
+      end
+    end
+
+    # @param error_message [String] API redirect
+    # @return [Symbol]
+    def update_merged!(error_message)
+      Teacher.transaction do
+        mark_teacher_as_merged!(event_body: error_message)
+
+        :teacher_merged
       end
     end
   end
