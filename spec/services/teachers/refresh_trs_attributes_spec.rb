@@ -135,10 +135,6 @@ describe Teachers::RefreshTRSAttributes do
     context "when the teacher is not found in TRS" do
       include_context "test trs api client that finds nothing"
 
-      before do
-        allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
-      end
-
       it "flags the teacher" do
         service.refresh!
         teacher.reload
@@ -242,20 +238,6 @@ describe Teachers::RefreshTRSAttributes do
 
         it "ensures the induction status indicator is correct" do
           expect(teacher.trs_induction_status).to be_blank
-        end
-      end
-
-      context "and the API version does not distinguish DEACTIVATED accounts" do
-        before do
-          allow(Rails.application.config).to receive(:enable_test_guidance).and_return(false)
-        end
-
-        it "does not update the teacher record" do
-          service.refresh!
-          teacher.reload
-
-          expect(teacher.trs_data_last_refreshed_at).to be_blank
-          expect(teacher.trs_not_found).to be_blank
         end
       end
     end
