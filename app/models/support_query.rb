@@ -34,7 +34,7 @@ class SupportQuery < ApplicationRecord
     ticket = zendesk.tickets.create!(
       requester: { name:, email: },
       description:,
-      tags: %w[rect-web-form-support-query]
+      tags: %w[ecf-web-form-support-query]
     )
 
     update!(zendesk_id: ticket.id)
