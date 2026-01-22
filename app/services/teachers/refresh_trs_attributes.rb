@@ -2,7 +2,8 @@ module Teachers
   # Service run after passing, failing, or reopening inductions,
   # and periodically, to sync attributes from TRS
   #
-  # Teacher records not found in TRS, like seed data, are also refreshed.
+  # If a teacher record is not found in TRS but has an induction outcome we ensure
+  # the status indicator is still accurate. eg: seed data
   class RefreshTRSAttributes
     include Manageable
 
@@ -16,19 +17,14 @@ module Teachers
     # In the sandbox environment we don't want to allow data in TRS to
     # overwrite existing teacher data, so we skip the refresh.
     #
-    # In some environments we use seeded teachers, which should not use
-    # TRNs found in TRS, so we update only their status to mimic the real behaviour.
-    #
-    # TODO: permit update_not_found! in production once TeacherDeactivated error is possible
-    #
     # @return [Symbol] :refresh_disabled, :teacher_updated, :teacher_deactivated, :teacher_not_found
     def refresh!
       return :refresh_disabled unless enabled?
 
       update!
     rescue TRS::Errors::TeacherNotFound
-      update_not_found! if Rails.application.config.enable_test_guidance
-    rescue TRS::Errors::TeacherDeactivated # NB: unreleased in production
+      update_not_found!
+    rescue TRS::Errors::TeacherDeactivated
       deactivate!
     end
 
