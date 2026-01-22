@@ -88,6 +88,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           let(:teacher_type) { trainee_type == :ect ? :mentor : :ect }
 
           it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+          it { is_expected.to have_no_error(:declaration_type) }
         end
 
         context "when a non existing teacher type is used" do

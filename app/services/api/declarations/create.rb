@@ -143,6 +143,7 @@ module API::Declarations
     def validate_milestone_exists
       return if errors[:declaration_type].any?
       return if errors[:teacher_api_id].any?
+      return if errors[:teacher_type].any?
 
       if milestone.blank?
         errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
