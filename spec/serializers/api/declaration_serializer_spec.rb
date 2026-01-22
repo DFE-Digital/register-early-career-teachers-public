@@ -32,6 +32,7 @@ describe API::DeclarationSerializer, type: :serializer do
       expect(attributes["updated_at"]).to eq(declaration.updated_at.rfc3339)
       expect(attributes["created_at"]).to eq(declaration.created_at.rfc3339)
       expect(attributes["delivery_partner_id"]).to eq(delivery_partner.api_id)
+      expect(attributes["ineligible_for_funding_reason"]).to be_nil
       expect(attributes["statement_id"]).to be_nil
       expect(attributes["clawback_statement_id"]).to be_nil
 
