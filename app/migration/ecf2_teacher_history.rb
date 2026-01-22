@@ -122,14 +122,12 @@ private
   end
 
   def save_mentor_periods!(teacher)
-    debugger
     mentor_at_school_period_rows.each do |mentor_at_school_period_row|
       with_failure_recording(teacher:, model: :mentor_at_school_period, migration_item_id: mentor_at_school_period_row.training_period_rows.first&.ecf_start_induction_record_id) do
         mentor_at_school_period = MentorAtSchoolPeriod.create!(teacher:, **mentor_at_school_period_row)
 
         mentor_at_school_period_row.training_period_rows.each do |training_period_row|
           with_failure_recording(teacher:, model: :training_period, migration_item_id: training_period_row.ecf_start_induction_record_id) do
-            debugger
             TrainingPeriod.create!(
               mentor_at_school_period:,
               **school_partnership_for(training_period_row),
