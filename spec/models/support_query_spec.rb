@@ -24,7 +24,7 @@ RSpec.describe SupportQuery do
         expect(ZendeskAPI::Ticket).to have_received(:create!).with(
           instance_of(ZendeskAPI::Client),
           hash_including(
-            tags: %w[rect-web-form-support-query],
+            tags: %w[ecf-web-form-support-query],
             requester: {
               name: support_query.name,
               email: support_query.email
