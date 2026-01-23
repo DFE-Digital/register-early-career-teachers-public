@@ -1,99 +1,120 @@
 RSpec.describe Admin::Schools::TeachersTableComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
+  subject { page }
+
   let(:school) { FactoryBot.create(:school) }
   let(:component) { described_class.new(school:) }
 
-  describe "#teachers_with_roles" do
-    context "when school has no teachers" do
-      it "returns empty array" do
-        expect(component.teachers_with_roles).to eq([])
-      end
-    end
+  context "when there are no teachers" do
+    before { render_inline(component) }
 
-    context "when school has ECT and mentor teachers" do
-      let(:ect_teacher) { FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Doe") }
-      let(:mentor_teacher) { FactoryBot.create(:teacher, trs_first_name: "Jane", trs_last_name: "Smith") }
-      let(:both_roles_teacher) { FactoryBot.create(:teacher, trs_first_name: "Bob", trs_last_name: "Wilson") }
-
-      before do
-        # Create ECT at school period
-        FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: ect_teacher, started_on: 1.year.ago)
-
-        # Create mentor at school period
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: mentor_teacher, started_on: 6.months.ago)
-
-        # Create teacher with both roles
-        FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: both_roles_teacher, started_on: 8.months.ago)
-        FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: both_roles_teacher, started_on: 4.months.ago)
-      end
-
-      it "returns all teachers with their roles" do
-        result = component.teachers_with_roles
-
-        expect(result.length).to eq(3)
-        expect(result.map { |data| data[:teacher] }).to contain_exactly(ect_teacher, mentor_teacher, both_roles_teacher)
-      end
-
-      it "includes correct teacher data" do
-        result = component.teachers_with_roles
-
-        ect_data = result.find { |data| data[:teacher] == ect_teacher }
-        expect(ect_data[:teacher]).to eq(ect_teacher)
-
-        mentor_data = result.find { |data| data[:teacher] == mentor_teacher }
-        expect(mentor_data[:teacher]).to eq(mentor_teacher)
-
-        both_data = result.find { |data| data[:teacher] == both_roles_teacher }
-        expect(both_data[:teacher]).to eq(both_roles_teacher)
-      end
-    end
+    it { is_expected.to have_css("p", text: "No teachers found at this school.") }
+    it { is_expected.not_to have_css("table.govuk-table") }
   end
 
-  describe "#latest_contract_period" do
-    it "returns contract period when available" do
-      teacher_data = { latest_contract_period: 2024 }
-      expect(component.latest_contract_period(teacher_data)).to eq(2024)
+  context "when there are teachers" do
+    let!(:ect) do
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: Date.new(2022, 7, 1))
+      school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2022)
+      FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, school_partnership:)
+      ect_at_school_period.teacher
     end
 
-    it "returns contract period value directly" do
-      teacher_data = { latest_contract_period: Date.current.year }
-      expect(component.latest_contract_period(teacher_data)).to eq(Date.current.year)
-    end
-  end
-
-  describe "rendering" do
-    context "when school has no teachers" do
-      it "displays no teachers message" do
-        render_inline(component)
-
-        expect(rendered_content).to have_css("p", text: "No teachers found at this school.")
-        expect(rendered_content).not_to have_css("table.govuk-table")
-      end
+    let!(:mentor) do
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: Date.new(2023, 7, 1))
+      school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2023)
+      FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_schedule, :ongoing, mentor_at_school_period:, school_partnership:)
+      mentor_at_school_period.teacher
     end
 
-    context "when school has teachers" do
-      let(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
+    let!(:ect_and_mentor) do
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2024, 7, 1))
+      school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2024)
+      FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, school_partnership:)
 
-      before do
-        FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher:)
-      end
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: ect_at_school_period.teacher, started_on: Date.new(2025, 7, 1))
+      school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2025)
+      FactoryBot.create(:training_period, :provider_led, :for_mentor, :with_schedule, :ongoing, mentor_at_school_period:, school_partnership:)
 
-      it "displays teachers table with correct headers" do
-        render_inline(component)
+      ect_at_school_period.teacher
+    end
 
-        expect(rendered_content).to have_css("table.govuk-table")
-        expect(rendered_content).to have_css("th", text: "Name")
-        expect(rendered_content).to have_css("th", text: "TRN")
-        expect(rendered_content).to have_css("th", text: "Type")
-        expect(rendered_content).to have_css("th", text: "Contract period")
-      end
+    let!(:ect_eoi) do
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2026, 7, 1))
+      expression_of_interest = FactoryBot.create(:active_lead_provider, :for_year, year: 2026)
+      FactoryBot.create(:training_period, :provider_led, :with_only_expression_of_interest, ect_at_school_period:, expression_of_interest:)
+      ect_at_school_period.teacher
+    end
 
-      it "displays teacher information" do
-        render_inline(component)
+    let!(:ect_without_training_period) do
+      FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2025, 7, 1)).teacher
+    end
 
-        expect(rendered_content).to have_css("td", text: "1234567")
-        expect(rendered_content).to have_css("td", text: "ECT")
-        expect(rendered_content).to have_css("td", text: Date.current.year.to_s)
-      end
+    let!(:mentor_without_training_period) do
+      FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: Date.new(2025, 7, 1)).teacher
+    end
+
+    let!(:ect_at_different_school) do
+      FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 7, 1)).teacher
+    end
+
+    before { render_inline component }
+
+    shared_examples "row" do |contract_period_year|
+      subject { page.find "tr", text: teacher.trn }
+
+      it { is_expected.to have_link(Teachers::Name.new(teacher).full_name, href: admin_teacher_induction_path(teacher)) }
+      it { is_expected.to have_css("td", text: Teachers::Role.new(teacher:).to_s) }
+      it { is_expected.to have_css("td", text: contract_period_year) }
+    end
+
+    it { is_expected.to have_css("tbody tr", count: 6) }
+    it { is_expected.not_to have_css("td", text: ect_at_different_school.trn) }
+
+    describe "table headers" do
+      subject { page.find "thead" }
+
+      it { is_expected.to have_css("th", text: "Name") }
+      it { is_expected.to have_css("th", text: "TRN") }
+      it { is_expected.to have_css("th", text: "Type") }
+      it { is_expected.to have_css("th", text: "Contract period") }
+    end
+
+    describe "the ECT row" do
+      let(:teacher) { ect }
+
+      include_examples "row", "2022"
+    end
+
+    describe "the mentor row" do
+      let(:teacher) { mentor }
+
+      include_examples "row", "2023"
+    end
+
+    describe "the ECT and mentor row" do
+      let(:teacher) { ect_and_mentor }
+
+      include_examples "row", "2025"
+    end
+
+    describe "the ECT EOI row" do
+      let(:teacher) { ect_eoi }
+
+      include_examples "row", "2026"
+    end
+
+    describe "the ECT without training period row" do
+      let(:teacher) { ect_without_training_period }
+
+      include_examples "row", "No training period"
+    end
+
+    describe "the mentor without training period row" do
+      let(:teacher) { mentor_without_training_period }
+
+      include_examples "row", "No training period"
     end
   end
 end
