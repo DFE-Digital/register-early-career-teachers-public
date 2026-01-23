@@ -238,7 +238,7 @@ module Events
     def self.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_start_date_updated
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction start date was updated"
+      heading = "#{teacher_name}’s induction start date was updated"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
@@ -246,7 +246,7 @@ module Events
     def self.record_teacher_trs_induction_end_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_end_date_updated
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction end date was updated"
+      heading = "#{teacher_name}’s induction end date was updated"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
@@ -256,7 +256,7 @@ module Events
     def self.record_induction_extension_created_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_created
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
+      heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
@@ -264,7 +264,7 @@ module Events
     def self.record_induction_extension_updated_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_updated
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction extended by #{induction_extension.number_of_terms} terms"
+      heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms"
 
       new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
@@ -272,7 +272,7 @@ module Events
     def self.record_induction_extension_deleted_event!(author:, appropriate_body:, teacher:, number_of_terms:, happened_at: Time.zone.now)
       event_type = :induction_extension_deleted
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s induction extension of #{number_of_terms} terms was deleted"
+      heading = "#{teacher_name}’s induction extension of #{number_of_terms} terms was deleted"
 
       new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
     end
@@ -280,7 +280,6 @@ module Events
     def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body:, zendesk_ticket_id:)
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
-
       heading = "Induction period reopened"
 
       new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
