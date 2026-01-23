@@ -27,16 +27,6 @@ class School < ApplicationRecord
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
   has_many :training_periods, through: :school_partnerships
 
-  # if RIAB decides to store multiple TSHs and regions
-  has_many :led_teaching_school_hubs, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
-
-  # if RIAB decides to consolidate TSH activity and ignore regions
-  has_one :led_teaching_school_hub, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
-
-  # if RIAB decides to store multiple TSHs and regions
-  has_many :led_teaching_school_hubs, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
-
-  # if RIAB decides to consolidate TSH activity and ignore regions
   has_one :led_teaching_school_hub, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
 
   touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
