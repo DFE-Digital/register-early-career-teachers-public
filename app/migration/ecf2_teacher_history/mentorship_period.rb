@@ -1,4 +1,4 @@
-class ECF2TeacherHistory::MentorshipPeriodRow
+class ECF2TeacherHistory::MentorshipPeriod
   attr_reader :started_on,
               :finished_on,
               :ecf_start_induction_record_id,
@@ -18,14 +18,14 @@ class ECF2TeacherHistory::MentorshipPeriodRow
   end
 
   def mentor_teacher
-    Teacher.find_by(trn: mentor_data.trn)
+    ::Teacher.find_by(trn: mentor_data.trn)
   end
 
   def mentor_at_school_period
     {
       # FIXME: use dates too to ensure we pick the right mentorship period, it's feasible
       #        that one teacher has multiple at the same school
-      mentor: MentorAtSchoolPeriod
+      mentor: ::MentorAtSchoolPeriod
         .joins(:school, :teacher)
         .find_by(school: { urn: mentor_data.urn }, teacher: { trn: mentor_data.trn })
     }

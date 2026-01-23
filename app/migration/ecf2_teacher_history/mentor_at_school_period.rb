@@ -1,16 +1,16 @@
-class ECF2TeacherHistory::MentorAtSchoolPeriodRow
+class ECF2TeacherHistory::MentorAtSchoolPeriod
   attr_reader :started_on,
               :finished_on,
               :school,
               :email,
-              :training_period_rows
+              :training_periods
 
-  def initialize(started_on:, finished_on:, school:, email:, training_period_rows: [])
+  def initialize(started_on:, finished_on:, school:, email:, training_periods: [])
     @started_on = started_on
     @finished_on = finished_on
     @school = school
     @email = email
-    @training_period_rows = training_period_rows
+    @training_periods = training_periods
   end
 
   def to_hash

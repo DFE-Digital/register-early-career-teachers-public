@@ -11,7 +11,7 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
     @induction_records = latest_induction_records(induction_records:)
   end
 
-  # Returns ECF2TeacherHistory::MentorAtSchoolPeriodRow[]
+  # Returns ECF2TeacherHistory::MentorAtSchoolPeriod[]
   def mentor_at_school_periods
     @mentor_at_school_periods ||= induction_records
                                  .reverse
@@ -40,12 +40,12 @@ private
     training_period = build_new_training_period_from_induction_record(induction_record, { started_on:, finished_on: })
 
     mentor_at_school_periods.unshift(
-      ECF2TeacherHistory::MentorAtSchoolPeriodRow.new(
+      ECF2TeacherHistory::MentorAtSchoolPeriod.new(
         started_on:,
         finished_on:,
         school: induction_record.school,
         email: induction_record.preferred_identity_email,
-        training_period_rows: [training_period].compact
+        training_periods: [training_period].compact
       )
     )
   end
@@ -68,6 +68,6 @@ private
       schedule_info: induction_record.schedule_info
     }.merge(overrides)
 
-    ECF2TeacherHistory::TrainingPeriodRow.new(**training_attrs)
+    ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
   end
 end
