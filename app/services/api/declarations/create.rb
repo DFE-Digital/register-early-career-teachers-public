@@ -11,12 +11,13 @@ module API::Declarations
     attribute :evidence_type
 
     validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
+    validate :teacher_exists
     validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }
-    validate :teacher_training_exists
     validates :teacher_type, inclusion: {
       in: TEACHER_TYPES,
       message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
+    validate :teacher_type_exists
     validates :declaration_date, presence: { message: "Enter a '#/declaration_date'." }
     validate :declaration_date_in_the_past
     validates :declaration_date,
@@ -125,16 +126,24 @@ module API::Declarations
       end
     end
 
-    def teacher_training_exists
+    def teacher_exists
       return if errors[:teacher_api_id].any?
-      return if training_period
+      return if teacher
 
       errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
+    end
+
+    def teacher_type_exists
+      return if errors[:teacher_type].any?
+      return if training_period
+
+      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
     end
 
     def validate_milestone_exists
       return if errors[:declaration_type].any?
       return if errors[:teacher_api_id].any?
+      return if errors[:teacher_type].any?
 
       if milestone.blank?
         errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
