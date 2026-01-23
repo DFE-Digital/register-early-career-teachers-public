@@ -151,12 +151,12 @@ RSpec.describe TeacherHistoryConverter::Cleaner do
       end
       let(:raw_induction_records) { [first_induction_record, second_induction_record, third_induction_record] }
 
-      it "corrects the first IR's end_date to the second IR's start_date" do
+      it "corrects the first IR's end_date to its created_at (next IR's start_date is also invalid)" do
         result = cleaner.induction_records
-        expect(result[0].end_date).to eq(Date.new(2021, 1, 1))
+        expect(result[0].end_date).to eq(Date.new(2020, 9, 1))
       end
 
-      it "corrects the second IR's end_date to the third IR's start_date" do
+      it "corrects the second IR's end_date to the third IR's start_date (which is valid)" do
         result = cleaner.induction_records
         expect(result[1].end_date).to eq(Date.new(2021, 9, 1))
       end
@@ -194,14 +194,14 @@ RSpec.describe TeacherHistoryConverter::Cleaner do
       end
       let(:raw_induction_records) { [first_induction_record, second_induction_record, third_induction_record] }
 
-      it "corrects the first IR's end_date to the second IR's start_date" do
+      it "corrects the first IR's end_date to its created_at (next IR's start_date is also invalid)" do
         result = cleaner.induction_records
-        expect(result[0].end_date).to eq(Date.new(2021, 1, 1))
+        expect(result[0].end_date).to eq(Date.new(2020, 9, 1))
       end
 
-      it "corrects the second IR's end_date to the third IR's start_date" do
+      it "corrects the second IR's end_date to its created_at (next IR's start_date is also invalid)" do
         result = cleaner.induction_records
-        expect(result[1].end_date).to eq(Date.new(2021, 4, 1))
+        expect(result[1].end_date).to eq(Date.new(2021, 1, 1))
       end
 
       it "corrects the third IR's end_date to its created_at (no successor)" do
