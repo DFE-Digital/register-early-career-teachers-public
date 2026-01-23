@@ -2,8 +2,9 @@
 
   if Rails.application.config.enable_teaching_school_hubs
     sl.with_row do |row|
-      row.with_key(text: "Leading teaching school hubs")
-      row.with_value(text: govuk_list(school.led_teaching_school_hubs.map(&:name)))
+      row.with_key(text: "Leading teaching school hub")
+      row.with_value(text: school.led_teaching_school_hub&.name || 'Not set')
+      row.with_action(text: "View", href: admin_teaching_school_hub_path(school.led_teaching_school_hub)) if school.led_teaching_school_hub.present?
     end
 
     sl.with_row do |row|
