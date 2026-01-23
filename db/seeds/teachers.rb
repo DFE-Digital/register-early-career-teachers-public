@@ -44,7 +44,7 @@ uplift_attrs = {
   ect_pupil_premium_uplift: true,
 }
 
-# NB: seeded teachers MUST NOT use TRNs found in TRS otherwise data refreshes alter status indicators and names
+# NB: DO NOT use TRNs from TRS because attributes like name will change when refreshed
 teachers = [
   { trn: "0000001", trs_first_name: "Stephen", trs_last_name: "Griddle", trs_induction_status: "InProgress" },
   { trn: "0000002", trs_first_name: "Dominic", trs_last_name: "East", trs_induction_status: "InProgress" },
@@ -75,13 +75,41 @@ teachers = [
   { trn: "0000027", trs_first_name: "Sid", trs_last_name: "James", trs_induction_status: "InProgress" },
   { trn: "0000028", trs_first_name: "Joan", trs_last_name: "Sims", trs_induction_status: "InProgress" },
   { trn: "0000029", trs_first_name: "Hattie", trs_last_name: "Jacques", trs_induction_status: "InProgress" },
-  { trn: "3002600", trs_first_name: "Joyce", trs_last_name: "Grenfell", trs_induction_status: "Passed" },
-  { trn: "3002601", trs_first_name: "George", trs_last_name: "Cole", trs_induction_status: "Passed" },
-  { trn: "3002602", trs_first_name: "Frankie", trs_last_name: "Howard", trs_induction_status: "InProgress" },
+  { trn: "0000030", trs_first_name: "Jane", trs_last_name: "Smith", trs_induction_status: "InProgress" },
+  { trn: "0000031", trs_first_name: "Joyce", trs_last_name: "Grenfell", trs_induction_status: "Passed" },
+  { trn: "0000032", trs_first_name: "George", trs_last_name: "Cole", trs_induction_status: "Passed" },
+  { trn: "0000033", trs_first_name: "Frankie", trs_last_name: "Howard", trs_induction_status: "InProgress" },
+  { trn: "0000034", trs_first_name: "Naruto", trs_last_name: "Uzumaki", trs_induction_status: "InProgress" },
 ]
 
 teachers.each do |attrs|
-  FactoryBot.create(:teacher, *attrs[:traits], attrs.excluding(:traits)).tap do |teacher|
-    describe_teacher(teacher)
+  trn = attrs.fetch(:trn)
+
+  teacher = Teacher.find_or_initialize_by(trn:)
+
+  teacher.assign_attributes(
+    attrs.excluding(:traits, :id_changed_from_trn).except(:trn)
+  )
+
+  teacher.save!
+
+  if attrs[:traits]&.include?(:with_teacher_id_change)
+    from_trn = attrs.fetch(:id_changed_from_trn)
+
+    from_teacher =
+      Teacher.find_by(trn: from_trn) ||
+      Teacher.create!(
+        trn: from_trn,
+        trs_first_name: teacher.trs_first_name,
+        trs_last_name: teacher.trs_last_name
+      )
+
+    TeacherIdChange.find_or_create_by!(
+      teacher_id: teacher.id,
+      api_from_teacher_id: from_teacher.api_id,
+      api_to_teacher_id: teacher.api_id
+    )
   end
+
+  describe_teacher(teacher)
 end

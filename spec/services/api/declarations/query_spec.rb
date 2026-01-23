@@ -7,7 +7,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
     if following_on_from_training_period
       previous_finished_on = following_on_from_training_period.started_on + rand(10..100).days
       following_on_from_training_period.update!(finished_on: previous_finished_on)
-      school_period = following_on_from_training_period.trainee
+      school_period = following_on_from_training_period.at_school_period
 
       FactoryBot.create(:training_period, trait, :ongoing, school_partnership:, started_on: previous_finished_on, "#{trainee}_at_school_period": school_period)
     else
@@ -182,7 +182,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
 
           context "when teacher has previous ECT declarations, however the lead provider is only associated with their mentor training" do
             # ECT teacher for `training_period1` will be a mentor with a new lead provider `lead_provider4`
-            let(:teacher) { training_period1.trainee.teacher }
+            let(:teacher) { training_period1.teacher }
             let(:mentor_training_period) { create_training_period(contract_period:, trainee: :mentor, teacher:) }
             let(:lead_provider4) { mentor_training_period.lead_provider }
             let!(:mentor_declaration) { create_declaration(training_period: mentor_training_period, declaration_type: "started") }
@@ -277,8 +277,26 @@ RSpec.describe API::Declarations::Query, :with_metadata do
           expect(query.declarations).to contain_exactly(declaration1, declaration2)
         end
 
-        it "returns empty if no declarations are found for the given `teacher_api_ids`" do
+        it "returns empty if no declarations are found for an existing teacher `api_id`" do
           query = described_class.new(teacher_api_ids: FactoryBot.create(:teacher).api_id)
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for random UUID" do
+          query = described_class.new(teacher_api_ids: SecureRandom.uuid)
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for invalid UUID" do
+          query = described_class.new(teacher_api_ids: "XXX123")
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for empty array" do
+          query = described_class.new(teacher_api_ids: [])
 
           expect(query.declarations).to be_empty
         end

@@ -83,6 +83,14 @@ RSpec.describe Schools::RegisterECT do
           it "raises an exception" do
             expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
           end
+
+          it "does not enqueue a confirmation email" do
+            ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+
+            expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
+
+            expect(ActiveJob::Base.queue_adapter.enqueued_jobs).to be_empty
+          end
         end
 
         context "when a Teacher record with the same TRN exists and has multiple ect records at different schools" do
@@ -154,6 +162,11 @@ RSpec.describe Schools::RegisterECT do
           expect(ect_at_school_period.school_reported_appropriate_body_id).to eq(school_reported_appropriate_body.id)
         end
 
+        it "sends a provider-led confirmation email to the early career teacher" do
+          expect { service.register! }
+            .to have_enqueued_mail(Schools::ECTRegistrationMailer, :provider_led_confirmation)
+        end
+
         describe "recording an event" do
           before { allow(Events::Record).to receive(:record_teacher_registered_as_ect_event!).with(any_args).and_call_original }
 
@@ -190,6 +203,21 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
+        context "when the ECT start date is backdated before the registration contract period" do
+          let(:started_on) { contract_period.started_on - 1.day }
+
+          it "keeps the ECTAtSchoolPeriod started_on backdated, but normalises TrainingPeriod started_on to the registration contract period start" do
+            expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+            training_period = ect_at_school_period.training_periods.order(:created_at).last
+
+            expect(ect_at_school_period.started_on).to eq(started_on)
+            expect(training_period.started_on).to eq(contract_period.started_on)
+            expect(training_period.schedule.contract_period_year).to eq(contract_period.year)
+            expect(training_period.started_on).not_to eq(ect_at_school_period.started_on)
+          end
+        end
+
         context "when a SchoolPartnership exists" do
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
@@ -223,6 +251,11 @@ RSpec.describe Schools::RegisterECT do
 
       it "creates a TrainingPeriod" do
         expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+      end
+
+      it "sends a school-led confirmation email to the early career teacher" do
+        expect { service.register! }
+          .to have_enqueued_mail(Schools::ECTRegistrationMailer, :school_led_confirmation)
       end
 
       it "has no expression of interest or school partnership" do

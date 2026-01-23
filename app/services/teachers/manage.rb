@@ -3,11 +3,12 @@
 # 1. teacher name changes
 # 2. induction status and date changes
 # 3. QTS and ITT changes
-# 4. teacher deactivation
+# 4. teacher deactivated in TRS
+# 5. teacher not found in TRS
 #
 # @see Teachers::Manageable
 class Teachers::Manage
-  class AlreadyDeactivated < StandardError; end
+  class AlreadyFlagged < StandardError; end
 
   attr_reader :author, :teacher, :appropriate_body
 
@@ -41,6 +42,11 @@ class Teachers::Manage
       old_name = full_name
       teacher.assign_attributes(trs_first_name:, trs_last_name:)
       new_name = full_name
+
+      # Clear `corrected_name` if new trs name matches it
+      if teacher.corrected_name.to_s.squish == new_name.to_s.squish
+        teacher.assign_attributes(corrected_name: nil)
+      end
 
       record_name_change_event(old_name, new_name)
       teacher.save!
@@ -80,7 +86,7 @@ class Teachers::Manage
   end
 
   def mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
-    fail(AlreadyDeactivated) if teacher.trs_deactivated?
+    fail(AlreadyFlagged) if teacher.trs_deactivated?
 
     Teacher.transaction do
       teacher.update!(trs_deactivated: true, trs_data_last_refreshed_at:)
@@ -88,10 +94,30 @@ class Teachers::Manage
     end
   end
 
+  # FIXME: TRS induction values are populated using in-service data to preserve status indicators but we flag the teacher for investigation
+  def mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+    fail(AlreadyFlagged) if teacher.trs_not_found?
+
+    Teacher.transaction do
+      teacher.update!(trs_not_found: true, trs_data_last_refreshed_at:)
+      record_teacher_not_found_event
+      update_induction_status_indicator
+    end
+  end
+
 private
 
   def full_name
     ::Teachers::Name.new(teacher).full_name_in_trs
+  end
+
+  def update_induction_status_indicator
+    return if teacher.finished_induction_period.blank?
+
+    trs_induction_status = INDUCTION_OUTCOMES.fetch(teacher.finished_induction_period.outcome&.to_sym, "InProgress")
+    trs_induction_start_date = teacher.started_induction_period.started_on
+    trs_induction_completed_date = teacher.finished_induction_period.finished_on
+    teacher.update!(trs_induction_status:, trs_induction_start_date:, trs_induction_completed_date:)
   end
 
   # Events ---------------------------------------------------------------------
@@ -115,5 +141,9 @@ private
 
   def record_teacher_deactivated_event
     Events::Record.record_teacher_trs_deactivated_event!(author:, teacher:)
+  end
+
+  def record_teacher_not_found_event
+    Events::Record.record_teacher_trs_not_found_event!(author:, teacher:)
   end
 end

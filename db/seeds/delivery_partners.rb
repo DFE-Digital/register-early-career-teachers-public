@@ -12,6 +12,6 @@ end
   "Harvest Academy",
   "Capita Delivery Partner"
 ].each do |name|
-  delivery_partner = FactoryBot.create(:delivery_partner, name:)
+  delivery_partner = DeliveryPartner.find_or_create_by!(name:)
   describe_delivery_partner(delivery_partner)
 end

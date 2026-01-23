@@ -32,6 +32,8 @@ private
       items = object.map { |v| "#{padding}  #{spec_format(v, indent + 2)}" }
 
       "[\n#{items.join(",\n")}\n#{padding}]"
+    when nil
+      ":ignore"
     else
       object.inspect
     end

@@ -136,7 +136,7 @@ module API::Declarations
     end
 
     def where_teacher_is(teacher_api_ids)
-      return if ignore?(filter: teacher_api_ids)
+      return if ignore?(filter: teacher_api_ids, ignore_empty_array: false)
 
       ect_join = scope.left_outer_joins(:ect_teacher, :mentor_teacher).where(ect_teacher: { api_id: teacher_api_ids })
       mentor_join = scope.left_outer_joins(:ect_teacher, :mentor_teacher).where(mentor_teacher: { api_id: teacher_api_ids })

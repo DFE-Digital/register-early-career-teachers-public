@@ -33,7 +33,7 @@ RSpec.describe Events::Record do
 
     it "assigns and saves attributes correctly" do
       ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.weeks.ago)
-      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 3.weeks.ago)
+      mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school, started_on: 3.weeks.ago)
 
       attributes = {
         author:,
@@ -497,6 +497,23 @@ RSpec.describe Events::Record do
           event_type: :teacher_trs_deactivated,
           happened_at: Time.zone.now,
           body: "TRS API returned 410 so the record was marked as deactivated",
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_teacher_trs_not_found_event!" do
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_teacher_trs_not_found_event!(author:, teacher:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Rhys Ifans was not found in TRS",
+          event_type: :teacher_trs_not_found,
+          happened_at: Time.zone.now,
+          body: "TRS API returned 404 so the record was marked as not found",
           **author_params
         )
       end
@@ -1091,7 +1108,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_teacher_training_period_withdrawn_event" do
-    let(:teacher) { training_period.trainee.teacher }
+    let(:teacher) { training_period.teacher }
     let(:lead_provider) { training_period.lead_provider }
     let(:reason) { "left_teaching_profession" }
     let(:teacher_name) { Teachers::Name.new(teacher).full_name }

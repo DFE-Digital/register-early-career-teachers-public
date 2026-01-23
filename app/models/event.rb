@@ -44,6 +44,7 @@ class Event < ApplicationRecord
     teacher_finishes_mentoring
     teacher_trs_attributes_updated
     teacher_trs_deactivated
+    teacher_trs_not_found
     teacher_trs_induction_end_date_updated
     teacher_trs_induction_start_date_updated
     teacher_trs_induction_status_updated
@@ -104,6 +105,8 @@ class Event < ApplicationRecord
 
   scope :earliest_first, -> { order(happened_at: "asc") }
   scope :latest_first, -> { order(happened_at: "desc") }
+  scope :happened_on_or_before, ->(date) { where(happened_at: ..date) }
+  scope :happened_on_or_after, ->(date) { where(happened_at: date..) }
 
 private
 

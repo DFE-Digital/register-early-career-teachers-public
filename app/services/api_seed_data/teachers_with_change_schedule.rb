@@ -78,6 +78,7 @@ module APISeedData
 
       # With new contract_period
       if variation[:change_contract_period]
+        original_year = school_partnership.contract_period.year
         school_partnership = SchoolPartnership
           .includes(:lead_provider, :contract_period)
           .joins(:lead_provider)
@@ -85,6 +86,7 @@ module APISeedData
             school: school_partnership.school,
             lead_providers: { id: active_lead_provider.lead_provider.id }
           )
+          .excluding_contract_period_year(original_year)
           .order("RANDOM()")
           .first!
         schedule = Schedule.find_by!(contract_period: school_partnership.contract_period, identifier: schedule.identifier)

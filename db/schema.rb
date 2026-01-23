@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -185,6 +185,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
     t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
     t.index ["payment_statement_id"], name: "index_declarations_on_payment_statement_id"
+    t.index ["training_period_id", "declaration_type", "payment_status"], name: "idx_unique_declarations", unique: true, where: "((payment_status = ANY (ARRAY['no_payment'::declaration_payment_statuses, 'eligible'::declaration_payment_statuses, 'payable'::declaration_payment_statuses, 'paid'::declaration_payment_statuses])) AND (clawback_status = 'no_clawback'::declaration_clawback_statuses))"
     t.index ["training_period_id"], name: "index_declarations_on_training_period_id"
     t.index ["voided_by_user_id"], name: "index_declarations_on_voided_by_user_id"
   end
@@ -834,8 +835,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_165603) do
     t.boolean "trnless", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
-    t.enum "ect_migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
-    t.enum "mentor_migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
+    t.enum "migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
+    t.boolean "trs_not_found", default: false
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true

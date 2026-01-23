@@ -243,7 +243,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
       let!(:lead_provider) { mentee_training_period.lead_provider }
       let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
       let!(:previous_mentorship_period) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
-      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 1.month.ago, finished_on: 1.day.ago) }
+      let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, school: mentee.school, started_on: 1.month.ago, finished_on: 1.day.ago) }
       let(:previous_mentor_training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, :for_mentor, started_on: 2.weeks.ago, mentor_at_school_period: previous_mentor) }
 
       before do

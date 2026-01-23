@@ -39,6 +39,10 @@ FactoryBot.define do
       trs_deactivated { true }
     end
 
+    trait :not_found_in_trs do
+      trs_not_found { true }
+    end
+
     trait :early_roll_out_mentor do
       mentor_became_ineligible_for_funding_on { Date.new(2021, 4, 19) }
       mentor_became_ineligible_for_funding_reason { "completed_during_early_roll_out" }
@@ -64,7 +68,8 @@ FactoryBot.define do
         FactoryBot.create(
           :teacher_id_change,
           teacher:,
-          api_from_teacher_id: Teacher.find_by_trn(evaluator.id_changed_from_trn).api_id
+          api_from_teacher_id: Teacher.find_by_trn(evaluator.id_changed_from_trn).api_id,
+          api_to_teacher_id: teacher.api_id
         )
       end
     end

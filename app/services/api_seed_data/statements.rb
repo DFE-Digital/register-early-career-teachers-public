@@ -23,8 +23,12 @@ module APISeedData
         active_lead_providers.each do |active_lead_provider|
           years = years(active_lead_provider.contract_period.year)
 
-          statements += years.product(MONTHS).map do |year, month|
+          statements += years.product(MONTHS).map { |year, month|
             deadline_date = deadline_date(year, month)
+            random_fee_type = fee_type
+
+            next if active_lead_provider.contract_period.payments_frozen? &&
+              random_fee_type == "output"
 
             Statement.find_by(active_lead_provider:, month:, year:, deadline_date:) ||
               FactoryBot.create(:statement,
@@ -34,8 +38,8 @@ module APISeedData
                                 deadline_date:,
                                 payment_date: payment_date(deadline_date),
                                 status: status(payment_date(deadline_date), deadline_date),
-                                fee_type:)
-          end
+                                fee_type: random_fee_type)
+          }.compact
         end
 
         log_statement_seed_info(lead_provider, statements)

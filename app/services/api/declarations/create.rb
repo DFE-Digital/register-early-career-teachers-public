@@ -30,6 +30,7 @@ module API::Declarations
     validate :validate_milestone_exists
     validate :validates_billable_slot_available
     validate :payment_statement_available
+    validate :declaration_in_sequence
 
     def create
       return false unless valid?
@@ -87,7 +88,7 @@ module API::Declarations
     def mentorship_period
       return unless training_period.for_ect?
 
-      @mentorship_period ||= training_period.trainee.mentorship_periods.closest_to(declaration_date).first
+      @mentorship_period ||= training_period.mentorship_periods.closest_to(declaration_date).first
     end
 
     def delivery_partner
@@ -171,5 +172,34 @@ module API::Declarations
 
       errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
     end
+
+    def declaration_in_sequence
+      return if errors[:declaration_date].any? || errors[:declaration_type].any?
+      return if declaration_date.blank? || declaration_type.blank?
+      return unless contract_period && contract_period.year >= 2025
+
+      ordered_types = Declaration.declaration_types.values
+      index = ordered_types.index(declaration_type)
+      before_declaration_types = ordered_types[0...index]
+      after_declaration_types = ordered_types[(index + 1)..]
+
+      from_declaration_date = existing_declarations
+        .billable_or_changeable_for_declaration_type(before_declaration_types)
+        .maximum(:declaration_date)
+
+      to_declaration_date = existing_declarations
+        .billable_or_changeable_for_declaration_type(after_declaration_types)
+        .minimum(:declaration_date)
+
+      error_message = "This '#/declaration_date' is invalid. Check that it is in sequence with existing declaration dates for this participant."
+
+      if from_declaration_date && parsed_declaration_date.before?(from_declaration_date)
+        errors.add(:declaration_date, error_message)
+      elsif to_declaration_date && parsed_declaration_date.after?(to_declaration_date)
+        errors.add(:declaration_date, error_message)
+      end
+    end
+
+    def parsed_declaration_date = Time.zone.parse(declaration_date)
   end
 end

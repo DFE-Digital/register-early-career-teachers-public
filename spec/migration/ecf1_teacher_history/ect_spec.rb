@@ -1,6 +1,8 @@
 describe ECF1TeacherHistory::ECT do
   describe ".from_hash" do
-    subject { ECF1TeacherHistory::ECT.from_hash(input) }
+    subject do
+      ECF1TeacherHistory::ECT.from_hash(input)
+    end
 
     let(:input) do
       {

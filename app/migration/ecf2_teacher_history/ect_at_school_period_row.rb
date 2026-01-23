@@ -31,11 +31,22 @@ class ECF2TeacherHistory::ECTAtSchoolPeriodRow
     {
       started_on:,
       finished_on:,
-      school:,
+      school: school.to_h,
       email:,
       school_reported_appropriate_body: appropriate_body,
       training_periods: training_period_rows.map(&:to_h)
     }
+  end
+
+  # if we update a ect_at_school_period_row's finished_on after creation
+  # we need to adjust any training_period that matches it too
+  def finished_on=(date)
+    original_finished_on = @finished_on
+
+    @finished_on = date
+
+    training_period_rows.select { it.finished_on == original_finished_on }
+                        .each { |tp| tp.finished_on = date }
   end
 
   def real_school
@@ -44,5 +55,17 @@ class ECF2TeacherHistory::ECTAtSchoolPeriodRow
 
   def real_appropriate_body
     # AppropriateBody.find(appropriate_body.id)
+  end
+
+  def dates
+    [started_on, finished_on]
+  end
+
+  def range
+    started_on..finished_on
+  end
+
+  def ongoing?
+    finished_on.nil?
   end
 end

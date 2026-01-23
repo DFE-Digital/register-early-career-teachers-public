@@ -33,23 +33,19 @@ module Migration
     end
 
     def induction_record_descriptions
-      urn = nil
+      induction_records.group_by(&:urn).flat_map do |urn, records|
+        chunk = [%(-- #{urn} --)]
 
-      induction_records.map do |ir|
-        chunk = []
+        records.sort_by(&:start_date).each do |ir|
+          identifier = ir.induction_record_id[0..7]
 
-        chunk << %(-- #{ir.urn} --) if ir.urn != urn
+          chunk << <<~LINE
+            [#{identifier}] starts on #{ir.start_date} and ends on #{ir.end_date || Time.zone.today}
+            [#{identifier}] is colored in #{colour(ir.lead_provider_name)}
+          LINE
 
-        identifier = ir.induction_record_id[0..7]
-
-        chunk << <<~LINE
-          [#{identifier}] starts on #{ir.start_date} and ends on #{ir.end_date || Time.zone.today}
-          [#{identifier}] is colored in #{colour(ir.lead_provider_name)}
-        LINE
-
-        chunk << withdrawn_note(identifier) if ir.withdrawn?
-
-        urn = ir.urn
+          chunk << withdrawn_note(identifier) if ir.withdrawn?
+        end
 
         chunk.join("\n")
       end

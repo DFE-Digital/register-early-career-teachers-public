@@ -12,8 +12,7 @@ class Teacher < ApplicationRecord
   self.ignored_columns = %i[search]
 
   # Enums
-  enum :ect_migration_mode, MIGRATION_MODES, validate: { message: "Must be latest_induction_records, all_induction_records or not_migrated" }, suffix: true
-  enum :mentor_migration_mode, MIGRATION_MODES, validate: { message: "Must be latest_induction_records, all_induction_records or not_migrated" }, suffix: true
+  enum :migration_mode, MIGRATION_MODES, validate: { message: "Must be latest_induction_records, all_induction_records or not_migrated" }, suffix: true
   enum :mentor_became_ineligible_for_funding_reason, {
     completed_declaration_received: "completed_declaration_received",
     completed_during_early_roll_out: "completed_during_early_roll_out",
@@ -120,6 +119,8 @@ class Teacher < ApplicationRecord
 
   scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
   scope :active_in_trs, -> { where(trs_deactivated: false) }
+  scope :not_found_in_trs, -> { where(trs_not_found: true) }
+  scope :found_in_trs, -> { where(trs_not_found: false) }
 
   normalizes :corrected_name, with: -> { it.squish }
 

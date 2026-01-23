@@ -217,6 +217,15 @@ module Events
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end
 
+    def self.record_teacher_trs_not_found_event!(author:, teacher:, happened_at: Time.zone.now)
+      event_type = :teacher_trs_not_found
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name} was not found in TRS"
+      body = "TRS API returned 404 so the record was marked as not found"
+
+      new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
+    end
+
     def self.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_start_date_updated
       teacher_name = Teachers::Name.new(teacher).full_name

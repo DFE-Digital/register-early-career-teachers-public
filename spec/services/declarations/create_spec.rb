@@ -1,7 +1,7 @@
 RSpec.describe Declarations::Create do
   let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
   let(:lead_provider) { training_period.lead_provider }
-  let(:teacher) { training_period.trainee.teacher }
+  let(:teacher) { training_period.teacher }
   let(:declaration_type) { "started" }
   let(:evidence_type) { "training-event-attended" }
   let(:schedule) { training_period.schedule }
@@ -38,8 +38,20 @@ RSpec.describe Declarations::Create do
         let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
         let!(:mentorship_period) do
           if trainee_type == :ect
-            mentor = FactoryBot.create(:mentor_at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
-            FactoryBot.create(:mentorship_period, mentee: at_school_period, mentor:, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on)
+            mentor = FactoryBot.create(
+              :mentor_at_school_period,
+              school: at_school_period.school,
+              started_on: at_school_period.started_on,
+              finished_on: at_school_period.finished_on
+            )
+
+            FactoryBot.create(
+              :mentorship_period,
+              mentee: at_school_period,
+              mentor:,
+              started_on: at_school_period.started_on,
+              finished_on: at_school_period.finished_on
+            )
           end
         end
 
@@ -121,6 +133,29 @@ RSpec.describe Declarations::Create do
               }
             )
           )
+        end
+
+        context "when a duplicate declaration exists" do
+          let!(:existing_declaration) { service.create }
+
+          it "returns the existing declaration with correct attributes" do
+            declaration = nil
+            expect { declaration = create_declaration }.not_to change(Declaration, :count)
+
+            expect(declaration).to eq(existing_declaration)
+            expect(declaration.payment_statement).to be_nil
+            if trainee_type == :ect
+              expect(declaration.mentorship_period).to eq(mentorship_period)
+            end
+            expect(declaration.evidence_type).to eq(evidence_type)
+            expect(declaration).not_to be_payment_status_eligible
+          end
+
+          it "acquires a lock on the run" do
+            expect(Declaration).to receive(:with_advisory_lock).with("lock_#{training_period.id}_#{declaration_type}").and_call_original
+
+            create_declaration
+          end
         end
       end
     end

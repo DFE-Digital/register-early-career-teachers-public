@@ -27,7 +27,7 @@ module Metadata::Handlers
         latest_mentor_training_period = latest_mentor_training_period_by_lead_provider(teacher:)[lead_provider_id]
         latest_ect_contract_period = latest_ect_training_period&.contract_period
         latest_mentor_contract_period = latest_mentor_training_period&.contract_period
-        api_mentor_id = latest_ect_training_period&.trainee&.latest_mentorship_period&.mentor&.teacher&.api_id
+        api_mentor_id = latest_ect_training_period&.at_school_period&.latest_mentorship_period&.mentor&.teacher&.api_id
         involved_in_school_transfer = school_transfers_exist_for(teacher.ect_at_school_periods, lead_provider_id) ||
           school_transfers_exist_for(teacher.mentor_at_school_periods, lead_provider_id)
 

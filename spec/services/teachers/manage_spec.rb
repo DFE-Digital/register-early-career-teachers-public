@@ -49,23 +49,49 @@ RSpec.describe Teachers::Manage do
   end
 
   describe "#update_name!" do
-    before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+    describe "teacher.corrected_name" do
+      subject(:service) { described_class.system_update(teacher:) }
 
-    it "records a name change event" do
-      freeze_time do
-        service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
+      let(:teacher) { FactoryBot.create(:teacher, corrected_name: "Test User") }
 
-        expect(RecordEventJob).to have_received(:perform_later).with(
-          appropriate_body:,
-          author_email: "christopher.biggins@education.gov.uk",
-          author_id: author.id,
-          author_name: "Christopher Biggins",
-          author_type: :dfe_staff_user,
-          event_type: :teacher_name_updated_by_trs,
-          happened_at: Time.zone.now,
-          heading: "Name changed from 'Barry Allen' to 'John Doe'",
-          teacher:
-        )
+      context "when TRS name matches `corrected_name`" do
+        it "clears `corrected_name` on teacher" do
+          expect(teacher.corrected_name).to eq("Test User")
+
+          service.update_name!(trs_first_name: "Test", trs_last_name: "User")
+          expect(teacher.reload.corrected_name).to be_nil
+        end
+      end
+
+      context "when TRS name does not match `corrected_name`" do
+        it "does not change `corrected_name` on teacher" do
+          expect(teacher.corrected_name).to eq("Test User")
+
+          service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
+          expect(teacher.reload.corrected_name).to eq("Test User")
+        end
+      end
+    end
+
+    context "when name has changed" do
+      before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+
+      it "records a name change event" do
+        freeze_time do
+          service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
+
+          expect(RecordEventJob).to have_received(:perform_later).with(
+            appropriate_body:,
+            author_email: "christopher.biggins@education.gov.uk",
+            author_id: author.id,
+            author_name: "Christopher Biggins",
+            author_type: :dfe_staff_user,
+            event_type: :teacher_name_updated_by_trs,
+            happened_at: Time.zone.now,
+            heading: "Name changed from 'Barry Allen' to 'John Doe'",
+            teacher:
+          )
+        end
       end
     end
   end
@@ -226,17 +252,17 @@ RSpec.describe Teachers::Manage do
   describe "#mark_teacher_as_deactivated!" do
     let(:trs_data_last_refreshed_at) { 2.minutes.ago }
 
-    context "when the teacher is already deactivated" do
+    context "when the teacher is already flagged" do
       let(:teacher) { FactoryBot.create(:teacher, :deactivated_in_trs) }
 
       it do
         expect {
           service.mark_teacher_as_deactivated!(trs_data_last_refreshed_at:)
-        }.to raise_error(Teachers::Manage::AlreadyDeactivated)
+        }.to raise_error(Teachers::Manage::AlreadyFlagged)
       end
     end
 
-    context "when the teacher is active" do
+    context "when the teacher is not yet flagged" do
       it "sets the trs_deactivated flag to true" do
         expect(teacher.trs_deactivated).to be(false)
 
@@ -245,6 +271,59 @@ RSpec.describe Teachers::Manage do
 
         expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
         expect(teacher.trs_deactivated).to be(true)
+      end
+    end
+  end
+
+  describe "#mark_teacher_as_not_found!" do
+    let(:trs_data_last_refreshed_at) { 2.minutes.ago }
+
+    context "when the teacher is already flagged" do
+      let(:teacher) { FactoryBot.create(:teacher, :not_found_in_trs) }
+
+      it do
+        expect {
+          service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+        }.to raise_error(Teachers::Manage::AlreadyFlagged)
+      end
+    end
+
+    context "when the teacher is not yet flagged" do
+      it "sets the trs_not_found flag to true" do
+        expect(teacher.trs_not_found).to be(false)
+
+        service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+        teacher.reload
+
+        expect(teacher.trs_data_last_refreshed_at).to be_within(0.001.seconds).of(trs_data_last_refreshed_at)
+        expect(teacher.trs_not_found).to be(true)
+      end
+    end
+
+    context "when the teacher has an existing status and no induction" do
+      let(:teacher) { FactoryBot.create(:teacher, trs_induction_status: "Exempt") }
+
+      context "and no induction" do
+        before do
+          service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+          teacher.reload
+        end
+
+        it "does not overwrite the status" do
+          expect(teacher.trs_induction_status).to eq("Exempt")
+        end
+      end
+
+      context "and an induction" do
+        before do
+          FactoryBot.create(:induction_period, :pass, teacher:)
+          service.mark_teacher_as_not_found!(trs_data_last_refreshed_at:)
+          teacher.reload
+        end
+
+        it "overwrites the status" do
+          expect(teacher.trs_induction_status).to eq("Passed")
+        end
       end
     end
   end

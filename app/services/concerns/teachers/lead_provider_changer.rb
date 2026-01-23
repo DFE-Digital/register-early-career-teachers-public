@@ -37,13 +37,13 @@ module Teachers
       raise LeadProviderNotChangedError unless lead_provider_changed?
 
       ActiveRecord::Base.transaction do
-        if destroy_existing_training_period?
-          training_period.destroy!
+        if current_or_future_training_period?
+          update_training_period_in_place!
         else
-          finish_training_period!
+          finish_or_destroy_training_period!
+          create_training_period!
         end
 
-        create_training_period!
         record_lead_provider_updated_event!
       end
     end
@@ -53,9 +53,10 @@ module Teachers
     def create_training_period!
       TrainingPeriods::Create.provider_led(
         period:,
-        started_on: date_of_transition,
+        started_on:,
         school_partnership:,
         expression_of_interest:,
+        schedule:,
         author:
       ).call
     end
@@ -77,14 +78,44 @@ module Teachers
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
     end
 
+    def contract_period
+      if reuse_existing_schedule?
+        existing_schedule.contract_period
+      else
+        contract_period_at_transition
+      end
+    end
+
+    def schedule
+      existing_schedule if reuse_existing_schedule?
+    end
+
+    def reuse_existing_schedule?
+      return false unless existing_schedule
+
+      existing_schedule.contract_period != contract_period_at_transition
+    end
+
+    def contract_period_at_transition
+      @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
+    end
+
+    def existing_schedule
+      training_period&.schedule
+    end
+
     def school_partnership
       earliest_matching_school_partnership
     end
 
-    def destroy_existing_training_period?
-      return false unless training_period
+    def finish_or_destroy_training_period!
+      return unless training_period
 
-      date_of_transition.future? || !training_period_confirmed?
+      if training_period_confirmed?
+        finish_training_period!
+      else
+        training_period.destroy!
+      end
     end
 
     def training_period_confirmed?
@@ -92,13 +123,26 @@ module Teachers
     end
 
     def date_of_transition
+      return training_period.started_on if current_or_future_training_period?
+
       [period.started_on, Date.current].max
     end
+    alias_method :started_on, :date_of_transition
 
     def training_period
       period.current_or_next_training_period
     end
 
+    def current_or_future_training_period?
+      training_period.present? && training_period.started_on >= Date.current
+    end
+
+    def update_training_period_in_place!
+      training_period.update!(
+        school_partnership:,
+        expression_of_interest:
+      )
+    end
     delegate :school, to: :period
     delegate :teacher, to: :period
 
@@ -109,7 +153,5 @@ module Teachers
     def lead_provider
       new_lead_provider
     end
-
-    alias_method :started_on, :date_of_transition
   end
 end

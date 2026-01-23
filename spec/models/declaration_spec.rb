@@ -47,13 +47,14 @@ describe Declaration do
   end
 
   describe "validation" do
-    it { expect(FactoryBot.build(:declaration)).to be_valid }
+    subject { FactoryBot.build(:declaration) }
 
+    it { is_expected.to be_valid }
     it { is_expected.to validate_presence_of(:training_period).with_message("Choose a training period") }
     it { is_expected.to validate_presence_of(:declaration_date).with_message("Declaration date must be specified") }
     it { is_expected.to validate_absence_of(:ineligibility_reason).with_message("Ineligibility reason must not be set unless the declaration is ineligible") }
-    it { is_expected.to validate_inclusion_of(:declaration_type).in_array(described_class.declaration_types.keys).with_message("Choose a valid declaration type") }
-    it { is_expected.to validate_inclusion_of(:payment_status).in_array(described_class.payment_statuses.keys).with_message("Choose a valid payment status") }
+    it { is_expected.to allow_values(*described_class.declaration_types.keys).for(:declaration_type) }
+    it { is_expected.to allow_values(*described_class.payment_statuses.keys).for(:payment_status) }
     it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }
     it { is_expected.to validate_inclusion_of(:evidence_type).in_array(described_class.evidence_types.keys).with_message("Choose a valid evidence type").allow_nil }
     it { is_expected.to validate_inclusion_of(:ineligibility_reason).in_array(described_class.ineligibility_reasons.keys).with_message("Choose a valid ineligibility reason").allow_nil }
@@ -62,6 +63,30 @@ describe Declaration do
     it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
     it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
+
+    context "training period unique index" do
+      subject { FactoryBot.create(:declaration) }
+
+      it { is_expected.to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status).with_message("A billable declaration with the same type already exists for this training period") }
+
+      context "when the declaration payment status is voided" do
+        subject { FactoryBot.create(:declaration, :voided) }
+
+        it { is_expected.not_to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status) }
+      end
+
+      context "when the declaration clawback status is `awaiting_clawback`" do
+        subject { FactoryBot.create(:declaration, :awaiting_clawback) }
+
+        it { is_expected.not_to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status) }
+      end
+
+      context "when the declaration clawback status is `clawed_back`" do
+        subject { FactoryBot.create(:declaration, :clawed_back) }
+
+        it { is_expected.not_to validate_uniqueness_of(:training_period).scoped_to(:declaration_type, :payment_status) }
+      end
+    end
 
     context "when payment" do
       subject { FactoryBot.build(:declaration, :paid) }
@@ -179,12 +204,13 @@ describe Declaration do
       subject(:declaration) { FactoryBot.build(:declaration, mentorship_period:, training_period:) }
 
       let(:started_on) { 1.month.ago }
-      let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on:, finished_on: nil) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on:, finished_on: nil) }
+      let(:school) { FactoryBot.create(:school) }
+      let(:mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: nil) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, started_on:, finished_on: nil) }
       let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on:, finished_on: nil) }
 
       context "when the mentorship_period does not belong to the trainee" do
-        let(:mentee) { FactoryBot.create(:ect_at_school_period, started_on:, finished_on: nil) }
+        let(:mentee) { FactoryBot.create(:ect_at_school_period, school:, started_on:, finished_on: nil) }
         let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee:, started_on:, finished_on: nil) }
 
         it "is not valid" do
@@ -194,7 +220,7 @@ describe Declaration do
       end
 
       context "when the mentorship_period does belong to the trainee" do
-        let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: training_period.trainee, finished_on: nil) }
+        let(:mentorship_period) { FactoryBot.create(:mentorship_period, mentor:, mentee: training_period.at_school_period, finished_on: nil) }
 
         it { is_expected.to be_valid }
       end
@@ -364,10 +390,10 @@ describe Declaration do
           "retained-2": "retained-2",
           "retained-3": "retained-3",
           "retained-4": "retained-4",
+          completed: "completed",
           "extended-1": "extended-1",
           "extended-2": "extended-2",
           "extended-3": "extended-3",
-          completed: "completed"
         })
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: false)
@@ -529,7 +555,7 @@ describe Declaration do
 
     let(:declaration) { FactoryBot.create(:declaration) }
 
-    it { is_expected.to eq(declaration.training_period.trainee.teacher) }
+    it { is_expected.to eq(declaration.training_period.teacher) }
 
     context "when training_period is nil" do
       before { declaration.training_period = nil }
@@ -573,7 +599,7 @@ describe Declaration do
       context "when an existing, billable/changeable declaration of the same type exists for the other teacher type" do
         before { FactoryBot.create(:declaration, :eligible, training_period: other_type_training_period, declaration_type: :started) }
 
-        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: training_period.trainee.teacher, started_on: 1.month.ago, finished_on: nil) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: training_period.teacher, started_on: 1.month.ago, finished_on: nil) }
         let(:other_type_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 1.month.ago) }
 
         it { is_expected.not_to be_duplicate_declaration_exists }

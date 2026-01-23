@@ -45,7 +45,7 @@ class TrainingPeriod < ApplicationRecord
   has_many :events
 
   touch -> { self }, when_changing: %i[started_on finished_on], timestamp_attribute: :api_transfer_updated_at
-  touch -> { trainee&.teacher },
+  touch -> { teacher },
         on_event: %i[create destroy update],
         timestamp_attribute: :api_updated_at,
         when_changing: %i[
@@ -62,13 +62,13 @@ class TrainingPeriod < ApplicationRecord
         ]
 
   refresh_metadata -> { school_partnership&.school }, on_event: %i[create destroy update], when_changing: %i[school_partnership_id expression_of_interest_id]
-  refresh_metadata -> { trainee&.teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on withdrawn_at deferred_at school_partnership_id]
+  refresh_metadata -> { teacher }, on_event: %i[create destroy update], when_changing: %i[started_on finished_on withdrawn_at deferred_at school_partnership_id]
 
   # Validations
   validates :started_on,
             presence: true
 
-  validate :one_id_of_trainee_present
+  validate :only_one_at_school_period_present
   validate :at_least_expression_of_interest_or_school_partnership_present, if: :provider_led_training_programme?
   validate :expression_of_interest_absent_for_school_led, if: :school_led_training_programme?
   validate :school_partnership_absent_for_school_led, if: :school_led_training_programme?
@@ -105,6 +105,8 @@ class TrainingPeriod < ApplicationRecord
   # Delegations
   delegate :name, to: :delivery_partner, prefix: true, allow_nil: true
   delegate :name, to: :lead_provider, prefix: true, allow_nil: true
+  delegate :teacher, :teacher_id, :school, :school_id, :mentorship_periods, :email, to: :at_school_period, allow_nil: true
+  delegate :started_on, :finished_on, to: :at_school_period, prefix: true, allow_nil: true
 
   def for_ect?
     ect_at_school_period_id.present?
@@ -114,14 +116,22 @@ class TrainingPeriod < ApplicationRecord
     mentor_at_school_period_id.present?
   end
 
-  def trainee
+  def partnership_change_requires_replacement?
+    started_on.present? && started_on < Date.current && finished_on.blank?
+  end
+
+  def partnership_change_eligible?
+    provider_led_training_programme? && finished_on.blank?
+  end
+
+  def at_school_period
     ect_at_school_period || mentor_at_school_period
   end
 
   def siblings
-    return TrainingPeriod.none unless trainee
+    return TrainingPeriod.none unless at_school_period
 
-    trainee.training_periods.excluding(self)
+    at_school_period.training_periods.excluding(self)
   end
 
   def only_expression_of_interest?
@@ -144,26 +154,27 @@ class TrainingPeriod < ApplicationRecord
 
   def teacher_completed_training?
     if for_ect?
-      trainee.teacher.finished_induction_period&.complete?
+      teacher.finished_induction_period&.complete?
     else
-      trainee.teacher.mentor_became_ineligible_for_funding_on.present?
+      teacher.mentor_became_ineligible_for_funding_on.present?
     end
   end
 
   def eligible_for_funding?
     if for_ect?
-      trainee.teacher.ect_first_became_eligible_for_training_at.present?
+      teacher.ect_first_became_eligible_for_training_at.present?
     else
-      trainee.teacher.mentor_first_became_eligible_for_training_at.present?
+      teacher.mentor_first_became_eligible_for_training_at.present?
     end
   end
 
 private
 
-  def one_id_of_trainee_present
+  def only_one_at_school_period_present
     ids = [ect_at_school_period_id, mentor_at_school_period_id]
-    errors.add(:base, "Id of trainee missing") if ids.none?
-    errors.add(:base, "Only one id of trainee required. Two given") if ids.all?
+
+    errors.add(:base, "Either an ECT at school period or mentor at school period is required") if ids.none?
+    errors.add(:base, "Can belong to either an ECT at school period or a mentor at school period, not both") if ids.all?
   end
 
   def trainee_distinct_period
@@ -172,17 +183,9 @@ private
 
   def enveloped_by_trainee_at_school_period
     return if finished_on.blank?
-    return if (trainee_started_on_at_school..trainee_finished_on_at_school).cover?(started_on..finished_on)
+    return if (at_school_period_started_on..at_school_period_finished_on).cover?(started_on..finished_on)
 
     errors.add(:base, "Date range is not contained by the period the trainee is at the school")
-  end
-
-  def trainee_started_on_at_school
-    ect_at_school_period&.started_on || mentor_at_school_period&.started_on
-  end
-
-  def trainee_finished_on_at_school
-    ect_at_school_period&.finished_on || mentor_at_school_period&.finished_on
   end
 
   def at_least_expression_of_interest_or_school_partnership_present
@@ -232,11 +235,11 @@ private
   end
 
   def school_consistency
-    return if trainee.blank?
+    return if at_school_period.blank?
     return if school_partnership.blank?
-    return if school_partnership.school == trainee.school
+    return if school_partnership.school == school
 
-    extra = { teacher_id: trainee.teacher.id, school_partnership_id: school_partnership.id, trainee_school_id: trainee.school_id }
+    extra = { teacher_id:, school_partnership_id: school_partnership.id, trainee_school_id: school_id }
     Sentry.capture_message("[Data integrity] Attempt to assign school partnership to a different school from the school period", level: :error, extra:)
     errors.add(:school_partnership, "School partnership's school must match the trainee's school")
   end

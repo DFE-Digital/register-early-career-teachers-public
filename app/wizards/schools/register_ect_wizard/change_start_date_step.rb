@@ -8,6 +8,14 @@ module Schools
       def previous_step
         :check_answers
       end
+
+    private
+
+      def persist
+        super
+        store[:school_partnership_to_reuse_id] = nil
+        true
+      end
     end
   end
 end

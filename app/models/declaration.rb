@@ -29,8 +29,19 @@ class Declaration < ApplicationRecord
        validate: { message: "Choose a valid clawback status" },
        prefix: true
 
+  # Declaration types are in specific order used for validation to maintain submission order
   enum :declaration_type,
-       %w[started retained-1 retained-2 retained-3 retained-4 extended-1 extended-2 extended-3 completed].index_by(&:itself),
+       %w[
+         started
+         retained-1
+         retained-2
+         retained-3
+         retained-4
+         completed
+         extended-1
+         extended-2
+         extended-3
+       ].index_by(&:itself),
        validate: { message: "Choose a valid declaration type" },
        prefix: true
 
@@ -54,7 +65,13 @@ class Declaration < ApplicationRecord
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
 
   # Validations
-  validates :training_period, presence: { message: "Choose a training period" }
+  validates :training_period,
+            presence: { message: "Choose a training period" },
+            uniqueness: {
+              scope: %i[declaration_type payment_status],
+              conditions: -> { billable_or_changeable },
+              message: "A billable declaration with the same type already exists for this training period"
+            }
   validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_by_user_at
   validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
@@ -158,7 +175,7 @@ class Declaration < ApplicationRecord
   def voidable_payment? = payment_status.in?(VOIDABLE_PAYMENT_STATUSES)
 
   def teacher
-    training_period&.trainee&.teacher
+    training_period&.teacher
   end
 
   def duplicate_declaration_exists?
@@ -190,7 +207,7 @@ private
   def mentorship_period_belongs_to_teacher
     return unless mentorship_period && training_period
 
-    unless mentorship_period.in?(training_period.trainee.mentorship_periods)
+    unless mentorship_period.in?(training_period.mentorship_periods)
       errors.add(:mentorship_period, "Mentorship period must belong to the trainee")
     end
   end
