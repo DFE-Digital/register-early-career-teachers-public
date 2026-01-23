@@ -779,6 +779,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
   end
 
+  create_table "support_queries", force: :cascade do |t|
+    t.string "state", default: "pending", null: false
+    t.integer "zendesk_id"
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "school_name", null: false
+    t.integer "school_urn", null: false
+    t.text "message", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "teacher_id_changes", force: :cascade do |t|
     t.bigint "teacher_id", null: false
     t.uuid "api_from_teacher_id", null: false

@@ -89,5 +89,7 @@ constraints -> { Rails.application.config.enable_schools_interface } do
         concerns :wizardable, wizard: Schools::InductionTutor::UpdateInductionTutorWizard
       end
     end
+
+    resources :support_queries, only: %i[new create]
   end
 end

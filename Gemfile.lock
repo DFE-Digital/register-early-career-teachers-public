@@ -212,6 +212,8 @@ GEM
       logger
     faraday-follow_redirects (0.4.0)
       faraday (>= 1, < 3)
+    faraday-multipart (1.2.0)
+      multipart-post (~> 2.0)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
     ffi (1.17.0)
@@ -338,6 +340,7 @@ GEM
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
+    inflection (1.0.0)
     io-console (0.8.2)
     io-endpoint (0.15.2)
     io-event (1.12.1)
@@ -412,6 +415,7 @@ GEM
     msgpack (1.8.0)
     multi_json (1.18.0)
     multi_xml (0.6.0)
+    multipart-post (2.4.1)
     mutex_m (0.3.0)
     nanoc (4.14.5)
       addressable (~> 2.5)
@@ -818,6 +822,13 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.7.4)
+    zendesk_api (3.1.1)
+      faraday (> 2.0.0)
+      faraday-multipart
+      hashie (>= 3.5.2, < 6.0.0)
+      inflection
+      mini_mime
+      multipart-post (~> 2.0)
 
 PLATFORMS
   aarch64-linux
@@ -901,6 +912,7 @@ DEPENDENCIES
   webmock
   webrick
   with_advisory_lock
+  zendesk_api (~> 3.1, >= 3.1.1)
 
 RUBY VERSION
    ruby 3.4.7p58
