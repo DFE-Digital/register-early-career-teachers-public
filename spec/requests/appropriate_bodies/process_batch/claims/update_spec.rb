@@ -10,7 +10,7 @@ RSpec.describe "Appropriate Body bulk claims confirmation", type: :request do
                       file_name:)
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   describe "PATCH /appropriate-body/bulk/claims/:batch_id" do
     context "with only valid claims" do

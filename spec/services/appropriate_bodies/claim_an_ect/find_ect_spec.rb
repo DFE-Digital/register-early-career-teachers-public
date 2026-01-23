@@ -23,7 +23,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     end
 
     context "when no teacher is found" do
-      include_context "test trs api client that finds nothing"
+      include_context "test TRS API returns nothing"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::TeacherNotFound)
@@ -31,7 +31,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     end
 
     context "when the teacher is required to complete" do
-      include_context "test trs api client that finds teacher with specific induction status", "RequiredToComplete"
+      include_context "test TRS API returns a teacher with specific induction status", "RequiredToComplete"
 
       it "saves attributes from TRS to the pending_induction_submission" do
         expect(find_ect.import_from_trs!).to be(true)
@@ -76,7 +76,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     end
 
     context "when the teacher has passed" do
-      include_context "test trs api client that finds teacher with specific induction status", "Passed"
+      include_context "test TRS API returns a teacher with specific induction status", "Passed"
 
       it do
         expect {
@@ -86,7 +86,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     end
 
     context "when the teacher has failed" do
-      include_context "test trs api client that finds teacher with specific induction status", "Failed"
+      include_context "test TRS API returns a teacher with specific induction status", "Failed"
 
       it do
         expect {
@@ -96,7 +96,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     end
 
     context "when the teacher is exempt" do
-      include_context "test trs api client that finds teacher with specific induction status", "Exempt"
+      include_context "test TRS API returns a teacher with specific induction status", "Exempt"
 
       it do
         expect {

@@ -1,5 +1,5 @@
 RSpec.describe "Searching for a mentor", :enable_schools_interface do
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   before do
     given_there_is_a_school_with_teachers
