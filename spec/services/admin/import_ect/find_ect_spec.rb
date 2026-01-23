@@ -26,7 +26,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when the teacher is required to complete" do
-      include_context "test trs api client that finds teacher with specific induction status", "RequiredToComplete"
+      include_context "test TRS API returns a teacher with specific induction status", "RequiredToComplete"
 
       it "saves attributes from TRS to the pending_induction_submission" do
         expect(find_ect.import_from_trs!).to be(true)
@@ -38,7 +38,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher already exists in system" do
-      include_context "test trs api client"
+      include_context "test TRS API returns a teacher"
 
       before do
         FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
@@ -50,7 +50,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when no teacher is found" do
-      include_context "test trs api client that finds nothing"
+      include_context "test TRS API returns nothing"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::TeacherNotFound)
@@ -58,7 +58,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when the teacher is prohibited from teaching" do
-      include_context "test trs api client that finds teacher prohibited from teaching"
+      include_context "test TRS API returns a teacher prohibited from teaching"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::ProhibitedFromTeaching)
@@ -66,7 +66,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when the teacher does not have QTS" do
-      include_context "test trs api client that finds teacher without QTS"
+      include_context "test TRS API returns a teacher without QTS"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::QTSNotAwarded)
@@ -74,7 +74,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when the teacher has passed" do
-      include_context "test trs api client that finds teacher with specific induction status", "Passed"
+      include_context "test TRS API returns a teacher with specific induction status", "Passed"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
@@ -82,7 +82,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when the ECT has failed" do
-      include_context "test trs api client that finds teacher with specific induction status", "Failed"
+      include_context "test TRS API returns a teacher with specific induction status", "Failed"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
@@ -90,7 +90,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when the teacher is exempt" do
-      include_context "test trs api client that finds teacher with specific induction status", "Exempt"
+      include_context "test TRS API returns a teacher with specific induction status", "Exempt"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::InductionAlreadyCompleted)
@@ -98,7 +98,7 @@ RSpec.describe Admin::ImportECT::FindECT do
     end
 
     context "when teacher is deactivated" do
-      include_context "test trs api client deactivated teacher"
+      include_context "test TRS API returns a deactivated teacher"
 
       it do
         expect { find_ect.import_from_trs! }.to raise_error(TRS::Errors::TeacherDeactivated)

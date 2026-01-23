@@ -3,7 +3,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::ActionJob, type: :job do
     described_class.perform_now(pending_induction_submission_batch, author.email, author.name)
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   let(:author) { FactoryBot.create(:user, name: "Barry Cryer", email: "barry@not-a-clue.co.uk") }
 

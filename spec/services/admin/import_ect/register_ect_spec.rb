@@ -3,7 +3,7 @@ RSpec.describe Admin::ImportECT::RegisterECT do
 
   subject { described_class.new(pending_induction_submission:, author:) }
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   before do
     allow(Events::Record).to receive(:new).and_call_original

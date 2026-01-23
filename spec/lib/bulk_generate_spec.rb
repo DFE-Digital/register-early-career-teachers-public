@@ -1,5 +1,5 @@
 RSpec.describe BulkGenerate do
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   let(:bulk_generate) { described_class.new }
 
