@@ -6,7 +6,7 @@ RSpec.describe Admin::DestroyInductionPeriod do
     )
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
   include ActiveJob::TestHelper
 
   before do

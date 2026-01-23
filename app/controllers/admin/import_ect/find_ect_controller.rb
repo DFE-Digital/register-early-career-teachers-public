@@ -15,18 +15,18 @@ module Admin
         else
           render :new
         end
+      rescue TRS::Errors::TeacherNotFound,
+             TRS::Errors::TeacherDeactivated,
+             TRS::Errors::TeacherMerged
 
-      # Not in TRS
-      rescue TRS::Errors::TeacherNotFound, TRS::Errors::TeacherDeactivated
         @pending_induction_submission.errors.add(:base, "No teacher with this TRN and date of birth was found")
         render :new
+      rescue TRS::Errors::InductionAlreadyCompleted,
+             TRS::Errors::QTSNotAwarded,
+             TRS::Errors::ProhibitedFromTeaching
 
-      # Not claimable
-      rescue TRS::Errors::InductionAlreadyCompleted, TRS::Errors::QTSNotAwarded, TRS::Errors::ProhibitedFromTeaching
         @pending_induction_submission.save!
         redirect_to edit_admin_import_ect_check_path(@pending_induction_submission)
-
-      # Already registered
       rescue Admin::Errors::TeacherAlreadyExists
         existing_teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
         redirect_to admin_teacher_induction_path(existing_teacher), notice: "Teacher #{existing_teacher.trn} already exists in the system"

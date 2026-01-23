@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
     described_class.perform_now(pending_induction_submission.id, author_email, author_name)
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   let(:pending_induction_submission_batch) do
     FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)

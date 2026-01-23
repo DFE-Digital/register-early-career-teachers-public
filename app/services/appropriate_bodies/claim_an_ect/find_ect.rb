@@ -12,6 +12,7 @@ module AppropriateBodies
         @pending_induction_submission = pending_induction_submission
       end
 
+      # @raise [TRS::Errors::TeacherMerged]
       # @raise [TRS::Errors::TeacherDeactivated]
       # @raise [TRS::Errors::TeacherNotFound]
       # @raise [TRS::Errors::ProhibitedFromTeaching]

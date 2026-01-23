@@ -13,7 +13,7 @@ RSpec.describe "Appropriate Body bulk claims upload", type: :request do
     PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body).last
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   describe "POST /appropriate-body/bulk/claims" do
     it "enqueues a job" do

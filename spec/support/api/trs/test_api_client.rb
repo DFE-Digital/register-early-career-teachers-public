@@ -5,6 +5,7 @@ module TRS
     def initialize(
       raise_not_found: false,
       raise_deactivated: false,
+      raise_merged: false,
       induction_status: nil,
       has_qts: true,
       has_itt: true,
@@ -15,6 +16,7 @@ module TRS
 
       @raise_not_found = raise_not_found
       @raise_deactivated = raise_deactivated
+      @raise_merged = raise_merged
       @induction_status = induction_status
       @has_qts = has_qts
       @has_itt = has_itt
@@ -25,6 +27,7 @@ module TRS
     def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil)
       raise(TRS::Errors::TeacherNotFound, "Teacher with TRN #{trn} not found") if @raise_not_found
       raise(TRS::Errors::TeacherDeactivated, "Teacher with TRN #{trn} deactivated") if @raise_deactivated
+      raise(TRS::Errors::TeacherMerged, "Teacher with TRN #{trn} merged") if @raise_merged
 
       build_trs_teacher(trn:, date_of_birth:, national_insurance_number:)
     end

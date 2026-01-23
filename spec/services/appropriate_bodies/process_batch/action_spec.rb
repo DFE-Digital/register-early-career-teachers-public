@@ -3,7 +3,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     described_class.new(pending_induction_submission_batch:, author:)
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,

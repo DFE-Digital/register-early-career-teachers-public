@@ -33,7 +33,7 @@ RSpec.describe InductionExtensions::Manage do
             author_type: :appropriate_body_user,
             event_type: :induction_extension_created,
             happened_at: Time.zone.now,
-            heading: "Andy Zaltzman's induction extended by 1.0 terms",
+            heading: "Andy Zaltzman’s induction extended by 1.0 terms",
             teacher:,
             metadata: {},
             modifications: [],
@@ -59,7 +59,7 @@ RSpec.describe InductionExtensions::Manage do
             author_type: :appropriate_body_user,
             event_type: :induction_extension_updated,
             happened_at: Time.zone.now,
-            heading: "Andy Zaltzman's induction extended by 4.6 terms",
+            heading: "Andy Zaltzman’s induction extended by 4.6 terms",
             teacher:,
             metadata: {},
             modifications: [],
@@ -89,7 +89,7 @@ RSpec.describe InductionExtensions::Manage do
             author_type: :appropriate_body_user,
             event_type: :induction_extension_deleted,
             happened_at: Time.zone.now,
-            heading: "Andy Zaltzman's induction extension of 2.5 terms was deleted",
+            heading: "Andy Zaltzman’s induction extension of 2.5 terms was deleted",
             teacher:
           )
         end

@@ -3,7 +3,7 @@ RSpec.shared_context "it closes an induction" do
     described_class.new(teacher:, appropriate_body:, author:)
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,

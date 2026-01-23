@@ -1,7 +1,7 @@
 RSpec.describe "Admin deleting an induction" do
   include ActiveJob::TestHelper
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
