@@ -66,6 +66,8 @@ gem "with_advisory_lock"
 
 gem "diffy"
 
+gem "zendesk_api", "~> 3.1", ">= 3.1.1"
+
 group :development do
   gem "better_errors"
   gem "binding_of_caller"
