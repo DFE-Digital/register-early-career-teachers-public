@@ -100,18 +100,34 @@ module Schools
       end
 
       def reusable_expression_of_interest?
-        TrainingPeriod
-          .at_school(school)
-          .where(training_programme: "provider_led")
-          .where.not(expression_of_interest_id: nil)
-          .joins(:expression_of_interest)
-          .where(
-            active_lead_providers: {
-              contract_period_year: registration_contract_period.year,
-              lead_provider_id: school.last_chosen_lead_provider_id
-            }
+        previous_provider_led_expression_of_interest_training_period =
+          TrainingPeriod
+            .at_school(school)
+            .where(training_programme: "provider_led")
+            .where.not(expression_of_interest_id: nil)
+            .where(
+              "training_periods.started_on < ?",
+              registration_contract_period.started_on
+            )
+            .order(started_on: :desc, id: :desc)
+            .first
+
+        return false unless previous_provider_led_expression_of_interest_training_period
+
+        previous_expression_of_interest_active_lead_provider =
+          ActiveLeadProvider.find_by(
+            id: previous_provider_led_expression_of_interest_training_period.expression_of_interest_id
           )
-          .exists?
+
+        return false unless previous_expression_of_interest_active_lead_provider
+
+        previous_expression_of_interest_lead_provider_id =
+          previous_expression_of_interest_active_lead_provider.lead_provider_id
+
+        ActiveLeadProvider.exists?(
+          contract_period_year: registration_contract_period.year,
+          lead_provider_id: previous_expression_of_interest_lead_provider_id
+        )
       end
     end
   end
