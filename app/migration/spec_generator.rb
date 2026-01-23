@@ -12,23 +12,75 @@ class SpecGenerator
   end
 
   def spec
+    induction_records = ecf1_teacher_history.ect.induction_records
+
+    induction_blocks =
+      induction_records.map.with_index { |induction_record, index|
+        trailing_comma = index == induction_records.size - 1 ? "" : ","
+
+        <<~IR
+          hash_including(
+            started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
+            finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'},
+            training_periods: array_including(
+              hash_including(
+                started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
+                finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'}
+              )
+            )
+          )#{trailing_comma}
+        IR
+      }.join("\n")
+
+    input_source = SpecObjectFormatter.new(ecf1_teacher_history_hash, 0).formatted_object
+
     <<~SPEC
       describe "Real data check for user #{user_id}" do
         subject(:actual_output) { ecf2_teacher_history.to_h }
 
         let(:input) do
-          #{SpecObjectFormatter.new(ecf1_teacher_history_hash, 4).formatted_object}
-        end
-
-        let(:expected_output) do
-          {}
+      #{input_source.indent(4)}
         end
 
         let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
         let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
 
-        it "produces the expected output", skip: "set the expected_output" do
-          expect(actual_output).to include(expected_output)
+        context "when using the economy migrator" do
+          let(:migration_mode) { :latest_induction_records }
+
+          let(:expected_output) do
+            {
+              teacher: hash_including(
+                trn: "#{ecf1_teacher_history.user.trn}",
+                ect_at_school_periods: array_including(
+      #{induction_blocks.indent(12)}
+                )
+              )
+            }
+          end
+
+          it "matches the expected output" do
+            expect(actual_output).to include(expected_output)
+          end
+        end
+
+        context "when using the premium migrator" do
+          let(:migration_mode) { :all_induction_records }
+
+          let(:expected_output) do
+            {
+              teacher: hash_including(
+                trn: "#{ecf1_teacher_history.user.trn}",
+                ect_at_school_periods: array_including(
+      #{induction_blocks.indent(12)}
+                )
+              )
+            }
+          end
+
+          it "matches the expected output" do
+            expect(actual_output).to include(expected_output)
+          end
         end
       end
     SPEC
