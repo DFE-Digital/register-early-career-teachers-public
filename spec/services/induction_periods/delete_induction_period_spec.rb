@@ -5,7 +5,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     described_class.new(author:, induction_period:, note:, zendesk_ticket_id:)
   end
 
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:note) { "Induction period created in error" }

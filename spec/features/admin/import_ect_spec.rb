@@ -9,7 +9,7 @@ RSpec.describe "Admin importing an ECT" do
   end
 
   describe "eligible import" do
-    include_context "test trs api client"
+    include_context "test TRS API returns a teacher"
 
     scenario "the teacher can be imported" do
       given_i_am_on_the_admin_teachers_index_page
@@ -32,7 +32,7 @@ RSpec.describe "Admin importing an ECT" do
 
   describe "ineligible import" do
     context "when teacher is not found in TRS" do
-      include_context "test trs api client that finds nothing"
+      include_context "test TRS API returns nothing"
 
       scenario "displays an error" do
         given_i_am_on_the_find_ect_page
@@ -43,7 +43,7 @@ RSpec.describe "Admin importing an ECT" do
     end
 
     context "when teacher already exists in the service" do
-      include_context "test trs api client"
+      include_context "test TRS API returns a teacher"
 
       let!(:existing_teacher) { FactoryBot.create(:teacher, trn: "1234567") }
 
@@ -57,7 +57,7 @@ RSpec.describe "Admin importing an ECT" do
     end
 
     context "when teacher does not have QTS" do
-      include_context "test trs api client that finds teacher without QTS"
+      include_context "test TRS API returns a teacher without QTS"
 
       scenario "the teacher cannot be imported" do
         given_i_am_on_the_find_ect_page
@@ -70,7 +70,7 @@ RSpec.describe "Admin importing an ECT" do
     end
 
     context "when teacher is prohibited from teaching" do
-      include_context "test trs api client that finds teacher prohibited from teaching"
+      include_context "test TRS API returns a teacher prohibited from teaching"
 
       scenario "the teacher cannot be imported" do
         given_i_am_on_the_find_ect_page
@@ -83,7 +83,7 @@ RSpec.describe "Admin importing an ECT" do
     end
 
     context "when the teacher is exempt" do
-      include_context "test trs api client that finds teacher with specific induction status", "Exempt"
+      include_context "test TRS API returns a teacher with specific induction status", "Exempt"
 
       scenario "the teacher cannot be imported" do
         given_i_am_on_the_find_ect_page
@@ -96,7 +96,7 @@ RSpec.describe "Admin importing an ECT" do
     end
 
     context "when the teacher has passed their induction" do
-      include_context "test trs api client that finds teacher with specific induction status", "Passed"
+      include_context "test TRS API returns a teacher with specific induction status", "Passed"
 
       scenario "the teacher cannot be imported" do
         given_i_am_on_the_find_ect_page
@@ -109,7 +109,7 @@ RSpec.describe "Admin importing an ECT" do
     end
 
     context "when the teacher has failed their induction" do
-      include_context "test trs api client that finds teacher with specific induction status", "Failed"
+      include_context "test TRS API returns a teacher with specific induction status", "Failed"
 
       scenario "the teacher cannot be imported" do
         given_i_am_on_the_find_ect_page
@@ -122,7 +122,7 @@ RSpec.describe "Admin importing an ECT" do
     end
 
     context "when the teacher has failed their induction (in Wales)" do
-      include_context "test trs api client that finds teacher with specific induction status", "FailedInWales"
+      include_context "test TRS API returns a teacher with specific induction status", "FailedInWales"
 
       scenario "the teacher cannot be imported" do
         given_i_am_on_the_find_ect_page

@@ -1,5 +1,5 @@
 RSpec.describe "Registering an ECT - reuse previous partnership", :enable_schools_interface do
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
   include ReusablePartnershipHelpers
 
   around do |example|

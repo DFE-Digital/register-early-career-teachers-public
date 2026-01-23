@@ -1,7 +1,7 @@
 RSpec.describe "Process batch events" do
   include ActiveJob::TestHelper
 
-  include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+  include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
   let(:appropriate_body) do
     FactoryBot.create(:appropriate_body, name: "The Appropriate Body")

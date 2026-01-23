@@ -10,7 +10,7 @@ describe Teachers::RefreshTRSAttributes do
   end
   let(:enable_trs_teacher_refresh) { true }
 
-  include_context "test trs api client that finds teacher that has passed their induction"
+  include_context "test TRS API returns a teacher that has passed their induction"
 
   before do
     allow(Rails.application.config).to receive(:enable_trs_teacher_refresh)
@@ -92,7 +92,7 @@ describe Teachers::RefreshTRSAttributes do
       end
 
       context "when the teacher has been deactivated in TRS" do
-        include_context "test trs api client deactivated teacher"
+        include_context "test TRS API returns a deactivated teacher"
 
         let(:fake_manage) do
           double(Teachers::Manage,
@@ -110,7 +110,7 @@ describe Teachers::RefreshTRSAttributes do
       end
 
       context "when the teacher is not found in TRS" do
-        include_context "test trs api client that finds nothing"
+        include_context "test TRS API returns nothing"
 
         before do
           allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
@@ -133,7 +133,7 @@ describe Teachers::RefreshTRSAttributes do
     end
 
     context "when the TRN or DoB in TRS have changed" do
-      include_context "test trs api client permanently moved teacher"
+      include_context "test TRS API returns a merged teacher"
 
       it "flags the teacher" do
         expect(service.refresh!).to eq(:teacher_merged)
@@ -155,7 +155,7 @@ describe Teachers::RefreshTRSAttributes do
     end
 
     context "when the teacher is not found in TRS" do
-      include_context "test trs api client that finds nothing"
+      include_context "test TRS API returns nothing"
 
       it "flags the teacher" do
         service.refresh!
@@ -265,7 +265,7 @@ describe Teachers::RefreshTRSAttributes do
     end
 
     context "when the teacher has been deactivated in TRS" do
-      include_context "test trs api client deactivated teacher"
+      include_context "test TRS API returns a deactivated teacher"
 
       it "flags the teacher" do
         expect(service.refresh!).to eq(:teacher_deactivated)
