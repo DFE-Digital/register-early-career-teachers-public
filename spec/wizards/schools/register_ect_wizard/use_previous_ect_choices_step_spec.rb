@@ -94,8 +94,18 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         end
       end
 
-      context "and no partnership is reusable but an EOI exists for the registration contract period" do
-        let!(:active_lead_provider) do
+      context "and no partnership is reusable but a previous EOI exists and the LP is available in the registration contract period" do
+        let!(:previous_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+
+        let!(:previous_year_active_lead_provider) do
+          FactoryBot.create(
+            :active_lead_provider,
+            lead_provider:,
+            contract_period: previous_contract_period
+          )
+        end
+
+        let!(:active_lead_provider_2025) do
           FactoryBot.create(
             :active_lead_provider,
             lead_provider:,
@@ -104,7 +114,12 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         end
 
         let!(:ect_at_school_period) do
-          FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2025, 9, 1), finished_on: nil)
+          FactoryBot.create(
+            :ect_at_school_period,
+            school:,
+            started_on: Date.new(2024, 9, 1),
+            finished_on: nil
+          )
         end
 
         before do
@@ -116,9 +131,9 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             :training_period,
             ect_at_school_period:,
             training_programme: "provider_led",
-            expression_of_interest: active_lead_provider,
+            expression_of_interest: previous_year_active_lead_provider,
             school_partnership: nil,
-            started_on: Date.new(2025, 9, 1),
+            started_on: Date.new(2024, 9, 1),
             finished_on: nil
           )
         end
