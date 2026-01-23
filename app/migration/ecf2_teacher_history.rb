@@ -6,17 +6,17 @@ class ECF2TeacherHistory
   AppropriateBodyData = Data.define(:id, :name)
   MentorData = Data.define(:trn, :urn, :started_on, :finished_on)
 
-  attr_reader :teacher_row,
-              :ect_at_school_period_rows,
-              :mentor_at_school_period_rows,
-              :training_period_rows,
-              :mentorship_period_rows
+  attr_reader :teacher,
+              :ect_at_school_periods,
+              :mentor_at_school_periods,
+              :training_periods,
+              :mentorship_periods
 
-  def initialize(teacher_row:, ect_at_school_period_rows: [], mentor_at_school_period_rows: [])
-    @teacher_row = teacher_row
+  def initialize(teacher:, ect_at_school_periods: [], mentor_at_school_periods: [])
+    @teacher = teacher
 
-    @ect_at_school_period_rows = ect_at_school_period_rows
-    @mentor_at_school_period_rows = mentor_at_school_period_rows
+    @ect_at_school_periods = ect_at_school_periods
+    @mentor_at_school_periods = mentor_at_school_periods
   end
 
   def save_all_ect_data!
@@ -38,10 +38,10 @@ class ECF2TeacherHistory
   def to_h
     {
       teacher: {
-        trn: teacher_row.trn,
-        api_ect_training_record_id: teacher_row.api_ect_training_record_id,
-        ect_at_school_periods: ect_at_school_period_rows.map(&:to_h),
-        mentor_at_school_periods: mentor_at_school_period_rows.map(&:to_h)
+        trn: teacher.trn,
+        api_ect_training_record_id: teacher.api_ect_training_record_id,
+        ect_at_school_periods: ect_at_school_periods.map(&:to_h),
+        mentor_at_school_periods: mentor_at_school_periods.map(&:to_h)
       }
     }
   end
@@ -49,15 +49,15 @@ class ECF2TeacherHistory
 private
 
   def find_or_create_teacher!
-    teacher = if teacher_row.trn.present?
-                Teacher.find_or_initialize_by(trn: teacher_row.trn)
-              else
-                Teacher.find_or_initialize_by(api_id: teacher_row.api_id)
-              end
+    found_teacher = if teacher.trn.present?
+                      ::Teacher.find_or_initialize_by(trn: teacher.trn)
+                    else
+                      ::Teacher.find_or_initialize_by(api_id: teacher.api_id)
+                    end
 
-    teacher.assign_attributes(**teacher_row.to_hash)
-    teacher.save!
-    teacher
+    found_teacher.assign_attributes(**teacher.to_hash)
+    found_teacher.save!
+    found_teacher
   end
 
   def with_failure_recording(teacher:, model:, migration_item_id:)
@@ -68,7 +68,7 @@ private
 
   def record_failure!(teacher:, model:, message:, migration_item_id:)
     @failed = true
-    TeacherMigrationFailure.create!(
+    ::TeacherMigrationFailure.create!(
       teacher:,
       model:,
       message:,
@@ -77,43 +77,43 @@ private
     )
   end
 
-  def school_partnership_for(training_period_row)
-    return { school_partnership: nil } unless training_period_row.training_programme.to_s == "provider_led"
+  def school_partnership_for(training_period)
+    return { school_partnership: nil } unless training_period.training_programme.to_s == "provider_led"
 
-    training_period_row.school_partnership
+    training_period.school_partnership
   end
 
-  def save_ect_periods!(teacher)
-    ect_at_school_period_rows.each do |ect_at_school_period_row|
-      with_failure_recording(teacher:, model: :ect_at_school_period, migration_item_id: ect_at_school_period_row.training_period_rows.first&.ecf_start_induction_record_id) do
-        ect_at_school_period = ECTAtSchoolPeriod.create!(teacher:, **ect_at_school_period_row)
+  def save_ect_periods!(found_teacher)
+    ect_at_school_periods.each do |ect_at_school_period|
+      with_failure_recording(teacher: found_teacher, model: :ect_at_school_period, migration_item_id: ect_at_school_period.training_periods.first&.ecf_start_induction_record_id) do
+        created_ect_at_school_period = ::ECTAtSchoolPeriod.create!(teacher: found_teacher, **ect_at_school_period)
 
-        ect_at_school_period_row.training_period_rows.each do |training_period_row|
-          with_failure_recording(teacher:, model: :training_period, migration_item_id: training_period_row.ecf_start_induction_record_id) do
-            TrainingPeriod.create!(
-              ect_at_school_period:,
-              **school_partnership_for(training_period_row),
-              **training_period_row
+        ect_at_school_period.training_periods.each do |training_period|
+          with_failure_recording(teacher: found_teacher, model: :training_period, migration_item_id: training_period.ecf_start_induction_record_id) do
+            ::TrainingPeriod.create!(
+              ect_at_school_period: created_ect_at_school_period,
+              **school_partnership_for(training_period),
+              **training_period
             )
           end
         end
 
-        ect_at_school_period_row.mentorship_period_rows.each do |mentorship_period_row|
-          with_failure_recording(teacher:, model: :mentorship_period, migration_item_id: mentorship_period_row.ecf_start_induction_record_id) do
-            if mentorship_period_row.mentor_teacher.nil?
+        ect_at_school_period.mentorship_periods.each do |mentorship_period|
+          with_failure_recording(teacher: found_teacher, model: :mentorship_period, migration_item_id: mentorship_period.ecf_start_induction_record_id) do
+            if mentorship_period.mentor_teacher.nil?
               raise ActiveRecord::RecordNotFound, "Mentor not found in migrated data"
             end
 
-            mentor_period = mentorship_period_row.mentor_at_school_period[:mentor]
+            mentor_period = mentorship_period.mentor_at_school_period[:mentor]
 
             if mentor_period.nil?
               raise ActiveRecord::RecordNotFound, "No MentorAtSchoolPeriod found for mentorship dates"
             end
 
-            MentorshipPeriod.create!(
-              mentee: ect_at_school_period,
+            ::MentorshipPeriod.create!(
+              mentee: created_ect_at_school_period,
               mentor: mentor_period,
-              **mentorship_period_row
+              **mentorship_period
             )
           end
         end
@@ -121,17 +121,17 @@ private
     end
   end
 
-  def save_mentor_periods!(teacher)
-    mentor_at_school_period_rows.each do |mentor_at_school_period_row|
-      with_failure_recording(teacher:, model: :mentor_at_school_period, migration_item_id: mentor_at_school_period_row.training_period_rows.first&.ecf_start_induction_record_id) do
-        mentor_at_school_period = MentorAtSchoolPeriod.create!(teacher:, **mentor_at_school_period_row)
+  def save_mentor_periods!(found_teacher)
+    mentor_at_school_periods.each do |mentor_at_school_period|
+      with_failure_recording(teacher: found_teacher, model: :mentor_at_school_period, migration_item_id: mentor_at_school_period.training_periods.first&.ecf_start_induction_record_id) do
+        created_mentor_at_school_period = ::MentorAtSchoolPeriod.create!(teacher: found_teacher, **mentor_at_school_period)
 
-        mentor_at_school_period_row.training_period_rows.each do |training_period_row|
-          with_failure_recording(teacher:, model: :training_period, migration_item_id: training_period_row.ecf_start_induction_record_id) do
-            TrainingPeriod.create!(
-              mentor_at_school_period:,
-              **school_partnership_for(training_period_row),
-              **training_period_row
+        mentor_at_school_period.training_periods.each do |training_period|
+          with_failure_recording(teacher: found_teacher, model: :training_period, migration_item_id: training_period.ecf_start_induction_record_id) do
+            ::TrainingPeriod.create!(
+              mentor_at_school_period: created_mentor_at_school_period,
+              **school_partnership_for(training_period),
+              **training_period
             )
           end
         end
