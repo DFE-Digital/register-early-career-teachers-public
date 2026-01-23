@@ -25,7 +25,7 @@ module Admin
 
       def latest_training_period_for(teacher)
         at_school_periods = teacher.ect_at_school_periods.for_school(school.id) +
-                            teacher.mentor_at_school_periods.for_school(school.id)
+          teacher.mentor_at_school_periods.for_school(school.id)
 
         at_school_periods.filter_map(&:latest_training_period).max_by(&:started_on)
       end
