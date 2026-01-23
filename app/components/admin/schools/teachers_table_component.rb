@@ -7,35 +7,27 @@ module Admin
         @school = school
       end
 
-      def teachers_with_roles
-        @teachers_with_roles ||= all_teachers_with_roles
+      def teachers
+        (school.ect_teachers + school.mentor_teachers).uniq
       end
 
-      def latest_contract_period(teacher_data)
-        teacher_data[:latest_contract_period]
+      def contract_period_text(teacher)
+        tp = latest_training_period_for(teacher)
+
+        if tp.nil?
+          govuk_visually_hidden("No training period")
+        else
+          tp.contract_period&.year || tp.expression_of_interest_contract_period&.year
+        end
       end
 
     private
 
-      def teacher_full_name(teacher)
-        ::Teachers::Name.new(teacher).full_name
-      end
+      def latest_training_period_for(teacher)
+        at_school_periods = teacher.ect_at_school_periods.for_school(school.id) +
+                            teacher.mentor_at_school_periods.for_school(school.id)
 
-      def all_teachers_with_roles
-        all_school_teachers.map do |teacher|
-          {
-            teacher:,
-            latest_contract_period: current_year
-          }
-        end
-      end
-
-      def all_school_teachers
-        (school.ect_teachers + school.mentor_teachers).uniq
-      end
-
-      def current_year
-        Date.current.year
+        at_school_periods.filter_map(&:latest_training_period).max_by(&:started_on)
       end
     end
   end

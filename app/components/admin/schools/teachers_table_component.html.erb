@@ -1,4 +1,4 @@
-<% if teachers_with_roles.any? %>
+<% if teachers.any? %>
   <%= govuk_table do |table|
     table.with_head do |head|
       head.with_row do |row|
@@ -10,15 +10,14 @@
     end
 
     table.with_body do |body|
-      teachers_with_roles.each do |teacher_data|
-        teacher = teacher_data[:teacher]
+      teachers.each do |teacher|
         body.with_row do |row|
           row.with_cell do
-            govuk_link_to teacher_full_name(teacher), admin_teacher_induction_path(teacher)
+            govuk_link_to Teachers::Name.new(teacher).full_name, admin_teacher_induction_path(teacher)
           end
           row.with_cell(text: teacher.trn)
           row.with_cell(text: ::Teachers::Role.new(teacher:, school:).to_s)
-          row.with_cell(text: latest_contract_period(teacher_data))
+          row.with_cell(text: contract_period_text(teacher))
         end
       end
     end
