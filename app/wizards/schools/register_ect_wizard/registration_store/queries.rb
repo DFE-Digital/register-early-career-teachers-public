@@ -26,6 +26,11 @@ module Schools
           @contract_start_date ||= ContractPeriod.containing_date(registration_store.start_date&.to_date)
         end
 
+        def registration_contract_period
+          @registration_contract_period ||=
+            ContractPeriod.for_registration_start_date(registration_store.start_date&.to_date)
+        end
+
         def lead_provider_partnerships_for_contract_period(school:)
           contract_period = contract_start_date
 
@@ -37,9 +42,10 @@ module Schools
         end
 
         def lead_providers_within_contract_period
-          return [] unless contract_start_date
+          contract_period = registration_contract_period
+          return [] unless contract_period
 
-          @lead_providers_within_contract_period ||= LeadProviders::Active.in_contract_period(contract_start_date).select(:id, :name)
+          @lead_providers_within_contract_period ||= LeadProviders::Active.in_contract_period(contract_period).select(:id, :name)
         end
 
         def previous_ect_at_school_period

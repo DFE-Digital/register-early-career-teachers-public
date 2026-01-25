@@ -487,7 +487,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     end
 
     describe "#lead_providers_within_contract_period" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let!(:contract_period) { FactoryBot.create(:contract_period, :current) }
       let!(:lp_in) { FactoryBot.create(:lead_provider) }
       let!(:lp_out) { FactoryBot.create(:lead_provider) }
 
