@@ -27,8 +27,10 @@ module Schools
         end
 
         def registration_contract_period
-          @registration_contract_period ||=
-            ContractPeriod.for_registration_start_date(registration_store.start_date&.to_date)
+          start_date = registration_store.start_date&.to_date
+          return nil unless start_date
+
+          @registration_contract_period ||= ContractPeriod.for_registration_start_date(start_date)
         end
 
         def lead_provider_partnerships_for_contract_period(school:)
