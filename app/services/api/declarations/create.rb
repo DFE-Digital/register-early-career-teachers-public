@@ -32,6 +32,7 @@ module API::Declarations
     validate :validates_billable_slot_available
     validate :payment_statement_available
     validate :declaration_in_sequence
+    validate :not_eligible_in_frozen_contract_period
 
     def create
       return false unless valid?
@@ -180,6 +181,19 @@ module API::Declarations
       return if payment_statement.present?
 
       errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
+    end
+
+    def not_eligible_in_frozen_contract_period
+      return if errors[:contract_period_year].any?
+      return unless teacher
+
+      latest_ongoing_training_period_for_teacher = training_periods.ongoing_today.first
+      return unless latest_ongoing_training_period_for_teacher&.eligible_for_funding?
+
+      current_contract_period = latest_ongoing_training_period_for_teacher.contract_period
+      return unless current_contract_period&.payments_frozen?
+
+      errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
     end
 
     def declaration_in_sequence
