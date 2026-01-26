@@ -6,6 +6,7 @@ FactoryBot.define do
     transient do
       ect_teacher_type { false }
       mentor_teacher_type { false }
+      with_eoi_only { false }
     end
 
     after(:create) do |metadata, evaluator|
@@ -14,9 +15,17 @@ FactoryBot.define do
 
       contract_period = FactoryBot.create(:contract_period, :current)
       active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:)
-      lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-      school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
-      school = school_partnership.school
+
+      if evaluator.with_eoi_only
+        school = FactoryBot.create(:school)
+        school_partnership = nil
+        expression_of_interest = active_lead_provider
+      else
+        lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+        school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
+        school = school_partnership.school
+        expression_of_interest = nil
+      end
 
       [
         (:ect if evaluator.ect_teacher_type),
@@ -35,7 +44,8 @@ FactoryBot.define do
           started_on: at_school_period.started_on,
           finished_on: at_school_period.finished_on,
           "#{teacher_type}_at_school_period": at_school_period,
-          school_partnership:
+          school_partnership:,
+          expression_of_interest:
         )
 
         metadata.public_send("latest_#{teacher_type}_training_period=", training_period)
@@ -49,6 +59,10 @@ FactoryBot.define do
 
     trait :with_latest_mentor_training_period do
       mentor_teacher_type { true }
+    end
+
+    trait :with_eoi_only do
+      with_eoi_only { true }
     end
   end
 end
