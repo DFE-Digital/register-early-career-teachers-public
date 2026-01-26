@@ -2,11 +2,11 @@ module Admin
   module Teachers
     class TrainingSummaryComponent < ApplicationComponent
       class UnexpectedTrainingProgrammeError < StandardError; end
-      attr_reader :training_period, :show_move_partnership_link
+      attr_reader :training_period, :index
 
-      def initialize(training_period:, show_move_partnership_link: false)
+      def initialize(training_period:, index: 0)
         @training_period = training_period
-        @show_move_partnership_link = show_move_partnership_link
+        @index = index
       end
 
       def call
@@ -46,7 +46,8 @@ module Admin
           training_programme_row,
           summary_row("Schedule", schedule_text),
           summary_row("Start date", start_date_text),
-          summary_row("End date", end_date_text)
+          summary_row("End date", end_date_text),
+          api_response_row,
         ].compact
       end
 
@@ -131,8 +132,57 @@ module Admin
         summary_row("Training programme", TRAINING_PROGRAMME[training_period.training_programme])
       end
 
+      def api_response_row
+        return unless show_api_row?
+
+        summary_row("API response", api_response_text)
+      end
+
+      def api_response_text
+        govuk_details(summary_text: "See this participant as they appear over the API for #{lead_provider&.name}") do
+          content_tag(:pre, class: "app-code app-code--full-width") do
+            content_tag(:code, formatted_teacher)
+          end
+        end
+      end
+
+      def lead_provider
+        return training_period.lead_provider if confirmed_partnership?
+
+        training_period.expression_of_interest_lead_provider
+      end
+
+      def serialized_teacher
+        API::TeacherSerializer.render(teacher, root: "data", **{ lead_provider_id: lead_provider.id })
+      rescue Enumerable::SoleItemExpectedError
+        nil
+      end
+
+      def formatted_teacher
+        return "Partnership not confirmed for this participant" unless confirmed_partnership?
+        return "No API data for this participant" if serialized_teacher.nil?
+
+        @formatted_teacher ||= JSON.pretty_generate(JSON.parse(serialized_teacher))
+      end
+
+      def teacher
+        return training_period.ect_at_school_period.teacher if training_period.for_ect?
+
+        training_period.mentor_at_school_period.teacher
+      end
+
       def format_date(date)
         date&.to_fs(:govuk)
+      end
+
+      def show_move_partnership_link?
+        @show_move_partnership_link ||= index.zero? &&
+          training_period.provider_led_training_programme? &&
+          training_period.finished_on.nil?
+      end
+
+      def show_api_row?
+        index.zero?
       end
 
       def summary_row(label, value)
@@ -140,12 +190,6 @@ module Admin
           key: { text: label },
           value: { text: value.presence || not_available_text }
         }
-      end
-
-      def show_move_partnership_link?
-        show_move_partnership_link &&
-          training_period.provider_led_training_programme? &&
-          training_period.finished_on.nil?
       end
 
       def move_partnership_path

@@ -15,6 +15,7 @@ $govuk-assets-path: "/";
 @import "search";
 @import "admin/filter";
 @import "admin/button-group";
+@import "admin/teachers";
 
 // library styles
 @import "accessible-autocomplete/src/autocomplete";
@@ -30,12 +31,3 @@ $govuk-assets-path: "/";
 
 // Test guidance styles
 @import "personas";
-
-.app-code {
-  padding: 2px 5px;
-  font-family: monospace;
-  background-color: $govuk-template-background-colour;
-  white-space: pre-wrap;
-  font-size: 0.8em;
-}
-
