@@ -5,7 +5,7 @@ class User < ApplicationRecord
     finance: "Finance",
   }.freeze
 
-  enum :role, ROLES.keys.index_with(&:to_s), validate: { message: "Must be admin, finance or super_admin" }
+  enum :role, ROLES.keys.index_with(&:to_s), validate: { message: "Must be admin, finance or user_manager" }
 
   encrypts :otp_secret
 
