@@ -2,7 +2,7 @@ module Schools
   class RegisterECTWizardController < SchoolsController
     include Schools::InductionRedirectable
 
-    before_action :redirect_if_blocked_from_registering_new_ects?
+    before_action :redirect_if_blocked_from_registering_new_ects
     before_action :initialize_wizard, only: %i[new create]
     before_action :reset_wizard, only: :new
     before_action :check_allowed_step, except: %i[start]
@@ -50,7 +50,7 @@ module Schools
       redirect_to @wizard.allowed_step_path
     end
 
-    def redirect_if_blocked_from_registering_new_ects?
+    def redirect_if_blocked_from_registering_new_ects
       return unless school.blocked_from_registering_new_ects?
 
       redirect_to schools_ects_home_path
