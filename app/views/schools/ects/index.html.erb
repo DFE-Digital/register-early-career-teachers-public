@@ -7,7 +7,7 @@
   )
 %>
 
-<% if @blocked_from_registering_new_ects %>
+<% if @school.blocked_from_registering_new_ects? %>
   <%= govuk_inset_text do %>
     <p class="govuk-body"><%= @school.name %> no longer has funding for early career teacher entitlement (ECTE). You cannot register new early career teachers.</p>
     <p class="govuk-body">Find out more about <%= govuk_link_to("eligibility and funding for ECTE", "https://www.gov.uk/guidance/funding-and-eligibility-for-ecf-based-training") %>.</p>

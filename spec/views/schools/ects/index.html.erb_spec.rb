@@ -5,7 +5,7 @@ RSpec.describe "schools/ects/index.html.erb" do
     assign(:teachers, [])
     assign(:number_of_teachers, 0)
     assign(:school, school)
-    assign(:blocked_from_registering_new_ects, false)
+    allow(school).to receive(:blocked_from_registering_new_ects?).and_return(false)
   end
 
   it "shows the Register an ECT starting at your school button" do
@@ -43,7 +43,7 @@ RSpec.describe "schools/ects/index.html.erb" do
       assign(:number_of_teachers, 1)
       assign(:school, school)
       assign(:school_ect_periods, [ect_at_school_period])
-      assign(:blocked_from_registering_new_ects, false)
+      allow(school).to receive(:blocked_from_registering_new_ects?).and_return(false)
 
       render
     end
@@ -59,7 +59,7 @@ RSpec.describe "schools/ects/index.html.erb" do
     context "when there are no matching teachers" do
       before do
         assign(:teachers, [])
-        assign(:blocked_from_registering_new_ects, false)
+        allow(school).to receive(:blocked_from_registering_new_ects?).and_return(false)
         render
       end
 
@@ -78,7 +78,7 @@ RSpec.describe "schools/ects/index.html.erb" do
       assign(:teachers, [])
       assign(:number_of_teachers, 0)
       assign(:school, school)
-      assign(:blocked_from_registering_new_ects, true)
+      allow(school).to receive(:blocked_from_registering_new_ects?).and_return(true)
       render
     end
 
