@@ -209,6 +209,93 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
         end
 
+        describe "frozen contract period validations" do
+          let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
+          let(:eligible_at_field) { "#{trainee_type}_first_became_eligible_for_training_at" }
+
+          context "when teacher's latest ongoing training period is in a frozen contract period and participant is eligible for funding" do
+            before do
+              teacher.update!(eligible_at_field => 3.years.ago)
+              contract_period.update!(payments_frozen_at: Time.zone.now)
+            end
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:contract_period_year, "You cannot submit declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
+          end
+
+          context "when teacher's latest ongoing training period is in a frozen contract period but participant is not eligible for funding" do
+            before do
+              teacher.update!(eligible_at_field => nil)
+              contract_period.update!(payments_frozen_at: Time.zone.now)
+            end
+
+            it { is_expected.to be_valid }
+          end
+
+          context "when teacher's latest ongoing training period is in a non-frozen contract period and participant is eligible for funding" do
+            before do
+              teacher.update!(eligible_at_field => 3.years.ago)
+              contract_period.update!(payments_frozen_at: nil)
+            end
+
+            it { is_expected.to be_valid }
+          end
+
+          context "when teacher's latest ongoing training period is in a frozen contract period but declaration targets non-frozen" do
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :"for_#{trainee_type}",
+                :active,
+                "#{trainee_type}_at_school_period": at_school_period,
+                started_on: at_school_period.started_on,
+                finished_on: 2.months.ago
+              )
+            end
+
+            let(:frozen_contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen) }
+            let(:frozen_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: frozen_contract_period) }
+            let(:frozen_school_partnership) do
+              FactoryBot.create(
+                :school_partnership,
+                active_lead_provider: frozen_active_lead_provider,
+                school: at_school_period.school
+              )
+            end
+            let!(:frozen_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :"for_#{trainee_type}",
+                :ongoing,
+                "#{trainee_type}_at_school_period": at_school_period,
+                school_partnership: frozen_school_partnership,
+                started_on: training_period.finished_on
+              )
+            end
+
+            before do
+              # Make teacher eligible for funding
+              teacher.update!(eligible_at_field => 3.years.ago)
+            end
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:contract_period_year, "You cannot submit declarations for the #{frozen_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
+          end
+
+          context "when teacher has no ongoing training period today" do
+            before do
+              # End the training period so there's no ongoing period
+              training_period.update!(finished_on: 1.week.ago)
+
+              # Make teacher eligible for funding
+              teacher.update!(eligible_at_field => 3.years.ago)
+              contract_period.update!(payments_frozen_at: Time.zone.now)
+            end
+
+            it { is_expected.to be_valid }
+          end
+        end
+
         context "when a duplicate declaration already exists" do
           %w[no_payment eligible payable paid].each do |payment_status|
             context "with payment status `#{payment_status}`" do
