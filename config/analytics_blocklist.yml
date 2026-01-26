@@ -397,6 +397,7 @@
   - training_period_id
   - payment_statement_id
   - clawback_statement_id
+  - call_off_contract_assignment_id
   - declaration_type
   - declaration_date
   - voided_by_user_at
@@ -575,5 +576,41 @@
   - school_name
   - school_urn
   - message
+  - created_at
+  - updated_at
+  :call_off_contract_banded_bands:
+  - id
+  - banded_contract_id
+  - min_declarations
+  - max_declarations
+  - fee_per_declaration
+  - output_fee_ratio
+  - service_fee_ratio
+  - created_at
+  - updated_at
+  :call_off_contract_flat_rates:
+  - id
+  - fee_per_declaration
+  - created_at
+  - updated_at
+  :call_off_contract_banded:
+  - id
+  - uplift_target
+  - uplift_fee_per_declaration
+  - monthly_service_fee
+  - setup_fee
+  - created_at
+  - updated_at
+  :call_off_contracts:
+  - id
+  - contractable_type
+  - contractable_id
+  - recruitment_target
+  - created_at
+  - updated_at
+  :call_off_contract_assignments:
+  - id
+  - call_off_contract_id
+  - statement_id
   - created_at
   - updated_at

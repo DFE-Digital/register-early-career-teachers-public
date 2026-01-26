@@ -10,6 +10,7 @@ class Declaration < ApplicationRecord
   belongs_to :mentorship_period, optional: true
   belongs_to :payment_statement, optional: true, class_name: "Statement"
   belongs_to :clawback_statement, optional: true, class_name: "Statement"
+  belongs_to :call_off_contract_assignment, optional: true, class_name: "CallOffContract::Assignment"
   has_one :lead_provider, through: :training_period
   has_one :delivery_partner, through: :training_period
   has_one :contract_period, through: :training_period
