@@ -20,6 +20,10 @@ module Schools
         ContractPeriod.current
       end
 
+      def send_confirmation_email?
+        raise NotImplementedError, "#{self.class} must implement #send_confirmation_email?"
+      end
+
       delegate :save!, to: :current_step
       delegate :reset, to: :store
     end
