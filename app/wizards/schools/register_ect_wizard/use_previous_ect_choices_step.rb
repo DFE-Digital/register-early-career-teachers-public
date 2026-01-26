@@ -51,7 +51,10 @@ module Schools
       end
 
       def registration_contract_period
-        @registration_contract_period ||= ContractPeriod.for_registration_start_date(ect.normalized_start_date)
+        start_date = ect.normalized_start_date
+        return unless start_date
+
+        ContractPeriod.for_registration_start_date(start_date)
       end
 
     private
@@ -73,66 +76,66 @@ module Schools
         store[:school_partnership_to_reuse_id] = reusable_partnership_id
       end
 
-      def reusable_partnership_in_registration_year?
-        SchoolPartnership
-          .joins(lead_provider_delivery_partnership: :active_lead_provider)
-          .where(id: reusable_partnership_id)
-          .where(active_lead_providers: { contract_period_year: registration_contract_period.year })
-          .exists?
-      end
-
-      def choices
-        use_previous_ect_choices ? school.last_programme_choices : {}
-      end
-
       def find_reusable_partnership_id
         return if school.school_led_training_programme_chosen?
         return if school.last_chosen_lead_provider.blank?
+
+        contract_period = registration_contract_period
+        return unless contract_period
 
         SchoolPartnerships::FindReusablePartnership
           .new
           .call(
             school:,
             lead_provider: school.last_chosen_lead_provider,
-            contract_period: registration_contract_period
+            contract_period:
           )
           &.id
       end
 
+      def choices
+        use_previous_ect_choices ? school.last_programme_choices : {}
+      end
+
       def reusable_expression_of_interest?
-        ect_start_date = ect.normalized_start_date
-        return false unless ect_start_date
+        contract_period = registration_contract_period
+        return false unless contract_period
 
-        most_recent_provider_led_expression_of_interest_training_period =
-          most_recent_provider_led_expression_of_interest_training_period_before(ect_start_date)
+        training_period =
+          most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
+        return false unless training_period
 
-        return false unless most_recent_provider_led_expression_of_interest_training_period
-
-        lead_provider_id_from_expression_of_interest =
-          lead_provider_id_for_expression_of_interest(
-            most_recent_provider_led_expression_of_interest_training_period.expression_of_interest_id
-          )
-
-        return false unless lead_provider_id_from_expression_of_interest
+        active_lead_provider =
+          ActiveLeadProvider.find_by(id: training_period.expression_of_interest_id)
+        return false unless active_lead_provider
 
         ActiveLeadProvider.exists?(
-          contract_period_year: registration_contract_period.year,
-          lead_provider_id: lead_provider_id_from_expression_of_interest
+          contract_period_year: contract_period.year,
+          lead_provider_id: active_lead_provider.lead_provider_id
         )
       end
 
-      def most_recent_provider_led_expression_of_interest_training_period_before(cutoff_date)
+      def reusable_partnership_in_registration_year?
+        contract_period = registration_contract_period
+        return false unless reusable_partnership_id && contract_period
+
+        SchoolPartnership
+          .joins(lead_provider_delivery_partnership: :active_lead_provider)
+          .where(id: reusable_partnership_id)
+          .where(active_lead_providers: { contract_period_year: contract_period.year })
+          .exists?
+      end
+
+      def most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
+        return unless contract_period
+
         TrainingPeriod
           .at_school(school)
           .where(training_programme: "provider_led")
           .where.not(expression_of_interest_id: nil)
-          .where("training_periods.started_on <= ?", cutoff_date)
+          .where("training_periods.started_on <= ?", contract_period.finished_on)
           .order(started_on: :desc, id: :desc)
           .first
-      end
-
-      def lead_provider_id_for_expression_of_interest(active_lead_provider_id)
-        ActiveLeadProvider.find_by(id: active_lead_provider_id)&.lead_provider_id
       end
     end
   end

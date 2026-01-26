@@ -4,7 +4,13 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
   let(:use_previous_ect_choices) { true }
   let(:step_params) { {} }
   let(:school) { FactoryBot.create(:school) }
-  let(:store) { FactoryBot.build(:session_repository, use_previous_ect_choices:) }
+  let(:store) do
+    FactoryBot.build(
+      :session_repository,
+      use_previous_ect_choices:,
+      start_date: "3 September 2025"
+    )
+  end
 
   let(:wizard) do
     FactoryBot.build(
