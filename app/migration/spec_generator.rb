@@ -51,7 +51,7 @@ class SpecGenerator
           let(:expected_output) do
             {
               teacher: hash_including(
-                trn: "#{ecf1_teacher_history.user.trn}",
+                trn: "11111111",
                 ect_at_school_periods: array_including(
       #{induction_blocks.indent(12)}
                 )
@@ -70,7 +70,7 @@ class SpecGenerator
           let(:expected_output) do
             {
               teacher: hash_including(
-                trn: "#{ecf1_teacher_history.user.trn}",
+                trn: "11111111",
                 ect_at_school_periods: array_including(
       #{induction_blocks.indent(12)}
                 )
