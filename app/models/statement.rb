@@ -10,6 +10,9 @@ class Statement < ApplicationRecord
   has_one :lead_provider, through: :active_lead_provider
   has_one :contract_period, through: :active_lead_provider
 
+  has_one :call_off_contract, class_name: "Statement::CallOffContract"
+  has_one :mentor_call_off_contract, class_name: "Statement::MentorCallOffContract"
+
   touch -> { self }, timestamp_attribute: :api_updated_at
 
   def self.maximum_year = Date.current.year + 5

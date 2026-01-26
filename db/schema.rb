@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_26_160027) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -763,6 +763,43 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
     t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
   end
 
+  create_table "statement_call_off_contracts", force: :cascade do |t|
+    t.bigint "statement_id"
+    t.integer "recruitment_target"
+    t.decimal "set_up_fee"
+    t.decimal "monthly_service_fee"
+    t.decimal "uplift_target"
+    t.decimal "uplift_amount"
+    t.integer "band_a_max", default: 0
+    t.decimal "band_a_per_participant", default: "0.0"
+    t.integer "band_a_output_payment_percentage", default: 0
+    t.integer "band_a_service_fee_percentage", default: 0
+    t.integer "band_b_max", default: 0
+    t.decimal "band_b_per_participant", default: "0.0"
+    t.integer "band_b_output_payment_percentage", default: 0
+    t.integer "band_b_service_fee_percentage", default: 0
+    t.integer "band_c_max", default: 0
+    t.decimal "band_c_per_participant", default: "0.0"
+    t.integer "band_c_output_payment_percentage", default: 0
+    t.integer "band_c_service_fee_percentage", default: 0
+    t.integer "band_d_max", default: 0
+    t.decimal "band_d_per_participant", default: "0.0"
+    t.integer "band_d_output_payment_percentage", default: 0
+    t.integer "band_d_service_fee_percentage", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["statement_id"], name: "index_statement_call_off_contracts_on_statement_id"
+  end
+
+  create_table "statement_mentor_call_off_contracts", force: :cascade do |t|
+    t.bigint "statement_id"
+    t.integer "recruitment_target"
+    t.decimal "payment_per_participant"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["statement_id"], name: "index_statement_mentor_call_off_contracts_on_statement_id"
+  end
+
   create_table "statements", force: :cascade do |t|
     t.bigint "active_lead_provider_id", null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
@@ -976,6 +1013,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
+  add_foreign_key "statement_call_off_contracts", "statements"
+  add_foreign_key "statement_mentor_call_off_contracts", "statements"
   add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
