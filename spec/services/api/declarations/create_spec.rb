@@ -242,6 +242,8 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
 
           context "when teacher's latest ongoing training period is in a frozen contract period but declaration targets non-frozen" do
+            let(:declaration_date) { Faker::Date.between(from: training_period.started_on, to: training_period.finished_on).rfc3339 }
+
             let!(:training_period) do
               FactoryBot.create(
                 :training_period,
