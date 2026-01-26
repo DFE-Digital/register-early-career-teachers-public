@@ -16,7 +16,7 @@ module Statements
 
     def payment_calculators
       @payment_calculators ||= call_off_contract_assignments.map do |assignment|
-        CallOffContracts::PaymentCalculators::Factory.create_calculator(assignment:)
+        assignment.call_off_contract.contractable.payment_calculator(declarations: assignment.declarations)
       end
     end
   end
