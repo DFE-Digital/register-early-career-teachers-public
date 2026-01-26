@@ -53,5 +53,26 @@ RSpec.describe AppropriateBodies::RecordPass do
         )
       end
     end
+
+    context "with an ongoing ECT period" do
+      let(:school) { ect_at_school_period.school }
+      let(:mentor_teacher) { FactoryBot.create(:teacher) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher, school:) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:) }
+      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period) }
+      let(:ect_service) { ECTAtSchoolPeriods::Finish }
+
+      before do
+        allow(ect_service).to receive(:new).and_call_original
+      end
+
+      it "calls ECT finish service which finishes ongoing ECT and mentorship periods" do
+        service_call
+
+        expect(ect_service).to have_received(:new).with(ect_at_school_period:, finished_on: 1.day.ago.to_date, author:).once
+        expect(ect_at_school_period.reload.finished_on).to eql(1.day.ago.to_date)
+        expect(mentorship_period.reload.finished_on).to eql(1.day.ago.to_date)
+      end
+    end
   end
 end

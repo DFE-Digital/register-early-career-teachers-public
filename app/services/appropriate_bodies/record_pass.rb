@@ -9,6 +9,7 @@ module AppropriateBodies
 
       InductionPeriod.transaction do
         close_induction_period
+        finish_ect_period
         delete_submission
         sync_with_trs
         update_event_history
