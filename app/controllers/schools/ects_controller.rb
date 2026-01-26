@@ -9,7 +9,6 @@ module Schools
       @pagy, @teachers = pagy(search)
 
       @number_of_teachers = Teachers::Search.new(ect_at_school: school).count
-      @blocked_from_registering_new_ects = school.blocked_from_registering_new_ects?
     end
 
     def show
