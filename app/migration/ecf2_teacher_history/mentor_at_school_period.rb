@@ -27,7 +27,8 @@ class ECF2TeacherHistory::MentorAtSchoolPeriod
       started_on:,
       finished_on:,
       school:,
-      email:
+      email:,
+      training_periods: training_periods.map(&:to_h)
     }
   end
 
