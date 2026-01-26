@@ -365,6 +365,18 @@ erDiagram
   }
   ActiveLeadProvider }o--|| ContractPeriod : belongs_to
   ActiveLeadProvider }o--|| LeadProvider : belongs_to
+  SupportQuery {
+    integer id
+    string state
+    integer zendesk_id
+    string name
+    string email
+    string school_name
+    integer school_urn
+    text message
+    datetime created_at
+    datetime updated_at
+  }
   Metadata_TeacherLeadProvider {
     integer id
     integer teacher_id
