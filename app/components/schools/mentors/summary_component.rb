@@ -10,15 +10,6 @@ module Schools
         @school = school
       end
 
-      def call
-        govuk_summary_card(title: link_to_mentor) do |card|
-          card.with_summary_list(
-            classes: %w[govuk-summary-list--no-border],
-            rows: [trn_row, assigned_ects_row]
-          )
-        end
-      end
-
     private
 
       def link_to_mentor
