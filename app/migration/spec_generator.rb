@@ -13,24 +13,20 @@ class SpecGenerator
 
   def spec
     induction_records = ecf1_teacher_history.ect.induction_records
-
-    induction_blocks =
-      induction_records.map.with_index { |induction_record, index|
-        trailing_comma = index == induction_records.size - 1 ? "" : ","
-
-        <<~IR
-          hash_including(
-            started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
-            finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'},
-            training_periods: array_including(
-              hash_including(
-                started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
-                finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'}
-              )
+    induction_blocks = induction_records.map do |induction_record|
+      <<~IR.chomp
+        hash_including(
+          started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
+          finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'},
+          training_periods: array_including(
+            hash_including(
+              started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
+              finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'}
             )
-          )#{trailing_comma}
-        IR
-      }.join("\n")
+          )
+        )
+      IR
+    end
 
     input_source = SpecObjectFormatter.new(ecf1_teacher_history_hash, 0).formatted_object
 
@@ -53,7 +49,7 @@ class SpecGenerator
               teacher: hash_including(
                 trn: "11111111",
                 ect_at_school_periods: array_including(
-      #{induction_blocks.indent(12)}
+      #{induction_blocks.join(",\n").indent(12)}
                 )
               )
             }
@@ -72,7 +68,7 @@ class SpecGenerator
               teacher: hash_including(
                 trn: "11111111",
                 ect_at_school_periods: array_including(
-      #{induction_blocks.indent(12)}
+      #{induction_blocks.join(",\n").indent(12)}
                 )
               )
             }
