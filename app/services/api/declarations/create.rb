@@ -187,10 +187,10 @@ module API::Declarations
       return if errors[:contract_period_year].any?
       return unless teacher
 
-      latest_ongoing_training_period_for_teacher = training_periods.ongoing_today.first
-      return unless latest_ongoing_training_period_for_teacher&.eligible_for_funding?
+      training_period_ongoing_today = training_periods.ongoing_today.first
+      return unless training_period_ongoing_today&.eligible_for_funding?
 
-      current_contract_period = latest_ongoing_training_period_for_teacher.contract_period
+      current_contract_period = training_period_ongoing_today.contract_period
       return unless current_contract_period&.payments_frozen?
 
       errors.add(:contract_period_year, "You cannot submit declarations for the #{current_contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
