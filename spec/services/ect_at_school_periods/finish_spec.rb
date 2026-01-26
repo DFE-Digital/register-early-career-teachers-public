@@ -66,6 +66,18 @@ describe ECTAtSchoolPeriods::Finish do
       )
     end
 
+    context "when record_event is false" do
+      subject { ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:, reported_by_school_id:, record_event: false) }
+
+      it "does not record an event" do
+        allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_return(true)
+
+        subject.finish!
+
+        expect(Events::Record).not_to have_received(:record_teacher_left_school_as_ect!)
+      end
+    end
+
     describe "closing mentorship periods" do
       context "when the mentorship period has not started yet" do
         let(:mentorship_start_date) { finished_on + 1.week }
