@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_23_150642) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -24,6 +24,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
   create_enum "batch_type", ["action", "claim"]
   create_enum "declaration_clawback_statuses", ["no_clawback", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_payment_statuses", ["no_payment", "eligible", "payable", "paid", "voided", "ineligible"]
+  create_enum "declaration_resolver_type", ["all", "ect", "mentor"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
@@ -132,6 +133,47 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
+  end
+
+  create_table "call_off_contract_assignments", force: :cascade do |t|
+    t.bigint "statement_id", null: false
+    t.bigint "call_off_contract_banded_id"
+    t.bigint "call_off_contract_flat_rate_id"
+    t.enum "declaration_resolver_type", null: false, enum_type: "declaration_resolver_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["call_off_contract_banded_id"], name: "idx_on_call_off_contract_banded_id_c965daa670"
+    t.index ["call_off_contract_flat_rate_id"], name: "idx_on_call_off_contract_flat_rate_id_5afc06ac0d"
+    t.index ["statement_id"], name: "index_call_off_contract_assignments_on_statement_id"
+  end
+
+  create_table "call_off_contract_banded_bands", force: :cascade do |t|
+    t.bigint "call_off_contract_banded_id", null: false
+    t.integer "min_declarations", null: false
+    t.integer "max_declarations", null: false
+    t.decimal "fee_per_declaration", null: false
+    t.decimal "output_fee_ratio", null: false
+    t.decimal "service_fee_ratio", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["call_off_contract_banded_id"], name: "idx_on_call_off_contract_banded_id_8c95c22af5"
+  end
+
+  create_table "call_off_contract_bandeds", force: :cascade do |t|
+    t.integer "recruitment_target", null: false
+    t.integer "uplift_target", null: false
+    t.decimal "uplift_fee_per_declaration", null: false
+    t.decimal "monthly_service_fee", null: false
+    t.decimal "setup_fee", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "call_off_contract_flat_rates", force: :cascade do |t|
+    t.integer "recruitment_target", null: false
+    t.decimal "fee_per_declaration", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "contract_periods", primary_key: "year", id: :serial, force: :cascade do |t|
@@ -906,6 +948,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "call_off_contract_assignments", "call_off_contract_bandeds"
+  add_foreign_key "call_off_contract_assignments", "call_off_contract_flat_rates"
+  add_foreign_key "call_off_contract_assignments", "statements"
+  add_foreign_key "call_off_contract_banded_bands", "call_off_contract_bandeds"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"

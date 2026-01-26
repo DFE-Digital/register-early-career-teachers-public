@@ -577,3 +577,36 @@
   - message
   - created_at
   - updated_at
+  :call_off_contract_banded_bands:
+  - id
+  - call_off_contract_banded_id
+  - min_declarations
+  - max_declarations
+  - fee_per_declaration
+  - output_fee_ratio
+  - service_fee_ratio
+  - created_at
+  - updated_at
+  :call_off_contract_flat_rates:
+  - id
+  - recruitment_target
+  - fee_per_declaration
+  - created_at
+  - updated_at
+  :call_off_contract_bandeds:
+  - id
+  - recruitment_target
+  - uplift_target
+  - uplift_fee_per_declaration
+  - monthly_service_fee
+  - setup_fee
+  - created_at
+  - updated_at
+  :call_off_contract_assignments:
+  - id
+  - statement_id
+  - call_off_contract_banded_id
+  - call_off_contract_flat_rate_id
+  - declaration_resolver_type
+  - created_at
+  - updated_at
