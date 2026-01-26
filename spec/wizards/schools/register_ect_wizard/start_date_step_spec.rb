@@ -283,6 +283,18 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     context "when the step is valid" do
+      it "stores a parsed start_date in the wizard store for later steps" do
+        expect { subject.save! }
+          .to change { store[:start_date_as_date] }
+          .from(nil)
+          .to(Date.new(2024, 7, 1))
+      end
+
+      it "stores a formatted start_date in the wizard store for display/serialization" do
+        subject.save!
+        expect(store[:start_date]).to eq("1 July 2024")
+      end
+
       it "updates the wizard ect start date" do
         expect { subject.save! }
           .to change(subject.ect, :start_date).to("1 July 2024")
