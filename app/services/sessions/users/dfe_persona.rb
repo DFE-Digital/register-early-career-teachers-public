@@ -21,7 +21,7 @@ module Sessions
         super(email: user.email, **)
       end
 
-      delegate :role, :admin?, :super_admin?, :finance?, :finance_access?, to: :user
+      delegate :role, :admin?, :user_manager?, :super_admin?, :finance?, :finance_access?, to: :user
 
       def dfe_user? = true
 

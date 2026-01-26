@@ -30,7 +30,7 @@ RSpec.describe Current, type: :model do
   describe "role" do
     it "is derived from user and can be retrieved" do
       Current.user = current_user
-      expect(Current.role).to eq("admin")
+      expect(Current.role).to eq("Admin")
     end
   end
 
