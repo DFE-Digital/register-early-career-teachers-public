@@ -83,5 +83,24 @@ describe MentorshipPeriods::Finish do
         )
       )
     end
+
+    context "when record_event is false" do
+      subject { MentorshipPeriods::Finish.new(mentorship_period:, finished_on:, author:, record_event: false) }
+
+      it "does not record any events" do
+        allow(Events::Record).to receive(:record_teacher_finishes_mentoring_event!).and_call_original
+        allow(Events::Record).to receive(:record_teacher_finishes_being_mentored_event!).and_call_original
+
+        expect {
+          subject.finish!
+          perform_enqueued_jobs
+        }.not_to change(Event, :count)
+
+        mentorship_period.reload
+
+        expect(Events::Record).not_to have_received(:record_teacher_finishes_mentoring_event!)
+        expect(Events::Record).not_to have_received(:record_teacher_finishes_being_mentored_event!)
+      end
+    end
   end
 end
