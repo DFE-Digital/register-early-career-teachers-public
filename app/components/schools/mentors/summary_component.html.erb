@@ -1,0 +1,10 @@
+<div class="govuk-summary-card">
+  <div class="govuk-summary-card__title-wrapper">
+    <h3 class="govuk-summary-card__title govuk-!-font-size-24">
+      <strong><%= link_to_mentor %></strong>
+    </h3>
+  </div>
+  <div class="govuk-summary-card__content">
+    <%= govuk_summary_list(borders: false, rows: [trn_row, assigned_ects_row]) %>
+  </div>
+</div>
