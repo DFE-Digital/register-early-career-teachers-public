@@ -88,8 +88,12 @@ module APISeedData
           )
           .excluding_contract_period_year(original_year)
           .order("RANDOM()")
-          .first!
-        schedule = Schedule.find_by!(contract_period: school_partnership.contract_period, identifier: schedule.identifier)
+          .first
+
+        # There may not be another school partnership in a different contract period.
+        if school_partnership
+          schedule = Schedule.find_by!(contract_period: school_partnership.contract_period, identifier: schedule.identifier)
+        end
       end
 
       # With new schedule
