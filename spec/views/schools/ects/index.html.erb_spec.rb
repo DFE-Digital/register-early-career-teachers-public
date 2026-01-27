@@ -73,11 +73,11 @@ RSpec.describe "schools/ects/index.html.erb" do
     end
 
     context "when teachers have completed induction" do
-      let(:passed_teacher) { FactoryBot.create(:teacher, trs_first_name: "Jack", trs_last_name: "Daniels", trs_induction_completed_date: Time.zone.today - 1, trs_induction_status: "Passed") }
+      let(:completed_teacher) { FactoryBot.create(:teacher, :induction_completed, trs_first_name: "Jack", trs_last_name: "Daniels") }
 
       before do
-        passed_ect = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: passed_teacher, school:)
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: passed_ect)
+        completed_ect = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: completed_teacher, school:)
+        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: completed_ect)
 
         render
       end
