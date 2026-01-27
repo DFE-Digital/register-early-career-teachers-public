@@ -79,6 +79,10 @@ module APISeedData
           ect_mentor_traits,
           ect_specific_traits
         )
+
+        if Faker::Boolean.boolean(true_ratio: 0.85)
+          create_induction_period(teacher:, **school_period)
+        end
       else
         create_mentor_and_optional_ect_training(
           teacher,
@@ -389,6 +393,10 @@ module APISeedData
       else
         "since #{period.started_on}"
       end
+    end
+
+    def create_induction_period(teacher:, started_on:, finished_on:)
+      FactoryBot.create(:induction_period, :ongoing, teacher:, started_on:, finished_on:)
     end
   end
 end
