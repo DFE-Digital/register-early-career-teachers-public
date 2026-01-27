@@ -10,8 +10,15 @@ RSpec.describe TRS::APIClient do
     let(:expected_path) { "v3/persons/1234567" }
 
     context "finding a teacher by TRN and date of birth" do
-      let(:response_body) { { "firstName" => "John", "trn" => trn }.to_json }
-      let(:expected_payload) { { dateOfBirth: "1990-01-01", include: "Induction,InitialTeacherTraining,Alerts" } }
+      let(:response_body) do
+        { "firstName" => "John", "trn" => trn }.to_json
+      end
+      let(:expected_payload) do
+        {
+          dateOfBirth: "1990-01-01",
+          include: "Alerts,Induction,MandatoryQualifications,RoutesToProfessionalStatuses"
+        }
+      end
 
       before do
         allow(connection).to receive(:get).with(expected_path, expected_payload).and_return(response)
@@ -36,8 +43,15 @@ RSpec.describe TRS::APIClient do
     end
 
     context "finding a teacher by TRN and national insurance number" do
-      let(:response_body) { { "firstName" => "John", "trn" => trn }.to_json }
-      let(:expected_payload) { { nationalInsuranceNumber: "QQ123456A", include: "Induction,InitialTeacherTraining,Alerts" } }
+      let(:response_body) do
+        { "firstName" => "John", "trn" => trn }.to_json
+      end
+      let(:expected_payload) do
+        {
+          nationalInsuranceNumber: "QQ123456A",
+          include: "Alerts,Induction,MandatoryQualifications,RoutesToProfessionalStatuses"
+        }
+      end
 
       before do
         allow(connection).to receive(:get).with(expected_path, expected_payload).and_return(response)
@@ -64,11 +78,14 @@ RSpec.describe TRS::APIClient do
     describe "API failures" do
       let(:not_found_trn) { "5555555" }
       let(:gone_trn) { "6666666" }
+      let(:merged_trn) { "7777777" }
+
       let(:stubbed_connection) do
         Faraday.new do |builder|
           builder.adapter(:test) do |stub|
-            stub.get("/v3/persons/#{not_found_trn}") { [404, { "Content-Type" => "text/plain" }, "Not found"] }
+            stub.get("/v3/persons/#{not_found_trn}") { [404, { "Content-Type" => "text/plain" }, "Not Found"] }
             stub.get("/v3/persons/#{gone_trn}") { [410, { "Content-Type" => "text/plain" }, "Gone"] }
+            stub.get("/v3/persons/#{merged_trn}") { [308, { "Content-Type" => "text/plain", "location" => "/v3/persons/8888888" }, "Permanent Redirect"] }
           end
         end
       end
@@ -76,14 +93,20 @@ RSpec.describe TRS::APIClient do
       before { client.instance_variable_set(:@connection, stubbed_connection) }
 
       context "when the API request fails with 404" do
-        it "raises TRS::Errors::TeacherNotFound" do
+        it do
           expect { client.find_teacher(trn: not_found_trn) }.to raise_error(TRS::Errors::TeacherNotFound)
         end
       end
 
       context "when the API request fails with 410" do
-        it "raises TRS::Errors::TeacherDeactivated" do
+        it do
           expect { client.find_teacher(trn: gone_trn) }.to raise_error(TRS::Errors::TeacherDeactivated)
+        end
+      end
+
+      context "when the API request fails with 308" do
+        it do
+          expect { client.find_teacher(trn: merged_trn) }.to raise_error(TRS::Errors::TeacherMerged)
         end
       end
     end

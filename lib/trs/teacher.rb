@@ -1,5 +1,8 @@
 module TRS
   # Unpack API response and validate eligibility
+  # Compatible with API version 20250627
+  # @see https://github.com/DFE-Digital/teaching-record-system/blob/main/CHANGELOG.md#20250627
+  #
   class Teacher
     PROHIBITED_FROM_TEACHING_CATEGORY_ID = "b2b19019-b165-47a3-8745-3297ff152581"
 
@@ -14,36 +17,50 @@ module TRS
     attr_reader :trs_trn,
                 :trs_date_of_birth,
                 :trs_first_name,
+                :trs_middle_name,
                 :trs_last_name,
                 :trs_email_address,
                 :trs_national_insurance_number,
                 :trs_alerts,
+                :trs_qtls_status,
+                :trs_routes_to_professional_status,
                 :trs_induction_start_date,
                 :trs_induction_completed_date,
                 :trs_induction_status,
-                :trs_induction_status_description,
+                :trs_induction_exemption_reasons,
+                # :trs_induction_status_description, TODO: DROP trs_induction_status_description
                 :trs_qts_awarded_on,
                 :trs_qts_status_description,
+                :trs_qts_awarded_or_approved_count,
                 :trs_initial_teacher_training_provider_name,
-                :trs_initial_teacher_training_end_date
+                :trs_initial_teacher_training_provider_ukprn,
+                :trs_initial_teacher_training_end_date,
+                :trs_initial_teacher_training_start_date
 
     # @param data [Hash{String=>Mixed}] TRS API response
     def initialize(data)
       @trs_trn = data["trn"]
       @trs_date_of_birth = data["dateOfBirth"]
       @trs_first_name = data["firstName"]
+      @trs_middle_name = data["middleName"]
       @trs_last_name = data["lastName"]
       @trs_email_address = data["emailAddress"]
       @trs_national_insurance_number = data["nationalInsuranceNumber"]
       @trs_alerts = data.fetch("alerts", []).map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
+      @trs_qtls_status = data["qtlsStatus"]
+      @trs_routes_to_professional_status = data["routesToProfessionalStatuses"]
       @trs_induction_start_date = data.dig("induction", "startDate")
       @trs_induction_completed_date = data.dig("induction", "completedDate")
       @trs_induction_status = data.dig("induction", "status")
-      @trs_induction_status_description = data.dig("induction", "statusDescription")
-      @trs_qts_awarded_on = data.dig("qts", "awarded")
-      @trs_qts_status_description = data.dig("qts", "statusDescription")
-      @trs_initial_teacher_training_provider_name = data.dig("initialTeacherTraining", -1, "provider", "name")
-      @trs_initial_teacher_training_end_date = data.dig("initialTeacherTraining", -1, "endDate")
+      @trs_induction_exemption_reasons = data.dig("induction", "exemptionReasons")
+      # @trs_induction_status_description = data.dig("induction", "statusDescription") TODO: DROP trs_induction_status_description
+      @trs_qts_awarded_on = data.dig("qts", "holdsFrom")
+      @trs_qts_status_description = data.dig("qts", "routes", -1, "routeToProfessionalStatusType", "professionalStatusType")
+      @trs_qts_awarded_or_approved_count = data.dig("qts", "awardedOrApprovedCount")
+      @trs_initial_teacher_training_provider_name = data.dig("routesToProfessionalStatuses", -1, "trainingProvider", "name")
+      @trs_initial_teacher_training_provider_ukprn = data.dig("routesToProfessionalStatuses", -1, "trainingProvider", "ukprn")
+      @trs_initial_teacher_training_end_date = data.dig("routesToProfessionalStatuses", -1, "trainingEndDate")
+      @trs_initial_teacher_training_start_date = data.dig("routesToProfessionalStatuses", -1, "trainingStartDate")
     end
 
     # @return [Boolean]
@@ -88,7 +105,7 @@ module TRS
         trs_induction_start_date:,
         trs_induction_completed_date:,
         trs_induction_status:,
-        trs_induction_status_description:,
+        # trs_induction_status_description:, TODO: DROP trs_induction_status_description
         trs_qts_awarded_on:,
         trs_qts_status_description:,
         trs_initial_teacher_training_provider_name:,

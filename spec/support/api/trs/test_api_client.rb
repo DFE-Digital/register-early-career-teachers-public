@@ -71,9 +71,16 @@ module TRS
       if @has_qts
         {
           "qts" => {
-            "awarded" => Time.zone.today - 3.years,
-            "certificateUrl" => "https://fancy-certificates.example.com/1234",
-            "statusDescription" => "Passed"
+            "holdsFrom" => 3.years.ago.to_date.to_s,
+            "routes" => [
+              {
+                "routeToProfessionalStatusType" => {
+                  "routeToProfessionalStatusTypeId" => "32017d68-9da4-43b2-ae91-4f24c68f6f78",
+                  "name" => "HEI - Historic",
+                  "professionalStatusType" => "QualifiedTeacherStatus"
+                }
+              }
+            ]
           }
         }
       else
@@ -104,6 +111,14 @@ module TRS
             "completedDate" => "2022-01-01",
           }
         }
+      elsif @induction_status.eql?("Exempt")
+        {
+          "induction" => {
+            "status" => @induction_status,
+            "startDate" => nil,
+            "completedDate" => nil,
+          }
+        }
       else
         { "induction" => { "status" => @induction_status } }
       end
@@ -112,22 +127,25 @@ module TRS
     def itt_data
       if @has_itt
         {
-          "initialTeacherTraining" => [
+
+          "routesToProfessionalStatuses" => [
             {
-              "qualification" => { "name" => "Postgraduate Certificate in Education" },
-              "startDate" => "2020-12-31",
-              "result" => "Pass",
-              "subjects" => [],
-              "endDate" => "2021-04-05",
-              "programmeType" => nil,
-              "programmeTypeDescription" => nil,
-              "ageRange" => nil,
-              "provider" => { "name" => "Example Provider Ltd." },
+              "routeToProfessionalStatusType" => {
+                "professionalStatusType" => "QualifiedTeacherStatus"
+              },
+              "status" => "Holds",
+              "holdsFrom" => "2022-01-01",
+              "trainingStartDate" => "2020-12-31",
+              "trainingEndDate" => "2021-04-05",
+              "trainingProvider" => {
+                "name" => "Example Provider Ltd."
+              }
             }
           ]
         }
+
       else
-        { "initialTeacherTraining" => [] }
+        { "routesToProfessionalStatuses" => [] }
       end
     end
   end
