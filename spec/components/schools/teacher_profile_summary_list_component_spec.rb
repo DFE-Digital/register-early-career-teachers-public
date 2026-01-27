@@ -1,4 +1,6 @@
 RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
+  subject { page }
+
   let(:school) { FactoryBot.create(:school) }
   let(:mentee_teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "Kakarot", trs_last_name: "SSJ") }
   let(:mentor_teacher) { FactoryBot.create(:teacher, trn: "987654", trs_first_name: "Naruto", trs_last_name: "Ninetails") }
@@ -12,44 +14,24 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
   before do
     FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago)
     FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: 2.years.ago)
-    render_inline(described_class.new(mentee))
+
+    # rubocop:disable RSpec/AnyInstance (ECTHelper is a module)
+    allow_any_instance_of(ECTHelper).to receive(:ect_mentor_details).with(mentee).and_return("ECTHelper#ect_mentor_details")
+    allow_any_instance_of(ECTHelper).to receive(:ect_status).with(mentee, current_school: school).and_return("ECTHelper#ect_status")
+    # rubocop:enable RSpec/AnyInstance
+
+    render_inline(described_class.new(mentee, current_school: school))
   end
 
   it "renders the summary list container" do
     expect(page).to have_selector(".govuk-summary-list")
   end
 
-  it "renders the name row with correct value" do
-    expect(page).to have_selector(".govuk-summary-list__row", text: "Name")
-    expect(page).to have_text("Kakarot SSJ")
-  end
-
-  it "renders the email row with correct value" do
-    expect(page).to have_selector(".govuk-summary-list__row", text: "Email address")
-    expect(page).to have_text("foobarect@madeup.com")
-  end
-
-  it "renders the mentor row with correct value" do
-    expect(page).to have_selector(".govuk-summary-list__row", text: "Mentor")
-    expect(page).to have_text("Naruto Ninetails")
-  end
-
-  it "renders the school start date row with correct value" do
-    expect(page).to have_selector(".govuk-summary-list__row", text: "School start date")
-    expect(page).to have_text("September 2021")
-  end
-
-  it "renders the working pattern row with correct value" do
-    expect(page).to have_selector(".govuk-summary-list__row", text: "Working pattern")
-    expect(page).to have_text("Full time")
-  end
-
-  it "renders the status row with correct value" do
-    expect(page).to have_selector(".govuk-summary-list__row", text: "Status")
-    expect(page).to have_selector(".govuk-tag", text: "Registered")
-  end
-
-  it "renders all expected rows" do
-    expect(page).to have_selector(".govuk-summary-list__row", count: 6)
-  end
+  it { is_expected.to have_selector(".govuk-summary-list__row", count: 6) }
+  it { is_expected.to have_summary_list_row("Name", value: "Kakarot SSJ") }
+  it { is_expected.to have_summary_list_row("Email address", value: "foobarect@madeup.com") }
+  it { is_expected.to have_summary_list_row("Mentor", value: "ECTHelper#ect_mentor_details") }
+  it { is_expected.to have_summary_list_row("School start date", value: "1 September 2021") }
+  it { is_expected.to have_summary_list_row("Working pattern", value: "Full time") }
+  it { is_expected.to have_summary_list_row("Status", value: "ECTHelper#ect_status") }
 end
