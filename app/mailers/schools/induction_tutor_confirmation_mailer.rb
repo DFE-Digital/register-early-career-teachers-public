@@ -3,7 +3,7 @@ class Schools::InductionTutorConfirmationMailer < ApplicationMailer
   SETUP_ECTE_GUIDANCE_URL = "https://www.gov.uk/guidance/set-up-and-manage-the-early-career-teacher-entitlement"
   REGISTER_ECT_SERVICE_URL = "https://www.register-early-career-teachers.education.gov.uk/"
   DFE_SIGN_IN_URL = "https://services.signin.education.gov.uk/"
-  DFE_SIGN_IN_HELP_URL = "https://help.signin.education.gov.uk/contact-us"
+  DFE_SIGN_IN_HELP_URL = "https://edd-help.signin.education.gov.uk/contact"
   ECT_GUIDANCE_COLLECTION_URL = "https://www.gov.uk/government/collections/induction-training-and-support-for-early-career-teachers-ects"
 
   def confirmation
