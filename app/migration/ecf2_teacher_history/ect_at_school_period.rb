@@ -34,6 +34,7 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
       school: school.to_h,
       email:,
       school_reported_appropriate_body: appropriate_body,
+      mentorship_periods: mentorship_periods.map(&:to_h),
       training_periods: training_periods.map(&:to_h)
     }
   end
