@@ -248,17 +248,14 @@ describe ECTAtSchoolPeriods::Finish do
           expect { subject.finish! }.to change(TrainingPeriod, :count).by(-1)
         end
 
-        it "deletes any events associated with the training period" do
-          FactoryBot.create(:event, training_period:)
-          FactoryBot.create(:event, training_period:)
-          other_event = FactoryBot.create(:event)
-
-          expect(Event.where(training_period:).count).to eq(2)
+        it "records an event which is not linked to a training period" do
+          allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_return(true)
 
           subject.finish!
 
-          expect(Event.where(training_period:)).to be_empty
-          expect(Event.exists?(other_event.id)).to be true
+          expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).once.with(
+            hash_including(author:, ect_at_school_period:, school:, teacher:, training_period: nil, happened_at: finished_on)
+          )
         end
       end
     end
