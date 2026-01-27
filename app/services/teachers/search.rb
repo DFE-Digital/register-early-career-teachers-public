@@ -88,10 +88,7 @@ module Teachers
     def where_in_progress(in_progress)
       return if in_progress == :ignore
 
-      @scope = @scope.
-        induction_not_completed.
-        not_failed.
-        not_passed
+      @scope = @scope.induction_not_completed
     end
   end
 end
