@@ -28,7 +28,6 @@ module TRS
                 :trs_induction_completed_date,
                 :trs_induction_status,
                 :trs_induction_exemption_reasons,
-                # :trs_induction_status_description, TODO: DROP trs_induction_status_description
                 :trs_qts_awarded_on,
                 :trs_qts_status_description,
                 :trs_qts_awarded_or_approved_count,
@@ -53,7 +52,6 @@ module TRS
       @trs_induction_completed_date = data.dig("induction", "completedDate")
       @trs_induction_status = data.dig("induction", "status")
       @trs_induction_exemption_reasons = data.dig("induction", "exemptionReasons")
-      # @trs_induction_status_description = data.dig("induction", "statusDescription") TODO: DROP trs_induction_status_description
       @trs_qts_awarded_on = data.dig("qts", "holdsFrom")
       @trs_qts_status_description = data.dig("qts", "routes", -1, "routeToProfessionalStatusType", "professionalStatusType")
       @trs_qts_awarded_or_approved_count = data.dig("qts", "awardedOrApprovedCount")
@@ -105,7 +103,6 @@ module TRS
         trs_induction_start_date:,
         trs_induction_completed_date:,
         trs_induction_status:,
-        # trs_induction_status_description:, TODO: DROP trs_induction_status_description
         trs_qts_awarded_on:,
         trs_qts_status_description:,
         trs_initial_teacher_training_provider_name:,
