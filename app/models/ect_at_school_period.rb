@@ -65,7 +65,13 @@ class ECTAtSchoolPeriod < ApplicationRecord
     with_expressions_of_interest_for_contract_period(year)
     .where(expression_of_interest: { lead_provider_id: })
   }
-  scope :induction_not_completed, -> { joins(:teacher).merge(Teacher.induction_not_completed) }
+  scope :induction_not_completed, -> {
+    joins(<<~SQL)
+      LEFT JOIN teachers AS ect_teachers
+        ON ect_teachers.id = ect_at_school_periods.teacher_id
+    SQL
+    .where(ect_teachers: { trs_induction_completed_date: nil })
+  }
 
   def reported_leaving_by?(school)
     reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id
