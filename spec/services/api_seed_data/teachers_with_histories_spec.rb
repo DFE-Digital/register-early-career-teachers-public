@@ -202,6 +202,15 @@ RSpec.describe APISeedData::TeachersWithHistories do
       it { expect { plant }.to change(TrainingPeriod.where(deferred_at: nil, withdrawn_at: nil), :count).by(20) }
     end
 
+    context "when creating teachers with induction period" do
+      before do
+        allow(Faker::Boolean).to receive(:boolean).and_return(true)
+        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.85).and_return(true)
+      end
+
+      it { expect { plant }.to change(InductionPeriod, :count).by(school_partnerships.count * 2) }
+    end
+
     it "logs the creation of api teachers records" do
       plant
 
