@@ -22,19 +22,24 @@ module TRS
       new
     end
 
-    # Included items:
-    # * Induction
-    # * Alerts
-    # * InitialTeacherTraining
     # Other available items:
-    # * NpqQualifications
-    # * MandatoryQualifications
-    # * PendingDetailChanges
-    # * HigherEducationQualifications
-    # * Sanctions
-    # * PreviousNames
-    # * AllowIdSignInWithProhibitions
-    def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: %w[Induction InitialTeacherTraining Alerts])
+    #   * InitialTeacherTraining (removed in 20250627)
+    #   * NpqQualifications (removed in 20250627)
+    #   * PendingDetailChanges
+    #   * HigherEducationQualifications
+    #   * Sanctions
+    #   * PreviousNames
+    #   * AllowIdSignInWithProhibitions
+    #
+    # @return [Array<String>]
+    QUERY_PARAMS = %w[
+      Alerts
+      Induction
+      MandatoryQualifications
+      RoutesToProfessionalStatuses
+    ].freeze
+
+    def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: QUERY_PARAMS)
       params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: include.join(",") }.compact
       response = @connection.get(persons_path(trn), params)
 
@@ -109,12 +114,16 @@ module TRS
       TRS::Teacher.new(JSON.parse(response.body))
     end
 
-    # @param response [Faraday::Response]
+    # @param response [Faraday::Response] "location" => "/v3/persons/1234567"
     # @return [String]
     def trs_redirected_trn(response)
       response.headers[:location].match(%r{/v3/persons/(\d*)})[1]
     end
 
+    # Added in version 20250203
+    # PUT /v3/persons/<trn>/cpd-induction
+    #
+    # @return [Boolean]
     def update_induction_status(trn:, status:, modified_at:, start_date:, completed_date: nil)
       payload = { "status" => status,
                   "startDate" => start_date,
