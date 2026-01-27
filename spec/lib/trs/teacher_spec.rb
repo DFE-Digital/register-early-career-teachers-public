@@ -139,7 +139,6 @@ RSpec.describe TRS::Teacher do
         trs_induction_start_date: "2024-09-18",
         trs_induction_status: "InProgress",
         trs_induction_completed_date: "2024-09-18",
-        # trs_induction_status_description: "Induction Status Description",
         trs_initial_teacher_training_end_date: "2024-09-18",
         trs_initial_teacher_training_provider_name: "Provider Name",
         trs_qts_awarded_on: "2024-09-18",
