@@ -116,7 +116,9 @@ module AppropriateBodies
         pending_induction_submission.update(**trs_teacher.to_h)
 
         nil
-      rescue TRS::Errors::TeacherNotFound, TRS::Errors::TeacherDeactivated, TRS::Errors::TeacherMerged
+      rescue TRS::Errors::TeacherNotFound,
+             TRS::Errors::TeacherDeactivated,
+             TRS::Errors::TeacherMerged
         "TRN and date of birth do not match"
       rescue TRS::Errors::APIRequestError
         "TRS could not be contacted. You’ll need to try again later"
