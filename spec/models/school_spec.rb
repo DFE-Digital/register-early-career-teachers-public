@@ -490,4 +490,39 @@ describe School do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe "#blocked_from_service_access?" do
+    subject { school.blocked_from_service_access? }
+
+    context "when the school is independent" do
+      let(:gias_school) { FactoryBot.create(:gias_school, :independent_school_type, :not_section_41) }
+      let(:school) { FactoryBot.create(:school, urn: gias_school.urn, gias_school:) }
+
+      context "and section 41 is not approved" do
+        context "with no ongoing training periods" do
+          it { is_expected.to be_truthy }
+        end
+
+        context "with an ongoing ect training period" do
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+
+          before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context "and section 41 is approved" do
+        let(:school) { FactoryBot.create(:school, :independent, :section_41) }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context "when the school is state-funded" do
+      let(:school) { FactoryBot.create(:school, :state_funded) }
+
+      it { is_expected.to be_falsey }
+    end
+  end
 end
