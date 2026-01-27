@@ -17,6 +17,16 @@ class ECF2TeacherHistory::MentorshipPeriod
     { started_on:, finished_on:, ecf_start_induction_record_id:, ecf_end_induction_record_id: }
   end
 
+  def to_h
+    {
+      started_on:,
+      finished_on:,
+      ecf_start_induction_record_id:,
+      ecf_end_induction_record_id:,
+      mentor_data: mentor_data.to_h,
+    }
+  end
+
   def mentor_teacher
     ::Teacher.find_by(trn: mentor_data.trn)
   end
@@ -27,7 +37,10 @@ class ECF2TeacherHistory::MentorshipPeriod
       #        that one teacher has multiple at the same school
       mentor: ::MentorAtSchoolPeriod
         .joins(:school, :teacher)
-        .find_by(school: { urn: mentor_data.urn }, teacher: { trn: mentor_data.trn })
+        .order(:started_on)
+        .where(school: { urn: mentor_data.urn },
+               teacher: { trn: mentor_data.trn })
+        .last
     }
   end
 end

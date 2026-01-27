@@ -1,3 +1,5 @@
+require "ostruct"
+
 # From all the induction records of a participant received in the converter, the latest induction records mode will
 # group them by (school, lead provider, cohort) and select the one unfinished or the most recently created one.
 # The resulting list will be sorted by start_date, created_at, unfinished last and them converted to ect at school periods.
@@ -37,7 +39,14 @@ private
     first_school_period = ect_at_school_periods.first
     started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date.to_date].compact.min
     finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date&.to_date].compact.min
-    training_period = build_new_training_period_from_induction_record(induction_record, { started_on:, finished_on: })
+    training_period = build_training_period(induction_record:, started_on:, finished_on:)
+
+    # Only create mentorship for the last ect at school period if its associated induction record has mentor profile
+    if first_school_period.nil? && induction_record.mentor_profile_id
+      mentorship_period = build_mentorship_period(induction_record:,
+                                                  ect_started_on: started_on,
+                                                  ect_finished_on: finished_on)
+    end
 
     ect_at_school_periods.unshift(
       ECF2TeacherHistory::ECTAtSchoolPeriod.new(
@@ -45,13 +54,41 @@ private
         finished_on:,
         school: induction_record.school,
         email: induction_record.preferred_identity_email,
-        mentorship_periods: [],
+        mentorship_periods: [mentorship_period].compact,
         training_periods: [training_period]
       )
     )
   end
 
-  def build_new_training_period_from_induction_record(induction_record, overrides = {})
+  def build_mentorship_period(induction_record:, ect_started_on:, ect_finished_on:)
+    mentor_at_school_period = find_overlapping_mentor_period(started_on: ect_started_on,
+                                                             finished_on: ect_finished_on,
+                                                             mentor_profile_id: induction_record.mentor_profile_id,
+                                                             urn: induction_record.school.urn)
+
+    if mentor_at_school_period
+      mentor_started_on = mentor_at_school_period.started_on
+      mentor_finished_on = mentor_at_school_period.finished_on
+
+      mentorship_started_on = [ect_started_on, mentor_started_on].max
+      mentorship_finished_on = [ect_finished_on, mentor_finished_on].compact.min
+
+      ECF2TeacherHistory::MentorshipPeriod.new(
+        started_on: mentorship_started_on,
+        finished_on: mentorship_finished_on,
+        ecf_start_induction_record_id: induction_record.induction_record_id,
+        ecf_end_induction_record_id: induction_record.induction_record_id,
+        mentor_data: ECF2TeacherHistory::MentorData.new(
+          trn: mentor_at_school_period.teacher.trn,
+          urn: mentor_at_school_period.school.urn,
+          started_on: mentor_started_on,
+          finished_on: mentor_finished_on
+        )
+      )
+    end
+  end
+
+  def build_training_period(induction_record:, **overrides)
     training_attrs = {
       started_on: induction_record.start_date.to_date,
       finished_on: induction_record.end_date&.to_date,
@@ -67,5 +104,15 @@ private
     }.merge(overrides)
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
+  end
+
+  # Find the last MentorAtSchoolPeriod overlapping started_on..finished_on for the teacher and school identifiers given
+  def find_overlapping_mentor_period(started_on:, finished_on:, mentor_profile_id:, urn:)
+    MentorAtSchoolPeriod.joins(:school, :teacher)
+                        .where(schools: { urn: },
+                               teachers: { api_mentor_training_record_id: mentor_profile_id })
+                        .overlapping_with(OpenStruct.new(started_on:, finished_on:))
+                        .order(:started_on)
+                        .last
   end
 end

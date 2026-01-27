@@ -23,7 +23,7 @@ describe "Latest induction records mode conversion" do
     }
   end
 
-  let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
+  let!(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
 
   {
     "two IRs share start date. The first ends later than the second" => {
@@ -43,12 +43,12 @@ describe "Latest induction records mode conversion" do
       #                                             │       B       │
       #                                             └───────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 111_111, start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-5-5" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-5-5" },
+        { urn: 111_111, started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-5-5" },
       ]
     },
 
@@ -69,12 +69,12 @@ describe "Latest induction records mode conversion" do
       #                                             │       B       │
       #                                             └───────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111, start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111, started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -95,12 +95,12 @@ describe "Latest induction records mode conversion" do
       #                                             │         A          │
       #                                             └────────────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-4-4", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 111_111, start_date: "2024-4-4", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-5-5" },
       ],
       at_school_periods: [
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-4-3" },
-        { urn: 111_111,  started_on: "2024-4-4", finished_on: "2024-6-6" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-4-3" },
+        { urn: 111_111, started_on: "2024-4-4", finished_on: "2024-6-6" },
       ]
     },
 
@@ -121,12 +121,12 @@ describe "Latest induction records mode conversion" do
       #                                     │        A           │
       #                                     └────────────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-5-5", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-4-4" },
+        { urn: 111_111, start_date: "2024-5-5", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-4-4" },
       ],
       at_school_periods: [
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-4-4" },
-        { urn: 111_111,  started_on: "2024-5-5", finished_on: "2024-6-6" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-4-4" },
+        { urn: 111_111, started_on: "2024-5-5", finished_on: "2024-6-6" },
       ]
     },
 
@@ -147,12 +147,12 @@ describe "Latest induction records mode conversion" do
       #           │         B          │
       #           └────────────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-5-5" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111, start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111, started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -173,12 +173,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B          │
       #                       └────────────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-5-5" },
+        { urn: 111_111, start_date: "2024-1-1", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-5-5" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-5-5" },
+        { urn: 111_111, started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-5-5" },
       ]
     },
 
@@ -199,12 +199,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B          │
       #                       └────────────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111, start_date: "2024-1-1", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111, started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -225,12 +225,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B          │
       #                       └────────────────────┘
       induction_records: [
-        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-5-5" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 111_111, start_date: "2024-1-1", end_date: "2024-5-5" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: "2024-6-6" },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: "2024-6-6" },
+        { urn: 111_111, started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: "2024-6-6" },
       ]
     },
 
@@ -251,12 +251,12 @@ describe "Latest induction records mode conversion" do
       #                       │         B
       #                       └────────────────────>
       induction_records: [
-        { urn: 111_111,  start_date: "2024-1-1", end_date: "2024-5-5" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: :ignore },
+        { urn: 111_111, start_date: "2024-1-1", end_date: "2024-5-5" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: :ignore },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-1-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: nil },
+        { urn: 111_111, started_on: "2024-1-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: nil },
       ]
     },
 
@@ -277,12 +277,12 @@ describe "Latest induction records mode conversion" do
       #           │           B
       #           └────────────────────────────>
       induction_records: [
-        { urn: 111_111,  start_date: "2024-3-3", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: :ignore },
+        { urn: 111_111, start_date: "2024-3-3", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: :ignore },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: nil },
+        { urn: 111_111, started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: nil },
       ]
     },
 
@@ -303,12 +303,12 @@ describe "Latest induction records mode conversion" do
       #           │                 B
       #           └────────────────────────────────────>
       induction_records: [
-        { urn: 111_111,  start_date: "2024-4-4", end_date: "2024-6-6" },
-        { urn: 222_222,  start_date: "2024-3-3", end_date: :ignore },
+        { urn: 111_111, start_date: "2024-4-4", end_date: "2024-6-6" },
+        { urn: 222_222, start_date: "2024-3-3", end_date: :ignore },
       ],
       at_school_periods: [
-        { urn: 111_111,  started_on: "2024-3-1", finished_on: "2024-3-2" },
-        { urn: 222_222,  started_on: "2024-3-3", finished_on: nil },
+        { urn: 111_111, started_on: "2024-3-1", finished_on: "2024-3-2" },
+        { urn: 222_222, started_on: "2024-3-3", finished_on: nil },
       ]
     }
   }.each do |description, data|
@@ -352,6 +352,118 @@ describe "Latest induction records mode conversion" do
             expect(school_period.finished_on).to eq school_period.training_periods.first.finished_on
           end
         end
+      end
+    end
+  end
+
+  context "mentorship periods" do
+    let!(:school_222_222) { FactoryBot.create(:school, urn: 222_222) }
+    let(:mentor_profile_id) { SecureRandom.uuid }
+    let(:mentor_teacher) { FactoryBot.create(:teacher, :with_name, api_mentor_training_record_id: mentor_profile_id) }
+
+    let(:induction_records) do
+      [
+        {
+          start_date: Time.zone.parse("2024-1-1"),
+          end_date: Time.zone.parse("2024-5-5"),
+          school: school_a,
+          training_provider_info: {
+            lead_provider: lead_provider_a,
+            delivery_partner: delivery_partner_a,
+            cohort_year:
+          }
+        },
+        {
+          start_date: Time.zone.parse("2024-3-3"),
+          end_date: Time.zone.parse("2024-6-6"),
+          school: school_b,
+          mentor_profile_id:,
+          training_provider_info: {
+            lead_provider: lead_provider_a,
+            delivery_partner: delivery_partner_a,
+            cohort_year:
+          }
+        }
+      ]
+    end
+
+    context "when there is no mentor at school period overlaping the last starting ect_at_school_period" do
+      before do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: mentor_teacher,
+                          school: school_222_222,
+                          start_date: Date.parse("2024-1-1"),
+                          end_date: Date.parse("2024-2-2"))
+      end
+
+      it "don't create any mentorship at school period" do
+        expect(subject.ect_at_school_periods.last.mentorship_periods).to be_empty
+      end
+    end
+
+    context "when there is a mentor at school period overlaping only the start of the last starting ect_at_school_period" do
+      before do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: mentor_teacher,
+                          school: school_222_222,
+                          start_date: Date.parse("2024-1-1"),
+                          end_date: Date.parse("2024-2-2"))
+
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: mentor_teacher,
+                          school: school_222_222,
+                          start_date: Date.parse("2024-2-15"),
+                          end_date: Date.parse("2024-4-4"))
+      end
+
+      it "create a mentorship at school period with the overlapped range of dates" do
+        expect(subject.ect_at_school_periods.last.mentorship_periods.size).to eq(1)
+        expect(subject.ect_at_school_periods.last.mentorship_periods.first.started_on).to eq(Date.parse("2024-3-3"))
+        expect(subject.ect_at_school_periods.last.mentorship_periods.first.finished_on).to eq(Date.parse("2024-4-4"))
+      end
+    end
+
+    context "when there is a mentor at school period overlaping only the end of the last starting ect_at_school_period" do
+      before do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: mentor_teacher,
+                          school: school_222_222,
+                          start_date: Date.parse("2024-1-1"),
+                          end_date: Date.parse("2024-4-4"))
+
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: mentor_teacher,
+                          school: school_222_222,
+                          start_date: Date.parse("2024-5-5"),
+                          end_date: nil)
+      end
+
+      it "create a mentorship at school period with the overlapped range of dates" do
+        expect(subject.ect_at_school_periods.last.mentorship_periods.size).to eq(1)
+        expect(subject.ect_at_school_periods.last.mentorship_periods.first.started_on).to eq(Date.parse("2024-5-5"))
+        expect(subject.ect_at_school_periods.last.mentorship_periods.first.finished_on).to eq(Date.parse("2024-6-6"))
+      end
+    end
+
+    context "when there is a mentor at school period containing the last starting ect_at_school_period" do
+      before do
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: mentor_teacher,
+                          school: school_222_222,
+                          start_date: Date.parse("2024-1-1"),
+                          end_date: Date.parse("2024-2-2"))
+
+        FactoryBot.create(:mentor_at_school_period,
+                          teacher: mentor_teacher,
+                          school: school_222_222,
+                          start_date: Date.parse("2024-2-15"),
+                          end_date: nil)
+      end
+
+      it "create a mentorship at school period with the overlapped range of dates" do
+        expect(subject.ect_at_school_periods.last.mentorship_periods.size).to eq(1)
+        expect(subject.ect_at_school_periods.last.mentorship_periods.first.started_on).to eq(Date.parse("2024-3-3"))
+        expect(subject.ect_at_school_periods.last.mentorship_periods.first.finished_on).to eq(Date.parse("2024-6-6"))
       end
     end
   end
