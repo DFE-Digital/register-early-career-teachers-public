@@ -45,7 +45,7 @@ module TrainingPeriods
       end
     end
 
-    private
+  private
 
     def record_teacher_finishes_training_period_event!
       return unless record_event?
