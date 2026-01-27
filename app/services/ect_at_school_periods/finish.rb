@@ -2,11 +2,12 @@ module ECTAtSchoolPeriods
   class Finish
     attr_reader :ect_at_school_period, :finished_on, :author, :reported_by_school_id
 
-    def initialize(ect_at_school_period:, finished_on:, author:, reported_by_school_id: nil)
+    def initialize(ect_at_school_period:, finished_on:, author:, reported_by_school_id: nil, record_event: true)
       @ect_at_school_period = ect_at_school_period
       @finished_on = finished_on
       @author = author
       @reported_by_school_id = reported_by_school_id
+      @record_event = record_event
     end
 
     def finish!
@@ -26,6 +27,12 @@ module ECTAtSchoolPeriods
       end
 
       ect_at_school_period.update!(finish_attrs)
+
+      record_teacher_left_school_as_ect_event!
+    end
+
+    def record_teacher_left_school_as_ect_event!
+      return unless record_event?
 
       Events::Record.record_teacher_left_school_as_ect!(
         author:,
@@ -51,7 +58,7 @@ module ECTAtSchoolPeriods
 
       return if mentorship_period.finished_on.present? && mentorship_period.finished_on <= finished_on
 
-      MentorshipPeriods::Finish.new(author:, mentorship_period:, finished_on:).finish!
+      MentorshipPeriods::Finish.new(author:, mentorship_period:, finished_on:, record_event: record_event?).finish!
     end
 
     def finish_training_period!
@@ -64,7 +71,7 @@ module ECTAtSchoolPeriods
 
       return if training_period.finished_on.present? && training_period.finished_on <= finished_on
 
-      TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:).finish!
+      TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:, record_event: record_event?).finish!
     end
 
     # Prevent events being linked to unstarted training_periods (which will be deleted)
@@ -104,6 +111,10 @@ module ECTAtSchoolPeriods
       { finished_on: }.tap do |attrs|
         attrs[:reported_leaving_by_school_id] = reported_by_school_id if reported_by_school_id
       end
+    end
+
+    def record_event?
+      @record_event
     end
   end
 end

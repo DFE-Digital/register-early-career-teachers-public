@@ -72,24 +72,19 @@ RSpec.describe "schools/ects/index.html.erb" do
       end
     end
 
-    context "when teachers have passed or failed induction" do
-      let(:passed_teacher) { FactoryBot.create(:teacher, trs_first_name: "Jack", trs_last_name: "Daniels", trs_induction_status: "Passed") }
-      let(:failed_teacher) { FactoryBot.create(:teacher, trs_first_name: "Jim", trs_last_name: "Beam", trs_induction_status: "Failed") }
+    context "when teachers have completed induction" do
+      let(:passed_teacher) { FactoryBot.create(:teacher, trs_first_name: "Jack", trs_last_name: "Daniels", trs_induction_completed_date: Date.today - 1, trs_induction_status: "Passed") }
 
       before do
         passed_ect = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: passed_teacher, school:)
-        failed_ect = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: failed_teacher, school:)
         FactoryBot.create(:training_period, :ongoing, ect_at_school_period: passed_ect)
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: failed_ect)
 
         render
       end
 
-      # TODO induction completed date
       it "does not render summary components for completed teachers" do
         expect(rendered).to have_css(".govuk-summary-card__title", text: "Johnnie Walker")
         expect(rendered).not_to have_css(".govuk-summary-card__title", text: "Jack Daniels")
-        expect(rendered).not_to have_css(".govuk-summary-card__title", text: "Jim Beam")
       end
     end
   end
