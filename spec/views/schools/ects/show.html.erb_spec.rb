@@ -1,4 +1,6 @@
 RSpec.describe "schools/ects/show.html.erb" do
+  subject { render }
+
   let(:contract_period) { FactoryBot.create(:contract_period) }
   let!(:current_ect_period) do
     FactoryBot.create(:ect_at_school_period,
@@ -35,31 +37,33 @@ RSpec.describe "schools/ects/show.html.erb" do
     assign(:ect_at_school_period, current_ect_period)
     assign(:training_period, training_period)
     assign(:teacher, teacher)
-
-    render
   end
 
-  it "has title" do
-    expect(view.content_for(:page_title)).to eql("Baz White")
-  end
+  describe "page_data" do
+    before { render }
 
-  it "includes a back button that links to the school home page" do
-    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: schools_ects_home_path)
+    it "has title" do
+      expect(view.content_for(:page_title)).to eql("Baz White")
+    end
+
+    it "includes a back button that links to the school home page" do
+      expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: schools_ects_home_path)
+    end
   end
 
   describe "ECT details" do
     it "title" do
-      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECT details")
+      expect(subject).to have_css("h2.govuk-heading-m", text: "ECT details")
     end
 
     it "full name" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Name")
-      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Baz White")
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "Name")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Baz White")
     end
 
     it "current email address" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Email address")
-      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "love@whale.com")
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "Email address")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "love@whale.com")
     end
 
     describe "mentor" do
@@ -76,37 +80,35 @@ RSpec.describe "schools/ects/show.html.erb" do
                             started_on: current_ect_period.started_on,
                             mentee: current_ect_period,
                             mentor: mentor_at_school_period)
-
-          render
         end
 
         it "has mentor's full name" do
-          expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Mentor")
-          expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Moby Dick")
+          expect(subject).to have_css("dt.govuk-summary-list__key", text: "Mentor")
+          expect(subject).to have_css("dd.govuk-summary-list__value", text: "Moby Dick")
         end
       end
 
       context "when unassigned" do
         it "has instruction to assign" do
-          expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Mentor")
-          expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Assign a mentor for this ECT")
+          expect(subject).to have_css("dt.govuk-summary-list__key", text: "Mentor")
+          expect(subject).to have_css("dd.govuk-summary-list__value", text: "Assign a mentor for this ECT")
         end
       end
     end
 
     it "school start date" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "School start date")
-      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "January 2025")
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "School start date")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "January 2025")
     end
 
     it "working pattern" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Working pattern")
-      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Full time")
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "Working pattern")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Full time")
     end
 
     it "status" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Status")
-      expect(rendered).to have_css("dd.govuk-summary-list__value .govuk-tag")
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "Status")
+      expect(subject).to have_css("dd.govuk-summary-list__value .govuk-tag")
     end
   end
 
@@ -114,55 +116,49 @@ RSpec.describe "schools/ects/show.html.erb" do
     before do
       FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
       teacher.reload # Reload to pick up the new induction period
-      render
     end
 
     it "has title" do
-      expect(rendered).to have_css("h2.govuk-heading-m", text: "Induction details")
+      expect(subject).to have_css("h2.govuk-heading-m", text: "Induction details")
     end
 
     it "shows appropriate body" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Appropriate body")
-      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Requested AB")
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "Appropriate body")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Requested AB")
     end
 
     it "shows induction start date" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Induction start date")
-      expect(rendered).to have_css("dd.govuk-summary-list__value", text: 1.year.ago.to_date.to_fs(:govuk))
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "Induction start date")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: 1.year.ago.to_date.to_fs(:govuk))
     end
 
     context "when no induction start date is available" do
       before do
         teacher.induction_periods.destroy_all
-        render
       end
 
       it "shows appropriate message" do
-        expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
+        expect(subject).to have_css("dd.govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
       end
     end
   end
 
   describe "Training details" do
-    before do
-      render
-    end
-
     it "has title" do
-      expect(rendered).to have_css("h2.govuk-heading-m", text: "Training details")
+      expect(subject).to have_css("h2.govuk-heading-m", text: "Training details")
     end
 
     it "shows training programme" do
-      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Training programme")
-      expect(rendered).to have_css("dd.govuk-summary-list__value", text: "Provider-led")
+      expect(subject).to have_css("dt.govuk-summary-list__key", text: "Training programme")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Provider-led")
     end
 
     context "when provider-led" do
       let(:training_programme) { "provider_led" }
 
       it "shows lead provider and delivery partner fields" do
-        expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
-        expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+        expect(subject).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+        expect(subject).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
       end
     end
 
@@ -171,8 +167,8 @@ RSpec.describe "schools/ects/show.html.erb" do
       let(:training_programme) { "school_led" }
 
       it "does not show lead provider and delivery partner fields" do
-        expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
-        expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+        expect(subject).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+        expect(subject).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
       end
     end
   end

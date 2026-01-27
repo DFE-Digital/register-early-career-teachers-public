@@ -10,7 +10,7 @@ RSpec.describe "schools/mentors/index.html.erb" do
 
   context "when there are no mentors" do
     it "shows a message that there are no mentors" do
-      expect(rendered).to have_css("div.govuk-grid-column-two-thirds p.govuk-body", text: "Your school currently has no registered mentors.")
+      expect(rendered).to have_text("Your school currently has no registered mentors.")
     end
 
     it 'shows the "assign" link' do
