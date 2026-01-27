@@ -11,6 +11,7 @@ RSpec.describe "Changing an mentor's name", :enable_schools_interface do
 
   before do
     given_i_am_logged_in_as_a_school_user
+    and_there_are_mentors_with_ongoing_ects_assigned
     and_i_visit_the_mentors_page
     when_i_select_a_mentor
     and_i_try_to_change_the_mentor_name
@@ -74,6 +75,11 @@ RSpec.describe "Changing an mentor's name", :enable_schools_interface do
 
   def given_i_am_logged_in_as_a_school_user
     sign_in_as_school_user(school:)
+  end
+
+  def and_there_are_mentors_with_ongoing_ects_assigned
+    mentee = FactoryBot.create(:ect_at_school_period, :ongoing, school: mentor_at_school_period.school)
+    FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee:)
   end
 
   def and_i_visit_the_mentors_page
