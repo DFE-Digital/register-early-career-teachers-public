@@ -454,8 +454,8 @@ describe ECTAtSchoolPeriod do
     end
 
     describe ".induction_not_completed" do
-      let(:teacher_with_passed_induction) { FactoryBot.create(:teacher, trs_induction_completed_date: Date.yesterday, trs_induction_status: "Passed") }
-      let(:teacher_with_failed_induction) { FactoryBot.create(:teacher, trs_induction_completed_date: Date.yesterday, trs_induction_status: "Failed") }
+      let(:teacher_with_passed_induction) { FactoryBot.create(:teacher, :induction_passed) }
+      let(:teacher_with_failed_induction) { FactoryBot.create(:teacher, :induction_failed) }
 
       let!(:period_1) { FactoryBot.create(:ect_at_school_period, :finished, teacher: teacher_with_passed_induction) }
       let!(:period_2) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }

@@ -79,8 +79,8 @@ teachers = [
   { trn: "0000028", trs_first_name: "Joan", trs_last_name: "Sims", trs_induction_status: "InProgress" },
   { trn: "0000029", trs_first_name: "Hattie", trs_last_name: "Jacques", trs_induction_status: "InProgress" },
   { trn: "0000030", trs_first_name: "Jane", trs_last_name: "Smith", trs_induction_status: "InProgress" },
-  { trn: "0000031", trs_first_name: "Joyce", trs_last_name: "Grenfell", trs_induction_status: "Passed", trs_induction_completed_date: Date.new(2023, 6, 30) },
-  { trn: "0000032", trs_first_name: "George", trs_last_name: "Cole", trs_induction_status: "Passed", trs_induction_completed_date: Date.new(2023, 6, 30) },
+  { trn: "0000031", trs_first_name: "Joyce", trs_last_name: "Grenfell", trs_induction_status: "InProgress" },
+  { trn: "0000032", trs_first_name: "George", trs_last_name: "Cole", trs_induction_status: "InProgress" },
   { trn: "0000033", trs_first_name: "Frankie", trs_last_name: "Howard", trs_induction_status: "InProgress" },
   { trn: "0000034", trs_first_name: "Naruto", trs_last_name: "Uzumaki", trs_induction_status: "InProgress" },
 ]
