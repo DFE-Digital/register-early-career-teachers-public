@@ -20,7 +20,7 @@ module MentorshipPeriods
       end
     end
 
-    private 
+  private
 
     def record_finish_events!
       return unless record_event?
