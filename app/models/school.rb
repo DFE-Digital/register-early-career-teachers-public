@@ -174,4 +174,8 @@ class School < ApplicationRecord
   def blocked_from_registering_new_ects?
     independent? && section_41_approved? == false && TrainingPeriod.at_school(self).ongoing.exists?
   end
+
+  def blocked_from_service_access?
+    independent? && section_41_approved? == false && !TrainingPeriod.at_school(self).ongoing.exists?
+  end
 end

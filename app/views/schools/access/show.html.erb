@@ -1,0 +1,33 @@
+<%
+  page_data(
+    title: "You cannot access the register early career teacher service for #{@school_name}",
+    error: false
+  )
+%>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">This could be for different reasons.</p>
+
+    <h2 class="govuk-heading-m">The school is closed or school details have changed</h2>
+    <p class="govuk-body">
+      The school might have closed or changed, for example, has a new name, become an academy, or merged with another school.
+    </p>
+    <p class="govuk-body">If the school has changed, sign in to your DfE Sign-in account and request access to:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>the new school</li>
+      <li><%= smart_quotes("the 'Register early career teacher' service for the new school") %></li>
+    </ul>
+
+    <h2 class="govuk-heading-m">The school is new</h2>
+    <p class="govuk-body">
+      We might not have set up the new school in our systems yet. Wait a few days and try to sign in again.
+    </p>
+    <p class="govuk-body">If you continue to have problems, contact us at <%= school_support_mailto_link %>.</p>
+
+    <h2 class="govuk-heading-m">The school does not have funding</h2>
+    <p class="govuk-body">
+      The school has never had or has lost funding for the early career teacher entitlement (ECTE).
+    </p>
+  </div>
+</div>
