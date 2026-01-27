@@ -9,9 +9,12 @@ RSpec.describe "Moving School", :enable_schools_interface do
     create_reusable_previous_partnership(school_two, @lpdp_previous_year)
     create_reusable_previous_partnership(school_one, @lpdp_current_year)
     create_reusable_previous_partnership(school_two, @lpdp_current_year)
+  end
 
-    register_ect(school: school_one, start_date: school_one_start_date, previously_registered: false)
-    register_ect(school: school_two, start_date: school_two_start_date, previously_registered: true)
+  around do |example|
+    travel_to Date.new(2025, 6, 16) do
+      example.run
+    end
   end
 
   context "Registering a teacher at two schools" do
@@ -19,66 +22,87 @@ RSpec.describe "Moving School", :enable_schools_interface do
       let(:school_one_start_date) { Date.new(2025, 6, 1) }
       let(:school_two_start_date) { Date.new(2025, 6, 3) }
 
-      around do |example|
-        travel_to Date.new(2025, 6, 16) do
-          example.run
-        end
-      end
+      scenario "with no back-dated start dates" do
+        given_a_school_has_registered_a_teacher
+        and_another_school_has_registered_the_same_teacher_at_a_later_date
 
-      scenario "it deletes an unstarted training period" do
-        ect_at_school_one = ECTAtSchoolPeriod.first
-        ect_at_school_two = ECTAtSchoolPeriod.last
-
-        training_period_one = ect_at_school_one.training_periods.first
-        training_period_two = ect_at_school_two.training_periods.first
-
-        expect(training_period_one.finished_on).to eq(school_two_start_date)
-        expect(training_period_two.finished_on).to be_nil
+        then_both_training_periods_start_on_the_dates_entered_by_the_schools
+        and_the_earlier_training_period_should_finish_on_the_day_the_later_period_starts
+        and_the_later_training_period_should_be_ongoing
       end
     end
 
-    context "with one back-dated start date" do
+    context "when the first period has a back-dated start date" do
       let(:school_one_start_date) { Date.new(2025, 4, 1) }
       let(:school_two_start_date) { Date.new(2025, 6, 2) }
 
-      around do |example|
-        travel_to Date.new(2025, 6, 16) do
-          example.run
-        end
-      end
+      scenario "with one back-dated start date" do
+        given_a_school_has_registered_a_teacher
+        and_another_school_has_registered_the_same_teacher_at_a_later_date
 
-      scenario "it ends the first training period" do
-        ect_at_school_one = ECTAtSchoolPeriod.first
-        ect_at_school_two = ECTAtSchoolPeriod.last
-
-        training_period_one = ect_at_school_one.training_periods.first
-        training_period_two = ect_at_school_two.training_periods.first
-
-        expect(training_period_one.finished_on).to eq(school_two_start_date)
-        expect(training_period_two.finished_on).to be_nil
+        then_the_earlier_backdated_training_period_should_start_on_the_first_day_of_the_current_contract_period
+        and_the_earlier_training_period_should_finish_on_the_day_the_later_period_starts
+        and_the_later_training_period_should_be_ongoing
       end
     end
 
-    context "with two back-dated start dates" do
+    context "when both periods have back-dated start dates" do
       let(:school_one_start_date) { Date.new(2025, 4, 1) }
       let(:school_two_start_date) { Date.new(2025, 5, 1) }
 
-      around do |example|
-        travel_to Date.new(2025, 6, 16) do
-          example.run
-        end
-      end
-
       scenario "it deletes an unstarted training period" do
-        ect_at_school_one = ECTAtSchoolPeriod.first
-        ect_at_school_two = ECTAtSchoolPeriod.last
+        given_a_school_has_registered_a_teacher
+        and_another_school_has_registered_the_same_teacher_at_a_later_date
 
-        training_period_two = ect_at_school_two.training_periods.first
-
-        expect(ect_at_school_one.training_periods.count).to eq(0)
-        expect(training_period_two.finished_on).to be_nil
+        then_the_training_period_which_has_not_started_yet_should_be_deleted
+        and_the_later_training_period_should_be_ongoing
       end
     end
+  end
+
+  def given_a_school_has_registered_a_teacher
+    register_ect(school: school_one, start_date: school_one_start_date, previously_registered: false)
+  end
+
+  def and_another_school_has_registered_the_same_teacher_at_a_later_date
+    register_ect(school: school_two, start_date: school_two_start_date, previously_registered: true)
+  end
+
+  def then_the_training_period_which_has_not_started_yet_should_be_deleted
+    ect_at_school_period = ECTAtSchoolPeriod.first
+
+    expect(ect_at_school_period.training_periods.count).to eq(0)
+  end
+
+  def and_the_earlier_training_period_should_finish_on_the_day_the_later_period_starts
+    ect_at_school_period = ECTAtSchoolPeriod.first
+
+    training_period = ect_at_school_period.training_periods.first
+
+    expect(training_period.finished_on).to eq(school_two_start_date)
+  end
+
+  def and_the_later_training_period_should_be_ongoing
+    ect_at_school_period = ECTAtSchoolPeriod.last
+
+    training_period = ect_at_school_period.training_periods.first
+
+    expect(training_period.finished_on).to be_nil
+  end
+
+  def then_both_training_periods_start_on_the_dates_entered_by_the_schools
+    ect_at_school_period_one = ECTAtSchoolPeriod.first
+    ect_at_school_period_two = ECTAtSchoolPeriod.last
+    expect(ect_at_school_period_one.training_periods.first.started_on).to eq(school_one_start_date)
+    expect(ect_at_school_period_two.training_periods.first.started_on).to eq(school_two_start_date)
+  end
+
+  def then_the_earlier_backdated_training_period_should_start_on_the_first_day_of_the_current_contract_period
+    ect_at_school_period = ECTAtSchoolPeriod.first
+
+    training_period = ect_at_school_period.training_periods.first
+
+    expect(training_period.started_on).to eq(Date.new(2025, 6, 1))
   end
 
   def register_ect(school:, start_date:, previously_registered:)
