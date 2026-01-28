@@ -37,7 +37,8 @@ The payment states are:
 - `payable` once it has been confirmed for payment.
 - `paid` when the declaration has been paid.
 - `voided` when the declaration as been cancelled before being paid.
-- `ineligible` when the declaration does not qualify for payment.
+
+Note: `ineligible` was removed as a state as we prevent duplicate declarations in RECT rather than creating `ineligible`/`superseded_by` declarations as we did in ECF.
 
 The clawback states are:
 
@@ -48,10 +49,9 @@ The clawback states are:
 There are five payment transitions a declaration can go through:
 
 - `mark_as_eligible` transitions a declaration from `no_payment` to `eligible`. This happens on submitting a declaration if there are no duplicates and the participant is eligible for funding.
-- `mark_as_ineligible` transitions a declaration from `no_payment` to `ineligible`. This happens when there is a duplicate declaration for the participant.
 - `mark_as_payable` transitions a declaration from `eligible` to `payable`. This happens on a daily job that picks up statements when the `deadline_date` has passed.
 - `mark_as_paid` transitions a declaration from `payable` to `paid`. This happens when a finance user marks a statement as paid in the finance dashboard.
-- `mark_as_voided` transitions a declaration from `eligible`, `ineligible` or `payable` to `voided`. This happens when a lead provider voids an unpaid declaration.
+- `mark_as_voided` transitions a declaration from `eligible` or `payable` to `voided`. This happens when a lead provider voids an unpaid declaration.
 
 There are two clawback transitions a declaration can go through once in the `paid` payment state:
 
@@ -64,13 +64,10 @@ There are two clawback transitions a declaration can go through once in the `pai
 stateDiagram-v2
   [*] --> no_payment
   no_payment --> eligible : mark_as_eligible
-  no_payment --> ineligible: mark_as_ineligible
   eligible --> payable : mark_as_payable
   payable --> paid : mark_as_paid
-  eligible --> ineligible : mark_as_ineligible
   eligible --> voided : mark_as_voided
   payable --> voided : mark_as_voided
-  ineligible --> voided : mark_as_voided
 ```
 
 ### Clawback states

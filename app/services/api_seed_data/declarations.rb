@@ -66,7 +66,6 @@ module APISeedData
           next unless clawback_statement
         end
 
-        ineligibility_reason = Declaration.ineligibility_reasons.keys.sample if payment_status == "ineligible"
         mentorship_period = training_period.mentorship_periods.sample if training_period.for_ect?
 
         declaration = FactoryBot.build(
@@ -78,7 +77,6 @@ module APISeedData
           payment_statement:,
           clawback_statement:,
           training_period:,
-          ineligibility_reason:,
           mentorship_period:,
           **uplifts(training_period:)
         )
