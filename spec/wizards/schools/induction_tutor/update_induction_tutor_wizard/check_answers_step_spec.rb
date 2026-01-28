@@ -63,5 +63,10 @@ describe Schools::InductionTutor::UpdateInductionTutorWizard::CheckAnswersStep d
 
       current_step.save!
     end
+
+    it "sends a confirmation email" do
+      expect { current_step.save! }
+        .to have_enqueued_mail(Schools::InductionTutorConfirmationMailer, :confirmation)
+    end
   end
 end
