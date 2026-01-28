@@ -11,7 +11,7 @@ module Migration::ParityChecks
         "Run a parity check" => new_migration_parity_check_path,
         "Completed parity checks" => completed_migration_parity_checks_path,
         "Parity check run ##{@run.id}" => migration_parity_check_path(@run),
-        @request.description => migration_parity_check_request_path(@run, @request),
+        @request.human_readable_url => migration_parity_check_request_path(@run, @request),
       }
     end
 
