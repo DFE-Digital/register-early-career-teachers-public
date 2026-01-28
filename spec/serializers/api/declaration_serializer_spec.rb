@@ -32,6 +32,7 @@ describe API::DeclarationSerializer, type: :serializer do
       expect(attributes["updated_at"]).to eq(declaration.updated_at.rfc3339)
       expect(attributes["created_at"]).to eq(declaration.created_at.rfc3339)
       expect(attributes["delivery_partner_id"]).to eq(delivery_partner.api_id)
+      expect(attributes["ineligible_for_funding_reason"]).to be_nil
       expect(attributes["statement_id"]).to be_nil
       expect(attributes["clawback_statement_id"]).to be_nil
 
@@ -63,7 +64,7 @@ describe API::DeclarationSerializer, type: :serializer do
     end
 
     describe "state" do
-      %i[no_payment eligible payable paid voided ineligible awaiting_clawback clawed_back].each do |status|
+      %i[no_payment eligible payable paid voided awaiting_clawback clawed_back].each do |status|
         context "when status is `#{status}`" do
           let(:declaration) { FactoryBot.create(:declaration, status) }
 
@@ -74,17 +75,6 @@ describe API::DeclarationSerializer, type: :serializer do
             expect(attributes["state"]).to eq(expected_state)
           end
         end
-      end
-    end
-
-    describe "ineligible_for_funding_reason" do
-      let(:declaration) { FactoryBot.create(:declaration, :ineligible) }
-
-      it "serializes correctly" do
-        expect(attributes["ineligible_for_funding_reason"]).to be_present
-        # Reason `duplicate` should be returned as `duplicate_declaration` to match ECF1
-        expect(declaration.ineligibility_reason).to eq("duplicate")
-        expect(attributes["ineligible_for_funding_reason"]).to eq("duplicate_declaration")
       end
     end
 
