@@ -152,7 +152,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
             end
           end
 
-          %i[voided awaiting_clawback clawed_back].each do |ignored_status|
+          %i[voided ineligible awaiting_clawback clawed_back].each do |ignored_status|
             context "when previous declaration is `#{ignored_status}`" do
               let!(:declaration1) { create_declaration(training_period: training_period1, declaration_type: "started", status: ignored_status) }
 

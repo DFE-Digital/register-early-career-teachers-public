@@ -78,7 +78,7 @@ module ParityCheck
 
     def voidable_declaration_for_voiding_id
       declaration_with_output_fee_statement
-        .where(state: %w[submitted eligible payable])
+        .where(state: %w[submitted eligible payable ineligible])
         .pick(:id)
     end
 
