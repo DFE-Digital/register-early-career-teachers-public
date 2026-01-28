@@ -12,7 +12,7 @@ FactoryBot.define do
       end_date { (started_on || start_date) + rand(6.months..1.year) }
     end
 
-    teacher { association :teacher, api_ect_training_record_id: SecureRandom.uuid }
+    teacher { association :teacher, :with_realistic_name, api_ect_training_record_id: SecureRandom.uuid }
 
     after(:create) do |ect_at_school_period|
       teacher = ect_at_school_period.teacher
