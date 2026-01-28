@@ -1,4 +1,4 @@
-class Admin::TeachingSchoolHubsController < ApplicationController
+class Admin::TeachingSchoolHubsController < AdminController
   layout "full"
 
   def index
