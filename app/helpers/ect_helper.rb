@@ -42,7 +42,13 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def ect_mentor_details(ect)
-    latest_mentor_name(ect) || link_to_assign_mentor(ect)
+    mentorship = ECTAtSchoolPeriods::Mentorship.new(ect)
+
+    if mentorship && mentorship.current_mentor.present?
+      govuk_link_to(mentorship.current_mentor_name, schools_mentor_path(mentorship.current_mentor))
+    else
+      link_to_assign_mentor(ect)
+    end
   end
 
   # @param ect [ECTAtSchoolPeriod]

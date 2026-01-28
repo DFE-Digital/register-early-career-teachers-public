@@ -1,0 +1,3 @@
+<%= govuk_summary_card(title: tag.span(link_to_mentor, class: "govuk-!-font-size-24")) do |card| %>
+  <%= card.with_summary_list(borders: false, rows: [trn_row, assigned_ects_row]) %>
+<% end %>

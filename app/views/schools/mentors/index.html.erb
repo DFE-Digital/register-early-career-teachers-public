@@ -1,10 +1,10 @@
-<% 
+<%
   page_data(
-    title: "Mentors", 
-    error: false, 
-    caption: @school.name, 
+    title: "Mentors",
+    error: false,
+    caption: @school.name,
     caption_size: 'l'
-  ) 
+  )
 %>
 
 <p class="govuk-body">To add a new mentor you need to <%= govuk_link_to("assign one to an ECT", schools_ects_home_path) %>.</p>
@@ -12,9 +12,9 @@
 <hr class="govuk-section-break--m" />
 
 <div class="govuk-grid-row">
-  <div class='govuk-grid-column-two-thirds'>
+  <div class='govuk-grid-column-full'>
     <% if @number_of_mentors.zero? %>
-    
+
         <p class="govuk-body">Your school currently has no registered mentors.</p>
 
     <% else %>
