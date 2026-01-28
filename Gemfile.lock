@@ -1,11 +1,11 @@
 GIT
   remote: https://github.com/DFE-Digital/dfe-analytics.git
-  revision: 91427abc46315f266dea803834d21edd6c7ef136
-  tag: v1.15.12
+  revision: 31c25462e5fa824c1e75a1099c06e0676724731c
+  tag: v1.15.14
   specs:
-    dfe-analytics (1.15.12)
+    dfe-analytics (1.15.14)
       google-cloud-bigquery (~> 1.38)
-      httparty (~> 0.21)
+      httparty (~> 0.24)
       multi_xml (~> 0.6.0)
       request_store_rails (~> 2)
 
@@ -210,7 +210,7 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-follow_redirects (0.4.0)
+    faraday-follow_redirects (0.5.0)
       faraday (>= 1, < 3)
     faraday-multipart (1.2.0)
       multipart-post (~> 2.0)
@@ -226,7 +226,7 @@ GEM
       raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
-    google-apis-bigquery_v2 (0.96.0)
+    google-apis-bigquery_v2 (0.98.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-core (1.0.2)
       addressable (~> 2.8, >= 2.8.7)
@@ -236,7 +236,7 @@ GEM
       mini_mime (~> 1.1)
       representable (~> 3.0)
       retriable (~> 3.1)
-    google-cloud-bigquery (1.61.1)
+    google-cloud-bigquery (1.62.0)
       bigdecimal (~> 3.0)
       concurrent-ruby (~> 1.0)
       google-apis-bigquery_v2 (~> 0.71)
@@ -279,7 +279,7 @@ GEM
     google-protobuf (4.31.1-x86_64-linux-musl)
       bigdecimal
       rake (>= 13)
-    googleauth (1.16.0)
+    googleauth (1.16.1)
       faraday (>= 1.0, < 3.a)
       google-cloud-env (~> 2.2)
       google-logging-utils (~> 0.1)
@@ -322,7 +322,7 @@ GEM
     html-attributes-utils (1.0.2)
       activesupport (>= 6.1.4.4)
     http_parser.rb (0.8.0)
-    httparty (0.24.0)
+    httparty (0.24.2)
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
@@ -413,7 +413,7 @@ GEM
       stimulus-rails
       turbo-rails
     msgpack (1.8.0)
-    multi_json (1.18.0)
+    multi_json (1.19.1)
     multi_xml (0.6.0)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
@@ -456,7 +456,7 @@ GEM
       listen (~> 3.0)
       nanoc-cli (~> 4.11, >= 4.11.14)
       nanoc-core (~> 4.11, >= 4.11.14)
-    net-http (0.8.0)
+    net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.5.12)
       date
@@ -563,7 +563,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    public_suffix (7.0.0)
+    public_suffix (7.0.2)
     puma (7.1.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
