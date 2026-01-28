@@ -67,6 +67,7 @@ module ECTAtSchoolPeriods
       TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:).finish!
     end
 
+    # Prevent events being linked to unstarted training_periods (which will be deleted)
     def training_period
       return if unstarted_training_periods.present?
 
