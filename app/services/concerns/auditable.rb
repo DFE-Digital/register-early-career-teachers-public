@@ -5,7 +5,7 @@ module Auditable
   include ActiveModel::Attributes
   include ActiveModel::Dirty
   include ActiveModel::Validations::Callbacks
-  include ActiveRecord::Normalization
+  include ActiveModel::Attributes::Normalization
 
   class_methods do
     def auditable_params
