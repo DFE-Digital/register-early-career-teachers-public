@@ -42,7 +42,13 @@ module Admin
       statement.payment_date.to_fs(:govuk)
     end
 
+    delegate :total, to: :calculator
+
   private
+
+    def calculator
+      @calculator ||= ::Statements::Calculator.new(statement)
+    end
 
     def statement
       __getobj__

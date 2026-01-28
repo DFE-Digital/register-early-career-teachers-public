@@ -43,6 +43,11 @@
       row.with_key(text: "Output fee")
       row.with_value { boolean_to_yes_or_no(@statement.output_fee?) }
     end
+
+    sl.with_row do |row|
+      row.with_key(text: "Total amount")
+      row.with_value(text: number_to_currency(@statement.total))
+    end
   end
 %>
 
