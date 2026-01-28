@@ -2,6 +2,8 @@ module ContractPeriodYearConcern
   extend ActiveSupport::Concern
 
   def to_year(value)
+    return nil if value.nil?
+
     case value
     when Integer then value
     when String  then value.to_i

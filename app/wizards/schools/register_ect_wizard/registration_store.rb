@@ -92,10 +92,15 @@ module Schools
         return store[:start_date_as_date] if store[:start_date_as_date].present?
 
         case start_date
-        when Date   then start_date
-        when String then Date.parse(start_date)
-        when Hash   then Schools::Validation::ECTStartDate.new(date_as_hash: start_date).value_as_date
+        when Date
+          start_date
+        when String
+          Date.parse(start_date)
+        when Hash
+          Schools::Validation::ECTStartDate.new(date_as_hash: start_date).value_as_date
         end
+      rescue ArgumentError, TypeError
+        nil
       end
 
     private

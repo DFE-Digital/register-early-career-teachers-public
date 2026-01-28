@@ -14,8 +14,7 @@ module Schools
       end
 
       def show_previous_programme_choices_row?
-        school.last_programme_choices? &&
-          wizard.use_previous_choices_allowed?
+        wizard.use_previous_choices_allowed? && school.last_programme_choices?
       end
 
     private

@@ -11,10 +11,10 @@ module Schools
 
       def next_step
         reuse_step = wizard.step_for(:use_previous_ect_choices)
-        if school.last_programme_choices? && reuse_step.allowed?
+        if reuse_step.allowed?
           :use_previous_ect_choices
         else
-          school.independent? ? :independent_school_appropriate_body : :state_school_appropriate_body
+          (school.independent? ? :independent_school_appropriate_body : :state_school_appropriate_body)
         end
       end
 
