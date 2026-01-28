@@ -18,7 +18,6 @@ describe Declaration do
         declaration_date
         payment_status
         clawback_status
-        ineligibility_reason
         sparsity_uplift
         pupil_premium_uplift
         evidence_type
@@ -52,16 +51,13 @@ describe Declaration do
     it { is_expected.to be_valid }
     it { is_expected.to validate_presence_of(:training_period).with_message("Choose a training period") }
     it { is_expected.to validate_presence_of(:declaration_date).with_message("Declaration date must be specified") }
-    it { is_expected.to validate_absence_of(:ineligibility_reason).with_message("Ineligibility reason must not be set unless the declaration is ineligible") }
     it { is_expected.to allow_values(*described_class.declaration_types.keys).for(:declaration_type) }
     it { is_expected.to allow_values(*described_class.payment_statuses.keys).for(:payment_status) }
     it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }
     it { is_expected.to validate_inclusion_of(:evidence_type).in_array(described_class.evidence_types.keys).with_message("Choose a valid evidence type").allow_nil }
-    it { is_expected.to validate_inclusion_of(:ineligibility_reason).in_array(described_class.ineligibility_reasons.keys).with_message("Choose a valid ineligibility reason").allow_nil }
     it { is_expected.to validate_uniqueness_of(:api_id).with_message("API id already exists for another declaration").case_insensitive }
     it { is_expected.not_to validate_presence_of(:voided_by_user) }
     it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
-    it { is_expected.not_to validate_presence_of(:ineligibility_reason) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
     context "training period unique index" do
@@ -114,12 +110,6 @@ describe Declaration do
 
       it { is_expected.to validate_presence_of(:voided_by_user).with_message("Voided by user must be set as well as the voided date") }
       it { is_expected.to validate_presence_of(:voided_by_user_at).with_message("Voided by user at must be set as well as the voided by user") }
-    end
-
-    context "when ineligible" do
-      subject { FactoryBot.build(:declaration, :ineligible) }
-
-      it { is_expected.to validate_presence_of(:ineligibility_reason).with_message("Ineligibility reason must be set when the declaration is ineligible") }
     end
 
     describe "declaration date relative to milestone dates" do
@@ -363,7 +353,6 @@ describe Declaration do
           payable: "payable",
           paid: "paid",
           voided: "voided",
-          ineligible: "ineligible",
         })
         .validating(allowing_nil: false)
         .backed_by_column_of_type(:enum)
@@ -414,15 +403,6 @@ describe Declaration do
         .backed_by_column_of_type(:enum)
         .validating(allowing_nil: true)
     end
-
-    it "has an ineligibility_reason enum" do
-      expect(subject).to define_enum_for(:ineligibility_reason)
-        .with_values({
-          duplicate: "duplicate"
-        })
-        .backed_by_column_of_type(:enum)
-        .validating(allowing_nil: true)
-    end
   end
 
   describe "payment_status transitions" do
@@ -450,29 +430,10 @@ describe Declaration do
       it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("eligible").to("voided") }
     end
 
-    context "when transitioning from ineligible to voided" do
-      let(:declaration) { FactoryBot.create(:declaration, :ineligible) }
-
-      it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("ineligible").to("voided") }
-      it { expect { declaration.mark_as_voided! }.to change(declaration, :ineligibility_reason).to(nil) }
-    end
-
     context "when transitioning from payable to voided" do
       let(:declaration) { FactoryBot.create(:declaration, :payable) }
 
       it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("payable").to("voided") }
-    end
-
-    context "when transitioning from no_payment to ineligible" do
-      let(:reason) { described_class.ineligibility_reasons.keys.sample }
-      let(:declaration) do
-        FactoryBot.create(:declaration).tap do
-          it.ineligibility_reason = reason
-          it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period)
-        end
-      end
-
-      it { expect { declaration.mark_as_ineligible! }.to change(declaration, :payment_status).from("no_payment").to("ineligible") }
     end
 
     context "when transitioning to an invalid state" do
@@ -539,7 +500,7 @@ describe Declaration do
   end
 
   describe "#overall_status" do
-    %i[no_payment eligible payable paid voided ineligible awaiting_clawback clawed_back].each do |status|
+    %i[no_payment eligible payable paid voided awaiting_clawback clawed_back].each do |status|
       context "when status is `#{status}`" do
         let(:declaration) { FactoryBot.create(:declaration, status) }
 
