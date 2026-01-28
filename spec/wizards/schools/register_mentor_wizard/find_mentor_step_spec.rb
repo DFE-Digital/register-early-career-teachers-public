@@ -85,6 +85,28 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
       end
     end
 
+    context "when the mentor is deactivated in TRS" do
+      before do
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_deactivated: true))
+        subject.save!
+      end
+
+      it "returns :trn_not_found" do
+        expect(subject.next_step).to eq(:trn_not_found)
+      end
+    end
+
+    context "when the mentor is merged in TRS" do
+      before do
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_merged: true))
+        subject.save!
+      end
+
+      it "returns :trn_not_found" do
+        expect(subject.next_step).to eq(:trn_not_found)
+      end
+    end
+
     context "when the mentor trn matches that of the ECT" do
       let(:teacher) { FactoryBot.create(:teacher, trn: "1234568") }
       let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }

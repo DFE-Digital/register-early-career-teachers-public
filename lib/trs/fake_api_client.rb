@@ -1,5 +1,5 @@
 module TRS
-  # 7000001 - 7000010 are special TRNs that mimic:
+  # 7000001 - 7000011 are special TRNs that mimic:
   #
   # 1. Missing QTS
   # 2. Not found
@@ -11,20 +11,23 @@ module TRS
   # 8. Failed induction
   # 9. Exempt
   # 10. Failed induction in Wales
+  # 11. Merged
   #
   class FakeAPIClient
     class FakeAPIClientUsedInProduction < StandardError; end
 
-    def initialize(raise_not_found: false, raise_deactivated: false)
+    def initialize(raise_not_found: false, raise_deactivated: false, raise_merged: false)
       fail(FakeAPIClientUsedInProduction) if Rails.env.production?
 
       @raise_not_found = raise_not_found
       @raise_deactivated = raise_deactivated
+      @raise_merged = raise_merged
     end
 
     def find_teacher(trn:, date_of_birth: "1977-02-03", national_insurance_number: nil)
       raise(TRS::Errors::TeacherNotFound, "Teacher with TRN #{trn} not found") if @raise_not_found
       raise(TRS::Errors::TeacherDeactivated, "Teacher with TRN #{trn} deactivated") if @raise_deactivated
+      raise(TRS::Errors::TeacherMerged, "Teacher with TRN #{trn} merged") if @raise_merged
 
       Rails.logger.info("TRSFakeAPIClient pretending to find teacher with TRN=#{trn} and Date of birth=#{date_of_birth} and National Insurance Number=#{national_insurance_number}")
 
@@ -150,6 +153,7 @@ module TRS
       when 7_000_008 then @induction_status = "Failed"
       when 7_000_009 then @induction_status = "Exempt"
       when 7_000_010 then @induction_status = "FailedInWales"
+      when 7_000_011 then raise(TRS::Errors::TeacherMerged)
       else
         @has_itt = true
         @is_prohibited_from_teaching = false
@@ -162,6 +166,7 @@ module TRS
         {
           "trn" => teacher.trn,
           "firstName" => teacher.trs_first_name,
+          # "middleName" => teacher.trs_middle_name,
           "lastName" => teacher.trs_last_name,
           "dateOfBirth" => date_of_birth,
           "nationalInsuranceNumber" => national_insurance_number,
@@ -172,6 +177,7 @@ module TRS
         {
           "trn" => trn,
           "firstName" => first_name,
+          # "middleName" => middle_name,
           "lastName" => last_name,
           "dateOfBirth" => date_of_birth,
           "nationalInsuranceNumber" => national_insurance_number,
@@ -187,9 +193,16 @@ module TRS
       if @has_qts
         {
           "qts" => {
-            "awarded" => Time.zone.today - 3.years,
-            "certificateUrl" => "https://fancy-certificates.example.com/1234",
-            "statusDescription" => "Passed"
+            "holdsFrom" => 3.years.ago.to_date.to_s,
+            "routes" => [
+              {
+                "routeToProfessionalStatusType" => {
+                  "routeToProfessionalStatusTypeId" => "32017d68-9da4-43b2-ae91-4f24c68f6f78",
+                  "name" => "HEI - Historic",
+                  "professionalStatusType" => "QualifiedTeacherStatus"
+                }
+              }
+            ]
           }
         }
       else
@@ -206,7 +219,7 @@ module TRS
     def other_alert_data
       {
         # Conditional Registration Order - unacceptable professional conduct
-        "alerts" => [{ "alertType" => { "alertCategory" => { "alertCategoryId" => "5562a5b7-3e32-eb11-a814-000d3a23980a" } } }]
+        "alerts" => [{ "alertType" => { "alertCategory" => { "alertCategoryId" => TRS::Teacher::UNACCEPTABLE_CONDUCT_CATEGORY_ID } } }]
       }
     end
 
@@ -235,22 +248,25 @@ module TRS
     def itt_data
       if @has_itt
         {
-          "initialTeacherTraining" => [
+
+          "routesToProfessionalStatuses" => [
             {
-              "qualification" => { "name" => "Postgraduate Certificate in Education" },
-              "startDate" => "2020-12-31",
-              "result" => "Pass",
-              "subjects" => [],
-              "endDate" => "2021-04-05",
-              "programmeType" => nil,
-              "programmeTypeDescription" => nil,
-              "ageRange" => nil,
-              "provider" => { "name" => "Example Provider Ltd." },
+              "routeToProfessionalStatusType" => {
+                "professionalStatusType" => "QualifiedTeacherStatus"
+              },
+              "status" => "Holds",
+              "holdsFrom" => "2022-01-01",
+              "trainingStartDate" => "2020-12-31",
+              "trainingEndDate" => "2021-04-05",
+              "trainingProvider" => {
+                "name" => "Example Provider Ltd."
+              }
             }
           ]
         }
+
       else
-        { "initialTeacherTraining" => [] }
+        { "routesToProfessionalStatuses" => [] }
       end
     end
   end

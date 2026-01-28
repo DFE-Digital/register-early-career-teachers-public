@@ -10,7 +10,10 @@ RSpec.describe TRS::Teacher do
       "dateOfBirth" => "1980-01-01",
       "nationalInsuranceNumber" => "AB123456C",
       "emailAddress" => "john.doe@example.com",
-      "eyts" => { "awarded" => "2024-09-18", "certificateUrl" => "eyts_certificate_url", "statusDescription" => "eyts_status" },
+      "eyts" => {
+        "holdsFrom" => "2024-09-18",
+        "routes" => [],
+      },
       "alerts" => [
         {
           "alertId" => "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -30,23 +33,68 @@ RSpec.describe TRS::Teacher do
         "startDate" => "2024-09-18",
         "completedDate" => "2024-09-18",
         "status" => "InProgress",
-        "statusDescription" => "Induction Status Description",
-        "certificateUrl" => "induction_certificate_url"
+        "exemptionReasons" => [
+          {
+            "inductionExemptionReasonId" => "a112e691-1694-46a7-8f33-5ec5b845c181",
+            "name" => "They have or are eligible for full registration in Scotland"
+          }
+        ]
       },
       "pendingNameChange" => true,
       "pendingDateOfBirthChange" => true,
-      "qts" => { "awarded" => "2024-09-18", "certificateUrl" => "qts_certificate_url", "statusDescription" => "qts_status" },
-      "initialTeacherTraining" => [
+      "qts" => {
+        "holdsFrom" => "2024-09-18",
+        "routes" => [
+          {
+            "routeToProfessionalStatusType" => {
+              "routeToProfessionalStatusTypeId" => "32017d68-9da4-43b2-ae91-4f24c68f6f78",
+              "name" => "HEI - Historic",
+              "professionalStatusType" => "QualifiedTeacherStatus"
+            }
+          }
+        ]
+      },
+      "routesToProfessionalStatuses" => [
         {
-          "qualification" => { "name" => "Qualification Name" },
-          "ageRange" => { "description" => "Age Range Description" },
-          "provider" => { "name" => "Provider Name", "ukprn" => "Provider UKPRN" },
-          "subjects" => [{ "code" => "Subject Code", "name" => "Subject Name" }],
-          "startDate" => "2024-09-18",
-          "endDate" => "2024-09-18",
-          "programmeType" => "Apprenticeship",
-          "programmeTypeDescription" => "Programme Type Description",
-          "result" => "Pass"
+          "routeToProfessionalStatusId" => "5598605e-d4a3-4846-96c9-df480ee57e38",
+          "routeToProfessionalStatusType" => {
+            "routeToProfessionalStatusTypeId" => "52835b1f-1f2e-4665-abc6-7fb1ef0a80bb",
+            "name" => "Scottish Recognition",
+            "professionalStatusType" => "QualifiedTeacherStatus"
+          },
+          "status" => "Holds",
+          "holdsFrom" => "2024-09-19",
+          "trainingStartDate" => "2024-09-18",
+          "trainingEndDate" => "2024-09-18",
+          "trainingSubjects" => [
+            {
+              "reference" => "X9005",
+              "name" => "Primary Curriculum"
+            }
+          ],
+          "trainingAgeSpecialism" => {
+            "type" => "Range",
+            "from" => 3,
+            "to" => 11
+          },
+          "trainingCountry" => {
+            "reference" => "GB-SCT",
+            "name" => "Scotland"
+          },
+          "trainingProvider" => {
+            "ukprn" => nil,
+            "name" => "Provider Name"
+          },
+          "degreeType" => nil,
+          "inductionExemption" => {
+            "isExempt" => true,
+            "exemptionReasons" => [
+              {
+                "inductionExemptionReasonId" => "a112e691-1694-46a7-8f33-5ec5b845c181",
+                "name" => "They have or are eligible for full registration in Scotland"
+              }
+            ]
+          }
         }
       ],
       "npqQualifications" => [
@@ -91,11 +139,10 @@ RSpec.describe TRS::Teacher do
         trs_induction_start_date: "2024-09-18",
         trs_induction_status: "InProgress",
         trs_induction_completed_date: "2024-09-18",
-        trs_induction_status_description: "Induction Status Description",
         trs_initial_teacher_training_end_date: "2024-09-18",
         trs_initial_teacher_training_provider_name: "Provider Name",
         trs_qts_awarded_on: "2024-09-18",
-        trs_qts_status_description: "qts_status",
+        trs_qts_status_description: "QualifiedTeacherStatus",
         trs_prohibited_from_teaching: false,
       })
     end
@@ -141,7 +188,7 @@ RSpec.describe TRS::Teacher do
     end
 
     context "when the teacher has not been awarded QTS" do
-      let(:data) { { "qts" => { "awarded" => nil } } }
+      let(:data) { { "qts" => { "holdsFrom" => nil } } }
 
       it do
         expect { service.check_eligibility! }.to raise_error(TRS::Errors::QTSNotAwarded)
@@ -151,7 +198,7 @@ RSpec.describe TRS::Teacher do
     context "when the teacher is prohibited from teaching" do
       let(:data) do
         {
-          "qts" => { "awarded" => "2024-09-18" },
+          "qts" => { "holdsFrom" => "2024-09-18" },
           "alerts" => [
             {
               "alertType" => { "alertCategory" => { "alertCategoryId" => "b2b19019-b165-47a3-8745-3297ff152581" } },

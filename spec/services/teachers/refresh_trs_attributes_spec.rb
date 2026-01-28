@@ -28,7 +28,7 @@ describe Teachers::RefreshTRSAttributes do
         expect(teacher.trs_last_name).to eql("Van Houten")
         expect(teacher.trs_induction_status).to eql("Passed")
         expect(teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date)
-        expect(teacher.trs_qts_status_description).to eql("Passed")
+        expect(teacher.trs_qts_status_description).to eql("QualifiedTeacherStatus")
         expect(teacher.trs_initial_teacher_training_provider_name).to eql("Example Provider Ltd.")
         expect(teacher.trs_initial_teacher_training_end_date).to eql(Date.new(2021, 4, 5))
         expect(teacher.trs_data_last_refreshed_at).to eql(Time.zone.now)
@@ -79,8 +79,8 @@ describe Teachers::RefreshTRSAttributes do
               trs_data_last_refreshed_at: Time.zone.now,
               trs_initial_teacher_training_end_date: "2021-04-05",
               trs_initial_teacher_training_provider_name: "Example Provider Ltd.",
-              trs_qts_awarded_on: 3.years.ago.to_date,
-              trs_qts_status_description: "Passed"
+              trs_qts_awarded_on: 3.years.ago.to_date.to_s,
+              trs_qts_status_description: "QualifiedTeacherStatus"
             })
             expect(fake_manage).to have_received(:update_trs_induction_status!).once.with(
               trs_induction_status: "Passed",

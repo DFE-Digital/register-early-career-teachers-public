@@ -63,6 +63,28 @@ describe Schools::RegisterECTWizard::FindECTStep, type: :model do
       end
     end
 
+    context "when the ect is deactivated in TRS" do
+      before do
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_deactivated: true))
+        subject.save!
+      end
+
+      it "returns :trn_not_found" do
+        expect(subject.next_step).to eq(:trn_not_found)
+      end
+    end
+
+    context "when the ect is merged in TRS" do
+      before do
+        allow(::TRS::APIClient).to receive(:new).and_return(TRS::TestAPIClient.new(raise_merged: true))
+        subject.save!
+      end
+
+      it "returns :trn_not_found" do
+        expect(subject.next_step).to eq(:trn_not_found)
+      end
+    end
+
     context "when the date of birth does not match that on TRS" do
       let(:step_params) do
         ActionController::Parameters.new(

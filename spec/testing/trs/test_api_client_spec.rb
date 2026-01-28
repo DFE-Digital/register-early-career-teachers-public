@@ -15,7 +15,7 @@ describe TRS::TestAPIClient do
     context "when initialized with raise_not_found" do
       let(:kwargs) { { raise_not_found: true } }
 
-      it "raises a TRS::Errors::TeacherNotFound error" do
+      it do
         expect { trs_teacher }.to raise_error(TRS::Errors::TeacherNotFound)
       end
     end
@@ -23,8 +23,16 @@ describe TRS::TestAPIClient do
     context "when initialized with raise_deactivated" do
       let(:kwargs) { { raise_deactivated: true } }
 
-      it "raises a TRS::Errors::TeacherDeactivated error" do
+      it do
         expect { trs_teacher }.to raise_error(TRS::Errors::TeacherDeactivated)
+      end
+    end
+
+    context "when initialized with raise_merged" do
+      let(:kwargs) { { raise_merged: true } }
+
+      it do
+        expect { trs_teacher }.to raise_error(TRS::Errors::TeacherMerged)
       end
     end
 
@@ -82,8 +90,8 @@ describe TRS::TestAPIClient do
       context "when initialized with has_qts: true" do
         let(:kwargs) { { has_qts: true } }
 
-        it "the teacher has a QTS awarded on date of 3 years ago" do
-          expect(trs_teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date)
+        it "the teacher has QTS awarded on date of 3 years ago" do
+          expect(trs_teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date.to_s)
         end
       end
     end

@@ -280,7 +280,6 @@
   - trs_induction_start_date
   - trs_induction_completed_date
   - trs_induction_status
-  - trs_induction_status_description
   - trs_qts_awarded_on
   - trs_qts_status_description
   - trs_initial_teacher_training_end_date
