@@ -1,4 +1,9 @@
+
 <%= bulk_upload_links %>
+
+<% if Rails.application.config.enable_appropriate_body_records_to_review %>
+  <%= review_section %>
+<% end %>
 
 <%= header %>
 

@@ -6,6 +6,10 @@ class TeachersIndexComponent < ApplicationComponent
     TeachersIndex::BulkUploadLinksComponent.new(appropriate_body:)
   }
 
+  renders_one :review_section, -> {
+    TeachersIndex::ReviewSectionComponent.new(appropriate_body:)
+  }
+
   renders_one :header, -> {
     TeachersIndex::HeaderSectionComponent.new(
       status:,
@@ -43,6 +47,7 @@ private
 
   def before_render
     with_bulk_upload_links
+    with_review_section
     with_header
     with_search_box
     with_table
