@@ -9,6 +9,8 @@ module Schools
             confirmation: ConfirmationStep
           }]
         end
+
+        def send_confirmation_email? = true
       end
     end
   end

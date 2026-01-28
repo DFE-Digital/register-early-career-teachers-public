@@ -16,9 +16,18 @@ module Schools
           )
           true
         end
+
+        send_confirmation_email!
+        true
       end
 
     private
+
+      def send_confirmation_email!
+        return unless wizard.send_confirmation_email?
+
+        Schools::InductionTutorConfirmationMailer.with(school:).confirmation.deliver_later
+      end
 
       def record_event!
         Events::Record.record_school_induction_tutor_updated_event!(

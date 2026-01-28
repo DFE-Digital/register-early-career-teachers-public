@@ -9,6 +9,10 @@ module Schools
             confirmation: ConfirmationStep
           }]
         end
+
+        def send_confirmation_email?
+          store.are_these_details_correct == false
+        end
       end
     end
   end
