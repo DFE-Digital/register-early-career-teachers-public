@@ -396,7 +396,10 @@ module APISeedData
     end
 
     def create_induction_period(teacher:, started_on:, finished_on:)
-      FactoryBot.create(:induction_period, :ongoing, teacher:, started_on:, finished_on:)
+      started_on = [1.month.ago, started_on].min
+      finished_on = Time.zone.today if finished_on&.future?
+      number_of_terms = 1 if finished_on
+      FactoryBot.create(:induction_period, teacher:, started_on:, finished_on:, number_of_terms:)
     end
   end
 end
