@@ -577,3 +577,36 @@
   - message
   - created_at
   - updated_at
+  :statement_call_off_contracts:
+  - id
+  - statement_id
+  - recruitment_target
+  - set_up_fee
+  - monthly_service_fee
+  - uplift_target
+  - uplift_amount
+  - band_a_max
+  - band_a_per_participant
+  - band_a_output_payment_percentage
+  - band_a_service_fee_percentage
+  - band_b_max
+  - band_b_per_participant
+  - band_b_output_payment_percentage
+  - band_b_service_fee_percentage
+  - band_c_max
+  - band_c_per_participant
+  - band_c_output_payment_percentage
+  - band_c_service_fee_percentage
+  - band_d_max
+  - band_d_per_participant
+  - band_d_output_payment_percentage
+  - band_d_service_fee_percentage
+  - created_at
+  - updated_at
+  :statement_mentor_call_off_contracts:
+  - id
+  - statement_id
+  - recruitment_target
+  - payment_per_participant
+  - created_at
+  - updated_at
