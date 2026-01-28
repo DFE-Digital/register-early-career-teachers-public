@@ -2,7 +2,7 @@ class Declaration < ApplicationRecord
   include DeclarativeUpdates
 
   BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES = %w[no_payment eligible payable paid].freeze
-  VOIDABLE_PAYMENT_STATUSES = %w[no_payment eligible payable].freeze
+  VOIDABLE_PAYMENT_STATUSES = %w[no_payment eligible payable ineligible].freeze
 
   # Associations
   belongs_to :training_period
@@ -20,7 +20,7 @@ class Declaration < ApplicationRecord
 
   # Enums
   enum :payment_status,
-       %w[no_payment eligible payable paid voided].index_by(&:itself),
+       %w[no_payment eligible payable paid voided ineligible].index_by(&:itself),
        validate: { message: "Choose a valid payment status" },
        prefix: true
 
@@ -57,6 +57,10 @@ class Declaration < ApplicationRecord
        ].index_by(&:itself),
        validate: { message: "Choose a valid evidence type", allow_nil: true }
 
+  enum :ineligibility_reason,
+       %w[duplicate].index_by(&:itself),
+       validate: { message: "Choose a valid ineligibility reason", allow_nil: true }
+
   # Delegations
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
 
@@ -74,6 +78,9 @@ class Declaration < ApplicationRecord
   validates :declaration_date, presence: { message: "Declaration date must be specified" }, declaration_date_within_milestone: true
   validates :declaration_type, inclusion: { in: Declaration.declaration_types.keys, message: "Choose a valid declaration type" }
   validates :evidence_type, inclusion: { in: Declaration.evidence_types.keys, message: "Choose a valid evidence type" }, allow_nil: true
+  validates :ineligibility_reason, inclusion: { in: Declaration.ineligibility_reasons.keys, message: "Choose a valid ineligibility reason" }, allow_nil: true
+  validates :ineligibility_reason, presence: { message: "Ineligibility reason must be set when the declaration is ineligible" }, if: :ineligible?
+  validates :ineligibility_reason, absence: { message: "Ineligibility reason must not be set unless the declaration is ineligible" }, unless: :ineligible?
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
   validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_no_payment?
   validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_no_clawback?
@@ -103,13 +110,16 @@ class Declaration < ApplicationRecord
           declaration_date
           payment_status
           clawback_status
+          ineligibility_reason
           sparsity_uplift
           pupil_premium_uplift
           evidence_type
         ]
 
   state_machine :payment_status, initial: :no_payment do
-    state :no_payment, :eligible, :payable, :paid, :voided
+    state :no_payment, :ineligible, :eligible, :payable, :paid, :voided
+
+    before_transition from: :ineligible, do: :clear_ineligibility_reason
 
     event :mark_as_eligible do
       transition %i[no_payment] => :eligible
@@ -123,8 +133,12 @@ class Declaration < ApplicationRecord
       transition %i[payable] => :paid
     end
 
+    event :mark_as_ineligible do
+      transition %i[no_payment] => :ineligible
+    end
+
     event :mark_as_voided do
-      transition %i[no_payment eligible payable] => :voided
+      transition %i[no_payment eligible payable ineligible] => :voided
     end
   end
 
@@ -185,6 +199,10 @@ class Declaration < ApplicationRecord
   end
 
 private
+
+  def clear_ineligibility_reason
+    self.ineligibility_reason = nil
+  end
 
   def mentorship_period_belongs_to_teacher
     return unless mentorship_period && training_period
