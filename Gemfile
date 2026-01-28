@@ -11,7 +11,7 @@ gem "blazer"
 gem "bootsnap", require: false
 gem "cssbundling-rails"
 gem "csv"
-gem "dfe-analytics", github: "DFE-Digital/dfe-analytics", tag: "v1.15.12"
+gem "dfe-analytics", github: "DFE-Digital/dfe-analytics", tag: "v1.15.14"
 gem "dfe-wizard", github: "DFE-Digital/dfe-wizard"
 gem "faraday"
 gem "jsbundling-rails"
