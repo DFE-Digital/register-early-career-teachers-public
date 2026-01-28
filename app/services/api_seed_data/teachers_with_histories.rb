@@ -81,7 +81,7 @@ module APISeedData
         )
 
         if Faker::Boolean.boolean(true_ratio: 0.85)
-          create_induction_period(teacher:, **school_period)
+          create_induction_period(teacher:)
         end
       else
         create_mentor_and_optional_ect_training(
@@ -395,11 +395,24 @@ module APISeedData
       end
     end
 
-    def create_induction_period(teacher:, started_on:, finished_on:)
-      started_on = [1.month.ago, started_on].min
-      finished_on = Time.zone.today if finished_on&.future?
+    def create_induction_period(teacher:)
+      return if teacher.reload.ect_at_school_periods.count > 1
+
+      # Use the earliest ECT at school period for induction
+      school_period = teacher.earliest_ect_at_school_period
+
+      # Induction starts around the same time as school period
+      started_on = (school_period.started_on + rand(-3..3).days)
+
+      # Induction start can't be in the future
+      return if started_on.future?
+
+      # Induction finishes around 2 years after start (+- 30 days)
+      finished_on = (school_period.started_on + 2.years + rand(-30..30).days)
+      finished_on = nil if finished_on.future?
+
       number_of_terms = 1 if finished_on
-      FactoryBot.create(:induction_period, teacher:, started_on:, finished_on:, number_of_terms:)
+      FactoryBot.create(:induction_period, :pass, teacher:, started_on:, finished_on:, number_of_terms:)
     end
   end
 end
