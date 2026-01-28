@@ -275,6 +275,7 @@ naruto_uzumaki = Teacher.find_by!(trn: "0000034")
 peter_davison = Teacher.find_by!(trn: "0000021")
 sid_james = Teacher.find_by!(trn: "0000027")
 stephen_fry = Teacher.find_by!(trn: "0000013")
+stephen_griddle = Teacher.find_by!(trn: "0000001")
 terry_thomas = Teacher.find_by!(trn: "0000026")
 
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -710,6 +711,24 @@ FactoryBot.create(:training_period,
                   started_on: Date.new(2024, 9, 1),
                   finished_on: nil,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+print_seed_info("Stephen Griddle (ECT) at Ashford Independent School", indent: 2, colour: ECT_COLOUR)
+
+stephen_griddle_ect_at_ashford = FactoryBot.create(:ect_at_school_period,
+                                                   teacher: stephen_griddle,
+                                                   school: ashford_independent_school,
+                                                   email: "stephen.griddle@ashford.example.com",
+                                                   started_on: Date.new(2024, 9, 1),
+                                                   finished_on: nil).tap { |sp| describe_ect_at_school_period(sp) }
+
+FactoryBot.create(:training_period,
+                  :for_ect,
+                  :school_led,
+                  ect_at_school_period: stephen_griddle_ect_at_ashford,
+                  started_on: Date.new(2024, 9, 1),
+                  finished_on: nil,
+                  expression_of_interest: nil,
+                  school_partnership: nil).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
