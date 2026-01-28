@@ -41,7 +41,10 @@ mismatched_teachers.each do |teacher|
   Rails.logger.debug "[TRN: #{trn}] Syncing with TRS..."
   begin
     Teachers::RefreshTRSAttributes.new(teacher).refresh!
-  rescue TRS::Errors::TeacherNotFound
+  rescue TRS::Errors::TeacherNotFound,
+         TRS::Errors::TeacherMerged,
+         TRS::Errors::TeacherDeactivated
+
     Rails.logger.debug "[TRN: #{trn}] Teacher not found in TRS, skipping..."
     next
   end
