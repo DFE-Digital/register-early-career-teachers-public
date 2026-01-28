@@ -10,8 +10,7 @@ module GIAS
   private
 
     def fetch_extract
-      client = Savon.client(wsdl: ENV["GIAS_API_SCHEMA"],
-                            ssl_ca_cert_file: "/opt/homebrew/etc/ca-certificates/cert.pem") # TODO: remove before merging
+      client = Savon.client(wsdl: ENV["GIAS_API_SCHEMA"])
       res = client.call(
         :get_extract,
         message: { "tns:Id" => ENV["GIAS_EXTRACT_ID"] },
