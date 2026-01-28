@@ -46,8 +46,21 @@ end
     urn: 2_976_163,
     name: "Brookfield School",
     type: :independent_school_type,
+    section_41_approved: true,
     induction_tutor_email: "Percy.Konopelski@example.com",
     induction_tutor_name: "Percy Konopelski"
+  },
+  {
+    urn: 9_123_457,
+    name: "Abbeymead Independent School",
+    type: :independent_school_type,
+    section_41_approved: false
+  },
+  {
+    urn: 9_123_458,
+    name: "Ashford Independent School",
+    type: :independent_school_type,
+    section_41_approved: false
   },
   {
     urn: 4_594_193,
@@ -74,16 +87,21 @@ end
     type,
     **data.merge(
       establishment_number: data[:urn],
-      section_41_approved: false
+      section_41_approved: data.fetch(:section_41_approved, false)
     ).except(
       :induction_tutor_name,
       :induction_tutor_email,
+      :section_41_approved,
       :type
     )
   ).school
 
   # Update School-specific attributes separately
-  school.update!(**data.except(:name, :type))
+  school.update!(**data.except(:name, :type, :section_41_approved))
+
+  if data.key?(:section_41_approved)
+    school.gias_school&.update!(section_41_approved: data[:section_41_approved])
+  end
 
   describe_school(school)
   school

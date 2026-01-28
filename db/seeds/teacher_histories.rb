@@ -122,6 +122,7 @@ abbey_grove_school = School.find_by!(urn: 1_759_427)
 ackley_bridge = School.find_by!(urn: 3_375_958)
 mallory_towers = School.find_by!(urn: 5_279_293)
 brookfield_school = School.find_by!(urn: 2_976_163)
+ashford_independent_school = School.find_by!(urn: 9_123_458)
 
 artisan_education_group = DeliveryPartner.find_by!(name: "Artisan Education Group")
 grain_teaching_school_hub = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
@@ -274,6 +275,7 @@ naruto_uzumaki = Teacher.find_by!(trn: "0000034")
 peter_davison = Teacher.find_by!(trn: "0000021")
 sid_james = Teacher.find_by!(trn: "0000027")
 stephen_fry = Teacher.find_by!(trn: "0000013")
+stephen_griddle = Teacher.find_by!(trn: "0000001")
 terry_thomas = Teacher.find_by!(trn: "0000026")
 
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -693,6 +695,40 @@ FactoryBot.create(:training_period,
                   finished_on: nil,
                   school_partnership: teach_first_grain_brookfield_2021,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+print_seed_info("George Cole (mentor) at Ashford Independent School", indent: 2, colour: MENTOR_COLOUR)
+
+george_cole_mentoring_at_ashford = FactoryBot.create(:mentor_at_school_period,
+                                                     teacher: george_cole,
+                                                     school: ashford_independent_school,
+                                                     started_on: Date.new(2024, 9, 1),
+                                                     finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+
+FactoryBot.create(:training_period,
+                  :for_mentor,
+                  :with_schedule,
+                  mentor_at_school_period: george_cole_mentoring_at_ashford,
+                  started_on: Date.new(2024, 9, 1),
+                  finished_on: nil,
+                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+print_seed_info("Stephen Griddle (ECT) at Ashford Independent School", indent: 2, colour: ECT_COLOUR)
+
+stephen_griddle_ect_at_ashford = FactoryBot.create(:ect_at_school_period,
+                                                   teacher: stephen_griddle,
+                                                   school: ashford_independent_school,
+                                                   email: "stephen.griddle@ashford.example.com",
+                                                   started_on: Date.new(2024, 9, 1),
+                                                   finished_on: nil).tap { |sp| describe_ect_at_school_period(sp) }
+
+FactoryBot.create(:training_period,
+                  :for_ect,
+                  :school_led,
+                  ect_at_school_period: stephen_griddle_ect_at_ashford,
+                  started_on: Date.new(2024, 9, 1),
+                  finished_on: nil,
+                  expression_of_interest: nil,
+                  school_partnership: nil).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("John Withers (mentor)", indent: 2, colour: MENTOR_COLOUR)
 

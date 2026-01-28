@@ -17,9 +17,38 @@ describe "Schools::RegisterECTWizardController", :enable_schools_interface do
     it_behaves_like "an induction redirectable route"
   end
 
+  describe "section 41 approval lost" do
+    let(:gias_school) { FactoryBot.create(:gias_school, :independent_school_type, :not_section_41) }
+    let(:school) { FactoryBot.create(:school, urn: gias_school.urn, gias_school:) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+    before { sign_in_as(:school_user, school:) }
+
+    it "prevents access to the wizard and redirects to the ECT list" do
+      get path_for_step("what-you-will-need")
+
+      expect(response).to have_http_status(:redirect)
+      expect(response).to redirect_to(schools_ects_home_path)
+    end
+  end
+
+  describe "section 41 approval lost without ongoing training periods" do
+    let(:gias_school) { FactoryBot.create(:gias_school, :independent_school_type, :not_section_41) }
+    let(:school) { FactoryBot.create(:school, urn: gias_school.urn, gias_school:) }
+
+    before { sign_in_as(:school_user, school:) }
+
+    it "allows access to the wizard" do
+      get path_for_step("what-you-will-need")
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
 private
 
   def path_for_step(step)
-    "/school/register-mentor/#{step}"
+    "/school/register-ect/#{step}"
   end
 end
