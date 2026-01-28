@@ -431,6 +431,14 @@ describe Teacher do
         expect(Teacher.found_in_trs.to_sql).to end_with(expected_clause)
       end
     end
+
+    describe ".induction_not_completed" do
+      it "only includes records where trs_induction_completed_date IS NULL" do
+        expected_clause = %("teachers"."trs_induction_completed_date" IS NULL)
+
+        expect(Teacher.induction_not_completed.to_sql).to end_with(expected_clause)
+      end
+    end
   end
 
   describe "normalizing" do
