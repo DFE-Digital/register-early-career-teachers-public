@@ -12,7 +12,9 @@ module Schools
       end
 
       def next_step
-        if mentor.became_ineligible_for_funding? || !mentor.provider_led_ect?
+        if !contract_period_enabled
+          :cannot_register_mentor_yet
+        elsif mentor.became_ineligible_for_funding? || !mentor.provider_led_ect?
           :check_answers
         elsif mentor.previous_training_period.blank?
           :programme_choices # if previous registration school led
@@ -61,6 +63,14 @@ module Schools
             "Start date must be before #{earliest_invalid_started_on.to_formatted_s(:govuk)}"
           )
         end
+      end
+
+      def contract_period_enabled
+        contract_period = ContractPeriod.containing_date(started_on_as_date)
+
+        return false unless contract_period
+
+        contract_period.enabled
       end
 
       def started_on_formatted
