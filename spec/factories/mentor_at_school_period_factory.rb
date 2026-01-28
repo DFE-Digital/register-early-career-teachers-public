@@ -13,7 +13,7 @@ FactoryBot.define do
     end
 
     association :school
-    teacher { association :teacher, api_mentor_training_record_id: SecureRandom.uuid }
+    teacher { association :teacher, :with_realistic_name, api_mentor_training_record_id: SecureRandom.uuid }
 
     after(:create) do |mentor_at_school_period|
       teacher = mentor_at_school_period.teacher
