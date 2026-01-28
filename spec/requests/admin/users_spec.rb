@@ -45,9 +45,6 @@ describe "Admin::Users" do
 
     before do
       sign_in_as(:dfe_user, user:)
-    end
-
-    before do
       allow(Events::Record).to receive(:record_dfe_user_created_event!).with(any_args).and_call_original
       allow(Events::Record).to receive(:record_dfe_user_updated_event!).with(any_args).and_call_original
     end
