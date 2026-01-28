@@ -15,12 +15,7 @@ class AppropriateBodyMigrator
       dfe_sign_in_organisation
       legacy_appropriate_body
 
-      if appropriate_body_period.teaching_school_hub?
-        appropriate_body_period.update!(teaching_school_hub:) if appropriate_body_period.teaching_school_hub.blank?
-        appropriate_body_period.update!(lead_school:) if appropriate_body_period.lead_school.blank?
-      elsif appropriate_body_period.national?
-        appropriate_body_period.update!(national_body:) if appropriate_body_period.national_body.blank?
-      end
+      appropriate_body_period.update!(appropriate_body:) if appropriate_body_period.appropriate_body.blank?
 
       dfe_sign_in_organisation.update!(last_authenticated_at: authenticated_at)
     end
@@ -48,17 +43,10 @@ private
         .find_or_create_by!(uuid: organisation.id)
   end
 
-  # @return [TeachingSchoolHub]
-  def teaching_school_hub
-    @teaching_school_hub ||=
-      TeachingSchoolHub.create_with(dfe_sign_in_organisation:, lead_school:)
-        .find_or_create_by(name:)
-  end
-
-  # @return [NationalBody]
-  def national_body
-    @national_body ||=
-      NationalBody.create_with(dfe_sign_in_organisation:)
+  # @return [AppropriateBody]
+  def appropriate_body
+    @appropriate_body ||=
+      AppropriateBody.create_with(dfe_sign_in_organisation:)
         .find_or_create_by(name:)
   end
 

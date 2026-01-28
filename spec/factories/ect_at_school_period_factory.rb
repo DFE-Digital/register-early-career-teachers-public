@@ -54,15 +54,15 @@ FactoryBot.define do
     end
 
     trait :local_authority_ab do
-      association :school_reported_appropriate_body, :local_authority, factory: :appropriate_body
+      association :school_reported_appropriate_body, :local_authority, factory: :appropriate_body_period
     end
 
     trait :national_ab do
-      association :school_reported_appropriate_body, :national, factory: :appropriate_body
+      association :school_reported_appropriate_body, :national, factory: :appropriate_body_period
     end
 
     trait :teaching_school_hub_ab do
-      association :school_reported_appropriate_body, :teaching_school_hub, factory: :appropriate_body
+      association :school_reported_appropriate_body, :teaching_school_hub, factory: :appropriate_body_period
     end
 
     trait :with_teacher_payments_frozen_year do

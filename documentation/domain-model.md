@@ -64,16 +64,6 @@ erDiagram
   TrainingPeriod }o--|| SchoolPartnership : belongs_to
   TrainingPeriod }o--|| Schedule : belongs_to
   TrainingPeriod }o--|| ActiveLeadProvider : belongs_to
-  TeachingSchoolHub {
-    integer id
-    string name
-    integer lead_school_id
-    integer dfe_sign_in_organisation_id
-    datetime created_at
-    datetime updated_at
-  }
-  TeachingSchoolHub }o--|| DfESignInOrganisation : belongs_to
-  TeachingSchoolHub }o--|| School : belongs_to
   TeacherMigrationFailure {
     integer id
     integer teacher_id
@@ -155,11 +145,11 @@ erDiagram
     integer id
     string code
     array[string] districts
-    integer teaching_school_hub_id
     datetime created_at
     datetime updated_at
+    integer appropriate_body_id
   }
-  Region }o--|| TeachingSchoolHub : belongs_to
+  Region }o--|| AppropriateBody : belongs_to
   PendingInductionSubmissionBatch {
     integer id
     integer appropriate_body_period_id
@@ -249,14 +239,6 @@ erDiagram
   }
   PendingInductionSubmission }o--|| AppropriateBodyPeriod : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
-  NationalBody {
-    integer id
-    string name
-    integer dfe_sign_in_organisation_id
-    datetime created_at
-    datetime updated_at
-  }
-  NationalBody }o--|| DfESignInOrganisation : belongs_to
   Milestone {
     integer id
     integer schedule_id
@@ -505,14 +487,19 @@ erDiagram
     uuid dfe_sign_in_organisation_id
     uuid dqt_id
     enum body_type
-    integer teaching_school_hub_id
-    integer lead_school_id
-    integer national_body_id
+    integer appropriate_body_id
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
-  AppropriateBodyPeriod }o--|| NationalBody : belongs_to
-  AppropriateBodyPeriod }o--|| TeachingSchoolHub : belongs_to
+  AppropriateBodyPeriod }o--|| AppropriateBody : belongs_to
   AppropriateBodyPeriod }o--|| School : belongs_to
+  AppropriateBody {
+    integer id
+    string name
+    integer dfe_sign_in_organisation_id
+    datetime created_at
+    datetime updated_at
+  }
+  AppropriateBody }o--|| DfESignInOrganisation : belongs_to
   ActiveLeadProvider {
     integer id
     integer lead_provider_id

@@ -1,5 +1,7 @@
+#
+# NB: The purpose of this record is changing. "name" will eventually be stored in different tables.
+#
 class AppropriateBodyPeriod < ApplicationRecord
-  # TODO: replace body_type with a type check on the AB (TSH or NationalBody)
   # Enums
   enum :body_type, {
     local_authority: "local_authority",
@@ -15,13 +17,9 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Associations
   has_one :legacy_appropriate_body, inverse_of: :appropriate_body_period
 
-  # TODO: remove UUID once linked to DfESignInOrganisation through TSH or NationalBody
+  # TODO: remove UUID once linked to DfESignInOrganisation
   belongs_to :dfe_sign_in_organisation, primary_key: :uuid, inverse_of: :appropriate_body_period
-  belongs_to :national_body, optional: true
-  belongs_to :teaching_school_hub, optional: true
-  belongs_to :lead_school, class_name: "School", optional: true
-
-  has_many :supported_schools, class_name: "School", foreign_key: "last_chosen_appropriate_body_id" # cannot be derived from induction periods which don't link to schools, therefore...
+  belongs_to :appropriate_body
   has_many :pending_induction_submissions
   has_many :induction_periods, inverse_of: :appropriate_body_period
   has_many :events
@@ -33,38 +31,16 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Scopes
   scope :active, -> { where.not(dfe_sign_in_organisation_id: nil) }
   scope :inactive, -> { where(dfe_sign_in_organisation_id: nil) }
-  scope :legacy, -> { local_authority.where(dfe_sign_in_organisation_id: nil) }
+  scope :legacy, -> { where.not(dqt_id: nil) }
 
   # Validations
-  # TODO: remove name once value is available from LegacyAppropriateBody, TSH or NationalBody
-  validates :name,
-            presence: true,
-            uniqueness: true
-
-  validate :only_one_regional_or_national_body
-  validate :national_body_limit
-
-  # National Bodies only have one unending AB period (TSHs can have many)
-  def national_body_limit
-    national_body = NationalBody.find_by(id: national_body_id)
-
-    return if national_body&.appropriate_body_period.blank?
-    return if national_body.appropriate_body_period.eql?(self)
-
-    errors.add(:base, "A National Body can only have a single Appropriate Body period")
-  end
-
-  # Only once an AB has started the migration do we apply additional rules
-  def only_one_regional_or_national_body
-    return if dfe_sign_in_organisation.blank?
-
-    appropriate_bodies = [teaching_school_hub, national_body].compact
-
-    unless appropriate_bodies.one?
-      errors.add(:base, "An Appropriate Body period must be associated with either a Teaching School Hub or a National Body")
-    end
-  end
+  # TODO: remove name once value is available from LegacyAppropriateBody or AppropriateBody
+  validates :name, presence: true, uniqueness: true
 
   # Normalizations
   normalizes :name, with: -> { it.squish }
+
+  # TODO: consider removing once view components accept the new AB object not the ABP
+  # @return [School]
+  delegate :lead_school, to: :appropriate_body, allow_nil: true
 end

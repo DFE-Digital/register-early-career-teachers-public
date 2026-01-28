@@ -27,8 +27,6 @@ class School < ApplicationRecord
   has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod"
   has_many :training_periods, through: :school_partnerships
 
-  has_one :led_teaching_school_hub, class_name: "TeachingSchoolHub", foreign_key: :lead_school_id, inverse_of: :lead_school
-
   touch -> { self }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
   touch -> { school_partnerships }, when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
   touch -> { ect_teachers }, when_changing: %i[urn], timestamp_attribute: :api_updated_at
@@ -36,9 +34,6 @@ class School < ApplicationRecord
   touch -> { training_periods }, when_changing: %i[urn], timestamp_attribute: :api_transfer_updated_at
 
   refresh_metadata -> { self }, on_event: %i[create]
-
-  # Scopes
-  scope :lead_schools, -> { joins(:led_teaching_school_hub).distinct }
 
   # Validations
   validates :last_chosen_lead_provider_id,
@@ -166,6 +161,13 @@ class School < ApplicationRecord
       Arel.sql("COALESCE(expression_of_interest.contract_period_year, contract_periods_school_partnerships.year)")
     ).uniq
   end
+
+  def teaching_school_hub
+    dfe_sign_in_organisation&.appropriate_body
+  end
+
+  # teaching_school_hub_name
+  delegate :name, to: :teaching_school_hub, prefix: true, allow_nil: true
 
   def induction_tutor_details_cannot_be_confirmed_if_blank
     return if induction_tutor_last_nominated_in.blank?

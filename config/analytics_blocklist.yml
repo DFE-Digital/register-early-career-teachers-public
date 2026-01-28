@@ -14,13 +14,7 @@
     - last_authenticated_at
     - created_at
     - updated_at
-  :national_bodies:
-    - id
-    - name
-    - dfe_sign_in_organisation_id
-    - created_at
-    - updated_at
-  :teaching_school_hubs:
+  :appropriate_bodies:
     - id
     - name
     - dfe_sign_in_organisation_id
@@ -31,7 +25,7 @@
     - id
     - code
     - districts
-    - teaching_school_hub_id
+    - appropriate_body_id
     - created_at
     - updated_at
   :legacy_appropriate_bodies:
@@ -44,9 +38,7 @@
     - updated_at
   :appropriate_body_periods:
     - body_type
-    - teaching_school_hub_id
-    - lead_school_id
-    - national_body_id
+    - appropriate_body_id
   :blazer_queries:
     - id
     - creator_id
