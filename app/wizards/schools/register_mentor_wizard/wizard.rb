@@ -9,6 +9,7 @@ module Schools
             already_active_at_school: AlreadyActiveAtSchoolStep,
             cannot_mentor_themself: CannotMentorThemselfStep,
             cannot_register_mentor: CannotRegisterMentorStep,
+            cannot_register_mentor_yet: CannotRegisterMentorYetStep,
             cant_use_changed_email: CantUseChangedEmailStep,
             cant_use_email: CantUseEmailStep,
             change_email_address: ChangeEmailAddressStep,
@@ -89,6 +90,7 @@ module Schools
             steps += %i[change_mentor_details change_email_address check_answers]
             steps << :change_started_on if mentor.started_on
             steps << :change_lead_provider if mentor.lead_provider
+            steps << :cannot_register_mentor_yet if mentor.started_on
 
             steps
           end
