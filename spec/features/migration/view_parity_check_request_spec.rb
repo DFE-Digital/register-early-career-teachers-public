@@ -18,7 +18,7 @@ RSpec.describe "View parity check request" do
     page.get_by_role("link", name: "Request details").click
 
     expect(page.locator(".govuk-caption-m").get_by_text(request.lead_provider.name)).to be_visible
-    expect(page.get_by_role("heading", name: request.description)).to be_visible
+    expect(page.get_by_role("heading", name: request.human_readable_url)).to be_visible
 
     expect(page.get_by_text("The request resulted in 2 responses that took 3 minutes to complete.")).to be_visible
     expect(page.get_by_text("Overall the request was 50% successful")).to be_visible

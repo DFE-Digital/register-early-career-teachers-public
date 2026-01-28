@@ -41,8 +41,8 @@ describe ParityCheck::Endpoint do
     end
   end
 
-  describe "#description" do
-    subject { instance.description }
+  describe "#human_readable_url" do
+    subject { instance.human_readable_url }
 
     let(:options) { {} }
     let(:instance) { FactoryBot.build(:parity_check_endpoint, method: :get, path: "/a/path", options:) }
@@ -66,6 +66,14 @@ describe ParityCheck::Endpoint do
 
       it { is_expected.to eq("GET /a/path?filter[active]=true&filter[cohort]=2022 (all pages)") }
     end
+  end
+
+  describe "#description" do
+    subject { described_class.new(options:).description }
+
+    let(:options) { { description: "Something very descriptive" } }
+
+    it { is_expected.to eq("Something very descriptive") }
   end
 
   describe "#excluded_for_lead_provider?" do

@@ -171,7 +171,7 @@ RSpec.describe "Parity check", type: :request do
       it "renders the parity check request page" do
         get migration_parity_check_request_path(run, request)
         expect(response).to have_http_status(:success)
-        expect(response.body).to include(request.description)
+        expect(response.body).to include(request.human_readable_url)
       end
 
       context "when the parity check is not completed" do
