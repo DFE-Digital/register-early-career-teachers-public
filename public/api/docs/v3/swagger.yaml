@@ -1515,6 +1515,7 @@ components:
               - payable
               - paid
               - voided
+              - ineligible
               - awaiting_clawback
               - clawed_back
               example: submitted

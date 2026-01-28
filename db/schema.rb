@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_15_093043) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_13_150052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -23,7 +23,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_15_093043) do
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
   create_enum "declaration_clawback_statuses", ["no_clawback", "awaiting_clawback", "clawed_back"]
-  create_enum "declaration_payment_statuses", ["no_payment", "eligible", "payable", "paid", "voided"]
+  create_enum "declaration_payment_statuses", ["no_payment", "eligible", "payable", "paid", "voided", "ineligible"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
   create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
@@ -34,6 +34,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_15_093043) do
   create_enum "induction_outcomes", ["fail", "pass"]
   create_enum "induction_programme", ["cip", "fip", "diy", "unknown", "pre_september_2021"]
   create_enum "induction_programme_choice", ["not_yet_known", "provider_led", "school_led"]
+  create_enum "ineligibility_reasons", ["duplicate"]
   create_enum "mentor_became_ineligible_for_funding_reason", ["completed_declaration_received", "completed_during_early_roll_out", "started_not_completed"]
   create_enum "parity_check_request_states", ["pending", "queued", "in_progress", "completed", "failed"]
   create_enum "parity_check_run_modes", ["concurrent", "sequential"]
@@ -175,6 +176,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_15_093043) do
     t.enum "evidence_type", enum_type: "evidence_types"
     t.enum "payment_status", default: "no_payment", null: false, enum_type: "declaration_payment_statuses"
     t.enum "clawback_status", default: "no_clawback", null: false, enum_type: "declaration_clawback_statuses"
+    t.enum "ineligibility_reason", enum_type: "ineligibility_reasons"
     t.enum "declaration_type", default: "started", null: false, enum_type: "declaration_types"
     t.boolean "sparsity_uplift", default: false, null: false
     t.boolean "pupil_premium_uplift", default: false, null: false
