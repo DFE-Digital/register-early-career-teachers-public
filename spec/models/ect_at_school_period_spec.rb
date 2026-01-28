@@ -421,8 +421,8 @@ describe ECTAtSchoolPeriod do
     end
 
     describe ".unclaimed_by_school_reported_appropriate_body" do
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
-      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
 
       let!(:period_without_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body_period) }
       let!(:period_with_ongoing_induction_period_for_same_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body_period) }

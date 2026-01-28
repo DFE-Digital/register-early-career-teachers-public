@@ -77,7 +77,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
       end
 
       context "when no appropriate body is recorded" do
-        let(:appropriate_body) { nil }
+        let(:appropriate_body_period) { nil }
 
         it "falls back to the placeholder text" do
           expect(rendered).to have_css("dt", text: "Appropriate body")

@@ -1,4 +1,4 @@
-RSpec.describe "Migrating authenticated Appropriate Body users" do
+RSpec.describe "Migrating authenticated Appropriate Body Period users" do
   context "when no School records exist" do
     describe "after authentication" do
       let(:appropriate_body_period) do
@@ -44,31 +44,32 @@ RSpec.describe "Migrating authenticated Appropriate Body users" do
         end
       end
 
-      context "when Appropriate Body is a National Body" do
-        it "links Appropriate Body to National Body" do
+      context "when Appropriate Body is a national body (ISTIP or ESP)" do
+        it "links AppropriateBodyPeriod to AppropriateBody" do
           expect {
             sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period)
-          }.to change(NationalBody, :count).by(1)
+          }.to change(AppropriateBody, :count).by(1)
 
           appropriate_body_period.reload
-          expect(appropriate_body_period.national_body.name).to eq(appropriate_body_period.name)
+          expect(appropriate_body_period.appropriate_body.name).to eq(appropriate_body_period.name)
+          expect(appropriate_body_period.appropriate_body.lead_school).to be_nil
         end
       end
 
-      context "when Appropriate Body is a Teaching School Hub" do
+      context "when AppropriateBodyPeriod is a teaching school hub (regional)" do
         let(:appropriate_body_period) do
           FactoryBot.create(:appropriate_body, :teaching_school_hub)
         end
         let(:school) { School.first }
 
-        it "links Appropriate Body to Teaching School Hub and Lead School" do
+        it "links AppropriateBodyPeriod to AppropriateBody and to a leading School" do
           expect {
             sign_in_as_teaching_school_hub(appropriate_body: appropriate_body_period, school:)
-          }.to change(TeachingSchoolHub, :count).by(1)
+          }.to change(AppropriateBody, :count).by(1)
 
           appropriate_body_period.reload
-          expect(appropriate_body_period.teaching_school_hub.name).to eq(appropriate_body_period.name)
-          expect(appropriate_body_period.teaching_school_hub.lead_school).to eq(school)
+          expect(appropriate_body_period.appropriate_body.name).to eq(appropriate_body_period.name)
+          expect(appropriate_body_period.appropriate_body.lead_school).to eq(school)
         end
       end
     end
