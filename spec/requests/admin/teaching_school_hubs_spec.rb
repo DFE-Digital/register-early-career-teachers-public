@@ -1,11 +1,16 @@
 RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
-  let!(:teaching_school_hub) do
-    FactoryBot.create(:teaching_school_hub, name: "Hub Name")
+  let(:teaching_school_hub) do
+    FactoryBot.create(:appropriate_body, name: "Hub Name")
   end
 
   before do
-    FactoryBot.create(:region, districts: %w[West East], teaching_school_hub:)
-    FactoryBot.create(:region, districts: %w[North], teaching_school_hub:)
+    urn = teaching_school_hub.dfe_sign_in_organisation.urn
+    name = teaching_school_hub.dfe_sign_in_organisation.name
+    gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england, name:, urn:)
+    FactoryBot.create(:school, :eligible, urn:, gias_school:)
+
+    FactoryBot.create(:region, districts: %w[West East], appropriate_body: teaching_school_hub)
+    FactoryBot.create(:region, districts: %w[North], appropriate_body: teaching_school_hub)
   end
 
   describe "GET /index" do

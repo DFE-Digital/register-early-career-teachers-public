@@ -25,15 +25,15 @@ FactoryBot.define do
     end
 
     trait :local_authority_ab_last_chosen do
-      association :last_chosen_appropriate_body, :local_authority, factory: :appropriate_body
+      association :last_chosen_appropriate_body, :local_authority, factory: :appropriate_body_period
     end
 
     trait :national_ab_last_chosen do
-      association :last_chosen_appropriate_body, :national, factory: :appropriate_body
+      association :last_chosen_appropriate_body, :national, factory: :appropriate_body_period
     end
 
     trait :teaching_school_hub_ab_last_chosen do
-      association :last_chosen_appropriate_body, :teaching_school_hub, factory: :appropriate_body
+      association :last_chosen_appropriate_body, :teaching_school_hub, factory: :appropriate_body_period
     end
 
     trait :eligible do

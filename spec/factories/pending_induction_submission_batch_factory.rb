@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory(:pending_induction_submission_batch) do
     pending
-    association :appropriate_body_period, factory: :appropriate_body
+    association :appropriate_body_period
     error_message { nil }
     data { nil }
 

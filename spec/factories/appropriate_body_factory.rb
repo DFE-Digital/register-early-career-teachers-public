@@ -1,38 +1,21 @@
 FactoryBot.define do
-  factory(:appropriate_body, class: "AppropriateBodyPeriod") do
+  factory(:appropriate_body) do
     initialize_with do
-      AppropriateBodyPeriod.find_or_initialize_by(name:)
+      AppropriateBody.find_or_initialize_by(name:)
     end
 
-    sequence(:name) { |n| "Appropriate Body Period #{n}" }
-    dfe_sign_in_organisation_id { Faker::Internet.uuid }
+    sequence(:name) { |n| "Appropriate Body #{n}" }
 
-    trait :inactive do
-      dfe_sign_in_organisation_id { nil }
-    end
-
-    # Once data migration has started
-    trait :active do
-      association :dfe_sign_in_organisation
-    end
+    association :dfe_sign_in_organisation
 
     trait :istip do
-      name { NationalBody::ISTIP }
-      body_type { "national" }
+      name { AppropriateBody::ISTIP }
+      association :dfe_sign_in_organisation, :istip
     end
 
     trait :esp do
-      name { NationalBody::ESP }
-      body_type { "national" }
-    end
-
-    trait :teaching_school_hub do
-      body_type { "teaching_school_hub" }
-    end
-
-    trait :local_authority do
-      inactive
-      body_type { "local_authority" }
+      name { AppropriateBody::ESP }
+      association :dfe_sign_in_organisation, :esp
     end
   end
 end
