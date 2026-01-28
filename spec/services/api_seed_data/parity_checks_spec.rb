@@ -48,7 +48,7 @@ RSpec.describe APISeedData::ParityChecks do
 
       expect(logger).to have_received(:info).with(/Planting parity_checks/).once
       ParityCheck::Endpoint.find_each do |endpoint|
-        expect(logger).to have_received(:info).with(/#{Regexp.escape(endpoint.description)}/).at_least(:once)
+        expect(logger).to have_received(:info).with(/#{Regexp.escape(endpoint.human_readable_url)}/).at_least(:once)
       end
 
       expect(logger).to have_received(:info).with(/Concurrent, *\d+ requests, -?\d+\.?\d*x performance gain, \d+% match rate/).at_least(:once)

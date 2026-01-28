@@ -14,7 +14,7 @@ RSpec.describe "View parity check response" do
     page.goto(migration_parity_check_request_path(run, request))
     page.get_by_role("link", name: "Response details").click
 
-    expect(page.locator(".govuk-caption-m").get_by_text(request.description)).to be_visible
+    expect(page.locator(".govuk-caption-m").get_by_text(request.human_readable_url)).to be_visible
     expect(page.get_by_role("heading", name: response.description)).to be_visible
 
     expect(page.get_by_text("The status code from ECF was 200 and the response took #{number_with_delimiter(response.ecf_time_ms)}ms.")).to be_visible

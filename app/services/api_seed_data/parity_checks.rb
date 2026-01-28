@@ -62,7 +62,7 @@ module APISeedData
   private
 
     def describe_endpoint(endpoint)
-      log_seed_info(endpoint.description, indent: 4)
+      log_seed_info(endpoint.human_readable_url, indent: 4)
     end
 
     def describe_run(run)
