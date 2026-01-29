@@ -14,6 +14,7 @@ module Admin
         teacher:,
         appropriate_body:,
         induction_period: ongoing_induction_period,
+        ect_at_school_period:,
         body: note,
         zendesk_ticket_id:
       )
