@@ -4,6 +4,8 @@ inherit_from: .rubocop_todo.yml
 plugins:
   - rubocop-performance
   - rubocop-factory_bot
+  - rubocop-rspec
+  - rubocop-rspec_rails
 
 inherit_gem:
   rubocop-govuk:
@@ -28,6 +30,9 @@ RSpec/RequireRailsHelper:
   Exclude:
     - "spec/spec_helper.rb"
     - "spec/rails_helper.rb"
+
+RSpecRails/HttpStatusNameConsistency:
+  Enabled: true
 
 # Otherwise it suggests the namespace "ec_ts"
 RSpec/SpecFilePathFormat:
