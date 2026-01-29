@@ -111,6 +111,22 @@ class SpecGenerator
     #           cohort_year:
     #         }
     #       }
+    #     ],
+    #     mentor_at_school_periods: [
+    #       {
+    #         started_on: Date.new(2024, 1, 2),
+    #         finished_on: :ignore,
+    #         created_at: Time.zone.local(2024, 1, 2, 0, 0, 3),
+    #         updated_at: Time.zone.local(2025, 7, 22, 15, 3, 3),
+    #         school: {
+    #           urn: "100002",
+    #           name: "School 2"
+    #         },
+    #         teacher: {
+    #           api_mentor_training_record_id: "dddddd-2222-6666-aaaa-cccccccccccc" },
+    #           trn: "123112"
+    #         }
+    #       }
     #     ]
     #   },
     #   mentor: {
@@ -190,7 +206,8 @@ private
         sparsity_uplift: ect.sparsity_uplift,
         payments_frozen_cohort_start_year: ect.payments_frozen_cohort_start_year,
         states: ecf1_ect_states,
-        induction_records: ecf1_ect_induction_records
+        induction_records: ecf1_ect_induction_records,
+        mentor_at_school_periods: ecf1_mentor_at_school_periods
       }
     }
   end
@@ -198,8 +215,11 @@ private
   def ecf1_ect_induction_records
     ecf1_teacher_history.ect.induction_records.map do |ir|
       {
+        induction_record_id: ir.induction_record_id,
         start_date: ir.start_date,
         end_date: ir.end_date,
+        created_at: ir.created_at,
+        updated_at: ir.updated_at,
         training_programme: ir.training_programme,
         cohort_year: ir.cohort_year,
         school: ir.school.to_h,
@@ -219,6 +239,20 @@ private
           end
         end,
         schedule_info: ir.schedule_info.to_h
+      }
+    end
+  end
+
+  def ecf1_mentor_at_school_periods
+    ecf1_teacher_history.ect.mentor_at_school_periods.map do |period|
+      {
+        mentor_at_school_period_id: period.mentor_at_school_period.id,
+        started_on: period.started_on,
+        finished_on: period.finished_on,
+        created_at: period.created_at,
+        updated_at: period.updated_at,
+        school: period.school.to_h,
+        teacher: period.teacher.to_h
       }
     end
   end
