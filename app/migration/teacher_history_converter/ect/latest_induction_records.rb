@@ -89,6 +89,8 @@ private
   end
 
   def build_training_period(induction_record:, **overrides)
+    training_programme = convert_training_programme_name(induction_record.training_programme)
+
     training_attrs = {
       started_on: induction_record.start_date.to_date,
       finished_on: induction_record.end_date&.to_date,
@@ -102,6 +104,8 @@ private
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info
     }.merge(overrides)
+
+    training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
   end
