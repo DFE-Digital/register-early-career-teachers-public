@@ -121,6 +121,7 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
   scope :not_found_in_trs, -> { where(trs_not_found: true) }
   scope :found_in_trs, -> { where(trs_not_found: false) }
+  scope :induction_not_completed, -> { where(trs_induction_completed_date: nil) }
 
   normalizes :corrected_name, with: -> { it.squish }
 

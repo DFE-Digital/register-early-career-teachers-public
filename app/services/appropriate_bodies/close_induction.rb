@@ -67,5 +67,16 @@ module AppropriateBodies
         end
       end
     end
+
+    def finish_ect_period
+      return unless ect_at_school_period
+      return if ect_at_school_period.finished_on.present?
+
+      ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:).finish!
+    end
+
+    def ect_at_school_period
+      ongoing_induction_period.teacher.current_or_next_ect_at_school_period
+    end
   end
 end
