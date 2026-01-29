@@ -467,4 +467,92 @@ describe "Latest induction records mode conversion" do
       end
     end
   end
+
+  context "training period details" do
+    let(:schedule_a) do
+      {
+        schedule_id: 1,
+        identifier: "ect-schedule-a",
+        name: "Schedule A",
+        cohort_year: 2021,
+      }
+    end
+
+    let(:schedule_b) do
+      {
+        schedule_id: 2,
+        identifier: "ect-schedule-b",
+        name: "Schedule B",
+        cohort_year: 2024,
+      }
+    end
+
+    let(:induction_records) do
+      [
+        {
+          start_date: Time.zone.parse("2022-1-1"),
+          end_date: Time.zone.parse("2022-8-5"),
+          school: school_a,
+          training_programme:,
+          training_provider_info: {
+            lead_provider: lead_provider_a,
+            delivery_partner: delivery_partner_a,
+            cohort_year: 2021
+          },
+          schedule_info: schedule_a
+        },
+        {
+          start_date: Time.zone.parse("2024-3-3"),
+          end_date: Time.zone.parse("2025-6-6"),
+          school: school_b,
+          training_programme:,
+          training_provider_info: {
+            lead_provider: lead_provider_b,
+            delivery_partner: delivery_partner_b,
+            cohort_year: 2024
+          },
+          schedule_info: schedule_b
+        }
+      ]
+    end
+
+    context "provider_led training" do
+      let(:training_programme) { "full_induction_programme" }
+
+      it "adds the correct providers to the training period" do
+        expect(subject.ect_at_school_periods.first.training_periods.first.lead_provider_info.name).to eq lead_provider_a[:name]
+        expect(subject.ect_at_school_periods.first.training_periods.first.delivery_partner_info.name).to eq delivery_partner_a[:name]
+
+        expect(subject.ect_at_school_periods.second.training_periods.first.lead_provider_info.name).to eq lead_provider_b[:name]
+        expect(subject.ect_at_school_periods.second.training_periods.first.delivery_partner_info.name).to eq delivery_partner_b[:name]
+      end
+
+      it "adds the correct schedule to the training period" do
+        schedule_2021 = subject.ect_at_school_periods.first.training_periods.first.schedule_info
+        expect(schedule_2021.name).to eq schedule_a[:name]
+        expect(schedule_2021.cohort_year).to eq schedule_a[:cohort_year]
+
+        schedule_2024 = subject.ect_at_school_periods.second.training_periods.first.schedule_info
+        expect(schedule_2024.name).to eq schedule_b[:name]
+        expect(schedule_2024.cohort_year).to eq schedule_b[:cohort_year]
+      end
+    end
+
+    context "school_led training" do
+      let(:training_programme) { "core_induction_programme" }
+
+      it "does not add providers to the training period" do
+        expect(subject.ect_at_school_periods.first.training_periods.first.lead_provider_info).to be_blank
+        expect(subject.ect_at_school_periods.first.training_periods.first.delivery_partner_info).to be_blank
+
+        expect(subject.ect_at_school_periods.second.training_periods.first.lead_provider_info).to be_blank
+        expect(subject.ect_at_school_periods.second.training_periods.first.delivery_partner_info).to be_blank
+      end
+
+      it "does not add a schedule to the training period" do
+        expect(subject.ect_at_school_periods.first.training_periods.first.schedule_info).to be_blank
+        expect(subject.ect_at_school_periods.second.training_periods.first.schedule_info).to be_blank
+      end
+    end
+  end
 end
