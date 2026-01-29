@@ -72,7 +72,7 @@ module AppropriateBodies
       return unless ect_at_school_period
       return if ect_at_school_period.finished_on.present?
 
-      ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:).finish!
+      ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:, record_event: false).finish!
     end
 
     def ect_at_school_period
