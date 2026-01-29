@@ -62,6 +62,19 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
+      context "when the school has not been linked but the gias school exists and the user has the SchoolUser role" do
+        let(:organisation_id) { Faker::Internet.uuid }
+        let(:gias_school) { FactoryBot.create(:gias_school, :open) }
+        let(:organisation_urn) { gias_school.urn }
+        let(:dfe_sign_in_roles) { %w[SchoolUser] }
+
+        it "returns a school user session" do
+          expect(session_user).to be_a(Sessions::Users::SchoolUser)
+          expect(session_user.school).to be_nil
+          expect(session_user.gias_school).to eq(gias_school)
+        end
+      end
+
       context "when both the AppropriateBody and School exist and the user has both roles" do
         let(:organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
         let(:organisation_urn) { school.urn }
