@@ -79,12 +79,7 @@ private
         finished_on: mentorship_finished_on,
         ecf_start_induction_record_id: induction_record.induction_record_id,
         ecf_end_induction_record_id: induction_record.induction_record_id,
-        mentor_data: ECF2TeacherHistory::MentorData.new(
-          trn: mentor_at_school_period.teacher.trn,
-          urn: mentor_at_school_period.school.urn,
-          started_on: mentor_started_on,
-          finished_on: mentor_finished_on
-        )
+        mentor_at_school_period_id: mentor_at_school_period.mentor_at_school_period_id
       )
     end
   end
@@ -113,11 +108,12 @@ private
 
   # Find the last MentorAtSchoolPeriod overlapping started_on..finished_on for the teacher and school identifiers given
   def find_overlapping_mentor_period(started_on:, finished_on:, mentor_profile_id:, urn:)
-    MentorAtSchoolPeriod.joins(:school, :teacher)
-                        .where(schools: { urn: },
-                               teachers: { api_mentor_training_record_id: mentor_profile_id })
-                        .overlapping_with(OpenStruct.new(started_on:, finished_on:))
-                        .order(:started_on)
-                        .last
+    overlapping_mentor_periods = mentor_at_school_periods.select do
+      it.school.urn == urn &&
+        it.teacher.api_mentor_training_record_id == mentor_profile_id &&
+        it.range.overlaps?(started_on..finished_on)
+    end
+
+    OVERLAPPING_MENTOR_PERIODS_SORTING.call(overlapping_mentor_periods).last
   end
 end
