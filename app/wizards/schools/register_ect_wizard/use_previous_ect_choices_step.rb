@@ -84,12 +84,12 @@ module Schools
         return unless contract_period
 
         SchoolPartnerships::FindReusablePartnership
-          .new
-          .call(
+          .new(
             school:,
             lead_provider: school.last_chosen_lead_provider,
             contract_period:
           )
+          .call
           &.id
       end
 
