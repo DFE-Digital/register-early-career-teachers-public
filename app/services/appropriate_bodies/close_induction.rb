@@ -76,7 +76,7 @@ module AppropriateBodies
     end
 
     def ect_at_school_period
-      ongoing_induction_period.teacher.current_or_next_ect_at_school_period
+      ongoing_induction_period.teacher.ect_at_school_periods.latest_first.first
     end
   end
 end

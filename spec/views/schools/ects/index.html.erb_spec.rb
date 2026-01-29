@@ -79,6 +79,8 @@ RSpec.describe "schools/ects/index.html.erb" do
         completed_ect = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: completed_teacher, school:)
         FactoryBot.create(:training_period, :ongoing, ect_at_school_period: completed_ect)
 
+        assign(:teachers, [teacher, completed_teacher])
+
         render
       end
 
