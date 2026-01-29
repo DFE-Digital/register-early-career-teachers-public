@@ -8,7 +8,7 @@ module Schools
       search = Teachers::Search.new(ect_at_school: school, in_progress: true, query_string: params[:q]).search
       @pagy, @teachers = pagy(search)
 
-      @number_of_teachers = Teachers::Search.new(ect_at_school: school).count
+      @number_of_teachers = Teachers::Search.new(ect_at_school: school, in_progress: true).count
     end
 
     def show
