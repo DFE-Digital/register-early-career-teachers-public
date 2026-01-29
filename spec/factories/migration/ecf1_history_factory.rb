@@ -119,6 +119,41 @@ FactoryBot.define do
     end
   end
 
+  factory :ecf1_teacher_history_mentor_at_school_period_row, class: "ECF1TeacherHistory::MentorAtSchoolPeriod" do
+    mentor_at_school_period_id { SecureRandom.uuid }
+    started_on { Date.new(2023, 9, 1) }
+    finished_on { Date.new(2023 + 2, 6, 1) }
+    created_at { started_on }
+    updated_at { 6.months.ago }
+    sequence(:school) { |n| Types::SchoolData.new(urn: 100_000 + n, name: "School #{n}") }
+    teacher do
+      Types::TeacherData.new(trn: Faker::Number.unique.number(digits: 7),
+                             api_mentor_training_record_id: SecureRandom.uuid)
+    end
+
+    initialize_with do
+      new(mentor_at_school_period_id:,
+          started_on:,
+          finished_on:,
+          created_at:,
+          updated_at:,
+          school:,
+          teacher:)
+    end
+
+    trait :created_at_later_than_started_on do
+      created_at { started_on + 2.days }
+    end
+
+    trait :started_on_later_than_created_at do
+      created_at { started_on - 2.days }
+    end
+
+    trait :ongoing do
+      finished_on { nil }
+    end
+  end
+
   factory :ecf1_teacher_history_ect, class: "ECF1TeacherHistory::ECT" do
     transient do
       cohort_year { Random.rand(2020..2119) }
@@ -131,6 +166,7 @@ FactoryBot.define do
     updated_at { 6.months.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
     induction_records { [] }
+    mentor_at_school_periods { [] }
 
     pupil_premium_uplift { false }
     sparsity_uplift { false }
@@ -144,6 +180,7 @@ FactoryBot.define do
           updated_at:,
           states:,
           induction_records:,
+          mentor_at_school_periods:,
           pupil_premium_uplift:,
           sparsity_uplift:,
           payments_frozen_cohort_start_year:)
@@ -151,6 +188,12 @@ FactoryBot.define do
 
     trait :one_induction_record do
       induction_records { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, cohort_year:)] }
+      mentor_at_school_periods do
+        [
+          FactoryBot.build(:ecf1_teacher_history_mentor_at_school_period_row,
+                           school: induction_records.first.school)
+        ]
+      end
     end
 
     trait :two_induction_record do
@@ -161,6 +204,15 @@ FactoryBot.define do
                                start_date: ir1.start_date + 90.days,
                                end_date: ir1.end_date + 90.days)
         [ir1, ir2]
+      end
+
+      mentor_at_school_periods do
+        [
+          FactoryBot.build(:ecf1_teacher_history_mentor_at_school_period_row,
+                           school: induction_records.first.school),
+          FactoryBot.build(:ecf1_teacher_history_mentor_at_school_period_row,
+                           school: induction_records.last.school)
+        ]
       end
     end
   end

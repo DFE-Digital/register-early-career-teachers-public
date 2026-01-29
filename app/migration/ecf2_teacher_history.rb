@@ -20,15 +20,15 @@ class ECF2TeacherHistory
   end
 
   def save_all_ect_data!
-    teacher = find_or_create_teacher!
-    save_ect_periods!(teacher)
-    teacher
+    find_or_create_teacher!.tap do |teacher|
+      save_ect_periods!(teacher)
+    end
   end
 
   def save_all_mentor_data!
-    teacher = find_or_create_teacher!
-    save_mentor_periods!(teacher)
-    teacher
+    find_or_create_teacher!.tap do |teacher|
+      save_mentor_periods!(teacher)
+    end
   end
 
   def success?
@@ -100,21 +100,7 @@ private
 
         ect_at_school_period.mentorship_periods.each do |mentorship_period|
           with_failure_recording(teacher: found_teacher, model: :mentorship_period, migration_item_id: mentorship_period.ecf_start_induction_record_id) do
-            if mentorship_period.mentor_teacher.nil?
-              raise ActiveRecord::RecordNotFound, "Mentor not found in migrated data"
-            end
-
-            mentor_period = mentorship_period.mentor_at_school_period[:mentor]
-
-            if mentor_period.nil?
-              raise ActiveRecord::RecordNotFound, "No MentorAtSchoolPeriod found for mentorship dates"
-            end
-
-            ::MentorshipPeriod.create!(
-              mentee: created_ect_at_school_period,
-              mentor: mentor_period,
-              **mentorship_period
-            )
+            ::MentorshipPeriod.create!(mentee: created_ect_at_school_period, **mentorship_period)
           end
         end
       end

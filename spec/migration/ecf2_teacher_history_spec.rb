@@ -11,7 +11,6 @@ describe ECF2TeacherHistory do
   let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
   let(:school_a_data) { Types::SchoolData.new(urn: 111_111, name: "School A") }
   let(:school_b_data) { Types::SchoolData.new(urn: 222_222, name: "School B") }
-  let(:mentor_data) { ECF2TeacherHistory::MentorData.new(trn: "1234567", urn: "123456", started_on: 1.week.ago, finished_on: 1.day.ago) }
   let(:created_at) { 1.month.ago.round }
 
   let(:mentorship_periods) do
@@ -21,7 +20,7 @@ describe ECF2TeacherHistory do
         finished_on: 1.week.ago.to_date,
         ecf_start_induction_record_id: SecureRandom.uuid,
         ecf_end_induction_record_id: SecureRandom.uuid,
-        mentor_data:
+        mentor_at_school_period_id: SecureRandom.uuid
       )
     ]
   end
@@ -349,22 +348,13 @@ describe ECF2TeacherHistory do
             )
           end
 
-          let(:mentor_data) do
-            ECF2TeacherHistory::MentorData.new(
-              trn: existing_mentor_at_school_period.teacher.trn,
-              urn: existing_mentor_at_school_period.school.urn,
-              started_on: existing_mentor_at_school_period.started_on,
-              finished_on: existing_mentor_at_school_period.finished_on
-            )
-          end
-
           let(:mentorship_period) do
             ECF2TeacherHistory::MentorshipPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               ecf_start_induction_record_id: SecureRandom.uuid,
               ecf_end_induction_record_id: SecureRandom.uuid,
-              mentor_data:
+              mentor_at_school_period_id: existing_mentor_at_school_period.id
             )
           end
 
@@ -620,155 +610,6 @@ describe ECF2TeacherHistory do
 
   describe "failure recording" do
     let(:other_arguments) { { ect_at_school_periods: } }
-
-    describe "when Mentor Teacher is not found" do
-      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
-
-      let(:mentor_data) do
-        ECF2TeacherHistory::MentorData.new(
-          trn: "9999999",
-          urn: school_a.urn,
-          started_on: 1.month.ago.to_date,
-          finished_on: 1.week.ago.to_date
-        )
-      end
-
-      let(:mentorship_period) do
-        ECF2TeacherHistory::MentorshipPeriod.new(
-          started_on: 1.month.ago.to_date,
-          finished_on: 1.week.ago.to_date,
-          ecf_start_induction_record_id:,
-          ecf_end_induction_record_id: SecureRandom.uuid,
-          mentor_data:
-        )
-      end
-
-      let(:ect_at_school_period) do
-        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
-          started_on: 1.month.ago.to_date,
-          finished_on: 1.week.ago.to_date,
-          school: school_a_data,
-          email: "a@example.org",
-          mentorship_periods: [mentorship_period],
-          training_periods: []
-        )
-      end
-
-      let(:ect_at_school_periods) { [ect_at_school_period] }
-
-      it "creates a TeacherMigrationFailure record" do
-        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
-      end
-
-      it "records the failure with the correct model" do
-        subject.save_all_ect_data!
-        failure = TeacherMigrationFailure.last
-
-        expect(failure.model).to eq("mentorship_period")
-      end
-
-      it "records a specific error message" do
-        subject.save_all_ect_data!
-        failure = TeacherMigrationFailure.last
-
-        expect(failure.message).to eq("Mentor not found in migrated data")
-      end
-
-      it "records the migration item reference" do
-        subject.save_all_ect_data!
-        failure = TeacherMigrationFailure.last
-
-        expect(failure.migration_item_id).to eq(ecf_start_induction_record_id)
-        expect(failure.migration_item_type).to eq("Migration::InductionRecord")
-      end
-
-      it "sets success? to false" do
-        subject.save_all_ect_data!
-
-        expect(subject.success?).to be(false)
-      end
-
-      it "still creates the ECTAtSchoolPeriod" do
-        teacher = subject.save_all_ect_data!
-
-        expect(teacher.ect_at_school_periods.count).to eq(1)
-      end
-    end
-
-    describe "when MentorAtSchoolPeriod is not found" do
-      let(:ecf_start_induction_record_id) { SecureRandom.uuid }
-      let!(:mentor_teacher) { FactoryBot.create(:teacher, trn: "9999999") }
-
-      let(:mentor_data) do
-        ECF2TeacherHistory::MentorData.new(
-          trn: mentor_teacher.trn,
-          urn: school_a.urn,
-          started_on: 1.month.ago.to_date,
-          finished_on: 1.week.ago.to_date
-        )
-      end
-
-      let(:mentorship_period) do
-        ECF2TeacherHistory::MentorshipPeriod.new(
-          started_on: 1.month.ago.to_date,
-          finished_on: 1.week.ago.to_date,
-          ecf_start_induction_record_id:,
-          ecf_end_induction_record_id: SecureRandom.uuid,
-          mentor_data:
-        )
-      end
-
-      let(:ect_at_school_period) do
-        ECF2TeacherHistory::ECTAtSchoolPeriod.new(
-          started_on: 1.month.ago.to_date,
-          finished_on: 1.week.ago.to_date,
-          school: school_a_data,
-          email: "a@example.org",
-          mentorship_periods: [mentorship_period],
-          training_periods: []
-        )
-      end
-
-      let(:ect_at_school_periods) { [ect_at_school_period] }
-
-      it "creates a TeacherMigrationFailure record" do
-        expect { subject.save_all_ect_data! }.to change(TeacherMigrationFailure, :count).by(1)
-      end
-
-      it "records the failure with the correct model" do
-        subject.save_all_ect_data!
-        failure = TeacherMigrationFailure.last
-
-        expect(failure.model).to eq("mentorship_period")
-      end
-
-      it "records a specific error message" do
-        subject.save_all_ect_data!
-        failure = TeacherMigrationFailure.last
-
-        expect(failure.message).to eq("No MentorAtSchoolPeriod found for mentorship dates")
-      end
-
-      it "records the migration item reference" do
-        subject.save_all_ect_data!
-        failure = TeacherMigrationFailure.last
-
-        expect(failure.migration_item_id).to eq(ecf_start_induction_record_id)
-        expect(failure.migration_item_type).to eq("Migration::InductionRecord")
-      end
-
-      it "sets success? to false" do
-        subject.save_all_ect_data!
-
-        expect(subject.success?).to be(false)
-      end
-
-      it "still creates the ECTAtSchoolPeriod" do
-        teacher = subject.save_all_ect_data!
-
-        expect(teacher.ect_at_school_periods.count).to eq(1)
-      end
-    end
 
     describe "when SchoolPartnership is not found" do
       let(:contract_period) { FactoryBot.create(:contract_period) }
