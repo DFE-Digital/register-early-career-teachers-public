@@ -6,7 +6,7 @@ FactoryBot.define do
     trait :provider_led do
       training_programme { :full_induction_programme }
       core_induction_programme { nil }
-      partnership { FactoryBot.create(:migration_partnership) }
+      partnership { FactoryBot.create(:migration_partnership, cohort: school_cohort.cohort, school: school_cohort.school) }
     end
 
     trait :school_led do

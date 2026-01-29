@@ -1,4 +1,5 @@
 module TeacherHistoryConverter::CalculatedAttributes
+  OVERLAPPING_MENTOR_PERIODS_SORTING = ->(periods) { periods.sort_by { [it.finished_on.present? ? 0 : 1, it.started_on, it.created_at] } }
   INDUCTION_RECORD_GROUPS_SORTING = ->(records) { records.sort_by { [it.end_date.present? ? 0 : 1, it.start_date, it.created_at] } }
   GROUP_INDUCTION_RECORDS_SORTING = ->(records) { records.sort_by { [it.end_date.present? ? 0 : 1, it.created_at] } }
 
@@ -9,7 +10,7 @@ module TeacherHistoryConverter::CalculatedAttributes
   def latest_induction_records(induction_records:)
     induction_records
       .group_by { [it.school, it.training_provider_info&.lead_provider_info, it.cohort_year] }
-      .then { it.transform_values! { GROUP_INDUCTION_RECORDS_SORTING.call(it).last } }
+      .transform_values! { GROUP_INDUCTION_RECORDS_SORTING.call(it).last }
       .then { INDUCTION_RECORD_GROUPS_SORTING.call(it.values) }
   end
 
