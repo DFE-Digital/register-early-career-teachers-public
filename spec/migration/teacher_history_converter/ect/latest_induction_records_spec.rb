@@ -537,6 +537,8 @@ describe "Latest induction records mode conversion" do
       ]
     end
 
+    let(:mentor_at_school_periods) { [] }
+
     context "provider_led training" do
       let(:training_programme) { "full_induction_programme" }
 
