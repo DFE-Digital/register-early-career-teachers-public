@@ -1,5 +1,11 @@
 RSpec.describe SchoolPartnerships::FindReusablePartnership do
-  subject(:service) { described_class.new }
+  subject(:service) do
+    described_class.new(
+      school:,
+      lead_provider:,
+      contract_period: current_contract_period
+    )
+  end
 
   let(:school) { FactoryBot.create(:school) }
 
@@ -50,22 +56,37 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
     )
   end
 
-  def call_service(school: self.school, lead_provider: self.lead_provider, contract_period: current_contract_period)
-    service.call(school:, lead_provider:, contract_period:)
+  def call_service
+    service.call
   end
 
   describe "#call" do
     context "guard conditions" do
       it "returns nil when school is nil" do
-        expect(service.call(school: nil, lead_provider:, contract_period: current_contract_period)).to be_nil
+        result =
+          described_class
+            .new(school: nil, lead_provider:, contract_period: current_contract_period)
+            .call
+
+        expect(result).to be_nil
       end
 
       it "returns nil when lead_provider is nil" do
-        expect(service.call(school:, lead_provider: nil, contract_period: current_contract_period)).to be_nil
+        result =
+          described_class
+            .new(school:, lead_provider: nil, contract_period: current_contract_period)
+            .call
+
+        expect(result).to be_nil
       end
 
       it "returns nil when contract_period is nil" do
-        expect(service.call(school:, lead_provider:, contract_period: nil)).to be_nil
+        result =
+          described_class
+            .new(school:, lead_provider:, contract_period: nil)
+            .call
+
+        expect(result).to be_nil
       end
     end
 
