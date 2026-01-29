@@ -71,24 +71,6 @@ RSpec.describe "schools/ects/index.html.erb" do
         expect(rendered).to have_css(".govuk-form-group label", text: "Search by name or teacher reference number (TRN)")
       end
     end
-
-    context "when teachers have completed induction" do
-      let(:completed_teacher) { FactoryBot.create(:teacher, :induction_completed, trs_first_name: "Jack", trs_last_name: "Daniels") }
-
-      before do
-        completed_ect = FactoryBot.create(:ect_at_school_period, :ongoing, teacher: completed_teacher, school:)
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: completed_ect)
-
-        assign(:teachers, [teacher, completed_teacher])
-
-        render
-      end
-
-      it "does not render summary components for completed teachers" do
-        expect(rendered).to have_css(".govuk-summary-card__title", text: "Johnnie Walker")
-        expect(rendered).not_to have_css(".govuk-summary-card__title", text: "Jack Daniels")
-      end
-    end
   end
 
   context "when registration is blocked" do

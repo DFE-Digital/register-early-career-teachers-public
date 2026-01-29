@@ -78,7 +78,11 @@ class ECTAtSchoolPeriod < ApplicationRecord
   }
   scope :induction_not_completed, -> {
     joins("LEFT JOIN teachers AS induction_teachers ON induction_teachers.id = ect_at_school_periods.teacher_id")
-    .where(induction_teachers: { trs_induction_completed_date: nil })
+    .where(
+      "induction_teachers.trs_induction_status NOT IN (?)
+       OR induction_teachers.trs_induction_status IS NULL",
+      %w[Passed Failed]
+    )
   }
 
   def reported_leaving_by?(school)

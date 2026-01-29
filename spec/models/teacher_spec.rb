@@ -432,11 +432,22 @@ describe Teacher do
       end
     end
 
-    describe ".induction_not_completed" do
-      it "only includes records where trs_induction_completed_date IS NULL" do
-        expected_clause = %("teachers"."trs_induction_completed_date" IS NULL)
+    context "induction status scopes" do
+      let!(:target) { FactoryBot.create(:teacher, :induction_in_progress) }
+      let!(:other) { FactoryBot.create(:teacher) }
+      let!(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
+      let!(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
 
-        expect(Teacher.induction_not_completed.to_sql).to end_with(expected_clause)
+      describe ".not_failed" do
+        it "only includes records where trs_induction_status is not 'Failed'" do
+          expect(Teacher.not_failed).to contain_exactly(target, other, passed_teacher)
+        end
+      end
+
+      describe ".not_passed" do
+        it "only includes records where trs_induction_status is not 'Passed'" do
+          expect(Teacher.not_passed).to contain_exactly(target, other, failed_teacher)
+        end
       end
     end
   end

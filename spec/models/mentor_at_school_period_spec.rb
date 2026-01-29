@@ -21,16 +21,18 @@ describe MentorAtSchoolPeriod do
 
     let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 2.years.ago, finished_on: nil) }
     let(:school) { mentor.school }
-    let(:teacher_with_completed_induction) { FactoryBot.create(:teacher, :induction_completed) }
+    let(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
+    let(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
 
     let(:finished)  { FactoryBot.create(:ect_at_school_period, school:, finished_on: Time.zone.today) }
     let(:finishing) { FactoryBot.create(:ect_at_school_period, school:, finished_on: 1.week.from_now) }
     let(:current)   { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
     let(:upcoming)  { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.week.from_now) }
-    let(:completed) { FactoryBot.create(:ect_at_school_period, school:, teacher: teacher_with_completed_induction) }
+    let(:passed)    { FactoryBot.create(:ect_at_school_period, school:, teacher: passed_teacher) }
+    let(:failed)    { FactoryBot.create(:ect_at_school_period, school:, teacher: failed_teacher) }
 
     before do
-      [finished, finishing, current, upcoming, completed].each do |mentee|
+      [finished, finishing, current, upcoming, passed, failed].each do |mentee|
         FactoryBot.create(:mentorship_period, mentor:, mentee:)
       end
     end
