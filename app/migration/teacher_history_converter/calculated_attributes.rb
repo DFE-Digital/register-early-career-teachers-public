@@ -8,7 +8,7 @@ module TeacherHistoryConverter::CalculatedAttributes
   # 4. Return the resulting list ordered by end_date.present?, start_date, created_at.
   def latest_induction_records(induction_records:)
     induction_records
-      .group_by { [it.school, it.training_provider_info.lead_provider_info, it.cohort_year] }
+      .group_by { [it.school, it.training_provider_info&.lead_provider_info, it.cohort_year] }
       .then { it.transform_values! { GROUP_INDUCTION_RECORDS_SORTING.call(it).last } }
       .then { INDUCTION_RECORD_GROUPS_SORTING.call(it.values) }
   end
