@@ -24,6 +24,12 @@ module HaveSummaryListRow
         .join("\n\n")
     end
 
+    def description
+      d = "have summary list row with key \"#{@key}\""
+      d += " and value \"#{@value}\"" if @value.present?
+      d
+    end
+
   private
 
     def generic_failure_message

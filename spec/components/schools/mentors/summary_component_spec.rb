@@ -71,14 +71,14 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
     it "lists upto 5 current ECT names" do
       render_inline(described_class.new(mentor:, school:))
 
-      expect(rendered_content).not_to have_css(".govuk-summary-list__value", text: "No ECTs assigned")
+      expect(rendered_content).not_to have_text("No ECTs assigned")
 
-      expect(rendered_content).to have_css(".govuk-summary-list__value", text: full_name(current_teacher))
-      expect(rendered_content).to have_css(".govuk-summary-list__value", text: full_name(upcoming_teacher))
-      expect(rendered_content).not_to have_css(".govuk-summary-list__value", text: full_name(finished_teacher))
+      expect(rendered_content).to have_link(full_name(current_teacher), href: schools_ect_path(current_period))
+      expect(rendered_content).to have_link(full_name(upcoming_teacher), href: schools_ect_path(upcoming_period))
+      expect(rendered_content).not_to have_link(full_name(finished_teacher), href: schools_ect_path(finished_period))
 
       ects.each do |teacher|
-        expect(rendered_content).to have_css(".govuk-summary-list__value", text: full_name(teacher))
+        expect(rendered_content).to have_link(full_name(teacher), href: schools_ect_path(teacher.ect_at_school_periods.first))
       end
     end
   end
