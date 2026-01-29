@@ -27,11 +27,13 @@ module ParityCheck
       match ? match[:group]&.to_sym : :miscellaneous
     end
 
-    def description
+    def human_readable_url
       pagination_note = options[:paginate] ? " (all pages)" : ""
       query_string = options[:query].present? ? "?#{CGI.unescape(options[:query].to_query)}" : ""
       "#{method.to_s.upcase} #{path}#{query_string}#{pagination_note}"
     end
+
+    def description = options[:description]
 
     def excluded_for_lead_provider?(lead_provider)
       excluded_lead_providers = options[:exclude_lead_providers] || []
