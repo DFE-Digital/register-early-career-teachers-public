@@ -34,10 +34,10 @@ private
   def redirect_if_school_access_blocked
     return unless current_user&.school_user?
     return unless current_user.dfe_sign_in?
+
     blocker = Schools::AccessBlocker.new(school_urn: current_user.school_urn)
     return unless blocker.blocked?
 
     redirect_to(schools_access_denied_path)
   end
-
 end
