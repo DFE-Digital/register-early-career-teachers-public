@@ -23,6 +23,7 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
+        ect_at_school_period:,
         induction_period: ongoing_induction_period
       )
     end
