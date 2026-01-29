@@ -174,7 +174,7 @@ module Sessions
       # @return [Boolean]
       def school_user?
         organisation.urn.present? &&
-          School.exists?(urn: organisation.urn) &&
+          (School.exists?(urn: organisation.urn) || GIAS::School.exists?(urn: organisation.urn)) &&
           dfe_sign_in_roles.include?("SchoolUser")
       end
 
