@@ -23,12 +23,23 @@ RSpec.shared_context "it closes an induction" do
                       teacher:)
   end
 
+  let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:) }
+
   it "deletes the pending induction submission after a day" do
     freeze_time do
       service_call
       expect(PendingInductionSubmission.count).to be(1)
       expect(PendingInductionSubmission.last.delete_at).to eql(24.hours.from_now)
     end
+  end
+
+  it "does not log events for a teacher leaving school" do
+    expect(Events::Record).not_to receive(:record_teacher_left_school_as_ect!)
+    expect(Events::Record).not_to receive(:record_teacher_finishes_training_period_event!)
+    expect(Events::Record).not_to receive(:record_teacher_finishes_mentoring_event!)
+    expect(Events::Record).not_to receive(:record_teacher_finishes_being_mentored_event!)
+
+    service_call
   end
 
   context "without an ongoing induction period" do
@@ -50,6 +61,26 @@ RSpec.shared_context "it closes an induction" do
       end)
 
       expect(service.errors.size).not_to be_zero
+    end
+  end
+
+  context "with an ongoing ECT period" do
+    let(:school) { ect_at_school_period.school }
+    let(:mentor_teacher) { FactoryBot.create(:teacher) }
+    let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: mentor_teacher, school:) }
+    let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period) }
+    let(:ect_service) { ECTAtSchoolPeriods::Finish }
+
+    before do
+      allow(ect_service).to receive(:new).and_call_original
+    end
+
+    it "calls ECT finish service which finishes ongoing ECT and mentorship periods" do
+      service_call
+
+      expect(ect_service).to have_received(:new).with(ect_at_school_period:, finished_on: 1.day.ago.to_date, author:, record_event: false).once
+      expect(ect_at_school_period.reload.finished_on).to eql(1.day.ago.to_date)
+      expect(mentorship_period.reload.finished_on).to eql(1.day.ago.to_date)
     end
   end
 end

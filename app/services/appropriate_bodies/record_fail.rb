@@ -43,6 +43,7 @@ module AppropriateBodies
         teacher:,
         appropriate_body:,
         induction_period: ongoing_induction_period,
+        ect_at_school_period:,
         body: "ECT notified on #{ongoing_induction_period.fail_confirmation_sent_on.to_fs(:govuk)}"
       )
     end
