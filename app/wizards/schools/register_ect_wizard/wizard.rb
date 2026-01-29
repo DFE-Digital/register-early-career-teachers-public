@@ -129,6 +129,11 @@ module Schools
         if use_previous_choices_allowed?
           steps << :use_previous_ect_choices
 
+          # `use_previous_ect_choices` is tri-state:
+          # nil   → user has reached this step but has not yet answered,
+          #         or has navigated back to change their answer
+          # true  → user chose to reuse previous choices
+          # false → user chose not to reuse
           if ect.use_previous_ect_choices.nil?
             if can_reach_check_answers?
               steps << :check_answers

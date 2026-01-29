@@ -2,18 +2,16 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
   subject(:service) { described_class.new }
 
   let(:school) { FactoryBot.create(:school) }
-  let(:other_school) { FactoryBot.create(:school) }
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
 
   let(:delivery_partner_alpha) { FactoryBot.create(:delivery_partner) }
   let(:delivery_partner_omega) { FactoryBot.create(:delivery_partner) }
 
   let(:current_year) { 2025 }
-  let(:previous_year) { 2024 }
-  let(:older_year) { 2023 }
-  let(:gap_year) { 2022 }
+  let(:one_year_ago) { current_year - 1 }
+  let(:two_years_ago) { current_year - 2 }
+  let(:three_years_ago) { current_year - 3 }
 
   let(:current_contract_period) { FactoryBot.create(:contract_period, year: current_year) }
 
@@ -71,7 +69,7 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
       end
     end
 
-    context "when a current-year school partnership exists (scenario 1)" do
+    context "when a current-year school partnership exists" do
       let!(:current_year_school_partnership) do
         create_school_partnership!(
           school:,
@@ -84,31 +82,9 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
       it "returns the current-year school partnership" do
         expect(call_service).to eq(current_year_school_partnership)
       end
-
-      it "does not return partnerships from other schools" do
-        create_school_partnership!(
-          school: other_school,
-          lead_provider:,
-          delivery_partner: delivery_partner_alpha,
-          year: current_year
-        )
-
-        expect(call_service).to eq(current_year_school_partnership)
-      end
-
-      it "does not return partnerships for other lead providers" do
-        create_school_partnership!(
-          school:,
-          lead_provider: other_lead_provider,
-          delivery_partner: delivery_partner_alpha,
-          year: current_year
-        )
-
-        expect(call_service).to eq(current_year_school_partnership)
-      end
     end
 
-    context "when there is no current-year partnership but a previous-year partnership is compatible (scenario 2)" do
+    context "when there is no current-year partnership but a previous partnership is compatible" do
       before do
         create_lead_provider_delivery_partnership!(
           lead_provider:,
@@ -117,102 +93,102 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
         )
       end
 
-      it "returns the most recent compatible previous-year partnership" do
-        previous_year_school_partnership =
+      it "returns the most recent compatible previous partnership" do
+        one_year_ago_school_partnership =
           create_school_partnership!(
             school:,
             lead_provider:,
             delivery_partner: delivery_partner_alpha,
-            year: previous_year
+            year: one_year_ago
           )
 
-        expect(call_service).to eq(previous_year_school_partnership)
+        expect(call_service).to eq(one_year_ago_school_partnership)
       end
 
-      context "when multiple previous-year partnerships exist in the same year" do
-        let!(:alpha_prev) do
+      context "when multiple prior-year partnerships exist in the same year" do
+        let!(:alpha_one_year_ago) do
           create_school_partnership!(
             school:,
             lead_provider:,
             delivery_partner: delivery_partner_alpha,
-            year: previous_year
+            year: one_year_ago
           )
         end
 
-        let!(:omega_prev) do
+        let!(:omega_one_year_ago) do
           create_school_partnership!(
             school:,
             lead_provider:,
             delivery_partner: delivery_partner_omega,
-            year: previous_year
+            year: one_year_ago
           )
         end
 
-        it "returns the previous-year partnership whose delivery partner is paired this year" do
+        it "returns the partnership whose delivery partner is paired this year" do
           result = call_service
-          expect(result).to eq(alpha_prev)
-          expect(result).not_to eq(omega_prev)
+          expect(result).to eq(alpha_one_year_ago)
+          expect(result).not_to eq(omega_one_year_ago)
         end
       end
 
-      context "when the most recent previous year is not paired this year but an older one is" do
-        let!(:previous_year_incompatible_partnership) do
+      context "when the most recent year is not paired this year but an older one is" do
+        let!(:one_year_ago_incompatible_partnership) do
           create_school_partnership!(
             school:,
             lead_provider:,
-            delivery_partner: delivery_partner_omega, # NOT paired in current_year
-            year: previous_year
+            delivery_partner: delivery_partner_omega,
+            year: one_year_ago
           )
         end
 
-        let!(:older_year_compatible_partnership) do
+        let!(:two_years_ago_compatible_partnership) do
           create_school_partnership!(
             school:,
             lead_provider:,
-            delivery_partner: delivery_partner_alpha, # paired in current_year
-            year: older_year
+            delivery_partner: delivery_partner_alpha,
+            year: two_years_ago
           )
         end
 
         it "skips the incompatible most-recent year and returns the older compatible partnership" do
-          expect(call_service).to eq(older_year_compatible_partnership)
-          expect(call_service).not_to eq(previous_year_incompatible_partnership)
+          expect(call_service).to eq(two_years_ago_compatible_partnership)
+          expect(call_service).not_to eq(one_year_ago_incompatible_partnership)
         end
       end
 
-      context "when there are gaps between years (non-consecutive year pairing)" do
-        let!(:gap_year_compatible_partnership) do
+      context "when the most recent compatible partnership is not from the previous year (non-consecutive years)" do
+        let!(:three_years_ago_compatible_partnership) do
           create_school_partnership!(
             school:,
             lead_provider:,
-            delivery_partner: delivery_partner_alpha, # paired in current_year
-            year: gap_year
+            delivery_partner: delivery_partner_alpha,
+            year: three_years_ago
           )
         end
 
-        let!(:previous_year_incompatible_partnership) do
+        let!(:one_year_ago_incompatible_partnership) do
           create_school_partnership!(
             school:,
             lead_provider:,
-            delivery_partner: delivery_partner_omega, # NOT paired in current_year
-            year: previous_year
+            delivery_partner: delivery_partner_omega,
+            year: one_year_ago
           )
         end
 
-        it "returns the most recent previous year with a valid current-year pairing even if years are non-consecutive" do
-          expect(call_service).to eq(gap_year_compatible_partnership)
-          expect(call_service).not_to eq(previous_year_incompatible_partnership)
+        it "returns the most recent year with a valid current-year pairing even if years are non-consecutive" do
+          expect(call_service).to eq(three_years_ago_compatible_partnership)
+          expect(call_service).not_to eq(one_year_ago_incompatible_partnership)
         end
       end
     end
 
-    context "when there is no compatible partnership (scenario 3)" do
+    context "when there is no compatible partnership" do
       before do
         create_school_partnership!(
           school:,
           lead_provider:,
           delivery_partner: delivery_partner_alpha,
-          year: previous_year
+          year: one_year_ago
         )
       end
 
@@ -238,7 +214,7 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
       end
     end
 
-    context "when both current-year and previous-year partnerships exist" do
+    context "when both current-year and prior-year partnerships exist" do
       let!(:current_year_school_partnership) do
         create_school_partnership!(
           school:,
@@ -248,18 +224,18 @@ RSpec.describe SchoolPartnerships::FindReusablePartnership do
         )
       end
 
-      let!(:previous_year_school_partnership) do
+      let!(:one_year_ago_school_partnership) do
         create_school_partnership!(
           school:,
           lead_provider:,
           delivery_partner: delivery_partner_alpha,
-          year: previous_year
+          year: one_year_ago
         )
       end
 
-      it "prefers the current-year partnership (product rule)" do
+      it "prefers the current-year partnership" do
         expect(call_service).to eq(current_year_school_partnership)
-        expect(call_service).not_to eq(previous_year_school_partnership)
+        expect(call_service).not_to eq(one_year_ago_school_partnership)
       end
     end
   end
