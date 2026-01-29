@@ -751,16 +751,6 @@ john_withers_training_period = FactoryBot.create(:training_period,
 john_withers_declaration_date = john_withers_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
 FactoryBot.create(:declaration, declaration_type: :started, declaration_date: john_withers_declaration_date, training_period: john_withers_training_period)
 
-print_seed_info("Ichigo Kurosaki (Mentor)", indent: 2, colour: MENTOR_COLOUR)
-
-ichigo_kurosaki = Teacher.find_by!(trs_first_name: "Ichigo", trs_last_name: "Kurosaki")
-FactoryBot.create(:mentor_at_school_period,
-                  teacher: ichigo_kurosaki,
-                  school: brookfield_school,
-                  email: "ichigo.kurosaki@brookfield.com",
-                  started_on: 1.year.ago,
-                  finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
-
 print_seed_info("Dominic West (ECT)", indent: 2, colour: ECT_COLOUR)
 
 dominic_west_ect_at_brookfield_school = FactoryBot.create(:ect_at_school_period,
