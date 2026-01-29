@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_29_161426) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -145,6 +145,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
     t.boolean "detailed_evidence_types_enabled", default: false, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+  end
+
+  create_table "data_migration_teacher_combinations", force: :cascade do |t|
+    t.string "trn"
+    t.uuid "participant_id"
+    t.jsonb "ecf1_ect_combinations"
+    t.jsonb "ecf1_mentor_combinations"
+    t.jsonb "ecf2_ect_combinations"
+    t.jsonb "ecf2_mentor_combinations"
+    t.virtual "ecf1_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_ect_combinations)", stored: true
+    t.virtual "ecf1_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_mentor_combinations)", stored: true
+    t.virtual "ecf2_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_ect_combinations)", stored: true
+    t.virtual "ecf2_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_mentor_combinations)", stored: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "data_migrations", force: :cascade do |t|

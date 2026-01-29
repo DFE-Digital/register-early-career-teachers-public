@@ -575,3 +575,17 @@
   - message
   - created_at
   - updated_at
+  :data_migration_teacher_combinations:
+  - id
+  - trn
+  - participant_id
+  - ecf1_ect_combinations
+  - ecf1_mentor_combinations
+  - ecf2_ect_combinations
+  - ecf2_mentor_combinations
+  - created_at
+  - updated_at
+  - ecf1_ect_combinations_count
+  - ecf1_mentor_combinations_count
+  - ecf2_ect_combinations_count
+  - ecf2_mentor_combinations_count
