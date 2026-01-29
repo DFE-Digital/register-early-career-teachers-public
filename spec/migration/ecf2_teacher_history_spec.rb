@@ -11,7 +11,6 @@ describe ECF2TeacherHistory do
   let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
   let(:school_a_data) { Types::SchoolData.new(urn: 111_111, name: "School A") }
   let(:school_b_data) { Types::SchoolData.new(urn: 222_222, name: "School B") }
-  let(:mentor_data) { ECF2TeacherHistory::MentorData.new(trn: "1234567", urn: "123456", started_on: 1.week.ago, finished_on: 1.day.ago) }
   let(:created_at) { 1.month.ago.round }
 
   let(:mentorship_periods) do
@@ -21,7 +20,7 @@ describe ECF2TeacherHistory do
         finished_on: 1.week.ago.to_date,
         ecf_start_induction_record_id: SecureRandom.uuid,
         ecf_end_induction_record_id: SecureRandom.uuid,
-        mentor_data:
+        mentor_at_school_period_id: SecureRandom.uuid
       )
     ]
   end
@@ -349,22 +348,13 @@ describe ECF2TeacherHistory do
             )
           end
 
-          let(:mentor_data) do
-            ECF2TeacherHistory::MentorData.new(
-              trn: existing_mentor_at_school_period.teacher.trn,
-              urn: existing_mentor_at_school_period.school.urn,
-              started_on: existing_mentor_at_school_period.started_on,
-              finished_on: existing_mentor_at_school_period.finished_on
-            )
-          end
-
           let(:mentorship_period) do
             ECF2TeacherHistory::MentorshipPeriod.new(
               started_on: 1.year.ago.to_date,
               finished_on: 1.month.ago.to_date,
               ecf_start_induction_record_id: SecureRandom.uuid,
               ecf_end_induction_record_id: SecureRandom.uuid,
-              mentor_data:
+              mentor_at_school_period_id: existing_mentor_at_school_period.id
             )
           end
 
