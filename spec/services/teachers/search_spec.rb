@@ -296,6 +296,23 @@ describe Teachers::Search do
           expect(results).to eq([teacher2, teacher1, mentored_teacher2, mentored_teacher1])
         end
       end
+
+      describe "in_progress filtering" do
+        let(:failed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
+        let(:passed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
+        let(:teacher1) { FactoryBot.create(:teacher, :induction_in_progress) }
+        let(:teacher2) { FactoryBot.create(:teacher, trs_induction_status: "FailedInWales") }
+
+        it "is not enabled by default" do
+          expect(Teachers::Search.new.search).to contain_exactly(passed_teacher, failed_teacher, teacher1, teacher2, teacher3)
+        end
+
+        context "when it is enabled" do
+          it "excludes Passed/Failed teachers" do
+            expect(Teachers::Search.new(in_progress: true).search).to contain_exactly(teacher1, teacher2, teacher3)
+          end
+        end
+      end
     end
 
     it "orders results by last name, first name, and id" do
