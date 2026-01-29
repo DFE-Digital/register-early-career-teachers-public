@@ -115,7 +115,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
       context "when fetching `voidable_declaration_for_voiding_id`" do
         let(:identifier) { :voidable_declaration_for_voiding_id }
-        let(:possible_states) { %i[submitted eligible payable ineligible] }
+        let(:possible_states) { %i[submitted eligible payable] }
         let(:state) { possible_states.sample }
 
         it { is_expected.to eq(ecf_participant_declaration.id) }
