@@ -57,6 +57,24 @@ RSpec.describe Admin::RecordPass do
       service_call
     end
 
+    context "when the ect at school period has already finished" do
+      let(:finished_on) { 2.days.ago }
+
+      it "assigns the finished period to the event" do
+        expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
+          appropriate_body:,
+          teacher:,
+          induction_period:,
+          ect_at_school_period:,
+          author:,
+          body: note,
+          zendesk_ticket_id: "123456"
+        )
+
+        service_call
+      end
+    end
+
     context "when ongoing induction period only has the legacy programme type" do
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing, :legacy_programme_type,
