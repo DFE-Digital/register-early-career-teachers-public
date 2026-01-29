@@ -198,6 +198,18 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       end
     end
 
+    context "when the start date is in the past but the contract period lookup returns nil" do
+      let(:start_date) { { 1 => period_2023.year, 2 => "07", 3 => "01" } }
+
+      before do
+        allow(ContractPeriod).to receive(:containing_date).and_return(nil)
+      end
+
+      it "returns the cannot register ect yet step" do
+        expect(subject.next_step).to eq(:cannot_register_ect_yet)
+      end
+    end
+
     context "when the start date is in the past" do
       let(:start_date) { { 1 => period_2023.year, 2 => "07", 3 => "01" } }
 

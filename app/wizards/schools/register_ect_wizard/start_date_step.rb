@@ -14,7 +14,7 @@ module Schools
       def next_step
         return :cannot_register_ect_yet unless start_date_contract_period
 
-        return :working_pattern if past_start_date? || start_date_contract_period.enabled?
+        return :working_pattern if past_start_date? || start_date_contract_period&.enabled?
 
         :cannot_register_ect_yet
       end
