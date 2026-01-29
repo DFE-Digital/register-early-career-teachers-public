@@ -44,6 +44,8 @@
         legend: { text: "Select the new lead provider for #{@wizard.teacher_full_name}" }
       ) %>
 
+  <%= render "schools/shared/roles_details" %>
+
   <%= form.govuk_submit "Continue" %>
 
   <p class="govuk-body">
