@@ -10,6 +10,13 @@ describe ECF1TeacherHistory do
       ]
     end
 
+    let(:mentor_at_school_periods) do
+      [
+        FactoryBot.build(:ecf1_teacher_history_mentor_at_school_period_row, started_on: 12.months.ago, finished_on: 6.months.ago),
+        FactoryBot.build(:ecf1_teacher_history_mentor_at_school_period_row, started_on: 6.months.ago),
+      ]
+    end
+
     let(:mentor_induction_records) do
       [
         FactoryBot.build(:ecf1_teacher_history_induction_record_row, start_date: 2.years.ago, end_date: 9.months.ago),
@@ -17,13 +24,14 @@ describe ECF1TeacherHistory do
       ]
     end
 
-    let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records) }
+    let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, mentor_at_school_periods:) }
     let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records) }
 
     it "can be initialized directly with teacher history classes" do
       expect(subject.user.trn).to eq(user.trn)
       expect(subject.user.full_name).to eql(user.full_name)
       expect(subject.ect.induction_records).to match_array(ect_induction_records)
+      expect(subject.ect.mentor_at_school_periods).to match_array(mentor_at_school_periods)
       expect(subject.mentor.induction_records).to match_array(mentor_induction_records)
     end
   end
@@ -32,13 +40,36 @@ describe ECF1TeacherHistory do
     subject(:history) { described_class.build(teacher_profile:) }
 
     let(:ect_profile) { FactoryBot.create(:migration_participant_profile, :ect) }
-    let(:induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-    let(:appropriate_body) { FactoryBot.create(:migration_appropriate_body) }
-    let!(:ect_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: ect_profile, induction_programme:, appropriate_body:) }
     let(:teacher_profile) { ect_profile.teacher_profile }
-    let!(:user) { teacher_profile.user }
-    let!(:mentor_profile) { FactoryBot.create(:migration_participant_profile, :mentor, teacher_profile:) }
-    let!(:mentor_induction_records) { FactoryBot.create_list(:migration_induction_record, 2, participant_profile: mentor_profile, induction_programme:, appropriate_body:) }
+    let(:user) { teacher_profile.user }
+    let(:school_cohort) { ect_profile.school_cohort }
+    let(:induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led, school_cohort:) }
+    let(:mentor_profile) { FactoryBot.create(:migration_participant_profile, :mentor, teacher_profile:, school_cohort:) }
+    let(:appropriate_body) { FactoryBot.create(:migration_appropriate_body) }
+    let!(:ect_induction_records) do
+      [
+        FactoryBot.create(:migration_induction_record, :with_mentor, participant_profile: ect_profile, induction_programme:, appropriate_body:, start_date: 1.month.ago, end_date: 3.weeks.ago),
+        FactoryBot.create(:migration_induction_record, :with_mentor, participant_profile: ect_profile, induction_programme:, appropriate_body:, start_date: 3.weeks.ago, end_date: nil)
+      ]
+    end
+
+    let!(:mentor_at_school_periods) do
+      school = FactoryBot.create(:school, urn: ect_induction_records.first.induction_programme.school_cohort.school.urn.to_i)
+      period_1 = FactoryBot.create(:mentor_at_school_period,
+                                   api_mentor_training_record_id: ect_induction_records.first.mentor_profile_id,
+                                   school:)
+      period_2 = FactoryBot.create(:mentor_at_school_period,
+                                   api_mentor_training_record_id: ect_induction_records.last.mentor_profile_id,
+                                   school:)
+      [period_1, period_2]
+    end
+
+    let!(:mentor_induction_records) do
+      [
+        FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile, induction_programme:, appropriate_body:, start_date: 1.month.ago, end_date: 3.weeks.ago),
+        FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile, induction_programme:, appropriate_body:, start_date: 3.weeks.ago, end_date: nil)
+      ]
+    end
 
     it "can be built with ECF1 data" do
       expect(history.user.trn).to eq(teacher_profile.trn)
@@ -48,20 +79,6 @@ describe ECF1TeacherHistory do
     end
 
     describe "setting up induction records correctly" do
-      let(:ect_induction_records) do
-        [
-          FactoryBot.create(:migration_induction_record, participant_profile: ect_profile, induction_programme:, appropriate_body:, start_date: 1.month.ago, end_date: 3.weeks.ago),
-          FactoryBot.create(:migration_induction_record, participant_profile: ect_profile, induction_programme:, appropriate_body:, start_date: 3.weeks.ago, end_date: nil)
-        ]
-      end
-
-      let(:mentor_induction_records) do
-        [
-          FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile, induction_programme:, appropriate_body:, start_date: 1.month.ago, end_date: 3.weeks.ago),
-          FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile, induction_programme:, appropriate_body:, start_date: 3.weeks.ago, end_date: nil)
-        ]
-      end
-
       describe "ECT induction records" do
         it "creates the right number" do
           expect(history.ect.induction_records.count).to eq ect_induction_records.count
@@ -93,6 +110,27 @@ describe ECF1TeacherHistory do
               expect(historic_record.training_provider_info.cohort_year).to eq(induction_record.induction_programme.partnership.cohort.start_year)
               expect(historic_record.appropriate_body.ecf1_id).to eq(induction_record.appropriate_body.id)
               expect(historic_record.appropriate_body.name).to eq(induction_record.appropriate_body.name)
+            end
+          end
+        end
+      end
+
+      describe "ECT mentor at school periods" do
+        it "creates the right number" do
+          expect(history.ect.mentor_at_school_periods.count).to eq mentor_at_school_periods.count
+        end
+
+        it "populates the right attributes" do
+          aggregate_failures "ECT mentor at school periods results" do
+            mentor_at_school_periods.each do |mentor_at_school_period|
+              historic_period = history.ect.mentor_at_school_periods.find { |hp| hp.mentor_at_school_period_id == mentor_at_school_period.id }
+              expect(historic_period.started_on).to eq(mentor_at_school_period.started_on)
+              expect(historic_period.finished_on).to eq(mentor_at_school_period&.finished_on)
+              expect(historic_period.created_at).to be_within(1.second).of(mentor_at_school_period.created_at)
+              expect(historic_period.updated_at).to be_within(1.second).of(mentor_at_school_period.updated_at)
+              expect(historic_period.school.urn).to eq(mentor_at_school_period.school.urn)
+              expect(historic_period.teacher.trn).to eq(mentor_at_school_period.teacher.trn)
+              expect(historic_period.teacher.api_mentor_training_record_id).to eq(mentor_at_school_period.teacher.api_mentor_training_record_id)
             end
           end
         end
