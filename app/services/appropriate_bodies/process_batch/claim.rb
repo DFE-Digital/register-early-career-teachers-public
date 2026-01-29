@@ -59,7 +59,7 @@ module AppropriateBodies
               false # can be claimed
             end
           elsif claimed_by_another_ab?
-            capture_error("#{name} is already claimed by another appropriate body (#{teacher.current_appropriate_body.name})")
+            capture_error("#{name} is already claimed by another appropriate body (#{teacher.current_appropriate_body_period.name})")
             true
           elsif !claimed_by_another_ab?
             capture_error("#{name} is already claimed by your appropriate body")
@@ -126,12 +126,12 @@ module AppropriateBodies
 
       # @return [AppropriateBodies::ClaimAnECT::FindECT]
       def find_ect
-        ClaimAnECT::FindECT.new(appropriate_body:, pending_induction_submission:)
+        ClaimAnECT::FindECT.new(appropriate_body_period:, pending_induction_submission:)
       end
 
       # @return [AppropriateBodies::ClaimAnECT::CheckECT]
       def check_ect
-        ClaimAnECT::CheckECT.new(appropriate_body:, pending_induction_submission:)
+        ClaimAnECT::CheckECT.new(appropriate_body_period:, pending_induction_submission:)
       end
     end
   end

@@ -1,7 +1,7 @@
 RSpec.describe Admin::ImportECT::CheckECT do
   subject { Admin::ImportECT::CheckECT.new(pending_induction_submission:) }
 
-  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body: nil) }
+  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period: nil) }
 
   describe "#initialize" do
     it "assigns the provided pending induction submission params" do
@@ -31,7 +31,7 @@ RSpec.describe Admin::ImportECT::CheckECT do
     end
 
     context "when the database save fails" do
-      let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body: nil) }
+      let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period: nil) }
 
       before do
         allow(pending_induction_submission).to receive(:save).and_return(false)

@@ -4,7 +4,7 @@ RSpec.describe Teachers::Manage do
       trn: teacher.trn,
       trs_first_name: teacher.trs_first_name,
       trs_last_name: teacher.trs_last_name,
-      event_metadata: Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body:)
+      event_metadata: Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body_period:)
     )
   end
 
@@ -21,13 +21,13 @@ RSpec.describe Teachers::Manage do
                       trs_induction_status: "InProgress")
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   describe "#initialize" do
     it "sets the author, teacher, and appropriate_body" do
       expect(service.author).to eq(author)
       expect(service.teacher).to eq(teacher)
-      expect(service.appropriate_body).to eq(appropriate_body)
+      expect(service.appropriate_body_period).to eq(appropriate_body_period)
     end
   end
 
@@ -36,12 +36,12 @@ RSpec.describe Teachers::Manage do
 
     it "uses a system user as the author" do
       expect(service.author).to be_a(Events::SystemAuthor)
-      expect(service.appropriate_body).to be_nil
+      expect(service.appropriate_body_period).to be_nil
     end
   end
 
   describe ".new" do
-    subject(:service) { described_class.new(author:, teacher:, appropriate_body:) }
+    subject(:service) { described_class.new(author:, teacher:, appropriate_body_period:) }
 
     it "is private" do
       expect { service }.to raise_error(NoMethodError, /private method 'new' called/)
@@ -81,7 +81,7 @@ RSpec.describe Teachers::Manage do
           service.update_name!(trs_first_name: "John", trs_last_name: "Doe")
 
           expect(RecordEventJob).to have_received(:perform_later).with(
-            appropriate_body:,
+            appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_id: author.id,
             author_name: "Christopher Biggins",
@@ -227,7 +227,7 @@ RSpec.describe Teachers::Manage do
             author_name: "Christopher Biggins",
             author_type: :dfe_staff_user,
             event_type: :teacher_trs_induction_status_updated,
-            appropriate_body:,
+            appropriate_body_period:,
             teacher:,
             happened_at: Time.zone.now,
             heading: %(Induction status changed from 'InProgress' to 'Passed')

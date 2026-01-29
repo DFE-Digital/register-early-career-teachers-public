@@ -15,7 +15,7 @@ RSpec.describe InductionPeriod do
   end
 
   describe "associations" do
-    it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:appropriate_body_period) }
     it { is_expected.to belong_to(:teacher) }
     it { is_expected.to have_many(:events) }
   end
@@ -23,10 +23,10 @@ RSpec.describe InductionPeriod do
   describe "validations" do
     subject { FactoryBot.build(:induction_period) }
 
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
     it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
-    it { is_expected.to validate_presence_of(:appropriate_body_id).with_message("Select an appropriate body") }
+    it { is_expected.to validate_presence_of(:appropriate_body_period_id).with_message("Select an appropriate body") }
 
     describe "overlapping periods" do
       let(:started_on_message) { "Start date cannot overlap another induction period" }
@@ -75,10 +75,10 @@ RSpec.describe InductionPeriod do
     end
 
     describe "check constraints" do
-      subject { FactoryBot.build(:induction_period, teacher:, appropriate_body:, started_on: Date.current, finished_on: Date.current) }
+      subject { FactoryBot.build(:induction_period, teacher:, appropriate_body_period:, started_on: Date.current, finished_on: Date.current) }
 
       let(:teacher) { FactoryBot.create(:teacher) }
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
       it "prevents 0 day periods from being written to the database" do
         expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
@@ -100,8 +100,8 @@ RSpec.describe InductionPeriod do
 
       describe "#touch_teacher?" do
         let(:teacher) { FactoryBot.create(:teacher) }
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-        let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body:, started_on: "2019-01-01", finished_on: "2019-07-01") }
+        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+        let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: "2019-01-01", finished_on: "2019-07-01") }
 
         context "when a new induction period is created" do
           it "returns true if it is the first induction period for the teacher" do
@@ -109,13 +109,13 @@ RSpec.describe InductionPeriod do
           end
 
           it "returns false if it is not the first induction period and outcome has not changed" do
-            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: "2023-01-01")
+            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: "2023-01-01")
 
             expect(second_induction_period.send(:touch_teacher?)).to be(false)
           end
 
           it "returns true if it is not the first induction period but outcome is set on creation" do
-            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: "2023-01-01", outcome: "pass")
+            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: "2023-01-01", outcome: "pass")
 
             expect(second_induction_period.send(:touch_teacher?)).to be(true)
           end
@@ -170,7 +170,7 @@ RSpec.describe InductionPeriod do
     end
 
     describe "#started_on_not_in_future" do
-      subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body:, started_on:) }
+      subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body_period:, started_on:) }
 
       context "when start date is today" do
         let(:started_on) { Date.current }
@@ -195,7 +195,7 @@ RSpec.describe InductionPeriod do
     end
 
     describe "#finished_on_not_in_future" do
-      subject { FactoryBot.build(:induction_period, appropriate_body:, finished_on:) }
+      subject { FactoryBot.build(:induction_period, appropriate_body_period:, finished_on:) }
 
       context "when end date is today" do
         let(:finished_on) { Date.current }
@@ -221,7 +221,7 @@ RSpec.describe InductionPeriod do
 
     describe "#fail_confirmation_sent_on_not_in_future" do
       subject do
-        FactoryBot.build(:induction_period, :fail, appropriate_body:, fail_confirmation_sent_on:)
+        FactoryBot.build(:induction_period, :fail, appropriate_body_period:, fail_confirmation_sent_on:)
       end
 
       context "when confirmation date is today" do
@@ -247,7 +247,7 @@ RSpec.describe InductionPeriod do
 
       context "when outcome is not a fail" do
         subject do
-          FactoryBot.build(:induction_period, :pass, appropriate_body:)
+          FactoryBot.build(:induction_period, :pass, appropriate_body_period:)
         end
 
         it "a confirmation date is not required" do
@@ -259,7 +259,7 @@ RSpec.describe InductionPeriod do
 
     describe "#fail_confirmation_sent_on_not_before_end_date" do
       context "when confirmation date is before end date" do
-        subject { FactoryBot.build(:induction_period, :fail, appropriate_body:, fail_confirmation_sent_on: 2.months.ago) }
+        subject { FactoryBot.build(:induction_period, :fail, appropriate_body_period:, fail_confirmation_sent_on: 2.months.ago) }
 
         it do
           expect(subject).not_to be_valid(:record_outcome)
@@ -270,25 +270,25 @@ RSpec.describe InductionPeriod do
 
     describe "#number_of_terms" do
       context "when finished_on is empty" do
-        subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body:) }
+        subject { FactoryBot.build(:induction_period, :ongoing, appropriate_body_period:) }
 
         it { is_expected.not_to validate_presence_of(:number_of_terms) }
       end
 
       context "when finished_on is present" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:) }
+        subject { FactoryBot.build(:induction_period, appropriate_body_period:) }
 
         it { is_expected.to validate_presence_of(:number_of_terms).with_message("Enter a number of terms") }
       end
 
       context "when finished on is empty and number of terms is present" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3, finished_on: nil) }
+        subject { FactoryBot.build(:induction_period, appropriate_body_period:, number_of_terms: 3, finished_on: nil) }
 
         it { is_expected.to validate_absence_of(:number_of_terms).with_message("Delete the number of terms if the induction has no end date") }
       end
 
       context "when number_of_terms contains non-numeric characters" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: "4.r5", finished_on: Date.current) }
+        subject { FactoryBot.build(:induction_period, appropriate_body_period:, number_of_terms: "4.r5", finished_on: Date.current) }
 
         it do
           expect(subject).not_to be_valid
@@ -297,7 +297,7 @@ RSpec.describe InductionPeriod do
       end
 
       context "when number_of_terms has more than 1 decimal place" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
+        subject { FactoryBot.build(:induction_period, appropriate_body_period:, number_of_terms: 3.45, finished_on: Date.current) }
 
         it do
           expect(subject).not_to be_valid
@@ -306,13 +306,13 @@ RSpec.describe InductionPeriod do
       end
 
       context "when number_of_terms has 1 decimal place" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3.5, finished_on: Date.current) }
+        subject { FactoryBot.build(:induction_period, appropriate_body_period:, number_of_terms: 3.5, finished_on: Date.current) }
 
         it { is_expected.to be_valid }
       end
 
       context "when number_of_terms is an integer" do
-        subject { FactoryBot.build(:induction_period, appropriate_body:, number_of_terms: 3, finished_on: Date.current) }
+        subject { FactoryBot.build(:induction_period, appropriate_body_period:, number_of_terms: 3, finished_on: Date.current) }
 
         it { is_expected.to be_valid }
       end
@@ -320,7 +320,7 @@ RSpec.describe InductionPeriod do
   end
 
   describe "#training_programme=" do
-    subject { FactoryBot.build(:induction_period, appropriate_body_id: 1) }
+    subject { FactoryBot.build(:induction_period, appropriate_body_period_id: 1) }
 
     it "assigns the induction_programme for provider_led and is valid" do
       subject.induction_programme = nil
@@ -346,9 +346,9 @@ RSpec.describe InductionPeriod do
       end
     end
 
-    describe ".for_appropriate_body" do
-      it "returns induction periods only for the specified appropriate_body" do
-        expect(InductionPeriod.for_appropriate_body(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_id" = 456))
+    describe ".for_appropriate_body_period" do
+      it "returns induction periods only for the specified appropriate body period" do
+        expect(InductionPeriod.for_appropriate_body_period(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_period_id" = 456))
       end
     end
   end

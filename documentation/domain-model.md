@@ -110,7 +110,7 @@ erDiagram
     boolean marked_as_eligible
   }
   School }o--|| DfESignInOrganisation : belongs_to
-  School }o--|| AppropriateBody : belongs_to
+  School }o--|| AppropriateBodyPeriod : belongs_to
   School }o--|| LeadProvider : belongs_to
   School }o--|| ContractPeriod : belongs_to
   Schedule {
@@ -123,7 +123,7 @@ erDiagram
   Schedule }o--|| ContractPeriod : belongs_to
   PendingInductionSubmissionBatch {
     integer id
-    integer appropriate_body_id
+    integer appropriate_body_period_id
     enum batch_type
     enum batch_status
     string error_message
@@ -140,7 +140,7 @@ erDiagram
     integer file_size
     string file_type
   }
-  PendingInductionSubmissionBatch }o--|| AppropriateBody : belongs_to
+  PendingInductionSubmissionBatch }o--|| AppropriateBodyPeriod : belongs_to
   Teacher {
     integer id
     string corrected_name
@@ -176,7 +176,7 @@ erDiagram
   }
   PendingInductionSubmission {
     integer id
-    integer appropriate_body_id
+    integer appropriate_body_period_id
     string establishment_id
     string trn
     string trs_first_name
@@ -208,7 +208,7 @@ erDiagram
     date trs_date_of_birth
     date fail_confirmation_sent_on
   }
-  PendingInductionSubmission }o--|| AppropriateBody : belongs_to
+  PendingInductionSubmission }o--|| AppropriateBodyPeriod : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
   NationalBody {
     integer id
@@ -267,7 +267,7 @@ erDiagram
     datetime created_at
     datetime updated_at
   }
-  LegacyAppropriateBody }o--|| AppropriateBody : belongs_to
+  LegacyAppropriateBody }o--|| AppropriateBodyPeriod : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
     integer active_lead_provider_id
@@ -287,7 +287,7 @@ erDiagram
   }
   InductionPeriod {
     integer id
-    integer appropriate_body_id
+    integer appropriate_body_period_id
     date started_on
     date finished_on
     datetime created_at
@@ -300,7 +300,7 @@ erDiagram
     enum training_programme
     date fail_confirmation_sent_on
   }
-  InductionPeriod }o--|| AppropriateBody : belongs_to
+  InductionPeriod }o--|| AppropriateBodyPeriod : belongs_to
   InductionPeriod }o--|| Teacher : belongs_to
   InductionExtension {
     integer id
@@ -328,7 +328,7 @@ erDiagram
   }
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
-  ECTAtSchoolPeriod }o--|| AppropriateBody : belongs_to
+  ECTAtSchoolPeriod }o--|| AppropriateBodyPeriod : belongs_to
   DfESignInOrganisation {
     integer id
     string name
@@ -390,7 +390,7 @@ erDiagram
     boolean mentor_funding_enabled
     boolean detailed_evidence_types_enabled
   }
-  AppropriateBody {
+  AppropriateBodyPeriod {
     integer id
     string name
     datetime created_at
@@ -402,10 +402,10 @@ erDiagram
     integer lead_school_id
     integer national_body_id
   }
-  AppropriateBody }o--|| DfESignInOrganisation : belongs_to
-  AppropriateBody }o--|| NationalBody : belongs_to
-  AppropriateBody }o--|| TeachingSchoolHub : belongs_to
-  AppropriateBody }o--|| School : belongs_to
+  AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
+  AppropriateBodyPeriod }o--|| NationalBody : belongs_to
+  AppropriateBodyPeriod }o--|| TeachingSchoolHub : belongs_to
+  AppropriateBodyPeriod }o--|| School : belongs_to
   ActiveLeadProvider {
     integer id
     integer lead_provider_id

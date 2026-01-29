@@ -92,10 +92,10 @@ describe Schools::LatestRegistrationChoices do
     context "when there is a last_chosen_appropriate_body present on the school" do
       subject { service.appropriate_body }
 
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-      let(:school) { FactoryBot.create(:school, last_chosen_appropriate_body: appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:school) { FactoryBot.create(:school, last_chosen_appropriate_body: appropriate_body_period) }
 
-      it("returns the last chosen appropriate body") { is_expected.to eql(appropriate_body) }
+      it("returns the last chosen appropriate body") { is_expected.to eql(appropriate_body_period) }
     end
 
     context "when there is no last_chosen_appropriate_body present on the school" do

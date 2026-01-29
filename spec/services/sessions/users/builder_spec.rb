@@ -3,7 +3,7 @@ RSpec.describe Sessions::Users::Builder do
     subject(:session_user) { described_class.new(omniauth_payload:).session_user }
 
     let(:email) { Faker::Internet.email }
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
     let(:school) { FactoryBot.create(:school) }
 
     let(:omniauth_payload) do
@@ -15,6 +15,7 @@ RSpec.describe Sessions::Users::Builder do
           first_name: Faker::Name.first_name,
           last_name: Faker::Name.last_name,
           name: Faker::Name.name,
+          # persona provider only
           appropriate_body_id:,
           school_urn:,
           dfe_staff:
@@ -43,8 +44,8 @@ RSpec.describe Sessions::Users::Builder do
         allow_any_instance_of(Organisation::Access).to receive(:roles).and_return(dfe_sign_in_roles)
       end
 
-      context "when the AppropriateBody exists and the user has the AppropriateBodyUser role" do
-        let(:organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
+      context "when the AppropriateBodyPeriod exists and the user has the AppropriateBodyUser role" do
+        let(:organisation_id) { appropriate_body_period.dfe_sign_in_organisation_id }
         let(:organisation_urn) { nil }
         let(:dfe_sign_in_roles) { %w[AppropriateBodyUser] }
 
@@ -63,8 +64,8 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
-      context "when both the AppropriateBody and School exist and the user has both roles", :enable_schools_interface do
-        let(:organisation_id) { appropriate_body.dfe_sign_in_organisation_id }
+      context "when both the AppropriateBodyPeriod and School exist and the user has both roles", :enable_schools_interface do
+        let(:organisation_id) { appropriate_body_period.dfe_sign_in_organisation_id }
         let(:organisation_urn) { school.urn }
         let(:dfe_sign_in_roles) { %w[SchoolUser AppropriateBodyUser] }
 
@@ -136,9 +137,9 @@ RSpec.describe Sessions::Users::Builder do
           end
         end
 
-        context "when the appropriate_body_id is present" do
+        context "when the appropriate_body_period_id is present" do
           let(:uid) { email }
-          let(:appropriate_body_id) { appropriate_body.id }
+          let(:appropriate_body_id) { appropriate_body_period.id }
           let(:school_urn) { nil }
           let(:dfe_staff) { "false" }
           let(:organisation_id) { nil }
@@ -149,7 +150,7 @@ RSpec.describe Sessions::Users::Builder do
           end
         end
 
-        context "when no dfe_staff or school_urn or appropriate_body_id present" do
+        context "when no dfe_staff or school_urn or appropriate_body_period_id present" do
           let(:uid) { email }
           let(:appropriate_body_id) { nil }
           let(:school_urn) { nil }
