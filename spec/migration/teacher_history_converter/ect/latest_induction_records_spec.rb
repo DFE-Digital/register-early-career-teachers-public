@@ -18,7 +18,8 @@ describe "Latest induction records mode conversion" do
       trn: "1234567",
       ect: {
         participant_profile_id: "11111111-2222-3333-aaaa-bbbbbbbbbbbb",
-        induction_records:
+        induction_records:,
+        mentor_at_school_periods:
       }
     }
   end
@@ -328,6 +329,8 @@ describe "Latest induction records mode conversion" do
         end
       end
 
+      let(:mentor_at_school_periods) { [] }
+
       it "creates the right expected number of ECT at school periods" do
         expect(subject.ect_at_school_periods.size).to eq(data[:at_school_periods].size)
       end
@@ -357,9 +360,8 @@ describe "Latest induction records mode conversion" do
   end
 
   context "mentorship periods" do
-    let!(:school_222_222) { FactoryBot.create(:school, urn: 222_222) }
     let(:mentor_profile_id) { SecureRandom.uuid }
-    let(:mentor_teacher) { FactoryBot.create(:teacher, :with_name, api_mentor_training_record_id: mentor_profile_id) }
+    let(:mentor_teacher) { { trn: "1122333", api_mentor_training_record_id: mentor_profile_id } }
 
     let(:induction_records) do
       [
@@ -387,13 +389,17 @@ describe "Latest induction records mode conversion" do
       ]
     end
 
-    context "when there is no mentor at school period overlaping the last starting ect_at_school_period" do
-      before do
-        FactoryBot.create(:mentor_at_school_period,
-                          teacher: mentor_teacher,
-                          school: school_222_222,
-                          start_date: Date.parse("2024-1-1"),
-                          end_date: Date.parse("2024-2-2"))
+    context "when there is no mentor at school period overlapping the last starting ect_at_school_period" do
+      let(:mentor_at_school_periods) do
+        [
+          {
+            mentor_at_school_period_id: SecureRandom.uuid,
+            started_on: Date.parse("2024-1-1"),
+            finished_on: Date.parse("2024-2-2"),
+            school: school_b,
+            teacher: mentor_teacher
+          }
+        ]
       end
 
       it "don't create any mentorship at school period" do
@@ -401,19 +407,24 @@ describe "Latest induction records mode conversion" do
       end
     end
 
-    context "when there is a mentor at school period overlaping only the start of the last starting ect_at_school_period" do
-      before do
-        FactoryBot.create(:mentor_at_school_period,
-                          teacher: mentor_teacher,
-                          school: school_222_222,
-                          start_date: Date.parse("2024-1-1"),
-                          end_date: Date.parse("2024-2-2"))
-
-        FactoryBot.create(:mentor_at_school_period,
-                          teacher: mentor_teacher,
-                          school: school_222_222,
-                          start_date: Date.parse("2024-2-15"),
-                          end_date: Date.parse("2024-4-4"))
+    context "when there is a mentor at school period overlapping only the start of the last starting ect_at_school_period" do
+      let(:mentor_at_school_periods) do
+        [
+          {
+            mentor_at_school_period_id: SecureRandom.uuid,
+            started_on: Date.parse("2024-1-1"),
+            finished_on: Date.parse("2024-2-2"),
+            school: school_b,
+            teacher: mentor_teacher
+          },
+          {
+            mentor_at_school_period_id: SecureRandom.uuid,
+            started_on: Date.parse("2024-2-15"),
+            finished_on: Date.parse("2024-4-4"),
+            school: school_b,
+            teacher: mentor_teacher
+          }
+        ]
       end
 
       it "create a mentorship at school period with the overlapped range of dates" do
@@ -423,19 +434,24 @@ describe "Latest induction records mode conversion" do
       end
     end
 
-    context "when there is a mentor at school period overlaping only the end of the last starting ect_at_school_period" do
-      before do
-        FactoryBot.create(:mentor_at_school_period,
-                          teacher: mentor_teacher,
-                          school: school_222_222,
-                          start_date: Date.parse("2024-1-1"),
-                          end_date: Date.parse("2024-4-4"))
-
-        FactoryBot.create(:mentor_at_school_period,
-                          teacher: mentor_teacher,
-                          school: school_222_222,
-                          start_date: Date.parse("2024-5-5"),
-                          end_date: nil)
+    context "when there is a mentor at school period overlapping only the end of the last starting ect_at_school_period" do
+      let(:mentor_at_school_periods) do
+        [
+          {
+            mentor_at_school_period_id: SecureRandom.uuid,
+            started_on: Date.parse("2024-1-1"),
+            finished_on: Date.parse("2024-4-4"),
+            school: school_b,
+            teacher: mentor_teacher
+          },
+          {
+            mentor_at_school_period_id: SecureRandom.uuid,
+            started_on: Date.parse("2024-5-5"),
+            finished_on: :ignore,
+            school: school_b,
+            teacher: mentor_teacher
+          }
+        ]
       end
 
       it "create a mentorship at school period with the overlapped range of dates" do
@@ -446,18 +462,23 @@ describe "Latest induction records mode conversion" do
     end
 
     context "when there is a mentor at school period containing the last starting ect_at_school_period" do
-      before do
-        FactoryBot.create(:mentor_at_school_period,
-                          teacher: mentor_teacher,
-                          school: school_222_222,
-                          start_date: Date.parse("2024-1-1"),
-                          end_date: Date.parse("2024-2-2"))
-
-        FactoryBot.create(:mentor_at_school_period,
-                          teacher: mentor_teacher,
-                          school: school_222_222,
-                          start_date: Date.parse("2024-2-15"),
-                          end_date: nil)
+      let(:mentor_at_school_periods) do
+        [
+          {
+            mentor_at_school_period_id: SecureRandom.uuid,
+            started_on: Date.parse("2024-1-1"),
+            finished_on: Date.parse("2024-2-2"),
+            school: school_b,
+            teacher: mentor_teacher
+          },
+          {
+            mentor_at_school_period_id: SecureRandom.uuid,
+            started_on: Date.parse("2024-2-15"),
+            finished_on: :ignore,
+            school: school_b,
+            teacher: mentor_teacher
+          }
+        ]
       end
 
       it "create a mentorship at school period with the overlapped range of dates" do
