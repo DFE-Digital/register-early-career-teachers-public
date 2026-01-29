@@ -58,10 +58,12 @@ private
 
     raw_induction_records = ecf1_teacher_history.ect.induction_records
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
+    mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
 
     case migration_mode
     when :latest_induction_records
-      TeacherHistoryConverter::ECT::LatestInductionRecords.new(induction_records).ect_at_school_periods
+      TeacherHistoryConverter::ECT::LatestInductionRecords.new(induction_records:, mentor_at_school_periods:)
+                                                          .ect_at_school_periods
     when :all_induction_records
       TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records).ect_at_school_periods
     end
