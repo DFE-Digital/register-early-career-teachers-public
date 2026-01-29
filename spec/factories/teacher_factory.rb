@@ -79,6 +79,10 @@ FactoryBot.define do
       trs_induction_completed_date { Faker::Date.backward(days: 14) }
     end
 
+    trait :induction_in_progress do
+      trs_induction_status { "InProgress" }
+    end
+
     trait :induction_passed do
       induction_completed
       trs_induction_status { "Passed" }
