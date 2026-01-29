@@ -1,0 +1,2 @@
+class DataMigrationTeacherCombination < ApplicationRecord
+end
