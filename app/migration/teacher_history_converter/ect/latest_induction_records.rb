@@ -7,10 +7,11 @@ require "ostruct"
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :induction_records
+  attr_reader :induction_records, :mentor_at_school_periods
 
-  def initialize(induction_records)
+  def initialize(induction_records:, mentor_at_school_periods:)
     @induction_records = latest_induction_records(induction_records:)
+    @mentor_at_school_periods = mentor_at_school_periods
   end
 
   # Returns ECF2TeacherHistory::ECTAtSchoolPeriod[]
