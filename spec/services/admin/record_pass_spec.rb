@@ -48,6 +48,7 @@ RSpec.describe Admin::RecordPass do
         appropriate_body:,
         teacher:,
         induction_period:,
+        ect_at_school_period:,
         author:,
         body: note,
         zendesk_ticket_id: "123456"
