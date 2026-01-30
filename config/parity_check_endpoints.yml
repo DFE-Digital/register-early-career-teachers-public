@@ -424,32 +424,39 @@ post:
         - challenged_reason
         - status
   - "/api/v3/participant-declarations":
+      description: "Create a declaration for a pre-2025 contract period"
       body: pre2025_declaration_create_body
       exclude:
         - has_passed
   - "/api/v3/participant-declarations":
+      description: "Create a declaration for a post-2024 contract period"
       body: post2024_declaration_create_body
       exclude:
         - has_passed
   - "/api/v3/participant-declarations":
+      description: "Create a declaration when one already exists"
       body: declaration_already_exists_create_body
       exclude:
         - has_passed
   - "/api/v3/participant-declarations":
+      description: "Create a declaration when there is a completed milestone"
       body: declaration_complete_create_body
       exclude:
         - has_passed
 
 put:
   - "/api/v3/participant-declarations/:id/void":
+      description: "Void a paid declaration"
       id: ":paid_declaration_for_clawback_id"
       exclude_lead_providers:
         - Capita
   - "/api/v3/participant-declarations/:id/void":
+      description: "Void a voidable declaration"
       id: ":voidable_declaration_for_voiding_id"
       exclude_lead_providers:
         - Capita
   - "/api/v3/participant-declarations/:id/void":
+      description: "Void a declaration that has already been voided"
       id: ":already_voided_declaration_for_voiding_id"
       exclude_lead_providers:
         - Capita
@@ -465,6 +472,7 @@ put:
         - status
 
   - "/api/v3/participants/:id/withdraw":
+      description: "Withdraw an active participant"
       ecf_path: "/api/v3/participants/ecf/:id/withdraw"
       id: ":active_teacher_api_id_for_participant_action"
       body: active_participant_withdraw_body
@@ -472,6 +480,7 @@ put:
         - teacher_reference_number_validated
         - overall_induction_start_date
   - "/api/v3/participants/:id/withdraw":
+      description: "Withdraw a withdrawn participant"
       ecf_path: "/api/v3/participants/ecf/:id/withdraw"
       id: ":withdrawn_teacher_api_id_for_participant_action"
       body: withdrawn_participant_withdraw_body
@@ -480,6 +489,7 @@ put:
         - overall_induction_start_date
 
   - "/api/v3/participants/:id/defer":
+      description: "Defer an active participant"
       ecf_path: "/api/v3/participants/ecf/:id/defer"
       id: ":active_teacher_api_id_for_participant_action"
       body: active_participant_defer_body
@@ -487,6 +497,7 @@ put:
         - teacher_reference_number_validated
         - overall_induction_start_date
   - "/api/v3/participants/:id/defer":
+      description: "Defer a deferred participant"
       ecf_path: "/api/v3/participants/ecf/:id/defer"
       id: ":deferred_teacher_api_id_for_participant_action"
       body: deferred_participant_defer_body
@@ -495,6 +506,7 @@ put:
         - overall_induction_start_date
 
   - "/api/v3/participants/:id/resume":
+      description: "Resume a withdrawn participant"
       ecf_path: "/api/v3/participants/ecf/:id/resume"
       id: ":withdrawn_teacher_api_id_for_participant_action"
       body: withdrawn_participant_resume_body
@@ -502,6 +514,7 @@ put:
         - teacher_reference_number_validated
         - overall_induction_start_date
   - "/api/v3/participants/:id/resume":
+      description: "Resume a deferred participant"
       ecf_path: "/api/v3/participants/ecf/:id/resume"
       id: ":deferred_teacher_api_id_for_participant_action"
       body: deferred_participant_resume_body
@@ -509,6 +522,7 @@ put:
         - teacher_reference_number_validated
         - overall_induction_start_date
   - "/api/v3/participants/:id/resume":
+      description: "Resume an active participant"
       ecf_path: "/api/v3/participants/ecf/:id/resume"
       id: ":active_teacher_api_id_for_participant_action"
       body: active_participant_resume_body
@@ -517,18 +531,22 @@ put:
         - overall_induction_start_date
 
   - "/api/v3/participants/:id/change-schedule":
+      description: "Change schedule to a different schedule and cohort"
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_different_schedule_and_cohort_participant_body
   - "/api/v3/participants/:id/change-schedule":
+      description: "Change schedule to a different cohort"
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_different_cohort_participant_body
   - "/api/v3/participants/:id/change-schedule":
+      description: "Change schedule to a different schedule"
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_different_schedule_participant_body
   - "/api/v3/participants/:id/change-schedule":
+      description: "Change schedule with incorrect course identifier"
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_error_state_participant_body

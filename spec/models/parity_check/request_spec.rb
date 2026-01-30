@@ -9,7 +9,7 @@ describe ParityCheck::Request do
   end
 
   describe "delegate methods" do
-    it { is_expected.to delegate_method(:description).to(:endpoint) }
+    it { is_expected.to delegate_method(:human_readable_url).to(:endpoint) }
     it { is_expected.to delegate_method(:method).to(:endpoint) }
   end
 

@@ -24,11 +24,11 @@ RSpec.describe "Run parity check" do
     expect(page.get_by_text("Select endpoints you would like to run a parity check against.")).to be_visible
 
     expect(page.locator("legend").and(page.get_by_text("Statements"))).to be_visible
-    expect(page.get_by_label(get_endpoint.description)).to be_visible
-    page.get_by_label(post_endpoint.description).click
+    expect(page.get_by_label(get_endpoint.human_readable_url)).to be_visible
+    page.get_by_label(post_endpoint.human_readable_url).click
 
     expect(page.locator("legend").and(page.get_by_text("Users"))).to be_visible
-    page.get_by_label(put_endpoint.description).click
+    page.get_by_label(put_endpoint.human_readable_url).click
 
     # clear previous jobs to avoid selecting wrong parity check request id
     clear_previous_enqueued_jobs
