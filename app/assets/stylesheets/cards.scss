@@ -1,0 +1,24 @@
+.action-card {
+  background: govuk-colour('light-grey');
+  padding: 20px;
+  border: 1px solid govuk-colour('mid-grey');
+  transition: background-color 0.2s ease;
+
+  .govuk-heading-l {
+    color: govuk-colour('blue');
+  }
+
+  .govuk-body {
+    color: govuk-colour('black');
+  }
+
+  &:hover {
+    background: govuk-tint(govuk-colour('blue'), 85);
+
+    .govuk-body {
+      text-decoration: underline;
+      text-decoration-thickness: max(3px, .1875rem, .12em);
+      text-underline-offset: .1578em;
+    }
+  }
+}
