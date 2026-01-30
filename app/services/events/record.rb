@@ -312,6 +312,14 @@ module Events
       new(event_type:, author:, heading:, ect_at_school_period:, teacher:, school:, training_period:, happened_at:).record_event!
     end
 
+    def self.record_teacher_ect_at_school_period_deleted!(author:, teacher:, school:, started_on:, happened_at: Time.zone.now)
+      event_type = :teacher_ect_at_school_period_deleted
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}'s ECT at school period which was due to start on #{started_on} was deleted"
+
+      new(event_type:, author:, heading:, teacher:, school:, happened_at:).record_event!
+    end
+
     def self.record_teacher_starts_training_period_event!(author:, training_period:, ect_at_school_period:, mentor_at_school_period:, teacher:, school:, happened_at:)
       if ect_at_school_period.present? && mentor_at_school_period.present?
         fail(ArgumentError, "either ect_at_school_period or mentor_at_school_period permitted, not both")
