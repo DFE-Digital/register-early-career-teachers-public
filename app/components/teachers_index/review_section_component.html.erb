@@ -14,7 +14,7 @@
 
 <%= render AppropriateBodies::CardContainerComponent.new do %>
   <%= render AppropriateBodies::ActionCardComponent.new(
-    url: "#",
+    url: ab_unclaimed_index_path,
     heading: number_of_ect_records_to_review,
     body: "ECT induction #{"record".pluralize(number_of_ect_records_to_review)} to review"
   ) %>
