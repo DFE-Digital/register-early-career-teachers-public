@@ -13,7 +13,7 @@ class ECF1TeacherHistory::ECT
 
   attr_accessor :induction_records, :mentor_at_school_periods
 
-  def initialize(participant_profile_id:, created_at:, updated_at:, induction_start_date:, induction_completion_date:, pupil_premium_uplift:, sparsity_uplift:, payments_frozen_cohort_start_year:, states:, induction_records:, mentor_at_school_periods:)
+  def initialize(participant_profile_id:, created_at:, updated_at:, induction_start_date:, induction_completion_date:, pupil_premium_uplift:, sparsity_uplift:, payments_frozen_cohort_start_year:, states:, induction_records:, mentor_at_school_periods: [])
     @participant_profile_id = participant_profile_id
     @created_at = created_at
     @updated_at = updated_at
