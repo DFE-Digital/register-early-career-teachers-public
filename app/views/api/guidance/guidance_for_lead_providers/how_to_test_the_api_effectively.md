@@ -20,7 +20,7 @@ Try each operation individually before automating.
 
 ## API rate limit restrictions in Sandbox
 
-The API in Sandbox is limited to 1,000 requests every 5 minutes for authenticated API requests and 300 every 5 minutes for unauthenticated requests.
+The API is limited to 1,000 requests every 5 minutes for authenticated API requests and 300 every 5 minutes for unauthenticated requests.
 
 Please contact us if this causes an issue.
 
