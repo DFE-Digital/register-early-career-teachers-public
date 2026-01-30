@@ -10,10 +10,15 @@ class TeacherHistoryConverter
   end
 
   def convert_to_ecf2!
+    ect_at_school_periods, ecf1_ect_combinations = extract_ect_at_school_periods
+    mentor_at_school_periods, ecf1_mentor_combinations = extract_mentor_at_school_periods
+
     ECF2TeacherHistory.new(
       teacher:,
       ect_at_school_periods:,
-      mentor_at_school_periods:
+      mentor_at_school_periods:,
+      ecf1_ect_combinations:,
+      ecf1_mentor_combinations:
     )
   end
 
@@ -53,7 +58,7 @@ private
     )
   end
 
-  def ect_at_school_periods
+  def extract_ect_at_school_periods
     return [] if ecf1_teacher_history.ect.blank?
 
     raw_induction_records = ecf1_teacher_history.ect.induction_records
@@ -63,7 +68,7 @@ private
     case migration_mode
     when :latest_induction_records
       TeacherHistoryConverter::ECT::LatestInductionRecords.new(induction_records:, mentor_at_school_periods:)
-                                                          .ect_at_school_periods
+                                                          .extract_ect_at_school_periods
     when :all_induction_records
       TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records).ect_at_school_periods
     end
@@ -73,7 +78,7 @@ private
     @parsed_name ||= Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
   end
 
-  def mentor_at_school_periods
+  def extract_mentor_at_school_periods
     return [] if ecf1_teacher_history.mentor.blank?
 
     raw_induction_records = ecf1_teacher_history.mentor.induction_records
@@ -81,7 +86,7 @@ private
 
     case migration_mode
     when :latest_induction_records
-      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records).mentor_at_school_periods
+      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records).extract_mentor_at_school_periods
     when :all_induction_records
       TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
     end
