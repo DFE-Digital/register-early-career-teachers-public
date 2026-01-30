@@ -173,6 +173,18 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       end
     end
 
+    context "when the start date is in the past but the contract period lookup returns nil" do
+      let(:start_date) { { 1 => period_2023.year, 2 => "07", 3 => "01" } }
+
+      before do
+        allow(ContractPeriod).to receive(:containing_date).and_return(nil)
+      end
+
+      it "returns the cannot register ect yet step" do
+        expect(subject.next_step).to eq(:cannot_register_ect_yet)
+      end
+    end
+
     context "when the start date is in the past" do
       let(:start_date) { { 1 => period_2023.year, 2 => "07", 3 => "01" } }
 
@@ -258,6 +270,18 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     context "when the step is valid" do
+      it "stores a parsed start_date in the wizard store for later steps" do
+        expect { subject.save! }
+          .to change { store[:start_date_as_date] }
+          .from(nil)
+          .to(Date.new(2024, 7, 1))
+      end
+
+      it "stores a formatted start_date in the wizard store for display/serialization" do
+        subject.save!
+        expect(store[:start_date]).to eq("1 July 2024")
+      end
+
       it "updates the wizard ect start date" do
         expect { subject.save! }
           .to change(subject.ect, :start_date).to("1 July 2024")

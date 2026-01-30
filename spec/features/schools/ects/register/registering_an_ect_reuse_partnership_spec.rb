@@ -76,13 +76,41 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     then_i_am_on_the_confirmation_page
   end
 
+  scenario "reuses previous choices when no partnership exists but a previous EOI exists (provider-led)" do
+    given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
+    and_i_am_on_the_schools_ects_index_page
+    and_i_start_adding_an_ect
+    and_i_click_continue
+    and_i_submit_the_find_ect_form
+    and_i_choose_that_the_details_are_correct
+    and_i_click_confirm_and_continue
+    then_i_am_on_the_email_address_page
+
+    and_i_enter_the_ect_email_address
+    and_i_click_continue
+    then_i_am_on_the_start_date_page
+
+    and_i_enter_a_valid_start_date
+    and_i_click_continue
+    then_i_am_on_the_working_pattern_page
+
+    and_i_select_full_time
+    and_i_click_continue
+    then_i_am_on_the_use_previous_choices_page
+
+    and_i_choose_to_reuse_previous_choices
+    and_i_click_continue
+    then_i_am_on_the_check_answers_page
+    and_i_see_previous_programme_choices_summary_when_reusing
+  end
+
   def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
     context = build_school_with_reusable_provider_led_partnership
 
-    @current_school               = context.school
-    @current_contract_period      = context.current_contract_period
-    @previous_school_partnership  = context.previous_school_partnership
-    @last_chosen_lead_provider    = context.last_chosen_lead_provider
+    @current_school = context.school
+    @current_contract_period = context.current_contract_period
+    @previous_school_partnership = context.previous_school_partnership
+    @last_chosen_lead_provider = context.last_chosen_lead_provider
     @previous_year_delivery_partner = context.previous_year_delivery_partner
 
     @appropriate_body_name = "Golden Leaf Teaching Hub"
@@ -94,10 +122,62 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     sign_in_as_school_user(school: @current_school)
   end
 
-  def stub_reuse_finder_to_return(previous_partnership)
-    reuse_finder = instance_double(SchoolPartnerships::FindPreviousReusable)
+  def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
+    context = build_school_with_reusable_provider_led_partnership
 
-    allow(SchoolPartnerships::FindPreviousReusable).to receive(:new)
+    @current_school = context.school
+    @current_contract_period = context.current_contract_period
+    @last_chosen_lead_provider = context.last_chosen_lead_provider
+
+    @appropriate_body_name = "Golden Leaf Teaching Hub"
+    FactoryBot.create(:appropriate_body, name: @appropriate_body_name)
+
+    stub_reuse_finder_to_return(nil)
+
+    create_previous_provider_led_eoi_at_school!(previous_year: 2024)
+
+    sign_in_as_school_user(school: @current_school)
+  end
+
+  def create_previous_provider_led_eoi_at_school!(previous_year: 2024)
+    previous_contract_period = FactoryBot.create(:contract_period, year: previous_year)
+
+    previous_year_active_lead_provider =
+      FactoryBot.create(
+        :active_lead_provider,
+        lead_provider: @last_chosen_lead_provider,
+        contract_period: previous_contract_period
+      )
+
+    FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @last_chosen_lead_provider,
+      contract_period: @current_contract_period
+    )
+
+    previous_ect_at_school_period =
+      FactoryBot.create(
+        :ect_at_school_period,
+        school: @current_school,
+        started_on: Date.new(previous_year, 9, 1),
+        finished_on: nil
+      )
+
+    FactoryBot.create(
+      :training_period,
+      ect_at_school_period: previous_ect_at_school_period,
+      training_programme: "provider_led",
+      expression_of_interest: previous_year_active_lead_provider,
+      school_partnership: nil,
+      started_on: Date.new(previous_year, 9, 1),
+      finished_on: nil
+    )
+  end
+
+  def stub_reuse_finder_to_return(previous_partnership)
+    reuse_finder = instance_double(SchoolPartnerships::FindReusablePartnership)
+
+    allow(SchoolPartnerships::FindReusablePartnership).to receive(:new)
       .and_return(reuse_finder)
 
     allow(reuse_finder).to receive(:call)
