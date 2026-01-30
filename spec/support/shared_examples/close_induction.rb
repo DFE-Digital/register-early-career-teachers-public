@@ -66,6 +66,10 @@ RSpec.shared_context "it closes an induction" do
       expect(service.errors.size).not_to be_zero
     end
   end
+end
+
+RSpec.shared_context "it closes and induction period and finishes any related periods" do
+  include_context "it closes an induction"
 
   context "ECT periods" do
     let(:school) { ect_at_school_period.school }
@@ -83,6 +87,26 @@ RSpec.shared_context "it closes an induction" do
 
     before do
       allow(ect_service).to receive(:new).and_call_original
+    end
+
+    context "when the ect at school period is has not started" do
+      let(:started_on) { 2.days.from_now }
+
+      it "calls a service to delete the period" do
+        allow(ECTAtSchoolPeriods::Destroy)
+        .to receive(:call)
+        .and_call_original
+
+        service_call
+
+        expect(ECTAtSchoolPeriods::Destroy)
+        .to have_received(:call).with(
+          ect_at_school_period:,
+          author:
+        )
+
+        expect(ECTAtSchoolPeriod).not_to exist(ect_at_school_period.id)
+      end
     end
 
     context "an ongoing ECT period" do

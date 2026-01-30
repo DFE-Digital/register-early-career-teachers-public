@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::RecordPass do
     })
   end
 
-  it_behaves_like "it closes an induction" do
+  it_behaves_like "it closes and induction period and finishes any related periods" do
     it "closes with pass outcome" do
       service_call
 
@@ -36,26 +36,6 @@ RSpec.describe AppropriateBodies::RecordPass do
         ect_at_school_period:,
         author:
       )
-    end
-
-    context "when the ect at school period is has not started" do
-      let(:started_on) { 2.days.from_now }
-
-      it "calls a service to delete the period" do
-        allow(ECTAtSchoolPeriods::Destroy)
-        .to receive(:call)
-        .and_call_original
-
-        service_call
-
-        expect(ECTAtSchoolPeriods::Destroy)
-        .to have_received(:call).with(
-          ect_at_school_period:,
-          author:
-        )
-
-        expect(ECTAtSchoolPeriod).not_to exist(ect_at_school_period.id)
-      end
     end
 
     context "when the ect at school period has already finished" do
