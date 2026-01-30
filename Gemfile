@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby "3.4.7"
 
-gem "rails", "~> 8.0.4"
+gem "rails", "~> 8.1.2"
 
 # temporary, see https://github.com/mperham/connection_pool/issues/212#issuecomment-3637733716
 gem "connection_pool", "< 3"
