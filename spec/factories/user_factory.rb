@@ -10,7 +10,7 @@ FactoryBot.define do
     end
 
     trait(:admin) { role { "admin" } }
-    trait(:super_admin) { role { "super_admin" } }
+    trait(:user_manager) { role { "user_manager" } }
     trait(:finance) { role { "finance" } }
   end
 end
