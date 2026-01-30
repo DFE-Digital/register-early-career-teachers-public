@@ -34,6 +34,7 @@ class Event < ApplicationRecord
     teacher_passes_induction
     teacher_registered_as_ect
     teacher_left_school_as_ect
+    teacher_ect_at_school_period_deleted
     teacher_registered_as_mentor
     teacher_left_school_as_mentor
     teacher_starts_being_mentored
