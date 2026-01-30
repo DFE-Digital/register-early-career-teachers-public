@@ -85,16 +85,16 @@ RSpec.shared_context "it closes an induction" do
       allow(ect_service).to receive(:new).and_call_original
     end
 
-    context "one ongoing ECT period" do
+    context "an ongoing ECT period" do
       let(:finished_on) { nil }
 
       it "calls ECT finish service which finishes ongoing ECT and mentorship periods" do
         mentorship_period.touch
         service_call
 
-        expect(ect_service).to have_received(:new).with(ect_at_school_period:, finished_on: 1.day.ago.to_date, author:, record_event: false).once
-        expect(ect_at_school_period.reload.finished_on).to eql(1.day.ago.to_date)
-        expect(mentorship_period.reload.finished_on).to eql(1.day.ago.to_date)
+        expect(ect_service).to have_received(:new).with(ect_at_school_period:, finished_on: Time.zone.today, author:, record_event: false).once
+        expect(ect_at_school_period.reload.finished_on).to eql(Time.zone.today)
+        expect(mentorship_period.reload.finished_on).to eql(Time.zone.today)
       end
     end
 
