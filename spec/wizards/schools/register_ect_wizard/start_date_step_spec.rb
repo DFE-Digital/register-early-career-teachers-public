@@ -114,55 +114,30 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         end
       end
 
-      let(:start_date) { { 1 => "2024", 2 => "10", 3 => "01" } }
+      let(:start_date_too_early_message) { "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a later start date." }
 
       context "when the start_date is before the previous ECTAtSchoolPeriod started_on date" do
-        let(:start_date) { { 1 => "2024", 2 => "08", 3 => "01" } }
+        let(:start_date) { previous_period.started_on - 1.day }
 
-        it "is not valid" do
-          expect(subject).not_to be_valid
-          expect(subject.errors[:start_date]).to include(
-            "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a later start date."
-          )
-        end
+        it { is_expected.to have_error(:start_date, start_date_too_early_message) }
       end
 
       context "when the start_date is on the previous ECTAtSchoolPeriod started_on date" do
-        let(:start_date) { { 1 => "2024", 2 => "09", 3 => "01" } }
+        let(:start_date) { previous_period.started_on }
 
-        it "is valid" do
-          expect(subject).to be_valid
-          expect(subject.errors[:start_date]).to be_blank
-        end
+        it { is_expected.to have_error(:start_date, start_date_too_early_message) }
       end
 
       context "when the start_date is after the previous ECTAtSchoolPeriod started_on date" do
-        let(:start_date) { { 1 => "2024", 2 => "10", 3 => "01" } }
+        let(:start_date) { previous_period.started_on + 1.day }
 
-        it "is valid" do
-          expect(subject).to be_valid
-          expect(subject.errors[:start_date]).to be_blank
-        end
+        it { is_expected.not_to have_error(:start_date) }
       end
 
       context "when the start_date is blank" do
         let(:start_date) { nil }
 
-        it "is not valid" do
-          expect(subject).not_to be_valid
-          expect(subject.errors[:start_date]).not_to include(
-            "This ECT was previously registered at Springfield Primary (1 September 2024). Enter a later date."
-          )
-        end
-      end
-
-      context "when there is no previous period" do
-        let(:previous_period) { nil }
-
-        it "is valid" do
-          expect(subject).to be_valid
-          expect(subject.errors[:start_date]).to be_blank
-        end
+        it { is_expected.to have_error(:start_date, "Enter the date the ECT started or will start teaching at your school") }
       end
     end
   end

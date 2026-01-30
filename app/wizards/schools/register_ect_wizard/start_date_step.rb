@@ -29,7 +29,7 @@ module Schools
         previous_period = ect.previous_ect_at_school_period
         return unless previous_start_date_invalid?(previous_period)
 
-        if start_date_as_date < previous_period.started_on
+        if start_date_as_date <= previous_period.started_on
           add_start_date_too_early_error(previous_period)
         end
       end
