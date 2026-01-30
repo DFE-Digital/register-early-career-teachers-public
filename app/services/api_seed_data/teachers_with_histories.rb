@@ -396,10 +396,9 @@ module APISeedData
     end
 
     def create_induction_period(teacher:)
-      return if teacher.reload.ect_at_school_periods.count > 1
-
       # Use the earliest ECT at school period for induction
       school_period = teacher.earliest_ect_at_school_period
+      return unless school_period
 
       # Induction starts around the same time as school period
       started_on = (school_period.started_on + rand(-3..3).days)
