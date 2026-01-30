@@ -11,8 +11,7 @@ module TeachersIndex
     attr_reader :appropriate_body
 
     def number_of_ect_records_to_review
-      # TODO: - replace with query
-      42
+      appropriate_body.unclaimed_ect_at_school_periods.count
     end
   end
 end

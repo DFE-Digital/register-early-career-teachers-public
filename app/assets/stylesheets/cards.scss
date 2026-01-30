@@ -14,5 +14,11 @@
 
   &:hover {
     background: govuk-tint(govuk-colour('blue'), 85);
+
+    .govuk-body {
+      text-decoration: underline;
+      text-decoration-thickness: max(3px, .1875rem, .12em);
+      text-underline-offset: .1578em;
+    }
   }
 }
