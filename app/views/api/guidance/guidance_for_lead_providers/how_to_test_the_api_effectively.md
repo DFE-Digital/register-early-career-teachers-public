@@ -18,6 +18,12 @@ Use the [sandbox environment](https://sandbox.register-early-career-teachers.edu
 
 Try each operation individually before automating. 
 
+## API rate limit restrictions in Sandbox
+
+The API in Sandbox is limited to 1,000 requests every 5 minutes for authenticated API requests and 300 every 5 minutes for unauthenticated requests.
+
+Please contact us if this causes an issue.
+
 ## Focused pulls 
 
 Avoid pulling everything every time. 
