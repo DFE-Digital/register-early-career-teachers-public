@@ -48,6 +48,10 @@ class ECF2TeacherHistory::TrainingPeriod
     @school = school
   end
 
+  def combination
+    [school.urn, contract_period_year, lead_provider_info&.name].join(": ")
+  end
+
   def to_hash
     {
       started_on:,
