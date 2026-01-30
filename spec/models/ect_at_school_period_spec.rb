@@ -427,7 +427,6 @@ describe ECTAtSchoolPeriod do
       let!(:period_with_ongoing_induction_period_for_same_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
       let!(:period_with_ongoing_induction_period_for_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
       let!(:period_with_finished_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
-      let!(:period_with_claimed_pending_submission) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
       let!(:finished_period) { FactoryBot.create(:ect_at_school_period, :finished, school_reported_appropriate_body: appropriate_body) }
       let!(:period_with_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: other_appropriate_body) }
 
@@ -435,7 +434,6 @@ describe ECTAtSchoolPeriod do
         FactoryBot.create(:induction_period, :ongoing, appropriate_body:, teacher: period_with_ongoing_induction_period_for_same_appropriate_body.teacher)
         FactoryBot.create(:induction_period, :ongoing, appropriate_body: other_appropriate_body, teacher: period_with_ongoing_induction_period_for_different_appropriate_body.teacher)
         FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 1.month.ago, teacher: period_with_finished_induction_period.teacher)
-        FactoryBot.create(:pending_induction_submission, :claimed, appropriate_body:, trn: period_with_claimed_pending_submission.teacher.trn)
       end
 
       it "returns only current/future periods not claimed by their school_reported_appropriate_body" do
@@ -449,7 +447,6 @@ describe ECTAtSchoolPeriod do
         )
         expect(results).not_to include(
           period_with_ongoing_induction_period_for_same_appropriate_body,
-          period_with_claimed_pending_submission,
           finished_period
         )
       end

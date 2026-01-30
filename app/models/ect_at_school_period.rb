@@ -74,17 +74,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
           AND induction_periods.finished_on IS NULL
           AND induction_periods.appropriate_body_id = ect_at_school_periods.school_reported_appropriate_body_id
       SQL
-      .joins(<<~SQL)
-        LEFT OUTER JOIN pending_induction_submissions
-          ON pending_induction_submissions.trn = teachers.trn
-          AND pending_induction_submissions.appropriate_body_id = ect_at_school_periods.school_reported_appropriate_body_id
-          AND pending_induction_submissions.error_messages = '{}'
-          AND pending_induction_submissions.finished_on IS NULL
-          AND pending_induction_submissions.started_on IS NOT NULL
-          AND pending_induction_submissions.delete_at IS NOT NULL
-      SQL
       .where(induction_periods: { id: nil })
-      .where(pending_induction_submissions: { id: nil })
   }
 
   def reported_leaving_by?(school)
