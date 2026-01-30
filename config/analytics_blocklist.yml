@@ -578,6 +578,8 @@
   :data_migration_teacher_combinations:
   - id
   - trn
+  - ecf1_ect_profile_id
+  - ecf1_mentor_profile_id
   - participant_id
   - ecf1_ect_combinations
   - ecf1_mentor_combinations
