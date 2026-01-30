@@ -1040,3 +1040,113 @@ create_same_school_mentorship!(
   started_on: Date.new(2025, 7, 15),
   finished_on: nil
 )
+
+# Admin add partnership EOI scenario (Grange Hill)
+contract_period = ContractPeriod.current
+raise "ContractPeriod.current not set" if contract_period.blank?
+
+lead_provider = LeadProvider.find_by!(name: "Ambition Institute")
+active_lead_provider = ActiveLeadProvider.find_or_create_by!(
+  lead_provider:,
+  contract_period_year: contract_period.year
+)
+
+schedule = Schedule.find_or_create_by!(
+  contract_period:,
+  identifier: "ecf-standard-september"
+)
+
+school = School.find_by!(urn: 2_472_261)
+
+alice_thompson = Teacher.find_by!(trn: "0000035")
+ben_edwards = Teacher.find_by!(trn: "0000036")
+chris_walker = Teacher.find_by!(trn: "0000037")
+dana_hughes = Teacher.find_by!(trn: "0000038")
+
+alice_period = FactoryBot.create(
+  :ect_at_school_period,
+  school:,
+  teacher: alice_thompson,
+  started_on: contract_period.started_on + 1.month,
+  finished_on: nil
+)
+
+ben_period = FactoryBot.create(
+  :ect_at_school_period,
+  school:,
+  teacher: ben_edwards,
+  started_on: contract_period.started_on + 2.months,
+  finished_on: nil
+)
+
+chris_period = FactoryBot.create(
+  :mentor_at_school_period,
+  school:,
+  teacher: chris_walker,
+  started_on: contract_period.started_on + 3.months,
+  finished_on: nil
+)
+
+dana_period = FactoryBot.create(
+  :ect_at_school_period,
+  school:,
+  teacher: dana_hughes,
+  started_on: contract_period.started_on + 1.week,
+  finished_on: nil
+)
+
+print_seed_info("Admin add partnership EOI teachers:", indent: 2, colour: ECT_COLOUR)
+describe_ect_at_school_period(alice_period)
+describe_ect_at_school_period(ben_period)
+describe_mentor_at_school_period(chris_period)
+describe_ect_at_school_period(dana_period)
+
+describe_training_period(
+  FactoryBot.create(
+    :training_period,
+    :with_only_expression_of_interest,
+    :for_ect,
+    ect_at_school_period: alice_period,
+    expression_of_interest: active_lead_provider,
+    schedule:,
+    started_on: alice_period.started_on,
+    finished_on: nil
+  )
+)
+
+describe_training_period(
+  FactoryBot.create(
+    :training_period,
+    :with_only_expression_of_interest,
+    :for_ect,
+    ect_at_school_period: ben_period,
+    expression_of_interest: active_lead_provider,
+    schedule:,
+    started_on: ben_period.started_on,
+    finished_on: nil
+  )
+)
+
+describe_training_period(
+  FactoryBot.create(
+    :training_period,
+    :with_only_expression_of_interest,
+    :for_mentor,
+    mentor_at_school_period: chris_period,
+    expression_of_interest: active_lead_provider,
+    schedule:,
+    started_on: chris_period.started_on,
+    finished_on: nil
+  )
+)
+
+describe_training_period(
+  FactoryBot.create(
+    :training_period,
+    :school_led,
+    :for_ect,
+    ect_at_school_period: dana_period,
+    started_on: dana_period.started_on,
+    finished_on: nil
+  )
+)
