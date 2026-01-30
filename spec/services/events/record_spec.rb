@@ -161,14 +161,17 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_teacher_passes_induction_event!" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, induction_period:, body: "Correcting an error")
+        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, ect_at_school_period:, induction_period:, body: "Correcting an error")
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
+          ect_at_school_period:,
           heading: "Rhys Ifans passed induction by admin",
           event_type: :teacher_passes_induction,
           happened_at: induction_period.finished_on,
@@ -180,20 +183,23 @@ RSpec.describe Events::Record do
 
     it "fails when induction period is missing" do
       expect {
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, ect_at_school_period:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
   describe ".record_teacher_fails_induction_event!" do
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
+
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:, zendesk_ticket_id: "#123456")
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:, ect_at_school_period:, zendesk_ticket_id: "#123456")
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
           appropriate_body:,
+          ect_at_school_period:,
           heading: "Rhys Ifans failed induction by admin",
           event_type: :teacher_fails_induction,
           happened_at: induction_period.finished_on,
@@ -205,7 +211,7 @@ RSpec.describe Events::Record do
 
     it "fails when induction period is missing" do
       expect {
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, ect_at_school_period:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
