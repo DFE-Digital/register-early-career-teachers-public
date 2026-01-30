@@ -7,6 +7,12 @@ module GIAS
     SCHOOLS_FILENAME = "ecf_tech.csv"
     SCHOOL_LINKS_FILENAME = "links.csv"
 
+    # file_source - :gias to fetch files from GIAS API
+    #               :local to fetch supplemental files from filesystem (childrens centres)
+    def initialize(file_source: :gias)
+      @file_source = file_source
+    end
+
     def fetch
       DeclarativeUpdates.skip(:metadata) do
         import_only? ? fetch_and_import_only : fetch_and_update
@@ -32,7 +38,7 @@ module GIAS
 
     def parse_school_row(row)
       @school_row = GIAS::SchoolRow.new(row)
-      if eligible?
+      if eligible_to_import?
         import_only? ? import_school! : update_school!
       end
 
@@ -58,10 +64,10 @@ module GIAS
 
   private
 
-    attr_reader :gias_school, :school_row
+    attr_reader :gias_school, :school_row, :file_source
 
     delegate :create_school!, :school, to: :gias_school
-    delegate :attributes, :eligible?, :open?, :urn, to: :school_row
+    delegate :attributes, :eligible_to_import?, :urn, to: :school_row
 
     # import only doesn't try to work out what has changed and does not include "closed" schools
     # we need to import schools first in an empty DB
@@ -84,10 +90,8 @@ module GIAS
     end
 
     def import_school!
-      if open?
-        @gias_school = GIAS::School.create_with(attributes).find_or_create_by!(urn:)
-        school || create_school!
-      end
+      @gias_school = GIAS::School.create_with(attributes).find_or_create_by!(urn:)
+      school || create_school!
     end
 
     def import_schools
@@ -98,9 +102,21 @@ module GIAS
       foreach_school_link_row { |row| parse_school_link_row(row) }
     end
 
-    def schools_file_path = gias_files[SCHOOLS_FILENAME].path
+    def schools_file_path
+      if file_source == :gias
+        gias_files[SCHOOLS_FILENAME].path
+      else
+        Rails.application.config.gias_supplemental_schools_path
+      end
+    end
 
-    def school_links_file_path = gias_files[SCHOOL_LINKS_FILENAME].path
+    def school_links_file_path
+      if file_source == :gias
+        gias_files[SCHOOL_LINKS_FILENAME].path
+      else
+        Rails.application.config.gias_supplemental_links_path
+      end
+    end
 
     def sync_changes!
       gias_school.assign_attributes(attributes)

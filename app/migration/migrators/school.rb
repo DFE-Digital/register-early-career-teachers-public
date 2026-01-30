@@ -15,7 +15,7 @@ module Migrators
     MISMATCH_FIELD_MESSAGE = ->(school, field, gias_value, ecf_value) { ":#{field} - School #{school.urn} (#{school.name}) mismatch value on field named '#{field}': '#{ecf_value}' on ECF whilst '#{gias_value}' expected on RECT!" }
     MISSING_SCHOOL_MESSAGE = ->(urn, name) { ":school_missing - School #{urn} (#{name}) missing on RECT!" }
 
-    def self.dependencies = %i[gias_import]
+    def self.dependencies = %i[gias_import gias_childrens_centres]
 
     def self.model = :school
 
