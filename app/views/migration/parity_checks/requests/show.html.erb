@@ -1,17 +1,17 @@
-<% page_data(title: @request.description, caption: @request.lead_provider.name, breadcrumbs: @breadcrumbs) %>
+<% page_data(title: @request.human_readable_url, caption: @request.lead_provider.name, breadcrumbs: @breadcrumbs) %>
 
 <p>
-  The request resulted in <strong><%= number_with_delimiter(@responses.size) %> <%= "response".pluralize(@responses.size) %></strong> 
+  The request resulted in <strong><%= number_with_delimiter(@responses.size) %> <%= "response".pluralize(@responses.size) %></strong>
   that took <strong><%= distance_of_time_in_words(@request.started_at, @request.completed_at) %></strong> to complete.
 </p>
 
 <p>
-  Overall the request was <%= match_rate_tag(@request.match_rate) %> successful and had on average 
+  Overall the request was <%= match_rate_tag(@request.match_rate) %> successful and had on average
   <strong><%= performance_gain(@request.rect_performance_gain_ratio) %></strong> performance when compared to ECF.
 </p>
 
 <p>
-  The response IDs were <strong><%= comparison_in_words(@request.response_body_ids_matching?) %></strong>. In total  
+  The response IDs were <strong><%= comparison_in_words(@request.response_body_ids_matching?) %></strong>. In total
   RECT returned <strong><%= id_count_in_words(@request.rect_response_body_ids) %></strong> and ECF returned <strong><%= id_count_in_words(@request.ecf_response_body_ids) %></strong>.
 </p>
 
@@ -66,7 +66,7 @@
         row.with_cell(text: comparison_emoji(response.matching?), html_attributes: { class: "center" })
 
         if response.different?
-          row.with_cell(text: govuk_link_to("Response details", migration_parity_check_response_path(@request.run, response)), html_attributes: { class: "center" })     
+          row.with_cell(text: govuk_link_to("Response details", migration_parity_check_response_path(@request.run, response)), html_attributes: { class: "center" })
         elsif @responses.any?(&:different?)
           row.with_cell
         end
@@ -81,7 +81,7 @@ end %>
   <% content_for(:head) do %>
     <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
   <% end %>
-  
+
   <hr class="govuk-section-break govuk-section-break--m">
 
   <h2 class="govuk-heading-m">Response IDs</h2>
