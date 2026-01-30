@@ -16,8 +16,8 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
     @mentor_at_school_periods ||= induction_records
                                  .reverse
                                  .each_with_object([]) do |induction_record, periods|
-      process(periods, induction_record)
-    end
+                                   process(periods, induction_record)
+                                 end
   end
 
 private
