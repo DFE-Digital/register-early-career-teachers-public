@@ -47,8 +47,8 @@ RSpec.describe GIAS::Importer, type: :service do
   end
 
   describe "#import_schools" do
-    it "creates only eligible schools from the CSV data" do
-      expect { importer.send(:import_schools) }.to change(School, :count).by(2)
+    it "creates only schools that are eligible for import from the CSV data" do
+      expect { importer.send(:import_schools) }.to change(School, :count).by(3)
     end
 
     it "assigns correct attributes to the schools" do
@@ -60,9 +60,14 @@ RSpec.describe GIAS::Importer, type: :service do
       expect(school.type_name).to eq("Children's centre")
 
       school = School.find_by(urn: "20002")
-      expect(school.name).to eq("Example School 2")
+      expect(school.name).to eq("Independent School")
       expect(school.address_line1).to eq("Beta School")
-      expect(school.type_name).to eq("Children's centre")
+      expect(school.type_name).to eq("Other independent school")
+
+      school = School.find_by(urn: "20005")
+      expect(school.name).to eq("Example Recently Closed School")
+      expect(school.address_line1).to eq("Sample House")
+      expect(school.type_name).to eq("Local authority nursery school")
     end
   end
 
