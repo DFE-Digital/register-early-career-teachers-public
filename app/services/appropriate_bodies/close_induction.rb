@@ -68,15 +68,24 @@ module AppropriateBodies
       end
     end
 
-    def finish_ect_period
+    # We may allow inductions to be closed with a future date,
+    # but for MVP inductions can only be closed with today's date or earlier.
+    # To keep it simple therefore we close ECT, training and mentorship periods
+    # on today's date unless it is already closed.
+    # Anything that starts today or in the future is destroyed first.
+    def finish_ect_period_today
       return unless ect_at_school_period
       return if ect_at_school_period.finished_on.present?
 
-      ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on:, author:, record_event: false).finish!
+      ECTAtSchoolPeriods::Finish.new(ect_at_school_period:, finished_on: Time.zone.today, author:, record_event: false).finish!
     end
 
     def ect_at_school_period
       ongoing_induction_period.teacher.ect_at_school_periods.latest_first.first
+    end
+
+    def destroy_unstarted_ect_period!
+      ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:)
     end
   end
 end
