@@ -5,6 +5,8 @@ module GIAS
   class SchoolRow
     attr_reader :data
 
+    RECENT_CLOSURE_CUTOFF_DATE = Date.new(2020, 1, 1)
+
     def initialize(data)
       @data = data
     end
@@ -48,11 +50,17 @@ module GIAS
     end
 
     def administrative_district_name
-      @administrative_district_name ||= data.fetch("DistrictAdministrative (name)")
+      # not in export for Childrens Centres
+      @administrative_district_name ||= data.fetch("DistrictAdministrative (name)", nil)
     end
 
     def closed_on
-      @closed_on ||= data.fetch("CloseDate")
+      # not in export for Childrens Centres
+      @closed_on ||= data.fetch("CloseDate", nil)
+    end
+
+    def eligible_to_import?
+      open_or_recently_closed? && in_england? && (eligible_type? || independent_school_type?)
     end
 
     def eligible
@@ -66,7 +74,8 @@ module GIAS
     end
 
     def establishment_number
-      @establishment_number ||= data.fetch("EstablishmentNumber").presence
+      # not in export for Childrens Centres
+      @establishment_number ||= data.fetch("EstablishmentNumber", nil).presence
     end
 
     def independent_school_type?
@@ -95,8 +104,13 @@ module GIAS
       @open ||= status.in?(%w[open proposed_to_close])
     end
 
+    def open_or_recently_closed?
+      open? || (closed_on.present? && Date.parse(closed_on) >= RECENT_CLOSURE_CUTOFF_DATE)
+    end
+
     def phase_name
-      @phase_name ||= data.fetch("PhaseOfEducation (name)")
+      # Children's centre export doesn't have this column but it used to be "Not applicable" in the old combined export
+      @phase_name ||= data.fetch("PhaseOfEducation (name)", "Not applicable")
     end
 
     def postcode
@@ -104,15 +118,18 @@ module GIAS
     end
 
     def primary_contact_email
-      @primary_contact_email ||= data.fetch("MainEmail").presence
+      # not in export for Childrens Centres
+      @primary_contact_email ||= data.fetch("MainEmail", nil).presence
     end
 
     def secondary_contact_email
-      @secondary_contact_email ||= data.fetch("AlternativeEmail").presence
+      # not in export for Childrens Centres
+      @secondary_contact_email ||= data.fetch("AlternativeEmail", nil).presence
     end
 
     def section_41_approved
-      @section_41_approved ||= data.fetch("Section41Approved (name)") == "Approved"
+      # not in export for Childrens Centres
+      @section_41_approved ||= data.fetch("Section41Approved (name)", nil) == "Approved"
     end
 
     alias_method :section_41_approved?, :section_41_approved
@@ -130,7 +147,8 @@ module GIAS
     end
 
     def ukprn
-      @ukprn ||= data.fetch("UKPRN").presence
+      # not in export for Childrens Centres
+      @ukprn ||= data.fetch("UKPRN", nil).presence
     end
 
     def urn
