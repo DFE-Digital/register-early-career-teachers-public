@@ -1,10 +1,4 @@
-RSpec.shared_examples "a review mentor details step view" do |current_step:,
-                                                              back_path:,
-                                                              back_step_name:,
-                                                              confirm_and_continue_path:,
-                                                              continue_step_name:,
-                                                              check_details_path:,
-                                                              check_details_step_name:|
+shared_examples "a review mentor details step view" do |current_step:, back_path:, back_step_name:, confirm_and_continue_path:, continue_step_name:, check_details_path:, check_details_step_name:|
   let(:date_of_birth) { "1950/1/1" }
   let(:national_insurance_number) { "AD12345ED" }
   let(:email) { nil }
