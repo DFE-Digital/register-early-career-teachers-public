@@ -5,22 +5,27 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :induction_records
+  attr_reader :induction_records, :mentor_at_school_periods
 
   def initialize(induction_records)
     @induction_records = latest_induction_records(induction_records:)
   end
 
   # Returns ECF2TeacherHistory::MentorAtSchoolPeriod[]
-  def mentor_at_school_periods
+  def extract_mentor_at_school_periods
+    @ecf1_mentor_combinations ||= []
     @mentor_at_school_periods ||= induction_records
                                  .reverse
                                  .each_with_object([]) do |induction_record, periods|
-                                   process(periods, induction_record)
-                                 end
+      process(periods, induction_record)
+    end
+
+    [mentor_at_school_periods, ecf1_mentor_combinations]
   end
 
 private
+  
+  attr_accessor :ecf1_mentor_combinations
 
   # Add a new school_period period to the beginning of mentor_at_school_periods with:
   #  - start_date: the earliest of the induction_record.start_date and the first school_period start_date - 2.days
@@ -38,6 +43,8 @@ private
     started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date.to_date].compact.min
     finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date&.to_date].compact.min
     training_period = build_new_training_period_from_induction_record(induction_record, { started_on:, finished_on: })
+
+    ecf1_mentor_combinations << [induction_record.combination]
 
     mentor_at_school_periods.unshift(
       ECF2TeacherHistory::MentorAtSchoolPeriod.new(

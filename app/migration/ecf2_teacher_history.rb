@@ -9,25 +9,34 @@ class ECF2TeacherHistory
   attr_reader :teacher,
               :ect_at_school_periods,
               :mentor_at_school_periods,
+              :ecf1_ect_combinations,
+              :ecf1_mentor_combinations,
+              :ecf2_ect_combinations,
+              :ecf2_mentor_combinations,
               :training_periods,
               :mentorship_periods
 
-  def initialize(teacher:, ect_at_school_periods: [], mentor_at_school_periods: [])
+  def initialize(teacher:, ect_at_school_periods: [], mentor_at_school_periods: [], ecf1_ect_combinations: [], ecf1_mentor_combinations: [])
     @teacher = teacher
-
     @ect_at_school_periods = ect_at_school_periods
     @mentor_at_school_periods = mentor_at_school_periods
+    @ecf1_ect_combinations = ecf1_ect_combinations
+    @ecf1_mentor_combinations = ecf1_mentor_combinations
+    @ecf2_ect_combinations = []
+    @ecf2_mentor_combinations = []
   end
 
   def save_all_ect_data!
     find_or_create_teacher!.tap do |teacher|
       save_ect_periods!(teacher)
+      save_ect_combinations!
     end
   end
 
   def save_all_mentor_data!
     find_or_create_teacher!.tap do |teacher|
       save_mentor_periods!(teacher)
+      save_mentor_combinations!
     end
   end
 
@@ -54,10 +63,11 @@ private
                     else
                       ::Teacher.find_or_initialize_by(api_id: teacher.api_id)
                     end
-
-    found_teacher.assign_attributes(**teacher.to_hash)
-    found_teacher.save!
-    found_teacher
+    with_failure_recording(teacher: found_teacher, model: :teacher, migration_item_id: teacher.api_id) do
+      found_teacher.assign_attributes(**teacher.to_hash)
+      found_teacher.save!
+      found_teacher
+    end
   end
 
   def with_failure_recording(teacher:, model:, migration_item_id:)
@@ -68,13 +78,15 @@ private
 
   def record_failure!(teacher:, model:, message:, migration_item_id:)
     @failed = true
-    ::TeacherMigrationFailure.create!(
-      teacher:,
-      model:,
-      message:,
-      migration_item_id:,
-      migration_item_type: MIGRATION_ITEM_TYPE
-    )
+    if teacher.id
+      ::TeacherMigrationFailure.create!(
+        teacher:,
+        model:,
+        message:,
+        migration_item_id:,
+        migration_item_type: MIGRATION_ITEM_TYPE
+      )
+    end
   end
 
   def school_partnership_for(training_period)
@@ -82,6 +94,26 @@ private
 
     training_period.school_partnership
   end
+
+  def data_migration_teacher_combinations
+    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(trn: teacher.urn)
+  end
+
+  def save_ect_combinations!
+    data_migration_teacher_combinations.update!(
+      ecf1_ect_profile_id: teacher.api_ect_training_record_id,
+      ecf1_ect_combinations:,
+      ecf2_ect_combinations:
+    )
+  end
+  def save_mentor_combinations!
+    data_migration_teacher_combinations.update!(
+      ecf1_mentor_profile_id: teacher.api_mentor_training_record_id,
+      ecf1_mentor_combinations:,
+      ecf2_mentor_combinations:
+    )
+  end
+
 
   def save_ect_periods!(found_teacher)
     ect_at_school_periods.each do |ect_at_school_period|
@@ -95,6 +127,7 @@ private
               **school_partnership_for(training_period),
               **training_period
             )
+            ecf2_ect_combinations << training_period.combination
           end
         end
 
@@ -119,6 +152,7 @@ private
               **school_partnership_for(training_period),
               **training_period
             )
+            ecf2_ect_combinations << training_period.combination
           end
         end
       end
