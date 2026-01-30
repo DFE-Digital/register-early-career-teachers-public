@@ -68,6 +68,9 @@ module RegisterEarlyCareerTeachers
       rect_url: ENV["PARITY_CHECK_RECT_URL"],
     }
 
+    config.gias_supplemental_schools_path = Rails.root.join("config/gias/schools.csv")
+    config.gias_supplemental_links_path = Rails.root.join("config/gias/links.csv")
+
     allow_indexing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ALLOW_INDEXING", true))
     (config.action_dispatch.default_headers["X-Robots-Tag"] = "none") unless allow_indexing
 
