@@ -12,7 +12,7 @@ class SpecGenerator
   end
 
   def spec
-    induction_records = ecf1_teacher_history.ect.induction_records
+    induction_records = ecf1_teacher_history.ect&.induction_records || []
     induction_blocks = induction_records.map do |induction_record|
       <<~IR.chomp
         hash_including(
