@@ -7,6 +7,10 @@ module ECTAtSchoolPeriods
       @author = author
     end
 
+    def self.call(**args)
+      new(**args).call
+    end
+
     def call
       return unless ect_at_school_period
       return if ect_at_school_period_started?

@@ -1,5 +1,5 @@
 describe ECTAtSchoolPeriods::Destroy do
-  subject { ECTAtSchoolPeriods::Destroy.new(ect_at_school_period:, author:).call }
+  subject { ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:) }
 
   let(:started_on) { Date.tomorrow }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 1.week.ago) }
