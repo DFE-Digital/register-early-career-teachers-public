@@ -26,7 +26,8 @@ describe TrainingPeriod do
       let(:instance) { FactoryBot.create(:training_period, ect_at_school_period:, school_partnership:, **period_boundaries) }
       let!(:target) { FactoryBot.create(:school) }
 
-      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update], when_changing: %i[school_partnership_id expression_of_interest_id]
+      it_behaves_like "a declarative metadata model", on_event: %i[create update], when_changing: %i[school_partnership_id expression_of_interest_id]
+      it_behaves_like "a declarative metadata model", on_event: %i[destroy]
     end
 
     context "when target is teacher" do
