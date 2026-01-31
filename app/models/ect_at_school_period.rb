@@ -119,6 +119,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
     teacher.ect_at_school_periods.excluding(self)
   end
 
+  def display_training_period
+    current_or_next_training_period || latest_training_period
+  end
+
   delegate :trn, to: :teacher
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
   delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
