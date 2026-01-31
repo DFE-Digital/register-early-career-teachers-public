@@ -109,7 +109,7 @@ private
   # Find the last MentorAtSchoolPeriod overlapping started_on..finished_on for the teacher and school identifiers given
   def find_overlapping_mentor_period(started_on:, finished_on:, mentor_profile_id:, urn:)
     overlapping_mentor_periods = mentor_at_school_periods.select do
-      it.school.urn == urn &&
+      it.school.urn.to_i == urn.to_i &&
         it.teacher.api_mentor_training_record_id == mentor_profile_id &&
         it.range.overlaps?(started_on..finished_on)
     end
