@@ -62,6 +62,28 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
   end
 
+  context "when training_period is nil" do
+    let(:training_period) { nil }
+
+    let!(:latest_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period:,
+        started_on: 6.months.ago.to_date,
+        finished_on: 1.day.ago.to_date
+      )
+    end
+
+    it "falls back to ect_at_school_period.display_training_period" do
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_text("Their lead provider will confirm this")
+    end
+  end
+
   context "when school led chosen" do
     let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led) }
 

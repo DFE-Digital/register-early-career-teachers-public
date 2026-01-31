@@ -4,7 +4,7 @@ module Schools
       include TeacherHelper
       include ECTHelper
 
-      attr_reader :teacher, :ect_at_school_period, :training_period, :current_school
+      attr_reader :teacher, :ect_at_school_period, :current_school
 
       def initialize(teacher:, ect_at_school_period:, training_period:, current_school: nil)
         @teacher = teacher
@@ -14,6 +14,10 @@ module Schools
       end
 
     private
+
+      def training_period
+        @training_period || ect_at_school_period&.display_training_period
+      end
 
       def appropriate_body_row
         { key: { text: "Appropriate body" }, value: { text: ect_at_school_period.school_reported_appropriate_body_name } }
