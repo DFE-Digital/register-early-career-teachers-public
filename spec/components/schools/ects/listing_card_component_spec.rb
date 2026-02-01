@@ -68,10 +68,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     let!(:latest_training_period) do
       FactoryBot.create(
         :training_period,
+        :ongoing,
         :provider_led,
         ect_at_school_period:,
-        started_on: 6.months.ago.to_date,
-        finished_on: 1.day.ago.to_date
+        started_on: 6.months.ago.to_date
       )
     end
 
@@ -79,8 +79,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_text(latest_training_period.lead_provider_name)
+
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
-      expect(rendered_content).to have_text("Their lead provider will confirm this")
+      expect(rendered_content).to have_text(latest_training_period.delivery_partner_name)
     end
   end
 
