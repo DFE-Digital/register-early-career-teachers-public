@@ -717,6 +717,10 @@ GEM
     rubocop-rspec (3.9.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.81)
+    rubocop-rspec_rails (2.32.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
+      rubocop-rspec (~> 3.5)
     ruby-progressbar (1.13.0)
     rubypants (0.7.1)
     rubyzip (3.2.2)
@@ -899,6 +903,8 @@ DEPENDENCIES
   rubocop-factory_bot
   rubocop-govuk
   rubocop-performance
+  rubocop-rspec
+  rubocop-rspec_rails
   rubypants
   rubyzip
   savon
