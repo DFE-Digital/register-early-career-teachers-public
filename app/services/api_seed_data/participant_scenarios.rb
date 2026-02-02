@@ -38,9 +38,7 @@ module APISeedData
 
         next unless contract_period
 
-        LeadProvider.find_each do |lead_provider|
-          active_lead_provider = find_or_create_active_lead_provider(lead_provider:, contract_period:)
-
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants (ECTs and mentors) in this contract period with this lead provider
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
@@ -82,7 +80,7 @@ module APISeedData
               started_on: start_date
             )
 
-            log_seed_info("Created #{type} in contract period #{contract_period.year} with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created #{type} in contract period #{contract_period.year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -94,11 +92,9 @@ module APISeedData
 
         next unless contract_period
 
-        LeadProvider.find_each do |lead_provider|
-          active_lead_provider = find_or_create_active_lead_provider(lead_provider:, contract_period:)
-
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants (ECTs and mentors) with EOI but no partnership in this contract period
-          active_lead_provider_ids = lead_provider.active_lead_providers.where(contract_period:).pluck(:id)
+          active_lead_provider_ids = active_lead_provider.lead_provider.active_lead_providers.where(contract_period:).pluck(:id)
 
           existing_ects = Teacher
             .joins(ect_at_school_periods: :training_periods)
@@ -141,7 +137,7 @@ module APISeedData
               started_on: start_date
             )
 
-            log_seed_info("Created #{type} with EOI (no partnership) in contract period #{contract_period_year} with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created #{type} with EOI (no partnership) in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -153,9 +149,7 @@ module APISeedData
 
         next unless contract_period
 
-        LeadProvider.find_each do |lead_provider|
-          active_lead_provider = find_or_create_active_lead_provider(lead_provider:, contract_period:)
-
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           existing_count = Teacher
             .joins(:induction_periods, ect_at_school_periods: { training_periods: :active_lead_provider })
             .where.not(induction_periods: { started_on: nil })
@@ -196,7 +190,7 @@ module APISeedData
               appropriate_body: random_or_create_appropriate_body
             )
 
-            log_seed_info("Created ECT with induction start date #{start_date} in contract period #{contract_period_year} with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created ECT with induction start date #{start_date} in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -208,9 +202,7 @@ module APISeedData
 
         next unless contract_period
 
-        LeadProvider.find_each do |lead_provider|
-          active_lead_provider = find_or_create_active_lead_provider(lead_provider:, contract_period:)
-
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           existing_count = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
             .where.missing(:induction_periods)
@@ -244,7 +236,7 @@ module APISeedData
               started_on: start_date
             )
 
-            log_seed_info("Created ECT without induction start date in contract period #{contract_period_year} with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+            log_seed_info("Created ECT without induction start date in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
           end
         end
       end
@@ -274,9 +266,7 @@ module APISeedData
 
         next unless contract_period
 
-        LeadProvider.find_each do |lead_provider|
-          active_lead_provider = find_or_create_active_lead_provider(lead_provider:, contract_period:)
-
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: %i[declarations active_lead_provider] })
             .where(declarations: { payment_status: billable_statuses })
@@ -299,9 +289,7 @@ module APISeedData
               school_partnership = school_partnership(active_lead_provider)
               school = school_partnership.school
               start_date = Date.new(contract_period_year, 9, 1)
-
               school_period = FactoryBot.create(:"#{type}_at_school_period", :ongoing, school:, started_on: start_date)
-
               schedule = find_schedule(contract_period)
               teacher = school_period.teacher
 
@@ -348,7 +336,7 @@ module APISeedData
                 declaration.save!
               end
 
-              log_seed_info("Created #{type} with billable declarations in contract period #{contract_period_year} with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+              log_seed_info("Created #{type} with billable declarations in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
             end
           end
         end
@@ -361,9 +349,7 @@ module APISeedData
 
         next unless contract_period
 
-        LeadProvider.find_each do |lead_provider|
-          active_lead_provider = find_or_create_active_lead_provider(lead_provider:, contract_period:)
-
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
@@ -385,8 +371,9 @@ module APISeedData
 
             missing_count.times do
               school_partnership = school_partnership(active_lead_provider)
-              school = school_partnership.school
+              next unless school_partnership
 
+              school = school_partnership.school
               start_date = Date.new(contract_period_year, 9, 1)
               finished_date = Time.zone.today + rand(1..6).months
 
@@ -405,7 +392,7 @@ module APISeedData
                 finished_on: finished_date
               )
 
-              log_seed_info("Created #{type} with training status change to leaving in contract period #{contract_period_year} with #{lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+              log_seed_info("Created #{type} with training status change to leaving in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
             end
           end
         end
@@ -437,11 +424,6 @@ module APISeedData
 
     def find_contract_period(year)
       ContractPeriod.find_by(year:)
-    end
-
-    def find_or_create_active_lead_provider(lead_provider:, contract_period:)
-      ActiveLeadProvider.find_by(lead_provider:, contract_period:) ||
-        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
     end
 
     def random_or_create_appropriate_body
