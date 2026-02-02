@@ -84,6 +84,29 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
   end
 
+  context "when start_date is backdated but registration policy uses current contract period" do
+    let!(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
+    let!(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+
+    let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
+    let!(:lead_provider_2024_only) { FactoryBot.create(:lead_provider, name: "MATRIX LPX (2024 only)") }
+
+    before do
+      allow(ContractPeriod).to receive(:current).and_return(contract_period_2025)
+
+      FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025, lead_provider: lead_provider_2025)
+      FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024, lead_provider: lead_provider_2024_only)
+
+      allow(registration_store).to receive(:start_date).and_return(Date.new(2025, 2, 3))
+    end
+
+    it "returns lead providers for the registration contract period, not the date-derived contract period" do
+      names = queries.lead_providers_within_contract_period.map(&:name)
+      expect(names).to include("LP 2025")
+      expect(names).not_to include("MATRIX LPX (2024 only)")
+    end
+  end
+
   describe "#lead_provider_partnerships_for_contract_period" do
     let(:contract_period) { FactoryBot.create(:contract_period, year: 2026) }
     let(:start_date) { (contract_period.started_on + 1.day) }

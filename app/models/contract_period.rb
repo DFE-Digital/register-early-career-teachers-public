@@ -47,6 +47,17 @@ class ContractPeriod < ApplicationRecord
       &.started_on
   end
 
+  def self.for_registration_start_date(start_date)
+    current_contract_period = current
+    return current_contract_period unless current_contract_period && start_date.is_a?(Date)
+
+    contract_period_from_start_date = containing_date(start_date)
+    return current_contract_period if contract_period_from_start_date.nil?
+    return current_contract_period if contract_period_from_start_date.year < current_contract_period.year
+
+    contract_period_from_start_date
+  end
+
   def started_on_or_before_today?
     started_on <= Time.zone.today
   end

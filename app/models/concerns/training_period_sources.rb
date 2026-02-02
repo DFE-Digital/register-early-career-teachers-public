@@ -2,7 +2,7 @@ module TrainingPeriodSources
   extend ActiveSupport::Concern
 
   def contract_period
-    @contract_period ||= ContractPeriod.containing_date(started_on)
+    @contract_period ||= ContractPeriod.current
   end
 
   def active_lead_provider

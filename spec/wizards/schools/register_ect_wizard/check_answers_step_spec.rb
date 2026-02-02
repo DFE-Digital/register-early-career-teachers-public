@@ -1,4 +1,4 @@
-describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
+RSpec.describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
   subject(:step) { wizard.current_step }
 
   let(:training_programme) { "provider_led" }
@@ -106,12 +106,9 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
   end
 
   describe "#show_previous_programme_choices_row?" do
-    before do
-      allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
-    end
-
-    context "when the school has last programme choices and reuse step is allowed" do
+    context "when the school has previous programme choices recorded and reuse step is allowed" do
       before do
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
         allow(school).to receive(:last_programme_choices?).and_return(true)
       end
 
@@ -120,8 +117,9 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
       end
     end
 
-    context "when the school does not have last programme choices" do
+    context "when the school has no previous programme choices recorded" do
       before do
+        allow(wizard).to receive(:use_previous_choices_allowed?).and_return(true)
         allow(school).to receive(:last_programme_choices?).and_return(false)
       end
 
@@ -132,8 +130,8 @@ describe Schools::RegisterECTWizard::CheckAnswersStep, type: :model do
 
     context "when reuse previous choices step is not allowed" do
       before do
-        allow(school).to receive(:last_programme_choices?).and_return(true)
         allow(wizard).to receive(:use_previous_choices_allowed?).and_return(false)
+        allow(school).to receive(:last_programme_choices?).and_return(true)
       end
 
       it "returns false" do
