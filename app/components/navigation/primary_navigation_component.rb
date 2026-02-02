@@ -99,7 +99,7 @@ module Navigation
     def can_manage_users?
       return false unless current_user_type == :dfe_staff_user
 
-      current_user&.user_manager?
+      current_user&.can_manage_users?
     end
 
     def current_user_type
