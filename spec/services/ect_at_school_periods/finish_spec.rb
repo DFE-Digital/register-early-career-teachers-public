@@ -233,6 +233,31 @@ describe ECTAtSchoolPeriods::Finish do
           expect(training_period.reload.finished_on).to eql(finished_on)
         end
       end
+
+      context "when the training period has not started yet" do
+        let(:training_start_date) { finished_on + 1.week }
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            ect_at_school_period:,
+            started_on: training_start_date
+          )
+        end
+
+        it "deletes the training period" do
+          expect { subject.finish! }.to change(TrainingPeriod, :count).by(-1)
+        end
+
+        it "records an event which is not linked to a training period" do
+          allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_return(true)
+
+          subject.finish!
+
+          expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).once.with(
+            hash_including(author:, ect_at_school_period:, school:, teacher:, training_period: nil, happened_at: finished_on)
+          )
+        end
+      end
     end
   end
 end
