@@ -55,6 +55,8 @@ module ECTAtSchoolPeriods
     end
 
     def finish_training_period!
+      destroy_unstarted_training_periods!
+
       return unless (
         training_period = ect_at_school_period.training_periods
                                               .find_by(TrainingPeriod.date_in_range(finished_on))
@@ -65,8 +67,18 @@ module ECTAtSchoolPeriods
       TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:).finish!
     end
 
+    # Prevent events being linked to unstarted training_periods (which will be deleted)
     def training_period
+      return if unstarted_training_periods.present?
+
       @training_period ||= ect_at_school_period.current_or_next_training_period
+    end
+
+    def destroy_unstarted_training_periods!
+      unstarted_training_periods.find_each do |training_period|
+        Event.where(training_period:).delete_all
+        training_period.destroy!
+      end
     end
 
     def destroy_unstarted_mentorship_periods!
@@ -76,11 +88,15 @@ module ECTAtSchoolPeriods
       end
     end
 
+    def unstarted_training_periods
+      @unstarted_training_periods ||= ect_at_school_period.training_periods.started_on_or_after(finished_on)
+    end
+
     def event_params
       {
         teacher: ect_at_school_period.teacher,
         school: ect_at_school_period.school,
-        training_period: ect_at_school_period.current_or_next_training_period
+        training_period:
       }
     end
 
