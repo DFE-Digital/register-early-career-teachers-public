@@ -7,7 +7,7 @@ require "ostruct"
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :induction_records, :mentor_at_school_periods, :ect_at_school_periods
+  attr_reader :induction_records, :mentor_at_school_periods, :ect_at_school_periods, :ecf1_ect_combinations
 
   def initialize(induction_records:, mentor_at_school_periods:)
     @induction_records = latest_induction_records(induction_records:)
@@ -27,8 +27,6 @@ class TeacherHistoryConverter::ECT::LatestInductionRecords
   end
 
 private
-
-  attr_accessor :ecf1_ect_combinations
 
   # Add a new school_period period to the beginning of ect_at_school_periods with:
   #  - start_date: the earliest of the induction_record.start_date and the first school_period start_date - 2.days
@@ -54,7 +52,7 @@ private
                                                   ect_finished_on: finished_on)
     end
 
-    ecf1_ect_combinations << [induction_record.combination]
+    ecf1_ect_combinations << induction_record.combination
 
     ect_at_school_periods.unshift(
       ECF2TeacherHistory::ECTAtSchoolPeriod.new(

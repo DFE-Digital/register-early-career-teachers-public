@@ -50,7 +50,9 @@ class ECF2TeacherHistory
         trn: teacher.trn,
         api_ect_training_record_id: teacher.api_ect_training_record_id,
         ect_at_school_periods: ect_at_school_periods.map(&:to_h),
-        mentor_at_school_periods: mentor_at_school_periods.map(&:to_h)
+        mentor_at_school_periods: mentor_at_school_periods.map(&:to_h),
+        ecf2_ect_combinations:,
+        ecf2_mentor_combinations:
       }
     }
   end
@@ -152,7 +154,7 @@ private
               **school_partnership_for(training_period),
               **training_period
             )
-            ecf2_ect_combinations << training_period.combination
+            ecf2_mentor_combinations << training_period.combination
           end
         end
       end

@@ -61,6 +61,9 @@ describe ECF2TeacherHistory do
     ]
   end
 
+  let(:ecf1_ect_combinations) { ["111111: 2103: Lead provider A", "222222: 2109: Lead provider A"] }
+  let(:ecf1_mentor_combinations) { ["111111: 2103: Lead provider A", "222222: 2109: Lead provider A"] }
+
   let(:other_arguments) { {} }
 
   describe "#initialize" do
@@ -86,6 +89,22 @@ describe ECF2TeacherHistory do
 
       it "can be initialized with mentor_at_school_periods" do
         expect(subject.mentor_at_school_periods).to eql(mentor_at_school_periods)
+      end
+    end
+
+    context "when ecf1_ect_combinations are present" do
+      let(:other_arguments) { { ecf1_ect_combinations: } }
+
+      it "can be initialized with ecf1_ect_combinations" do
+        expect(subject.ecf1_ect_combinations).to eql(ecf1_ect_combinations)
+      end
+    end
+
+    context "when ecf1_mentor_combinations are present" do
+      let(:other_arguments) { { ecf1_mentor_combinations: } }
+
+      it "can be initialized with ecf1_mentor_combinations" do
+        expect(subject.ecf1_mentor_combinations).to eql(ecf1_mentor_combinations)
       end
     end
   end
@@ -187,7 +206,7 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher has ECT at school periods" do
-        let(:other_arguments) { { ect_at_school_periods: } }
+        let(:other_arguments) { { ect_at_school_periods:, ecf1_ect_combinations: } }
         let(:teacher) { subject.save_all_ect_data! }
 
         let(:appropriate_body_a) { FactoryBot.create(:appropriate_body) }
@@ -205,10 +224,12 @@ describe ECF2TeacherHistory do
           )
         end
 
-        context "when training periods are present" do
-          let(:contract_period) { FactoryBot.create(:contract_period) }
+        let(:ecf1_ect_combinations) { ["111111: 2021: Lead Provider 1", "222222: : "] }
 
-          let(:lead_provider) { FactoryBot.create(:lead_provider) }
+        context "when training periods are present" do
+          let(:contract_period) { FactoryBot.create(:contract_period, year: 2021) }
+
+          let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -336,6 +357,20 @@ describe ECF2TeacherHistory do
                 end
               end
             end
+          end
+
+          it "saves the expected DataMigrationTeacherCombination" do
+            expected_combinations = teacher.ect_at_school_periods.map(&:training_periods).flatten.map do |training_period|
+              [training_period.school.urn,
+               training_period.contract_period&.year,
+               training_period.lead_provider&.name].join(": ")
+            end
+            data_migration_teacher_combination = DataMigrationTeacherCombination.first
+
+            expect(DataMigrationTeacherCombination.count).to be(1)
+            expect(data_migration_teacher_combination.ecf1_ect_profile_id).to eq(teacher.api_ect_training_record_id)
+            expect(data_migration_teacher_combination.ecf1_ect_combinations).to match_array(expected_combinations)
+            expect(data_migration_teacher_combination.ecf2_ect_combinations).to match_array(expected_combinations)
           end
         end
 
@@ -505,7 +540,7 @@ describe ECF2TeacherHistory do
       end
 
       context "when the teacher has mentor at school periods" do
-        let(:other_arguments) { { mentor_at_school_periods: } }
+        let(:other_arguments) { { mentor_at_school_periods:, ecf1_mentor_combinations: } }
         let(:teacher) { subject.save_all_mentor_data! }
 
         let(:appropriate_body_a) { FactoryBot.create(:appropriate_body) }
@@ -523,9 +558,11 @@ describe ECF2TeacherHistory do
           )
         end
 
+        let(:ecf1_mentor_combinations) { ["111111: 2021: Lead Provider 2"] }
+
         context "when training periods are present" do
-          let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:lead_provider) { FactoryBot.create(:lead_provider) }
+          let(:contract_period) { FactoryBot.create(:contract_period, year: 2021) }
+          let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
@@ -603,6 +640,18 @@ describe ECF2TeacherHistory do
                 end
               end
             end
+          end
+
+          it "saves the expected DataMigrationTeacherCombination" do
+            combinations = teacher.mentor_at_school_periods.map(&:training_periods).flatten.map do |training_period|
+              [training_period.school.urn, training_period.contract_period&.year, training_period.lead_provider&.name].join(": ")
+            end
+            dat_migration_teacher_combination = DataMigrationTeacherCombination.first
+
+            expect(DataMigrationTeacherCombination.count).to be(1)
+            expect(dat_migration_teacher_combination.ecf1_mentor_profile_id).to eq(teacher.api_mentor_training_record_id)
+            expect(dat_migration_teacher_combination.ecf1_mentor_combinations).to match_array(combinations)
+            expect(dat_migration_teacher_combination.ecf2_mentor_combinations).to match_array(combinations)
           end
         end
       end
