@@ -10,6 +10,10 @@ class AppropriateBody < ApplicationRecord
   has_many :pending_induction_submissions
   has_many :induction_periods, inverse_of: :appropriate_body
   has_many :events
+  has_many :unclaimed_ect_at_school_periods,
+           -> { unclaimed_by_school_reported_appropriate_body },
+           class_name: "ECTAtSchoolPeriod",
+           foreign_key: :school_reported_appropriate_body_id
 
   # Validations
   validates :name,
