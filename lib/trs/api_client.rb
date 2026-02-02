@@ -46,9 +46,12 @@ module TRS
       return trs_teacher(response) if response.success?
 
       case Rack::Utils::HTTP_STATUS_CODES.fetch(response.status)
-      when "Not Found" then raise(TRS::Errors::TeacherNotFound)
-      when "Gone" then raise(TRS::Errors::TeacherDeactivated)
-      when "Permanent Redirect" then raise(TRS::Errors::TeacherMerged, "TRN #{trn} redirects to TRN #{trs_redirected_trn(response)}")
+      when "Not Found"
+        raise(TRS::Errors::TeacherNotFound)
+      when "Gone"
+        raise(TRS::Errors::TeacherDeactivated)
+      when "Permanent Redirect"
+        raise(TRS::Errors::TeacherMerged, "TRN #{trn} redirects to TRN #{trs_redirected_trn(response)}")
       else
         fail(TRS::Errors::APIRequestError, "#{response.status} #{response.body}")
       end
