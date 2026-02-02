@@ -256,6 +256,7 @@ describe ECF2TeacherHistory do
               started_on: 1.month.ago.to_date,
               finished_on: 1.week.ago.to_date,
               created_at:,
+              school: school_b_data,
               training_programme: :school_led
             )
           end

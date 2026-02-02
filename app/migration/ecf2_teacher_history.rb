@@ -96,7 +96,7 @@ private
   end
 
   def data_migration_teacher_combinations
-    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(trn: teacher.urn)
+    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(trn: teacher.trn)
   end
 
   def save_ect_combinations!
@@ -106,6 +106,7 @@ private
       ecf2_ect_combinations:
     )
   end
+
   def save_mentor_combinations!
     data_migration_teacher_combinations.update!(
       ecf1_mentor_profile_id: teacher.api_mentor_training_record_id,
@@ -113,7 +114,6 @@ private
       ecf2_mentor_combinations:
     )
   end
-
 
   def save_ect_periods!(found_teacher)
     ect_at_school_periods.each do |ect_at_school_period|
