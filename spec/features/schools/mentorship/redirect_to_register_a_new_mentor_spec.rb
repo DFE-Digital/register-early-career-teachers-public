@@ -1,5 +1,5 @@
 RSpec.describe "Redirect to register a new mentor for an ECT", :enable_schools_interface do
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
   include SchoolPartnershipHelpers
 
   let(:trn) { "9876543" }

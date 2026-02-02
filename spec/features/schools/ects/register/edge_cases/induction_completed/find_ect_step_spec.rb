@@ -1,5 +1,5 @@
 RSpec.describe "Registering an ECT", :enable_schools_interface do
-  include_context "test trs api client that finds teacher that has passed their induction"
+  include_context "test TRS API returns a teacher that has passed their induction"
 
   scenario "User enters date of birth (find ECT step) but teacher has completed their induction" do
     given_i_am_logged_in_as_a_school_user

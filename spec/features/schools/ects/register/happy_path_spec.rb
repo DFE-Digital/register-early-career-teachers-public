@@ -1,5 +1,5 @@
 RSpec.describe "Registering an ECT", :enable_schools_interface do
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
 
   around do |example|
     travel_to(Date.new(2025, 9, 1)) { example.run }

@@ -1,5 +1,5 @@
 RSpec.describe "Registering an ECT", :enable_schools_interface do
-  include_context "test trs api client that finds nothing"
+  include_context "test TRS API returns nothing"
 
   scenario "Teacher with TRN is not found" do
     given_i_am_logged_in_as_a_school_user

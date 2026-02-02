@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_15_093043) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -571,7 +571,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_15_093043) do
     t.citext "trs_email_address"
     t.jsonb "trs_alerts"
     t.date "trs_induction_start_date"
-    t.string "trs_induction_status_description"
     t.string "trs_qts_status_description"
     t.date "trs_initial_teacher_training_end_date"
     t.string "trs_initial_teacher_training_provider_name"

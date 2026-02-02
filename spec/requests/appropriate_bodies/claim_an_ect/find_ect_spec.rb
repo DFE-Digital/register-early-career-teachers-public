@@ -1,5 +1,5 @@
 RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
-  include_context "test trs api client"
+  include_context "test TRS API returns a teacher"
   let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   let(:page_heading) { "Find an early career teacher" }
@@ -99,7 +99,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
       end
 
       context "when no ECT is found" do
-        include_context "test trs api client that finds nothing"
+        include_context "test TRS API returns nothing"
 
         let(:birth_year_param) { "2001" }
 
@@ -115,7 +115,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
       end
 
       context "when the ECT is deactivated" do
-        include_context "test trs api client deactivated teacher"
+        include_context "test TRS API returns a deactivated teacher"
 
         let(:birth_year_param) { "2001" }
 
