@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::RecordPass do
     })
   end
 
-  it_behaves_like "it closes and induction period and finishes any related periods" do
+  it_behaves_like "it closes an induction period and finishes any related periods" do
     it "closes with pass outcome" do
       service_call
 
@@ -25,34 +25,34 @@ RSpec.describe AppropriateBodies::RecordPass do
     end
 
     it "records an induction passed event" do
-      allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-
-      service_call
-
-      expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
+      expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
         appropriate_body:,
         teacher:,
         induction_period:,
         ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         author:
       )
+
+      service_call
     end
 
     context "when the ect at school period has already finished" do
       let(:finished_on) { 2.days.ago }
 
       it "assigns the period to the event" do
-        allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-
-        service_call
-
-        expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
+        expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
           appropriate_body:,
           teacher:,
           induction_period:,
           ect_at_school_period:,
+          mentorship_period:,
+          training_period:,
           author:
         )
+
+        service_call
       end
     end
 

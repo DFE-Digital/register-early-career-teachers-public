@@ -15,6 +15,8 @@ module Admin
         appropriate_body:,
         induction_period: ongoing_induction_period,
         ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         body: note,
         zendesk_ticket_id:
       )
