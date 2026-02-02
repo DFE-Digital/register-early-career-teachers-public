@@ -7,7 +7,12 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
               :mentorship_periods,
               :training_periods
 
-  def initialize(started_on:, finished_on:, school:, email:, mentorship_periods:, training_periods:, appropriate_body: nil)
+  def initialize(started_on:,
+                 finished_on:,
+                 school:, email:,
+                 mentorship_periods:,
+                 training_periods:,
+                 appropriate_body: nil)
     @started_on = started_on
     @finished_on = finished_on
     @school = school
@@ -35,7 +40,7 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
       email:,
       school_reported_appropriate_body: appropriate_body,
       mentorship_periods: mentorship_periods.map(&:to_h),
-      training_periods: training_periods.map(&:to_h)
+      training_periods: training_periods.map(&:to_h),
     }
   end
 

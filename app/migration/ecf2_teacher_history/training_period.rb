@@ -12,7 +12,8 @@ class ECF2TeacherHistory::TrainingPeriod
               :created_at,
               :ecf_start_induction_record_id,
               :is_ect,
-              :school
+              :school,
+              :combination
 
   attr_accessor :finished_on
 
@@ -30,7 +31,8 @@ class ECF2TeacherHistory::TrainingPeriod
                  withdrawal_reason: nil,
                  ecf_start_induction_record_id: nil,
                  is_ect: false,
-                 school: nil)
+                 school: nil,
+                 combination: nil)
     @started_on = started_on
     @finished_on = finished_on
     @created_at = created_at
@@ -46,10 +48,7 @@ class ECF2TeacherHistory::TrainingPeriod
     @ecf_start_induction_record_id = ecf_start_induction_record_id
     @is_ect = is_ect
     @school = school
-  end
-
-  def combination
-    [school.urn, contract_period_year, lead_provider_info&.name].join(": ")
+    @combination = combination
   end
 
   def to_hash

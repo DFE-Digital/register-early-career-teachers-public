@@ -7,23 +7,26 @@ require "ostruct"
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :induction_records, :mentor_at_school_periods, :ect_at_school_periods, :ecf1_ect_combinations
+  attr_reader :trn,
+              :profile_id,
+              :induction_records,
+              :mentor_at_school_periods,
+              :ect_at_school_periods
 
-  def initialize(induction_records:, mentor_at_school_periods:)
+  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:)
+    @trn = trn
+    @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @mentor_at_school_periods = mentor_at_school_periods
   end
 
   # Returns [ECF2TeacherHistory::ECTAtSchoolPeriod[], String[]]
-  def ect_at_school_periods_and_combinations
-    @ecf1_ect_combinations ||= []
+  def ect_at_school_periods
     @ect_at_school_periods ||= induction_records
                                  .reverse
                                  .each_with_object([]) do |induction_record, periods|
                                    process(periods, induction_record)
     end
-
-    [ect_at_school_periods, ecf1_ect_combinations]
   end
 
 private
@@ -52,8 +55,6 @@ private
                                                   ect_finished_on: finished_on)
     end
 
-    ecf1_ect_combinations << induction_record.combination
-
     ect_at_school_periods.unshift(
       ECF2TeacherHistory::ECTAtSchoolPeriod.new(
         started_on:,
@@ -61,7 +62,7 @@ private
         school: induction_record.school,
         email: induction_record.preferred_identity_email,
         mentorship_periods: [mentorship_period].compact,
-        training_periods: [training_period]
+        training_periods: [training_period].compact,
       )
     )
   end
@@ -97,18 +98,46 @@ private
       finished_on: induction_record.end_date&.to_date,
       created_at: induction_record.created_at,
       school: induction_record.school,
-      training_programme: convert_training_programme_name(induction_record.training_programme),
+      training_programme:,
       lead_provider_info: induction_record.training_provider_info&.lead_provider_info,
       delivery_partner_info: induction_record.training_provider_info&.delivery_partner_info,
       contract_period_year: induction_record.cohort_year,
       is_ect: true,
       ecf_start_induction_record_id: induction_record.induction_record_id,
-      schedule_info: induction_record.schedule_info
+      schedule_info: induction_record.schedule_info,
+      combination: build_combination(induction_record:, training_programme:)
     }.merge(overrides)
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
+  end
+
+  def build_combination(induction_record:, **overrides)
+    ECF2TeacherHistory::Combination.new(
+      trn:,
+      profile_id:,
+      profile_type: "ect",
+      induction_record_id: induction_record.induction_record_id,
+      training_programme: induction_record.training_programme,
+      school_urn: induction_record.school.urn,
+      cohort_year: induction_record.cohort_year,
+      lead_provider_name: induction_record.training_provider_info&.lead_provider_info&.name,
+      delivery_partner_name: induction_record.training_provider_info&.delivery_partner_info&.name,
+      start_date: induction_record.start_date,
+      end_date: induction_record.end_date,
+      induction_status: induction_record.induction_status,
+      training_status: induction_record.training_status,
+      mentor_profile_id: induction_record.mentor_profile_id,
+      schedule_id: induction_record.schedule_info&.schedule_id,
+      schedule_identifier: induction_record.schedule_info&.identifier,
+      schedule_name: induction_record.schedule_info&.name,
+      schedule_cohort_year: induction_record.schedule_info&.cohort_year,
+      preferred_identity_email: induction_record.preferred_identity_email,
+      created_at: induction_record.created_at,
+      updated_at: induction_record.updated_at,
+      **overrides
+    )
   end
 
   # Find the last MentorAtSchoolPeriod overlapping started_on..finished_on for the teacher and school identifiers given
