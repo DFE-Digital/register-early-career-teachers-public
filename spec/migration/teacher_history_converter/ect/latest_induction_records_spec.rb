@@ -357,10 +357,12 @@ describe "Latest induction records mode conversion" do
         end
       end
 
-      it "record the expected school-lp-cohort combinations" do
+      it "create the expected school-lp-cohort combinations" do
         aggregate_failures do
-          expect(subject.ect_at_school_periods.map(&:training_periods).flatten.map(&:combination))
-                 .to match_array(subject.ecf1_ect_combinations)
+          subject.ect_at_school_periods.flat_map(&:training_periods).each do |training_period|
+            expected_summary = [training_period.school.urn, training_period.contract_period_year, training_period.lead_provider_info&.name].join(": ")
+            expect(training_period.combination.summary).to eq(expected_summary)
+          end
         end
       end
     end

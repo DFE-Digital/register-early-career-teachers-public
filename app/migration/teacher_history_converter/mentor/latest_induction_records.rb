@@ -5,27 +5,24 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :induction_records, :mentor_at_school_periods
+  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods
 
-  def initialize(induction_records)
+  def initialize(trn:, profile_id:, induction_records:)
+    @trn = trn
+    @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
   end
 
   # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
-  def mentor_at_school_periods_and_combinations
-    @ecf1_mentor_combinations ||= []
+  def mentor_at_school_periods
     @mentor_at_school_periods ||= induction_records
                                  .reverse
                                  .each_with_object([]) do |induction_record, periods|
                                    process(periods, induction_record)
     end
-
-    [mentor_at_school_periods, ecf1_mentor_combinations]
   end
 
 private
-
-  attr_accessor :ecf1_mentor_combinations
 
   # Add a new school_period period to the beginning of mentor_at_school_periods with:
   #  - start_date: the earliest of the induction_record.start_date and the first school_period start_date - 2.days
@@ -42,9 +39,7 @@ private
     first_school_period = mentor_at_school_periods.first
     started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date.to_date].compact.min
     finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date&.to_date].compact.min
-    training_period = build_new_training_period_from_induction_record(induction_record, { started_on:, finished_on: })
-
-    ecf1_mentor_combinations << induction_record.combination
+    training_period = build_training_period(induction_record, { started_on:, finished_on: })
 
     mentor_at_school_periods.unshift(
       ECF2TeacherHistory::MentorAtSchoolPeriod.new(
@@ -57,7 +52,7 @@ private
     )
   end
 
-  def build_new_training_period_from_induction_record(induction_record, overrides = {})
+  def build_training_period(induction_record, overrides = {})
     training_programme = convert_training_programme_name(induction_record.training_programme)
     return if training_programme != "provider_led"
 
@@ -72,9 +67,37 @@ private
       contract_period_year: induction_record.cohort_year,
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
-      schedule_info: induction_record.schedule_info
+      schedule_info: induction_record.schedule_info,
+      combination: build_combination(induction_record:, training_programme:)
     }.merge(overrides)
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
+  end
+
+  def build_combination(induction_record:, **overrides)
+    ECF2TeacherHistory::Combination.new(
+      trn:,
+      profile_id:,
+      profile_type: "mentor",
+      induction_record_id: induction_record.induction_record_id,
+      training_programme: induction_record.training_programme,
+      school_urn: induction_record.school.urn,
+      cohort_year: induction_record.cohort_year,
+      lead_provider_name: induction_record.training_provider_info&.lead_provider_info&.name,
+      delivery_partner_name: induction_record.training_provider_info&.delivery_partner_info&.name,
+      start_date: induction_record.start_date,
+      end_date: induction_record.end_date,
+      induction_status: induction_record.induction_status,
+      training_status: induction_record.training_status,
+      mentor_profile_id: induction_record.mentor_profile_id,
+      schedule_id: induction_record.schedule_info&.schedule_id,
+      schedule_identifier: induction_record.schedule_info&.identifier,
+      schedule_name: induction_record.schedule_info&.name,
+      schedule_cohort_year: induction_record.schedule_info&.cohort_year,
+      preferred_identity_email: induction_record.preferred_identity_email,
+      created_at: induction_record.created_at,
+      updated_at: induction_record.updated_at,
+      **overrides
+    )
   end
 end

@@ -44,10 +44,6 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
     new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
   end
 
-  def combination
-    [school.urn, cohort_year, training_provider_info&.lead_provider_info&.name].join(": ")
-  end
-
   def range
     start_date.to_date..end_date&.to_date
   end
