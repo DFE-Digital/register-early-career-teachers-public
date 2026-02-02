@@ -356,6 +356,13 @@ describe "Latest induction records mode conversion" do
           end
         end
       end
+
+      it "record the expected school-lp-cohort combinations" do
+        aggregate_failures do
+          expect(subject.ect_at_school_periods.map(&:training_periods).flatten.map(&:combination))
+                 .to match_array(subject.ecf1_ect_combinations)
+        end
+      end
     end
   end
 
