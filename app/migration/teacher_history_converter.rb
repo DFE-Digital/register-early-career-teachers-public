@@ -76,7 +76,8 @@ private
   def mentor_at_school_periods
     return [] if ecf1_teacher_history.mentor.blank?
 
-    induction_records = ecf1_teacher_history.mentor.induction_records
+    raw_induction_records = ecf1_teacher_history.mentor.induction_records
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
 
     case migration_mode
     when :latest_induction_records
