@@ -5,7 +5,7 @@ RSpec.describe AppropriateBodies::RecordFail do
     })
   end
 
-  it_behaves_like "it closes and induction period and finishes any related periods" do
+  it_behaves_like "it closes an induction period and finishes any related periods" do
     let(:service_call) do
       service.call(
         finished_on: 1.day.ago.to_date,
@@ -34,36 +34,36 @@ RSpec.describe AppropriateBodies::RecordFail do
     end
 
     it "records an induction failed event" do
-      allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
-
-      service_call
-
-      expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
+      expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
         appropriate_body:,
         teacher:,
         induction_period:,
         ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         author:,
         body: "ECT notified on #{Date.current.to_fs(:govuk)}"
       )
+
+      service_call
     end
 
     context "when the ect at school period has already finished" do
       let(:finished_on) { 2.days.ago }
 
       it "assigns the period to the event" do
-        allow(Events::Record).to receive(:record_teacher_fails_induction_event!).and_call_original
-
-        service_call
-
-        expect(Events::Record).to have_received(:record_teacher_fails_induction_event!).with(
+        expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
           appropriate_body:,
           teacher:,
           induction_period:,
           ect_at_school_period:,
+          mentorship_period:,
+          training_period:,
           author:,
           body: "ECT notified on #{Date.current.to_fs(:govuk)}"
         )
+
+        service_call
       end
     end
 

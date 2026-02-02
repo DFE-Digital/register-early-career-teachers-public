@@ -24,6 +24,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
   let(:author_name) { "Barry Cryer" }
   let(:teacher) { pending_induction_submission.teacher }
   let(:induction_period) { teacher.induction_periods.first }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: induction_period.started_on) }
 
   before do
     FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
@@ -41,16 +42,17 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
   end
 
   it "creates a pass induction event by the author" do
-    allow(Events::Record).to receive(:record_teacher_passes_induction_event!).and_call_original
-
-    perform_record_pass_job
-    perform_enqueued_jobs
-
-    expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
+    expect(Events::Record).to receive(:record_teacher_passes_induction_event!).with(
       appropriate_body:,
       teacher:,
       induction_period:,
+      ect_at_school_period:,
+      mentorship_period: nil,
+      training_period: nil,
       author: an_instance_of(::Events::AppropriateBodyBatchAuthor)
     )
+
+    perform_record_pass_job
+    perform_enqueued_jobs
   end
 end

@@ -139,7 +139,7 @@ module Events
 
     # Teacher Status Events
 
-    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, ect_at_school_period:, teacher:, body: nil, zendesk_ticket_id: nil)
+    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_passes_induction
@@ -148,10 +148,10 @@ module Events
       heading = "#{teacher_name} passed induction by admin" if author.dfe_user?
       heading = "#{teacher_name} passed induction by #{appropriate_body.name}" if author.appropriate_body_user?
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, ect_at_school_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
-    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, ect_at_school_period:, teacher:, body: nil, zendesk_ticket_id: nil)
+    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_fails_induction
@@ -160,7 +160,7 @@ module Events
       heading = "#{teacher_name} failed induction by admin" if author.dfe_user?
       heading = "#{teacher_name} failed induction by #{appropriate_body.name}" if author.appropriate_body_user?
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, ect_at_school_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
+      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     def self.record_teacher_induction_status_reset_event!(author:, appropriate_body:, teacher:, happened_at: Time.zone.now)
