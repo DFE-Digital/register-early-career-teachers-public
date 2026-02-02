@@ -10,7 +10,7 @@ describe Teachers::RefreshTRSAttributes do
   end
   let(:enable_trs_teacher_refresh) { true }
 
-  include_context "test trs api client that finds teacher that has passed their induction"
+  include_context "test TRS API returns a teacher that has passed their induction"
 
   before do
     allow(Rails.application.config).to receive(:enable_trs_teacher_refresh)
@@ -28,7 +28,7 @@ describe Teachers::RefreshTRSAttributes do
         expect(teacher.trs_last_name).to eql("Van Houten")
         expect(teacher.trs_induction_status).to eql("Passed")
         expect(teacher.trs_qts_awarded_on).to eql(3.years.ago.to_date)
-        expect(teacher.trs_qts_status_description).to eql("Passed")
+        expect(teacher.trs_qts_status_description).to eql("QualifiedTeacherStatus")
         expect(teacher.trs_initial_teacher_training_provider_name).to eql("Example Provider Ltd.")
         expect(teacher.trs_initial_teacher_training_end_date).to eql(Date.new(2021, 4, 5))
         expect(teacher.trs_data_last_refreshed_at).to eql(Time.zone.now)
@@ -79,8 +79,8 @@ describe Teachers::RefreshTRSAttributes do
               trs_data_last_refreshed_at: Time.zone.now,
               trs_initial_teacher_training_end_date: "2021-04-05",
               trs_initial_teacher_training_provider_name: "Example Provider Ltd.",
-              trs_qts_awarded_on: 3.years.ago.to_date,
-              trs_qts_status_description: "Passed"
+              trs_qts_awarded_on: 3.years.ago.to_date.to_s,
+              trs_qts_status_description: "QualifiedTeacherStatus"
             })
             expect(fake_manage).to have_received(:update_trs_induction_status!).once.with(
               trs_induction_status: "Passed",
@@ -92,7 +92,7 @@ describe Teachers::RefreshTRSAttributes do
       end
 
       context "when the teacher has been deactivated in TRS" do
-        include_context "test trs api client deactivated teacher"
+        include_context "test TRS API returns a deactivated teacher"
 
         let(:fake_manage) do
           double(Teachers::Manage,
@@ -110,7 +110,7 @@ describe Teachers::RefreshTRSAttributes do
       end
 
       context "when the teacher is not found in TRS" do
-        include_context "test trs api client that finds nothing"
+        include_context "test TRS API returns nothing"
 
         before do
           allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
@@ -132,12 +132,30 @@ describe Teachers::RefreshTRSAttributes do
       end
     end
 
-    context "when the teacher is not found in TRS" do
-      include_context "test trs api client that finds nothing"
+    context "when the TRN or DoB in TRS have changed" do
+      include_context "test TRS API returns a merged teacher"
 
-      before do
-        allow(Rails.application.config).to receive(:enable_test_guidance).and_return(true)
+      it "flags the teacher" do
+        expect(service.refresh!).to eq(:teacher_merged)
+        teacher.reload
+
+        expect(teacher).to be_trs_not_found
       end
+
+      it "adds a teacher_trs_merged event" do
+        expect(teacher.events).to be_empty
+
+        service.refresh!
+        perform_enqueued_jobs
+
+        expect(teacher.events.map(&:event_type)).to contain_exactly(
+          "teacher_trs_merged"
+        )
+      end
+    end
+
+    context "when the teacher is not found in TRS" do
+      include_context "test TRS API returns nothing"
 
       it "flags the teacher" do
         service.refresh!
@@ -244,27 +262,13 @@ describe Teachers::RefreshTRSAttributes do
           expect(teacher.trs_induction_status).to be_blank
         end
       end
-
-      context "and the API version does not distinguish DEACTIVATED accounts" do
-        before do
-          allow(Rails.application.config).to receive(:enable_test_guidance).and_return(false)
-        end
-
-        it "does not update the teacher record" do
-          service.refresh!
-          teacher.reload
-
-          expect(teacher.trs_data_last_refreshed_at).to be_blank
-          expect(teacher.trs_not_found).to be_blank
-        end
-      end
     end
 
     context "when the teacher has been deactivated in TRS" do
-      include_context "test trs api client deactivated teacher"
+      include_context "test TRS API returns a deactivated teacher"
 
       it "flags the teacher" do
-        service.refresh!
+        expect(service.refresh!).to eq(:teacher_deactivated)
         teacher.reload
 
         expect(teacher).to be_trs_deactivated

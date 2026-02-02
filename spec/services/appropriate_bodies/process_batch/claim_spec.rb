@@ -32,7 +32,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   let(:induction_period) { teacher.induction_periods.first }
 
   describe "#process!" do
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     before { service.process! }
 
@@ -57,7 +57,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
     end
 
     context "when the ECT has been released from a previous induction claim" do
-      include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+      include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
       let(:started_on) { 1.day.ago.to_date.to_s }
 
@@ -274,7 +274,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the TRN is not found" do
-    include_context "test trs api client that finds nothing"
+    include_context "test TRS API returns nothing"
 
     before { service.process! }
 
@@ -296,7 +296,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT is prohibited" do
-    include_context "test trs api client that finds teacher prohibited from teaching"
+    include_context "test TRS API returns a teacher prohibited from teaching"
 
     before { service.process! }
 
@@ -318,7 +318,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT does not have QTS awarded" do
-    include_context "test trs api client that finds teacher without QTS"
+    include_context "test TRS API returns a teacher without QTS"
 
     before { service.process! }
 
@@ -340,7 +340,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT has passed" do
-    include_context "test trs api client that finds teacher with specific induction status", "Passed"
+    include_context "test TRS API returns a teacher with specific induction status", "Passed"
 
     before { service.process! }
 
@@ -362,7 +362,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT has failed" do
-    include_context "test trs api client that finds teacher with specific induction status", "Failed"
+    include_context "test TRS API returns a teacher with specific induction status", "Failed"
 
     before { service.process! }
 
@@ -384,7 +384,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT is exempt" do
-    include_context "test trs api client that finds teacher with specific induction status", "Exempt"
+    include_context "test TRS API returns a teacher with specific induction status", "Exempt"
 
     before { service.process! }
 
@@ -406,7 +406,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the submission overlaps an earlier induction period" do
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     let(:started_on) { 15.days.ago.to_date.to_s }
 
@@ -427,7 +427,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "start date before QTS" do
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     let(:qts_date) { 3.years.ago.to_date }
     let(:started_on) { (qts_date - 1.day).to_s }
@@ -444,7 +444,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT has already passed" do
-    include_context "test trs api client that finds teacher that has passed their induction"
+    include_context "test TRS API returns a teacher that has passed their induction"
 
     let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
@@ -467,7 +467,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT has already failed" do
-    include_context "test trs api client that finds teacher that has failed their induction"
+    include_context "test TRS API returns a teacher that has failed their induction"
 
     let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
@@ -490,7 +490,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when the ECT is already claimed by another body" do
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     let(:other_body) { FactoryBot.create(:appropriate_body, name: "Acme") }
     let(:teacher) { FactoryBot.create(:teacher, trn:) }
@@ -514,7 +514,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when induction programme is unknown" do
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     let(:training_programme) { "foo" }
 
@@ -534,7 +534,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   end
 
   context "when start date is in the future" do
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     let(:started_on) { 1.year.from_now.to_date.to_s }
 

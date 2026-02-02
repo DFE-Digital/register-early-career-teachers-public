@@ -14,7 +14,7 @@ RSpec.describe "Claiming an ECT" do
                                            appropriate_body: other_body)
     end
 
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     scenario "the teacher can be claimed" do
       given_i_am_on_the_claim_an_ect_find_page
@@ -32,7 +32,7 @@ RSpec.describe "Claiming an ECT" do
   end
 
   describe "when the teacher is already claimed by another appropriate body" do
-    include_context "test trs api client that finds teacher with specific induction status", "InProgress"
+    include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     before do
       FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body: other_body)
@@ -50,7 +50,7 @@ RSpec.describe "Claiming an ECT" do
   end
 
   describe "when the teacher has passed" do
-    include_context "test trs api client that finds teacher with specific induction status", "Passed"
+    include_context "test TRS API returns a teacher with specific induction status", "Passed"
 
     scenario "the teacher cannot be claimed" do
       given_i_am_on_the_claim_an_ect_find_page
@@ -63,7 +63,7 @@ RSpec.describe "Claiming an ECT" do
   end
 
   describe "when the teacher has failed" do
-    include_context "test trs api client that finds teacher with specific induction status", "Failed"
+    include_context "test TRS API returns a teacher with specific induction status", "Failed"
 
     scenario "the teacher cannot be claimed" do
       given_i_am_on_the_claim_an_ect_find_page
@@ -76,7 +76,7 @@ RSpec.describe "Claiming an ECT" do
   end
 
   describe "when the teacher is exempt" do
-    include_context "test trs api client that finds teacher with specific induction status", "Exempt"
+    include_context "test TRS API returns a teacher with specific induction status", "Exempt"
 
     scenario "the teacher cannot be claimed" do
       given_i_am_on_the_claim_an_ect_find_page

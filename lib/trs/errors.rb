@@ -6,5 +6,6 @@ module TRS
     class QTSNotAwarded < StandardError; end
     class TeacherDeactivated < StandardError; end
     class TeacherNotFound < StandardError; end
+    class TeacherMerged < StandardError; end
   end
 end

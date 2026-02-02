@@ -1,5 +1,5 @@
 RSpec.describe "Registering a mentor", :enable_schools_interface do
-  include_context "test trs api client returns 200 then 400"
+  include_context "test TRS API returns a teacher and then nothing"
 
   scenario "Teacher with TRN is not found" do
     given_there_is_a_school_in_the_service

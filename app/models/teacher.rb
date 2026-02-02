@@ -119,7 +119,7 @@ class Teacher < ApplicationRecord
 
   scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
   scope :active_in_trs, -> { where(trs_deactivated: false) }
-  scope :not_found_in_trs, -> { where(trs_not_found: true) }
+  scope :not_found_in_trs, -> { where(trs_not_found: true) } # TRS returned either 404 or 308
   scope :found_in_trs, -> { where(trs_not_found: false) }
 
   normalizes :corrected_name, with: -> { it.squish }

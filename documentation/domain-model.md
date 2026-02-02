@@ -183,7 +183,6 @@ erDiagram
     citext trs_email_address
     jsonb trs_alerts
     date trs_induction_start_date
-    string trs_induction_status_description
     string trs_qts_status_description
     date trs_initial_teacher_training_end_date
     string trs_initial_teacher_training_provider_name
