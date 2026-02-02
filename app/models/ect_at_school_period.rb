@@ -65,6 +65,17 @@ class ECTAtSchoolPeriod < ApplicationRecord
     with_expressions_of_interest_for_contract_period(year)
     .where(expression_of_interest: { lead_provider_id: })
   }
+  scope :unclaimed_by_school_reported_appropriate_body, -> {
+    current_or_future
+      .joins(:teacher)
+      .joins(<<~SQL)
+        LEFT OUTER JOIN induction_periods
+          ON induction_periods.teacher_id = ect_at_school_periods.teacher_id
+          AND induction_periods.finished_on IS NULL
+          AND induction_periods.appropriate_body_id = ect_at_school_periods.school_reported_appropriate_body_id
+      SQL
+      .where(induction_periods: { id: nil })
+  }
 
   def reported_leaving_by?(school)
     reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id
