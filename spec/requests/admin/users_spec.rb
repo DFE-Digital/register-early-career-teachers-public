@@ -1,9 +1,12 @@
-describe "Admin::Users" do
-  context "when signed in as a non-user-manager" do
-    include_context "sign in as DfE user"
-
+RSpec.describe "Admin::Users" do
+  context "when signed in as a user without users admin access" do
+    let(:user) { FactoryBot.create(:user, :admin) }
     let(:error_message) do
       "This is to access internal user information for Register early career teachers. To gain access, contact the product team."
+    end
+
+    before do
+      sign_in_as(:dfe_user, user:)
     end
 
     it "redirects GET /admin/users with an alert" do
@@ -165,6 +168,26 @@ describe "Admin::Users" do
           end
         end
       end
+    end
+  end
+
+  context "when signed in as a finance user" do
+    let(:user) { FactoryBot.create(:user, :finance) }
+
+    before do
+      sign_in_as(:dfe_user, user:)
+      allow(Events::Record).to receive(:record_dfe_user_created_event!).with(any_args).and_call_original
+      allow(Events::Record).to receive(:record_dfe_user_updated_event!).with(any_args).and_call_original
+    end
+
+    it "allows finance users to access the Users admin area" do
+      get admin_users_path
+      expect(response).to be_successful
+    end
+
+    it "allows GET /admin/users/new" do
+      get new_admin_user_path
+      expect(response).to be_successful
     end
   end
 end

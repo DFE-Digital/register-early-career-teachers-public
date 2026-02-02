@@ -1,6 +1,6 @@
 module Admin
   class UsersController < AdminController
-    before_action :require_user_manager!
+    before_action :require_users_access!
     def index
       @users = User.alphabetical
     end
@@ -47,8 +47,8 @@ module Admin
       params.expect(user: %i[name email role])
     end
 
-    def require_user_manager!
-      return if current_user&.user_manager?
+    def require_users_access!
+      return if current_user&.dfe_user? && current_user.can_manage_users?
 
       flash[:alert] = "This is to access internal user information for Register early career teachers. To gain access, contact the product team."
       redirect_to admin_path

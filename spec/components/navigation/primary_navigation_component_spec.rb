@@ -5,7 +5,15 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
   let(:current_user_type) { nil }
   let(:nav_selector) { "nav.govuk-service-navigation__wrapper" }
   let(:nav_list_selector) { "#{nav_selector} ul#register-early-career-teachers-service-navigation-list" }
-  let(:current_user) { double(school_user?: false, user_type: current_user_type, finance_access?: true, user_manager?: false) }
+  let(:current_user) do
+    double(
+      school_user?: false,
+      user_type: current_user_type,
+      finance_access?: true,
+      user_manager?: false,
+      can_manage_users?: false
+    )
+  end
 
   def validate_navigation_items(expected_items)
     expect(rendered_content).to have_css(nav_list_selector)
@@ -46,10 +54,42 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
       end
     end
 
+    context "when in admin section and user has finance access" do
+      let(:current_path) { "/admin" }
+      let(:current_user_type) { :dfe_staff_user }
+      let(:current_user) do
+        double(
+          school_user?: false,
+          user_type: current_user_type,
+          finance_access?: true,
+          user_manager?: false,
+          can_manage_users?: true
+        )
+      end
+
+      it "renders Users and Finance" do
+        render_inline(subject)
+
+        expect(rendered_content).to have_link("Teachers", href: "/admin/teachers")
+        expect(rendered_content).to have_link("Schools", href: "/admin/schools")
+        expect(rendered_content).to have_link("Organisations", href: "/admin/organisations")
+        expect(rendered_content).to have_link("Finance", href: "/admin/finance")
+        expect(rendered_content).to have_link("Users", href: "/admin/users")
+      end
+    end
+
     context "when in admin section and user is a user manager" do
       let(:current_path) { "/admin" }
       let(:current_user_type) { :dfe_staff_user }
-      let(:current_user) { double(school_user?: false, user_type: current_user_type, finance_access?: true, user_manager?: true) }
+      let(:current_user) do
+        double(
+          school_user?: false,
+          user_type: current_user_type,
+          finance_access?: true,
+          user_manager?: true,
+          can_manage_users?: true
+        )
+      end
 
       it "renders Users but not Finance" do
         render_inline(subject)
@@ -65,7 +105,15 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
     context "when in admin section and user does not have finance access" do
       let(:current_path) { "/admin" }
       let(:current_user_type) { :dfe_staff_user }
-      let(:current_user) { double(school_user?: false, user_type: current_user_type, finance_access?: false, user_manager?: false) }
+      let(:current_user) do
+        double(
+          school_user?: false,
+          user_type: current_user_type,
+          finance_access?: false,
+          user_manager?: false,
+          can_manage_users?: false
+        )
+      end
 
       it "does not render the Finance item" do
         render_inline(subject)
