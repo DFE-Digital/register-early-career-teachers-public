@@ -6,6 +6,15 @@ class API::TeacherSerializer < Blueprinter::Base
       field :created_at, name: :changed_at
     end
 
+    class WithdrawalAndDeferralSerializer < Blueprinter::Base
+      field(:reason) do |data|
+        data[:reason]
+      end
+      field(:date) do |data|
+        data[:date]
+      end
+    end
+
     class TrainingPeriodSerializer < Blueprinter::Base
       field(:training_record_id) do |(training_period, teacher, _)|
         if training_period.for_ect?
@@ -52,23 +61,13 @@ class API::TeacherSerializer < Blueprinter::Base
           .delivery_partner
           .api_id
       end
-      field(:withdrawal) do |(training_period, _, _)|
+      association :withdrawal, blueprint: WithdrawalAndDeferralSerializer do |(training_period, _, _)|
         training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
-        if training_status == :withdrawn
-          {
-            "reason" => training_period.withdrawal_reason.dasherize,
-            "date" => training_period.withdrawn_at.utc.rfc3339,
-          }
-        end
+        { reason: training_period.withdrawal_reason.dasherize, date: training_period.withdrawn_at } if training_status == :withdrawn
       end
-      field(:deferral) do |(training_period, _, _)|
+      association :deferral, blueprint: WithdrawalAndDeferralSerializer do |(training_period, _, _)|
         training_status = API::TrainingPeriods::TrainingStatus.new(training_period:).status
-        if training_status == :deferred
-          {
-            "reason" => training_period.deferral_reason.dasherize,
-            "date" => training_period.deferred_at.utc.rfc3339,
-          }
-        end
+        { reason: training_period.deferral_reason.dasherize, date: training_period.deferred_at } if training_status == :deferred
       end
       field(:created_at) do |(training_period, teacher, _)|
         earliest_school_period = if training_period.for_ect?
@@ -77,27 +76,27 @@ class API::TeacherSerializer < Blueprinter::Base
                                    teacher.earliest_mentor_at_school_period
                                  end
 
-        earliest_school_period.created_at.utc.rfc3339
+        earliest_school_period.created_at
       end
       field(:induction_end_date) do |(training_period, teacher, _)|
         if training_period.for_ect?
           if teacher.finished_induction_period.present?
-            teacher.finished_induction_period.finished_on.rfc3339
+            teacher.finished_induction_period.finished_on
           else
-            teacher.trs_induction_completed_date&.rfc3339
+            teacher.trs_induction_completed_date
           end
         end
       end
       field(:overall_induction_start_date) do |(training_period, teacher, _)|
         if training_period.for_ect?
           if teacher.started_induction_period.present?
-            teacher.started_induction_period.started_on.rfc3339
+            teacher.started_induction_period.started_on
           else
-            teacher.trs_induction_start_date&.rfc3339
+            teacher.trs_induction_start_date
           end
         end
       end
-      field(:mentor_funding_end_date) { |(training_period, teacher, _)| teacher.mentor_became_ineligible_for_funding_on&.rfc3339 if training_period.for_mentor? }
+      field(:mentor_funding_end_date) { |(training_period, teacher, _)| teacher.mentor_became_ineligible_for_funding_on if training_period.for_mentor? }
       field(:cohort_changed_after_payments_frozen) do |(training_period, teacher, _)|
         if training_period.for_ect?
           teacher.ect_payments_frozen_year.present?

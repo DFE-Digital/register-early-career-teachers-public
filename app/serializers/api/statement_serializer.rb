@@ -5,8 +5,8 @@ class API::StatementSerializer < Blueprinter::Base
     field(:month) { |s, _| Date::MONTHNAMES[s.month] }
     field(:year) { |s, _| s.year.to_s }
     field(:cohort) { |s, _| s.active_lead_provider.contract_period_year.to_s }
-    field :deadline_date, name: :cut_off_date, datetime_format: "%Y-%m-%d"
-    field :payment_date, datetime_format: "%Y-%m-%d"
+    field :deadline_date, name: :cut_off_date
+    field :payment_date
     field(:paid?, name: :paid)
     field :created_at
     field(:api_updated_at, name: :updated_at)
