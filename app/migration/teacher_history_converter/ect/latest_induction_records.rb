@@ -15,7 +15,7 @@ class TeacherHistoryConverter::ECT::LatestInductionRecords
   end
 
   # Returns [ECF2TeacherHistory::ECTAtSchoolPeriod[], String[]]
-  def extract_ect_at_school_periods_and_combinations
+  def ect_at_school_periods_and_combinations
     @ecf1_ect_combinations ||= []
     @ect_at_school_periods ||= induction_records
                                  .reverse
