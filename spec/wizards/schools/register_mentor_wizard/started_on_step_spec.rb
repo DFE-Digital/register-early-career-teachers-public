@@ -92,7 +92,7 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
     end
 
     context "when contract period is missing" do
-      let!(:contract_period) { }
+      let!(:contract_period) {}
 
       it { expect(step.next_step).to eq(:cannot_register_mentor_yet) }
     end
