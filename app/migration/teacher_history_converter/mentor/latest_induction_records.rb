@@ -44,7 +44,7 @@ private
     finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date&.to_date].compact.min
     training_period = build_new_training_period_from_induction_record(induction_record, { started_on:, finished_on: })
 
-    ecf1_mentor_combinations << [induction_record.combination]
+    ecf1_mentor_combinations << induction_record.combination
 
     mentor_at_school_periods.unshift(
       ECF2TeacherHistory::MentorAtSchoolPeriod.new(
