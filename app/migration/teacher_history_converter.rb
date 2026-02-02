@@ -10,15 +10,10 @@ class TeacherHistoryConverter
   end
 
   def convert_to_ecf2!
-    ect_at_school_periods, ecf1_ect_combinations = ect_at_school_periods_and_combinations
-    mentor_at_school_periods, ecf1_mentor_combinations = mentor_at_school_periods_and_combinations
-
     ECF2TeacherHistory.new(
       teacher:,
       ect_at_school_periods:,
       mentor_at_school_periods:,
-      ecf1_ect_combinations:,
-      ecf1_mentor_combinations:
     )
   end
 
@@ -58,17 +53,19 @@ private
     )
   end
 
-  def ect_at_school_periods_and_combinations
-    return [[], []] if ecf1_teacher_history.ect.blank?
+  def ect_at_school_periods
+    return [] if ecf1_teacher_history.ect.blank?
 
+    trn = ecf1_teacher_history.user.trn
+    profile_id = ecf1_teacher_history.ect.participant_profile_id
     raw_induction_records = ecf1_teacher_history.ect.induction_records
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
     mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
 
     case migration_mode
     when :latest_induction_records
-      TeacherHistoryConverter::ECT::LatestInductionRecords.new(induction_records:, mentor_at_school_periods:)
-                                                          .ect_at_school_periods_and_combinations
+      TeacherHistoryConverter::ECT::LatestInductionRecords.new(trn:, profile_id:, induction_records:, mentor_at_school_periods:)
+                                                          .ect_at_school_periods
     when :all_induction_records
       TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records).ect_at_school_periods
     end
@@ -78,15 +75,18 @@ private
     @parsed_name ||= Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
   end
 
-  def mentor_at_school_periods_and_combinations
-    return [[], []] if ecf1_teacher_history.mentor.blank?
+  def mentor_at_school_periods
+    return [] if ecf1_teacher_history.mentor.blank?
 
+    trn = ecf1_teacher_history.user.trn
+    profile_id = ecf1_teacher_history.mentor.participant_profile_id
     raw_induction_records = ecf1_teacher_history.mentor.induction_records
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
 
     case migration_mode
     when :latest_induction_records
-      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records).mentor_at_school_periods_and_combinations
+      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(trn:, profile_id:, induction_records:)
+                                                             .mentor_at_school_periods
     when :all_induction_records
       TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
     end
