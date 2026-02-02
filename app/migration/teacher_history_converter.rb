@@ -10,8 +10,8 @@ class TeacherHistoryConverter
   end
 
   def convert_to_ecf2!
-    ect_at_school_periods, ecf1_ect_combinations = extract_ect_at_school_periods
-    mentor_at_school_periods, ecf1_mentor_combinations = extract_mentor_at_school_periods
+    ect_at_school_periods, ecf1_ect_combinations = extract_ect_at_school_periods_and_combinations
+    mentor_at_school_periods, ecf1_mentor_combinations = extract_mentor_at_school_periods_and_combinations
 
     ECF2TeacherHistory.new(
       teacher:,
@@ -58,8 +58,8 @@ private
     )
   end
 
-  def extract_ect_at_school_periods
-    return [] if ecf1_teacher_history.ect.blank?
+  def extract_ect_at_school_periods_and_combinations
+    return [[], []] if ecf1_teacher_history.ect.blank?
 
     raw_induction_records = ecf1_teacher_history.ect.induction_records
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
@@ -68,7 +68,7 @@ private
     case migration_mode
     when :latest_induction_records
       TeacherHistoryConverter::ECT::LatestInductionRecords.new(induction_records:, mentor_at_school_periods:)
-                                                          .extract_ect_at_school_periods
+                                                          .extract_ect_at_school_periods_and_combinations
     when :all_induction_records
       TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records).ect_at_school_periods
     end
@@ -78,15 +78,15 @@ private
     @parsed_name ||= Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
   end
 
-  def extract_mentor_at_school_periods
-    return [] if ecf1_teacher_history.mentor.blank?
+  def extract_mentor_at_school_periods_and_combinations
+    return [[], []] if ecf1_teacher_history.mentor.blank?
 
     raw_induction_records = ecf1_teacher_history.mentor.induction_records
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
 
     case migration_mode
     when :latest_induction_records
-      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records).extract_mentor_at_school_periods
+      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(induction_records).extract_mentor_at_school_periods_and_combinations
     when :all_induction_records
       TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
     end
