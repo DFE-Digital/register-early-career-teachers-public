@@ -12,7 +12,7 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
   end
 
   # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
-  def extract_mentor_at_school_periods_and_combinations
+  def mentor_at_school_periods_and_combinations
     @ecf1_mentor_combinations ||= []
     @mentor_at_school_periods ||= induction_records
                                  .reverse
