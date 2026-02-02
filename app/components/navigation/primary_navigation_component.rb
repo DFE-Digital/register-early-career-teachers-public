@@ -61,9 +61,9 @@ module Navigation
           { text: "Users", href: admin_users_path, active_when: "/admin/users" }
         ],
         school_user: [
-          { text: "ECTs", href: schools_ects_home_path },
-          { text: "Mentors", href: schools_mentors_home_path },
-          { text: "Induction tutor", href: schools_induction_tutor_path }
+          { text: "ECTs", href: schools_ects_home_path, active_when: schools_ects_path },
+          { text: "Mentors", href: schools_mentors_home_path, active_when: schools_mentors_path },
+          { text: "Induction tutor", href: schools_induction_tutor_path, active_when: "/school/induction-tutor" }
         ],
         api_guidance: [
           { text: "Home", href: "/api/guidance" },

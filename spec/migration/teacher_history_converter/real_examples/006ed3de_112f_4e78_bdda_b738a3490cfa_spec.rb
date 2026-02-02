@@ -1,4 +1,9 @@
 describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
+  # this teacher had two periods of mentorship with different mentors:
+  #
+  # 160bdffd-ff0d-42ec-9270-febd9f594155 (see 81f8f951_a339_447e_a4d6_f10453d29e5d_spec.rb)
+  # 410e7dfe-7561-4149-aad5-5bfdd099d04c (see c82e38f1_920b_4ad0_98a3_5d69ee7f7b83_spec.rb)
+
   subject(:actual_output) { ecf2_teacher_history.to_h }
 
   let(:input) do
@@ -97,7 +102,8 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
               cohort_year: 2022
             }
           }
-        ]
+        ],
+        mentor_at_school_periods:,
       }
     }
   end
@@ -107,6 +113,23 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
+
+    let(:mentor_at_school_periods) do
+      [
+        {
+          # This teacher's data is covered by c82e38f1_920b_4ad0_98a3_5d69ee7f7b83_spec.rb
+          #
+          # This record was imported using the economy migrator so only the latest induction
+          # record is present, resulting in 0 overlap with the ECT and therefore no mentorship
+          # periods
+          mentor_at_school_period_id: 1,
+          started_on: Date.new(2024, 1, 8),
+          finished_on: nil,
+          school: { urn: "100001", name: "School 1" },
+          teacher: { trn: "9000009", api_mentor_training_record_id: "410e7dfe-7561-4149-aad5-5bfdd099d04c" }
+        }
+      ]
+    end
 
     let(:expected_output) do
       {
@@ -155,6 +178,11 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
 
   context "when using the premium migrator", skip: "Implement the premium migrator" do
     let(:migration_mode) { :all_induction_records }
+
+    let(:mentor_at_school_periods) do
+      # TODO: add the premium mentor at school periods
+      []
+    end
 
     let(:expected_output) do
       {}
