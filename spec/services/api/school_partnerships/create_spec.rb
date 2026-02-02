@@ -47,7 +47,7 @@ RSpec.describe API::SchoolPartnerships::Create, type: :model do
 
       it "is invalid" do
         expect(service).to be_invalid
-        expect(service.errors[:contract_period_year]).to eq(["You cannot create this partnership until the contract period has started."])
+        expect(service.errors[:contract_period_year]).to eq(["You cannot create this partnership as the contract period is closed."])
       end
     end
 

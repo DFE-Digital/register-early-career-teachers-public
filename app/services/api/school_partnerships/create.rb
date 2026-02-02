@@ -59,7 +59,7 @@ module API::SchoolPartnerships
     def contract_period_enabled
       return if errors[:contract_period_year].any?
 
-      errors.add(:contract_period_year, "You cannot create this partnership until the contract period has started.") unless contract_period&.enabled?
+      errors.add(:contract_period_year, "You cannot create this partnership as the contract period is closed.") unless contract_period&.enabled?
     end
 
     def lead_provider_exists
