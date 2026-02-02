@@ -12,7 +12,7 @@ class SpecGenerator
   end
 
   def spec
-    induction_records = ecf1_teacher_history.ect.induction_records
+    induction_records = ecf1_teacher_history.ect&.induction_records || []
     induction_blocks = induction_records.map do |induction_record|
       <<~IR.chomp
         hash_including(
@@ -47,7 +47,7 @@ class SpecGenerator
           let(:expected_output) do
             {
               teacher: hash_including(
-                trn: "11111111",
+                trn: "1111111",
                 ect_at_school_periods: array_including(
       #{induction_blocks.join(",\n").indent(12)}
                 )
@@ -66,7 +66,7 @@ class SpecGenerator
           let(:expected_output) do
             {
               teacher: hash_including(
-                trn: "11111111",
+                trn: "1111111",
                 ect_at_school_periods: array_including(
       #{induction_blocks.join(",\n").indent(12)}
                 )
