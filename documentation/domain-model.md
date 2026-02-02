@@ -162,6 +162,7 @@ erDiagram
     datetime api_updated_at
     datetime api_unfunded_mentor_updated_at
     enum migration_mode
+    boolean trs_not_found
   }
   PendingInductionSubmission {
     integer id
@@ -321,13 +322,12 @@ erDiagram
     uuid api_id
     datetime declaration_date
     enum evidence_type
-    enum payment_status
     enum clawback_status
-    enum ineligibility_reason
     enum declaration_type
     boolean sparsity_uplift
     boolean pupil_premium_uplift
     datetime api_updated_at
+    enum payment_status
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| User : belongs_to
