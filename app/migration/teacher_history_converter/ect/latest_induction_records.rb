@@ -20,13 +20,14 @@ class TeacherHistoryConverter::ECT::LatestInductionRecords
     @ect_at_school_periods ||= induction_records
                                  .reverse
                                  .each_with_object([]) do |induction_record, periods|
-      process(periods, induction_record)
+                                   process(periods, induction_record)
     end
 
     [ect_at_school_periods, ecf1_ect_combinations]
   end
 
 private
+
   attr_accessor :ecf1_ect_combinations
 
   # Add a new school_period period to the beginning of ect_at_school_periods with:
