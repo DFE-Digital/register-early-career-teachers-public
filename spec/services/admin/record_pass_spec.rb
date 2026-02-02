@@ -11,7 +11,7 @@ RSpec.describe Admin::RecordPass do
     })
   end
 
-  it_behaves_like "it closes and induction period and finishes any related periods" do
+  it_behaves_like "it closes an induction period and finishes any related periods" do
     subject(:service) do
       described_class.new(
         teacher:,
@@ -49,6 +49,8 @@ RSpec.describe Admin::RecordPass do
         teacher:,
         induction_period:,
         ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         author:,
         body: note,
         zendesk_ticket_id: "123456"
@@ -66,6 +68,8 @@ RSpec.describe Admin::RecordPass do
           teacher:,
           induction_period:,
           ect_at_school_period:,
+          mentorship_period:,
+          training_period:,
           author:,
           body: note,
           zendesk_ticket_id: "123456"

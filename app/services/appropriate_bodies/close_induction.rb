@@ -87,5 +87,13 @@ module AppropriateBodies
     def destroy_unstarted_ect_period!
       ECTAtSchoolPeriods::Destroy.call(ect_at_school_period:, author:)
     end
+
+    def mentorship_period
+      ect_at_school_period&.latest_mentorship_period
+    end
+
+    def training_period
+      ect_at_school_period&.latest_training_period
+    end
   end
 end

@@ -25,6 +25,8 @@ module AppropriateBodies
         teacher:,
         appropriate_body:,
         ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         induction_period: ongoing_induction_period
       )
     end
