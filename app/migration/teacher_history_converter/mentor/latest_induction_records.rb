@@ -11,8 +11,8 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
     @induction_records = latest_induction_records(induction_records:)
   end
 
-  # Returns ECF2TeacherHistory::MentorAtSchoolPeriod[]
-  def extract_mentor_at_school_periods
+  # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
+  def extract_mentor_at_school_periods_and_combinations
     @ecf1_mentor_combinations ||= []
     @mentor_at_school_periods ||= induction_records
                                  .reverse
@@ -24,7 +24,7 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
   end
 
 private
-  
+
   attr_accessor :ecf1_mentor_combinations
 
   # Add a new school_period period to the beginning of mentor_at_school_periods with:
