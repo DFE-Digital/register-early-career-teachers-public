@@ -49,6 +49,20 @@ describe Migrators::SchoolPartnership do
           expect(school_partnership.api_updated_at).to eq expected_api_updated_at
         end
       end
+
+      context "when the partnership is challenged" do
+        before do
+          migration_resource1.update!(challenged_at: 1.week.ago)
+        end
+
+        it "migrates the partnership" do
+          expect {
+            instance.migrate!
+          }.to change(SchoolPartnership, :count).by(2)
+
+          expect(SchoolPartnership.find_by(api_id: migration_resource1.id)).to be_present
+        end
+      end
     end
   end
 end
