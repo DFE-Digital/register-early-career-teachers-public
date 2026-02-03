@@ -465,6 +465,56 @@ describe ECTAtSchoolPeriod do
         expect(described_class.induction_not_completed).to match_array([period_2])
       end
     end
+
+    describe "claimable and non-claimable scopes" do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+
+      let(:teacher_with_qts) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+      let(:teacher_without_qts) { FactoryBot.create(:teacher, trs_qts_awarded_on: nil) }
+      let(:teacher_with_qts_claimed_by_different_ab) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+
+      let!(:period_with_qts) do
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_with_qts, school_reported_appropriate_body: appropriate_body)
+      end
+      let!(:period_without_qts) do
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_without_qts, school_reported_appropriate_body: appropriate_body)
+      end
+      let!(:period_with_qts_claimed_by_different_ab) do
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_with_qts_claimed_by_different_ab, school_reported_appropriate_body: appropriate_body)
+      end
+
+      before do
+        FactoryBot.create(:induction_period, :ongoing, appropriate_body: other_appropriate_body, teacher: teacher_with_qts_claimed_by_different_ab)
+      end
+
+      describe ".without_qts_award" do
+        it "returns only periods where the teacher has no QTS award date" do
+          results = described_class.without_qts_award
+
+          expect(results).to include(period_without_qts)
+          expect(results).not_to include(period_with_qts, period_with_qts_claimed_by_different_ab)
+        end
+      end
+
+      describe ".claimed_by_different_appropriate_body" do
+        it "returns only current/future periods with an active induction period for a different appropriate body" do
+          results = described_class.claimed_by_different_appropriate_body
+
+          expect(results).to include(period_with_qts_claimed_by_different_ab)
+          expect(results).not_to include(period_with_qts, period_without_qts)
+        end
+      end
+
+      describe ".claimable" do
+        it "returns only current/future periods with QTS and not claimed by a different appropriate body" do
+          results = described_class.claimable
+
+          expect(results).to include(period_with_qts)
+          expect(results).not_to include(period_without_qts, period_with_qts_claimed_by_different_ab)
+        end
+      end
+    end
   end
 
   describe "declarative touch" do
