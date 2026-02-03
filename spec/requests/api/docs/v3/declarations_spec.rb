@@ -30,7 +30,7 @@ RSpec.describe "Declarations endpoint", :with_metadata, openapi_spec: "v3/swagge
                     tag: "Declarations",
                     resource_description: "Declare a participant has reached a milestone. Idempotent endpoint - submitting exact copy of a request will return the same response body as submitting it the first time.",
                     response_description: "The created declaration",
-                    response_schema_ref: "#/components/schemas/DeclarationResponse",
+                    response_schema_ref: "#/components/schemas/DeclarationCreateResponse",
                     request_schema_ref: "#/components/schemas/DeclarationCreateRequest",
                   } do
     let(:schedule) { training_period.schedule }
