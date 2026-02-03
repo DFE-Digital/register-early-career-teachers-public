@@ -8,7 +8,9 @@ module AppropriateBodies::Importers
     attr_accessor :csv, :data, :logger
 
     ClaimEvent = Struct.new(:appropriate_body_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
-      def event_type = :appropriate_body_claims_teacher
+      def event_type = :induction_period_opened
+
+      # def heading = "#{teacher_name(teacher)} was claimed by #{appropriate_body.name}"
 
       def to_h
         {
@@ -17,7 +19,7 @@ module AppropriateBodies::Importers
           body: nil,
           event_type:,
           happened_at:,
-          heading: "placeholder",
+          heading: "placeholder", # TODO: replace placeholder, either now or as a postscript
           induction_period_id:,
           metadata:,
           teacher_id:,
@@ -26,7 +28,9 @@ module AppropriateBodies::Importers
     end
 
     ReleaseEvent = Struct.new(:appropriate_body_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
-      def event_type = :appropriate_body_releases_teacher
+      def event_type = :induction_period_closed
+
+      # def heading = "#{teacher_name(teacher)} was released by #{appropriate_body.name}"
 
       def to_h
         {
@@ -35,7 +39,7 @@ module AppropriateBodies::Importers
           body: nil,
           event_type:,
           happened_at:,
-          heading: "placeholder",
+          heading: "placeholder", # TODO: replace placeholder, either now or as a postscript
           induction_period_id:,
           metadata:,
           teacher_id:,

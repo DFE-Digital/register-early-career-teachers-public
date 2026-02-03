@@ -19,7 +19,7 @@ module AppropriateBodies::Importers
       import_induction_extensions
 
       update_event_titles
-      insert_admins
+      # insert_admins
     end
 
   private
@@ -115,10 +115,10 @@ module AppropriateBodies::Importers
       ActiveRecord::Base.connection.execute(statements.join(";"))
     end
 
-    def insert_admins
-      @admin_csv.each do |admin|
-        User.create(email: admin["email"], name: admin["name"])
-      end
-    end
+    # def insert_admins
+    #   @admin_csv.each do |admin|
+    #     User.create(email: admin["email"], name: admin["name"])
+    #   end
+    # end
   end
 end
