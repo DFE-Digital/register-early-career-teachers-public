@@ -1,11 +1,11 @@
 class User < ApplicationRecord
   ROLES = {
     admin: "Admin",
-    super_admin: "Super admin",
+    user_manager: "User manager",
     finance: "Finance",
   }.freeze
 
-  enum :role, ROLES.keys.index_with(&:to_s), validate: { message: "Must be admin, finance or super_admin" }
+  enum :role, ROLES.keys.index_with(&:to_s), validate: { message: "Must be admin, finance or user_manager" }
 
   encrypts :otp_secret
 
@@ -23,6 +23,14 @@ class User < ApplicationRecord
 
   # Scopes
   scope :alphabetical, -> { order(name: :asc) }
+
+  def super_admin?
+    user_manager?
+  end
+
+  def can_manage_users?
+    user_manager? || finance?
+  end
 
   def finance_access?
     finance?
