@@ -9,7 +9,7 @@ module Migrators
     end
 
     def self.partnerships
-      ::Migration::Partnership.where(challenged_at: nil)
+      ::Migration::Partnership.all
     end
 
     def self.dependencies
