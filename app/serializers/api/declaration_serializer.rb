@@ -4,7 +4,7 @@ class API::DeclarationSerializer < Blueprinter::Base
 
     field(:participant_id) { |declaration| declaration.training_period.teacher.api_id }
     field(:declaration_type)
-    field(:declaration_date) { |declaration| declaration.declaration_date.rfc3339 }
+    field(:declaration_date)
 
     field(:course_identifier) do |declaration|
       if declaration.training_period.for_ect?
@@ -20,8 +20,8 @@ class API::DeclarationSerializer < Blueprinter::Base
       status == "no_payment" ? "submitted" : status
     end
 
-    field(:updated_at) { |declaration| declaration.updated_at.rfc3339 }
-    field(:created_at) { |declaration| declaration.created_at.rfc3339 }
+    field(:updated_at)
+    field(:created_at)
     field(:delivery_partner_id) { |declaration| declaration.training_period.delivery_partner.api_id }
     field(:statement_id) { |declaration| declaration.payment_statement&.api_id }
     field(:clawback_statement_id) { |declaration| declaration.clawback_statement&.api_id }
