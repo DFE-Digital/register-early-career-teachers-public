@@ -43,7 +43,7 @@ describe ActiveLeadProvider do
     describe ".available_for_delivery_partner" do
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
       let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:contract_period) { FactoryBot.create(:contract_period) }
       let!(:available_alp_1) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let!(:available_alp_2) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let!(:assigned_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
@@ -103,7 +103,7 @@ describe ActiveLeadProvider do
 
     describe ".without_existing_partnership_for" do
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:contract_period) { FactoryBot.create(:contract_period) }
       let!(:available_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let!(:partnered_alp) { FactoryBot.create(:active_lead_provider, contract_period:) }
       let!(:different_period_alp) { FactoryBot.create(:active_lead_provider) }
