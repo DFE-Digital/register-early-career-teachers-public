@@ -25,6 +25,7 @@ class InductionPeriod < ApplicationRecord
 
   # Validations
   validates :appropriate_body_period_id, presence: { message: "Select an appropriate body" }
+  validates :outcome, absence: { message: "Outcome cannot be set for ongoing induction periods" }, if: -> { finished_on.nil? }
 
   validates :started_on,
             presence: { message: "Enter a start date" }
