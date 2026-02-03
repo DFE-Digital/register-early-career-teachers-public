@@ -19,6 +19,12 @@ class Migration::MigrationsController < ::AdminController
 
   def cache_stats
     @data_migrations = DataMigration.complete.where.not(cache_stats: nil).order(:id)
+    @combinations = DataMigrationTeacherCombination.select(
+      "SUM(ecf1_ect_combinations_count) AS total_ecf1_ect_combinations,
+       SUM(ecf1_mentor_combinations_count) AS total_ecf1_mentor_combinations,
+       SUM(ecf2_ect_combinations_count) AS total_ecf2_ect_combinations,
+       SUM(ecf2_mentor_combinations_count) AS total_ecf2_mentor_combinations"
+    )
 
     render layout: "full"
   end
