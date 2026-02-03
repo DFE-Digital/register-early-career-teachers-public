@@ -3,18 +3,41 @@ describe "Schools access guard", :enable_schools_interface do
     subject(:perform_request) { get schools_ects_home_path }
 
     context "when the gias school is closed" do
-      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :state_school_type) }
+      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :state_school_type, status: :closed) }
       let(:school) { gias_school.school }
 
-      before do
-        gias_school.update!(status: :closed)
-        sign_in_as(:school_user, method: :dfe_sign_in, school:)
-      end
+      before { sign_in_as(:school_user, method: :dfe_sign_in, school:) }
 
       it "redirects to the school access denied page" do
         perform_request
 
         expect(response).to redirect_to(schools_access_denied_path)
+      end
+    end
+
+    context "when the gias school is proposed to open" do
+      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :state_school_type, status: :proposed_to_open) }
+      let(:school) { gias_school.school }
+
+      before { sign_in_as(:school_user, method: :dfe_sign_in, school:) }
+
+      it "redirects to the school access denied page" do
+        perform_request
+
+        expect(response).to redirect_to(schools_access_denied_path)
+      end
+    end
+
+    context "when the gias school is proposed to close" do
+      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :state_school_type, status: :proposed_to_close) }
+      let(:school) { gias_school.school }
+
+      before { sign_in_as(:school_user, method: :dfe_sign_in, school:) }
+
+      it "allows access to the ects home page" do
+        perform_request
+
+        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -34,7 +57,7 @@ describe "Schools access guard", :enable_schools_interface do
     end
 
     context "when the school is independent, not section 41 approved, and has no ongoing training" do
-      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :independent_school_type, :not_section_41) }
+      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :independent_school_type, :not_section_41, status: :open) }
       let(:school) { gias_school.school }
 
       before { sign_in_as(:school_user, method: :dfe_sign_in, school:) }
@@ -47,7 +70,7 @@ describe "Schools access guard", :enable_schools_interface do
     end
 
     context "when the school is independent, not section 41 approved, and has ongoing training" do
-      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :independent_school_type, :not_section_41) }
+      let(:gias_school) { FactoryBot.create(:gias_school, :with_school, :independent_school_type, :not_section_41, status: :open) }
       let(:school) { gias_school.school }
 
       before do
