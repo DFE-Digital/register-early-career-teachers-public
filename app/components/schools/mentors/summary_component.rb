@@ -3,7 +3,9 @@ module Schools
     class SummaryComponent < ApplicationComponent
       include TeacherHelper
 
-      with_collection_parameter :mentor
+      # with_collection_parameter :mentor
+
+      attr_reader :mentor, :school
 
       def initialize(mentor:, school:)
         @mentor = mentor
@@ -30,6 +32,51 @@ module Schools
         { key: { text: "Assigned ECTs" }, value: { text: assigned_ects_summary } }
       end
 
+      def training_period_summary_rows
+        return [] unless latest_training_period
+
+        [
+          { key: { text: "Lead provider" }, value: { text: provider_display_with_status } },
+          { key: { text: "Delivery partner" }, value: { text: delivery_partner_name } },
+        ]
+      end
+
+      # TODO: N+1 queries
+      def latest_training_period
+        @latest_training_period ||= mentor_period_for_school&.latest_training_period
+      end
+
+      def lead_provider_name
+        @lead_provider_name ||= latest_training_period&.lead_provider_name
+      end
+
+      def status_text
+        case
+        when partnership_confirmed?
+          "Confirmed by #{lead_provider_name}"
+        when latest_training_period.only_expression_of_interest?
+          "Awaiting confirmation by #{lead_provider_name}"
+        end
+      end
+
+      def provider_display_with_status
+        safe_join([
+          lead_provider_name,
+          tag.br,
+          tag.span(status_text, class: "govuk-hint")
+        ])
+      end
+
+      def partnership_confirmed?
+        latest_training_period.school_partnership.present?
+      end
+
+      # TODO: N+1 queries
+      def delivery_partner_name
+        latest_training_period&.delivery_partner_name
+      end
+
+      # TODO: N+1 queries
       def mentor_period_for_school
         @mentor.mentor_at_school_periods.find_by(school: @school)
       end

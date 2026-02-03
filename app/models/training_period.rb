@@ -168,6 +168,14 @@ class TrainingPeriod < ApplicationRecord
     end
   end
 
+  def deferred?
+    deferred_at.present?
+  end
+
+  def withdrawn?
+    withdrawn_at.present?
+  end
+
 private
 
   def only_one_at_school_period_present
