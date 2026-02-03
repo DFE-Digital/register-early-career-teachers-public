@@ -64,10 +64,12 @@ RSpec.configure do |config|
 
           # Declarations
           Declaration: DECLARATION,
+          DeclarationCreate: DECLARATION_CREATE,
           DeclarationsFilter: DECLARATIONS_FILTER,
           DeclarationResponse: DECLARATION_RESPONSE,
           DeclarationsResponse: DECLARATIONS_RESPONSE,
           DeclarationCreateRequest: DECLARATION_CREATE_REQUEST,
+          DeclarationCreateResponse: DECLARATION_CREATE_RESPONSE,
 
           # Declaration Create - Pre-2025 (ECT and Mentor)
           DeclarationPre2025DataRequest: DECLARATION_PRE2025_DATA_REQUEST,
