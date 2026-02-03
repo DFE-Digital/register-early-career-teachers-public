@@ -1,4 +1,6 @@
-# Changes for schools when Register ECTs releases 
+# Register early career teacher service: changes for schools
+
+The launch of the register early career teacher service means a number of changes for schools. 
 
 The objective of this document is to explain to lead providers and appropriate bodies the changes to the Register early career teachers (ECTs) service for schools.  
 
