@@ -10,10 +10,14 @@
         <%= govuk_summary_list(borders: false, rows: [trn_row, assigned_ects_row]) %>
       </div>
       <div class='govuk-grid-column-one-half'>
-        <% if latest_training_period.withdrawn? %>
-          <p><%= lead_provider_name %> have told us that <%= mentor %>'s ECTE mentor training is paused. Contact them if you think this is an error.</p>
+        <% if latest_training_period.nil? %>
+          <p><%= teacher_name %> is not currently registered for ECTE mentor training with a lead provider.</p>
+        <% elsif latest_training_period.withdrawn? %>
+          <p><%= lead_provider_name %> have told us that <%= teacher_name %>'s ECTE mentor training is paused. Contact them if you think this is an error.</p>
         <% elsif latest_training_period.deferred? %>
-          <p>DEFERRED MESSAGE</p>
+          <p><%= lead_provider_name %> have told us that <%= teacher_name %> is not registered for ECTE mentor training with them. Contact them if you think this is an error.</p>
+          <p>Tell us if <%= teacher_name %> will be training with another lead provider.</p>
+          <%# TODO add link  %>
         <% else %>
           <%= govuk_summary_list(borders: false, rows: training_period_summary_rows) %>
         <% end %>
