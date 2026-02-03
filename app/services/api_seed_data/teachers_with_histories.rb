@@ -446,8 +446,11 @@ module APISeedData
       finished_on = (school_period.started_on + 2.years + rand(-30..30).days)
       finished_on = nil if finished_on.future?
 
-      number_of_terms = 1 if finished_on
-      FactoryBot.create(:induction_period, :pass, teacher:, started_on:, finished_on:, number_of_terms:)
+      if finished_on
+        outcome = %i[pass fail].sample
+        number_of_terms = 1
+      end
+      FactoryBot.create(:induction_period, outcome:, teacher:, started_on:, finished_on:, number_of_terms:)
     end
 
     def rand_boolean(ratio)
