@@ -11,9 +11,9 @@ private
     fixed_induction_records = []
 
     @raw_induction_records.each do |raw_ir|
-      fixed_induction_records << if right_way_round?(raw_ir)
+      fixed_induction_records << if raw_ir.end_date.nil?
                                    raw_ir
-                                 elsif raw_ir.end_date.nil?
+                                 elsif right_way_round?(raw_ir)
                                    raw_ir
                                  else
                                    # When the dates are 'inverted', where the end
@@ -21,8 +21,8 @@ private
                                    # the record to a (one day) 'stub' that the
                                    # converter can deal with
                                    raw_ir.tap do
-                                     it.start_date = raw_ir.end_date
-                                     it.end_date = raw_ir.end_date + 1.day
+                                     it.start_date = it.end_date
+                                     it.end_date = it.end_date + 1.day
                                    end
                                  end
     end
@@ -31,6 +31,6 @@ private
   end
 
   def right_way_round?(induction_record)
-    induction_record.end_date && induction_record.end_date >= induction_record.start_date
+    induction_record.end_date >= induction_record.start_date
   end
 end
