@@ -24,6 +24,7 @@ class InductionPeriod < ApplicationRecord
                    when_changing: %i[outcome]
 
   # Validations
+  validates :outcome, absence: { message: "Outcome cannot be set for ongoing induction periods" }, if: -> { finished_on.nil? }
   validates :appropriate_body_id, presence: { message: "Select an appropriate body" }
 
   validates :started_on,
