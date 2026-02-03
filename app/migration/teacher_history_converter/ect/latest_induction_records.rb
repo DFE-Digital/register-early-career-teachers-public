@@ -1,5 +1,3 @@
-require "ostruct"
-
 # From all the induction records of a participant received in the converter, the latest induction records mode will
 # group them by (school, lead provider, cohort) and select the one unfinished or the most recently created one.
 # The resulting list will be sorted by start_date, created_at, unfinished last and them converted to ect at school periods.
@@ -7,11 +5,7 @@ require "ostruct"
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn,
-              :profile_id,
-              :induction_records,
-              :mentor_at_school_periods,
-              :ect_at_school_periods
+  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods
 
   def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:)
     @trn = trn
@@ -62,7 +56,7 @@ private
         school: induction_record.school,
         email: induction_record.preferred_identity_email,
         mentorship_periods: [mentorship_period].compact,
-        training_periods: [training_period].compact,
+        training_periods: [training_period].compact
       )
     )
   end
@@ -114,30 +108,8 @@ private
   end
 
   def build_combination(induction_record:, **overrides)
-    ECF2TeacherHistory::Combination.new(
-      trn:,
-      profile_id:,
-      profile_type: "ect",
-      induction_record_id: induction_record.induction_record_id,
-      training_programme: induction_record.training_programme,
-      school_urn: induction_record.school.urn,
-      cohort_year: induction_record.cohort_year,
-      lead_provider_name: induction_record.training_provider_info&.lead_provider_info&.name,
-      delivery_partner_name: induction_record.training_provider_info&.delivery_partner_info&.name,
-      start_date: induction_record.start_date,
-      end_date: induction_record.end_date,
-      induction_status: induction_record.induction_status,
-      training_status: induction_record.training_status,
-      mentor_profile_id: induction_record.mentor_profile_id,
-      schedule_id: induction_record.schedule_info&.schedule_id,
-      schedule_identifier: induction_record.schedule_info&.identifier,
-      schedule_name: induction_record.schedule_info&.name,
-      schedule_cohort_year: induction_record.schedule_info&.cohort_year,
-      preferred_identity_email: induction_record.preferred_identity_email,
-      created_at: induction_record.created_at,
-      updated_at: induction_record.updated_at,
-      **overrides
-    )
+    ECF2TeacherHistory::Combination
+      .from_induction_record(trn:, profile_id:, profile_type: "ect", induction_record:, **overrides)
   end
 
   # Find the last MentorAtSchoolPeriod overlapping started_on..finished_on for the teacher and school identifiers given
