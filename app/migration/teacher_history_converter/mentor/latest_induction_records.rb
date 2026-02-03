@@ -5,7 +5,7 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods
+  attr_reader :trn, :profile_id, :induction_records
 
   def initialize(trn:, profile_id:, induction_records:)
     @trn = trn
@@ -75,29 +75,7 @@ private
   end
 
   def build_combination(induction_record:, **overrides)
-    ECF2TeacherHistory::Combination.new(
-      trn:,
-      profile_id:,
-      profile_type: "mentor",
-      induction_record_id: induction_record.induction_record_id,
-      training_programme: induction_record.training_programme,
-      school_urn: induction_record.school.urn,
-      cohort_year: induction_record.cohort_year,
-      lead_provider_name: induction_record.training_provider_info&.lead_provider_info&.name,
-      delivery_partner_name: induction_record.training_provider_info&.delivery_partner_info&.name,
-      start_date: induction_record.start_date,
-      end_date: induction_record.end_date,
-      induction_status: induction_record.induction_status,
-      training_status: induction_record.training_status,
-      mentor_profile_id: induction_record.mentor_profile_id,
-      schedule_id: induction_record.schedule_info&.schedule_id,
-      schedule_identifier: induction_record.schedule_info&.identifier,
-      schedule_name: induction_record.schedule_info&.name,
-      schedule_cohort_year: induction_record.schedule_info&.cohort_year,
-      preferred_identity_email: induction_record.preferred_identity_email,
-      created_at: induction_record.created_at,
-      updated_at: induction_record.updated_at,
-      **overrides
-    )
+    ECF2TeacherHistory::Combination
+      .from_induction_record(trn:, profile_id:, profile_type: "mentor", induction_record:, **overrides)
   end
 end
