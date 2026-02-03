@@ -24,6 +24,19 @@ module APISeedData
 
       # at least 5 participants with training status "leaving"
       participants_with_training_status_leaving(count: NUMBER_OF_RECORDS_PER_SCENARIO)
+
+      # at least 3 participants with participant status "joining"
+      # and training status "active"
+      active_participants_with_participant_status_joining(count: 3)
+      # at least 3 participants with participant status "leaving"
+      # and training status "active"
+      active_participants_with_participant_status_leaving_in_the_future(count: 3)
+      # at least 2 participants with participant status "left"
+      # and training status "withdrawn"
+      withdrawn_participants_with_participant_status_left(count: 2)
+      # at least 2 participants with participant status "left"
+      # and training status "active"
+      active_participants_with_participant_status_left(count: 2)
     end
 
     def plant_only(scenario, count:, contract_period_years:)
@@ -392,7 +405,289 @@ module APISeedData
                 finished_on: finished_date
               )
 
-              log_seed_info("Created #{type} with training status change to leaving in contract period #{contract_period_year} with #{active_lead_provider.lead_provider.name}", colour: Colourize::COLOURS.keys.sample)
+              log_participant_created(
+                type:,
+                participant_status: "leaving",
+                training_status: "active",
+                contract_period_year:,
+                lead_provider_name: active_lead_provider.lead_provider.name
+              )
+            end
+          end
+        end
+      end
+    end
+
+    def active_participants_with_participant_status_joining(count:, contract_period_years: [2025])
+      contract_period_years.each do |contract_period_year|
+        contract_period = find_contract_period(contract_period_year)
+
+        next unless contract_period
+
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+          # Count existing participants with "joining" training periods (to be started in the future)
+          existing_ects = Teacher
+            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { started_on: Time.zone.tomorrow.. })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          existing_mentors = Teacher
+            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { started_on: Time.zone.tomorrow.. })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          { ect: existing_ects, mentor: existing_mentors }.each do |type, existing_count|
+            missing_count = [count - existing_count, 0].max
+            next if missing_count.zero?
+
+            missing_count.times do
+              school_partnership = school_partnership(active_lead_provider)
+              next unless school_partnership
+
+              school = school_partnership.school
+              start_date = Time.zone.today + rand(1..6).months
+              finished_date = start_date + rand(6..12).months
+
+              school_period = FactoryBot.create(
+                :"#{type}_at_school_period",
+                school:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              schedule = find_schedule(contract_period)
+
+              FactoryBot.create(
+                :training_period,
+                :"for_#{type}",
+                :provider_led,
+                :active,
+                "#{type}_at_school_period" => school_period,
+                school_partnership:,
+                schedule:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              log_participant_created(
+                type:,
+                participant_status: "joining",
+                training_status: "active",
+                contract_period_year:,
+                lead_provider_name: active_lead_provider.lead_provider.name
+              )
+            end
+          end
+        end
+      end
+    end
+
+    def active_participants_with_participant_status_leaving_in_the_future(count:, contract_period_years: [2021, 2022, 2023, 2024, 2025])
+      contract_period_years.each do |contract_period_year|
+        contract_period = find_contract_period(contract_period_year)
+
+        next unless contract_period
+
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+          # Count existing participants with "leaving" training periods (to be finished in the future)
+          existing_ects = Teacher
+            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { finished_on: 4.months.from_now.. })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          existing_mentors = Teacher
+            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { finished_on: 4.months.from_now.. })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          { ect: existing_ects, mentor: existing_mentors }.each do |type, existing_count|
+            missing_count = [count - existing_count, 0].max
+            next if missing_count.zero?
+
+            missing_count.times do
+              school_partnership = school_partnership(active_lead_provider)
+              next unless school_partnership
+
+              school = school_partnership.school
+              start_date = Date.new(contract_period_year, 9, 1)
+              finished_date = 4.months.from_now + rand(1..6).months
+
+              school_period = FactoryBot.create(
+                :"#{type}_at_school_period",
+                school:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              schedule = find_schedule(contract_period)
+
+              FactoryBot.create(
+                :training_period,
+                :"for_#{type}",
+                :provider_led,
+                :active,
+                "#{type}_at_school_period" => school_period,
+                school_partnership:,
+                schedule:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              log_participant_created(
+                type:,
+                participant_status: "leaving",
+                training_status: "active",
+                contract_period_year:,
+                lead_provider_name: active_lead_provider.lead_provider.name
+              )
+            end
+          end
+        end
+      end
+    end
+
+    def withdrawn_participants_with_participant_status_left(count:, contract_period_years: [2021, 2022, 2023, 2024, 2025])
+      contract_period_years.each do |contract_period_year|
+        contract_period = find_contract_period(contract_period_year)
+
+        next unless contract_period
+
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+          # Count existing participants with "leaving" training periods (to be finished in the future)
+          existing_ects = Teacher
+            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where.not(training_periods: { withdrawn_at: nil })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          existing_mentors = Teacher
+            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where.not(training_periods: { withdrawn_at: nil })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          { ect: existing_ects, mentor: existing_mentors }.each do |type, existing_count|
+            missing_count = [count - existing_count, 0].max
+            next if missing_count.zero?
+
+            missing_count.times do
+              school_partnership = school_partnership(active_lead_provider)
+              next unless school_partnership
+
+              school = school_partnership.school
+              start_date = Date.new(contract_period_year, 9, 1)
+              finished_date = Date.current - rand(1..8).weeks
+
+              school_period = FactoryBot.create(
+                :"#{type}_at_school_period",
+                school:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              schedule = find_schedule(contract_period)
+
+              FactoryBot.create(
+                :training_period,
+                :"for_#{type}",
+                :provider_led,
+                :withdrawn,
+                "#{type}_at_school_period" => school_period,
+                school_partnership:,
+                schedule:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              log_participant_created(
+                type:,
+                participant_status: "left",
+                training_status: "withdrawn",
+                contract_period_year:,
+                lead_provider_name: active_lead_provider.lead_provider.name
+              )
+            end
+          end
+        end
+      end
+    end
+
+    def active_participants_with_participant_status_left(count:, contract_period_years: [2021, 2022, 2023, 2024, 2025])
+      contract_period_years.each do |contract_period_year|
+        contract_period = find_contract_period(contract_period_year)
+
+        next unless contract_period
+
+        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+          # Count existing participants with "leaving" training periods (to be finished in the future)
+          existing_ects = Teacher
+            .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          existing_mentors = Teacher
+            .joins(mentor_at_school_periods: { training_periods: :active_lead_provider })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
+            .where(active_lead_providers: { id: active_lead_provider })
+            .distinct
+            .count
+
+          { ect: existing_ects, mentor: existing_mentors }.each do |type, existing_count|
+            missing_count = [count - existing_count, 0].max
+            next if missing_count.zero?
+
+            missing_count.times do
+              school_partnership = school_partnership(active_lead_provider)
+              next unless school_partnership
+
+              school = school_partnership.school
+              start_date = Date.new(contract_period_year, 9, 1)
+              finished_date = Date.current - rand(1..8).weeks
+
+              school_period = FactoryBot.create(
+                :"#{type}_at_school_period",
+                school:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              schedule = find_schedule(contract_period)
+
+              FactoryBot.create(
+                :training_period,
+                :"for_#{type}",
+                :provider_led,
+                :active,
+                "#{type}_at_school_period" => school_period,
+                school_partnership:,
+                schedule:,
+                started_on: start_date,
+                finished_on: finished_date
+              )
+
+              log_participant_created(
+                type:,
+                participant_status: "left",
+                training_status: "active",
+                contract_period_year:,
+                lead_provider_name: active_lead_provider.lead_provider.name
+              )
             end
           end
         end
@@ -450,6 +745,23 @@ module APISeedData
       return Faker::Date.between(from: Date.new(schedule.contract_period.year), to: end_date) unless milestone
 
       Faker::Date.between(from: milestone.start_date, to: milestone.milestone_date || end_date)
+    end
+
+    def log_participant_created(
+      type:,
+      participant_status:,
+      training_status:,
+      contract_period_year:,
+      lead_provider_name:
+    )
+      log_message = <<~TXT.squish
+        Created #{type} with participant status #{participant_status}
+        and training status #{training_status}
+        in contract period #{contract_period_year}
+        with #{lead_provider_name}
+      TXT
+
+      log_seed_info(log_message, colour: Colourize::COLOURS.keys.sample)
     end
   end
 end
