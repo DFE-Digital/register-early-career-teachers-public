@@ -48,6 +48,7 @@ class InductionPeriod < ApplicationRecord
   validate :start_date_after_qts_date
   validate :teacher_distinct_period, if: -> { valid_date_order? }
   validate :end_date_admin_only, if: -> { started_on.present? }
+  validate :at_most_one_outcome_per_teacher, if: -> { outcome.present? }
 
   # Scopes
   scope :for_teacher, ->(teacher) { where(teacher:) }
@@ -108,5 +109,13 @@ private
     outcome_changed = saved_change_to_outcome?
 
     first_period || outcome_changed
+  end
+
+  def at_most_one_outcome_per_teacher
+    siblings_with_an_outcome = siblings.where.not(outcome: nil).where.not(id:)
+
+    return if siblings_with_an_outcome.empty?
+
+    errors.add(:outcome, "An induction period with an outcome already exists for this teacher")
   end
 end
