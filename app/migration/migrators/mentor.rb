@@ -17,7 +17,8 @@ module Migrators
     end
 
     def self.reset!
-      # Reset is handled by ECT which truncates the Teacher and DataMigrationTeacherCombination tables
+      # Reset is handled by ECT which truncates the Teacher, DataMigrationTeacherCombination
+      # and DataMigrationFailedCombination tables
     end
 
     def migrate!
