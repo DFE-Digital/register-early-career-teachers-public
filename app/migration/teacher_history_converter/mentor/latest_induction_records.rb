@@ -5,19 +5,21 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :induction_records
+  attr_reader :trn, :profile_id, :induction_records
 
-  def initialize(induction_records)
+  def initialize(trn:, profile_id:, induction_records:)
+    @trn = trn
+    @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
   end
 
-  # Returns ECF2TeacherHistory::MentorAtSchoolPeriod[]
+  # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
   def mentor_at_school_periods
     @mentor_at_school_periods ||= induction_records
                                  .reverse
                                  .each_with_object([]) do |induction_record, periods|
                                    process(periods, induction_record)
-                                 end
+    end
   end
 
 private
@@ -37,7 +39,7 @@ private
     first_school_period = mentor_at_school_periods.first
     started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date.to_date].compact.min
     finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date&.to_date].compact.min
-    training_period = build_new_training_period_from_induction_record(induction_record, { started_on:, finished_on: })
+    training_period = build_training_period(induction_record, { started_on:, finished_on: })
 
     mentor_at_school_periods.unshift(
       ECF2TeacherHistory::MentorAtSchoolPeriod.new(
@@ -50,7 +52,7 @@ private
     )
   end
 
-  def build_new_training_period_from_induction_record(induction_record, overrides = {})
+  def build_training_period(induction_record, overrides = {})
     training_programme = convert_training_programme_name(induction_record.training_programme)
     return if training_programme != "provider_led"
 
@@ -65,9 +67,15 @@ private
       contract_period_year: induction_record.cohort_year,
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
-      schedule_info: induction_record.schedule_info
+      schedule_info: induction_record.schedule_info,
+      combination: build_combination(induction_record:, training_programme:)
     }.merge(overrides)
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
+  end
+
+  def build_combination(induction_record:, **overrides)
+    ECF2TeacherHistory::Combination
+      .from_induction_record(trn:, profile_id:, profile_type: "mentor", induction_record:, **overrides)
   end
 end
