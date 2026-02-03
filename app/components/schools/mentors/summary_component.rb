@@ -17,11 +17,15 @@ module Schools
       delegate :trn, to: :@mentor
 
       def link_to_mentor
-        govuk_link_to(teacher_full_name(@mentor), schools_mentor_path(mentor_period_for_school))
+        govuk_link_to(teacher_name, schools_mentor_path(mentor_period_for_school))
       end
 
       def link_to_ect(ect)
         govuk_link_to(teacher_full_name(ect.teacher), schools_ect_path(ect))
+      end
+
+      def teacher_name
+        teacher_full_name(@mentor)
       end
 
       def trn_row
