@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_150838) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_03_150039) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -131,6 +131,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_150838) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
+  end
+
+  create_table "contract_fee_structure_flat_rates", force: :cascade do |t|
+    t.integer "recruitment_target", null: false
+    t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "contract_periods", primary_key: "year", id: :serial, force: :cascade do |t|
