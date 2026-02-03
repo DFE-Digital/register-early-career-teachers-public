@@ -26,7 +26,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
   create_enum "declaration_payment_statuses", ["no_payment", "eligible", "payable", "paid", "voided"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
-  create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
+  create_enum "dfe_role_type", ["admin", "user_manager", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
   create_enum "evidence_types", ["training-event-attended", "self-study-material-completed", "materials-engaged-with-offline", "75-percent-engagement-met", "75-percent-engagement-met-reduced-induction", "one-term-induction", "other"]
   create_enum "fee_types", ["output", "service"]

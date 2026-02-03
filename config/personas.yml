@@ -25,7 +25,7 @@
   image: personas/daphne.png
   alt: Daphne from Scooby Doo looking quizzical in a purple dress.
   type: DfE staff
-  role: super_admin
+  role: user_manager
 
 - name: Norville Rogers
   email: shaggy@example.com
