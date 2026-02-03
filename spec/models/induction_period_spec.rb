@@ -35,6 +35,19 @@ RSpec.describe InductionPeriod do
       it { is_expected.to validate_absence_of(:outcome).with_message("Outcome cannot be set for ongoing induction periods") }
     end
 
+    context "when the induction period has an outcome and there is another induction period with an outcome for the same teacher" do
+      subject(:induction_period) { FactoryBot.build(:induction_period, :fail) }
+
+      before do
+        FactoryBot.create(:induction_period, :pass, teacher: induction_period.teacher)
+      end
+
+      it "is invalid" do
+        expect(induction_period).to be_invalid
+        expect(induction_period.errors[:outcome]).to include("An induction period with an outcome already exists for this teacher")
+      end
+    end
+
     describe "overlapping periods" do
       let(:started_on_message) { "Start date cannot overlap another induction period" }
       let(:finished_on_message) { "End date cannot overlap another induction period" }
