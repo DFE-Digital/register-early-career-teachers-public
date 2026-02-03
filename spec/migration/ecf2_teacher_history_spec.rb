@@ -206,9 +206,9 @@ describe ECF2TeacherHistory do
         end
 
         context "when training periods are present" do
-          let(:contract_period) { FactoryBot.create(:contract_period) }
+          let(:contract_period) { FactoryBot.create(:contract_period, year: 2021) }
 
-          let(:lead_provider) { FactoryBot.create(:lead_provider) }
+          let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 1") }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
@@ -230,7 +230,13 @@ describe ECF2TeacherHistory do
               delivery_partner_info:,
               contract_period_year: contract_period.year,
               schedule_info:,
-              school: school_a_data
+              school: school_a_data,
+              combination: ::ECF2TeacherHistory::Combination.new(
+                induction_record_id: SecureRandom.uuid,
+                school_urn: school_a_data.urn,
+                cohort_year: contract_period.year,
+                lead_provider_name: lead_provider_info.name
+              )
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -256,7 +262,13 @@ describe ECF2TeacherHistory do
               started_on: 1.month.ago.to_date,
               finished_on: 1.week.ago.to_date,
               created_at:,
-              training_programme: :school_led
+              school: school_b_data,
+              training_programme: :school_led,
+              combination: ::ECF2TeacherHistory::Combination.new(
+                induction_record_id: SecureRandom.uuid,
+                school_urn: school_b_data.urn,
+                lead_provider_name: nil
+              )
             )
           end
 
@@ -334,6 +346,63 @@ describe ECF2TeacherHistory do
                   expect(p2_tp.schedule).to be_nil
                 end
               end
+            end
+          end
+
+          it "saves the expected DataMigrationTeacherCombination" do
+            expected_combinations = teacher.ect_at_school_periods.flat_map(&:training_periods).map do |training_period|
+              [training_period.school.urn,
+               training_period.contract_period&.year,
+               training_period.lead_provider&.name].join(": ")
+            end
+            data_migration_teacher_combination = DataMigrationTeacherCombination.first
+
+            expect(DataMigrationTeacherCombination.count).to be(1)
+            expect(data_migration_teacher_combination.ecf1_ect_profile_id).to eq(teacher.api_ect_training_record_id)
+            expect(data_migration_teacher_combination.ecf1_ect_combinations).to match_array(expected_combinations)
+            expect(data_migration_teacher_combination.ecf2_ect_combinations).to match_array(expected_combinations)
+          end
+
+          context "when an ect_at_school_period can't be persisted" do
+            let(:failure_message) { "ECTAtSchoolPeriod cant' be created!" }
+
+            before do
+              allow(ECTAtSchoolPeriod).to receive(:create!).and_raise(ActiveRecord::ActiveRecordError, failure_message)
+            end
+
+            it "saves a DataMigrationFailedCombination entry per training_period" do
+              teacher
+
+              expect(DataMigrationFailedCombination.count).to be(2)
+
+              combinations = ect_at_school_periods.flat_map(&:training_periods).map(&:combination)
+              induction_record_ids = combinations.map(&:induction_record_id)
+              failed_combinations = DataMigrationFailedCombination.all
+
+              expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
+              expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message, failure_message)
+            end
+          end
+
+          context "when an training_period can't be persisted" do
+            let(:failure_message) { "TrainingPeriod cant' be created!" }
+
+            before do
+              allow(TrainingPeriod).to receive(:create!).and_call_original
+              allow(TrainingPeriod).to receive(:create!)
+                                       .with(hash_including(started_on: 1.year.ago.to_date))
+                                       .and_raise(ActiveRecord::ActiveRecordError, failure_message)
+            end
+
+            it "saves a DataMigrationFailedCombination entry" do
+              teacher
+
+              expect(DataMigrationFailedCombination.count).to be(1)
+
+              failed_combination = DataMigrationFailedCombination.first
+
+              expect(failed_combination.induction_record_id).to eq(first_training_period.combination.induction_record_id)
+              expect(failed_combination.failure_message).to eq(failure_message)
             end
           end
         end
@@ -523,8 +592,8 @@ describe ECF2TeacherHistory do
         end
 
         context "when training periods are present" do
-          let(:contract_period) { FactoryBot.create(:contract_period) }
-          let(:lead_provider) { FactoryBot.create(:lead_provider) }
+          let(:contract_period) { FactoryBot.create(:contract_period, year: 2021) }
+          let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Lead Provider 2") }
           let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
           let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
           let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
@@ -546,7 +615,13 @@ describe ECF2TeacherHistory do
               delivery_partner_info:,
               contract_period_year: contract_period.year,
               schedule_info:,
-              school: school_a_data
+              school: school_a_data,
+              combination: ::ECF2TeacherHistory::Combination.new(
+                induction_record_id: SecureRandom.uuid,
+                school_urn: school_a_data.urn,
+                cohort_year: contract_period.year,
+                lead_provider_name: lead_provider_info.name
+              )
               # FIXME: soon TPs can be both deferred and withdrawn, so this can be uncommented
               # deferred_at: 2.months.ago.round(2),
               # deferral_reason: "career_break",
@@ -601,6 +676,63 @@ describe ECF2TeacherHistory do
                   # expect(p1_tp.deferral_reason).to eql("career_break")
                 end
               end
+            end
+          end
+
+          it "saves the expected DataMigrationTeacherCombination" do
+            combinations = teacher.mentor_at_school_periods.map(&:training_periods).flatten.map do |training_period|
+              [training_period.school.urn,
+               training_period.contract_period&.year,
+               training_period.lead_provider&.name].join(": ")
+            end
+            data_migration_teacher_combination = DataMigrationTeacherCombination.first
+
+            expect(DataMigrationTeacherCombination.count).to be(1)
+            expect(data_migration_teacher_combination.ecf1_mentor_profile_id).to eq(teacher.api_mentor_training_record_id)
+            expect(data_migration_teacher_combination.ecf1_mentor_combinations).to match_array(combinations)
+            expect(data_migration_teacher_combination.ecf2_mentor_combinations).to match_array(combinations)
+          end
+
+          context "when a mentor_at_school_period can't be persisted" do
+            let(:failure_message) { "MentorATSchoolPeriod cant' be created!" }
+
+            before do
+              allow(MentorAtSchoolPeriod).to receive(:create!).and_raise(ActiveRecord::ActiveRecordError, failure_message)
+            end
+
+            it "saves a DataMigrationFailedCombination entry per training_period" do
+              teacher
+
+              expect(DataMigrationFailedCombination.count).to be(1)
+
+              combinations = mentor_at_school_periods.flat_map(&:training_periods).map(&:combination)
+              induction_record_ids = combinations.map(&:induction_record_id)
+              failed_combinations = DataMigrationFailedCombination.all
+
+              expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
+              expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message)
+            end
+          end
+
+          context "when an training_period can't be persisted" do
+            let(:failure_message) { "TrainingPeriod cant' be created!" }
+
+            before do
+              allow(TrainingPeriod).to receive(:create!).and_call_original
+              allow(TrainingPeriod).to receive(:create!)
+                                         .with(hash_including(started_on: 1.year.ago.to_date))
+                                         .and_raise(ActiveRecord::ActiveRecordError, failure_message)
+            end
+
+            it "saves a DataMigrationFailedCombination entry" do
+              teacher
+
+              expect(DataMigrationFailedCombination.count).to be(1)
+
+              failed_combination = DataMigrationFailedCombination.first
+
+              expect(failed_combination.induction_record_id).to eq(first_training_period.combination.induction_record_id)
+              expect(failed_combination.failure_message).to eq(failure_message)
             end
           end
         end
