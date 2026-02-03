@@ -38,7 +38,7 @@ describe "admin/users/show.html.erb" do
   context "when the user is a user manager user" do
     let(:role) { :user_manager }
 
-    it "displays the finance role" do
+    it "displays the user manager role" do
       expect(rendered).to have_css("dt", text: "Role")
       expect(rendered).to have_css("dd", text: "User manager")
     end
