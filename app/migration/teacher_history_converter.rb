@@ -13,7 +13,7 @@ class TeacherHistoryConverter
     ECF2TeacherHistory.new(
       teacher:,
       ect_at_school_periods:,
-      mentor_at_school_periods:,
+      mentor_at_school_periods:
     )
   end
 
