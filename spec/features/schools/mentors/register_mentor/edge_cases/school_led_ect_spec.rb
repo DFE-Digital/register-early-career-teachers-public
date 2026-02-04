@@ -152,7 +152,6 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     page.get_by_label("Day").fill(@mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(@mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(@mentor_start_date.year.to_s)
-    page.screenshot(path: "tmp/mentor_start_date_page.png")
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
