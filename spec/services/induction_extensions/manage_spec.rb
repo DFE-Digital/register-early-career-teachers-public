@@ -13,7 +13,7 @@ RSpec.describe InductionExtensions::Manage do
 
   let(:user) { FactoryBot.create(:user, name: "Christopher Biggins", email: "christopher.biggins@education.gov.uk") }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Andy", trs_last_name: "Zaltzman") }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "#create_or_update!" do
     before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }

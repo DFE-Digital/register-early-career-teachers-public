@@ -9,8 +9,8 @@ RSpec.describe TeachersIndexComponent, type: :component do
     )
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
-  let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+  let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
   let!(:teacher_1) do
     teacher = FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")

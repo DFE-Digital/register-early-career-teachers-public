@@ -58,7 +58,7 @@ describe "Admin adding an induction" do
 private
 
   def given_an_appropriate_body_exists(name:)
-    FactoryBot.create(:appropriate_body, name:)
+    FactoryBot.create(:appropriate_body_period, name:)
   end
 
   def given_a_teacher_exists(first_name:, last_name:)

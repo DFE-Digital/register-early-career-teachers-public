@@ -21,7 +21,7 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       end
     end
 
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
     let!(:teacher_1) do
       teacher = FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
@@ -247,7 +247,7 @@ RSpec.describe TeachersIndex::TableSectionComponent, type: :component do
       end
     end
 
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
     let!(:integration_teacher) do
       teacher = FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")

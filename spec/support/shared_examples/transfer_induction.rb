@@ -3,8 +3,8 @@ RSpec.shared_context "it transfers an induction" do
     described_class.new(from: current_appropriate_body, to: new_appropriate_body, on: cut_off_date)
   end
 
-  let(:current_appropriate_body) { FactoryBot.create(:appropriate_body, name: "Current AB") }
-  let(:new_appropriate_body) { FactoryBot.create(:appropriate_body, name: "New AB") }
+  let(:current_appropriate_body) { FactoryBot.create(:appropriate_body_period, name: "Current AB") }
+  let(:new_appropriate_body) { FactoryBot.create(:appropriate_body_period, name: "New AB") }
   let(:cut_off_date) { Date.new(2024, 9, 1) }
 
   before do

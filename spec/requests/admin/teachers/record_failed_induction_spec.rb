@@ -1,5 +1,5 @@
 RSpec.describe "Admin recording a failed outcome for a teacher" do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do

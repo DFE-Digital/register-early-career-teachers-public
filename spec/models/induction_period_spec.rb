@@ -23,7 +23,7 @@ RSpec.describe InductionPeriod do
   describe "validations" do
     subject { FactoryBot.build(:induction_period) }
 
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
     it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
     it { is_expected.to validate_presence_of(:appropriate_body_period_id).with_message("Select an appropriate body") }
@@ -78,7 +78,7 @@ RSpec.describe InductionPeriod do
       subject { FactoryBot.build(:induction_period, teacher:, appropriate_body_period:, started_on: Date.current, finished_on: Date.current) }
 
       let(:teacher) { FactoryBot.create(:teacher) }
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
       it "prevents 0 day periods from being written to the database" do
         expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
@@ -100,7 +100,7 @@ RSpec.describe InductionPeriod do
 
       describe "#touch_teacher?" do
         let(:teacher) { FactoryBot.create(:teacher) }
-        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
         let!(:induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: "2019-01-01", finished_on: "2019-07-01") }
 
         context "when a new induction period is created" do

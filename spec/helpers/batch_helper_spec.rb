@@ -87,7 +87,7 @@ RSpec.describe BatchHelper, type: :helper do
     describe "#admin_batch_list_table" do
       subject(:table) { admin_batch_list_table(batches) }
 
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "The Appropriate Body") }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "The Appropriate Body") }
 
       let(:batches) do
         [

@@ -1,5 +1,5 @@
 RSpec.describe "Appropriate Body bulk actions show page", type: :request do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:batch) do
     FactoryBot.create(:pending_induction_submission_batch, :action,
                       appropriate_body_period:,

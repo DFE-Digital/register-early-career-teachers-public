@@ -8,7 +8,7 @@ describe AppropriateBodies::Search do
       subject { described_class.istip }
 
       context "when ISTIP has been registered" do
-        let!(:istip) { FactoryBot.create(:appropriate_body, :istip) }
+        let!(:istip) { FactoryBot.create(:appropriate_body_period, :istip) }
 
         it "returns it" do
           expect(subject).to eq(istip)
@@ -26,7 +26,7 @@ describe AppropriateBodies::Search do
       subject { described_class.esp }
 
       context "when ESP has been registered" do
-        let!(:esp) { FactoryBot.create(:appropriate_body, :esp) }
+        let!(:esp) { FactoryBot.create(:appropriate_body_period, :esp) }
 
         it "returns it" do
           expect(subject).to eq(esp)

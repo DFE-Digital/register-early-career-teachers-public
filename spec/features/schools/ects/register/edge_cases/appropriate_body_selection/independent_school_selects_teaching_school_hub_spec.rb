@@ -2,7 +2,7 @@ RSpec.describe "Registering an ECT", :enable_schools_interface do
   include_context "test TRS API returns a teacher"
 
   before do
-    FactoryBot.create(:appropriate_body, name: "Golden Leaf Teaching Hub")
+    FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching Hub")
   end
 
   scenario "Independent school selects teaching school hub as appropriate body" do

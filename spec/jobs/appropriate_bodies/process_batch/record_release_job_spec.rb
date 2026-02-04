@@ -18,7 +18,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordReleaseJob, type: :job do
                       number_of_terms: 10.9)
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:author_email) { "barry@not-a-clue.co.uk" }
   let(:author_name) { "Barry Cryer" }
   let(:teacher) { Teacher.find_by(trn: pending_induction_submission.trn) }
