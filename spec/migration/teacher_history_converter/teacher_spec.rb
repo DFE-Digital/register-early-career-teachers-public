@@ -37,11 +37,11 @@ describe "Migrating a teacher record" do
     end
 
     it "sets the first and last name from the user" do
-      first_name, last_name = *ecf1_teacher_history.user.full_name.split
+      parsed_name = Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
 
       aggregate_failures do
-        expect(subject.teacher.trs_first_name).to eql(first_name)
-        expect(subject.teacher.trs_last_name).to eql(last_name)
+        expect(subject.teacher.trs_first_name).to eql(parsed_name.first_name)
+        expect(subject.teacher.trs_last_name).to eql(parsed_name.last_name)
       end
     end
 
