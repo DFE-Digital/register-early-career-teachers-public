@@ -366,8 +366,8 @@ describe ECF2TeacherHistory do
 
             expect(DataMigrationTeacherCombination.count).to be(1)
             expect(data_migration_teacher_combination.ecf1_ect_profile_id).to eq(teacher.api_ect_training_record_id)
-            expect(data_migration_teacher_combination.ecf1_ect_combinations).to match_array(expected_combinations)
-            expect(data_migration_teacher_combination.ecf2_ect_combinations).to match_array(expected_combinations)
+            expect(data_migration_teacher_combination.ecf1_ect_combinations.map { it[39..-2] }).to match_array(expected_combinations)
+            expect(data_migration_teacher_combination.ecf2_ect_combinations.map { it[39..-2] }).to match_array(expected_combinations)
           end
 
           context "when an ect_at_school_period can't be persisted" do
@@ -397,8 +397,8 @@ describe ECF2TeacherHistory do
             before do
               allow(TrainingPeriod).to receive(:create!).and_call_original
               allow(TrainingPeriod).to receive(:create!)
-                                       .with(hash_including(started_on: 1.year.ago.to_date))
-                                       .and_raise(ActiveRecord::ActiveRecordError, failure_message)
+                                         .with(hash_including(started_on: 1.year.ago.to_date))
+                                         .and_raise(ActiveRecord::ActiveRecordError, failure_message)
             end
 
             it "saves a DataMigrationFailedCombination entry" do
@@ -703,8 +703,8 @@ describe ECF2TeacherHistory do
 
             expect(DataMigrationTeacherCombination.count).to be(1)
             expect(data_migration_teacher_combination.ecf1_mentor_profile_id).to eq(teacher.api_mentor_training_record_id)
-            expect(data_migration_teacher_combination.ecf1_mentor_combinations).to match_array(combinations)
-            expect(data_migration_teacher_combination.ecf2_mentor_combinations).to match_array(combinations)
+            expect(data_migration_teacher_combination.ecf1_mentor_combinations.map { it[39..-2] }).to match_array(combinations)
+            expect(data_migration_teacher_combination.ecf2_mentor_combinations.map { it[39..-2] }).to match_array(combinations)
           end
 
           context "when a mentor_at_school_period can't be persisted" do
