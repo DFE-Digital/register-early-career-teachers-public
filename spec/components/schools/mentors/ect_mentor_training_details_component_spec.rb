@@ -1,6 +1,8 @@
 RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :component do
   include TeacherHelper
 
+  subject(:component) { described_class.new(teacher:, mentor:) }
+
   let(:school)            { FactoryBot.create(:school) }
   let(:mentor_start_date) { Date.new(2023, 1, 1) }
 
@@ -12,107 +14,148 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
-  describe "rendering based on mentor training state" do
-    context "when registered via EOI (awaiting confirmation)" do
-      before do
-        FactoryBot.create(
-          :training_period, :provider_led, :for_mentor, :with_no_school_partnership,
-          mentor_at_school_period: mentor,
-          started_on: mentor_start_date,
-          finished_on: nil,
-          expression_of_interest: active_lead_provider
-        )
-      end
-
-      it "shows the LP and 'Awaiting confirmation' hint and DP 'Yet to be reported'" do
-        render_inline(described_class.new(teacher:, mentor:))
-
-        expect(rendered_content).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
-        expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
-        expect(rendered_content).to have_text("Hidden leaf village")
-        expect(rendered_content).to have_css(".govuk-hint", text: /Awaiting confirmation by Hidden leaf village/)
-
-        expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
-        expect(rendered_content).to have_text("Yet to be reported by the lead provider")
-      end
-
-      it "show a link to Change lead provider" do
-        render_inline(described_class.new(teacher:, mentor:))
-
-        expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
-      end
-    end
-
-    context "when partnership is confirmed" do
-      before do
-        FactoryBot.create(
-          :training_period, :provider_led, :for_mentor,
-          mentor_at_school_period: mentor,
-          started_on: mentor_start_date,
-          finished_on: nil,
-          school_partnership:
-        )
-      end
-
-      it "shows 'Confirmed by' hint and delivery partner + change-DP hint" do
-        render_inline(described_class.new(teacher:, mentor:))
-
-        expect(rendered_content).to have_css(".govuk-hint", text: /Confirmed by Hidden leaf village/)
-        expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
-        expect(rendered_content).to have_text(lead_provider_delivery_partnership.delivery_partner.name)
-        expect(rendered_content).to have_css(".govuk-hint", text: /To change the delivery partner, you must contact the lead provider/)
-      end
-
-      it "show a link to Change lead provider" do
-        render_inline(described_class.new(teacher:, mentor:))
-
-        expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
-      end
-    end
-
-    context "when the only mentor training period is in the past" do
-      before do
-        FactoryBot.create(
-          :training_period, :provider_led, :for_mentor,
-          mentor_at_school_period: mentor,
-          started_on: mentor_start_date + 1.month, # 2023-02-01
-          finished_on: mentor_start_date + 3.months, # 2023-04-01
-          school_partnership:
-        )
-      end
-
-      it "does not render (scope is current_or_future)" do
+  describe "eligibility states" do
+    context "when there are no mentor training periods" do
+      it "shows a message saying the mentor can be registered for training" do
         component = described_class.new(teacher:, mentor:)
-        expect(component.render?).to be(false)
 
         render_inline(component)
-        expect(rendered_content).to be_empty
+        expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
+        expect(rendered_content).to have_text("is not currently registered for ECTE mentor training with a lead provider.")
+        expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+        expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
       end
     end
 
-    context "when mentor has a future provider-led period" do
-      before do
-        FactoryBot.create(
-          :training_period, :provider_led, :for_mentor,
-          mentor_at_school_period: mentor,
-          started_on: mentor_start_date + 2.months,
-          finished_on: nil,
-          school_partnership:
-        )
+    context "when there are current provider-led mentor training period" do
+      context "when registered via EOI (awaiting confirmation)" do
+        before do
+          FactoryBot.create(
+            :training_period, :provider_led, :for_mentor, :with_no_school_partnership,
+            mentor_at_school_period: mentor,
+            started_on: mentor_start_date,
+            finished_on: nil,
+            expression_of_interest: active_lead_provider
+          )
+        end
+
+        it "shows the LP and 'Awaiting confirmation' hint and DP 'Yet to be reported'" do
+          render_inline(component)
+
+          expect(rendered_content).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
+          expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+          expect(rendered_content).to have_text("Hidden leaf village")
+          expect(rendered_content).to have_css(".govuk-hint", text: /Awaiting confirmation by Hidden leaf village/)
+
+          expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+          expect(rendered_content).to have_text("Yet to be reported by the lead provider")
+        end
+
+        it "shows a link to Change lead provider" do
+          render_inline(component)
+
+          expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
+        end
       end
 
-      it "renders the details (current_or_future includes future)" do
-        component = described_class.new(teacher:, mentor:)
-        expect(component.render?).to be(true)
+      context "when partnership is confirmed" do
+        before do
+          FactoryBot.create(
+            :training_period, :provider_led, :for_mentor,
+            mentor_at_school_period: mentor,
+            started_on: mentor_start_date,
+            finished_on: nil,
+            school_partnership:
+          )
+        end
 
-        render_inline(component)
-        expect(rendered_content).to have_text("Lead provider")
+        it "shows 'Confirmed by' hint and delivery partner + change-DP hint" do
+          render_inline(component)
+
+          expect(rendered_content).to have_css(".govuk-hint", text: /Confirmed by Hidden leaf village/)
+          expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+          expect(rendered_content).to have_text(lead_provider_delivery_partnership.delivery_partner.name)
+          expect(rendered_content).to have_css(".govuk-hint", text: /To change the delivery partner, you must contact the lead provider/)
+        end
+
+        it "shows a link to Change lead provider" do
+          render_inline(component)
+
+          expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
+        end
       end
 
-      it "show a link to Change lead provider" do
-        render_inline(described_class.new(teacher:, mentor:))
+      context "when the training period is deferred" do
+        before do
+          FactoryBot.create(
+            :training_period, :provider_led, :for_mentor,
+            :deferred,
+            mentor_at_school_period: mentor,
+            started_on: mentor_start_date,
+            finished_on: nil,
+            school_partnership:
+          )
+        end
 
-        expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
+        it "renders the deferred message and does not show lead provider details" do
+          render_inline(component)
+
+          expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
+          expect(rendered_content).to have_css(".govuk-body", text: /Hidden leaf village have told us that .* is not registered for ECTE mentor training with them./)
+
+          expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+          expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+        end
+      end
+
+      context "when the training period is withdrawn" do
+        before do
+          FactoryBot.create(
+            :training_period, :provider_led, :for_mentor,
+            :withdrawn,
+            mentor_at_school_period: mentor,
+            started_on: mentor_start_date,
+            finished_on: nil,
+            school_partnership:
+          )
+        end
+
+        it "renders the withdrawn message and shows lead provider details" do
+          render_inline(component)
+
+          expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
+          expect(rendered_content).to have_css(".govuk-body", text: /Hidden leaf village have told us that .*'s ECTE mentor training is paused./)
+          expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+          expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+        end
+
+        it "show a link to Change lead provider" do
+          render_inline(component)
+
+          expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
+        end
+      end
+
+      context "when mentor has a future provider-led period" do
+        before do
+          FactoryBot.create(
+            :training_period, :provider_led, :for_mentor,
+            mentor_at_school_period: mentor,
+            started_on: mentor_start_date + 2.months,
+            finished_on: nil,
+            school_partnership:
+          )
+        end
+
+        it "renders the details (current_or_future includes future)" do
+          render_inline(component)
+          expect(rendered_content).to have_text("Lead provider")
+        end
+
+        it "show a link to Change lead provider" do
+          render_inline(component)
+          expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
+        end
       end
     end
   end
@@ -192,13 +235,21 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   end
 
   describe "when nothing should render" do
-    context "when no mentor training period and not ineligible" do
-      it "does not render (no heading)" do
-        component = described_class.new(teacher:, mentor:)
+    context "when the mentor training period(s) have finished" do
+      before do
+        FactoryBot.create(
+          :training_period, :provider_led, :for_mentor,
+          mentor_at_school_period: mentor,
+          started_on: mentor_start_date + 1.month, # 2023-02-01
+          finished_on: mentor_start_date + 3.months, # 2023-04-01
+          school_partnership:
+        )
+      end
+
+      it "does not render" do
         expect(component.render?).to be(false)
 
         render_inline(component)
-        expect(rendered_content).not_to have_css("h2", text: "ECTE mentor training details")
         expect(rendered_content).to be_empty
       end
     end

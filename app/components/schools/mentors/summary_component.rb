@@ -50,30 +50,26 @@ module Schools
       end
 
       def training_status
-        return :unstarted unless latest_training_period
+        return :not_registered unless latest_training_period
 
         API::TrainingPeriods::TrainingStatus.new(training_period: latest_training_period).status
       end
 
       def lead_provider_name
-        @lead_provider_name ||= latest_training_period&.lead_provider_name
-      end
-
-      def lead_provider_name
-        @lead_provider_name ||= 
-        case
-        when partnership_confirmed?
-          latest_training_period.lead_provider_name
-        when latest_training_period.only_expression_of_interest?
-          mentor_training_period.expression_of_interest_lead_provider.name
-        end
+        @lead_provider_name ||=
+          case
+          when partnership_confirmed?
+            latest_training_period.lead_provider_name
+          when partnerhip_unconfirmed?
+            mentor_training_period.expression_of_interest_lead_provider.name
+          end
       end
 
       def status_text
         case
         when partnership_confirmed?
           "Confirmed by #{lead_provider_name}"
-        when latest_training_period.only_expression_of_interest?
+        when partnerhip_unconfirmed?
           "Awaiting confirmation by #{lead_provider_name}"
         end
       end
@@ -88,6 +84,10 @@ module Schools
 
       def partnership_confirmed?
         latest_training_period.school_partnership.present?
+      end
+
+      def partnerhip_unconfirmed?
+        latest_training_period.only_expression_of_interest?
       end
 
       def delivery_partner_name

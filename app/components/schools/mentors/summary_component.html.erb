@@ -11,7 +11,7 @@
       </div>
       <div class='govuk-grid-column-one-half'>
         <% case training_status %>
-        <% when :unstarted %>
+        <% when :not_registered %>
           <p class="govuk-body"><%= teacher_name %> is not currently registered for ECTE mentor training with a lead provider.</p>
         <% when :active %>
           <p class="govuk-body"><%= teacher_name %> is registered for ECTE mentor training with:</p>
