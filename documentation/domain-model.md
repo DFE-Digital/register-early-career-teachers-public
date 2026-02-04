@@ -1,5 +1,12 @@
 ```mermaid
 erDiagram
+  Contract_FeeStructure_FlatRate {
+    integer id
+    integer recruitment_target
+    decimal fee_per_declaration
+    datetime created_at
+    datetime updated_at
+  }
   User {
     integer id
     string name
@@ -333,6 +340,47 @@ erDiagram
   Declaration }o--|| MentorshipPeriod : belongs_to
   Declaration }o--|| Statement : belongs_to
   Declaration }o--|| Statement : belongs_to
+  DataMigrationTeacherCombination {
+    integer id
+    string trn
+    uuid ecf1_ect_profile_id
+    uuid ecf1_mentor_profile_id
+    jsonb ecf1_ect_combinations
+    jsonb ecf1_mentor_combinations
+    jsonb ecf2_ect_combinations
+    jsonb ecf2_mentor_combinations
+    integer ecf1_ect_combinations_count
+    integer ecf1_mentor_combinations_count
+    integer ecf2_ect_combinations_count
+    integer ecf2_mentor_combinations_count
+    datetime created_at
+    datetime updated_at
+  }
+  DataMigrationFailedCombination {
+    integer id
+    string trn
+    uuid profile_id
+    string profile_type
+    uuid induction_record_id
+    string training_programme
+    string school_urn
+    integer cohort_year
+    string lead_provider_name
+    string delivery_partner_name
+    datetime start_date
+    datetime end_date
+    string induction_status
+    string training_status
+    uuid mentor_profile_id
+    uuid schedule_id
+    string schedule_identifier
+    string schedule_name
+    integer schedule_cohort_year
+    string preferred_identity_email
+    text failure_message
+    datetime created_at
+    datetime updated_at
+  }
   ContractPeriod {
     integer year
     datetime created_at
