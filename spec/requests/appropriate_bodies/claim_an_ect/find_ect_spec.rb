@@ -1,6 +1,6 @@
 RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
   include_context "test TRS API returns a teacher"
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   let(:page_heading) { "Find an early career teacher" }
 

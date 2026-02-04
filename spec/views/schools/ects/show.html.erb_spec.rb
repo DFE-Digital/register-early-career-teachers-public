@@ -19,11 +19,11 @@ RSpec.describe "schools/ects/show.html.erb" do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: current_ect_period.school) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Alpha Teaching School Hub") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Alpha Teaching School Hub") }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Barry", trs_last_name: "White", corrected_name: "Baz White") }
   let(:previous_school) { FactoryBot.create(:school, urn: "123456") }
   let(:current_school) { FactoryBot.create(:school, :state_funded, urn: "987654") }
-  let(:requested_appropriate_body) { FactoryBot.create(:appropriate_body, name: "Requested AB") }
+  let(:requested_appropriate_body) { FactoryBot.create(:appropriate_body_period, name: "Requested AB") }
   let(:training_programme) { "provider_led" }
   let!(:training_period) { FactoryBot.create(:training_period, :provider_led, ect_at_school_period: current_ect_period, school_partnership:, started_on: "2025-01-11", finished_on: nil, training_programme:) }
 

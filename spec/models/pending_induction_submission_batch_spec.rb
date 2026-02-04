@@ -9,7 +9,7 @@ RSpec.describe PendingInductionSubmissionBatch do
 
   describe "scopes" do
     describe ".for_appropriate_body_period" do
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
       let!(:batch1) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body_period:) }
       let!(:batch2) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body_period:) }
@@ -22,7 +22,7 @@ RSpec.describe PendingInductionSubmissionBatch do
   end
 
   describe "class methods" do
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
     describe ".new_claim_for" do
       subject(:claim) { described_class.new_claim_for(appropriate_body_period:) }

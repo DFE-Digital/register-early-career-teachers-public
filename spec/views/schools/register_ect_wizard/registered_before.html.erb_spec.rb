@@ -2,7 +2,7 @@ RSpec.describe "schools/register_ect_wizard/registered_before.html.erb" do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }

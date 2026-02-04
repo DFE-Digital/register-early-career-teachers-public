@@ -1,5 +1,5 @@
 RSpec.describe "Admin::BatchesController", type: :request do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Busy Body") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Busy Body") }
 
   before do
     FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body_period:)

@@ -1,6 +1,6 @@
 RSpec.describe "User roles", :enable_schools_interface do
   let(:school) { FactoryBot.create(:school, :state_funded) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: school.name) }
+  let(:appropriate_body) { FactoryBot.create(:appropriate_body_period, name: school.name) }
 
   context "when the user has multiple roles (School and AB)" do
     before do

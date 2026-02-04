@@ -3,7 +3,7 @@ RSpec.describe Sessions::Users::AppropriateBodyPersona do
     described_class.new(email:, name:, appropriate_body_period_id:, last_active_at:)
   end
 
-  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:email) { "appropriate_body_persona@email.com" }
   let(:name) { "Christopher Lee" }
   let(:appropriate_body_period_id) { appropriate_body_period.id }

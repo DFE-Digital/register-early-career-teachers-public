@@ -3,8 +3,8 @@ describe Admin::CurrentTeachers do
     let(:teacher_1) { FactoryBot.create(:teacher) }
     let(:teacher_2) { FactoryBot.create(:teacher) }
     let(:teacher_3) { FactoryBot.create(:teacher) }
-    let(:appropriate_body_1) { FactoryBot.create(:appropriate_body) }
-    let(:appropriate_body_2) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_1) { FactoryBot.create(:appropriate_body_period) }
+    let(:appropriate_body_2) { FactoryBot.create(:appropriate_body_period) }
 
     context "with an appropriate body" do
       before do

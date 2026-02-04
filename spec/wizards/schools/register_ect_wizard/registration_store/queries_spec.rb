@@ -157,7 +157,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     let(:previous_delivery_partner) { training_period.school_partnership.lead_provider_delivery_partnership.delivery_partner }
     let(:previous_lead_provider) { training_period.school_partnership.lead_provider_delivery_partnership.lead_provider }
     let(:previous_school) { previous_ect_period.school }
-    let(:previous_appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:previous_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
     before do
       FactoryBot.create(:induction_period,

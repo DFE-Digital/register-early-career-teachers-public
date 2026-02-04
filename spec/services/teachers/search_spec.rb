@@ -16,9 +16,9 @@ describe Teachers::Search do
   end
 
   describe "#search" do
-    let(:ab1) { FactoryBot.create(:appropriate_body) }
-    let(:ab2) { FactoryBot.create(:appropriate_body) }
-    let(:ab3) { FactoryBot.create(:appropriate_body) }
+    let(:ab1) { FactoryBot.create(:appropriate_body_period) }
+    let(:ab2) { FactoryBot.create(:appropriate_body_period) }
+    let(:ab3) { FactoryBot.create(:appropriate_body_period) }
 
     let(:teacher1) { FactoryBot.create(:teacher) }
     let(:teacher2) { FactoryBot.create(:teacher) }

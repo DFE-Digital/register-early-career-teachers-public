@@ -16,7 +16,7 @@ RSpec.describe Sessions::User do
     context "when user session stores an appropriate body user" do
       let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
       let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
-      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
+      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:) }
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::AppropriateBodyUser",
@@ -39,7 +39,7 @@ RSpec.describe Sessions::User do
     end
 
     context "when user session stores an appropriate body persona" do
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::AppropriateBodyPersona",

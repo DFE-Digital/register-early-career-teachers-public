@@ -226,7 +226,7 @@ appropriate_body_periods.each do |data|
   body_type = data[:body_type]
   dfe_sign_in_organisation_id = data.dig(:dfe_sign_in, dfe_sign_in_env)
 
-  appropriate_body_period = FactoryBot.create(:appropriate_body,
+  appropriate_body_period = FactoryBot.create(:appropriate_body_period,
                                               name:,
                                               body_type:,
                                               dqt_id:,

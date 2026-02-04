@@ -10,7 +10,7 @@ describe Teachers::InductionPeriod do
 
     context "when the teacher has induction periods" do
       let(:expected_date) { Date.new(2022, 10, 2) }
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
       let!(:first_induction_period) do
         FactoryBot.create(:induction_period, appropriate_body_period:, teacher:, started_on: expected_date, finished_on: Date.new(2023, 10, 2))
       end

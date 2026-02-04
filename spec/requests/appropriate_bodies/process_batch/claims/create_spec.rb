@@ -1,7 +1,7 @@
 RSpec.describe "Appropriate Body bulk claims upload", type: :request do
   include ActionDispatch::TestProcess
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 

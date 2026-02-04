@@ -1,5 +1,5 @@
 RSpec.describe AnalyticsBatchJob, type: :job do
-  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
 
   let(:pending_induction_submission_batch) do
     FactoryBot.build(:pending_induction_submission_batch, appropriate_body_period:)

@@ -467,8 +467,8 @@ describe ECTAtSchoolPeriod do
     end
 
     describe "claimable and non-claimable scopes" do
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
-      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
+      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
 
       let(:teacher_with_qts) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
       let(:teacher_without_qts) { FactoryBot.create(:teacher, trs_qts_awarded_on: nil) }

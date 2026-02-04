@@ -1,7 +1,7 @@
 RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request do
   include_context "sign in as non-DfE user"
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher, :with_name, trs_qts_awarded_on: 1.year.ago) }
 
   let!(:induction_period) do

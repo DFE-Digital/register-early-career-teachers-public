@@ -199,8 +199,8 @@ describe ECF2TeacherHistory do
         let(:other_arguments) { { ect_at_school_periods: } }
         let(:teacher) { subject.save_all_ect_data! }
 
-        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body) }
-        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period) }
+        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period) }
         let(:appropriate_body_a_data) do
           ECF2TeacherHistory::AppropriateBodyData.new(
             id: appropriate_body_a.id,
@@ -594,8 +594,8 @@ describe ECF2TeacherHistory do
         let(:other_arguments) { { mentor_at_school_periods: } }
         let(:teacher) { subject.save_all_mentor_data! }
 
-        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body) }
-        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period) }
+        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period) }
         let(:appropriate_body_a_data) do
           ECF2TeacherHistory::AppropriateBodyData.new(
             id: appropriate_body_a.id,

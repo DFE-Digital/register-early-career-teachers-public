@@ -4,7 +4,7 @@ describe InductionPeriods::CreateInductionPeriod do
   subject { described_class.new(author:, teacher:, params:) }
 
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:started_on) { 3.weeks.ago.to_date }
   let(:induction_programme) { "cip" }
   let(:params) do

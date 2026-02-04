@@ -17,7 +17,7 @@ RSpec.describe Schools::RegisterECT do
   include_context "safe_schedules"
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
-  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
   let(:corrected_name) { "Randy Marsh" }
   let(:email) { "randy@tegridyfarms.com" }
   let(:school) { FactoryBot.create(:school) }
