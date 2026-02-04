@@ -31,7 +31,7 @@
     body.with_row do |row|
       row.with_cell(text: "Totals")
       row.with_cell(text: number_with_delimiter(total_number_of_combinations_processed))
-      row.with_cell(text: number_with_delimiter(total_number_of_combinations_processed))
+      row.with_cell(text: number_with_delimiter(total_number_of_successful_combinations))
       row.with_cell(text: number_with_delimiter(total_number_of_missing_combinations))
       row.with_cell(text: rate_tag(total_number_of_combinations_processed, total_number_of_missing_combinations))
     end
