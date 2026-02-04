@@ -168,23 +168,6 @@ class TrainingPeriod < ApplicationRecord
     end
   end
 
-
-  # Note a training period can be either withdrawn or deferred, not both at the same time. 
-  # However, the training period could be updated e.g. from deferred to withdrawn.
-  # LPs can't withdrawn/defer for a training period that hasn't started yet.
-
-  # We'll need to test that this works ok when there is a withdrawal for a current training period 
-  # and already a future training period created (at a different school).
-
-  # Consider instead: API::TrainingPeriods::TrainingStatus
-  def deferred?
-    deferred_at.present? && !withdrawn?
-  end
-
-  def withdrawn?
-    withdrawn_at.present?
-  end
-
 private
 
   def only_one_at_school_period_present

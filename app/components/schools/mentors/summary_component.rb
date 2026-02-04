@@ -16,8 +16,8 @@ module Schools
 
       delegate :trn, to: :@mentor
 
-      def link_to_mentor
-        govuk_link_to(teacher_name, schools_mentor_path(mentor_period_for_school))
+      def link_to_mentor(link_text = teacher_name)
+        govuk_link_to(link_text, schools_mentor_path(mentor_period_for_school))
       end
 
       def link_to_ect(ect)
@@ -45,13 +45,28 @@ module Schools
         ]
       end
 
-      # TODO: N+1 queries
       def latest_training_period
         @latest_training_period ||= mentor_period_for_school&.latest_training_period
       end
 
+      def training_status
+        return :unstarted unless latest_training_period
+
+        API::TrainingPeriods::TrainingStatus.new(training_period: latest_training_period).status
+      end
+
       def lead_provider_name
         @lead_provider_name ||= latest_training_period&.lead_provider_name
+      end
+
+      def lead_provider_name
+        @lead_provider_name ||= 
+        case
+        when partnership_confirmed?
+          latest_training_period.lead_provider_name
+        when latest_training_period.only_expression_of_interest?
+          mentor_training_period.expression_of_interest_lead_provider.name
+        end
       end
 
       def status_text
@@ -75,12 +90,10 @@ module Schools
         latest_training_period.school_partnership.present?
       end
 
-      # TODO: N+1 queries
       def delivery_partner_name
         latest_training_period&.delivery_partner_name
       end
 
-      # TODO: N+1 queries
       def mentor_period_for_school
         @mentor.mentor_at_school_periods.find_by(school: @school)
       end
