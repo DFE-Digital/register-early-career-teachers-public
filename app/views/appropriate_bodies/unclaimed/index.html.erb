@@ -1,0 +1,9 @@
+<%
+  page_data(
+    title: "ECT induction records to review for #{UnclaimedIndexComponent.period}",
+    backlink_href: ab_teachers_path
+  )
+%>
+
+<%= render UnclaimedIndexComponent.new(appropriate_body: @appropriate_body) %>
+
