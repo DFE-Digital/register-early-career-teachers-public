@@ -6,7 +6,13 @@
 
     <% if @unauthorised_context == :finance %>
       <p class="govuk-body">
-        This is to access financial information for Register early career teachers. To gain access, contact the product team.
+        This is to access financial information for Register early career teachers.
+        To gain access, contact the product team.
+      </p>
+    <% elsif @unauthorised_context == :users %>
+      <p class="govuk-body">
+        This is to access internal user information for Register early career teachers.
+        To gain access, contact the product team.
       </p>
     <% else %>
       <p class="govuk-body">
