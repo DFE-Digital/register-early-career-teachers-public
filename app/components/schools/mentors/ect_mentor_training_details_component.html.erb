@@ -1,19 +1,22 @@
-<% if ineligible_for_training? %>
-  <h2 class="govuk-heading-m">ECTE mentor training details</h2>
+<h2 class="govuk-heading-m">ECTE mentor training details</h2>
 
-  <% if completed_reason? %>
-    <p class="govuk-body">
-      <%= teacher_full_name(teacher) %> completed mentor training on <%= ineligible_date_govuk %>.
-    </p>
-  <% elsif started_not_completed_reason? %>
-    <p class="govuk-body">Our records show that <%= teacher_full_name(teacher) %> cannot do further mentor training.</p>
-    <p class="govuk-body">This might be because they’ve completed it before, or started but not completed it.</p>
-    <p class="govuk-body">We’ve passed <%= teacher_full_name(teacher) %>’s details to their ECTs’ lead provider so they can access ECT training materials. Speak to the lead provider if <%= teacher_full_name(teacher) %> cannot access them.</p>
-  <% end %>
+<% case training_status %>
+<% when :not_registered %>
+  <p class="govuk-body"><%= teacher_name %> is not currently registered for ECTE mentor training with a lead provider.</p>
+<% when :withdrawn %>
+  <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %>'s ECTE mentor training is paused. Contact them if you think this is an error.</p>
+<% when :deferred %>
+  <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %> is not registered for ECTE mentor training with them. Contact them if you think this is an error.</p>
+  <p class="govuk-body">You can select a lead provider for <%= teacher_name %> if they will be training with another lead provider.</p>
+<% when :started_not_completed %>
+  <p class="govuk-body">Our records show that <%= teacher_name %> cannot do further mentor training.</p>
+  <p class="govuk-body">This might be because they’ve completed it before, or started but not completed it.</p>
+  <p class="govuk-body">We’ve passed <%= teacher_name %>’s details to their ECTs’ lead provider so they can access ECT training materials. Speak to the lead provider if <%= teacher_full_name(teacher) %> cannot access them.</p>
+<% when :completed %>
+  <p class="govuk-body"><%= teacher_name %> completed mentor training on <%= ineligible_date_govuk %>.</p>
+<% end %>
 
-<% elsif mentor_training_period.present? %>
-  <h2 class="govuk-heading-m">ECTE mentor training details</h2>
-
+<% if show_list? %>
   <%= govuk_summary_list do |list| %>
     <% list.with_row do |row| %>
       <% row.with_key { "Lead provider" } %>
