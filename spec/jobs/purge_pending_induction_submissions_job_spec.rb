@@ -1,6 +1,6 @@
 RSpec.describe PurgePendingInductionSubmissionsJob, type: :job do
   describe "#perform" do
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
     it "deletes pending induction submissions with delete_at in the past" do
       # submissions that should be deleted

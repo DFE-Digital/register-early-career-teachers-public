@@ -1,8 +1,8 @@
 RSpec.describe AppropriateBodies::ECTs do
   subject { AppropriateBodies::ECTs.new(appropriate_body_period) }
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
-  let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+  let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   describe "#current_or_completed_while_at_appropriate_body" do

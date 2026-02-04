@@ -4,7 +4,7 @@ RSpec.describe "Process batch events" do
   include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
   let(:appropriate_body_period) do
-    FactoryBot.create(:appropriate_body, name: "The Appropriate Body")
+    FactoryBot.create(:appropriate_body_period, name: "The Appropriate Body")
   end
 
   before do

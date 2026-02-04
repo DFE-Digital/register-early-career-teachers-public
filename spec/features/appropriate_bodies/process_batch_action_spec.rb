@@ -1,7 +1,7 @@
 RSpec.describe "Process bulk actions" do
   include_context "test TRS API returns a teacher"
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   let(:file_name) { "valid_complete_action.csv" }
   let(:file_path) { Rails.root.join("spec/fixtures/#{file_name}").to_s }
@@ -14,7 +14,7 @@ RSpec.describe "Process bulk actions" do
   end
 
   context "when batch is owned by another appropriate body" do
-    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
     let(:batch) do
       FactoryBot.create(:pending_induction_submission_batch, :claim,
                         appropriate_body_period: other_appropriate_body)

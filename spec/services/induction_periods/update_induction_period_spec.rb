@@ -4,7 +4,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
   let(:user) { FactoryBot.create(:user, email: "user@education.gov.uk") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:induction_period) do
     FactoryBot.create(
       :induction_period,

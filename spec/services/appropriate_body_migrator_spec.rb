@@ -29,7 +29,7 @@ RSpec.describe AppropriateBodyMigrator do
       end
 
       # TODO: AB is being converted to a period
-      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub) }
       let(:urn) { "1234567" }
       let(:name)  { "Lead School for TSH" }
 
@@ -88,7 +88,7 @@ RSpec.describe AppropriateBodyMigrator do
     #
     context "with Appropriate Body (national)" do
       # TODO: AB is being converted to a period
-      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body, :national) }
+      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :national) }
       let(:name)  { appropriate_body_period.name }
       let(:urn) { nil }
 

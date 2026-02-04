@@ -1,5 +1,5 @@
 RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_path:, back_step_name:, continue_path:, continue_step_name:|
-  let(:last_chosen_appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:last_chosen_appropriate_body) { FactoryBot.build(:appropriate_body_period) }
   let(:last_chosen_lead_provider) { FactoryBot.build(:lead_provider) }
   let(:last_chosen_delivery_partner) { FactoryBot.build(:delivery_partner) }
 
@@ -66,7 +66,7 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
   end
 
   context "when school-led" do
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub, name: "Team 7") }
+    let(:appropriate_body) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub, name: "Team 7") }
     let(:school) do
       FactoryBot.create(
         :school,

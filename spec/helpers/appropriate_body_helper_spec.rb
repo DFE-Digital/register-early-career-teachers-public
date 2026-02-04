@@ -72,7 +72,7 @@ RSpec.describe AppropriateBodyHelper, type: :helper do
       let!(:induction_period) do
         FactoryBot.create(
           :induction_period,
-          appropriate_body_period: FactoryBot.create(:appropriate_body),
+          appropriate_body_period: FactoryBot.create(:appropriate_body_period),
           teacher:,
           started_on: Date.parse(expected_date)
         )

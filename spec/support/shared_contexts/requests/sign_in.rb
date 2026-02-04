@@ -1,6 +1,6 @@
 RSpec.shared_context "sign in as non-DfE user" do
   before do
-    sign_in_as(:appropriate_body_user, appropriate_body: FactoryBot.create(:appropriate_body))
+    sign_in_as(:appropriate_body_user, appropriate_body: FactoryBot.create(:appropriate_body_period))
   end
 end
 

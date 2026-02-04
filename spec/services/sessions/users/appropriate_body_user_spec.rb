@@ -10,7 +10,7 @@ RSpec.describe Sessions::Users::AppropriateBodyUser do
     )
   end
 
-  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:email) { "appropriate_body_user@email.com" }
   let(:name) { "Christopher Lee" }
   let(:dfe_sign_in_organisation_id) { appropriate_body_period.dfe_sign_in_organisation_id }

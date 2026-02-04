@@ -1,5 +1,5 @@
 RSpec.describe "appropriate_bodies/claim_an_ect/check_ect/edit.html.erb" do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission, appropriate_body_period:, trs_first_name: "Anna", trs_last_name: "Chancellor")

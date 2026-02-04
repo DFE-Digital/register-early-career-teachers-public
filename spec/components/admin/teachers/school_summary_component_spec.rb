@@ -5,14 +5,14 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
 
   describe "ECT at school period" do
     let(:school) { FactoryBot.create(:school) }
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Appropriate Body Name") }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Appropriate Body Name") }
     let(:school_period_attributes) do
       {
         school:,
         started_on: Date.new(2023, 1, 1),
         finished_on: nil,
         working_pattern: "full_time",
-        school_reported_appropriate_body: appropriate_body,
+        school_reported_appropriate_body: appropriate_body_period,
         email: "ect@example.com"
       }
     end

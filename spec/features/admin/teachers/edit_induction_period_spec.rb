@@ -1,7 +1,7 @@
 RSpec.describe "Admin editing an induction" do
   include ActiveJob::TestHelper
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do

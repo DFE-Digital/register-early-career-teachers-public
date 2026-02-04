@@ -2,7 +2,7 @@ RSpec.describe "Migrating authenticated Appropriate Body Period users" do
   context "when no School records exist" do
     describe "after authentication" do
       let(:appropriate_body_period) do
-        FactoryBot.create(:appropriate_body, name: "Valid AB")
+        FactoryBot.create(:appropriate_body_period, name: "Valid AB")
       end
 
       it "does not migrate data" do
@@ -22,7 +22,7 @@ RSpec.describe "Migrating authenticated Appropriate Body Period users" do
 
     describe "after authentication" do
       let(:appropriate_body_period) do
-        FactoryBot.create(:appropriate_body, :national)
+        FactoryBot.create(:appropriate_body_period, :national)
       end
 
       it "migrates data" do
@@ -58,7 +58,7 @@ RSpec.describe "Migrating authenticated Appropriate Body Period users" do
 
       context "when AppropriateBodyPeriod is a teaching school hub (regional)" do
         let(:appropriate_body_period) do
-          FactoryBot.create(:appropriate_body, :teaching_school_hub)
+          FactoryBot.create(:appropriate_body_period, :teaching_school_hub)
         end
         let(:school) { School.first }
 

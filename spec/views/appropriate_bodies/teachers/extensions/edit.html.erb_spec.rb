@@ -1,10 +1,10 @@
 RSpec.describe "appropriate_bodies/teachers/extensions/edit.html.erb" do
-  let(:appropriate_body) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:extension) { FactoryBot.create(:induction_extension) }
 
   before do
-    assign(:appropriate_body, appropriate_body)
+    assign(:appropriate_body, appropriate_body_period)
     assign(:teacher, teacher)
     assign(:extension, extension)
   end

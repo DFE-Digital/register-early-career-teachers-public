@@ -1,6 +1,6 @@
 RSpec.describe "appropriate_bodies/teachers/record_failed_induction/new.html.erb" do
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
