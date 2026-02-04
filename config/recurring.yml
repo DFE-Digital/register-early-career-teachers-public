@@ -23,6 +23,11 @@ production:
     queue: metadata
     schedule: every day at 1am
 
+  gias_import:
+    class: GIASImportJob
+    queue: default
+    schedule: every day at 3am
+
   blazer_run_checks_1_day:
     command: "Blazer.run_checks(schedule: '1 day')"
     schedule: every day at 7:30am
