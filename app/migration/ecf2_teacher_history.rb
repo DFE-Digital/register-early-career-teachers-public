@@ -88,6 +88,11 @@ private
     yield
   rescue ActiveRecord::ActiveRecordError => e
     record_failure!(teacher:, model:, message: e.message, migration_item_id:)
+    raise if raise_errors?
+  end
+
+  def raise_errors?
+    Rails.application.config.raise_migration_errors
   end
 
   def record_failure!(teacher:, model:, message:, migration_item_id:)
