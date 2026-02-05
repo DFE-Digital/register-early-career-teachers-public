@@ -1,11 +1,12 @@
+require_relative "./shared_examples/started_on_step"
+
 RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   subject(:step) { described_class.new(wizard:, started_on:) }
 
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :started_on, store:) }
   let(:store) do
-     FactoryBot.build(:session_repository,
-                        mentoring_at_new_school_only: mentoring_only,
-                        previous_school_mentor_at_school_periods: []
+    FactoryBot.build(:session_repository,
+                        mentoring_at_new_school_only: mentoring_only
   ) 
   end
 
@@ -18,49 +19,16 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   let(:contract_period_enabled?) { contract_period.enabled }
   let(:currently_mentor_at_another_school) { false }
 
-  describe "validations" do
-    context "when start date is in the future" do
-      let(:started_on) { Date.new(2025, 5, 2) }
 
-      around do |example|
-        travel_to(Date.new(2025, 1, 1)) { example.run }
-      end
-
-      before do
-        allow(wizard.mentor).to receive(:currently_mentor_at_another_school?).and_return(currently_mentor_at_another_school)
-      end
-
-      context "and the mentor is not currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { false }
-
-        it { is_expected.to be_valid }
-      end
-
-      context "and the mentor is currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { true }
-        let(:latest_valid_started_on) { 4.months.from_now.to_date }
-
-        it "is valid up to 4 months from today" do
-          subject.started_on = latest_valid_started_on
-          expect(subject).to be_valid
-        end
-
-        it "is invalid over 4 months from today" do
-          subject.started_on = latest_valid_started_on + 1.day
-          expect(subject).not_to be_valid
-          expect(subject.errors[:started_on]).to include("Start date must be before 2 May 2025")
-        end
-      end
-    end
-  end
+  it_behaves_like "a started on step", current_step: :started_on 
+  
 
   describe "#next_step" do
     before do
-      allow(wizard.mentor).to receive(:contract_period_enabled?).and_return(contract_period_enabled?)
       allow(wizard.mentor).to receive(:provider_led_ect?).and_return(provider_led)
       allow(wizard.mentor).to receive(:became_ineligible_for_funding?).and_return(ineligible)
       allow(wizard.mentor).to receive(:previous_training_period).and_return(previous_training_period)
-
+      allow(wizard.mentor).to receive(:contract_period_enabled?).and_return(contract_period_enabled?)
     end
 
     context "when mentor is ineligible for funding" do
@@ -84,24 +52,17 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
 
       it { expect(step.next_step).to eq(:programme_choices) }
     end
-
-    context "when contract period is not open yet" do
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
-
-      it { expect(step.next_step).to eq(:cannot_register_mentor_yet) }
-    end
   end
 
   describe "#previous_step" do
     context "when mentoring_at_new_school_only is 'yes'" do
       let(:mentoring_only) { "yes" }
 
-      it "works" do
-        expect(step.previous_step).to eq(:mentoring_at_new_school_only) 
-      end
+      it { expect(step.previous_step).to eq(:mentoring_at_new_school_only) }
     end
 
     context "when mentoring_at_new_school_only is 'no'" do
+      let(:mentoring_only) { "no" }
       it { expect(step.previous_step).to eq(:email_address) }
     end
   end
