@@ -20,9 +20,7 @@ class TeacherHistoryConverter
 private
 
   def select_migration_mode
-    # FIXME: make this cleverer
-
-    :latest_induction_records
+    MigrationStrategy.new(ecf1_teacher_history).strategy
   end
 
   def date_corrector
