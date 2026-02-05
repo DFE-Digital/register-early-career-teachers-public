@@ -58,7 +58,7 @@ module Schools
       @ect.teacher.trs_induction_status == "Exempt"
     end
 
-    # TODO check if these are used?
+    # TODO: check if these are used?
     def current_mentor = mentorship.current_mentor
 
     def mentorship = @mentorship ||= ECTAtSchoolPeriods::Mentorship.new(@ect)
