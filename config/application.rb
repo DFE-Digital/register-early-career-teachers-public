@@ -68,6 +68,8 @@ module RegisterEarlyCareerTeachers
       rect_url: ENV["PARITY_CHECK_RECT_URL"],
     }
 
+    config.raise_migration_errors = ActiveModel::Type::Boolean.new.cast(ENV.fetch("RAISE_MIGRATION_ERRORS", false))
+
     config.gias_supplemental_schools_path = Rails.root.join("config/gias/schools.csv")
     config.gias_supplemental_links_path = Rails.root.join("config/gias/links.csv")
 
