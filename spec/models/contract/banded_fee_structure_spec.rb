@@ -1,6 +1,7 @@
 RSpec.describe Contract::BandedFeeStructure, type: :model do
   describe "associations" do
     it { is_expected.to have_many(:bands).order(min_declarations: :asc).class_name("Contract::BandedFeeStructure::Band").inverse_of(:banded_fee_structure).dependent(:destroy) }
+    it { is_expected.to have_one(:contract).with_foreign_key("contract_banded_fee_structure_id").inverse_of(:contract_banded_fee_structure) }
   end
 
   describe "validations" do
