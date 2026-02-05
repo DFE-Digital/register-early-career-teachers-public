@@ -1,9 +1,30 @@
 ```mermaid
 erDiagram
-  Contract_FeeStructure_FlatRate {
+  Contract_BandedFeeStructure_Band {
+    integer id
+    integer banded_fee_structure_id
+    integer min_declarations
+    integer max_declarations
+    integer fee_per_declaration
+    decimal output_fee_ratio
+    decimal service_fee_ratio
+    datetime created_at
+    datetime updated_at
+  }
+  Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
+  Contract_FlatRateFeeStructure {
     integer id
     integer recruitment_target
     decimal fee_per_declaration
+    datetime created_at
+    datetime updated_at
+  }
+  Contract_BandedFeeStructure {
+    integer id
+    integer recruitment_target
+    decimal uplift_fee_per_declaration
+    decimal monthly_service_fee
+    decimal setup_fee
     datetime created_at
     datetime updated_at
   }
