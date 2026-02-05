@@ -29,8 +29,8 @@ As part of using DfE Sign-in, multiple people working for a school can now get a
 ### Nominating a school induction tutor separately
 
 As part of the change to the DfE Sign in, we now ask schools to tell us their induction tutor. Schools do this:
-- when they first sign in after the opening of a new registration period
-- any other time within the service 
+* when they first sign in after the opening of a new registration period
+* any other time within the service 
 
 <a href="../images/induction-tutor.png" target="blank"><img alt="View induction tutor details for school with option to change details" src="../images/induction-tutor.png" width="300"/></a>
 
@@ -38,8 +38,8 @@ As part of the change to the DfE Sign in, we now ask schools to tell us their in
 
 When a school registers an ECT or mentor, they only provide the: 
 
-- teacher reference number (TRN)
-- date of birth
+* teacher reference number (TRN)
+* date of birth
 
 They no longer need to provide a name. 
  
