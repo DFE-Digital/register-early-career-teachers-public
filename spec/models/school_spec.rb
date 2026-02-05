@@ -510,6 +510,22 @@ describe School do
 
           it { is_expected.to be_falsey }
         end
+
+        context "with an ongoing mentor training period" do
+          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+
+          before { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context "and only has finished training periods" do
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+
+          before { FactoryBot.create(:training_period, :finished, ect_at_school_period:) }
+
+          it { is_expected.to be_truthy }
+        end
       end
 
       context "and section 41 is approved" do
