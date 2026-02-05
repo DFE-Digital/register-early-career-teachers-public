@@ -14,11 +14,11 @@ RSpec.describe UnclaimedIndexComponent, type: :component do
     expect(page).to have_css("h2", text: "Check records and claim an ECT")
   end
 
-  describe ".period" do
+  describe "#period" do
     context "when the current month is after May" do
       it "returns the current year and next year" do
         travel_to(Date.new(2024, 6, 1)) do
-          expect(described_class.period).to eq("2024/2025")
+          expect(component.period).to eq("2024/2025")
         end
       end
     end
@@ -26,7 +26,7 @@ RSpec.describe UnclaimedIndexComponent, type: :component do
     context "when the current month is May or earlier" do
       it "returns the previous year and current year" do
         travel_to(Date.new(2024, 5, 1)) do
-          expect(described_class.period).to eq("2023/2024")
+          expect(component.period).to eq("2023/2024")
         end
       end
     end
