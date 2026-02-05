@@ -614,7 +614,7 @@
   - failure_message
   - created_at
   - updated_at
-  :contract_fee_structure_flat_rates:
+  :contract_flat_rate_fee_structures:
   - id
   - recruitment_target
   - fee_per_declaration
