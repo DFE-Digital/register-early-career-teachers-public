@@ -1,33 +1,94 @@
 module Schools
   class ECTTrainingDetailsComponent < ApplicationComponent
     include ProgrammeHelper
+    include TeacherHelper
+    include ECTHelper
 
     NOT_AVAILABLE = "Not available"
     YET_TO_BE_REPORTED = "Yet to be reported by the lead provider"
     DELIVERY_PARTNER_CHANGE_HINT = "To change the delivery partner, you must contact the lead provider"
 
-    attr_reader :ect_at_school_period, :training_period
+    attr_reader :ect_at_school_period
 
     def initialize(ect_at_school_period:, training_period:)
       @ect_at_school_period = ect_at_school_period
       @training_period = training_period
     end
 
-    def render? = @training_period.present?
+    def render? = ect_at_school_period.display_training_period.present?
 
     def call
-      safe_join([
-        tag.h2("Training details", class: "govuk-heading-m"),
-        govuk_summary_list(rows:)
-      ])
+      tag.section(id: "training-details") do
+        safe_join([
+          tag.h2("Training details", class: "govuk-heading-m"),
+          training_details_body
+        ])
+      end
     end
 
   private
 
+    def training_period
+      @training_period || ect_at_school_period.display_training_period
+    end
+
+    def training_details_body
+      return withdrawn_training_details if withdrawn?
+
+      govuk_summary_list(rows:)
+    end
+
+    def withdrawn?
+      ect_at_school_period.display_training_status == :withdrawn
+    end
+
+    def withdrawn_training_details
+      safe_join([
+        govuk_tag(text: "Action required", colour: "red"),
+        tag.p(withdrawn_training_details_message, class: "govuk-body govuk-!-margin-top-2"),
+        tag.p(
+          govuk_link_to(
+            "Select a lead provider",
+            schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
+            no_visited_state: true
+          ),
+          class: "govuk-body"
+        ),
+        tag.p(
+          govuk_link_to(
+            "Tell us if they are changing their programme type to school-led",
+            schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
+            no_visited_state: true
+          ),
+          class: "govuk-body"
+        )
+      ])
+    end
+
+    def withdrawn_training_details_message
+      lead_provider_name = withdrawn_lead_provider_name
+      subject = lead_provider_name.presence || "The lead provider"
+      verb = lead_provider_name.present? ? "have" : "has"
+      name = teacher_full_name(ect_at_school_period.teacher)
+
+      "#{subject} #{verb} told us that #{name} is no longer training with them. Contact them if you think this is an error."
+    end
+
+    def withdrawn_lead_provider_name
+      tp = training_period
+      return if tp.blank?
+
+      if tp.only_expression_of_interest?
+        tp.expression_of_interest&.lead_provider&.name
+      else
+        tp.lead_provider_name
+      end
+    end
+
     def rows
       base_rows = [training_programme_row]
 
-      if training_period.provider_led_training_programme?
+      if training_period&.provider_led_training_programme?
         base_rows << lead_provider_row
         base_rows << delivery_partner_row
       end

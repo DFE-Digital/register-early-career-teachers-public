@@ -43,6 +43,7 @@ class Teacher < ApplicationRecord
   has_one :current_appropriate_body, through: :ongoing_induction_period, source: :appropriate_body
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: "ECTAtSchoolPeriod"
   has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
+  has_one :latest_ect_at_school_period, -> { latest_first }, class_name: "ECTAtSchoolPeriod"
 
   # TODO: remove after migration complete
   has_many :teacher_migration_failures
@@ -127,5 +128,9 @@ class Teacher < ApplicationRecord
   # Methods
   def eligible_for_funding?
     Teachers::MentorFundingEligibility.new(trn:).eligible?
+  end
+
+  def ect_at_school_period_for_list
+    current_or_next_ect_at_school_period || latest_ect_at_school_period
   end
 end
