@@ -1,6 +1,12 @@
 class Contract::BandedFeeStructure < ApplicationRecord
   self.table_name = "contract_banded_fee_structures"
 
+  has_many :bands,
+           -> { order(min_declarations: :asc) },
+           class_name: "Contract::BandedFeeStructure::Band",
+           inverse_of: :banded_fee_structure,
+           dependent: :destroy
+
   validates :recruitment_target,
             presence: { message: "Recruitment target is required" },
             numericality: {

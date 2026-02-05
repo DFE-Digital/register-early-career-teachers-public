@@ -628,3 +628,13 @@
   - setup_fee
   - created_at
   - updated_at
+  :contract_banded_fee_structure_bands:
+   - id
+   - banded_fee_structure_id
+   - min_declarations
+   - max_declarations
+   - fee_per_declaration
+   - output_fee_ratio
+   - service_fee_ratio
+   - created_at
+   - updated_at

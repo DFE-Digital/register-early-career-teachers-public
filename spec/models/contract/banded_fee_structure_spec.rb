@@ -1,4 +1,8 @@
 RSpec.describe Contract::BandedFeeStructure, type: :model do
+  describe "associations" do
+    it { is_expected.to have_many(:bands).order(min_declarations: :asc).class_name("Contract::BandedFeeStructure::Band").inverse_of(:banded_fee_structure).dependent(:destroy) }
+  end
+
   describe "validations" do
     it { is_expected.to validate_presence_of(:recruitment_target).with_message("Recruitment target is required") }
     it { is_expected.to validate_numericality_of(:recruitment_target).is_greater_than_or_equal_to(0).only_integer.with_message("Recruitment target must be a number greater than zero") }
