@@ -431,6 +431,25 @@ describe Teacher do
         expect(Teacher.found_in_trs.to_sql).to end_with(expected_clause)
       end
     end
+
+    context "induction status scopes" do
+      let!(:target) { FactoryBot.create(:teacher, :induction_in_progress) }
+      let!(:other) { FactoryBot.create(:teacher) }
+      let!(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
+      let!(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
+
+      describe ".not_failed" do
+        it "only includes records where trs_induction_status is not 'Failed'" do
+          expect(Teacher.not_failed).to contain_exactly(target, other, passed_teacher)
+        end
+      end
+
+      describe ".not_passed" do
+        it "only includes records where trs_induction_status is not 'Passed'" do
+          expect(Teacher.not_passed).to contain_exactly(target, other, failed_teacher)
+        end
+      end
+    end
   end
 
   describe "normalizing" do

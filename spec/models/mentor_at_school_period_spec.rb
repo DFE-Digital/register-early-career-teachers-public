@@ -20,14 +20,19 @@ describe MentorAtSchoolPeriod do
     subject { mentor.current_or_future_ects }
 
     let(:mentor) { FactoryBot.create(:mentor_at_school_period, started_on: 2.years.ago, finished_on: nil) }
+    let(:school) { mentor.school }
+    let(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
+    let(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
 
-    let(:finished)  { FactoryBot.create(:ect_at_school_period, school: mentor.school, finished_on: Time.zone.today) }
-    let(:finishing) { FactoryBot.create(:ect_at_school_period, school: mentor.school, finished_on: 1.week.from_now) }
-    let(:current)   { FactoryBot.create(:ect_at_school_period, school: mentor.school, finished_on: nil) }
-    let(:upcoming)  { FactoryBot.create(:ect_at_school_period, school: mentor.school, started_on: 1.week.from_now) }
+    let(:finished)  { FactoryBot.create(:ect_at_school_period, school:, finished_on: Time.zone.today) }
+    let(:finishing) { FactoryBot.create(:ect_at_school_period, school:, finished_on: 1.week.from_now) }
+    let(:current)   { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
+    let(:upcoming)  { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.week.from_now) }
+    let(:passed)    { FactoryBot.create(:ect_at_school_period, school:, teacher: passed_teacher) }
+    let(:failed)    { FactoryBot.create(:ect_at_school_period, school:, teacher: failed_teacher) }
 
     before do
-      [finished, finishing, current, upcoming].each do |mentee|
+      [finished, finishing, current, upcoming, passed, failed].each do |mentee|
         FactoryBot.create(:mentorship_period, mentor:, mentee:)
       end
     end
