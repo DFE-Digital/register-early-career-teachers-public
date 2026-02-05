@@ -13,15 +13,6 @@ module Schools
           Schools::TeacherEmail.new(email: registration_store.email, trn: registration_store.trn).is_currently_used?
         end
 
-        def contract_period_enabled?
-          return unless registration_store.started_on
-          contract_period = ContractPeriod.containing_date(registration_store.started_on)
-  
-          return false unless contract_period
-  
-          contract_period.enabled
-        end
-
         def corrected_name?
           registration_store.corrected_name.present?
         end
@@ -88,6 +79,10 @@ module Schools
 
         def mentoring_at_new_school_only?
           registration_store.store.fetch("mentoring_at_new_school_only", "yes") == "yes"
+        end
+
+        def contract_period_enabled?
+          queries.contract_period&.enabled
         end
 
       private
