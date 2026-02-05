@@ -80,7 +80,8 @@ private
 
     if found_teacher.present?
       with_failure_recording(teacher: found_teacher, model: :teacher, migration_item_id: teacher.api_id) do
-        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name))
+        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name, :api_updated_at))
+        found_teacher.api_updated_at = [found_teacher.api_updated_at, teacher.api_updated_at].compact.max
         found_teacher.save!
         found_teacher
       end
@@ -92,6 +93,8 @@ private
         new_teacher
       end
     end
+
+    found_teacher
   end
 
   def with_failure_recording(teacher:, model:, migration_item_id:)
