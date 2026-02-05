@@ -33,5 +33,6 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
   it { is_expected.to have_summary_list_row("Mentor", value: "ECTHelper#ect_mentor_details") }
   it { is_expected.to have_summary_list_row("School start date", value: "1 September 2021") }
   it { is_expected.to have_summary_list_row("Working pattern", value: "Full time") }
-  it { is_expected.to have_summary_list_row("Status", value: "ECTHelper#ect_status") }
+  it { is_expected.to have_summary_list_row("Status") }
+  it { is_expected.to have_text("ECTHelper#ect_status") }
 end

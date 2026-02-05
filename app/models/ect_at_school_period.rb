@@ -123,6 +123,14 @@ class ECTAtSchoolPeriod < ApplicationRecord
     current_or_next_training_period || latest_training_period
   end
 
+  def display_training_status
+    display_training_period&.school_training_status
+  end
+
+  def display_lead_provider_name
+    display_training_period&.lead_provider_name
+  end
+
   delegate :trn, to: :teacher
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
   delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
