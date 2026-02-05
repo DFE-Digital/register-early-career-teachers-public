@@ -48,6 +48,8 @@ ECF2TeacherHistory::Combination = Struct.new(
       created_at: induction_record.created_at,
       updated_at: induction_record.updated_at,
       **overrides
-    )
+    ).tap do |combination|
+      combination.lead_provider_name = "school_led" if combination.training_programme.to_s == "school_led"
+    end
   end
 end

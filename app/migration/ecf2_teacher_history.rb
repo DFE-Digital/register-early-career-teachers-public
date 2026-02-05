@@ -127,6 +127,7 @@ private
   def record_combinations_failure!(model:, message:)
     return record_failed_teacher_combinations(teacher: model, message:) if model.is_a?(Teacher)
     return record_failed_combinations(at_school_period: model, message:) if model.respond_to?(:training_periods)
+
     record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
   end
 
