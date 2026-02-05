@@ -87,13 +87,15 @@ module Schools
             steps << :lead_provider unless mentor.use_same_programme_choices == "yes"
             steps << :review_mentor_eligibility if mentor.eligible_for_funding?
             steps << :eligibility_lead_provider if mentor.eligible_for_funding?
-            steps << :cannot_register_mentor_yet if mentor.started_on
             
-            return steps unless mentor.contract_period_enabled?
+            if !mentor.contract_period_enabled?
+              steps << :cannot_register_mentor_yet
+              return steps
+            end
+
             steps += %i[change_mentor_details change_email_address check_answers]
             steps << :change_started_on if mentor.started_on
             steps << :change_lead_provider if mentor.lead_provider
-            
 
             steps
           end

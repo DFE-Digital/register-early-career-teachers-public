@@ -24,7 +24,8 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   let(:provider_led) { true }
   let(:started_on) { { "day" => "10", "month" => "9", "year" => "2025" } }
   let(:previous_training_period) { FactoryBot.build(:training_period) }
-  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+  let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+  let(:contract_period_enabled?) { contract_period.enabled }
 
   describe "validations" do
     context "when start date is in the future" do
@@ -63,6 +64,10 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   end
 
   describe "#next_step" do
+    before do
+      allow(registration_store).to receive(:contract_period_enabled?).and_return(contract_period_enabled?)
+    end
+
     context "when mentor is ineligible for funding" do
       let(:ineligible) { true }
 
@@ -85,14 +90,8 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
       it { expect(step.next_step).to eq(:programme_choices) }
     end
 
-    context "when contract period is not open" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
-
-      it { expect(step.next_step).to eq(:cannot_register_mentor_yet) }
-    end
-
-    context "when contract period is missing" do
-      let!(:contract_period) {}
+    context "when contract period is not open yet" do
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
 
       it { expect(step.next_step).to eq(:cannot_register_mentor_yet) }
     end
