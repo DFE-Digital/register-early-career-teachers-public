@@ -418,6 +418,39 @@ describe ECTAtSchoolPeriod do
         expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
       end
     end
+
+    describe ".unclaimed_by_school_reported_appropriate_body" do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+
+      let!(:period_without_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_ongoing_induction_period_for_same_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_ongoing_induction_period_for_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_finished_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:finished_period) { FactoryBot.create(:ect_at_school_period, :finished, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: other_appropriate_body) }
+
+      before do
+        FactoryBot.create(:induction_period, :ongoing, appropriate_body:, teacher: period_with_ongoing_induction_period_for_same_appropriate_body.teacher)
+        FactoryBot.create(:induction_period, :ongoing, appropriate_body: other_appropriate_body, teacher: period_with_ongoing_induction_period_for_different_appropriate_body.teacher)
+        FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 1.month.ago, teacher: period_with_finished_induction_period.teacher)
+      end
+
+      it "returns only current/future periods not claimed by their school_reported_appropriate_body" do
+        results = described_class.unclaimed_by_school_reported_appropriate_body
+
+        expect(results).to include(
+          period_without_induction_period,
+          period_with_finished_induction_period,
+          period_with_ongoing_induction_period_for_different_appropriate_body,
+          period_with_different_appropriate_body
+        )
+        expect(results).not_to include(
+          period_with_ongoing_induction_period_for_same_appropriate_body,
+          finished_period
+        )
+      end
+    end
   end
 
   describe "declarative touch" do
