@@ -58,6 +58,7 @@ module Migration
         school_urn
         cohort_year
         lead_provider_name
+        induction_record_id
       ].freeze
     end
 
@@ -67,7 +68,8 @@ module Migration
         ecf1_participant_profile_id:,
         school_urn: combination[39..44],
         cohort_year: combination[47..50],
-        lead_provider_name: combination[53..-2]
+        lead_provider_name: combination[53..-2],
+        induction_record_id: combination[1..36]
       )
     end
   end
