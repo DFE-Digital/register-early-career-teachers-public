@@ -6,9 +6,9 @@ This page describes these changes.
 
 <!-- The objective of this document is to explain to lead providers and appropriate bodies the changes to the Register early career teachers (ECTs) service for schools.  -->
 
-We hope this will make it easier for lead providers and appropriate bodies to support schools with the transition between the existing services to Manage early career teacher training and the new Register ECTs service. 
+<!-- We hope this will make it easier for lead providers and appropriate bodies to support schools with the transition between the existing services to Manage early career teacher training and the new Register ECTs service. 
 
-All of these changes have been tested in research with schools. 
+All of these changes have been tested in research with schools. -->
 
 ## Using DfE Sign in to access the service 
 
