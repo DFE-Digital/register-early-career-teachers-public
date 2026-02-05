@@ -6,6 +6,7 @@ describe Statement do
     it { is_expected.to have_many(:clawback_declarations).class_name("Declaration").inverse_of(:clawback_statement) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
+    it { is_expected.to belong_to(:contract).optional }
   end
 
   describe "validations" do
@@ -18,6 +19,32 @@ describe Statement do
     it { is_expected.to validate_numericality_of(:year).only_integer.is_greater_than_or_equal_to(2020).with_message("Year must be on or after 2020 and on or before #{described_class.maximum_year}") }
     it { is_expected.to validate_uniqueness_of(:active_lead_provider_id).scoped_to(:year, :month).with_message("Statement with the same month and year already exists for the lead provider") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
+
+    describe "same contract linked to other statements have same lead provider and contract period" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let(:contract) { FactoryBot.create(:contract) }
+
+      it "is valid when there are no statements associated with the contract" do
+        expect(contract).to be_valid
+      end
+
+      it "is valid when all statements associated with the contract have the same lead provider and contract period" do
+        FactoryBot.create(:statement, contract:, active_lead_provider:)
+        FactoryBot.create(:statement, contract:, active_lead_provider:)
+
+        expect(contract).to be_valid
+      end
+
+      it "is invalid when there are statements associated with the contract that have different lead providers or contract periods" do
+        FactoryBot.create(:statement, contract:, active_lead_provider:)
+
+        another_contract_statement = FactoryBot.create(:statement, active_lead_provider: FactoryBot.create(:active_lead_provider))
+        another_contract_statement.update_columns(contract_id: contract.id)
+
+        expect(contract).not_to be_valid
+        expect(contract.errors[:base]).to include("This contract is associated with other statements linked to different lead providers/contract periods.")
+      end
+    end
   end
 
   describe "declarative touch" do

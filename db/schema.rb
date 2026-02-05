@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
+  create_enum "contract_types", ["ecf", "ittecf_ectp"]
   create_enum "declaration_clawback_statuses", ["no_clawback", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_payment_statuses", ["no_payment", "eligible", "payable", "paid", "voided"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
@@ -173,6 +174,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
     t.boolean "detailed_evidence_types_enabled", default: false, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+  end
+
+  create_table "contracts", force: :cascade do |t|
+    t.enum "contract_type", null: false, enum_type: "contract_types"
+    t.bigint "contract_flat_rate_fee_structure_id"
+    t.bigint "contract_banded_fee_structure_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_banded_fee_structure_id"], name: "index_contracts_on_contract_banded_fee_structure_id"
+    t.index ["contract_flat_rate_fee_structure_id"], name: "index_contracts_on_contract_flat_rate_fee_structure_id"
+    t.index ["contract_type", "contract_banded_fee_structure_id"], name: "idx_on_contract_type_contract_banded_fee_structure__1dce84d2f3", unique: true
+    t.index ["contract_type", "contract_flat_rate_fee_structure_id"], name: "idx_on_contract_type_contract_flat_rate_fee_structu_0991b2695e", unique: true
   end
 
   create_table "data_migration_failed_combinations", force: :cascade do |t|
@@ -844,7 +857,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
     t.datetime "updated_at", null: false
     t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.bigint "contract_id"
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
+    t.index ["contract_id"], name: "index_statements_on_contract_id"
   end
 
   create_table "support_queries", force: :cascade do |t|
@@ -908,10 +923,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
     t.integer "mentor_payments_frozen_year"
     t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.boolean "ect_sparsity_uplift", default: false, null: false
-    t.date "trs_induction_start_date"
-    t.date "trs_induction_completed_date"
     t.datetime "ect_first_became_eligible_for_training_at"
     t.datetime "mentor_first_became_eligible_for_training_at"
+    t.date "trs_induction_start_date"
+    t.date "trs_induction_completed_date"
     t.boolean "trnless", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
@@ -975,6 +990,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
+  add_foreign_key "contracts", "contract_banded_fee_structures"
+  add_foreign_key "contracts", "contract_flat_rate_fee_structures"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
@@ -1046,6 +1063,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
   add_foreign_key "statements", "active_lead_providers"
+  add_foreign_key "statements", "contracts"
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"
