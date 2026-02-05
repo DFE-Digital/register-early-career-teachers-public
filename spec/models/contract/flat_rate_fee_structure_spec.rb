@@ -1,6 +1,6 @@
-describe Contract::FeeStructure::FlatRate do
+describe Contract::FlatRateFeeStructure do
   describe "validations" do
-    subject { FactoryBot.build(:contract_fee_structure_flat_rate) }
+    subject { FactoryBot.build(:contract_flat_rate_fee_structure) }
 
     it { is_expected.to validate_presence_of(:recruitment_target).with_message("Recruitment target is required") }
     it { is_expected.to validate_presence_of(:fee_per_declaration).with_message("Fee per declaration is required") }
