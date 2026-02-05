@@ -133,6 +133,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_150039) do
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
   end
 
+  create_table "contract_banded_fee_structures", force: :cascade do |t|
+    t.integer "recruitment_target", null: false
+    t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
+    t.decimal "monthly_service_fee", precision: 12, scale: 2, null: false
+    t.decimal "setup_fee", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "contract_fee_structure_flat_rates", force: :cascade do |t|
     t.integer "recruitment_target", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
