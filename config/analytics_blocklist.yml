@@ -620,3 +620,11 @@
   - fee_per_declaration
   - created_at
   - updated_at
+  :contract_banded_fee_structures:
+  - id
+  - recruitment_target
+  - uplift_fee_per_declaration
+  - monthly_service_fee
+  - setup_fee
+  - created_at
+  - updated_at
