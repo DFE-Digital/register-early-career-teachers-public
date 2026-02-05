@@ -23,8 +23,8 @@ RSpec.describe Migration::ECF2MigratedCombinationsExporter do
     let!(:csv_output) { exporter.generate_csv }
     let(:csv_data) do
       <<~CSV
-        ecf1_participant_profile_id,participant_profile_type,school_urn,cohort_year,lead_provider_name
-        7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,ect,222222,2049,Lead provider A
+        participant_profile_type,ecf1_participant_profile_id,school_urn,cohort_year,lead_provider_name,induction_record_id
+        ect,7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,222222,2049,Lead provider A,8aa33fa7-6a9f-4291-9da5-5f9170355871
       CSV
     end
 

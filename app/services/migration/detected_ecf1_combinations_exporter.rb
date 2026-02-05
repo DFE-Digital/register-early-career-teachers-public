@@ -30,8 +30,6 @@ module Migration
         query.find_each(batch_size: 2_000) do |teacher_combination|
           ecf1_ect_combination_rows(teacher_combination).each { csv << it }
           ecf1_mentor_combination_rows(teacher_combination).each { csv << it }
-          ecf2_ect_combination_rows(teacher_combination).each { csv << it }
-          ecf2_mentor_combination_rows(teacher_combination).each { csv << it }
         end
       end
     end
@@ -55,24 +53,6 @@ module Migration
             participant_profile_type: "mentor",
             participant_profile_id: teacher_combination.ecf1_mentor_profile_id,
             migrated: ecf2_mentor_combination.present?)
-      end
-    end
-
-    def ecf2_ect_combination_rows(teacher_combination)
-      teacher_combination.ecf2_ect_combinations.map do |ecf2_ect_combination|
-        row(combination: ecf2_ect_combination,
-            participant_profile_type: "ect",
-            participant_profile_id: teacher_combination.ecf1_ect_profile_id,
-            migrated: true)
-      end
-    end
-
-    def ecf2_mentor_combination_rows(teacher_combination)
-      teacher_combination.ecf2_mentor_combinations.map do |ecf2_mentor_combination|
-        row(combination: ecf2_mentor_combination,
-            participant_profile_type: "mentor",
-            participant_profile_id: teacher_combination.ecf1_mentor_profile_id,
-            migrated: true)
       end
     end
 
