@@ -307,7 +307,7 @@ describe Schools::RegisterMentorWizard::Wizard do
     context "when only TRN, DoB, Nino, change name (and maybe corrected name), email address, and start date have been set" do
       let(:mentor_date_of_birth) { "2000-01-01" }
       let(:started_on) { Date.new(2025, 7, 1) }
-      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) } 
+      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
       let(:store) do
         FactoryBot.build(:session_repository,
                          school_urn:,
@@ -362,7 +362,7 @@ describe Schools::RegisterMentorWizard::Wizard do
 
         context "when there is no matching contract period" do
           let(:started_on) { Date.new(2024, 7, 1) }
-  
+
           it do
             expect(subject).to eq(%i[find_mentor
                                      national_insurance_number

@@ -3,10 +3,9 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
 
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :started_on, store:) }
   let(:store) do
-     FactoryBot.build(:session_repository,
-                        mentoring_at_new_school_only: mentoring_only,
-                        previous_school_mentor_at_school_periods: []
-  ) 
+    FactoryBot.build(:session_repository,
+                     mentoring_at_new_school_only: mentoring_only,
+                     previous_school_mentor_at_school_periods: [])
   end
 
   let(:mentoring_only) { "no" }
@@ -60,7 +59,6 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
       allow(wizard.mentor).to receive(:provider_led_ect?).and_return(provider_led)
       allow(wizard.mentor).to receive(:became_ineligible_for_funding?).and_return(ineligible)
       allow(wizard.mentor).to receive(:previous_training_period).and_return(previous_training_period)
-
     end
 
     context "when mentor is ineligible for funding" do
@@ -97,7 +95,7 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
       let(:mentoring_only) { "yes" }
 
       it "works" do
-        expect(step.previous_step).to eq(:mentoring_at_new_school_only) 
+        expect(step.previous_step).to eq(:mentoring_at_new_school_only)
       end
     end
 

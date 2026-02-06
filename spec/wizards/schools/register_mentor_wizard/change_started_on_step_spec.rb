@@ -6,8 +6,7 @@ RSpec.describe Schools::RegisterMentorWizard::ChangeStartedOnStep do
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :started_on, store:) }
   let(:store) do
     FactoryBot.build(:session_repository,
-                        mentoring_at_new_school_only: mentoring_only
-  ) 
+                     mentoring_at_new_school_only: mentoring_only)
   end
 
   let(:mentoring_only) { "no" }
@@ -19,12 +18,12 @@ RSpec.describe Schools::RegisterMentorWizard::ChangeStartedOnStep do
   let(:contract_period_enabled?) { contract_period.enabled }
   let(:currently_mentor_at_another_school) { false }
 
-  it_behaves_like "a started on step", current_step: :started_on 
+  it_behaves_like "a started on step", current_step: :started_on
 
   describe "#next_step" do
     it { expect(step.previous_step).to eq(:check_answers) }
   end
-  
+
   describe "#previous_step" do
     it { expect(step.previous_step).to eq(:check_answers) }
   end

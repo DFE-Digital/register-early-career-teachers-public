@@ -87,8 +87,8 @@ module Schools
             steps << :lead_provider unless mentor.use_same_programme_choices == "yes"
             steps << :review_mentor_eligibility if mentor.eligible_for_funding?
             steps << :eligibility_lead_provider if mentor.eligible_for_funding?
-            
-            if !mentor.contract_period_enabled?
+
+            if !mentor.contract_period_enabled? || store.revised_start_date_in_closed_contract_period
               steps << :cannot_register_mentor_yet
               return steps
             end

@@ -1,12 +1,10 @@
 RSpec.shared_examples "a started on step" do |current_step:|
-
   subject(:step) { described_class.new(wizard:, started_on:) }
 
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :started_on, store:) }
   let(:store) do
-     FactoryBot.build(:session_repository,
-                        previous_school_mentor_at_school_periods: []
-  ) 
+    FactoryBot.build(:session_repository,
+                     previous_school_mentor_at_school_periods: [])
   end
 
   let(:ineligible) { false }
