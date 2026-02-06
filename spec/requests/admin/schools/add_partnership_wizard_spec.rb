@@ -132,25 +132,11 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
     end
 
     it "shows an error when the partnership already exists" do
-      post(
-        path_for_step("select-contract-period"),
-        params: { select_contract_period: { contract_period_year: contract_period.year } }
+      FactoryBot.create(
+        :school_partnership,
+        school:,
+        lead_provider_delivery_partnership:
       )
-      follow_redirect!
-
-      post(
-        path_for_step("select-lead-provider"),
-        params: { select_lead_provider: { active_lead_provider_id: active_lead_provider.id } }
-      )
-      follow_redirect!
-
-      post(
-        path_for_step("select-delivery-partner"),
-        params: { select_delivery_partner: { delivery_partner_id: delivery_partner.id } }
-      )
-      follow_redirect!
-
-      post path_for_step("check-answers"), params: { check_answers: {} }
 
       post(
         path_for_step("select-contract-period"),
