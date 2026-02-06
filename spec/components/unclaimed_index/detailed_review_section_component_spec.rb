@@ -26,7 +26,7 @@ RSpec.describe UnclaimedIndex::DetailedReviewSectionComponent, type: :component 
 
   it "displays the number of missing QTS records" do
     expect(page).to have_css("h3", text: "3")
-    expect(page).to have_css(".govuk-body", text: "No QTS award")
+    expect(page).to have_css(".govuk-body", text: "No QTS")
   end
 
   it "displays the number of records claimed by another appropriate body" do
