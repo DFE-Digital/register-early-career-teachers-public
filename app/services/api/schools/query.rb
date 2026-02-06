@@ -61,12 +61,13 @@ module API::Schools
     def or_where_school_partnership_exists(contract_period_year)
       return if ignore?(filter: contract_period_year)
 
-      @scope = scope.or(
-        School
-          .where(id: School.select("schools.id")
-          .joins(school_partnerships: { lead_provider_delivery_partnership: { active_lead_provider: :contract_period } })
-          .where(contract_periods: { year: contract_period_year }))
-      ).distinct
+      @scope = scope.or(School.where(id: school_ids_with_partnership(contract_period_year))).distinct
+    end
+
+    def school_ids_with_partnership(contract_period_year)
+      Metadata::SchoolContractPeriod
+        .where(contract_period_year:, in_partnership: true)
+        .select(:school_id)
     end
 
     def where_urn_is(urn)
