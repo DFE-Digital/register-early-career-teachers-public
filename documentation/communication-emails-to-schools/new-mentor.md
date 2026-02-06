@@ -10,7 +10,7 @@ Automatically triggered when mentor first registered and assigned to an ECT.
 
 Email to mentors to:
 
-- let them know they've been registered as a mentor  
+- let them know they’ve been registered as a mentor  
 - let them know what this means for them  
 - let them know that they might be able to get training
 - provide support and privacy statement links 

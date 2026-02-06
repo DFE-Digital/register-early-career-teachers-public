@@ -10,8 +10,8 @@ Automatically triggered on completed provider-led ECT registration in the servic
 
 Email to ECTs to:
 
-- let them know they've been registered for training  
-- let them know what they'll get  
+- let them know they’ve been registered for training  
+- let them know what they’ll get  
 - provide support and privacy statement links 
 
 ---
