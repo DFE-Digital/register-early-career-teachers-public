@@ -22,3 +22,6 @@ Emails sent automatically from within the service, triggered by a particular act
 
 [New ECT registered (provider-led)](/communication-emails-to-schools/new-ect-provider-led)
 
+[New ECT registered (school-led)](/communication-emails-to-schools/new-ect-school-led)
+
+
