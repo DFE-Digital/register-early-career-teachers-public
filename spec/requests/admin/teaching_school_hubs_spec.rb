@@ -1,0 +1,61 @@
+RSpec.describe "Admin::TeachingSchoolHubsController", type: :request do
+  let!(:teaching_school_hub) do
+    FactoryBot.create(:teaching_school_hub)
+  end
+
+  describe "GET /index" do
+    context "when signed in as admin" do
+      include_context "sign in as DfE user"
+
+      it "returns http success" do
+        get "/admin/organisations/teaching-school-hubs"
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include(teaching_school_hub.name)
+      end
+    end
+
+    context "when signed in as a non-DfE user" do
+      include_context "sign in as non-DfE user"
+
+      it "requires authorisation" do
+        get "/admin/organisations/teaching-school-hubs"
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "when not signed in" do
+      it "redirects to sign in" do
+        get "/admin/organisations/teaching-school-hubs"
+        expect(response).to redirect_to("/sign-in")
+      end
+    end
+  end
+
+  describe "GET /show" do
+    context "when signed in as admin" do
+      include_context "sign in as DfE user"
+
+      it "returns http success" do
+        get "/admin/organisations/teaching-school-hubs/#{teaching_school_hub.id}"
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include(teaching_school_hub.name)
+      end
+    end
+
+    context "when signed in as a non-DfE user" do
+      include_context "sign in as non-DfE user"
+
+      it "requires authorisation" do
+        get "/admin/organisations/teaching-school-hubs/#{teaching_school_hub.id}"
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "when not signed in" do
+      it "redirects to sign in" do
+        get "/admin/organisations/teaching-school-hubs/#{teaching_school_hub.id}"
+        expect(response).to redirect_to("/sign-in")
+      end
+    end
+  end
+end
