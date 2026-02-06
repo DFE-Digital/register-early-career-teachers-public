@@ -17,6 +17,7 @@ class Declaration < ApplicationRecord
   has_one :ect_teacher, through: :ect_at_school_period, source: :teacher
   has_one :mentor_at_school_period, through: :training_period
   has_one :mentor_teacher, through: :mentor_at_school_period, source: :teacher
+  has_many :events
 
   # Enums
   enum :payment_status,
