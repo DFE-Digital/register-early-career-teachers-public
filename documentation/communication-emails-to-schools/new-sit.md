@@ -8,7 +8,7 @@ Automatically triggered by change of induction tutor.
 
 ## Why
 
-Email to induction tutor to:
+Email to the new induction tutor to:
 
 - let them know they are the induction tutor  
 - let them know what it means for them  
