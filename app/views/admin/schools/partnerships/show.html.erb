@@ -14,4 +14,9 @@
 
 <h2 class="govuk-heading-m">Partnerships</h2>
 
+<%= govuk_button_link_to(
+  "Add partnership",
+  admin_schools_add_partnership_wizard_select_contract_period_path(@school.urn)
+) %>
+
 <%= render Admin::Schools::PartnershipsSummaryComponent.new(school: @school) %>
