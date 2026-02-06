@@ -13,15 +13,19 @@ module API::Concerns::Teachers
       attribute :teacher_type
 
       validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
-      validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
-      validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }
-
       validate :lead_provider_exists
-      validate :teacher_training_exists
-      validates :teacher_type, inclusion: {
-        in: TEACHER_TYPES,
-        message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
-      }, allow_blank: true
+
+      validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
+      validate :teacher_exists
+
+      validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }
+      validates :teacher_type,
+                inclusion: {
+                  in: TEACHER_TYPES,
+                  message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
+                },
+                allow_blank: true
+      validate :teacher_type_exists
     end
 
   private
@@ -41,11 +45,18 @@ module API::Concerns::Teachers
       errors.add(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.")
     end
 
-    def teacher_training_exists
+    def teacher_exists
       return if errors[:teacher_api_id].any?
-      return if training_period
+      return if teacher
 
       errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
+    end
+
+    def teacher_type_exists
+      return if errors[:teacher_type].any?
+      return if training_period
+
+      errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
     end
 
     def metadata
