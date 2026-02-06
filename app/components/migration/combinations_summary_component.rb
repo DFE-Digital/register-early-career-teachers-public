@@ -1,8 +1,9 @@
 class Migration::CombinationsSummaryComponent < Migration::BaseComponent
-  attr_reader :totals
+  attr_reader :totals, :data_downloadable
 
-  def initialize(totals)
+  def initialize(totals, data_downloadable: true)
     @totals = totals
+    @data_downloadable = data_downloadable
   end
 
   def number_of_ect_combinations_processed = totals.total_ecf1_ect_combinations.to_i

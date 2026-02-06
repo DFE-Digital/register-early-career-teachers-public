@@ -38,7 +38,8 @@
   end
 end %>
 
-<%= govuk_button_link_to('Download detected ecf1 combinations 💅', migration_download_detected_ecf1_combinations_path, class: "da-pink-button") %>
-<%= govuk_button_link_to('Download ecf2 migrated combinations 💅', migration_download_ecf2_migrated_combinations_path, class: "da-pink-button") %>
-<%= govuk_button_link_to('Download failed combinations 💅', migration_download_failed_combinations_path, class: "da-pink-button") %>
-
+<% if data_downloadable %>
+  <%= govuk_button_link_to('Download detected ecf1 combinations 💅', migration_download_detected_ecf1_combinations_path, class: "da-pink-button") %>
+  <%= govuk_button_link_to('Download ecf2 migrated combinations 💅', migration_download_ecf2_migrated_combinations_path, class: "da-pink-button") %>
+  <%= govuk_button_link_to('Download failed combinations 💅', migration_download_failed_combinations_path, class: "da-pink-button") %>
+<% end %>
