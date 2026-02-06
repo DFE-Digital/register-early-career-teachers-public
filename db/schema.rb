@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_05_145833) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_06_151825) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -383,6 +383,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_05_145833) do
     t.boolean "in_england", null: false
     t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((postcode)::text, ''::text)) || ' '::text) || COALESCE((urn)::text, ''::text)))", stored: true
     t.boolean "eligible", default: false, null: false
+    t.index ["eligible"], name: "index_gias_schools_on_eligible"
     t.index ["name"], name: "index_gias_schools_on_name"
     t.index ["search"], name: "index_gias_schools_on_search", using: :gin
     t.index ["ukprn"], name: "index_gias_schools_on_ukprn", unique: true
@@ -692,8 +693,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_05_145833) do
     t.integer "induction_tutor_last_nominated_in"
     t.boolean "marked_as_eligible", default: false, null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
+    t.index ["api_updated_at"], name: "index_schools_on_api_updated_at"
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
+    t.index ["marked_as_eligible"], name: "index_schools_on_marked_as_eligible"
     t.index ["urn"], name: "schools_unique_urn", unique: true
   end
 
