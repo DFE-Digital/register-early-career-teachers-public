@@ -187,3 +187,10 @@ $_current-link-border-width: govuk-spacing(1);
     }
   }
 }
+
+.app-mono {
+  padding: 2px 5px;
+  font-family: monospace;
+  background-color: $govuk-template-background-colour;
+  white-space: pre-wrap;
+}
