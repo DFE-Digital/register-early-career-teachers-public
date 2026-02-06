@@ -76,6 +76,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
     context "when the last induction period is ongoing" do
       let(:number_of_terms) { nil }
       let(:finished_on) { nil }
+      let(:outcome) { nil }
 
       it "raises an error" do
         expect { service.reopen_induction_period! }
@@ -97,7 +98,7 @@ RSpec.describe Admin::ReopenInductionPeriod do
         FactoryBot.create(
           :induction_period,
           teacher:,
-          outcome:,
+          outcome: nil,
           number_of_terms: 2,
           started_on: "2024-01-01",
           finished_on: "2024-06-30"

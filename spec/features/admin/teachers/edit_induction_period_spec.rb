@@ -75,7 +75,11 @@ RSpec.describe "Admin editing an induction" do
   end
 
   scenario "Can edit induction period with outcome" do
-    induction_period.update!(outcome: "pass")
+    induction_period.update!(
+      outcome: "pass",
+      finished_on: 1.month.ago,
+      number_of_terms: 3
+    )
 
     given_i_am_on_the_teacher_induction_page
     then_i_should_see_the_edit_link
