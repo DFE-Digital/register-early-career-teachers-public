@@ -1,43 +1,43 @@
-# New ECT registered (school-led)
+# New mentor registered
 
 ---
 
 ## When
 
-Automatically triggered on completed school-led ECT registration in the service
+Automatically triggered when mentor first registered and assigned to an ECT.
+
 ## Why
 
-Email to ECTs to:
+Email to mentors to:
 
-- let them know they've been registered for training  
-- let them know what they'll get  
+- let them know they've been registered as a mentor  
+- llet them know what this means for them  
+- let them know that they might be able to get training
 - provide support and privacy statement links 
 
 ---
 
-### Subject: You’ve been registered for early career teacher training and support
+### Subject: You’ve been registered as a mentor for early career teachers at ((school))
 
 ---
 
-Hello ((early_career_teacher_name)),
+Hello ((mentor_name)),
 
-((school)) has registered you for a training programme for early career teachers (ECTs).
+You’ve been registered as a mentor for early career teachers (ECTs) at ((school)).
 
-The training is part of your 2-year early career teacher entitlement (ECTE). It aims to support you during your first years as a qualified teacher.
+## What this means
 
-You’ll get:
+You’ll support ECTs at your school as part of their early career teacher entitlement (ECTE). Your school induction tutor will assign ECTs to you.
 
-- early career training 
-- support from a mentor at your school 
-- time off from your timetable to take part in training activities
+## Mentor training
 
-## Your training programme
-
-Your school is designing and delivering its own training programme (we call this ‘school-led’). Your school’s induction tutor or your mentor will tell you about your programme.
+If your school is using a ‘provider-led’ training programme, you might get up to 20 hours of mentor training. Speak to your school’s induction tutor about mentor training.
 
 ## Help and information
 
-You can read more about ECT training and support in our [ECT guidance](https://www.gov.uk/government/publications/early-career-teachers-your-training-and-support-entitlement).
+You can find out more about being an ECT mentor with our [mentors guidance](https://www.gov.uk/government/publications/early-career-teacher-entitlement-roles-and-responsibilities/mentors-responsibilities-for-early-career-teacher-entitlement).</p>
+
+Speak to your school’s induction tutor if you have questions about how ECTE works at your school.
 
 ## Your information and privacy
 
