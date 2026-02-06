@@ -3,16 +3,12 @@ module Admin
     class AddPartnershipWizardController < AdminController
       layout "full"
 
-      include Wizards::SessionTTL
-
-      FORM_KEY_PREFIX = "admin_schools_add_partnership_wizard"
+      FORM_KEY = "admin_schools_add_partnership_wizard"
 
       before_action :set_school
-      before_action :expire_store_if_stale
       before_action :initialize_wizard
       before_action :check_allowed_step
       before_action :reset_store_on_entry
-      before_action :touch_store
 
       def new
         render current_step
@@ -43,7 +39,7 @@ module Admin
       end
 
       def store
-        @store ||= SessionRepository.new(session:, form_key:)
+        @store ||= SessionRepository.new(session:, form_key: FORM_KEY)
       end
 
       def current_step
@@ -71,10 +67,6 @@ module Admin
 
       def wizard_class
         Admin::Schools::AddPartnershipWizard::Wizard
-      end
-
-      def form_key
-        "#{FORM_KEY_PREFIX}_#{@school.urn}"
       end
 
       def reset_store_on_entry
