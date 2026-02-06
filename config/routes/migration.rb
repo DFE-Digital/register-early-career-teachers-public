@@ -14,6 +14,10 @@ namespace :migration do
   resource :legacy_profile_gantt, only: :show, controller: "legacy_profile_gantt"
   resource :new_gantt, only: :show, controller: "new_gantt"
   get "download-induction-records", action: :download, controller: :induction_record_export
+  get "download-failed-combinations", action: :download, controller: :failed_combinations_export
+  get "download-teacher-combinations", action: :download, controller: :teacher_combinations_export
+  get "download-detected-ecf1-combinations", action: :download, controller: :detected_ecf1_combinations_export
+  get "download-ecf2-migrated-combinations", action: :download, controller: :ecf2_migrated_combinations_export
 
   constraints -> { Rails.application.config.parity_check[:enabled] } do
     resources :parity_checks, path: "parity-checks", only: %i[new create show], param: :run_id do

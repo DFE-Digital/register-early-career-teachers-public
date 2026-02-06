@@ -22,7 +22,7 @@ ECF2TeacherHistory::Combination = Struct.new(
   :updated_at,
   keyword_init: true
 ) do
-  def summary = [school_urn, cohort_year, lead_provider_name].join(": ")
+  def summary = "<#{[induction_record_id, school_urn, cohort_year, lead_provider_name].join(': ')}>"
 
   def self.from_induction_record(trn:, profile_id:, profile_type:, induction_record:, **overrides)
     new(
@@ -48,6 +48,8 @@ ECF2TeacherHistory::Combination = Struct.new(
       created_at: induction_record.created_at,
       updated_at: induction_record.updated_at,
       **overrides
-    )
+    ).tap do |combination|
+      combination.lead_provider_name = "school_led" if combination.training_programme.to_s == "school_led"
+    end
   end
 end
