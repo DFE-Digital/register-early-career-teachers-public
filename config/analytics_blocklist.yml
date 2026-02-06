@@ -614,9 +614,27 @@
   - failure_message
   - created_at
   - updated_at
-  :contract_fee_structure_flat_rates:
+  :contract_flat_rate_fee_structures:
   - id
   - recruitment_target
   - fee_per_declaration
   - created_at
   - updated_at
+  :contract_banded_fee_structures:
+  - id
+  - recruitment_target
+  - uplift_fee_per_declaration
+  - monthly_service_fee
+  - setup_fee
+  - created_at
+  - updated_at
+  :contract_banded_fee_structure_bands:
+   - id
+   - banded_fee_structure_id
+   - min_declarations
+   - max_declarations
+   - fee_per_declaration
+   - output_fee_ratio
+   - service_fee_ratio
+   - created_at
+   - updated_at

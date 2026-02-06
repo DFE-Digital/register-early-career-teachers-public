@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_03_150039) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_05_145833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -133,7 +133,28 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_150039) do
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
   end
 
-  create_table "contract_fee_structure_flat_rates", force: :cascade do |t|
+  create_table "contract_banded_fee_structure_bands", force: :cascade do |t|
+    t.bigint "banded_fee_structure_id", null: false
+    t.integer "min_declarations", default: 1, null: false
+    t.integer "max_declarations", null: false
+    t.integer "fee_per_declaration", null: false
+    t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
+    t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
+  end
+
+  create_table "contract_banded_fee_structures", force: :cascade do |t|
+    t.integer "recruitment_target", null: false
+    t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
+    t.decimal "monthly_service_fee", precision: 12, scale: 2, null: false
+    t.decimal "setup_fee", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "contract_flat_rate_fee_structures", force: :cascade do |t|
     t.integer "recruitment_target", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
     t.datetime "created_at", null: false
@@ -951,6 +972,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_150039) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
