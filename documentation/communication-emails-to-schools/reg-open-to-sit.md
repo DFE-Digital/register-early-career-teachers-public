@@ -33,7 +33,7 @@ You can now register early career teachers (ECTs) and mentors for the 2026-2027 
 
 ## DfE Sign-in account and service access
 
-If you do not have a DfE Sign-in account,[you can create](https://services.signin.education.gov.uk).
+If you do not have a DfE Sign-in account, [you can create one](https://services.signin.education.gov.uk).
 
 If you do not have access to the service, you can request it from your school or organisation’s approver using your DfE Sign-in account.
 
