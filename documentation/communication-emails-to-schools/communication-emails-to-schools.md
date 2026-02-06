@@ -17,3 +17,5 @@ Emails sent from outside of the service to school induction tutors.
 ## In service
 
 Emails sent automatically from within the service, triggered by a particular action.
+
+[New school induction tutor](/communication-emails-to-schools/new-sit)
