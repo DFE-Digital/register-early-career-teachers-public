@@ -150,13 +150,20 @@ RSpec.describe "Sessions", type: :request do
     end
 
     context "when using an appropriate body persona" do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body).id.to_s }
-      let(:params) { { email:, name:, appropriate_body_id: } }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:params) { { email:, name: } }
 
       it "authenticates and redirects to the appropriate body home page" do
         allow(Sessions::Users::AppropriateBodyPersona).to receive(:new).and_call_original
-        post("/auth/persona/callback", params:)
-        expect(Sessions::Users::AppropriateBodyPersona).to have_received(:new).with(**params).once
+
+        post("/auth/persona/callback", params:
+          { **params, appropriate_body_period_id: appropriate_body_period.id })
+
+        expect(Sessions::Users::AppropriateBodyPersona).to have_received(:new).with({
+          **params,
+          appropriate_body_period_id: appropriate_body_period.id.to_s
+        }).once
+
         expect(response).to redirect_to(ab_teachers_path)
       end
     end

@@ -10,18 +10,18 @@
 class Teachers::Manage
   class AlreadyFlagged < StandardError; end
 
-  attr_reader :author, :teacher, :appropriate_body
+  attr_reader :author, :teacher, :appropriate_body_period
 
-  def initialize(author:, teacher:, appropriate_body:)
+  def initialize(author:, teacher:, appropriate_body_period:)
     @author = author
     @teacher = teacher
-    @appropriate_body = appropriate_body
+    @appropriate_body_period = appropriate_body_period
   end
 
   private_class_method :new
 
   def self.system_update(teacher:)
-    new(teacher:, author: Events::SystemAuthor.new, appropriate_body: nil)
+    new(teacher:, author: Events::SystemAuthor.new, appropriate_body_period: nil)
   end
 
   def self.find_or_initialize_by(trn:, trs_first_name:, trs_last_name:, event_metadata:)
@@ -133,13 +133,13 @@ private
   def record_name_change_event(old_name, new_name)
     return if old_name == new_name
 
-    Events::Record.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_name:, new_name:)
+    Events::Record.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body_period:, old_name:, new_name:)
   end
 
   def record_induction_status_change_event(old_induction_status, new_induction_status)
     return if old_induction_status == new_induction_status
 
-    Events::Record.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
+    Events::Record.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body_period:, old_induction_status:, new_induction_status:)
   end
 
   def record_teacher_trs_attribute_update(modifications:)

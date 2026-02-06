@@ -8,7 +8,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
   include_context "test TRS API returns a teacher"
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+    FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body_period:)
   end
 
   let(:pending_induction_submission) do
@@ -19,7 +19,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
                       outcome: "pass")
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:author_email) { "barry@not-a-clue.co.uk" }
   let(:author_name) { "Barry Cryer" }
   let(:teacher) { pending_induction_submission.teacher }
@@ -27,7 +27,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
 
   before do
     FactoryBot.create(:teacher, trn: pending_induction_submission.trn)
-    FactoryBot.create(:induction_period, :ongoing, teacher: pending_induction_submission.teacher, appropriate_body:)
+    FactoryBot.create(:induction_period, :ongoing, teacher: pending_induction_submission.teacher, appropriate_body_period:)
   end
 
   it "records an outcome for the induction", :aggregate_failures do
@@ -47,7 +47,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
     perform_enqueued_jobs
 
     expect(Events::Record).to have_received(:record_teacher_passes_induction_event!).with(
-      appropriate_body:,
+      appropriate_body_period:,
       teacher:,
       induction_period:,
       author: an_instance_of(::Events::AppropriateBodyBatchAuthor)

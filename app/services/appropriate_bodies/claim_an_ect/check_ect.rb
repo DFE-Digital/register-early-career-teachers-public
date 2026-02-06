@@ -4,10 +4,10 @@ module AppropriateBodies
       class TeacherHasOngoingInductionPeriodWithAnotherAB < StandardError
       end
 
-      attr_reader :appropriate_body, :pending_induction_submission
+      attr_reader :appropriate_body_period, :pending_induction_submission
 
-      def initialize(appropriate_body:, pending_induction_submission:)
-        @appropriate_body = appropriate_body
+      def initialize(appropriate_body_period:, pending_induction_submission:)
+        @appropriate_body_period = appropriate_body_period
         @pending_induction_submission = pending_induction_submission
       end
 
@@ -35,7 +35,7 @@ module AppropriateBodies
 
         return unless ongoing_induction_period
 
-        if ongoing_induction_period.appropriate_body != appropriate_body
+        if ongoing_induction_period.appropriate_body_period != appropriate_body_period
           raise TeacherHasOngoingInductionPeriodWithAnotherAB
         end
       end

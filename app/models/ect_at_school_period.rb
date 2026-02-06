@@ -5,7 +5,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
   belongs_to :teacher, inverse_of: :ect_at_school_periods
-  belongs_to :school_reported_appropriate_body, class_name: "AppropriateBody"
+  belongs_to :school_reported_appropriate_body, class_name: "AppropriateBodyPeriod"
 
   has_many :mentorship_periods, inverse_of: :mentee, dependent: :destroy
   has_many :mentors, through: :mentorship_periods, source: :mentor
@@ -72,7 +72,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
         LEFT OUTER JOIN induction_periods
           ON induction_periods.teacher_id = ect_at_school_periods.teacher_id
           AND induction_periods.finished_on IS NULL
-          AND induction_periods.appropriate_body_id = ect_at_school_periods.school_reported_appropriate_body_id
+          AND induction_periods.appropriate_body_period_id = ect_at_school_periods.school_reported_appropriate_body_id
       SQL
       .where(induction_periods: { id: nil })
   }

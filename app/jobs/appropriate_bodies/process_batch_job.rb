@@ -39,7 +39,7 @@ module AppropriateBodies
       Events::AppropriateBodyBatchAuthor.new(
         email:,
         name:,
-        appropriate_body_id: pending_induction_submission_batch.appropriate_body.id,
+        appropriate_body_period_id: pending_induction_submission_batch.appropriate_body_period.id,
         batch_id: pending_induction_submission_batch.id
       )
     end

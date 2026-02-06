@@ -5,7 +5,7 @@ RSpec.describe InductionPeriods::FullTransferInductionPeriods, :aggregate_failur
     it "transfers full inductions only" do
       expect(InductionPeriod.count).to be 5
 
-      expect(InductionPeriod.all.map(&:appropriate_body).uniq).to eq([
+      expect(InductionPeriod.all.map(&:appropriate_body_period).uniq).to eq([
         current_appropriate_body
       ])
 
@@ -22,7 +22,7 @@ RSpec.describe InductionPeriods::FullTransferInductionPeriods, :aggregate_failur
       expect(InductionPeriod.count).to be 5
 
       # transfers inductions
-      expect(InductionPeriod.all.map(&:appropriate_body)).to eq([
+      expect(InductionPeriod.all.map(&:appropriate_body_period)).to eq([
         current_appropriate_body,
         current_appropriate_body,
         current_appropriate_body,

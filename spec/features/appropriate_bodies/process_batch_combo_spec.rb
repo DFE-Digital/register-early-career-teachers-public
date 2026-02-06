@@ -3,12 +3,12 @@ RSpec.describe "Process batch events" do
 
   include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
-  let(:appropriate_body) do
+  let(:appropriate_body_period) do
     FactoryBot.create(:appropriate_body, name: "The Appropriate Body")
   end
 
   before do
-    sign_in_as_appropriate_body_user(appropriate_body:)
+    sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period)
   end
 
   scenario "upload claim CSV then action CSV", :aggregate_failures do
@@ -157,9 +157,9 @@ RSpec.describe "Process batch events" do
     page.get_by_role("link", name: "Go back to your overview").click
     expect(page.get_by_text("valid_complete_action.csv")).to be_visible
 
-    # All events link to the batch and appropriate body
+    # All events link to the batch and appropriate body period
     Event.all.map do |event|
-      expect(event.pending_induction_submission_batch.appropriate_body.id).to eq(appropriate_body.id)
+      expect(event.pending_induction_submission_batch.appropriate_body_period.id).to eq(appropriate_body_period.id)
     end
   end
 
