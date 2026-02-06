@@ -7,6 +7,7 @@ namespace :appropriate_bodies, path: "appropriate-body", as: :ab do
     match "open", to: "teachers#index", via: :get, on: :collection, as: "open", defaults: { status: "open" }
 
     resources :induction_periods, only: %i[edit update], path: "induction-periods"
+
     scope module: :teachers do
       resource :release_ect, only: %i[new create show], path: "release", controller: :record_released_induction
       resource :record_passed_outcome, only: %i[new create show], path: "record-passed-outcome", controller: :record_passed_induction
