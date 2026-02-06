@@ -85,8 +85,6 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     then_i_should_be_taken_to_the_confirmation_page
   end
 
-  # TODO: will this change the school partnership bits???
-
   def and_i_enter_a_valid_start_date
     @mentor_start_date = 2.days.ago.to_date
     page.get_by_label("Day").fill(@mentor_start_date.day.to_s)

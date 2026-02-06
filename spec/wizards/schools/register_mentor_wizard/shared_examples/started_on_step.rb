@@ -1,7 +1,7 @@
 RSpec.shared_examples "a started on step" do |current_step:|
   subject(:step) { described_class.new(wizard:, started_on:) }
 
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step: :started_on, store:) }
+  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
   let(:store) do
     FactoryBot.build(:session_repository,
                      previous_school_mentor_at_school_periods: [])
@@ -52,10 +52,6 @@ RSpec.shared_examples "a started on step" do |current_step:|
   end
 
   describe "#next_step" do
-    before do
-      allow(wizard.mentor).to receive(:contract_period_enabled?).and_return(contract_period_enabled?)
-    end
-
     context "when contract period is not open yet" do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
 
