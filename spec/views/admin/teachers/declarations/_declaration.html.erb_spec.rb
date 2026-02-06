@@ -84,16 +84,13 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
       it { is_expected.to have_content("State history") }
 
       it "displays the state history table" do
-        # n.b. has_table? won't match <th>
-        within "table" do
-          within "tr:nth-child(1)" do
-            is_expected.to have_css("th", text: "Submitted")
-            is_expected.to have_css("td", text: "15 January 2024, 12:00pm")
-          end
-          within "tr:nth-child(2)" do
-            is_expected.to have_css("Voided")
-            is_expected.to have_css("16 January 2024, 12:00pm")
-          end
+        within "table tbody tr:nth-child(1)" do
+          expect(page).to have_css("th", text: "Submitted")
+          expect(page).to have_css("td", text: "15 January 2024, 12:00pm")
+        end
+        within "table tbody tr:nth-child(2)" do
+          expect(page).to have_css("th", text: "Voided")
+          expect(page).to have_css("td", text: "16 January 2024, 12:00pm")
         end
       end
     end
