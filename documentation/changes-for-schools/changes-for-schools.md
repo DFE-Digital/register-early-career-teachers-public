@@ -72,7 +72,7 @@ This applies to their working pattern as an ECT only. For example, if the ECT wo
 
 ### ECT start date
 
-We ask when the person started at the school as an ECT, not when they started before becoming an ECT. For example, as an unqualified or trainee teacher.
+We ask when the person started at the school as an ECT, not when they started before becoming an ECT. For example, if they started as an unqualified or trainee teacher.
 
 <a href="../images/ect-start-date.png" target="blank"><img alt="Enter the ECT's start date when adding to the service" src="../images/ect-start-date.png" width="300"/></a>
 
