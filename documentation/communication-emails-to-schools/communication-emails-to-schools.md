@@ -19,3 +19,6 @@ Emails sent from outside of the service to school induction tutors.
 Emails sent automatically from within the service, triggered by a particular action.
 
 [New school induction tutor](/communication-emails-to-schools/new-sit)
+
+[New ECT registered (provider-led)](/communication-emails-to-schools/new-ect-provider-led)
+
