@@ -1,0 +1,323 @@
+RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
+  include_context "test TRS API returns a teacher"
+  include SchoolPartnershipHelpers
+
+  around do |example|
+    travel_to(Time.zone.local(2026, 2, 3)) do
+      example.run
+    end
+  end
+
+  let(:trn) { "3002586" }
+
+  scenario "mentor has existing mentorship, and is required to enter a start date at this school" do
+    given_there_is_a_school_in_the_service
+    and_we_are_less_than_four_months_from_the_end_of_the_current_contract_period
+    and_the_next_contract_period_is_closed
+    and_there_is_an_ect_with_no_mentor_registered_at_the_school
+    and_mentor_has_existing_mentorship_at_another_school
+    and_i_sign_in_as_that_school_user
+    and_i_am_on_the_schools_landing_page
+
+    when_i_click_to_assign_a_mentor_to_the_ect
+    then_i_am_in_the_requirements_page
+
+    when_i_click_continue
+    then_i_should_be_taken_to_the_find_mentor_page
+
+    when_i_submit_the_find_mentor_form
+    then_i_should_be_taken_to_the_review_mentor_details_page
+    and_i_should_see_the_mentor_details_in_the_review_page
+    and_i_select_yes
+    and_i_click_continue
+
+    when_i_enter_the_mentor_email_address
+    and_i_click_continue
+    then_i_should_be_taken_to_mentoring_at_your_school_only_page
+    when_i_select_yes_they_will_be_mentoring_at_our_school_only
+
+    then_i_should_be_taken_to_mentor_start_date_page
+    when_i_enter_a_start_date_more_than_four_months_in_the_future
+    and_i_click_continue
+
+    then_i_see_a_validation_error_message
+    when_i_enter_a_date_in_a_closed_contract_period
+    and_i_click_continue
+    then_i_should_be_taken_the_cannot_register_mentor_yet_page
+
+    when_i_click_back
+    then_i_should_be_taken_to_mentor_start_date_page
+    and_i_enter_a_valid_start_date
+    and_i_click_continue
+
+    then_i_should_be_taken_to_previous_training_period_details_page
+    and_i_should_see_previous_training_period_details
+    and_i_click_continue
+
+    then_i_should_be_taken_to_programme_choices_page
+    when_i_select_no_choose_lead_provider
+
+    then_i_should_be_taken_to_lead_provider_page
+    when_i_select_a_different_lead_provider
+
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_all_the_mentor_data_on_the_page
+    and_the_mentors_start_date_should_be_the_entered_date
+
+    when_i_try_to_change_the_start_date
+    then_i_should_be_taken_to_the_change_start_date_page
+
+    when_i_enter_a_date_in_a_closed_contract_period
+    and_i_click_continue
+    then_i_should_be_taken_the_cannot_register_mentor_yet_page
+
+    when_i_click_back
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_the_start_date_originally_entered
+
+    when_i_try_to_change_the_start_date
+    and_i_enter_a_different_valid_start_date
+    and_i_click_continue
+    then_i_should_be_taken_to_the_check_answers_page
+    and_i_should_see_the_new_start_date
+
+    when_i_click_confirm_details
+    then_i_should_be_taken_to_the_confirmation_page
+  end
+
+  # TODO: will this change the school partnership bits???
+
+  def and_i_enter_a_valid_start_date
+    @mentor_start_date = 2.days.ago.to_date
+    page.get_by_label("Day").fill(@mentor_start_date.day.to_s)
+    page.get_by_label("Month").fill(@mentor_start_date.month.to_s)
+    page.get_by_label("Year").fill(@mentor_start_date.year.to_s)
+  end
+
+  def and_i_enter_a_different_valid_start_date
+    @mentor_start_date = 1.day.ago.to_date
+    page.get_by_label("Day").fill(@mentor_start_date.day.to_s)
+    page.get_by_label("Month").fill(@mentor_start_date.month.to_s)
+    page.get_by_label("Year").fill(@mentor_start_date.year.to_s)
+  end
+
+  def when_i_enter_a_date_in_a_closed_contract_period
+    mentor_start_date = Date.new(2026, 6, 3)
+    page.get_by_label("Day").fill(mentor_start_date.day.to_s)
+    page.get_by_label("Month").fill(mentor_start_date.month.to_s)
+    page.get_by_label("Year").fill(mentor_start_date.year.to_s)
+  end
+
+  def when_i_enter_a_start_date_more_than_four_months_in_the_future
+    mentor_start_date = Date.new(2026, 6, 4)
+    page.get_by_label("Day").fill(mentor_start_date.day.to_s)
+    page.get_by_label("Month").fill(mentor_start_date.month.to_s)
+    page.get_by_label("Year").fill(mentor_start_date.year.to_s)
+  end
+
+  def when_i_try_to_change_the_start_date
+    page.get_by_role("link", name: "Change mentor start date").click
+  end
+
+  def then_i_should_be_taken_to_the_change_start_date_page
+    expect(page).to have_path("/school/register-mentor/change-started-on")
+  end
+
+  def then_i_should_be_taken_the_cannot_register_mentor_yet_page
+    expect(page).to have_path("/school/register-mentor/cannot-register-mentor-yet")
+  end
+
+  def then_i_see_a_validation_error_message
+    expect(page.locator(".govuk-error-summary")).to have_text("There is a problem")
+    expect(page.locator(".govuk-error-summary a").and(page.get_by_text("Start date must be before 4 June 2026"))).to be_visible
+  end
+
+  def given_there_is_a_school_in_the_service
+    @school = FactoryBot.create(:school, urn: "1234567")
+  end
+
+  def and_i_sign_in_as_that_school_user
+    sign_in_as_school_user(school: @school)
+  end
+
+  def and_we_are_less_than_four_months_from_the_end_of_the_current_contract_period
+    @contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2025, enabled: true)
+  end
+
+  def and_the_next_contract_period_is_closed
+    FactoryBot.create(:contract_period, :with_schedules, year: 2026, enabled: false)
+  end
+
+  def and_there_is_an_ect_with_no_mentor_registered_at_the_school
+    school_partnership_for_ect = make_partnership_for(@school, @contract_period, lead_provider_name: "Xavier's School for Gifted Youngsters")
+
+    @another_lead_provider = FactoryBot.create(:lead_provider, name: "Another lead provider")
+    FactoryBot.create(:active_lead_provider, lead_provider: @another_lead_provider, contract_period: @contract_period)
+
+    @ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school: @school)
+    @training_period = FactoryBot.create(
+      :training_period, :ongoing,
+      ect_at_school_period: @ect_at_school_period,
+      school_partnership: school_partnership_for_ect
+    )
+
+    @ect_name = Teachers::Name.new(@ect_at_school_period.teacher).full_name
+  end
+
+  def and_mentor_has_existing_mentorship_at_another_school
+    another_school = FactoryBot.create(:school, urn: "7654321")
+    @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: "Kirk", trs_last_name: "Van Houten", corrected_name: nil)
+    @existing_mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, school: another_school, teacher: @teacher)
+    school_partnership_for_prev_lp = make_partnership_for(another_school, @contract_period, lead_provider_name: "Mentor Prev LP")
+
+    @training_period = FactoryBot.create(
+      :training_period, :for_mentor, :provider_led, :ongoing,
+      mentor_at_school_period: @existing_mentor_at_school_period,
+      school_partnership: school_partnership_for_prev_lp,
+      started_on: @existing_mentor_at_school_period.started_on
+    )
+  end
+
+  def and_i_am_on_the_schools_landing_page
+    path = "/school/home/ects"
+    page.goto path
+    expect(page).to have_path(path)
+  end
+
+  def when_i_click_to_assign_a_mentor_to_the_ect
+    page.get_by_role("link", name: "Assign a mentor for this ECT").click
+  end
+
+  def then_i_am_in_the_requirements_page
+    expect(page.get_by_text("What you'll need to add a new mentor for #{@ect_name}")).to be_visible
+    expect(page.url).to end_with("/school/register-mentor/what-you-will-need?ect_id=#{@ect_at_school_period.id}")
+  end
+
+  def when_i_click_continue
+    page.get_by_role("link", name: "Continue").click
+  end
+
+  def then_i_should_be_taken_to_the_find_mentor_page
+    path = "/school/register-mentor/find-mentor"
+    expect(page).to have_path(path)
+  end
+
+  def when_i_submit_the_find_mentor_form
+    page.get_by_label("trn").fill(trn)
+    page.get_by_label("day").fill("3")
+    page.get_by_label("month").fill("2")
+    page.get_by_label("year").fill("1977")
+    page.get_by_role("button", name: "Continue").click
+  end
+
+  def then_i_should_be_taken_to_the_review_mentor_details_page
+    expect(page).to have_path("/school/register-mentor/review-mentor-details")
+  end
+
+  def and_i_should_see_the_mentor_details_in_the_review_page
+    expect(page.get_by_text(trn)).to be_visible
+    expect(page.get_by_text("Kirk Van Houten")).to be_visible
+    expect(page.get_by_text("3 February 1977")).to be_visible
+  end
+
+  def and_i_select_yes
+    page.get_by_label("Yes").check
+  end
+
+  def and_i_click_confirm_and_continue
+    page.get_by_role("button", name: "Confirm and continue").click
+  end
+
+  def then_i_should_be_taken_to_the_email_address_page
+    expect(page).to have_path("/school/register-mentor/email-address")
+  end
+
+  def when_i_enter_the_mentor_email_address
+    page.get_by_label("email").fill("example@example.com")
+  end
+
+  def and_i_click_continue
+    page.get_by_role("button", name: "Continue").click
+  end
+
+  def then_i_should_be_taken_to_mentoring_at_your_school_only_page
+    expect(page).to have_path("/school/register-mentor/mentoring-at-new-school-only")
+  end
+
+  def when_i_select_yes_they_will_be_mentoring_at_our_school_only
+    page.get_by_role(:radio, name: "Yes, they will be mentoring at our school only").check
+    page.get_by_role(:button, name: "Continue").click
+  end
+
+  def then_i_should_be_taken_to_mentor_start_date_page
+    expect(page).to have_path("/school/register-mentor/started-on")
+  end
+
+  def then_i_should_be_taken_to_previous_training_period_details_page
+    expect(page).to have_path("/school/register-mentor/previous-training-period-details")
+  end
+
+  def and_i_should_see_previous_training_period_details
+    expect(page.locator("dt", hasText: "School name")).to be_visible
+    expect(page.locator("dd", hasText: @training_period.school_partnership.school.name)).to be_visible
+    expect(page.locator("dt", hasText: "Lead provider")).to be_visible
+    expect(page.locator("dd", hasText: @training_period.school_partnership.lead_provider.name)).to be_visible
+    expect(page.locator("dt", hasText: "Delivery partner")).to be_visible
+    expect(page.locator("dd", hasText: @training_period.school_partnership.delivery_partner.name)).to be_visible
+  end
+
+  def then_i_should_be_taken_to_programme_choices_page
+    expect(page).to have_path("/school/register-mentor/programme-choices")
+  end
+
+  def when_i_select_no_choose_lead_provider
+    page.get_by_role(:radio, name: "No").check
+    page.get_by_role(:button, name: "Continue").click
+  end
+
+  def then_i_should_be_taken_to_lead_provider_page
+    expect(page).to have_path("/school/register-mentor/lead-provider")
+  end
+
+  def when_i_select_a_different_lead_provider
+    page.get_by_role(:radio, name: @another_lead_provider.name).check
+    page.get_by_role(:button, name: "Continue").click
+  end
+
+  def then_i_should_be_taken_to_the_check_answers_page
+    expect(page).to have_path("/school/register-mentor/check-answers")
+  end
+
+  def and_i_should_see_all_the_mentor_data_on_the_page
+    expect(page.locator("dt", hasText: "Teacher reference number (TRN)")).to be_visible
+    expect(page.locator("dd", hasText: trn)).to be_visible
+    expect(page.locator("dt", hasText: "Name")).to be_visible
+    expect(page.locator("dd", hasText: "Kirk Van Houten")).to be_visible
+    expect(page.locator("dt", hasText: "Email address")).to be_visible
+    expect(page.locator("dd", hasText: "example@example.com")).to be_visible
+    expect(page.locator("dt", hasText: "Mentoring only at your school")).to be_visible
+    expect(page.locator("dd", hasText: "Yes")).to be_visible
+    expect(page.locator("dt", hasText: "Lead provider")).to be_visible
+    expect(page.locator("dd", hasText: @another_lead_provider.name)).to be_visible
+  end
+
+  def and_the_mentors_start_date_should_be_the_entered_date
+    expect(page.locator("dt", hasText: "Mentor start date")).to be_visible
+    expect(page.locator("dd", hasText: @mentor_start_date.to_fs(:govuk))).to be_visible
+  end
+
+  alias_method :and_i_should_see_the_new_start_date, :and_the_mentors_start_date_should_be_the_entered_date
+  alias_method :and_i_should_see_the_start_date_originally_entered, :and_the_mentors_start_date_should_be_the_entered_date
+
+  def when_i_click_confirm_details
+    page.get_by_role("button", name: "Confirm details").click
+  end
+
+  def then_i_should_be_taken_to_the_confirmation_page
+    expect(page).to have_path("/school/register-mentor/confirmation")
+  end
+
+  def when_i_click_back
+    page.get_by_role("link", name: "Back", exact: true).click
+  end
+end
