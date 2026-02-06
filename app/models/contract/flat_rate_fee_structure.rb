@@ -1,5 +1,5 @@
-class Contract::FeeStructure::FlatRate < ApplicationRecord
-  self.table_name = :contract_fee_structure_flat_rates
+class Contract::FlatRateFeeStructure < ApplicationRecord
+  self.table_name = :contract_flat_rate_fee_structures
 
   validates :recruitment_target,
             presence: { message: "Recruitment target is required" },
