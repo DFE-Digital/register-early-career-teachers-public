@@ -1,6 +1,6 @@
-# Resources for release of Register ECTs
+# Register early career teachers service support
 
-Use the resources listed below to support the release of Register ECTs.
+Resources to help the support schools using the register early career teachers service.
 
-- [Changes for schools when Register ECTs releases](/changes-for-schools/changes-for-schools/)
+- [Changes in the service](/changes-for-schools/changes-for-schools/)
 - [Communication emails to schools](/communication-emails-to-schools/communication-emails-to-schools/)
