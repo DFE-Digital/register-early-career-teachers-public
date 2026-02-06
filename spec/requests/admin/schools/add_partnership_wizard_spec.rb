@@ -99,13 +99,15 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
   end
 
   describe "validation" do
-    it "requires selections on each step" do
+    it "requires a contract period selection" do
       post(
         path_for_step("select-contract-period"),
         params: { select_contract_period: { contract_period_year: "" } }
       )
       expect(response.body).to include("Select a contract period")
+    end
 
+    it "requires a lead provider selection" do
       post(
         path_for_step("select-contract-period"),
         params: { select_contract_period: { contract_period_year: contract_period.year } }
@@ -117,6 +119,14 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
         params: { select_lead_provider: { active_lead_provider_id: "" } }
       )
       expect(response.body).to include("Select a lead provider")
+    end
+
+    it "requires a delivery partner selection" do
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: contract_period.year } }
+      )
+      follow_redirect!
 
       post(
         path_for_step("select-lead-provider"),
