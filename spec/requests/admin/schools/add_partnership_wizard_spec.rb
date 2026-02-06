@@ -168,13 +168,8 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
         path_for_step("select-delivery-partner"),
         params: { select_delivery_partner: { delivery_partner_id: delivery_partner.id } }
       )
-      follow_redirect!
 
-      expect {
-        post path_for_step("check-answers"), params: { check_answers: {} }
-      }.not_to change(SchoolPartnership, :count)
-
-      expect(response.body).to include("Partnership already exists for this school")
+      expect(response.body).to include("Partnership already exists for this school and contract period")
     end
   end
 
