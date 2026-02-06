@@ -10,6 +10,9 @@ Emails sent from outside of the service to school induction tutors.
 
 [Registration open for academic year 2026-2027](/communication-emails-to-schools/reg-open-to-sit)
 
+[Termly reminder](/communication-emails-to-schools/sit-trmly-reminder)
+
+
 
 ## In service
 

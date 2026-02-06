@@ -28,7 +28,6 @@ You can now register early career teachers (ECTs) and mentors for the 2026-2027 
 <p>To use the service you’ll need:</p>
 
 - a DfE Sign-in account    
- 
 - approved access to the service
 
 ## DfE Sign-in account and service access
