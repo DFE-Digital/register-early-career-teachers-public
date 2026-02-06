@@ -5,15 +5,11 @@ module Admin
         def previous_step = :select_delivery_partner
 
         def save!
-          return false unless valid?
-
-          # rubocop:disable Rails/SaveBang
           SchoolPartnerships::Create.new(
             author: wizard.author,
             school: wizard.school,
             lead_provider_delivery_partnership: wizard.lead_provider_delivery_partnership
           ).create
-          # rubocop:enable Rails/SaveBang
         end
       end
     end
