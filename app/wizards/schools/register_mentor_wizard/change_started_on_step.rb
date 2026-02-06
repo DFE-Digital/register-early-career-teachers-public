@@ -2,7 +2,7 @@ module Schools
   module RegisterMentorWizard
     class ChangeStartedOnStep < StartedOnStep
       def next_step
-        if !contract_period.enabled?
+        if !contract_period_enabled?
           wizard.store.revised_start_date_in_closed_contract_period = true
           :cannot_register_mentor_yet
         else
@@ -15,10 +15,6 @@ module Schools
       end
 
     private
-      def contract_period
-        @contract_period ||= ContractPeriod
-          .containing_date(started_on_as_date)
-      end
 
       def persist
         if contract_period.enabled?

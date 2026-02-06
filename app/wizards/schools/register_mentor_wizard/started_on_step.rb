@@ -12,7 +12,7 @@ module Schools
       end
 
       def next_step
-        if !mentor.contract_period_enabled?
+        if !contract_period_enabled?
           :cannot_register_mentor_yet
         elsif mentor.became_ineligible_for_funding? || !mentor.provider_led_ect?
           :check_answers
@@ -75,6 +75,16 @@ module Schools
 
       def started_on_as_date
         @started_on_as_date ||= started_on_obj.value_as_date
+      end
+
+      def contract_period_enabled?
+        return false unless contract_period
+
+        contract_period.enabled?
+      end
+
+      def contract_period
+        @contract_period ||= ContractPeriod.containing_date(started_on_as_date)
       end
     end
   end
