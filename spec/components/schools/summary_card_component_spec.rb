@@ -1,5 +1,5 @@
 RSpec.describe Schools::SummaryCardComponent, type: :component do
-  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body, name: "an org that assures the quality of statutory teacher induction") }
+  let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body_period, name: "an org that assures the quality of statutory teacher induction") }
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "An org that designs the training") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "An org that delivers the training") }

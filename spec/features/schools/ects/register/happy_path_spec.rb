@@ -155,8 +155,8 @@ RSpec.describe "Registering an ECT", :enable_schools_interface do
   end
 
   def create_appropriate_bodies
-    FactoryBot.create(:appropriate_body, name: "Golden Leaf Teaching Hub")
-    FactoryBot.create(:appropriate_body, name: "Umber Teaching Hub")
+    FactoryBot.create(:appropriate_body_period, name: "Golden Leaf Teaching Hub")
+    FactoryBot.create(:appropriate_body_period, name: "Umber Teaching Hub")
   end
 
   def create_reusable_previous_partnership

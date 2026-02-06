@@ -121,7 +121,7 @@ RSpec.describe PendingInductionSubmission do
     describe "#number_of_terms" do
       subject { FactoryBot.build(:pending_induction_submission, finished_on: Date.current) }
 
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
       it { is_expected.to validate_presence_of(:number_of_terms).with_message("Enter a number of terms").on(%i[release_ect record_outcome]) }
       it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Number of terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
@@ -377,7 +377,7 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe "#playback_errors" do
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
     let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, appropriate_body_period:, finished_on: 1.day.ago) }
 
     before do

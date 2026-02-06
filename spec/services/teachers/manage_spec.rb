@@ -21,7 +21,7 @@ RSpec.describe Teachers::Manage do
                       trs_induction_status: "InProgress")
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "#initialize" do
     it "sets the author, teacher, and appropriate_body" do

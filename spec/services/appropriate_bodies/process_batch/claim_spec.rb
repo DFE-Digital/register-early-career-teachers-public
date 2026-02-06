@@ -13,7 +13,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   let(:training_programme) { "provider-led" }
   let(:error) { nil }
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   let(:pending_induction_submission_batch) do
     FactoryBot.create(:pending_induction_submission_batch, :claim,
@@ -492,7 +492,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Claim do
   context "when the ECT is already claimed by another body" do
     include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
-    let(:other_body) { FactoryBot.create(:appropriate_body, name: "Acme") }
+    let(:other_body) { FactoryBot.create(:appropriate_body_period, name: "Acme") }
     let(:teacher) { FactoryBot.create(:teacher, trn:) }
 
     before do

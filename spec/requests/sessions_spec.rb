@@ -56,7 +56,7 @@ RSpec.describe "Sessions", type: :request do
       end
 
       before do
-        FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:)
+        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:)
 
         mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
                                    email:,
@@ -127,7 +127,7 @@ RSpec.describe "Sessions", type: :request do
 
       before do
         school = FactoryBot.create(:school, urn: school_urn)
-        FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:, name: school.name)
+        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:, name: school.name)
 
         mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
                                    email:,
@@ -150,7 +150,7 @@ RSpec.describe "Sessions", type: :request do
     end
 
     context "when using an appropriate body persona" do
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
       let(:params) { { email:, name: } }
 
       it "authenticates and redirects to the appropriate body home page" do

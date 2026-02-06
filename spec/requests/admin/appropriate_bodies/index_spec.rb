@@ -18,8 +18,8 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
     context "with an authenticated DfE user" do
       include_context "sign in as DfE user"
 
-      let!(:appropriate_body1) { FactoryBot.create(:appropriate_body, name: "Captain Scrummy") }
-      let!(:appropriate_body2) { FactoryBot.create(:appropriate_body, name: "Captain Hook") }
+      let!(:appropriate_body_period_1) { FactoryBot.create(:appropriate_body_period, name: "Captain Scrummy") }
+      let!(:aappropriate_body_period_2) { FactoryBot.create(:appropriate_body_period, name: "Captain Hook") }
 
       it "display appropriate bodies" do
         get "/admin/organisations/appropriate-bodies"

@@ -22,9 +22,9 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
   end
 
   describe "#call" do
-    let!(:first_appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let!(:first_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
-    let!(:second_appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let!(:second_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
     let!(:induction_period) do
       FactoryBot.create(:induction_period,

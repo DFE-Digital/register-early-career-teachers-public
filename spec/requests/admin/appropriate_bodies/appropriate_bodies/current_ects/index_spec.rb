@@ -1,6 +1,6 @@
 RSpec.describe "Listing and searching ECTs belonging to an appropriate body" do
   describe "GET /admin/organisations/appropriate-bodies/current-ects" do
-    let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
     context "when not logged in" do
       it "redirects to sign in path" do

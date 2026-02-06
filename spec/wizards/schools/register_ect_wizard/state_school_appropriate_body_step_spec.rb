@@ -7,7 +7,7 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
     subject { described_class.new(wizard:, appropriate_body_id:) }
 
     context "when the appropriate_body is a national" do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :national).id }
+      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body_period, :national).id }
 
       it "is not valid" do
         expect(subject).not_to be_valid
@@ -16,7 +16,7 @@ RSpec.describe Schools::RegisterECTWizard::StateSchoolAppropriateBodyStep, type:
     end
 
     context "when the appropriate_body is a teaching school hub" do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :teaching_school_hub).id }
+      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body_period, :teaching_school_hub).id }
       let(:appropriate_body_type) { "teaching_school_hub" }
 
       it "adds no error" do

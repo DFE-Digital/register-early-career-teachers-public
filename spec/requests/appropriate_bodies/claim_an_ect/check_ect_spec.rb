@@ -1,5 +1,5 @@
 RSpec.describe "Appropriate body claiming an ECT: checking we have the right ECT" do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:page_heading) { "Check details for" }
   let!(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period:) }
   let(:pending_induction_submission_id_param) { pending_induction_submission.id.to_s }

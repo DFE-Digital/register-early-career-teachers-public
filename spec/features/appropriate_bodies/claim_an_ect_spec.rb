@@ -1,6 +1,6 @@
 RSpec.describe "Claiming an ECT" do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
-  let(:other_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+  let(:other_body) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
   let(:pending_induction_submission) { PendingInductionSubmission.last }
 

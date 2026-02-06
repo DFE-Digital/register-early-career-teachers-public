@@ -78,7 +78,7 @@ RSpec.shared_examples "an induction redirectable route" do
     end
 
     context "when signed in as an appropriate body" do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 

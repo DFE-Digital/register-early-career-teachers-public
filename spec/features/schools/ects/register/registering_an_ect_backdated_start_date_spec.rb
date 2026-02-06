@@ -47,7 +47,7 @@ RSpec.describe "Registering an ECT - backdated start date", :enable_schools_inte
     @previous_year_delivery_partner = context.previous_year_delivery_partner
 
     @appropriate_body_name = "Golden Leaf Teaching Hub"
-    FactoryBot.create(:appropriate_body, name: @appropriate_body_name)
+    FactoryBot.create(:appropriate_body_period, name: @appropriate_body_name)
 
     stub_reuse_finder_to_return(@previous_school_partnership)
 
