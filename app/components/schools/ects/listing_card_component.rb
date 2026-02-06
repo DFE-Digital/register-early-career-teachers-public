@@ -32,7 +32,7 @@ module Schools
       end
 
       def deferred_message_text
-        lead_provider_name = display_training_lead_provider_name(ect_at_school_period)
+        lead_provider_name = ect_at_school_period.latest_started_lead_provider_name
         subject = lead_provider_name.presence || "The lead provider"
         verb = lead_provider_name.present? ? "have" : "has"
 
@@ -40,7 +40,7 @@ module Schools
       end
 
       def display_training_status
-        ect_at_school_period.display_training_status
+        ect_at_school_period.latest_started_training_status
       end
 
       def withdrawn?

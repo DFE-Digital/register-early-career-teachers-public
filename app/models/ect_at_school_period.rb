@@ -131,6 +131,28 @@ class ECTAtSchoolPeriod < ApplicationRecord
     display_training_period&.lead_provider_name
   end
 
+  def latest_started_training_period
+    training_periods
+      .where("started_on <= ?", Date.current)
+      .order(started_on: :desc, id: :desc)
+      .first
+  end
+
+  def latest_started_training_status
+    latest_started_training_period&.school_training_status
+  end
+
+  def latest_started_lead_provider_name
+    training_period = latest_started_training_period
+    return if training_period.blank?
+
+    if training_period.only_expression_of_interest?
+      training_period.expression_of_interest_lead_provider&.name
+    else
+      training_period.lead_provider_name
+    end
+  end
+
   delegate :trn, to: :teacher
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
   delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true

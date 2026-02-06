@@ -26,7 +26,7 @@ module Schools
     end
 
     def withdrawn_or_deferred_message_text
-      lead_provider_name = display_training_lead_provider_name(@ect)
+      lead_provider_name = @ect.latest_started_lead_provider_name
       subject = lead_provider_name.presence || "The lead provider"
       verb = lead_provider_name.present? ? "have" : "has"
       name = teacher_full_name(@ect.teacher)
@@ -39,7 +39,7 @@ module Schools
     end
 
     def training_status
-      @training_status ||= @ect.display_training_status
+      @training_status ||= @ect.latest_started_training_status
     end
 
     def withdrawn?
