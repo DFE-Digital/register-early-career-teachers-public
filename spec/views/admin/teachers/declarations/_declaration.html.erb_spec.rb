@@ -1,4 +1,6 @@
 RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view do
+  subject { Capybara.string(rendered) }
+
   let(:lead_provider) { FactoryBot.build_stubbed(:lead_provider, name: "Test Lead Provider") }
   let(:delivery_partner) { FactoryBot.build_stubbed(:delivery_partner, name: "Test Delivery Partner") }
   let(:declaration) do
@@ -22,14 +24,15 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
   end
 
   before do
+    # rubocop:disable RSpec/AnyInstance - needed for boundary with a helper
     allow_any_instance_of(DeclarationHelper).to receive_messages(
       declaration_state_tag: "declaration-state-tag",
       declaration_course_identifier: "declaration-course-identifier"
     )
+    # rubocop:enable RSpec/AnyInstance
+
     render locals: { declaration: }
   end
-
-  subject { Capybara.string(rendered) }
 
   it { is_expected.to have_summary_list_row("Declaration ID", value: "test-declaration-uuid", visible: :all) }
   it { is_expected.to have_summary_list_row("Course identifier", value: "declaration-course-identifier", visible: :all) }
