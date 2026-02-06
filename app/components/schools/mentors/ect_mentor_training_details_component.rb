@@ -16,7 +16,20 @@ module Schools
       end
 
       def render?
-        ineligible_for_training? || mentor_training_period.present?
+        training_status != :finished
+      end
+
+      def show_list?
+        %i[active withdrawn].include?(training_status)
+      end
+
+      def training_status
+        return :completed if completed_reason?
+        return :started_not_completed if started_not_completed_reason?
+        return :not_registered if not_registered?
+        return :finished if finished?
+
+        API::TrainingPeriods::TrainingStatus.new(training_period: mentor_training_period).status
       end
 
       def ineligible_for_training?
@@ -24,10 +37,24 @@ module Schools
       end
 
       def completed_reason?
+        return unless ineligible_for_training?
+
         COMPLETED_REASONS.include?(teacher.mentor_became_ineligible_for_funding_reason)
       end
 
+      def not_registered?
+        mentor_training_period.nil?
+      end
+
+      def finished?
+        return false unless mentor_training_period.finished_on
+
+        mentor_training_period.finished_on < Date.current
+      end
+
       def started_not_completed_reason?
+        return unless ineligible_for_training?
+
         teacher.mentor_became_ineligible_for_funding_reason == "started_not_completed"
       end
 
@@ -37,8 +64,6 @@ module Schools
 
       def mentor_training_period
         @mentor_training_period ||= TrainingPeriod
-          .current_or_future
-          .provider_led_training_programme
           .for_mentor(@mentor.id)
           .order(:started_on)
           .first
@@ -58,6 +83,10 @@ module Schools
 
       def delivery_partner_name
         mentor_training_period&.delivery_partner_name
+      end
+
+      def teacher_name
+        teacher_full_name(teacher)
       end
     end
   end
