@@ -84,7 +84,7 @@ Most schools will have an existing valid partnership from a previous or current 
 
 ## The appropriate body, lead provider and delivery partner are set for each ECT, not for the cohort year 
 
-Schools can assign an appropriate body, lead provider and delivery partner for individual ECTs. Schools can change the the default information during ECT registration.
+Schools can assign an appropriate body, lead provider and delivery partner for individual ECTs. Schools can change the default information during ECT registration.
 
 <!-- In the existing services, schools:
 
@@ -103,7 +103,7 @@ Schools have to tell us the ECT’s appropriate body.
 
 <a href="../images/select-appropriate-body.png" target="blank"><img alt="Select an appropriate body for the ECT when adding to the service" src="../images/select-appropriate-body.png" width="300"/></a>
 
-## Schools can make more changes without needing DfE Support 
+## Schools can make more changes without needing DfE support 
 
 After ECTs are registered but before they’ve completed induction, schools can change the following ECT information:
 
@@ -124,7 +124,7 @@ In the existing service, schools could only tell us when an ECT or mentor was le
 
 <a href="../images/tell-us-if-left-school.png" target="blank"><img alt="Report if ECT has left or is leaving school" src="../images/tell-us-if-left-school.png" width="300"/></a>
 
-## Mentor training and lead provider
+## Mentor training eligibility
 
 When registering a mentor, we tell schools if the mentor is eligible for mentor training. We also tell them we’ll pass the mentor details on to the their assigned ECT’s lead provider. They can change it to another lead provider if needed. 
 
