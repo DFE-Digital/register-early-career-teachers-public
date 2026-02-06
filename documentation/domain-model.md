@@ -283,6 +283,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     uuid ecf_id
+    boolean vat_registered
   }
   InductionPeriod {
     integer id

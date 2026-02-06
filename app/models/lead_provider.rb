@@ -13,6 +13,7 @@ class LeadProvider < ApplicationRecord
   # Validations
   validates :name, presence: true, uniqueness: true
   validates :ecf_id, uniqueness: { case_sensitive: false }, allow_nil: true
+  validates :vat_registered, inclusion: [true, false]
 
   scope :alphabetical, -> { order(name: :asc) }
 
