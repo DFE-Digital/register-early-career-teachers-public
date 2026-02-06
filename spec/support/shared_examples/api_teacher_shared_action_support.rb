@@ -15,7 +15,7 @@ RSpec.shared_examples "an API teacher shared action", :with_metadata do
 
         it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Enter a '#/lead_provider_id'.") }
         it { is_expected.to validate_presence_of(:teacher_api_id).with_message("Enter a '#/teacher_api_id'.") }
-        it { is_expected.to validate_inclusion_of(:teacher_type).in_array(API::Concerns::Teachers::SharedAction::TEACHER_TYPES).with_message("The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
+        it { is_expected.to validate_presence_of(:teacher_type).with_message("Enter a '#/teacher_type'.") }
 
         context "when the `lead_provider` does not exist" do
           let(:lead_provider_id) { 9999 }
@@ -28,14 +28,14 @@ RSpec.shared_examples "an API teacher shared action", :with_metadata do
           let(:teacher_type) { trainee_type == :ect ? :mentor : :ect }
 
           it { is_expected.to have_one_error_per_attribute }
-          it { is_expected.to have_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
+          it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
         end
 
         context "when a matching training period does not exist (different lead provider)" do
           let(:lead_provider_id) { FactoryBot.create(:lead_provider, name: "Different to #{lead_provider.name}").id }
 
           it { is_expected.to have_one_error_per_attribute }
-          it { is_expected.to have_error(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.") }
+          it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
         end
 
         context "when the teacher does not exist" do
