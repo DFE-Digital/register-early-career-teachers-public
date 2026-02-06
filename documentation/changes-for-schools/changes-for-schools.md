@@ -12,19 +12,19 @@ All of these changes have been tested in research with schools. -->
 
 ## DfE Sign-in is required to access the service 
 
-Schools will need to use DfE Sign-in to approve and manage access to the service. Typically, schools will nominate a DfE Sign-in approver to manange these activities.
+Schools will need to use DfE Sign-in to approve and manage access to the service. Schools need to nominate a DfE Sign-in approver to manange these activities. Typically, this would be a headteacher or induction tutor.
 
-Users of the service, for example, induction tutors, will need a DfE sign-in account and approved access to the service.
+All users of the service will need a DfE sign-in account and approved access.
 
-You can access [DfE Sign in](https://services.signin.education.gov.uk/).
+<!-- You can access [DfE Sign in](https://services.signin.education.gov.uk/). -->
 
-You can read [guidance on using DfE Sign in](https://edd-help.signin.education.gov.uk/contact).
+<!-- You can read [guidance on using DfE Sign in](https://edd-help.signin.education.gov.uk/contact). -->
 
 <a href="../images/landing-page.png" target="blank"><img alt="The guidance page for register early career teachers" src="../images/landing-page.png" width="300"/></a>
 
 ### Multiple users can have access to the service
 
-As part of using DfE Sign-in, multiple people working for a school can now get access to the service. Previously, only 1 person could be nominated as the school induction tutor and access the service. 
+As part of using DfE Sign-in, multiple people working for a school can now get access to the service. Previously, only 1 person could be nominated as the school induction tutor and have access the service. 
 
 ### Nominating a school induction tutor separately
 
@@ -72,7 +72,7 @@ This applies to their working pattern as an ECT only. For example, if the ECT wo
 
 ### ECT start date
 
-We ask when the person started at the school as an ECT. Meaning, not when they started working at a school before becoming an ECT. For example, as an unqualified or trainee teacher.
+We ask when the person started at the school as an ECT, not when they started before becoming an ECT. For example, as an unqualified or trainee teacher.
 
 <a href="../images/ect-start-date.png" target="blank"><img alt="Enter the ECT's start date when adding to the service" src="../images/ect-start-date.png" width="300"/></a>
 
@@ -103,7 +103,7 @@ Schools have to tell us the ECT's appropriate body.
 
 <a href="../images/select-appropriate-body.png" target="blank"><img alt="Select an appropriate body for the ECT when adding to the service" src="../images/select-appropriate-body.png" width="300"/></a>
 
-## Schools can make more changes without contacting DfE Support 
+## Schools can make more changes without needing DfE Support 
 
 After ECTs are registered but before they've completed induction, schools can change the following ECT information:
 
