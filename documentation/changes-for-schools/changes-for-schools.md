@@ -24,7 +24,7 @@ All users of the service will need a DfE sign-in account and approved access.
 
 ### Multiple users can have access to the service
 
-As part of using DfE Sign-in, multiple people working for a school can now get access to the service. Previously, only 1 person could be nominated as the school induction tutor and have access the service. 
+As part of using DfE Sign-in, multiple people working for a school can now get access to the service. Previously, only one person could be nominated as the school induction tutor and have access the service. 
 
 ### Nominating a school induction tutor separately
 
@@ -46,7 +46,7 @@ They no longer need to provide a name.
  
 The service will display the name of the ECT or mentor for the user to confirm if the TRN and date of birth are correct. 
 
-If they are incorrect, we ask for the national insurance number. If this is incorrect or not provided, ECT or mentor registration cannot be completed. 
+If they’re incorrect, we ask for the national insurance number. If this is incorrect or not provided, ECT or mentor registration cannot be completed. 
 
 If the name is wrong, the school can correct it. However, they must not do this to name a different person. Schools must only correct spelling or update legal name changes. 
 
@@ -99,13 +99,13 @@ Schools can assign an appropriate body, lead provider and delivery partner for i
 
 ## Appropriate body is mandatory 
 
-Schools have to tell us the ECT's appropriate body. 
+Schools have to tell us the ECT’s appropriate body. 
 
 <a href="../images/select-appropriate-body.png" target="blank"><img alt="Select an appropriate body for the ECT when adding to the service" src="../images/select-appropriate-body.png" width="300"/></a>
 
 ## Schools can make more changes without needing DfE Support 
 
-After ECTs are registered but before they've completed induction, schools can change the following ECT information:
+After ECTs are registered but before they’ve completed induction, schools can change the following ECT information:
 
 - Name
 - Email address 
@@ -126,6 +126,6 @@ In the existing service, schools could only tell us when an ECT or mentor was le
 
 ## Mentor training and lead provider
 
-When registering a mentor, we tell schools if the mentor is eligible for mentor training. We also tell them we’ll pass the mentor details on to the their assigned ECT's lead provider. They can change it to another lead provider if needed. 
+When registering a mentor, we tell schools if the mentor is eligible for mentor training. We also tell them we’ll pass the mentor details on to the their assigned ECT’s lead provider. They can change it to another lead provider if needed. 
 
 <a href="../images/can-receive-mentor-training.png" target="blank"><img alt="A notification telling the user that the mentor being added can receive mentor training" src="../images/can-receive-mentor-training.png" width="300"/></a>

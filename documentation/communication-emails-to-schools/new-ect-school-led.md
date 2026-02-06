@@ -9,8 +9,8 @@ Automatically triggered on completed school-led ECT registration in the service
 
 Email to ECTs to:
 
-- let them know they've been registered for training  
-- let them know what they'll get  
+- let them know they’ve been registered for training  
+- let them know what they’ll get  
 - provide support and privacy statement links 
 
 ---

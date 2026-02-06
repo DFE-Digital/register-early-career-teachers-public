@@ -23,9 +23,9 @@ To tell schools about:
 
 Hello ((sit_name)),
 
-We're sending you this email as our records show that you're the induction tutor for ((school_name)).
+We’re sending you this email as our records show that you're the induction tutor for ((school_name)).
 
-We're making changes to the way schools register and manage ECTs and mentors online with the DfE.
+We’re making changes to the way schools register and manage ECTs and mentors online with the DfE.
 
 Schools need to use our [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/) service. We’ve closed the manage training for early career teachers service.
 
@@ -46,7 +46,7 @@ You can get help with [DfE Sign-in](https://edd-help.signin.education.gov.uk/con
 ## Changes to the service
 
 ### More than one school user can use the register service
-Your school's DfE Sign-in approver can give access to the register early career teachers service to multiple users.
+Your school’s DfE Sign-in approver can give access to the register early career teachers service to multiple users.
 
 ### Lead provider training for ECTs and mentors
 Lead providers can be selected for individual ECTs and mentors (if your school uses a provider-led training programme). 
@@ -61,7 +61,7 @@ You can tell us about, and change, your main induction tutor.
 
 You can use the new service to manage your existing ECTs and mentors. 
 
-We'll email you when registration for the 2026-2027 academic year opens.
+We’ll email you when registration for the 2026-2027 academic year opens.
 
 ## Sign in
 

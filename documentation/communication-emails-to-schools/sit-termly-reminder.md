@@ -18,7 +18,7 @@ A reminder to school induction tutors to tell DfE about new participants and cha
 
 Hello ((sit_name)),
 
-We're sending you this email as our records show that you're the induction tutor for ((school_name)).
+We’re sending you this email as our records show that you’re the induction tutor for ((school_name)).
 
 This is a reminder to tell us about ECT and mentor changes this term.
 

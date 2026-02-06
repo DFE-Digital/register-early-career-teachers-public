@@ -21,7 +21,7 @@ To give notification that registration is open. This email will follow the notic
 
 Hello ((sit_name)),
 
-We're sending you this email as our records show that you're the induction tutor for ((school_name)).
+We’re sending you this email as our records show that you’re the induction tutor for ((school_name)).
 
 You can now register early career teachers (ECTs) and mentors for the 2026-2027 academic year with [register early career teacher](https://staging.register-early-career-teachers.education.gov.uk). 
 
