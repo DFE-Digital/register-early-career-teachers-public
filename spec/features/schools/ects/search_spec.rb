@@ -50,7 +50,7 @@ RSpec.describe "Searching for an ECT", :enable_schools_interface do
   end
 
   def then_i_should_see_the_matching_teacher
-    expect(page.get_by_text("Jimmy Searchable")).to be_visible
+    expect(page.get_by_role("link", name: "Jimmy Searchable")).to be_visible
   end
 
   def and_i_should_not_see_the_non_matching_teacher

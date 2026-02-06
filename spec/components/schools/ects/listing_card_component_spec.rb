@@ -5,6 +5,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :local_authority_ab, teacher:, school:, started_on:, finished_on: nil) }
   let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on:) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: nil) }
+  let(:valid_withdrawal_reason) { TrainingPeriod.withdrawal_reasons.keys.first }
+  let(:valid_deferral_reason) { TrainingPeriod.deferral_reasons.keys.first }
 
   context "when the ECT has a mentor assigned" do
     before do
@@ -21,9 +23,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   context "when the ECT has no mentor assigned" do
     before { render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:)) }
 
-    it "renders 'Mentor required' status" do
+    it "renders action required status with mentor message" do
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Status")
-      expect(rendered_content).to have_text("Mentor required")
+      expect(rendered_content).to have_text("Action required")
+      expect(rendered_content).to have_text("A mentor needs to be assigned to Naruto Uzumaki.")
     end
   end
 
@@ -59,6 +62,30 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
       expect(rendered_content).to have_text(training_period.lead_provider_name)
+    end
+  end
+
+  context "when training_period is nil" do
+    let(:training_period) { nil }
+
+    let!(:latest_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :ongoing,
+        :provider_led,
+        ect_at_school_period:,
+        started_on: 6.months.ago.to_date
+      )
+    end
+
+    it "falls back to ect_at_school_period.display_training_period" do
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_text(latest_training_period.lead_provider_name)
+
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_text(latest_training_period.delivery_partner_name)
     end
   end
 
@@ -98,6 +125,141 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
       expect(rendered_content).to have_text("Their lead provider will confirm this")
+    end
+  end
+
+  context "when training is withdrawn" do
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+
+    before do
+      training_period.update!(
+        withdrawn_at: Time.zone.today,
+        withdrawal_reason: valid_withdrawal_reason
+      )
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+    end
+
+    it "renders the withdrawn warning link" do
+      expect(rendered_content).to have_link(
+        "Tell us if Naruto Uzumaki will be continuing their training or if they have left your school",
+        href: /#training-details\z/
+      )
+    end
+
+    it "renders action required withdrawn status message" do
+      expect(rendered_content).to have_text("Action required")
+      expect(rendered_content).to match(
+        /(have|has) told us that Naruto Uzumaki is no longer training with them\. Contact them if you think this is an error\./
+      )
+    end
+
+    it "does not render lead provider or delivery partner rows" do
+      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+    end
+  end
+
+  context "when training is withdrawn and the ECT has no mentor assigned" do
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+
+    before do
+      training_period.update!(
+        withdrawn_at: Time.zone.today,
+        withdrawal_reason: valid_withdrawal_reason
+      )
+
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
+    end
+
+    it "shows withdrawn action required instead of mentor required" do
+      expect(rendered_content).to have_text("Action required")
+      expect(rendered_content).to match(/no longer training with them/i)
+
+      expect(rendered_content).not_to have_text("Mentor required")
+      expect(rendered_content).not_to have_text("A mentor needs to be assigned")
+    end
+  end
+
+  context "when training is deferred and the ECT has no mentor assigned" do
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+
+    before do
+      training_period.update!(
+        deferred_at: Time.zone.today,
+        deferral_reason: valid_deferral_reason
+      )
+
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
+    end
+
+    it "shows training paused instead of mentor required" do
+      expect(rendered_content).to have_text("Training paused")
+      expect(rendered_content).to match(/training is paused/i)
+
+      expect(rendered_content).not_to have_text("Mentor required")
+      expect(rendered_content).not_to have_text("A mentor needs to be assigned")
+    end
+  end
+
+  context "when latest started training is withdrawn but a future training period exists" do
+    let!(:withdrawn_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period:,
+        started_on: 1.year.ago,
+        withdrawn_at: Time.zone.today,
+        withdrawal_reason: valid_withdrawal_reason
+      )
+    end
+
+    let!(:future_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period:,
+        started_on: 1.month.from_now
+      )
+    end
+
+    it "shows the withdrawn status based on the latest started training period" do
+      render_inline(
+        described_class.new(
+          teacher:,
+          ect_at_school_period:,
+          training_period: nil
+        )
+      )
+
+      expect(rendered_content).to have_text("Action required")
+      expect(rendered_content).to match(
+        /(have|has) told us that Naruto Uzumaki is no longer training with them/
+      )
+    end
+  end
+
+  context "when training is deferred" do
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+
+    before do
+      training_period.update!(
+        deferred_at: Time.zone.today,
+        deferral_reason: valid_deferral_reason
+      )
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+    end
+
+    it "renders training paused status message" do
+      expect(rendered_content).to have_text("Training paused")
+      expect(rendered_content).to have_text("Contact them if you think this is an error.")
+    end
+
+    it "still renders lead provider and delivery partner rows" do
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_text(training_period.lead_provider_name)
+
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
+      expect(rendered_content).to have_text(training_period.delivery_partner_name)
     end
   end
 

@@ -52,6 +52,16 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
+  def mentor_required?(ect, current_school: nil)
+    return false if current_school && ect.leaving_reported_for_school?(current_school)
+
+    induction_status = ect.teacher.trs_induction_status
+    return false if induction_status.in?(%w[Passed Failed Exempt])
+
+    current_mentor_name(ect).blank?
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
   def ect_status(ect, current_school: nil)
     return govuk_tag(text: "Leaving school", colour: "yellow") if current_school && ect.leaving_reported_for_school?(current_school)
 
@@ -80,6 +90,46 @@ module ECTHelper
       new_schools_ect_mentorship_path(ect)
     else
       schools_ects_home_path
+    end
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
+  def display_training_lead_provider_name(ect)
+    training_period = ect.display_training_period
+    return if training_period.blank?
+
+    if training_period.only_expression_of_interest?
+      training_period.expression_of_interest&.lead_provider&.name
+    else
+      training_period.school_partnership
+        &.lead_provider_delivery_partnership
+        &.active_lead_provider
+        &.lead_provider
+        &.name
+    end
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
+  def display_training_delivery_partner_name(ect)
+    training_period = ect.display_training_period
+    return if training_period.blank?
+    return if training_period.only_expression_of_interest?
+
+    training_period.school_partnership
+      &.lead_provider_delivery_partnership
+      &.delivery_partner
+      &.name
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
+  def display_training_delivery_partner_text(ect)
+    training_period = ect.display_training_period
+    return if training_period.blank?
+
+    if training_period.only_expression_of_interest?
+      "Their lead provider will confirm this"
+    else
+      display_training_delivery_partner_name(ect)
     end
   end
 
