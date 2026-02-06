@@ -93,8 +93,6 @@ private
         new_teacher
       end
     end
-
-    found_teacher
   end
 
   def with_failure_recording(teacher:, model:, migration_item_id:)
@@ -110,7 +108,9 @@ private
 
   def record_failure!(teacher:, model:, message:, migration_item_id:)
     @failed = true
-    record_combinations_failure!(model:, message:)
+
+    record_failed_combinations(at_school_period: model, message:) if model.respond_to?(:training_periods)
+    record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
     model_identifier = model.is_a?(Symbol) ? model : model.class.name.demodulize.underscore
 
     ::TeacherMigrationFailure.create!(
@@ -120,19 +120,6 @@ private
       migration_item_id:,
       migration_item_type: MIGRATION_ITEM_TYPE
     )
-  end
-
-  def record_combinations_failure!(model:, message:)
-    # return record_failed_teacher_combinations(teacher: model, message:) if model.is_a?(Teacher)
-    return record_failed_combinations(at_school_period: model, message:) if model.respond_to?(:training_periods)
-
-    record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
-  end
-
-  def record_failed_teacher_combinations(message:)
-    (ect_at_school_periods + mentor_at_school_periods).flatten.each do |at_school_period|
-      record_failed_combinations(at_school_period:, message:)
-    end
   end
 
   def record_failed_combinations(at_school_period:, message:)
