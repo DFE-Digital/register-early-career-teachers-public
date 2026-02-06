@@ -5,6 +5,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
 
   scenario "mentor has existing mentorship and mentoring at new school only with school-led ect" do
     given_there_is_a_school_in_the_service
+    and_there_is_an_open_contract_period
     and_there_is_a_school_led_ect_with_no_mentor_registered_at_the_school
     and_mentor_has_existing_mentorship_at_another_school
     and_i_sign_in_as_that_school_user
@@ -49,6 +50,10 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
 
   def and_i_sign_in_as_that_school_user
     sign_in_as_school_user(school: @school)
+  end
+
+  def and_there_is_an_open_contract_period
+    FactoryBot.create(:contract_period, :current)
   end
 
   def and_there_is_a_school_led_ect_with_no_mentor_registered_at_the_school

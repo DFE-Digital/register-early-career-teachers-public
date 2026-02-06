@@ -81,6 +81,10 @@ module Schools
           registration_store.store.fetch("mentoring_at_new_school_only", "yes") == "yes"
         end
 
+        def contract_period_enabled?
+          queries.contract_period&.enabled
+        end
+
       private
 
         attr_reader :registration_store, :queries

@@ -9,6 +9,7 @@ module Schools
             already_active_at_school: AlreadyActiveAtSchoolStep,
             cannot_mentor_themself: CannotMentorThemselfStep,
             cannot_register_mentor: CannotRegisterMentorStep,
+            cannot_register_mentor_yet: CannotRegisterMentorYetStep,
             cant_use_changed_email: CantUseChangedEmailStep,
             cant_use_email: CantUseEmailStep,
             change_email_address: ChangeEmailAddressStep,
@@ -86,6 +87,12 @@ module Schools
             steps << :lead_provider unless mentor.use_same_programme_choices == "yes"
             steps << :review_mentor_eligibility if mentor.eligible_for_funding?
             steps << :eligibility_lead_provider if mentor.eligible_for_funding?
+
+            if !mentor.contract_period_enabled? || store.revised_start_date_in_closed_contract_period
+              steps << :cannot_register_mentor_yet
+              return steps
+            end
+
             steps += %i[change_mentor_details change_email_address check_answers]
             steps << :change_started_on if mentor.started_on
             steps << :change_lead_provider if mentor.lead_provider

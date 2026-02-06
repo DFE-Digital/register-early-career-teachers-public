@@ -48,6 +48,7 @@ module Schools
                :provider_led_ect?,
                :ect_lead_provider_invalid?,
                :mentoring_at_new_school_only?,
+               :contract_period_enabled?,
                to: :status
 
       delegate :expression_of_interest?, to: :ect_training_service
