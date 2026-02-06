@@ -27,6 +27,7 @@ module API::Teachers
 
     def no_ongoing_today_training_period
       return if errors[:teacher_api_id].any?
+      return unless training_period
 
       school_period = training_period.at_school_period
 
@@ -40,6 +41,7 @@ module API::Teachers
 
     def school_period_ongoing_today
       return if errors[:teacher_api_id].any?
+      return unless training_period
 
       school_period = training_period.at_school_period
       errors.add(:teacher_api_id, "The participant is no longer at the school. Please contact the induction tutor to resolve.") unless school_period.ongoing_today?
