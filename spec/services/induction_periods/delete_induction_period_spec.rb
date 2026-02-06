@@ -70,7 +70,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
     end
 
     context "when the induction period has an outcome" do
-      before { induction_period.update!(outcome: "pass") }
+      before { induction_period.update!(outcome: "pass", finished_on: 1.month.ago, number_of_terms: 3) }
 
       it "raises ActiveRecord::RecordInvalid and does not delete or fire events" do
         expect { service.delete_induction_period! }
