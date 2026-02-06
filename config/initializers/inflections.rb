@@ -27,7 +27,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "RIAB" # Record Inductions as an Appropriate Body
   inflect.acronym "TRN" # Teacher Reference Number
   inflect.acronym "TRS" # Teaching Record System
-  inflect.acronym "TTL" # Time to live
   inflect.acronym "URN" # Unique Reference Number
 
   inflect.irregular "was", "were"
