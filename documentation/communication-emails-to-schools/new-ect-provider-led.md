@@ -27,6 +27,7 @@ Hello ((early_career_teacher_name)),
 The training is part of your 2-year early career teacher entitlement (ECTE). It aims to support you during your first years as a qualified teacher.
 
 You’ll get:
+
 - early career training 
 - support from a mentor at your school 
 - time off from your timetable to take part in training activities
