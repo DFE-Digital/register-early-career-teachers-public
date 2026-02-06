@@ -14,10 +14,7 @@ module Admin
             lead_provider_delivery_partnership: wizard.lead_provider_delivery_partnership
           ).create
           # rubocop:enable Rails/SaveBang
-
-          wizard.store.reset
         end
-
       end
     end
   end
