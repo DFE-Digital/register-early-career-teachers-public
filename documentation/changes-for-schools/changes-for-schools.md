@@ -26,7 +26,7 @@ All users of the service will need a DfE sign-in account and approved access.
 
 As part of using DfE Sign-in, multiple people working for a school can now get access to the service. Previously, only one person could be nominated as the school induction tutor and have access the service. 
 
-### Nominating a school induction tutor separately
+### Telling DfE about the school induction tutor
 
 As part of the change to the DfE Sign in, we now ask schools to tell us their induction tutor. Schools do this:
 
@@ -35,7 +35,7 @@ As part of the change to the DfE Sign in, we now ask schools to tell us their in
 
 <a href="../images/induction-tutor.png" target="blank"><img alt="View induction tutor details for school with option to change details" src="../images/induction-tutor.png" width="300"/></a>
 
-## No longer a requirement to provide the ECT or mentor name to register them 
+## No longer a requirement to provide ECT or mentor names when registering 
 
 When a school registers an ECT or mentor, they only need to provide the: 
 
@@ -43,9 +43,9 @@ When a school registers an ECT or mentor, they only need to provide the:
 - date of birth
 
 They no longer need to provide a name. 
- 
-The service will display the name of the ECT or mentor for the user to confirm if the TRN and date of birth are correct. 
 
+If the TRN and date of birth are correct, the service will display the name for the user to confirm.
+ 
 If they’re incorrect, we ask for the national insurance number. If this is incorrect or not provided, ECT or mentor registration cannot be completed. 
 
 If the name is wrong, the school can correct it. However, they must not do this to name a different person. Schools must only correct spelling or update legal name changes. 
