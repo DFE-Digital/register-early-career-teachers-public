@@ -11,6 +11,7 @@ module API
         { title: "How we assign participant schedules", path: "how-we-assign-participant-schedules" },
         { title: "Update participant data", path: "update-participant-data" },
         { title: "View participant data", path: "view-participant-data" },
+        { title: "Glossary", path: "glossary" },
       ].freeze
 
       attr_reader :current_path, :page
