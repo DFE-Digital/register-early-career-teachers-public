@@ -169,6 +169,20 @@ RSpec.describe "Admin::Schools::AddPartnershipWizardController", type: :request 
     end
   end
 
+  describe "allowed steps" do
+    it "redirects to select lead provider when delivery partner is visited without a lead provider" do
+      post(
+        path_for_step("select-contract-period"),
+        params: { select_contract_period: { contract_period_year: contract_period.year } }
+      )
+      follow_redirect!
+
+      get path_for_step("select-delivery-partner")
+
+      expect(response).to redirect_to(path_for_step("select-lead-provider"))
+    end
+  end
+
 private
 
   def path_for_step(step)
