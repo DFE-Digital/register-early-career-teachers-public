@@ -11,11 +11,11 @@
     </p>
     
     <% if number_of_ect_records_to_review > 0 %>
-      <%= govuk_button_link_to "Review #{number_of_ect_records_to_review} ECT induction #{"record".pluralize(number_of_ect_records_to_review)}", "#" %>  
-    <% else %>
-      <p class="govuk-body govuk-inset-text">
-        You have no ECT induction records to review. 
-      </p>
+      <%= govuk_button_link_to "Review #{number_of_ect_records_to_review} ECT induction #{"record".pluralize(number_of_ect_records_to_review)}", ab_unclaimed_index_path %>
+    <% else %>    
+      <%= govuk_inset_text do %>
+        You have no ECT induction records to review.
+      <% end %>
     <% end %>
   </div>
 </div>
