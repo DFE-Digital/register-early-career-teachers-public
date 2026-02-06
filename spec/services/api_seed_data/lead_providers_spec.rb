@@ -2,7 +2,7 @@ RSpec.describe APISeedData::LeadProviders do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
-  let(:all_registration_years) { described_class::DATA.values.map(&:to_a).flatten }
+  let(:all_registration_years) { described_class::DATA.values.map { it[:contract_period_years] }.map(&:to_a).flatten }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
@@ -17,11 +17,11 @@ RSpec.describe APISeedData::LeadProviders do
     it "creates lead providers and active lead providers with correct attributes" do
       instance.plant
 
-      described_class::DATA.each do |name, active_years|
+      described_class::DATA.each do |name, attributes|
         lead_provider = LeadProvider.find_by(name:)
         expect(lead_provider).to be_present
 
-        active_years.each do |year|
+        attributes[:contract_period_years].each do |year|
           active_lead_provider = ActiveLeadProvider.find_by(
             lead_provider:,
             contract_period: ContractPeriod.find_by!(year:)
