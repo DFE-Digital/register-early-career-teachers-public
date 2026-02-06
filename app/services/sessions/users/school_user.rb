@@ -6,11 +6,13 @@ module Sessions
       USER_TYPE = :school_user
       PROVIDER = :dfe_sign_in
 
-      attr_reader :name, :school, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id, :dfe_sign_in_roles, :last_active_role
+      attr_reader :name, :school, :school_urn, :gias_school, :dfe_sign_in_organisation_id, :dfe_sign_in_user_id, :dfe_sign_in_roles, :last_active_role
 
       def initialize(email:, name:, school_urn:, dfe_sign_in_organisation_id:, dfe_sign_in_user_id:, dfe_sign_in_roles:, last_active_role: self.class.name.demodulize, **)
         @name = name
-        @school = school_from(school_urn)
+        @school_urn = school_urn
+        @school, @gias_school = school_from(school_urn)
+
         @dfe_sign_in_organisation_id = dfe_sign_in_organisation_id
         @dfe_sign_in_user_id = dfe_sign_in_user_id
         @dfe_sign_in_roles = dfe_sign_in_roles
@@ -32,14 +34,14 @@ module Sessions
 
       # @return [String]
       def organisation_name
+        school_name = school&.name || gias_school&.name
+
         if has_multiple_roles?
-          school.name + " (school)"
+          "#{school_name} (school)"
         else
-          school.name
+          school_name
         end
       end
-
-      delegate :urn, to: :school, prefix: true, allow_nil: true
 
       # @return [String]
       def sign_out_path
@@ -77,9 +79,11 @@ module Sessions
     private
 
       def school_from(urn)
-        ::School.find_by(urn:).tap do |school|
-          raise(UnknownOrganisationURN, urn) unless school
-        end
+        school = ::School.find_by(urn:)
+        gias_school = school&.gias_school || ::GIAS::School.find_by(urn:)
+        raise(UnknownOrganisationURN, urn) unless school || gias_school
+
+        [school, gias_school]
       end
     end
   end

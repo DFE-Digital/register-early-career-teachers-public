@@ -94,6 +94,7 @@ module RegisterEarlyCareerTeachers
                                   config.dfe_sign_in_issuer].all?
 
     config.support_email_address = "teacher.induction@education.gov.uk"
+    config.school_support_email_address = "continuing-professional-development@digital.education.gov.uk"
 
     config.trs_api_base_url = ENV["TRS_API_BASE_URL"]
     config.trs_api_key = ENV["TRS_API_KEY"]
