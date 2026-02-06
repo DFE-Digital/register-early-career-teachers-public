@@ -67,6 +67,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   }
   scope :unclaimed_by_school_reported_appropriate_body, -> {
     current_or_future
+      .where.not(school_reported_appropriate_body_id: nil)
       .joins(:teacher)
       .joins(<<~SQL)
         LEFT OUTER JOIN induction_periods
