@@ -63,7 +63,8 @@ You can find out more about the ECTE and your role as an induction tutor with ou
 
 ## Your information and privacy
 
-<p>Our [privacy notice](https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers) explains how we store and use your information.</p> 
+Our [privacy notice](https://www.gov.uk/government/publications/privacy-information-education-providers-workforce-including-teachers) explains how we store and use your information. 
+
 
 ## Sign in
 
