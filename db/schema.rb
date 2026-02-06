@@ -411,6 +411,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_05_145833) do
     t.date "fail_confirmation_sent_on"
     t.index ["appropriate_body_id"], name: "index_induction_periods_on_appropriate_body_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
+    t.index ["teacher_id"], name: "index_induction_periods_one_outcome_per_teacher", unique: true, where: "(outcome IS NOT NULL)"
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
