@@ -134,6 +134,44 @@ describe Migrators::School do
       end
     end
 
+    context "when school is a Children's Centre type" do
+      let!(:ecf_school) do
+        FactoryBot.create(:ecf_migration_school,
+                          school_status_code: 1,
+                          administrative_district_name: "AD1",
+                          administrative_district_code: "9999",
+                          school_type_code: 1,
+                          name: "School one",
+                          school_phase_name: "Phase one",
+                          section_41_approved: false,
+                          school_status_name: "Open",
+                          school_type_name: "Children's centre",
+                          ukprn: "12345")
+      end
+
+      let!(:gias_school) do
+        FactoryBot.create(:gias_school, :with_school,
+                          urn: ecf_school.urn,
+                          administrative_district_name: nil,
+                          eligible: true,
+                          in_england: true,
+                          name: "School one",
+                          phase_name: "Phase one",
+                          section_41_approved: false,
+                          status: "open",
+                          type_name: "Children's centre",
+                          ukprn: 12_345)
+      end
+
+      before do
+        described_class.new(worker: 0).migrate!
+      end
+
+      it "skips comparing the administrative_district_name field" do
+        expect(data_migration.reload.failure_count).to be_zero
+      end
+    end
+
     context "when schools match" do
       let!(:ecf_school) { create_ecf_school }
       let!(:gias_school) { create_gias_school(ecf_school) }
