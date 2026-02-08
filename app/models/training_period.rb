@@ -84,6 +84,12 @@ class TrainingPeriod < ApplicationRecord
   validate :contract_period_consistent_across_associations, if: :provider_led_training_programme?
   validate :schedule_absent_for_school_led, if: :school_led_training_programme?
   validate :schedule_applicable_for_trainee
+  with_options if: -> { started_on&.future? } do
+    validates :withdrawn_at, absence: true
+    validates :withdrawal_reason, absence: true
+    validates :deferred_at, absence: true
+    validates :deferral_reason, absence: true
+  end
 
   # Scopes
   scope :for_ect, ->(ect_at_school_period_id) { where(ect_at_school_period_id:) }
