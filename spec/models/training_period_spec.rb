@@ -177,6 +177,15 @@ describe TrainingPeriod do
       it { is_expected.to validate_presence_of(:deferred_at) }
     end
 
+    context "when started_on is in the future" do
+      subject { FactoryBot.build(:training_period, started_on: 1.day.from_now) }
+
+      it { is_expected.to validate_absence_of(:withdrawn_at) }
+      it { is_expected.to validate_absence_of(:withdrawal_reason) }
+      it { is_expected.to validate_absence_of(:deferred_at) }
+      it { is_expected.to validate_absence_of(:deferral_reason) }
+    end
+
     context "exactly one id of trainee present" do
       context "when ect_at_school_period_id and mentor_at_school_period_id are all nil" do
         subject do

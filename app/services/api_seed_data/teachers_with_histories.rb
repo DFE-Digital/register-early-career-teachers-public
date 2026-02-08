@@ -83,7 +83,11 @@ module APISeedData
       teacher = create_teacher(started_on: school_period[:started_on])
 
       training_period_data = random_period_within(**school_period)
-      training_period_traits = generate_training_period_traits
+      training_period_traits = if school_period[:started_on].future?
+                                 []
+                               else
+                                 generate_training_period_traits
+                               end
       ect_mentor_traits = generate_ect_mentor_school_period_traits
       ect_specific_traits = generate_ect_specific_traits
       schedule = find_schedule(school_partnership.contract_period)
