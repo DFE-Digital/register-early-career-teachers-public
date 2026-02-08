@@ -10,10 +10,11 @@ class Declaration < ApplicationRecord
   belongs_to :training_period
   belongs_to :voided_by_user, class_name: "User", optional: true
   belongs_to :mentorship_period, optional: true
+  belongs_to :delivery_partner_when_created, class_name: "DeliveryPartner"
+  attr_readonly :delivery_partner_when_created_id
   belongs_to :payment_statement, optional: true, class_name: "Statement"
   belongs_to :clawback_statement, optional: true, class_name: "Statement"
   has_one :lead_provider, through: :training_period
-  has_one :delivery_partner, through: :training_period
   has_one :contract_period, through: :training_period
   has_one :ect_at_school_period, through: :training_period
   has_one :ect_teacher, through: :ect_at_school_period, source: :teacher
@@ -80,6 +81,7 @@ class Declaration < ApplicationRecord
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
   validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_no_payment?
   validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_no_clawback?
+  validates :delivery_partner_when_created, presence: { message: "Delivery partner when the declaration was created must be specified" }
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
   validate :declaration_does_not_already_exist

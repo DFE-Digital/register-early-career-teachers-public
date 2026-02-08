@@ -2,7 +2,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
   subject { Capybara.string(rendered) }
 
   let(:lead_provider) { FactoryBot.build_stubbed(:lead_provider, name: "Test Lead Provider") }
-  let(:delivery_partner) { FactoryBot.build_stubbed(:delivery_partner, name: "Test Delivery Partner") }
+  let(:delivery_partner_when_created) { FactoryBot.build_stubbed(:delivery_partner, name: "Test Delivery Partner") }
   let(:declaration) do
     FactoryBot.build_stubbed(
       :declaration,
@@ -14,7 +14,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
       allow(d).to receive_messages(
         api_id: "test-declaration-uuid",
         lead_provider:,
-        delivery_partner:,
+        delivery_partner_when_created:,
         for_ect?: true,
         for_mentor?: false,
         overall_status: "no_payment",
@@ -41,18 +41,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
   it { is_expected.to have_summary_list_row("Declaration date and time", value: "15 January 2024, 12:00am", visible: :all) }
   it { is_expected.to have_summary_list_row("Lead provider", value: "Test Lead Provider", visible: :all) }
   it { is_expected.to have_summary_list_row("Evidence held", value: "training-event-attended", visible: :all) }
-
-  describe "delivery partner" do
-    context "when the declaration has no delivery partner" do
-      let(:delivery_partner) { nil }
-
-      it { is_expected.to have_summary_list_row("Delivery partner", value: "No delivery partner recorded", visible: :all) }
-    end
-
-    context "when the declaration has a delivery partner" do
-      it { is_expected.to have_summary_list_row("Delivery partner", value: "Test Delivery Partner", visible: :all) }
-    end
-  end
+  it { is_expected.to have_summary_list_row("Delivery partner", value: "Test Delivery Partner", visible: :all) }
 
   describe "state history" do
     context "when the declaration has no events" do

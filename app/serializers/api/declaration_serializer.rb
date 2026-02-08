@@ -22,7 +22,7 @@ class API::DeclarationSerializer < Blueprinter::Base
 
     field(:updated_at)
     field(:created_at)
-    field(:delivery_partner_id) { |declaration| declaration.training_period.delivery_partner.api_id }
+    field(:delivery_partner_id) { |declaration| declaration.delivery_partner_when_created.api_id }
     field(:statement_id) { |declaration| declaration.payment_statement&.api_id }
     field(:clawback_statement_id) { |declaration| declaration.clawback_statement&.api_id }
     # This will be removed at a later date, retaining for now for ECF parity and so

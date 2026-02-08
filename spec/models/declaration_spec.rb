@@ -29,10 +29,10 @@ describe Declaration do
     it { is_expected.to belong_to(:training_period) }
     it { is_expected.to belong_to(:voided_by_user).class_name("User").optional }
     it { is_expected.to belong_to(:mentorship_period).optional }
+    it { is_expected.to belong_to(:delivery_partner_when_created).class_name("DeliveryPartner") }
     it { is_expected.to belong_to(:payment_statement).optional }
     it { is_expected.to belong_to(:clawback_statement).optional }
     it { is_expected.to have_one(:lead_provider).through(:training_period) }
-    it { is_expected.to have_one(:delivery_partner).through(:training_period) }
     it { is_expected.to have_one(:contract_period).through(:training_period) }
     it { is_expected.to have_one(:ect_at_school_period).through(:training_period) }
     it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
@@ -57,6 +57,7 @@ describe Declaration do
     it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }
     it { is_expected.to validate_inclusion_of(:evidence_type).in_array(described_class.evidence_types.keys).with_message("Choose a valid evidence type").allow_nil }
     it { is_expected.to validate_uniqueness_of(:api_id).with_message("API id already exists for another declaration").case_insensitive }
+    it { is_expected.to validate_presence_of(:delivery_partner_when_created).with_message("Delivery partner when the declaration was created must be specified") }
     it { is_expected.not_to validate_presence_of(:voided_by_user) }
     it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
@@ -282,6 +283,36 @@ describe Declaration do
         expect(declaration).to have_one_error_per_attribute
         expect(declaration).to have_error(:sparsity_uplift, "must be absent for mentor declarations.")
         expect(declaration).to have_error(:pupil_premium_uplift, "must be absent for mentor declarations.")
+      end
+    end
+  end
+
+  describe "immutable delivery_partner_when_created_id" do
+    let(:delivery_partner_when_created) { FactoryBot.create(:delivery_partner) }
+
+    context "when creating a new record" do
+      let(:declaration) do
+        FactoryBot.build(:declaration, delivery_partner_when_created:)
+      end
+
+      it "assigns the delivery partner" do
+        expect { declaration.save! }.not_to raise_error
+        expect(declaration.delivery_partner_when_created)
+          .to eq(delivery_partner_when_created)
+      end
+    end
+
+    context "when updating an existing record" do
+      let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:declaration) do
+        FactoryBot.create(:declaration, delivery_partner_when_created:)
+      end
+
+      it "raises an error" do
+        expect { declaration.update!(delivery_partner_when_created: other_delivery_partner) }
+          .to raise_error(ActiveRecord::ReadonlyAttributeError)
+        expect(declaration.delivery_partner_when_created)
+          .to eq(delivery_partner_when_created)
       end
     end
   end
