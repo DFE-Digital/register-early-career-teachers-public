@@ -414,7 +414,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       declaration1 = FactoryBot.create(:declaration)
       declaration2 = FactoryBot.create(:declaration)
 
-      query = described_class.new(delivery_partner_api_ids: declaration1.delivery_partner.api_id)
+      query = described_class.new(delivery_partner_api_ids: declaration1.delivery_partner_when_created.api_id)
 
       expect { query.declaration_by_api_id(declaration2.api_id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -441,7 +441,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       declaration1 = FactoryBot.create(:declaration)
       declaration2 = FactoryBot.create(:declaration)
 
-      query = described_class.new(delivery_partner_api_ids: declaration1.delivery_partner.api_id)
+      query = described_class.new(delivery_partner_api_ids: declaration1.delivery_partner_when_created.api_id)
 
       expect { query.declaration_by_id(declaration2.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end

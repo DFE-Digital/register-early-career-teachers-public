@@ -19,7 +19,7 @@ RSpec.describe "admin/teachers/declarations/index.html.erb" do
       allow(d).to receive_messages(
         api_id: "test-declaration-uuid",
         lead_provider: FactoryBot.build_stubbed(:lead_provider),
-        delivery_partner: FactoryBot.build_stubbed(:delivery_partner),
+        delivery_partner_when_created: FactoryBot.build_stubbed(:delivery_partner),
         for_ect?: true,
         for_mentor?: false,
         overall_status: "no_payment",
@@ -87,7 +87,7 @@ RSpec.describe "admin/teachers/declarations/index.html.erb" do
         allow(d).to receive_messages(
           api_id: "test-mentor-declaration-uuid",
           lead_provider: FactoryBot.build_stubbed(:lead_provider),
-          delivery_partner: FactoryBot.build_stubbed(:delivery_partner),
+          delivery_partner_when_created: FactoryBot.build_stubbed(:delivery_partner),
           for_ect?: false,
           for_mentor?: true,
           overall_status: "no_payment",

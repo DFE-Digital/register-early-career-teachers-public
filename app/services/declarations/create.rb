@@ -72,7 +72,8 @@ module Declarations
         declaration_date:,
         declaration_type:,
         evidence_type:,
-        mentorship_period:
+        mentorship_period:,
+        delivery_partner_when_created: training_period.delivery_partner
       )
     end
 
