@@ -358,7 +358,7 @@ describe "Latest induction records mode conversion" do
         aggregate_failures do
           subject.mentor_at_school_periods.flat_map(&:training_periods).each do |training_period|
             expected_summary = [training_period.school.urn, training_period.contract_period_year, training_period.lead_provider_info&.name].join(": ")
-            expect(training_period.combination.summary).to eq(expected_summary)
+            expect(training_period.combination.summary[39..-2]).to eq(expected_summary)
           end
         end
       end

@@ -578,7 +578,7 @@
   - updated_at
   :data_migration_teacher_combinations:
   - id
-  - trn
+  - api_id
   - ecf1_ect_profile_id
   - ecf1_mentor_profile_id
   - ecf1_ect_combinations
