@@ -22,7 +22,7 @@ class Statement < ApplicationRecord
   validates :year, numericality: { greater_than_or_equal_to: 2020, is_less_than_or_equal_to: :maximum_year, only_integer: true, message: "Year must be on or after 2020 and on or before #{maximum_year}" }
   validates :active_lead_provider_id, uniqueness: { scope: %i[year month], message: "Statement with the same month and year already exists for the lead provider" }
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
-  validate :same_contract_linked_to_other_statements_have_same_lead_provider_and_contract_period?
+  validate :same_contract_linked_to_other_statements_have_same_lead_provider_and_contract_period
 
   scope :with_fee_type, ->(fee_type) { where(fee_type:) }
   scope :with_status, ->(*status) { where(status:) }
@@ -66,15 +66,9 @@ class Statement < ApplicationRecord
     output_fee? && payable? && !marked_as_paid_at? && deadline_date < Date.current
   end
 
-  def same_contract_linked_to_other_statements_have_same_lead_provider_and_contract_period?
-    return if contract.nil?
+  def same_contract_linked_to_other_statements_have_same_lead_provider_and_contract_period
+    return unless contract&.statements&.any? { it.active_lead_provider != active_lead_provider }
 
-    other_statements_with_same_contract = Statement.joins(:contract).where(contract_id:).where.not(id:)
-
-    return if other_statements_with_same_contract.all? do |statement|
-      statement.active_lead_provider_id == active_lead_provider_id
-    end
-
-    errors.add(:contract, "This contract is associated with other statements linked to different lead providers/contract periods")
+    errors.add(:contract, "This contract is associated with other statements linked to different lead providers/contract periods.")
   end
 end
