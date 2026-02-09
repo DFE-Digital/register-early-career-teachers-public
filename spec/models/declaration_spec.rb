@@ -38,6 +38,7 @@ describe Declaration do
     it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
     it { is_expected.to have_one(:ect_teacher).through(:ect_at_school_period).source(:teacher) }
     it { is_expected.to have_one(:mentor_teacher).through(:mentor_at_school_period).source(:teacher) }
+    it { is_expected.to have_many(:events) }
   end
 
   describe "delegations" do
