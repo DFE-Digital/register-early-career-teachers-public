@@ -1,8 +1,9 @@
-describe "One induction record (end to end)" do
+describe "One induction record (end to end, existing teacher)" do
   subject(:teacher) { Teacher.find_by(trn: ecf1_teacher_profile.trn) }
 
   # Timestamps we care about
   let(:user_created_at) { 3.years.ago.round }
+  let(:original_teacher_created_at) { 1.year.ago.round }
 
   # ECF1 data
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
@@ -18,6 +19,7 @@ describe "One induction record (end to end)" do
   let(:ecf2_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: ecf2_lead_provider, contract_period: ecf2_contract_period) }
   let(:ecf2_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: ecf2_active_lead_provider, delivery_partner: ecf2_delivery_partner) }
 
+  let!(:ecf2_teacher) { FactoryBot.create(:teacher, trn: ecf1_teacher_profile.trn, created_at: original_teacher_created_at) }
   let!(:ecf2_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: ecf1_urn) }
   let!(:ecf2_schedule) { FactoryBot.create(:schedule, contract_period: ecf2_contract_period, identifier: ecf1_induction_record.schedule.schedule_identifier) }
   let!(:ecf2_school_partnership) { FactoryBot.create(:school_partnership, school: ecf2_school, lead_provider_delivery_partnership: ecf2_lead_provider_delivery_partnership) }
@@ -27,7 +29,7 @@ describe "One induction record (end to end)" do
   let(:teacher_history_converter) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:) }
 
   before do
-    ecf1_teacher_profile.user.update(created_at: user_created_at)
+    ecf1_teacher_profile.user.update!(created_at: user_created_at)
 
     ecf2_teacher_history = teacher_history_converter.convert_to_ecf2!
     ecf2_teacher_history.save_all_ect_data!
@@ -74,7 +76,7 @@ describe "One induction record (end to end)" do
     end
   end
 
-  context "when in all_induction_records mode (premium)", pending: "re-enable once we've implemented premium mode" do
+  context "when in all_induction_records mode (premium)", skip: "re-enable once we've implemented premium mode" do
     let(:migration_mode) { :all_induction_records }
 
     it "creates the teacher record" do
