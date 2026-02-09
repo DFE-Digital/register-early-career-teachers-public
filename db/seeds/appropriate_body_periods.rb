@@ -256,11 +256,17 @@ appropriate_body_periods.each do |data|
     urn = data.dig(:lead_school, :urn)
     regions = data[:regions]
 
-    gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england, name: school_name, urn:)
+    gias_school = FactoryBot.create(:gias_school, :eligible_type, :in_england,
+                                    name: school_name,
+                                    urn:)
 
-    FactoryBot.create(:school, :eligible, urn:, gias_school:)
+    school = FactoryBot.create(:school, :eligible, :with_dsi,
+                               urn:,
+                               gias_school:)
 
-    appropriate_body = FactoryBot.create(:appropriate_body, name:)
+    appropriate_body = FactoryBot.create(:appropriate_body,
+                                         name:,
+                                         dfe_sign_in_organisation: school.dfe_sign_in_organisation)
 
     regions.each do |region|
       FactoryBot.create(:region,
@@ -278,7 +284,8 @@ appropriate_body_periods.each do |data|
 
   # National Bodies
   if appropriate_body_period.national? && appropriate_body_period.appropriate_body.blank?
-    appropriate_body = FactoryBot.create(:appropriate_body, name:)
+    appropriate_body = FactoryBot.create(:appropriate_body, :with_dsi,
+                                         name:)
     appropriate_body_period.update!(appropriate_body:)
   end
 

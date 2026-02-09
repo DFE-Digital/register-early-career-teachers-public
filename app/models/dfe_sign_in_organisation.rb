@@ -23,8 +23,8 @@ class DfESignInOrganisation < ApplicationRecord
             uniqueness: true
 
   # Scopes
-  scope :national_bodies, -> { joins(:appropriate_body).where.not(urn: nil) }
-  scope :schools, -> { includes(:school).where.not(urn: nil) }
+  scope :national_bodies, -> { where(urn: nil) }
+  scope :schools, -> { where.not(urn: nil) }
 
   def last_authenticated_at=(datetime)
     self.first_authenticated_at ||= datetime
