@@ -318,6 +318,12 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
   describe "#contract_period_enabled?" do
     let(:started_on) { Date.new(2025, 7, 1) }
 
+    around do |example|
+      travel_to(Date.new(2025, 6, 3)) do
+        example.run
+      end
+    end
+
     context "when the contract period is enabled" do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
 
@@ -336,6 +342,23 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
 
     context "when there is no matching contract period" do
       let(:contract_period) { nil }
+
+      it "returns nil" do
+        expect(status.contract_period_enabled?).to be_nil
+      end
+    end
+
+    context "when the start date is in the past" do
+      let(:started_on) { Date.new(2025, 6, 1) }
+      let(:contract_period) { nil }
+
+      it "returns true" do
+        expect(status.contract_period_enabled?).to be(true)
+      end
+    end
+
+    context "when the start date has not been set" do
+      let(:started_on) { nil }
 
       it "returns nil" do
         expect(status.contract_period_enabled?).to be_nil

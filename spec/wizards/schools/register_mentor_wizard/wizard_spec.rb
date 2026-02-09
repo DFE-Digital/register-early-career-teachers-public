@@ -10,6 +10,7 @@ describe Schools::RegisterMentorWizard::Wizard do
   let(:trs_date_of_birth) { "1977-02-03" }
   let(:trs_first_name) { "Mentor" }
   let(:trs_last_name) { "LastName" }
+  let(:started_on) { nil }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:, ect_id:) }
   let!(:contract_period) { FactoryBot.create(:contract_period, :current, enabled: true) }
 
@@ -306,8 +307,7 @@ describe Schools::RegisterMentorWizard::Wizard do
 
     context "when only TRN, DoB, Nino, change name (and maybe corrected name), email address, and start date have been set" do
       let(:mentor_date_of_birth) { "2000-01-01" }
-      let(:started_on) { Date.new(2025, 7, 1) }
-      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+
       let(:store) do
         FactoryBot.build(:session_repository,
                          school_urn:,
@@ -324,7 +324,59 @@ describe Schools::RegisterMentorWizard::Wizard do
                          started_on:)
       end
 
-      context "when the contract period is enabled" do
+      around do |example|
+        travel_to Date.new(2025, 5, 1) do
+          example.run
+        end
+      end
+
+      context "when the start date is in the future" do
+        let(:started_on) { Date.new(2025, 7, 1) }
+
+        context "when the contract period is enabled" do
+          let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+
+          it do
+            expect(subject).to eq(%i[find_mentor
+                                     national_insurance_number
+                                     review_mentor_details
+                                     email_address
+                                     started_on
+                                     previous_training_period_details
+                                     programme_choices
+                                     lead_provider
+                                     review_mentor_eligibility
+                                     eligibility_lead_provider
+                                     change_mentor_details
+                                     change_email_address
+                                     check_answers
+                                     change_started_on])
+          end
+        end
+
+        context "when the contract period is not enabled" do
+          let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
+
+          it do
+            expect(subject).to eq(%i[find_mentor
+                                     national_insurance_number
+                                     review_mentor_details
+                                     email_address
+                                     started_on
+                                     previous_training_period_details
+                                     programme_choices
+                                     lead_provider
+                                     review_mentor_eligibility
+                                     eligibility_lead_provider
+                                     cannot_register_mentor_yet])
+          end
+        end
+      end
+
+      context "when the date is in the past" do
+        let(:started_on) { Date.new(2025, 4, 1) }
+        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+
         it do
           expect(subject).to eq(%i[find_mentor
                                    national_insurance_number
@@ -340,42 +392,6 @@ describe Schools::RegisterMentorWizard::Wizard do
                                    change_email_address
                                    check_answers
                                    change_started_on])
-        end
-      end
-
-      context "when the contract period is not enabled" do
-        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
-
-        it do
-          expect(subject).to eq(%i[find_mentor
-                                   national_insurance_number
-                                   review_mentor_details
-                                   email_address
-                                   started_on
-                                   previous_training_period_details
-                                   programme_choices
-                                   lead_provider
-                                   review_mentor_eligibility
-                                   eligibility_lead_provider
-                                   cannot_register_mentor_yet])
-        end
-
-        context "when there is no matching contract period" do
-          let(:started_on) { Date.new(2024, 7, 1) }
-
-          it do
-            expect(subject).to eq(%i[find_mentor
-                                     national_insurance_number
-                                     review_mentor_details
-                                     email_address
-                                     started_on
-                                     previous_training_period_details
-                                     programme_choices
-                                     lead_provider
-                                     review_mentor_eligibility
-                                     eligibility_lead_provider
-                                     cannot_register_mentor_yet])
-          end
         end
       end
     end

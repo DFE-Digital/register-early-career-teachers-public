@@ -17,7 +17,7 @@ module Schools
     private
 
       def persist
-        if contract_period.enabled?
+        if contract_period_enabled?
           super
         else
           wizard.store.started_on = mentor.started_on&.to_date
