@@ -5,7 +5,7 @@ module Migration
     attr_reader :query
 
     TeacherCombinationRow = Struct.new(
-      :trn,
+      :api_id,
       :ecf1_ect_profile_id,
       :ecf1_mentor_profile_id,
       :ecf1_ect_combinations,
@@ -21,7 +21,7 @@ module Migration
     )
 
     def initialize
-      @query = DataMigrationTeacherCombination.order(:trn)
+      @query = DataMigrationTeacherCombination.order(:api_id)
     end
 
     def generate_and_cache_csv
@@ -42,7 +42,7 @@ module Migration
 
     def csv_headers
       %w[
-        trn
+        api_id
         ecf1_ect_profile_id
         ecf1_mentor_profile_id
         ecf1_ect_combinations
@@ -59,7 +59,7 @@ module Migration
 
     def row(teacher_combination)
       TeacherCombinationRow.new(
-        trn: teacher_combination.trn,
+        api_id: teacher_combination.api_id,
         ecf1_ect_profile_id: teacher_combination.ecf1_ect_profile_id,
         ecf1_mentor_profile_id: teacher_combination.ecf1_mentor_profile_id,
         ecf1_ect_combinations: teacher_combination.ecf1_ect_combinations,

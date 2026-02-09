@@ -139,7 +139,7 @@ private
   end
 
   def data_migration_teacher_combinations
-    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(trn: teacher.trn)
+    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(api_id: teacher.api_id)
   end
 
   def save_ect_combination_summaries!

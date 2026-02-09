@@ -15,7 +15,7 @@ module Migration
     )
 
     def initialize
-      @query = DataMigrationTeacherCombination.order(:trn)
+      @query = DataMigrationTeacherCombination.order(:api_id)
     end
 
     def generate_and_cache_csv

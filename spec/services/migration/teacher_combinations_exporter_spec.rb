@@ -24,7 +24,7 @@ RSpec.describe Migration::TeacherCombinationsExporter do
       expect(csv.length).to eq 2
 
       csv.each do |row|
-        expect(row["trn"]).to be_in [combination_1.trn, combination_2.trn]
+        expect(row["api_id"]).to be_in [combination_1.api_id, combination_2.api_id]
       end
     end
   end
