@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :data_migration_teacher_combination, class: "DataMigrationTeacherCombination" do
-    trn { Faker::Number.unique.number(digits: 7) }
+    api_id { SecureRandom.uuid }
     ecf1_ect_profile_id { SecureRandom.uuid }
     ecf1_mentor_profile_id { SecureRandom.uuid }
 

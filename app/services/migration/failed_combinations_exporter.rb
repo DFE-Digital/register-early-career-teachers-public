@@ -27,7 +27,7 @@ module Migration
     )
 
     def initialize
-      @query = DataMigrationFailedCombination.order(:trn, :profile_type)
+      @query = DataMigrationFailedCombination.order(:api_id, :profile_type)
     end
 
     def generate_and_cache_csv

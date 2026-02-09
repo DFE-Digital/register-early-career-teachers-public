@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_06_084155) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -201,7 +201,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_06_084155) do
   end
 
   create_table "data_migration_teacher_combinations", force: :cascade do |t|
-    t.string "trn"
     t.uuid "ecf1_ect_profile_id"
     t.uuid "ecf1_mentor_profile_id"
     t.jsonb "ecf1_ect_combinations", default: [], null: false
@@ -214,6 +213,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_06_084155) do
     t.virtual "ecf2_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_mentor_combinations)", stored: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "api_id"
   end
 
   create_table "data_migrations", force: :cascade do |t|
