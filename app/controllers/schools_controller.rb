@@ -3,6 +3,7 @@ class SchoolsController < ApplicationController
 
   include Authorisation
 
+  before_action :redirect_if_school_access_blocked
   before_action :set_school
 
 private
@@ -28,5 +29,15 @@ private
 
   def school_from_session
     School.joins(:gias_school).find_by_urn(current_user.school_urn)
+  end
+
+  def redirect_if_school_access_blocked
+    return unless current_user&.school_user?
+    return unless current_user.dfe_sign_in?
+
+    blocker = Schools::AccessBlocker.new(school_urn: current_user.school_urn)
+    return unless blocker.blocked?
+
+    redirect_to(schools_access_denied_path)
   end
 end
