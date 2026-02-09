@@ -298,8 +298,8 @@ describe Teachers::Search do
       end
 
       describe "in_progress filtering" do
-        let(:failed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
-        let(:passed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
+        let(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
+        let(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
         let(:teacher1) { FactoryBot.create(:teacher, :induction_in_progress) }
         let(:teacher2) { FactoryBot.create(:teacher, trs_induction_status: "FailedInWales") }
 
