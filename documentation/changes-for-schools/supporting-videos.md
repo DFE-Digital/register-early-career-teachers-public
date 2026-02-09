@@ -3,6 +3,8 @@
 
 ![Register a mentor (already registered at another school)](/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4)
 
+<video src="/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4" width="320" height="240" controls></video>
+
 <p><a href="/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4">Register a mentor (already registered at another school)</a></p>
 <p><a href="/changes-for-schools/videos/assign-mentor-to-ect.mp4">Assign a mentor to an early career teacher</a></p>
 <p><a href="/changes-for-schools/videos/tell-us-SIT.mp4">Tell DfE about school induction tutor</a></p>
@@ -13,9 +15,3 @@
 <p><a href="/changes-for-schools/videos/ect-mentor-leaving-permanently.mp4">Tell DfE about and early career teacher or mentor who's leaving the school permanently</a></p>
 <p><a href="/changes-for-schools/videos/update-ect-details.mp4">Update early career teacher details</a></p>
 <p><a href="/changes-for-schools/videos/update-mentor-details.mp4">Update mentor details</a></p>
-
-
-
-
-
-<p><a href="#">Video 2</a></p>
