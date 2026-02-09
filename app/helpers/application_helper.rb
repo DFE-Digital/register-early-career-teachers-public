@@ -55,6 +55,10 @@ module ApplicationHelper
     govuk_link_to(text, "mailto:" + Rails.application.config.support_email_address)
   end
 
+  def school_support_mailto_link(text = Rails.application.config.school_support_email_address)
+    govuk_link_to(text, "mailto:" + Rails.application.config.school_support_email_address)
+  end
+
   def ruby_pants_options
     {
       double_left_quote: "“",

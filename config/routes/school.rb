@@ -1,5 +1,7 @@
 constraints -> { Rails.application.config.enable_schools_interface } do
   namespace :schools, path: :school do
+    get "/access-denied", to: "access#show", as: :access_denied
+
     get "/home/ects", to: "ects#index", as: :ects_home
     resources :ects, only: %i[index show] do
       resource :mentorship, only: %i[new create] do
