@@ -43,23 +43,34 @@ module Schools
     end
 
     def withdrawn_training_details
+      name = teacher_full_name(ect_at_school_period.teacher)
+
       safe_join([
-        govuk_tag(text: "Action required", colour: "red"),
         tag.p(withdrawn_training_details_message, class: "govuk-body govuk-!-margin-top-2"),
+
         tag.p(
-          govuk_link_to(
-            "Select a lead provider",
-            schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
-            no_visited_state: true
-          ),
+          safe_join([
+            "You can ".html_safe,
+            govuk_link_to(
+              "select a lead provider",
+              schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
+              no_visited_state: true
+            ),
+            " for #{name} if they will be continuing provider-led training.".html_safe
+          ]),
           class: "govuk-body"
         ),
+
         tag.p(
-          govuk_link_to(
-            "Tell us if they are changing their programme type to school-led",
-            schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
-            no_visited_state: true
-          ),
+          safe_join([
+            "You can tell us if they are ".html_safe,
+            govuk_link_to(
+              "changing their programme type to school-led",
+              schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
+              no_visited_state: true
+            ),
+            ".".html_safe
+          ]),
           class: "govuk-body"
         )
       ])
