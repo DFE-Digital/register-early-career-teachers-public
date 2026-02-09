@@ -341,6 +341,29 @@ describe Declaration do
           end
         end
       end
+
+      describe ".refundable" do
+        let(:declarations) { described_class.clawback_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
+        let(:refundable_declarations) { declarations.select { |d| described_class::REFUNDABLE_PAYMENT_STATUSES.include?(d.clawback_status) } }
+
+        it "returns declarations with refundable statuses" do
+          expect(described_class.refundable).to match_array(refundable_declarations)
+        end
+
+        context "when clawback_status is `no_clawback`" do
+          before do
+            refundable_declarations.each do |d|
+              d.update!(
+                clawback_status: "no_clawback"
+              )
+            end
+          end
+
+          it "returns no declarations" do
+            expect(described_class.refundable).to be_empty
+          end
+        end
+      end
     end
   end
 
