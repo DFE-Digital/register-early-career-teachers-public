@@ -1,4 +1,6 @@
 module EnvironmentHelper
+  FEEDBACK_SURVEY_FORM_URL = "https://forms.office.com/e/yrtkdGGKNu"
+
   def environment_specific_header_colour_class
     return if ENVIRONMENT_COLOUR.blank?
 
@@ -15,6 +17,10 @@ module EnvironmentHelper
 private
 
   def environment_phase_banner_default_content
-    "This is a new service – your #{support_mailto_link('feedback')} will help us to improve it.".html_safe
+    "This is a new service – your #{support_feedback_form_link} will help us to improve it.".html_safe
+  end
+
+  def support_feedback_form_link
+    govuk_link_to("feedback", FEEDBACK_SURVEY_FORM_URL)
   end
 end
