@@ -34,6 +34,9 @@
 
 <video src="/changes-for-schools/videos/register-ect-moved-from-another-school.mp4" type="video/mp4" height="240" controls></video>
 
+<br>
+
+
 ## Register a mentor (already registered at another school)
 
 <video src="/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4" type="video/mp4" height="240" controls></video>
