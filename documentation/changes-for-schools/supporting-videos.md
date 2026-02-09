@@ -1,7 +1,7 @@
 # Register early career teacher service: supporting videos
 
 
-![video](/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4)
+![Register a mentor (already registered at another school)](/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4)
 
 <p><a href="/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4">Register a mentor (already registered at another school)</a></p>
 <p><a href="/changes-for-schools/videos/assign-mentor-to-ect.mp4">Assign a mentor to an early career teacher</a></p>
