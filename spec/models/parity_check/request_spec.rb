@@ -337,4 +337,62 @@ describe ParityCheck::Request do
 
     it { is_expected.to contain_exactly(111) }
   end
+
+  describe "#ecf_response_bodies_array, #ecf_response_bodies_array" do
+    let(:responses) do
+      [
+        FactoryBot.build(:parity_check_response, ecf_body: { data: [{ id: 123, foo: "bar" }] }.to_json, rect_body: { data: [{ id: 123, baz: "qux" }, { id: 456 }] }.to_json),
+        FactoryBot.build(:parity_check_response, ecf_body: { data: [{ id: 456 }] }.to_json, rect_body: { data: [{ id: 789 }] }.to_json),
+        FactoryBot.build(:parity_check_response, ecf_body: { error: "Some error" }.to_json, rect_body: nil.to_json),
+      ]
+    end
+    let(:request) { FactoryBot.create(:parity_check_request, responses:) }
+
+    it "extracts all response items into a single array and sorts by id" do
+      expect(request.ecf_response_bodies_array).to eq([{ id: 123, foo: "bar" }, { id: 456 }])
+      expect(request.rect_response_bodies_array).to eq([{ id: 123, baz: "qux" }, { id: 456 }, { id: 789 }])
+    end
+  end
+
+  describe "#response_bodies_diff, #response_bodies_different?" do
+    let(:responses) do
+      [
+        FactoryBot.build(:parity_check_response, ecf_body: { data: [{ id: 123, foo: "bar" }] }.to_json, rect_body: { data: [{ id: 456 }, { id: 111 }] }.to_json),
+        FactoryBot.build(:parity_check_response, ecf_body: { data: [{ id: 456 }] }.to_json, rect_body: { data: [{ id: 123 }] }.to_json),
+      ]
+    end
+    let(:request) { FactoryBot.create(:parity_check_request, responses:) }
+
+    it "generates a diff of the combined ECF and RECT response bodies" do
+      expect(request.response_bodies_diff.to_s).to eq(
+        <<~DIFF
+           [
+             {
+          -    "id": 123,
+          -    "foo": "bar"
+          +    "id": 123
+             },
+             {
+               "id": 456
+             }
+           ]
+          \\ No newline at end of file
+        DIFF
+      )
+    end
+
+    it { expect(request).to be_response_bodies_different }
+
+    context "when the responses are equal" do
+      let(:responses) do
+        [
+          FactoryBot.build(:parity_check_response, ecf_body: { data: [{ id: 123 }] }.to_json, rect_body: { data: [{ id: 456 }] }.to_json),
+          FactoryBot.build(:parity_check_response, ecf_body: { data: [{ id: 456 }] }.to_json, rect_body: { data: [{ id: 123 }] }.to_json),
+        ]
+      end
+
+      it { expect(request.response_bodies_diff.to_s).to be_empty }
+      it { expect(request).not_to be_response_bodies_different }
+    end
+  end
 end
