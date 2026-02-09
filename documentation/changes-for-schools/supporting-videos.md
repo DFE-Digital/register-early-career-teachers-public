@@ -1,14 +1,8 @@
 # Register early career teacher service: supporting videos
 
-## Register a mentor (already registered at another school)
+## Register a school's first early career teacher
 
-<video src="/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4" type="video/mp4" height="240" controls></video>
-
-<br>
-
-## Assign a mentor to an early career teacher
-
-<video src="/changes-for-schools/videos/assign-mentor-to-ect.mp4" type="video/mp4" height="240" controls></video>
+<video src="/changes-for-schools/videos/regsiter-first-ever-ect.mp4" type="video/mp4" height="240" controls></video>
 
 <br>
 
@@ -18,9 +12,15 @@
 
 <br>
 
-## Register a school's first early career teacher
+## Register early career teacher for a school-led programme
 
-<video src="/changes-for-schools/videos/regsiter-first-ever-ect.mp4" type="video/mp4" height="240" controls></video>
+<video src="/changes-for-schools/videos/register-school-led-ect.mp4" type="video/mp4" height="240" controls></video>
+
+<br>
+
+## Assign a mentor to an early career teacher
+
+<video src="/changes-for-schools/videos/assign-mentor-to-ect.mp4" type="video/mp4" height="240" controls></video>
 
 <br>
 
@@ -30,15 +30,15 @@
 
 <br>
 
-## Register early career teacher for a school-led programme
-
-<video src="/changes-for-schools/videos/register-school-led-ect.mp4" type="video/mp4" height="240" controls></video>
-
-<br>
-
 ## Register early career teacher who's moved from another school
 
 <video src="/changes-for-schools/videos/register-ect-moved-from-another-school.mp4" type="video/mp4" height="240" controls></video>
+
+## Register a mentor (already registered at another school)
+
+<video src="/changes-for-schools/videos/register-mentor-registered-at-another-school.mp4" type="video/mp4" height="240" controls></video>
+
+<br>
 
 ## Tell DfE about an early career teacher or mentor who's leaving the school permanently
 
