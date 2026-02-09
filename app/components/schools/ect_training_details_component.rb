@@ -43,55 +43,71 @@ module Schools
     end
 
     def withdrawn_training_details
-      name = teacher_full_name(ect_at_school_period.teacher)
-
       safe_join([
-        tag.p(withdrawn_training_details_message, class: "govuk-body govuk-!-margin-top-2"),
-
-        tag.p(
-          safe_join([
-            "You can ".html_safe,
-            govuk_link_to(
-              "select a lead provider",
-              schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
-              no_visited_state: true
-            ),
-            " for #{name} if they will be continuing provider-led training.".html_safe
-          ]),
-          class: "govuk-body"
-        ),
-
-        tag.p(
-          safe_join([
-            "You can tell us if they are ".html_safe,
-            govuk_link_to(
-              "changing their programme type to school-led",
-              schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
-              no_visited_state: true
-            ),
-            ".".html_safe
-          ]),
-          class: "govuk-body"
-        )
+        withdrawn_intro_paragraph,
+        select_lead_provider_paragraph,
+        change_to_school_led_paragraph
       ])
+    end
+
+    def withdrawn_intro_paragraph
+      tag.p(
+        withdrawn_training_details_message,
+        class: "govuk-body govuk-!-margin-top-2"
+      )
+    end
+
+    def select_lead_provider_paragraph
+      ect_name = teacher_full_name(ect_at_school_period.teacher)
+
+      tag.p(
+        safe_join([
+          "You can ".html_safe,
+          govuk_link_to(
+            "select a lead provider",
+            schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
+            no_visited_state: true
+          ),
+          " for #{ect_name} if they will be continuing provider-led training.".html_safe
+        ]),
+        class: "govuk-body"
+      )
+    end
+
+    def change_to_school_led_paragraph
+      tag.p(
+        safe_join([
+          "You can tell us if they are ".html_safe,
+          govuk_link_to(
+            "changing their programme type to school-led",
+            schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
+            no_visited_state: true
+          ),
+          ".".html_safe
+        ]),
+        class: "govuk-body"
+      )
     end
 
     def withdrawn_training_details_message
       lead_provider_name = withdrawn_lead_provider_name
       subject = lead_provider_name.presence || "The lead provider"
       verb = lead_provider_name.present? ? "have" : "has"
-      name = teacher_full_name(ect_at_school_period.teacher)
+      ect_name = teacher_full_name(ect_at_school_period.teacher)
 
-      "#{subject} #{verb} told us that #{name} is no longer training with them. Contact them if you think this is an error."
+      "#{subject} #{verb} told us that #{ect_name} is no longer training with them. Contact them if you think this is an error."
     end
 
     def withdrawn_lead_provider_name
-      return if training_period.blank?
+      current_training_period = training_period
+      return nil if current_training_period.blank?
 
-      if training_period.only_expression_of_interest?
-        training_period.expression_of_interest&.lead_provider&.name
+      if current_training_period.only_expression_of_interest?
+        expression_of_interest = current_training_period.expression_of_interest
+        lead_provider = expression_of_interest&.lead_provider
+        lead_provider&.name
       else
-        training_period.lead_provider_name
+        current_training_period.lead_provider_name
       end
     end
 
@@ -113,7 +129,7 @@ module Schools
         actions: [{
           text: "Change",
           visually_hidden_text: "training programme",
-          href: schools_ects_change_training_programme_wizard_edit_path(@ect_at_school_period),
+          href: schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
           classes: "govuk-link--no-visited-state"
         }]
       }
@@ -126,7 +142,7 @@ module Schools
         actions: [{
           text: "Change",
           visually_hidden_text: "lead provider",
-          href: schools_ects_change_lead_provider_wizard_edit_path(@ect_at_school_period),
+          href: schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
           classes: "govuk-link--no-visited-state"
         }]
       }
