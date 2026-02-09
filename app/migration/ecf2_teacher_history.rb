@@ -73,14 +73,24 @@ private
 
   def find_or_create_teacher!
     found_teacher = if teacher.trn.present?
-                      ::Teacher.find_or_initialize_by(trn: teacher.trn)
+                      ::Teacher.find_by(trn: teacher.trn)
                     else
-                      ::Teacher.find_or_initialize_by(api_id: teacher.api_id)
+                      ::Teacher.find_by(api_id: teacher.api_id)
                     end
-    with_failure_recording(teacher: found_teacher, model: :teacher, migration_item_id: teacher.api_id) do
-      found_teacher.assign_attributes(**teacher.to_hash)
-      found_teacher.save!
-      found_teacher
+
+    if found_teacher.present?
+      with_failure_recording(teacher: found_teacher, model: :teacher, migration_item_id: teacher.api_id) do
+        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name))
+        found_teacher.save!
+        found_teacher
+      end
+    else
+      new_teacher = ::Teacher.new
+      with_failure_recording(teacher: new_teacher, model: :teacher, migration_item_id: teacher.api_id) do
+        new_teacher.assign_attributes(**teacher.to_hash)
+        new_teacher.save!
+        new_teacher
+      end
     end
   end
 
