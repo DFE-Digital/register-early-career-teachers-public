@@ -16,11 +16,14 @@ module Schools
     private
 
       def withdrawn_warning_text
-        govuk_link_to(
-          "Tell us if #{teacher_full_name(teacher)} will be continuing their training or if they have left your school",
-          "#{schools_ect_path(ect_at_school_period)}#training-details",
-          no_visited_state: true
-        )
+        safe_join([
+          "Tell us if #{teacher_full_name(teacher)} will be ",
+          govuk_link_to(
+            "continuing their training or if they have left your school",
+            "#{schools_ect_path(ect_at_school_period)}#training-details",
+            no_visited_state: true
+          )
+        ])
       end
 
       def withdrawn_message_text
