@@ -1,6 +1,6 @@
 # Register early career teacher service: supporting videos
 
-## Register an early career teacher for the first time at a school
+## Register a school's first early career teacher
 
 <video src="/changes-for-schools/videos/regsiter-first-ever-ect.mp4" type="video/mp4" height="240" controls></video>
 
