@@ -29,7 +29,7 @@ module Schools
         return :not_registered if not_registered?
         return :finished if finished?
 
-        API::TrainingPeriods::TrainingStatus.new(training_period: mentor_training_period).status
+        mentor_training_period.status
       end
 
       def ineligible_for_training?

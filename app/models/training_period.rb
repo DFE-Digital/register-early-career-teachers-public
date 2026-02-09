@@ -168,6 +168,14 @@ class TrainingPeriod < ApplicationRecord
     end
   end
 
+  def status
+    return :active if withdrawn_at.blank? && deferred_at.blank?
+    return :withdrawn if deferred_at.blank?
+    return :deferred if withdrawn_at.blank?
+
+    withdrawn_at > deferred_at ? :withdrawn : :deferred
+  end
+
 private
 
   def only_one_at_school_period_present
