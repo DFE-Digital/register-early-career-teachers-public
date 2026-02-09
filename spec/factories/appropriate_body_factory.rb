@@ -8,30 +8,20 @@ FactoryBot.define do
 
     association :dfe_sign_in_organisation
 
-    trait :national do
-      body_type { "national" }
-    end
-
     trait :istip do
-      national
-      name { NationalBody::ISTIP }
+      name { AppropriateBody::ISTIP }
       association :dfe_sign_in_organisation, :istip
     end
 
     trait :esp do
-      national
-      name { NationalBody::ESP }
+      name { AppropriateBody::ESP }
       association :dfe_sign_in_organisation, :esp
     end
 
-    trait :teaching_school_hub do
-      body_type { "teaching_school_hub" }
-    end
-
-    trait :local_authority do
-      inactive
-      body_type { "local_authority" }
+    trait :with_dsi do
+      dfe_sign_in_organisation do
+        association :dfe_sign_in_organisation, urn: nil, name:
+      end
     end
   end
 end
-

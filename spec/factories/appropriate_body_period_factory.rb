@@ -16,14 +16,20 @@ FactoryBot.define do
       association :dfe_sign_in_organisation
     end
 
-    trait :istip do
-      name { AppropriateBody::ISTIP }
+    trait :national do
       body_type { "national" }
     end
 
+    trait :istip do
+      national
+      name { AppropriateBody::ISTIP }
+      association :dfe_sign_in_organisation, :istip
+    end
+
     trait :esp do
+      national
       name { AppropriateBody::ESP }
-      body_type { "national" }
+      association :dfe_sign_in_organisation, :esp
     end
 
     trait :teaching_school_hub do

@@ -1,6 +1,8 @@
 #
 # NB: This record is not production ready. Do not use until RIAB has removed this notice.
 #
+# An AppropriateBody is either a national body (like ISTIP) or a regional body (Teaching School Hub).
+# @see LegacyAppropriateBody for details of Local authorities, who used to perform this function.
 class AppropriateBody < ApplicationRecord
   # Independent schools in England and overseas
   ISTIP = "Independent Schools Teacher Induction Panel (ISTIP)"
