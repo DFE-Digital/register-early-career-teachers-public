@@ -693,6 +693,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
     t.integer "induction_tutor_last_nominated_in"
     t.boolean "marked_as_eligible", default: false, null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
+    t.index ["api_updated_at"], name: "index_schools_on_api_updated_at"
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
