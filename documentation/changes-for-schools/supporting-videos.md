@@ -34,11 +34,11 @@
 
 ## Update early career teacher details
 
-<video src="/update-ect-details.mp4" type="video/mp4" height="240" controls></video>
+<video src="/changes-for-schools/videos/update-ect-details.mp4" type="video/mp4" height="240" controls></video>
 
 ## Update mentor details
 
-<video src="/update-mentor-details.mp4" type="video/mp4" height="240" controls></video>
+<video src="/changes-for-schools/videos/update-mentor-details.mp4" type="video/mp4" height="240" controls></video>
 
 
 <!-- <p><a href="/changes-for-schools/videos/update-mentor-details.mp4">Update mentor details</a></p> -->
