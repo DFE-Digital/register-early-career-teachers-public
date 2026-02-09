@@ -848,24 +848,97 @@ FactoryBot.create(:training_period,
                   school_partnership: teach_first_grain_brookfield_2021,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
-print_seed_info("Harriet Walter (ECT) with multiple induction periods", indent: 2, colour: ECT_COLOUR)
+print_seed_info("Harriet Walter (ECT then mentor) with both ECT and mentor declarations", indent: 2, colour: ECT_COLOUR)
 
+# ECT training: 2021-2023 (2 years)
 harriet_walter_ect_at_brookfield_school = FactoryBot.create(:ect_at_school_period,
                                                             teacher: harriet_walter,
                                                             school: brookfield_school,
                                                             email: "harriet-walter@history.com",
                                                             started_on: Date.new(2022, 9, 1),
-                                                            finished_on: nil,
+                                                            finished_on: Date.new(2024, 9, 1),
                                                             school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
 
-FactoryBot.create(:training_period,
-                  :for_ect,
-                  :with_schedule,
-                  ect_at_school_period: harriet_walter_ect_at_brookfield_school,
-                  started_on: Date.new(2022, 9, 1),
-                  finished_on: nil,
-                  school_partnership: teach_first_grain_brookfield_2022,
-                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+harriet_walter_ect_training_period = FactoryBot.create(:training_period,
+                                                       :for_ect,
+                                                       :with_schedule,
+                                                       ect_at_school_period: harriet_walter_ect_at_brookfield_school,
+                                                       started_on: Date.new(2022, 9, 1),
+                                                       finished_on: Date.new(2024, 9, 1),
+                                                       school_partnership: teach_first_grain_brookfield_2022,
+                                                       training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+harriet_walter_lp_author = { author_name: harriet_walter_ect_training_period.lead_provider.name, author_type: "lead_provider_api" }
+
+harriet_walter_ect_started_date = harriet_walter_ect_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
+FactoryBot.create(:declaration,
+                  :paid,
+                  declaration_type: :started,
+                  declaration_date: harriet_walter_ect_started_date,
+                  evidence_type: "training-event-attended",
+                  training_period: harriet_walter_ect_training_period).tap do |decl|
+  FactoryBot.create(:event,
+                    event_type: "teacher_declaration_created",
+                    declaration: decl,
+                    teacher: harriet_walter,
+                    heading: "Declaration submitted",
+                    happened_at: harriet_walter_ect_started_date.at_midday,
+                    **harriet_walter_lp_author)
+  describe_declaration(decl)
+end
+
+harriet_walter_ect_completed_date = harriet_walter_ect_training_period.schedule.milestones.find_by(declaration_type: :completed).start_date
+FactoryBot.create(:declaration,
+                  :paid,
+                  declaration_type: :completed,
+                  declaration_date: harriet_walter_ect_completed_date,
+                  evidence_type: "training-event-attended",
+                  training_period: harriet_walter_ect_training_period).tap do |decl|
+  FactoryBot.create(:event,
+                    event_type: "teacher_declaration_created",
+                    declaration: decl,
+                    teacher: harriet_walter,
+                    heading: "Declaration submitted",
+                    happened_at: harriet_walter_ect_completed_date.at_midday,
+                    **harriet_walter_lp_author)
+  describe_declaration(decl)
+end
+
+# Mentor training: 2024 onwards (after completing ECT)
+harriet_walter_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
+                                                            teacher: harriet_walter,
+                                                            school: abbey_grove_school,
+                                                            email: "harriet.walter.mentor@abbey-grove.com",
+                                                            started_on: Date.new(2025, 9, 1),
+                                                            finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+
+harriet_walter_mentor_training_period = FactoryBot.create(:training_period,
+                                                          :for_mentor,
+                                                          :with_schedule,
+                                                          mentor_at_school_period: harriet_walter_mentoring_at_abbey_grove,
+                                                          started_on: Date.new(2025, 9, 1),
+                                                          finished_on: nil,
+                                                          school_partnership: teach_first_grain_abbey_grove_2025,
+                                                          training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+harriet_walter_mentor_lp_author = { author_name: harriet_walter_mentor_training_period.lead_provider.name, author_type: "lead_provider_api" }
+
+harriet_walter_mentor_started_date = harriet_walter_mentor_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
+FactoryBot.create(:declaration,
+                  :eligible,
+                  declaration_type: :started,
+                  declaration_date: harriet_walter_mentor_started_date,
+                  evidence_type: "training-event-attended",
+                  training_period: harriet_walter_mentor_training_period).tap do |decl|
+  FactoryBot.create(:event,
+                    event_type: "teacher_declaration_created",
+                    declaration: decl,
+                    teacher: harriet_walter,
+                    heading: "Declaration submitted",
+                    happened_at: harriet_walter_mentor_started_date.at_midday,
+                    **harriet_walter_mentor_lp_author)
+  describe_declaration(decl)
+end
 
 print_seed_info("Helen Mirren (mentor)", indent: 2, colour: MENTOR_COLOUR)
 

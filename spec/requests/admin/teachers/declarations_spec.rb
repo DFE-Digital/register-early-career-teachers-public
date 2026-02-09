@@ -7,7 +7,9 @@ RSpec.describe "Admin::Teachers::DeclarationsController", type: :request do
   let(:teacher) { FactoryBot.create(:teacher) }
 
   describe "GET /admin/teachers/:teacher_id/declarations" do
-    it { is_expected.to redirect_to(sign_in_path) }
+    context "when not signed in" do
+      it { is_expected.to redirect_to(sign_in_path) }
+    end
 
     context "with an authenticated non-DfE user" do
       include_context "sign in as non-DfE user"
