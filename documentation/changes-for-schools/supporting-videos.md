@@ -1,4 +1,4 @@
 # Register early career teacher service: supporting videos
 
-<p><a href="#">Video 1</a></p>
+<p><a href="/changes-for-schools/videos/register-mentor-registered-at-another-school">Register mentor (already registered at another school)</a></p>
 <p><a href="#">Video 2</a></p>
