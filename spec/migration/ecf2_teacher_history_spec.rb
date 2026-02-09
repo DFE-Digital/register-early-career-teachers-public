@@ -163,14 +163,21 @@ describe ECF2TeacherHistory do
           expect { subject.save_all_ect_data! }.not_to change(Teacher, :count)
         end
 
-        it "updates the existing teacher record" do
+        it "updates the existing teacher's corrected name" do
           teacher = subject.save_all_ect_data!
 
           aggregate_failures do
             expect(teacher.id).to eql(existing_teacher.id)
-            expect(teacher.trs_first_name).to eql(trs_first_name)
-            expect(teacher.trs_last_name).to eql(trs_last_name)
             expect(teacher.corrected_name).to eql(corrected_name)
+          end
+        end
+
+        it "does not overwrite the trs_first_name and trs_last_name fields" do
+          teacher = subject.save_all_ect_data!
+
+          aggregate_failures do
+            expect(teacher.trs_first_name).to eql("Old First Name")
+            expect(teacher.trs_last_name).to eql("Old Last Name")
           end
         end
 
@@ -554,9 +561,16 @@ describe ECF2TeacherHistory do
 
           aggregate_failures do
             expect(teacher.id).to eql(existing_teacher.id)
-            expect(teacher.trs_first_name).to eql(trs_first_name)
-            expect(teacher.trs_last_name).to eql(trs_last_name)
             expect(teacher.corrected_name).to eql(corrected_name)
+          end
+        end
+
+        it "does not overwrite the trs_first_name and trs_last_name fields" do
+          teacher = subject.save_all_ect_data!
+
+          aggregate_failures do
+            expect(teacher.trs_first_name).to eql("Old First Name")
+            expect(teacher.trs_last_name).to eql("Old Last Name")
           end
         end
 
