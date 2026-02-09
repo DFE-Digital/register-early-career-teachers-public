@@ -80,7 +80,8 @@ private
 
     if found_teacher.present?
       with_failure_recording(teacher: found_teacher, model: :teacher, migration_item_id: teacher.api_id) do
-        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name))
+        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name, :api_updated_at))
+        found_teacher.api_updated_at = [found_teacher.api_updated_at, teacher.api_updated_at].compact.max
         found_teacher.save!
         found_teacher
       end
@@ -112,15 +113,13 @@ private
     record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
     model_identifier = model.is_a?(Symbol) ? model : model.class.name.demodulize.underscore
 
-    if teacher.id
-      ::TeacherMigrationFailure.create!(
-        teacher:,
-        model: model_identifier,
-        message:,
-        migration_item_id:,
-        migration_item_type: MIGRATION_ITEM_TYPE
-      )
-    end
+    ::TeacherMigrationFailure.create!(
+      teacher:,
+      model: model_identifier,
+      message: message.presence || "FIXME: no message was set for this failure!",
+      migration_item_id:,
+      migration_item_type: MIGRATION_ITEM_TYPE
+    )
   end
 
   def record_failed_combinations(at_school_period:, message:)
@@ -140,7 +139,7 @@ private
   end
 
   def data_migration_teacher_combinations
-    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(trn: teacher.trn)
+    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(api_id: teacher.api_id)
   end
 
   def save_ect_combination_summaries!
