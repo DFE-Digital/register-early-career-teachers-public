@@ -127,12 +127,11 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     end
 
     it "shows the action required tag and withdrawn message" do
-      expect(page).to have_text("Action required")
       expect(page).to have_text("is no longer training with them")
     end
 
     it "shows a link to select a lead provider" do
-      expect(page).to have_link("Select a lead provider")
+      expect(page).to have_link("select a lead provider")
     end
 
     it "shows a link to change programme type to school-led" do

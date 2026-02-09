@@ -1,4 +1,6 @@
 RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
   let(:school) { FactoryBot.create(:school) }
   let(:started_on) { Date.new(2023, 9, 1) }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
@@ -136,14 +138,16 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
         withdrawn_at: Time.zone.today,
         withdrawal_reason: valid_withdrawal_reason
       )
-      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
     end
 
     it "renders the withdrawn warning link" do
       expect(rendered_content).to have_link(
-        "Tell us if Naruto Uzumaki will be continuing their training or if they have left your school",
-        href: /#training-details\z/
+        "continuing their training or if they have left your school",
+        href: "/school/ects/#{ect_at_school_period.id}#training-details"
       )
+
+      expect(rendered_content).to include("Tell us if Naruto Uzumaki will be")
     end
 
     it "renders action required withdrawn status message" do
