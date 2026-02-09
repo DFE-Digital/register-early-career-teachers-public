@@ -52,7 +52,7 @@ module Schools
       def training_status
         return :not_registered unless latest_training_period
 
-        API::TrainingPeriods::TrainingStatus.new(training_period: latest_training_period).status
+        latest_training_period.status
       end
 
       def lead_provider_name

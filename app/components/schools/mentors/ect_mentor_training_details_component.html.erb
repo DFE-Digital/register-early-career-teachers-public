@@ -4,7 +4,7 @@
 <% when :not_registered %>
   <p class="govuk-body"><%= teacher_name %> is not currently registered for ECTE mentor training with a lead provider.</p>
 <% when :withdrawn %>
-  <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %>'s ECTE mentor training is paused. Contact them if you think this is an error.</p>
+  <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %>’s ECTE mentor training is paused. Contact them if you think this is an error.</p>
 <% when :deferred %>
   <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %> is not registered for ECTE mentor training with them. Contact them if you think this is an error.</p>
   <p class="govuk-body">You can select a lead provider for <%= teacher_name %> if they will be training with another lead provider.</p>
@@ -37,8 +37,6 @@
         classes: "govuk-link--no-visited-state"
       ) %>
     <% end %>
-
-   
 
     <% list.with_row do |row| %>
       <% row.with_key { "Delivery partner" } %>
