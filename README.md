@@ -41,3 +41,4 @@ We still aim to work as openly as possible and will respond to any issues or pul
 This diagram is generated from the application's models and shows their relationships.
 
 👉🏽 [View Mermaid ERD](documentation/domain-model.md)
+
