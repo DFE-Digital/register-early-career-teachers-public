@@ -331,6 +331,7 @@
   - id
   - ecf_id
   - name
+  - vat_registered
   - created_at
   - updated_at
   :events:

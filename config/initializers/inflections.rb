@@ -28,6 +28,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "TRN" # Teacher Reference Number
   inflect.acronym "TRS" # Teaching Record System
   inflect.acronym "URN" # Unique Reference Number
+  inflect.acronym "VAT" # Value Added Tax
 
   inflect.irregular "was", "were"
 end
