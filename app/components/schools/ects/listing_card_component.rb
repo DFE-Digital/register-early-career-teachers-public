@@ -54,19 +54,16 @@ module Schools
         display_training_status == :deferred
       end
 
-      # Uses ECTHelper#mentor_required?(ect, current_school:)
-      def mentor_required?
-        super(ect_at_school_period, current_school:)
+      def mentor_required_for_card?
+        mentor_required?(ect_at_school_period, current_school:)
       end
 
       def show_lead_provider_delivery_partner_rows?
-        return false if withdrawn?
-
-        true
+        !withdrawn?
       end
 
       def training_period
-        @training_period || ect_at_school_period&.display_training_period
+        @training_period || ect_at_school_period.display_training_period
       end
 
       def appropriate_body_row
@@ -126,7 +123,7 @@ module Schools
       end
 
       def status_row
-        return status_override_row if withdrawn? || deferred? || mentor_required?
+        return status_override_row if withdrawn? || deferred? || mentor_required_for_card?
 
         { key: { text: "Status" }, value: { text: ect_status(ect_at_school_period, current_school:) } }
       end
@@ -135,15 +132,16 @@ module Schools
         { key: { text: "TRN" }, value: { text: teacher.trn } }
       end
 
+      def status_override
+        return ["Action required", "red", withdrawn_message_text] if withdrawn?
+        return ["Training paused", "orange", deferred_message_text] if deferred?
+        return ["Action required", "red", "A mentor needs to be assigned to #{teacher_full_name(teacher)}."] if mentor_required_for_card?
+
+        nil
+      end
+
       def status_override_row
-        tag_text, colour, message =
-          if withdrawn?
-            ["Action required", "red", withdrawn_message_text]
-          elsif deferred?
-            ["Training paused", "orange", deferred_message_text]
-          elsif mentor_required?
-            ["Action required", "red", "A mentor needs to be assigned to #{teacher_full_name(teacher)}."]
-          end
+        tag_text, colour, message = status_override
 
         {
           key: { text: "Status" },
