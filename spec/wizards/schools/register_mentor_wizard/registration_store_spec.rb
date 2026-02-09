@@ -499,6 +499,12 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     context "when the started_on date is set" do
       before { store.started_on = Date.new(2025, 7, 1) }
 
+      around do |example|
+        travel_to(Date.new(2025, 6, 2)) do
+          example.run
+        end
+      end
+
       context "when contract period is enabled" do
         let(:enabled) { true }
 
@@ -516,7 +522,27 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
       end
 
       context "when there is no matching contract period" do
-        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2026, enabled: true) }
+        let!(:contract_period) { nil }
+
+        it "returns nil" do
+          expect(registration_store.contract_period_enabled?).to be_nil
+        end
+      end
+
+      context "when the started_on date is in the past" do
+        before { store.started_on = Date.new(2025, 6, 1) }
+
+        let!(:contract_period) { nil }
+
+        it "returns true even if the contract period is disabled" do
+          expect(registration_store.contract_period_enabled?).to be(true)
+        end
+      end
+
+      context "when the started_on date is not set" do
+        before { store.started_on = nil }
+
+        let!(:contract_period) { nil }
 
         it "returns nil" do
           expect(registration_store.contract_period_enabled?).to be_nil
