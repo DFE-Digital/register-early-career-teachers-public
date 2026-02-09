@@ -1,6 +1,9 @@
 describe "One induction record (end to end)" do
   subject(:teacher) { Teacher.find_by(trn: ecf1_teacher_profile.trn) }
 
+  # Timestamps we care about
+  let(:user_created_at) { 3.years.ago.round }
+
   # ECF1 data
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
   let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round) }
@@ -24,6 +27,8 @@ describe "One induction record (end to end)" do
   let(:teacher_history_converter) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:) }
 
   before do
+    ecf1_teacher_profile.user.update(created_at: user_created_at)
+
     ecf2_teacher_history = teacher_history_converter.convert_to_ecf2!
     ecf2_teacher_history.save_all_ect_data!
   end
@@ -33,6 +38,10 @@ describe "One induction record (end to end)" do
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+    end
+
+    it "sets the ECF2 teacher's created_at to the ECF1 user's" do
+      expect(teacher.created_at).to eql(user_created_at)
     end
 
     it "creates a single ect_at_school_period linked to the teacher at the right school" do
