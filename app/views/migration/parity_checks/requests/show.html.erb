@@ -77,11 +77,11 @@ end %>
 
 <%= govuk_pagination(pagy: @pagy) %>
 
-<% if @request.response_body_ids_different? %>
-  <% content_for(:head) do %>
-    <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
-  <% end %>
+<% content_for(:head) do %>
+  <style type="text/css" nonce="<%= content_security_policy_nonce %>"><%= Diffy::CSS %></style>
+<% end %>
 
+<% if @request.response_body_ids_different? %>
   <hr class="govuk-section-break govuk-section-break--m">
 
   <h2 class="govuk-heading-m">Response IDs</h2>
@@ -103,3 +103,13 @@ end %>
     </div>
   </div>
 <% end %>
+
+<hr class="govuk-section-break govuk-section-break--m">
+
+<h2 class="govuk-heading-m">Response bodies</h2>
+
+<div class="govuk-grid-row diff-container">
+  <div class="govuk-grid-column-full">
+    <%= render partial: "response_bodies_diff", locals: { request: @request } %>
+  </div>
+</div>

@@ -2,6 +2,8 @@ module ParityCheck
   class Request < ApplicationRecord
     self.table_name = "parity_check_requests"
 
+    MAX_RESPONSES_TO_DIFF = 15
+
     belongs_to :run
     belongs_to :lead_provider
     belongs_to :endpoint
@@ -81,8 +83,31 @@ module ParityCheck
       rates.sum.fdiv(rates.size).round
     end
 
-    def pretty_json(ugly_json)
-      JSON.pretty_generate(ugly_json)
+    def ecf_response_bodies_array
+      @ecf_response_bodies_array ||= begin
+        responses_to_diff = responses.first(MAX_RESPONSES_TO_DIFF)
+        deep_merge_and_sort_combining_arrays(responses_to_diff.map(&:ecf_body_hash).compact)
+      end
+    end
+
+    def rect_response_bodies_array
+      @rect_response_bodies_array ||= begin
+        responses_to_diff = responses.first(MAX_RESPONSES_TO_DIFF)
+        deep_merge_and_sort_combining_arrays(responses_to_diff.map(&:rect_body_hash).compact)
+      end
+    end
+
+    def response_bodies_different?
+      ecf_norm, rect_norm = normalized_response_bodies_for_diff
+      ecf_norm != rect_norm
+    end
+
+    def response_bodies_diff
+      @response_bodies_diff ||= begin
+        ecf_norm, rect_norm = normalized_response_bodies_for_diff
+
+        Diffy::Diff.new(pretty_json(ecf_norm), pretty_json(rect_norm))
+      end
     end
 
     def response_body_ids_different?
@@ -107,6 +132,34 @@ module ParityCheck
 
     def rect_only_response_body_ids
       rect_response_body_ids - ecf_response_body_ids
+    end
+
+  private
+
+    def normalized_response_bodies_for_diff
+      @normalized_response_bodies_for_diff ||= begin
+        ecf_by_id  = ecf_response_bodies_array.index_by { |h| h[:id] }
+        rect_by_id = rect_response_bodies_array.index_by { |h| h[:id] }
+
+        common_ids = ecf_by_id.keys & rect_by_id.keys
+
+        [
+          common_ids.map { |id| ecf_by_id[id] }.sort_by { |h| h[:id] },
+          common_ids.map { |id| rect_by_id[id] }.sort_by { |h| h[:id] }
+        ]
+      end
+    end
+
+    def pretty_json(ugly_json)
+      JSON.pretty_generate(ugly_json)
+    end
+
+    def deep_merge_and_sort_combining_arrays(hashes)
+      hashes_with_objects = hashes.select { |hash| hash[:data].is_a?(Array) }
+
+      hashes_with_objects
+        .flat_map { |hash| hash[:data] }
+        .sort_by { |item| item[:id] }
     end
   end
 end
