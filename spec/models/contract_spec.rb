@@ -38,25 +38,29 @@ describe Contract do
     end
 
     describe "contract statements have same lead provider and contract period" do
-      let(:contract) { FactoryBot.create(:contract) }
+      let!(:contract) { FactoryBot.create(:contract) }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
       it "is valid when there are no statements associated with the contract" do
         expect(contract).to be_valid
       end
 
-      it "is valid when all statements associated with the contract have the same lead provider and contract period" do
+      it "is valid when all other statements associated with the same contract have the same lead provider and contract period" do
         FactoryBot.create(:statement, contract:, active_lead_provider:)
         FactoryBot.create(:statement, contract:, active_lead_provider:)
+
+        contract.reload
 
         expect(contract).to be_valid
       end
 
-      it "is invalid when there are statements associated with the contract that have different lead providers or contract periods" do
+      it "is invalid when there are other statements associated with the same contract that have different lead providers or contract periods" do
         FactoryBot.create(:statement, contract:, active_lead_provider:)
 
         another_contract_statement = FactoryBot.create(:statement, active_lead_provider: FactoryBot.create(:active_lead_provider))
         another_contract_statement.update_columns(contract_id: contract.id)
+
+        contract.reload
 
         expect(contract).not_to be_valid
         expect(contract.errors[:base]).to include("This contract is associated with other statements linked to different lead providers/contract periods.")

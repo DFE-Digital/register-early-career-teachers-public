@@ -1,6 +1,6 @@
 describe Contract::FlatRateFeeStructure do
   describe "associations" do
-    it { is_expected.to have_one(:contract).with_foreign_key("contract_flat_rate_fee_structure_id").inverse_of(:contract_flat_rate_fee_structure) }
+    it { is_expected.to have_many(:contracts).with_foreign_key("contract_flat_rate_fee_structure_id").inverse_of(:contract_flat_rate_fee_structure) }
   end
 
   describe "validations" do
