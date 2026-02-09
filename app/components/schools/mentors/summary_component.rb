@@ -3,9 +3,7 @@ module Schools
     class SummaryComponent < ApplicationComponent
       include TeacherHelper
 
-      # with_collection_parameter :mentor
-
-      attr_reader :mentor, :school
+      with_collection_parameter :mentor
 
       def initialize(mentor:, school:)
         @mentor = mentor
