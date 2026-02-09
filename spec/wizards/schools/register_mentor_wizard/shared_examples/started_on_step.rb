@@ -16,12 +16,12 @@ RSpec.shared_examples "a started on step" do |current_step:|
   let(:currently_mentor_at_another_school) { false }
 
   describe "validations" do
+    around do |example|
+      travel_to(Date.new(2025, 1, 1)) { example.run }
+    end
+
     context "when start date is in the future" do
       let(:started_on) { Date.new(2025, 5, 2) }
-
-      around do |example|
-        travel_to(Date.new(2025, 1, 1)) { example.run }
-      end
 
       before do
         allow(wizard.mentor).to receive(:currently_mentor_at_another_school?).and_return(currently_mentor_at_another_school)
@@ -48,10 +48,29 @@ RSpec.shared_examples "a started on step" do |current_step:|
           expect(subject.errors[:started_on]).to include("Start date must be before 2 May 2025")
         end
       end
+
+      context "when start date is in the past" do
+        context "and the mentor is not currently mentoring at another school" do
+          let(:currently_mentor_at_another_school) { false }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "and the mentor is currently mentoring at another school" do
+          let(:currently_mentor_at_another_school) { true }
+          let(:started_on) { Date.new(2024, 12, 1) }
+
+          it { is_expected.to be_valid }
+        end
+      end
     end
   end
 
   describe "#next_step" do
+    around do |example|
+      travel_to(Date.new(2025, 1, 1)) { example.run }
+    end
+
     context "when contract period is not open yet" do
       let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
 
