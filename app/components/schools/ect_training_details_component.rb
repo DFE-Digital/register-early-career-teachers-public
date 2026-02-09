@@ -86,13 +86,12 @@ module Schools
     end
 
     def withdrawn_lead_provider_name
-      tp = training_period
-      return if tp.blank?
+      return if training_period.blank?
 
-      if tp.only_expression_of_interest?
-        tp.expression_of_interest&.lead_provider&.name
+      if training_period.only_expression_of_interest?
+        training_period.expression_of_interest&.lead_provider&.name
       else
-        tp.lead_provider_name
+        training_period.lead_provider_name
       end
     end
 

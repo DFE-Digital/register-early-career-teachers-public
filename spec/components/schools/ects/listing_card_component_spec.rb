@@ -80,7 +80,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       )
     end
 
-    it "falls back to ect_at_school_period.display_training_period" do
+    it "shows provider and delivery partner based on the ECT’s latest training" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
@@ -94,7 +94,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   context "when school led chosen" do
     let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led) }
 
-    it "don't render providers" do
+    it "doesn't render providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
       expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Delivery partner")
