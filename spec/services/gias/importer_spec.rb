@@ -97,7 +97,7 @@ RSpec.describe GIAS::Importer, type: :service do
 
     context "when eligibility changes" do
       before do
-        FactoryBot.create(:gias_school, :with_school, urn: 20001, eligible: false)
+        FactoryBot.create(:gias_school, :with_school, urn: 20_001, eligible: false)
       end
 
       it "records an event with the raw modifications" do
@@ -116,7 +116,7 @@ RSpec.describe GIAS::Importer, type: :service do
 
     context "when eligibility does not change" do
       before do
-        FactoryBot.create(:gias_school, :with_school, urn: 20001, eligible: true, name: "Old Name")
+        FactoryBot.create(:gias_school, :with_school, urn: 20_001, eligible: true, name: "Old Name")
       end
 
       it "does not record an event" do
