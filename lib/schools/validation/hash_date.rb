@@ -27,7 +27,7 @@ module Schools
       def value_as_date
         @value_as_date ||= begin
           year, month, day = date_as_hash.values_at(1, 2, 3).map(&:to_i)
-          Time.zone.local(year, month, day).to_date
+          Date.new(year, month, day).to_date
         end
       end
 

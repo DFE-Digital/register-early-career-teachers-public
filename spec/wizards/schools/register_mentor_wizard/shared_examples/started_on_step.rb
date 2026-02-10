@@ -16,6 +16,20 @@ RSpec.shared_examples "a started on step" do |current_step:|
       travel_to(Date.new(2025, 6, 3)) { example.run }
     end
 
+    context "when the start_date is invalid" do
+      let(:started_on) { { "day" => "30", "month" => "2", "year" => "2025" } }
+      let(:currently_mentor_at_another_school) { false }
+
+      before do
+        allow(wizard.mentor).to receive(:currently_mentor_at_another_school?).and_return(currently_mentor_at_another_school)
+      end
+
+      it "is invalid with the correct error message" do
+        expect(subject).not_to be_valid
+        expect(subject.errors[:started_on]).to include("Enter the date in the correct format, for example 12 03 1998")
+      end
+    end
+
     context "when start date is in the future" do
       let(:started_on) { { "day" => "1", "month" => "11", "year" => "2025" } }
 
