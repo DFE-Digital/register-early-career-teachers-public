@@ -137,7 +137,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
           trn: "1111111",
           ect_at_school_periods: array_including(
             hash_including(
-              school: { urn: "100001", name: "School 1" },
+              school: hash_including(urn: "100001", name: "School 1"),
               started_on: Date.new(2022, 9, 1),
               finished_on: Date.new(2023, 9, 1),
               mentorship_periods: [],
@@ -152,7 +152,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
               )
             ),
             hash_including(
-              school: { urn: "100002", name: "School 2" },
+              school: hash_including(urn: "100002", name: "School 2"),
               started_on: Date.new(2024, 8, 20),
               finished_on: nil,
               mentorship_periods: [],
