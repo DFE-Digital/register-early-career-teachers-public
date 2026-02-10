@@ -691,6 +691,21 @@ module Events
       ).record_event!
     end
 
+    def self.record_school_eligibility_changed_event!(author:, school:, school_name:, eligibility:, modifications:, happened_at: Time.zone.now)
+      event_type = :school_eligibility_changed
+      status = eligibility ? "eligible" : "ineligible"
+      heading = "#{school_name} eligibility changed to #{status}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        school:,
+        happened_at:,
+        modifications:
+      ).record_event!
+    end
+
     def self.record_school_induction_tutor_confirmed_event!(author:, school:, name:, email:, contract_period_year:)
       event_type = :school_induction_tutor_confirmed
       heading = "Induction Tutor #{name} confirmed for #{contract_period_year}"

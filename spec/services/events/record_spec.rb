@@ -2147,6 +2147,44 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_school_eligibility_changed_event!" do
+    let(:gias_school) { FactoryBot.create(:gias_school, name: "New School") }
+    let(:school) { FactoryBot.create(:school, urn: gias_school.urn, gias_school:) }
+    let(:modifications) do
+      {
+        "eligible" => [false, true],
+        "name" => ["Old School", "New School"]
+      }
+    end
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_school_eligibility_changed_event!(
+          author: Events::SystemAuthor.new,
+          school:,
+          school_name: school.name,
+          eligibility: true,
+          modifications:
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          hash_including(
+            school:,
+            heading: "New School eligibility changed to eligible",
+            event_type: :school_eligibility_changed,
+            happened_at: Time.zone.now,
+            metadata: modifications,
+            modifications: array_including(
+              "Eligible set to 'true'",
+              "Name changed from 'Old School' to 'New School'"
+            ),
+            author_type: "system"
+          )
+        )
+      end
+    end
+  end
+
   describe ".record_declaration_created_event!" do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:) }
     let(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
