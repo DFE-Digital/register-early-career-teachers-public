@@ -12,7 +12,7 @@ All of these changes have been tested in research with schools. -->
 
 ## DfE Sign-in is required to access the service 
 
-Schools will need to use DfE Sign-in to approve and manage access to the service. Schools need to nominate a DfE Sign-in approver to manange these activities. Typically, this would be a headteacher or induction tutor.
+Schools will need to use DfE Sign-in to approve and manage access to the service. Schools need to nominate a DfE Sign-in approver to manage these activities. Typically, this would be a headteacher or induction tutor.
 
 All users of the service will need a DfE sign-in account and approved access.
 
@@ -99,13 +99,13 @@ Schools can assign an appropriate body, lead provider and delivery partner for i
 
 ## Appropriate body is mandatory 
 
-Schools have to tell us the ECT’s appropriate body. 
+Schools must tell us the ECT’s appropriate body. 
 
 <a href="../images/select-appropriate-body.png" target="blank"><img alt="Select an appropriate body for the ECT when adding to the service" src="../images/select-appropriate-body.png" width="300"/></a>
 
 ## Schools can make more changes without needing DfE support 
 
-After ECTs are registered but before they’ve completed induction, schools can change the following ECT information:
+Before ECTs complete their induction, schools can change the following ECT information:
 
 - Name
 - Email address 
@@ -126,6 +126,6 @@ In the existing service, schools could only tell us when an ECT or mentor was le
 
 ## Mentor training eligibility
 
-When registering a mentor, we tell schools if the mentor is eligible for mentor training. We also tell them we’ll pass the mentor details on to the their assigned ECT’s lead provider. They can change it to another lead provider if needed. 
+When registering a mentor, we tell schools if the mentor is eligible for mentor training. We also tell them we’ll pass the mentor details on to their assigned ECT’s lead provider. They can change it to another lead provider if needed. 
 
 <a href="../images/can-receive-mentor-training.png" target="blank"><img alt="A notification telling the user that the mentor being added can receive mentor training" src="../images/can-receive-mentor-training.png" width="300"/></a>
