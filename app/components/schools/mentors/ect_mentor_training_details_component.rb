@@ -29,7 +29,7 @@ module Schools
         return :not_registered if not_registered?
         return :finished if finished?
 
-        mentor_training_period.status
+        latest_training_period.status
       end
 
       def ineligible_for_training?
@@ -43,13 +43,13 @@ module Schools
       end
 
       def not_registered?
-        mentor_training_period.nil?
+        latest_training_period.nil?
       end
 
       def finished?
-        return false unless mentor_training_period.finished_on
+        return false unless latest_training_period.finished_on
 
-        mentor_training_period.finished_on < Date.current
+        latest_training_period.finished_on < Date.current
       end
 
       def started_not_completed_reason?
@@ -62,27 +62,28 @@ module Schools
         teacher.mentor_became_ineligible_for_funding_on&.to_fs(:govuk)
       end
 
-      def mentor_training_period
-        @mentor_training_period ||= TrainingPeriod
-          .for_mentor(@mentor.id)
-          .order(:started_on)
-          .first
+      def latest_training_period
+        @latest_training_period ||= @mentor&.latest_training_period
       end
 
       def partnership_confirmed?
-        @partnership_confirmed ||= mentor_training_period&.school_partnership.present?
+        @partnership_confirmed ||= latest_training_period&.school_partnership.present?
       end
 
       def lead_provider_name
         if partnership_confirmed?
-          mentor_training_period&.lead_provider_name
+          latest_training_period&.lead_provider_name
         else
-          mentor_training_period&.expression_of_interest_lead_provider&.name
+          latest_training_period&.expression_of_interest_lead_provider&.name
         end
       end
 
+      def change_lead_provider_link
+        govuk_link_to("select a lead provider", schools_mentors_change_lead_provider_wizard_edit_path(@mentor))
+      end
+
       def delivery_partner_name
-        mentor_training_period&.delivery_partner_name
+        latest_training_period&.delivery_partner_name
       end
 
       def teacher_name

@@ -59,7 +59,7 @@ module Schools
           when partnership_confirmed?
             latest_training_period.lead_provider_name
           when partnerhip_unconfirmed?
-            mentor_training_period.expression_of_interest_lead_provider.name
+            latest_training_period.expression_of_interest_lead_provider.name
           end
       end
 

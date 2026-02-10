@@ -168,6 +168,7 @@ private
 
   def then_i_am_asked_to_check_and_confirm_the_change
     heading = page.locator("h1")
+    page.screenshot(path: "tmp/confirmlp.png")
     expect(heading).to have_text("Check and confirm change")
   end
 
@@ -192,6 +193,7 @@ private
   end
 
   def then_i_see_the_new_lead_provider_is_assigned
+    page.screenshot(path: "tmp/screenshot.png")
     row = page.locator(".govuk-summary-list__row", hasText: "Lead provider").first
 
     expect(row)
