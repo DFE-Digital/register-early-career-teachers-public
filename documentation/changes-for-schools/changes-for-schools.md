@@ -78,7 +78,7 @@ We ask when the person started at the school as an ECT, not when they started be
 
 ### We ask for the lead provider when a school has not partnered with one before or chooses not to use existing ones
 
-Most schools will already have a partnership with a lead provider and delivery partner, that they can use to train their ECTs. 
+Most schools will already have a partnership with a lead provider and delivery partner that they can use to train their ECTs. 
 
 However, if they decline to use that partnership or do not have any others set up, we ask what lead provider they want to train their ECT. 
 
