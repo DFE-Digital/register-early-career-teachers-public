@@ -99,8 +99,10 @@ erDiagram
     datetime updated_at
     enum fee_type
     datetime api_updated_at
+    integer contract_id
   }
   Statement }o--|| ActiveLeadProvider : belongs_to
+  Statement }o--|| Contract : belongs_to
   SchoolPartnership {
     integer id
     datetime created_at
@@ -182,10 +184,10 @@ erDiagram
     integer mentor_payments_frozen_year
     boolean ect_pupil_premium_uplift
     boolean ect_sparsity_uplift
-    date trs_induction_start_date
-    date trs_induction_completed_date
     datetime ect_first_became_eligible_for_training_at
     datetime mentor_first_became_eligible_for_training_at
+    date trs_induction_start_date
+    date trs_induction_completed_date
     boolean trnless
     datetime api_updated_at
     datetime api_unfunded_mentor_updated_at
@@ -364,7 +366,6 @@ erDiagram
   Declaration }o--|| Statement : belongs_to
   DataMigrationTeacherCombination {
     integer id
-    string trn
     uuid ecf1_ect_profile_id
     uuid ecf1_mentor_profile_id
     jsonb ecf1_ect_combinations
@@ -377,6 +378,7 @@ erDiagram
     integer ecf2_mentor_combinations_count
     datetime created_at
     datetime updated_at
+    uuid api_id
   }
   DataMigrationFailedCombination {
     integer id
@@ -415,6 +417,16 @@ erDiagram
     boolean mentor_funding_enabled
     boolean detailed_evidence_types_enabled
   }
+  Contract {
+    integer id
+    enum contract_type
+    integer flat_rate_fee_structure_id
+    integer banded_fee_structure_id
+    datetime created_at
+    datetime updated_at
+  }
+  Contract }o--|| Contract_FlatRateFeeStructure : belongs_to
+  Contract }o--|| Contract_BandedFeeStructure : belongs_to
   AppropriateBody {
     integer id
     string name

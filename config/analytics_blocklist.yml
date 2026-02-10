@@ -463,6 +463,7 @@
   - created_at
   - updated_at
   - api_updated_at
+  - contract_id
   :api_tokens:
   - id
   - lead_provider_id
@@ -630,12 +631,19 @@
   - created_at
   - updated_at
   :contract_banded_fee_structure_bands:
-   - id
-   - banded_fee_structure_id
-   - min_declarations
-   - max_declarations
-   - fee_per_declaration
-   - output_fee_ratio
-   - service_fee_ratio
-   - created_at
-   - updated_at
+  - id
+  - banded_fee_structure_id
+  - min_declarations
+  - max_declarations
+  - fee_per_declaration
+  - output_fee_ratio
+  - service_fee_ratio
+  - created_at
+  - updated_at
+  :contracts:
+  - id
+  - contract_type
+  - flat_rate_fee_structure_id
+  - banded_fee_structure_id
+  - created_at
+  - updated_at
