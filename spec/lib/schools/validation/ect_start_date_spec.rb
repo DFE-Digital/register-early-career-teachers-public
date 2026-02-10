@@ -45,5 +45,14 @@ RSpec.describe Schools::Validation::ECTStartDate do
         expect(subject.error_message).to be_blank
       end
     end
+
+    context "when the date is invalid" do
+      let(:date_as_hash) { { 1 => 2025, 2 => 2, 3 => 30 } }
+
+      it "is not valid and returns the correct error message" do
+        expect(subject).not_to be_valid
+        expect(subject.error_message).to eq("Enter the start date using the correct format, for example, 17 09 1999")
+      end
+    end
   end
 end

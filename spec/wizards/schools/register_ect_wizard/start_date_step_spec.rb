@@ -40,6 +40,15 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       end
     end
 
+    context "when the start_date is invalid" do
+      let(:start_date) { { 1 => 2025, 2 => 2, 3 => 30 } }
+
+      it "is invalid with the correct error message" do
+        expect(subject).not_to be_valid
+        expect(subject.errors[:start_date]).to include("Enter the start date using the correct format, for example, 17 09 1999")
+      end
+    end
+
     context "when the start_date is present and valid" do
       let(:start_date) { { 1 => "2024", 2 => "07", 3 => "01" } }
 
