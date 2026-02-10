@@ -14,6 +14,10 @@ class Contract < ApplicationRecord
   validates :contract_type,
             presence: { message: "Enter a contract type" },
             inclusion: { in: Contract.contract_types.keys, message: "Choose a valid contract type" }
+  validates :flat_rate_fee_structure,
+            uniqueness: { case_sensitive: false, message: "Contract with the same flat rate fee structure already exists" }
+  validates :banded_fee_structure,
+            uniqueness: { case_sensitive: false, message: "Contract with the same banded fee structure already exists" }
   validate :active_lead_provider_consistency
 
   with_options if: :ittecf_ectp_contract_type? do
