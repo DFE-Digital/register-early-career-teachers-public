@@ -7,7 +7,7 @@
   <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %>’s ECTE mentor training is paused. Contact them if you think this is an error.</p>
 <% when :deferred %>
   <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %> is not registered for ECTE mentor training with them. Contact them if you think this is an error.</p>
-  <p class="govuk-body">You can select a lead provider for <%= teacher_name %> if they will be training with another lead provider.</p>
+  <p class="govuk-body">You can <%= change_lead_provider_link %> for <%= teacher_name %> if they will be training with another lead provider.</p>
 <% when :started_not_completed %>
   <p class="govuk-body">Our records show that <%= teacher_name %> cannot do further mentor training.</p>
   <p class="govuk-body">This might be because they’ve completed it before, or started but not completed it.</p>

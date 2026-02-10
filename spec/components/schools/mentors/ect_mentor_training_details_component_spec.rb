@@ -16,7 +16,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
 
   describe "eligibility states" do
     context "when there are no mentor training periods" do
-      it "shows a message saying the mentor can be registered for training" do
+      it "shows a message saying the mentor can be registered for training and does not show the list" do
         component = described_class.new(teacher:, mentor:)
 
         render_inline(component)
@@ -27,7 +27,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
       end
     end
 
-    context "when there are current provider-led mentor training period" do
+    context "when there is one current provider-led mentor training period" do
       context "when registered via EOI (awaiting confirmation)" do
         before do
           FactoryBot.create(
@@ -124,7 +124,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
           render_inline(component)
 
           expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
-          expect(rendered_content).to have_css(".govuk-body", text: /Hidden leaf village have told us that .*'s ECTE mentor training is paused./)
+          expect(rendered_content).to have_css(".govuk-body", text: /Hidden leaf village have told us that .*’s ECTE mentor training is paused./)
           expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
           expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
         end
@@ -156,6 +156,38 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
           render_inline(component)
           expect(rendered_content).to have_link("Change", href: "/school/mentors/#{mentor.id}/change-lead-provider/edit")
         end
+      end
+    end
+
+    context "when there are multiple current provider-led mentor training periods" do
+      let(:other_lead_provider) { FactoryBot.create(:lead_provider, name: "Konohagakure") }
+      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: other_lead_provider) }
+
+      before do
+        FactoryBot.create(
+          :training_period, :provider_led, :for_mentor, :with_no_school_partnership,
+          mentor_at_school_period: mentor,
+          started_on: mentor_start_date,
+          finished_on: mentor_start_date + 1.week,
+          expression_of_interest: other_active_lead_provider
+        )
+
+        FactoryBot.create(
+          :training_period, :provider_led, :for_mentor,
+          mentor_at_school_period: mentor,
+          started_on: mentor_start_date + 1.month,
+          finished_on: nil,
+          school_partnership:
+        )
+      end
+
+      it "renders the details for the most recent period" do
+        render_inline(component)
+
+        expect(rendered_content).not_to have_text("Konohagakure")
+        expect(rendered_content).to have_text("Hidden leaf village")
+        expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Lead provider").once
+        expect(rendered_content).to have_css("dt.govuk-summary-list__key", text: "Delivery partner").once
       end
     end
   end
@@ -235,7 +267,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   end
 
   describe "when nothing should render" do
-    context "when the mentor training period(s) have finished" do
+    context "when the training period has finished" do
       before do
         FactoryBot.create(
           :training_period, :provider_led, :for_mentor,

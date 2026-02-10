@@ -32,6 +32,17 @@ RSpec.describe "schools/mentors/show.html.erb" do
     render
   end
 
+  context "when mentor is not registered for training" do
+    before { render_view }
+
+    it "renders the section and message but no list" do
+      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
+      expect(rendered).to have_css(".govuk-body", text: "Naruto Uzumaki is not currently registered for ECTE mentor training with a lead provider.")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+    end
+  end
+
   context "when mentor is eligible via EOI (awaiting confirmation)" do
     before do
       FactoryBot.create(
@@ -89,14 +100,75 @@ RSpec.describe "schools/mentors/show.html.erb" do
     before { render_view }
 
     it "shows the completed message with GOV.UK date and hides the summary list" do
+      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
       expect(rendered).to have_css(".govuk-body", text: "Naruto Uzumaki completed mentor training on 1 January 2024.")
       expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
       expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
     end
   end
 
-  context "when nothing should render (no mentor training and not ineligible)" do
+  context "when mentor is not eligible (not completed)" do
+    let(:mentor_became_ineligible_for_funding_on) { Date.new(2024, 1, 1) }
+    let(:mentor_became_ineligible_for_funding_reason) { "started_not_completed" }
+
     before { render_view }
+
+    it "shows the completed message with GOV.UK date and hides the summary list" do
+      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
+      expect(rendered).to have_css(".govuk-body", text: "Our records show that Naruto Uzumaki cannot do further mentor training.")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+    end
+  end
+
+  context "when the training period is deferred" do
+    before do
+      FactoryBot.create(
+        :training_period, :provider_led, :for_mentor, :deferred,
+        mentor_at_school_period: mentor_period,
+        started_on: start_date, finished_on: nil,
+        school_partnership:
+      )
+      render_view
+    end
+
+    it "shows the deferred message and hides the summary list" do
+      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
+      expect(rendered).to have_css(".govuk-body", text: "Hidden leaf village have told us that Naruto Uzumaki is not registered for ECTE mentor training with them.")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+    end
+  end
+
+  context "when the training period has been withdrawn" do
+    before do
+      FactoryBot.create(
+        :training_period, :provider_led, :for_mentor, :withdrawn,
+        mentor_at_school_period: mentor_period,
+        started_on: start_date, finished_on: nil,
+        school_partnership:
+      )
+      render_view
+    end
+
+    it "shows the withdrawn message and shows the summary list" do
+      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
+      expect(rendered).to have_css(".govuk-body", text: "Hidden leaf village have told us that Naruto Uzumaki’s ECTE mentor training is paused.")
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+    end
+  end
+
+  context "when the training period has finished" do
+    before do
+      FactoryBot.create(
+        :training_period, :provider_led, :for_mentor,
+        mentor_at_school_period: mentor_period,
+        started_on: start_date, finished_on: Date.yesterday,
+        school_partnership:
+      )
+      render_view
+    end
 
     it "does not render the section" do
       expect(rendered).not_to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")

@@ -216,6 +216,14 @@ teach_first_grain_ackley_bridge_2022 = find_or_create_school_partnership!(
   contract_period: cp_2022
 )
 
+# Ackley Bridge — Teach First / Grain
+teach_first_grain_ackley_bridge_2025 = find_or_create_school_partnership!(
+  school: ackley_bridge,
+  lead_provider: teach_first,
+  delivery_partner: grain_teaching_school_hub,
+  contract_period: cp_2025
+)
+
 # Mallory Towers — Teach First / Grain
 
 teach_first_grain_mallory_towers_2024 = find_or_create_school_partnership!(
@@ -610,6 +618,7 @@ andre_roussimoff_mentoring_at_ackley_bridge = FactoryBot.create(:mentor_at_schoo
 FactoryBot.create(:training_period,
                   :for_mentor,
                   :with_schedule,
+                  :deferred,
                   mentor_at_school_period: andre_roussimoff_mentoring_at_ackley_bridge,
                   started_on: Date.new(2022, 9, 1),
                   finished_on: nil,
@@ -892,12 +901,21 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Joyce Grenfell (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
-FactoryBot.create(:mentor_at_school_period,
-                  teacher: joyce_grenfell,
-                  school: ackley_bridge,
-                  email: "joyce.grenfell@st-trinians.co.uk",
+joyce_grenfell_mentoring_at_ackley_bridge = FactoryBot.create(:mentor_at_school_period,
+                                                              teacher: joyce_grenfell,
+                                                              school: ackley_bridge,
+                                                              email: "joyce.grenfell@st-trinians.co.uk",
+                                                              started_on: Date.new(2025, 7, 1),
+                                                              finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+
+FactoryBot.create(:training_period,
+                  :for_mentor, :withdrawn,
+                  :with_schedule,
+                  mentor_at_school_period: joyce_grenfell_mentoring_at_ackley_bridge,
                   started_on: Date.new(2025, 7, 1),
-                  finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+                  finished_on: nil,
+                  school_partnership: teach_first_grain_ackley_bridge_2025,
+                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("George Cole (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
