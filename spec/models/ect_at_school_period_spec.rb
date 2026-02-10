@@ -363,9 +363,10 @@ describe ECTAtSchoolPeriod do
     let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-01-01", finished_on: "2023-06-01") }
     let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
     let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
 
     describe ".for_school" do
+      let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
+
       it "returns only ect periods for the specified school" do
         expect(described_class.for_school(period_1.school_id)).to match_array([period_1, period_3, teacher_2_period])
       end
@@ -449,6 +450,19 @@ describe ECTAtSchoolPeriod do
           period_with_ongoing_induction_period_for_same_appropriate_body,
           finished_period
         )
+      end
+    end
+
+    describe ".induction_not_completed" do
+      let(:teacher_with_passed_induction) { FactoryBot.create(:teacher, :induction_passed) }
+      let(:teacher_with_failed_induction) { FactoryBot.create(:teacher, :induction_failed) }
+
+      let!(:period_1) { FactoryBot.create(:ect_at_school_period, :finished, teacher: teacher_with_passed_induction) }
+      let!(:period_2) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+      let!(:period_3) { FactoryBot.create(:ect_at_school_period, :finished, teacher: teacher_with_failed_induction) }
+
+      it "returns ect periods where the teacher's induction is not completed" do
+        expect(described_class.induction_not_completed).to match_array([period_2])
       end
     end
   end

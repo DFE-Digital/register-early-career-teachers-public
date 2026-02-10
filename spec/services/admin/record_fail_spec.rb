@@ -11,7 +11,7 @@ RSpec.describe Admin::RecordFail do
     })
   end
 
-  it_behaves_like "it closes an induction" do
+  it_behaves_like "it closes an induction period and finishes any related periods" do
     subject(:service) do
       described_class.new(
         teacher:,
@@ -48,12 +48,35 @@ RSpec.describe Admin::RecordFail do
         appropriate_body:,
         teacher:,
         induction_period:,
+        ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         author:,
         body: note,
         zendesk_ticket_id: "123456"
       )
 
       service_call
+    end
+
+    context "when the ect at school period has already finished" do
+      let(:finished_on) { 2.days.ago }
+
+      it "assigns the period to the event" do
+        expect(Events::Record).to receive(:record_teacher_fails_induction_event!).with(
+          appropriate_body:,
+          teacher:,
+          induction_period:,
+          ect_at_school_period:,
+          mentorship_period:,
+          training_period:,
+          author:,
+          body: note,
+          zendesk_ticket_id: "123456"
+        )
+
+        service_call
+      end
     end
 
     context "when ongoing induction period only has a mappable legacy programme type" do
