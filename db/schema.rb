@@ -182,8 +182,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
     t.bigint "banded_fee_structure_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id"
-    t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id"
+    t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true
+    t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true
   end
 
   create_table "data_migration_failed_combinations", force: :cascade do |t|

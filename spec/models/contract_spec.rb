@@ -21,9 +21,11 @@ describe Contract do
 
     it { is_expected.to validate_presence_of(:contract_type).with_message("Enter a contract type") }
     it { is_expected.to validate_inclusion_of(:contract_type).in_array(Contract.contract_types.keys).with_message("Choose a valid contract type") }
+    it { is_expected.to validate_uniqueness_of(:flat_rate_fee_structure).with_message("Contract with the same flat rate fee structure already exists") }
+    it { is_expected.to validate_uniqueness_of(:banded_fee_structure).with_message("Contract with the same banded fee structure already exists") }
 
     context "when contract type is `ITTECF_ECTP`" do
-      subject { FactoryBot.create(:contract, :for_mentor) }
+      subject { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
       it { is_expected.to validate_presence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be provided for ITTECF_ECTP contracts") }
       it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ITTECF_ECTP contracts") }
