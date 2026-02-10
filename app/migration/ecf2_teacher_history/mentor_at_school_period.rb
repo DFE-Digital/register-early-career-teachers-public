@@ -5,6 +5,8 @@ class ECF2TeacherHistory::MentorAtSchoolPeriod
               :email,
               :training_periods
 
+  attr_accessor :created_at
+
   def initialize(started_on:, finished_on:, school:, email:, training_periods: [])
     @started_on = started_on
     @finished_on = finished_on
