@@ -643,7 +643,7 @@
   :contracts:
   - id
   - contract_type
-  - contract_flat_rate_fee_structure_id
-  - contract_banded_fee_structure_id
+  - flat_rate_fee_structure_id
+  - banded_fee_structure_id
   - created_at
   - updated_at

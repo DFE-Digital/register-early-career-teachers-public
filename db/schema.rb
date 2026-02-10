@@ -178,14 +178,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
 
   create_table "contracts", force: :cascade do |t|
     t.enum "contract_type", null: false, enum_type: "contract_types"
-    t.bigint "contract_flat_rate_fee_structure_id"
-    t.bigint "contract_banded_fee_structure_id"
+    t.bigint "flat_rate_fee_structure_id"
+    t.bigint "banded_fee_structure_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["contract_banded_fee_structure_id"], name: "index_contracts_on_contract_banded_fee_structure_id"
-    t.index ["contract_flat_rate_fee_structure_id"], name: "index_contracts_on_contract_flat_rate_fee_structure_id"
-    t.index ["contract_type", "contract_banded_fee_structure_id"], name: "idx_on_contract_type_contract_banded_fee_structure__1dce84d2f3", unique: true
-    t.index ["contract_type", "contract_flat_rate_fee_structure_id"], name: "idx_on_contract_type_contract_flat_rate_fee_structu_0991b2695e", unique: true
+    t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id"
+    t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id"
   end
 
   create_table "data_migration_failed_combinations", force: :cascade do |t|
@@ -990,8 +988,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
-  add_foreign_key "contracts", "contract_banded_fee_structures"
-  add_foreign_key "contracts", "contract_flat_rate_fee_structures"
+  add_foreign_key "contracts", "contract_banded_fee_structures", column: "banded_fee_structure_id"
+  add_foreign_key "contracts", "contract_flat_rate_fee_structures", column: "flat_rate_fee_structure_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
