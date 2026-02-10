@@ -16,6 +16,7 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
   let(:ect1_teacher) { FactoryBot.create(:teacher, trs_first_name: "Konohamaru", trs_last_name: "Sarutobi") }
   let(:ect2_teacher) { FactoryBot.create(:teacher, trs_first_name: "Boruto", trs_last_name: "Uzumaki") }
   let(:ect3_teacher) { FactoryBot.create(:teacher, trs_first_name: "Kakashi", trs_last_name: "Hatake") }
+  let(:ect4_teacher) { FactoryBot.create(:teacher, :induction_completed, trs_first_name: "Jiraiya", trs_last_name: "Sannin") }
 
   context "with no ECTs" do
     it "shows No ECTs assigned" do
@@ -25,10 +26,11 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
     end
   end
 
-  context "with less than or equal to 5 current ECTs" do
+  context "teacher statuses" do
     let(:current_teacher) { ect1_teacher }
     let(:upcoming_teacher) { ect2_teacher }
     let(:finished_teacher) { ect3_teacher }
+    let(:completed_teacher) { ect4_teacher }
 
     let(:current_period) do
       FactoryBot.create(:ect_at_school_period,
@@ -54,21 +56,22 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
                         finished_on: Date.yesterday)
     end
 
-    let!(:ects) do
-      FactoryBot.create_list(:teacher, 3).map do |ect_teacher|
-        ect = FactoryBot.create(:ect_at_school_period, teacher: ect_teacher, school:, started_on:, finished_on: nil)
-        FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect, started_on:, finished_on: nil)
-        ect_teacher
-      end
+    let(:completed_period) do
+      FactoryBot.create(:ect_at_school_period,
+                        teacher: completed_teacher,
+                        school:,
+                        started_on: finished,
+                        finished_on: completed_teacher.trs_induction_completed_date)
     end
 
     before do
       FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: current_period, started_on: current, finished_on: nil)
       FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: upcoming_period, started_on: upcoming, finished_on: nil)
       FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: finished_period, started_on: finished, finished_on: Date.yesterday)
+      FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: completed_period, started_on: finished, finished_on: completed_teacher.trs_induction_completed_date)
     end
 
-    it "lists upto 5 current ECT names" do
+    it "shows current and upcoming teachers only" do
       render_inline(described_class.new(mentor:, school:))
 
       expect(rendered_content).not_to have_text("No ECTs assigned")
@@ -76,6 +79,23 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
       expect(rendered_content).to have_link(full_name(current_teacher), href: schools_ect_path(current_period))
       expect(rendered_content).to have_link(full_name(upcoming_teacher), href: schools_ect_path(upcoming_period))
       expect(rendered_content).not_to have_link(full_name(finished_teacher), href: schools_ect_path(finished_period))
+      expect(rendered_content).not_to have_link(full_name(completed_teacher), href: schools_ect_path(completed_period))
+    end
+  end
+
+  context "with less than or equal to 5 current ECTs" do
+    let!(:ects) do
+      FactoryBot.create_list(:teacher, 5).map do |ect_teacher|
+        ect = FactoryBot.create(:ect_at_school_period, teacher: ect_teacher, school:, started_on:, finished_on: nil)
+        FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: ect, started_on:, finished_on: nil)
+        ect_teacher
+      end
+    end
+
+    it "lists upto 5 current ECT names" do
+      render_inline(described_class.new(mentor:, school:))
+
+      expect(rendered_content).not_to have_text("No ECTs assigned")
 
       ects.each do |teacher|
         expect(rendered_content).to have_link(full_name(teacher), href: schools_ect_path(teacher.ect_at_school_periods.first))

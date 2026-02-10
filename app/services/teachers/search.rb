@@ -2,12 +2,13 @@ module Teachers
   class Search
     attr_reader :scope
 
-    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore, mentor_at_school: :ignore, status: nil)
+    def initialize(query_string: :ignore, appropriate_bodies: :ignore, ect_at_school: :ignore, mentor_at_school: :ignore, status: nil, in_progress: :ignore)
       @scope = Teacher.all
 
       where_ect_at(ect_at_school)
       where_mentor_at(mentor_at_school)
       where_appropriate_bodies_in(appropriate_bodies, status)
+      where_in_progress(in_progress)
       matching(query_string)
     end
 
@@ -82,6 +83,12 @@ module Teachers
         .where(mentor_at_school_periods: { school_id: school.id })
         .merge(MentorAtSchoolPeriod.current_or_future)
         .distinct
+    end
+
+    def where_in_progress(in_progress)
+      return if in_progress == :ignore
+
+      @scope = @scope.not_failed.not_passed
     end
   end
 end

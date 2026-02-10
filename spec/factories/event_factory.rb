@@ -24,5 +24,17 @@ FactoryBot.define do
     trait(:with_modifications) do
       modifications { ["Something has changed"] }
     end
+
+    trait :with_ect_at_school_period do
+      ect_at_school_period
+    end
+
+    trait :with_training_period do
+      training_period
+    end
+
+    trait :with_mentorship_period do
+      mentorship_period
+    end
   end
 end

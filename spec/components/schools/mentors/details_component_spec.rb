@@ -19,6 +19,7 @@ RSpec.describe Schools::Mentors::DetailsComponent, type: :component do
   let(:current_teacher) { FactoryBot.create(:teacher, trs_first_name: "Konohamaru", trs_last_name: "Sarutobi") }
   let(:upcoming_teacher) { FactoryBot.create(:teacher, trs_first_name: "Boruto", trs_last_name: "Uzumaki") }
   let(:finished_teacher) { FactoryBot.create(:teacher, trs_first_name: "Kakashi", trs_last_name: "Hatake") }
+  let(:completed_teacher) { FactoryBot.create(:teacher, :induction_completed, trs_first_name: "Jiraiya", trs_last_name: "Sannin") }
 
   let(:current_period) do
     FactoryBot.create(:ect_at_school_period,
@@ -44,11 +45,20 @@ RSpec.describe Schools::Mentors::DetailsComponent, type: :component do
                       finished_on: Date.yesterday)
   end
 
+  let(:completed_period) do
+    FactoryBot.create(:ect_at_school_period,
+                      teacher: completed_teacher,
+                      school:,
+                      started_on: finished,
+                      finished_on: completed_teacher.trs_induction_completed_date)
+  end
+
   context "when there are ECTs assigned to the mentor" do
     before do
       FactoryBot.create(:mentorship_period, mentor:, mentee: current_period, started_on: current, finished_on: nil)
       FactoryBot.create(:mentorship_period, mentor:, mentee: upcoming_period, started_on: upcoming, finished_on: nil)
       FactoryBot.create(:mentorship_period, mentor:, mentee: finished_period, started_on: finished, finished_on: Date.yesterday)
+      FactoryBot.create(:mentorship_period, mentor:, mentee: completed_period, started_on: finished, finished_on: completed_teacher.trs_induction_completed_date)
 
       render_inline(described_class.new(teacher: mentor_teacher, mentor:))
     end
@@ -71,6 +81,7 @@ RSpec.describe Schools::Mentors::DetailsComponent, type: :component do
       expect(page).to have_link("Konohamaru Sarutobi", href: schools_ect_path(current_period, back_to_mentor: true, mentor_id: mentor.id))
       expect(page).to have_link("Boruto Uzumaki", href: schools_ect_path(upcoming_period, back_to_mentor: true, mentor_id: mentor.id))
       expect(page).not_to have_link("Kakashi Hatake", href: schools_ect_path(finished_period, back_to_mentor: true, mentor_id: mentor.id))
+      expect(page).not_to have_link("Jiraiya Sannin", href: schools_ect_path(completed_period, back_to_mentor: true, mentor_id: mentor.id))
     end
   end
 

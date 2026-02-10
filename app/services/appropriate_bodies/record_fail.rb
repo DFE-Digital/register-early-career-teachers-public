@@ -19,7 +19,9 @@ module AppropriateBodies
       validate_submission(context: :record_outcome)
 
       InductionPeriod.transaction do
+        destroy_unstarted_ect_period!
         close_induction_period
+        finish_ect_period_today
         delete_submission
         sync_with_trs
         update_event_history
@@ -42,6 +44,9 @@ module AppropriateBodies
         teacher:,
         appropriate_body:,
         induction_period: ongoing_induction_period,
+        ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         body: "ECT notified on #{ongoing_induction_period.fail_confirmation_sent_on.to_fs(:govuk)}"
       )
     end
