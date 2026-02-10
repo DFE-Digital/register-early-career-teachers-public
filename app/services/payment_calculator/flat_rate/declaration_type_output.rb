@@ -9,11 +9,11 @@ module PaymentCalculator
       attribute :fee_per_declaration
 
       def billable_count
-        @billable_count ||= filtered_declarations.billable_or_changeable.count
+        @billable_count ||= declarations_of_matching_type.billable.count
       end
 
       def refundable_count
-        @refundable_count ||= filtered_declarations.refundable.count
+        @refundable_count ||= declarations_of_matching_type.refundable.count
       end
 
       def total_billable_amount
@@ -30,7 +30,7 @@ module PaymentCalculator
 
     private
 
-      def filtered_declarations
+      def declarations_of_matching_type
         declarations.where(declaration_type:)
       end
     end

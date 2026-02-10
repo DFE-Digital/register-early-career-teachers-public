@@ -3,6 +3,7 @@ class Declaration < ApplicationRecord
 
   BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES = %w[no_payment eligible payable paid].freeze
   VOIDABLE_PAYMENT_STATUSES = %w[no_payment eligible payable].freeze
+  BILLABLE_PAYMENT_STATUSES = %w[eligible payable paid].freeze
   REFUNDABLE_PAYMENT_STATUSES = %w[awaiting_clawback clawed_back].freeze
 
   # Associations
@@ -91,6 +92,7 @@ class Declaration < ApplicationRecord
   scope :billable_or_changeable_for_declaration_type, ->(declaration_type) {
     billable_or_changeable.where(declaration_type:)
   }
+  scope :billable, -> { where(payment_status: BILLABLE_PAYMENT_STATUSES, clawback_status: :no_clawback) }
   scope :refundable, -> { where(clawback_status: REFUNDABLE_PAYMENT_STATUSES) }
 
   touch -> { self },
