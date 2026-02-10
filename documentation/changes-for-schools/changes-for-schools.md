@@ -76,8 +76,6 @@ We ask when the person started at the school as an ECT, not when they started be
 
 <a href="../images/ect-start-date.png" target="blank"><img alt="Enter the ECT's start date when adding to the service" src="../images/ect-start-date.png" width="300"/></a>
 
-### We ask for the lead provider when a school has either not had a partnership with a lead provider before or chooses not to use the existing partnership(s)
-
 ### We ask for the lead provider when a school has not partnered with one before or chooses not to use existing ones
 
 Most schools will already have a partnership with a lead provider and delivery partner, that they can use to train their ECTs. 
