@@ -7,6 +7,8 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
               :mentorship_periods,
               :training_periods
 
+  attr_accessor :created_at
+
   def initialize(started_on:,
                  finished_on:,
                  school:, email:,

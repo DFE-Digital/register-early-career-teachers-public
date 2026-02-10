@@ -63,7 +63,8 @@ private
     case migration_mode
     when :latest_induction_records
       TeacherHistoryConverter::ECT::LatestInductionRecords.new(trn:, profile_id:, induction_records:, mentor_at_school_periods:)
-                                                          .ect_at_school_periods
+        .ect_at_school_periods
+        .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.ect.created_at) }
     when :all_induction_records
       TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records).ect_at_school_periods
     end
@@ -84,10 +85,24 @@ private
     case migration_mode
     when :latest_induction_records
       TeacherHistoryConverter::Mentor::LatestInductionRecords.new(trn:, profile_id:, induction_records:)
-                                                             .mentor_at_school_periods
+        .mentor_at_school_periods
+        .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
     when :all_induction_records
       TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
     end
+  end
+
+  # in ECF1 we use the participant profile `created_at`, but as
+  # there's no equivalent in RECT we are taking the school period's
+  # created_at.
+  #
+  # Are we able to populate the earliest school period with the
+  # created at from the participant profile during migration?
+  def override_first_at_school_period_created_at(at_school_periods, participant_profile_created_at)
+    return at_school_periods if at_school_periods.empty?
+
+    at_school_periods[0].created_at = participant_profile_created_at
+    at_school_periods
   end
 
   # def build_mentorship_periods(induction_record)
