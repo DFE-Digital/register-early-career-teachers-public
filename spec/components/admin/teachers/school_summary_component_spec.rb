@@ -86,12 +86,16 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
       end
     end
 
-    context "Assigned mentor row" do
+    context "Mentor row" do
       let(:older_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: school_period.started_on) }
       let(:newer_mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: school_period.started_on + 1.month) }
 
+      it "appears as the last row" do
+        expect(rendered).to have_css(".govuk-summary-list__row:last-child dt", text: "Mentor")
+      end
+
       context "when mentors are assigned" do
-        before do
+        let!(:older_mentorship) do
           FactoryBot.create(
             :mentorship_period,
             mentee: school_period,
@@ -99,14 +103,23 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
             started_on: school_period.started_on + 1.month,
             finished_on: school_period.started_on + 2.months
           )
+        end
 
+        let!(:newer_mentorship) do
           FactoryBot.create(
             :mentorship_period,
             mentee: school_period,
             mentor: newer_mentor_period,
             started_on: school_period.started_on + 3.months,
-            finished_on: school_period.started_on + 4.months
+            finished_on: nil
           )
+        end
+
+        it "displays mentors in a table with name, start date, and end date columns" do
+          expect(rendered).to have_css("table.govuk-table")
+          expect(rendered).to have_css("th", text: "Name")
+          expect(rendered).to have_css("th", text: "Start date")
+          expect(rendered).to have_css("th", text: "End date")
         end
 
         it "lists mentors newest to oldest with links" do
@@ -118,6 +131,16 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
           html = rendered.to_html
           expect(html.index(newer_name)).to be < html.index(older_name)
         end
+
+        it "shows formatted start dates" do
+          expect(rendered).to have_css("td", text: older_mentorship.started_on.to_fs(:govuk))
+          expect(rendered).to have_css("td", text: newer_mentorship.started_on.to_fs(:govuk))
+        end
+
+        it "shows formatted end dates or 'Present' for ongoing mentorships" do
+          expect(rendered).to have_css("td", text: older_mentorship.finished_on.to_fs(:govuk))
+          expect(rendered).to have_css("td", text: "Present")
+        end
       end
 
       context "when no mentors are assigned" do
@@ -125,7 +148,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
         let(:newer_mentor_period) { nil }
 
         it "shows the fallback text" do
-          expect(rendered).to have_css("dt", text: "Assigned mentor")
+          expect(rendered).to have_css("dt", text: "Mentor")
           expect(rendered).to have_css("dd", text: "None assigned")
         end
       end
@@ -160,7 +183,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     end
     let(:school_period) { FactoryBot.create(:mentor_at_school_period, **school_period_attributes) }
     let(:older_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: school_period.started_on, finished_on: school_period.started_on + 6.months) }
-    let(:newer_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: school_period.started_on + 1.month, finished_on: school_period.started_on + 7.months) }
+    let(:newer_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: school_period.started_on + 1.month, finished_on: nil) }
 
     context "card title" do
       it "links to the admin school overview" do
@@ -216,7 +239,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
 
     context "Assigned ECTs row" do
       context "when ECTs are assigned" do
-        before do
+        let!(:older_mentorship) do
           FactoryBot.create(
             :mentorship_period,
             mentor: school_period,
@@ -224,14 +247,23 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
             started_on: school_period.started_on + 1.month,
             finished_on: school_period.started_on + 2.months
           )
+        end
 
+        let!(:newer_mentorship) do
           FactoryBot.create(
             :mentorship_period,
             mentor: school_period,
             mentee: newer_ect_period,
             started_on: school_period.started_on + 2.months,
-            finished_on: school_period.started_on + 3.months
+            finished_on: nil
           )
+        end
+
+        it "displays ECTs in a table with name, start date, and end date columns" do
+          expect(rendered).to have_css("table.govuk-table")
+          expect(rendered).to have_css("th", text: "Name")
+          expect(rendered).to have_css("th", text: "Start date")
+          expect(rendered).to have_css("th", text: "End date")
         end
 
         it "lists ECTs newest to oldest with links" do
@@ -242,6 +274,16 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
           expect(rendered).to have_link(older_name, href: admin_teacher_induction_path(older_ect_period.teacher))
           html = rendered.to_html
           expect(html.index(newer_name)).to be < html.index(older_name)
+        end
+
+        it "shows formatted start dates" do
+          expect(rendered).to have_css("td", text: older_mentorship.started_on.to_fs(:govuk))
+          expect(rendered).to have_css("td", text: newer_mentorship.started_on.to_fs(:govuk))
+        end
+
+        it "shows formatted end dates or 'Present' for ongoing mentorships" do
+          expect(rendered).to have_css("td", text: older_mentorship.finished_on.to_fs(:govuk))
+          expect(rendered).to have_css("td", text: "Present")
         end
       end
 
