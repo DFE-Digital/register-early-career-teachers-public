@@ -18,9 +18,14 @@ class AppropriateBody < ApplicationRecord
 
   # Associations
   belongs_to :dfe_sign_in_organisation
-
   has_many :appropriate_body_periods # original AppropriateBody table
+  has_one :ongoing_appropriate_body_period, -> { ongoing }, class_name: "AppropriateBodyPeriod"
+
+  # Regions and Lead School Periods are only relevant to regional  Teaching School Hubs
   has_many :regions
+  has_many :lead_school_periods
+  has_one :ongoing_lead_school_period, -> { ongoing }, class_name: "LeadSchoolPeriod"
+  has_one :lead_school, through: :ongoing_lead_school_period, source: :school
 
   # Validations
   validates :name, presence: true, uniqueness: true
@@ -29,11 +34,21 @@ class AppropriateBody < ApplicationRecord
   # Normalizations
   normalizes :name, with: -> { it.squish }
 
+  # @return [Boolean]
+  def national?
+    name.in?(NATIONAL_BODIES)
+  end
+
+  # @return [Boolean]
+  def teaching_school_hub?
+    !national?
+  end
+
   # @return [Array<String>]
   def districts
     regions.collect(&:districts).flatten
   end
 
-  # @return [School]
-  delegate :school, to: :dfe_sign_in_organisation, prefix: :lead
+  # @return [School, nil]
+  delegate :school, to: :dfe_sign_in_organisation, prefix: :login
 end

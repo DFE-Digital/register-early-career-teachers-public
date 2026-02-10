@@ -1,7 +1,7 @@
 RSpec.describe Admin::AppropriateBodies::DetailsComponent, type: :component do
   subject(:component) { described_class.new(appropriate_body_period:) }
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :with_lead_school) }
 
   before { render_inline(component) }
 

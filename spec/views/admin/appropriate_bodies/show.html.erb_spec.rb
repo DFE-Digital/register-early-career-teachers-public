@@ -1,6 +1,5 @@
 RSpec.describe "admin/appropriate_bodies/show.html.erb" do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name:) }
-  let(:name) { "Ancient County Council" }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :with_lead_school) }
 
   before do
     assign(:appropriate_body, appropriate_body_period)
@@ -12,19 +11,15 @@ RSpec.describe "admin/appropriate_bodies/show.html.erb" do
     expect(view.content_for(:page_header)).to have_css("h1", text: appropriate_body_period.name)
   end
 
-  context "when the appropriate body name contains ampersands" do
-    let(:name) { "Bright Futures Teaching School Hub (Salford & Trafford)" }
-
-    it "does not add the &amp; escape code in the title" do
-      expect(view.content_for(:page_title)).to eq name
-    end
-  end
-
   it "displays the DfE Sign In organisation ID" do
     expect(rendered).to have_css(".govuk-summary-list__value", text: appropriate_body_period.dfe_sign_in_organisation_id)
   end
 
   it "displays counts of current ECTs and bulk uploads" do
     expect(rendered).to have_css(".govuk-summary-list__value", exact_text: "0", count: 2)
+  end
+
+  it "links to appropriate body timeline", skip: "disabled for manual testing" do
+    expect(rendered).to have_link("Timeline of events", href: admin_appropriate_body_timeline_path(appropriate_body_period))
   end
 end

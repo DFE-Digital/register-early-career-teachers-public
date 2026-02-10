@@ -62,14 +62,14 @@ RSpec.describe "Migrating authenticated Appropriate Body Period users" do
         end
         let(:school) { School.first }
 
-        it "links AppropriateBodyPeriod to AppropriateBody and to a leading School" do
+        it "links AppropriateBodyPeriod to AppropriateBody and to a login School (current lead school if not using a period)" do
           expect {
             sign_in_as_teaching_school_hub(appropriate_body: appropriate_body_period, school:)
           }.to change(AppropriateBody, :count).by(1)
 
           appropriate_body_period.reload
           expect(appropriate_body_period.appropriate_body.name).to eq(appropriate_body_period.name)
-          expect(appropriate_body_period.appropriate_body.lead_school).to eq(school)
+          expect(appropriate_body_period.appropriate_body.login_school).to eq(school)
         end
       end
     end

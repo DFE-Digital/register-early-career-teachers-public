@@ -11,8 +11,7 @@ class AppropriateBodyPeriod < ApplicationRecord
     message: "Must be local authority, national or teaching school hub"
   }
 
-  # TODO: make this a period
-  # include Interval
+  include Interval
 
   # Associations
   has_one :legacy_appropriate_body, inverse_of: :appropriate_body_period
@@ -25,10 +24,6 @@ class AppropriateBodyPeriod < ApplicationRecord
   has_many :events
   has_many :unclaimed_ect_at_school_periods,
            -> { unclaimed_by_school_reported_appropriate_body },
-           class_name: "ECTAtSchoolPeriod",
-           foreign_key: :school_reported_appropriate_body_id
-  has_many :claimed_ect_at_school_periods,
-           -> { claimed_by_school_reported_appropriate_body },
            class_name: "ECTAtSchoolPeriod",
            foreign_key: :school_reported_appropriate_body_id
 
@@ -44,10 +39,17 @@ class AppropriateBodyPeriod < ApplicationRecord
   # Normalizations
   normalizes :name, with: -> { it.squish }
 
-  # TODO: consider removing once view components accept the new AB object not the ABP
-  # @return [School]
-  delegate :lead_school, to: :appropriate_body, allow_nil: true
+  # @return [LeadSchoolPeriod::ActiveRecord_AssociationRelation]
+  def lead_school_periods
+    return unless appropriate_body&.teaching_school_hub?
 
-  # Predicates
-  def active? = dfe_sign_in_organisation_id.present?
+    appropriate_body.lead_school_periods.containing_period(self)
+  end
+
+  # @return [School, nil]
+  def lead_school
+    return unless appropriate_body&.teaching_school_hub?
+
+    lead_school_periods.first&.school
+  end
 end
