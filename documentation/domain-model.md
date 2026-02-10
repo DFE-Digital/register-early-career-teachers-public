@@ -366,7 +366,6 @@ erDiagram
   Declaration }o--|| Statement : belongs_to
   DataMigrationTeacherCombination {
     integer id
-    string trn
     uuid ecf1_ect_profile_id
     uuid ecf1_mentor_profile_id
     jsonb ecf1_ect_combinations
@@ -379,6 +378,7 @@ erDiagram
     integer ecf2_mentor_combinations_count
     datetime created_at
     datetime updated_at
+    uuid api_id
   }
   DataMigrationFailedCombination {
     integer id
@@ -420,8 +420,8 @@ erDiagram
   Contract {
     integer id
     enum contract_type
-    integer contract_flat_rate_fee_structure_id
-    integer contract_banded_fee_structure_id
+    integer flat_rate_fee_structure_id
+    integer banded_fee_structure_id
     datetime created_at
     datetime updated_at
   }

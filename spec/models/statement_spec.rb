@@ -20,7 +20,7 @@ describe Statement do
     it { is_expected.to validate_uniqueness_of(:active_lead_provider_id).scoped_to(:year, :month).with_message("Statement with the same month and year already exists for the lead provider") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
 
-    describe "same contract linked to other statements have same lead provider and contract period" do
+    describe "contract active lead provider consistency" do
       subject(:statement) { FactoryBot.create(:statement, contract:) }
 
       let(:active_lead_provider) { statement.active_lead_provider }

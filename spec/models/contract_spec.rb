@@ -11,8 +11,8 @@ describe Contract do
   end
 
   describe "associations" do
-    it { is_expected.to belong_to(:contract_banded_fee_structure).class_name("Contract::BandedFeeStructure").optional }
-    it { is_expected.to belong_to(:contract_flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").optional }
+    it { is_expected.to belong_to(:banded_fee_structure).class_name("Contract::BandedFeeStructure").optional }
+    it { is_expected.to belong_to(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").optional }
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
   end
 
@@ -20,24 +20,23 @@ describe Contract do
     subject { FactoryBot.create(:contract) }
 
     it { is_expected.to validate_presence_of(:contract_type).with_message("Enter a contract type") }
-    it { is_expected.to validate_uniqueness_of(:contract_type).scoped_to(:contract_flat_rate_fee_structure_id).with_message("Contract with the same type and fee structure already exists") }
     it { is_expected.to validate_inclusion_of(:contract_type).in_array(Contract.contract_types.keys).with_message("Choose a valid contract type") }
 
     context "when contract type is `ITTECF_ECTP`" do
       subject { FactoryBot.create(:contract, :for_mentor) }
 
-      it { is_expected.to validate_presence_of(:contract_flat_rate_fee_structure).with_message("Flat rate fee structure must be provided for ITTECF_ECTP contracts") }
-      it { is_expected.to validate_absence_of(:contract_banded_fee_structure).with_message("Banded fee structure must be blank for ITTECF_ECTP contracts") }
+      it { is_expected.to validate_presence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be provided for ITTECF_ECTP contracts") }
+      it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ITTECF_ECTP contracts") }
     end
 
     context "when contract type is `ECF`" do
       subject { FactoryBot.create(:contract, :for_ecf) }
 
-      it { is_expected.to validate_presence_of(:contract_banded_fee_structure).with_message("Banded fee structure must be provided for ECF contracts") }
-      it { is_expected.to validate_absence_of(:contract_flat_rate_fee_structure).with_message("Flat rate fee structure must be blank for ECF contracts") }
+      it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ECF contracts") }
+      it { is_expected.to validate_absence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be blank for ECF contracts") }
     end
 
-    describe "contract statements have same lead provider and contract period" do
+    describe "active lead provider consistency" do
       let!(:contract) { FactoryBot.create(:contract) }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 

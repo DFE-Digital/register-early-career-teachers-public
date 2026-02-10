@@ -7,7 +7,7 @@ class Contract::BandedFeeStructure < ApplicationRecord
            class_name: "Contract::BandedFeeStructure::Band",
            inverse_of: :banded_fee_structure,
            dependent: :destroy
-  has_many :contracts, foreign_key: "contract_banded_fee_structure_id", inverse_of: :contract_banded_fee_structure
+  has_many :contracts, inverse_of: :banded_fee_structure
 
   # Validations
   validates :recruitment_target,
