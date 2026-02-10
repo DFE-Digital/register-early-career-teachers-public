@@ -33,6 +33,15 @@ RSpec.describe "admin/schools/partnerships/show.html.erb", type: :view do
     expect(rendered).to have_css(".govuk-button", text: "Sign in as #{school.name}")
   end
 
+  it "has an add partnership button" do
+    render
+
+    expect(rendered).to have_link(
+      "Add partnership",
+      href: admin_schools_add_partnership_wizard_select_contract_period_path(school.urn)
+    )
+  end
+
   it "displays secondary navigation" do
     render
 
