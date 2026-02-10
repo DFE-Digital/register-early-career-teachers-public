@@ -6,7 +6,7 @@
 
 ---
 
-## Tell DfE about school induction tutor
+## Tell DfE about the school induction tutor
 
 <video src="/changes-for-schools/videos/tell-us-SIT.mp4" type="video/mp4" height="360" controls></video>
 
