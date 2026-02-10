@@ -117,7 +117,15 @@ class ECF1TeacherHistory
   end
 
   def self.build_school_data(school)
-    Types::SchoolData.new(urn: school.urn, name: school.name)
+    Types::SchoolData.new(urn: school.urn, name: school.name, school_type_name: school_type_name_for(school))
+  end
+
+  def self.school_type_name_for(school)
+    if school.respond_to?(:school_type_name)
+      school.school_type_name
+    elsif school.respond_to?(:type_name)
+      school.type_name
+    end
   end
 
   def self.build_teacher_data(teacher)
