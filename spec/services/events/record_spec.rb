@@ -2170,7 +2170,7 @@ RSpec.describe Events::Record do
         expect(RecordEventJob).to have_received(:perform_later).with(
           hash_including(
             school:,
-            heading: "New School eligibility changed to eligible",
+            heading: "New School became eligible",
             event_type: :school_eligibility_changed,
             happened_at: Time.zone.now,
             metadata: modifications,
