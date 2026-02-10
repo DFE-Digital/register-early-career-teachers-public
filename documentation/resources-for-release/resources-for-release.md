@@ -8,5 +8,7 @@ These resources:
 - will likely change when updates are made to the service
 
 [Changes in the service](/changes-for-schools/changes-for-schools/)
+
 [Supporting videos](/changes-for-schools/supporting-videos)
+
 [Communication emails to schools](/communication-emails-to-schools/communication-emails-to-schools/)
