@@ -17,6 +17,7 @@ class Event < ApplicationRecord
     school_partnership_created
     school_partnership_reused
     school_partnership_updated
+    school_eligibility_changed
     school_induction_tutor_confirmed
     school_induction_tutor_updated
     statement_adjustment_added
