@@ -289,6 +289,18 @@ erDiagram
     datetime updated_at
   }
   LegacyAppropriateBody }o--|| AppropriateBodyPeriod : belongs_to
+  LeadSchoolPeriod {
+    integer id
+    integer school_id
+    integer appropriate_body_id
+    date started_on
+    date finished_on
+    daterange range
+    datetime created_at
+    datetime updated_at
+  }
+  LeadSchoolPeriod }o--|| School : belongs_to
+  LeadSchoolPeriod }o--|| AppropriateBody : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
     integer active_lead_provider_id
@@ -488,10 +500,12 @@ erDiagram
     uuid dqt_id
     enum body_type
     integer appropriate_body_id
+    date started_on
+    date finished_on
+    daterange range
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| AppropriateBody : belongs_to
-  AppropriateBodyPeriod }o--|| School : belongs_to
   AppropriateBody {
     integer id
     string name

@@ -239,7 +239,7 @@ appropriate_body_periods.each do |data|
   end
 
   # Legacy Appropriate Body
-  if dfe_sign_in_organisation_id.present?
+  if dqt_id.present?
     FactoryBot.create(:legacy_appropriate_body,
                       appropriate_body_period:,
                       dqt_id:,
@@ -268,6 +268,9 @@ appropriate_body_periods.each do |data|
                                          name:,
                                          dfe_sign_in_organisation: school.dfe_sign_in_organisation)
 
+    appropriate_body_period.update!(appropriate_body:)
+
+    # Regions for TSH
     regions.each do |region|
       FactoryBot.create(:region,
                         code: region[:code],
@@ -275,7 +278,10 @@ appropriate_body_periods.each do |data|
                         appropriate_body:)
     end
 
-    appropriate_body_period.update!(appropriate_body:)
+    # Lead School role for TSH
+    FactoryBot.create(:lead_school_period, :ongoing,
+                      school:,
+                      appropriate_body:)
 
     # Delivery Partner role for TSH
     FactoryBot.create(:delivery_partner,
