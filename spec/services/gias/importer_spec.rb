@@ -89,4 +89,41 @@ RSpec.describe GIAS::Importer, type: :service do
       end
     end
   end
+
+  describe "eligibility change events" do
+    before do
+      allow(Events::Record).to receive(:record_school_eligibility_changed_event!)
+    end
+
+    context "when eligibility changes" do
+      before do
+        FactoryBot.create(:gias_school, :with_school, urn: 20_001, eligible: false)
+      end
+
+      it "records an event with the raw modifications" do
+        importer.send(:import_schools)
+
+        expect(Events::Record).to have_received(:record_school_eligibility_changed_event!).with(
+          hash_including(
+            author: instance_of(Events::SystemAuthor),
+            school_name: "Example School 1",
+            eligibility: true,
+            modifications: hash_including("eligible" => [false, true])
+          )
+        )
+      end
+    end
+
+    context "when eligibility does not change" do
+      before do
+        FactoryBot.create(:gias_school, :with_school, urn: 20_001, eligible: true, name: "Old Name")
+      end
+
+      it "does not record an event" do
+        importer.send(:import_schools)
+
+        expect(Events::Record).not_to have_received(:record_school_eligibility_changed_event!)
+      end
+    end
+  end
 end
