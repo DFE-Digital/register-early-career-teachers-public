@@ -28,12 +28,12 @@ module Migrators
     end
 
     def self.schools
-      ::Migration::School.with(eligible_or_cip_or_with_irs:
-                                 [
-                                   ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh.distinct,
-                                   ::Migration::School.not_open.with_induction_records.distinct
-                                 ])
-                         .from("eligible_or_cip_or_with_irs AS schools")
+      ::Migration::School.with(
+        eligible_or_cip_or_with_irs: [
+          ::Migration::School.includes(:local_authority).eligible_or_cip_only_except_welsh.not_bso_schools.distinct,
+          ::Migration::School.not_open.with_induction_records.distinct
+        ]
+      ).from("eligible_or_cip_or_with_irs AS schools")
     end
 
     def migrate!
