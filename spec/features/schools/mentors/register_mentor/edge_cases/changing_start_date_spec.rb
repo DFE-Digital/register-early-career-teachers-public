@@ -3,7 +3,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   include SchoolPartnershipHelpers
 
   around do |example|
-    travel_to(Time.zone.local(2026, 2, 3)) do
+    travel_to(Time.zone.local(2025, 5, 30)) do
       example.run
     end
   end
@@ -12,7 +12,6 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
 
   scenario "mentor has existing mentorship, and is required to enter a start date at this school" do
     given_there_is_a_school_in_the_service
-    and_we_are_less_than_four_months_from_the_end_of_the_current_contract_period
     and_the_next_contract_period_is_closed
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
     and_mentor_has_existing_mentorship_at_another_school
@@ -47,7 +46,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
 
     when_i_click_back
     then_i_should_be_taken_to_mentor_start_date_page
-    and_i_enter_a_valid_start_date
+    and_i_enter_a_valid_start_date_in_the_past
     and_i_click_continue
 
     then_i_should_be_taken_to_previous_training_period_details_page
@@ -76,7 +75,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     and_i_should_see_the_start_date_originally_entered
 
     when_i_try_to_change_the_start_date
-    and_i_enter_a_different_valid_start_date
+    and_i_enter_a_todays_date
     and_i_click_continue
     then_i_should_be_taken_to_the_check_answers_page
     and_i_should_see_the_new_start_date
@@ -85,29 +84,29 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     then_i_should_be_taken_to_the_confirmation_page
   end
 
-  def and_i_enter_a_valid_start_date
+  def and_i_enter_a_valid_start_date_in_the_past
     @mentor_start_date = 2.days.ago.to_date
     page.get_by_label("Day").fill(@mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(@mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(@mentor_start_date.year.to_s)
   end
 
-  def and_i_enter_a_different_valid_start_date
-    @mentor_start_date = 1.day.ago.to_date
+  def and_i_enter_a_todays_date
+    @mentor_start_date = Time.zone.today
     page.get_by_label("Day").fill(@mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(@mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(@mentor_start_date.year.to_s)
   end
 
   def when_i_enter_a_date_in_a_closed_contract_period
-    mentor_start_date = Date.new(2026, 6, 3)
+    mentor_start_date = Date.new(2025, 7, 1)
     page.get_by_label("Day").fill(mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(mentor_start_date.year.to_s)
   end
 
   def when_i_enter_a_start_date_more_than_four_months_in_the_future
-    mentor_start_date = Date.new(2026, 6, 4)
+    mentor_start_date = Date.new(2025, 10, 2)
     page.get_by_label("Day").fill(mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(mentor_start_date.year.to_s)
@@ -126,8 +125,9 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   end
 
   def then_i_see_a_validation_error_message
+    page.screenshot(path: "tmp/validation_error_message.png")
     expect(page.locator(".govuk-error-summary")).to have_text("There is a problem")
-    expect(page.locator(".govuk-error-summary a").and(page.get_by_text("Start date must be before 4 June 2026"))).to be_visible
+    expect(page.locator(".govuk-error-summary a").and(page.get_by_text("Start date must be before 1 October 2025"))).to be_visible
   end
 
   def given_there_is_a_school_in_the_service
@@ -138,12 +138,9 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     sign_in_as_school_user(school: @school)
   end
 
-  def and_we_are_less_than_four_months_from_the_end_of_the_current_contract_period
-    @contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2025, enabled: true)
-  end
-
   def and_the_next_contract_period_is_closed
-    FactoryBot.create(:contract_period, :with_schedules, year: 2026, enabled: false)
+    @contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2024, enabled: true)
+    FactoryBot.create(:contract_period, :with_schedules, year: 2025, enabled: false)
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
@@ -274,6 +271,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   end
 
   def then_i_should_be_taken_to_lead_provider_page
+    page.screenshot(path: "tmp/lead_provider_page.png")
     expect(page).to have_path("/school/register-mentor/lead-provider")
   end
 

@@ -10,19 +10,22 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   end
 
   let(:mentoring_only) { "no" }
-  let(:ineligible) { false }
-  let(:provider_led) { true }
   let(:started_on) { { "day" => "10", "month" => "9", "year" => "2025" } }
-  let(:previous_training_period) { FactoryBot.build(:training_period) }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
-  let(:contract_period_enabled?) { contract_period.enabled }
-  let(:currently_mentor_at_another_school) { false }
 
   it_behaves_like "a started on step", current_step: :started_on
 
   describe "#next_step" do
+    let(:contract_period_enabled?) { contract_period.enabled }
+    let(:ineligible) { false }
+    let(:provider_led) { true }
+    let(:previous_training_period) { FactoryBot.build(:training_period) }
+
     before do
-      allow(wizard.mentor).to receive_messages(provider_led_ect?: provider_led, became_ineligible_for_funding?: ineligible, previous_training_period:, contract_period_enabled?: contract_period_enabled?)
+      allow(wizard.mentor).to receive_messages(provider_led_ect?: provider_led,
+                                               became_ineligible_for_funding?: ineligible,
+                                               previous_training_period:,
+                                               contract_period_enabled?: contract_period_enabled?)
     end
 
     context "when mentor is ineligible for funding" do
