@@ -156,7 +156,7 @@ module API::Declarations
       return unless training_status&.withdrawn?
       return unless training_period.withdrawn_at <= declaration_date
 
-      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.")
+      errors.add(:teacher_api_id, "This participant withdrew from this course on #{training_period.withdrawn_at.utc.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.")
     end
 
     def validate_only_started_or_completed_if_mentor
