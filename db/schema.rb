@@ -212,6 +212,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_133827) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "data_migration_failed_mentorships", force: :cascade do |t|
+    t.uuid "ect_participant_profile_id"
+    t.uuid "mentor_participant_profile_id"
+    t.date "started_on"
+    t.date "finished_on"
+    t.uuid "ecf_start_induction_record_id"
+    t.uuid "ecf_end_induction_record_id"
+    t.text "failure_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "data_migration_teacher_combinations", force: :cascade do |t|
     t.uuid "ecf1_ect_profile_id"
     t.uuid "ecf1_mentor_profile_id"
@@ -225,6 +237,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_133827) do
     t.virtual "ecf2_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_mentor_combinations)", stored: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "ecf1_mentorships", default: [], null: false
+    t.jsonb "ecf2_mentorships", default: [], null: false
+    t.virtual "ecf1_mentorships_count", type: :integer, as: "jsonb_array_length(ecf1_mentorships)", stored: true
+    t.virtual "ecf2_mentorships_count", type: :integer, as: "jsonb_array_length(ecf2_mentorships)", stored: true
     t.uuid "api_id"
   end
 
@@ -922,10 +938,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_133827) do
     t.integer "mentor_payments_frozen_year"
     t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.boolean "ect_sparsity_uplift", default: false, null: false
-    t.datetime "ect_first_became_eligible_for_training_at"
-    t.datetime "mentor_first_became_eligible_for_training_at"
     t.date "trs_induction_start_date"
     t.date "trs_induction_completed_date"
+    t.datetime "ect_first_became_eligible_for_training_at"
+    t.datetime "mentor_first_became_eligible_for_training_at"
     t.boolean "trnless", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }

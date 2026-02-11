@@ -20,7 +20,7 @@ module Migration
     end
 
     def generate_and_cache_csv
-      Rails.cache.fetch(CACHE_KEY, expires_in: 24.hours) do
+      Rails.cache.fetch(CACHE_KEY, expires_in: 1.minute) do
         generate_csv
       end
     end

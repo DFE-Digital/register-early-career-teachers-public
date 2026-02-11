@@ -79,7 +79,9 @@ private
         finished_on: mentorship_finished_on,
         ecf_start_induction_record_id: induction_record.induction_record_id,
         ecf_end_induction_record_id: induction_record.induction_record_id,
-        mentor_at_school_period_id: mentor_at_school_period.mentor_at_school_period_id
+        mentor_at_school_period_id: mentor_at_school_period.mentor_at_school_period_id,
+        api_ect_training_record_id: profile_id,
+        api_mentor_training_record_id: mentor_at_school_period.teacher.api_mentor_training_record_id
       )
     end
   end
