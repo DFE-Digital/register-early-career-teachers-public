@@ -17,12 +17,9 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
   end
 
   describe "#declaration_type_outputs" do
-    it "returns one DeclarationTypeOutput per declaration type" do
-      expect(outputs.declaration_type_outputs.size).to eq(Declaration.declaration_types.keys.size)
-    end
-
-    it "returns DeclarationTypeOutput instances" do
-      expect(outputs.declaration_type_outputs).to all(be_a(PaymentCalculator::FlatRate::DeclarationTypeOutput))
+    it "returns an output for each declaration type" do
+      expect(outputs.declaration_type_outputs.map(&:declaration_type)).to eq(Declaration.declaration_types.keys)
+      expect(outputs.declaration_type_outputs).to all(have_attributes(declarations: Declaration.all, fee_per_declaration:))
     end
   end
 
