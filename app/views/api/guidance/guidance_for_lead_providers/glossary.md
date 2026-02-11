@@ -13,6 +13,7 @@ They provide the overall induction start date and induction end date, which we s
 The grouping of participants who begin their induction or training in a given academic year under a given funding contract.
 
 For example, a participant who started their training in the 2024 to 2025 academic year is assigned to the 2024 cohort.
+
 This is because funding for their training comes from the 2024 to 2025 call-off contract.
 
 ## Declaration
@@ -61,11 +62,17 @@ To be eligible for funding, a mentor must:
 
 ## Initial Teacher Training and Early Career Framework​ (ITTECF)
 
-The Initial Teacher Training and Early Career Framework covers the training and induction periods at the start of a teacher’s career. It combines and replaces the previously separate Initial Teacher Training (ITT) Core Content Framework (CCF) and Early Career Framework (ECF) following a review. The ITTECF sets out the entitlement of every trainee and early career teacher (ECT) to the core body of knowledge, skills and behaviours that define great teaching, and to the mentoring and support from expert colleagues they should receive throughout the three or more years at the start of their career.
+The Initial Teacher Training and Early Career Framework covers the training and induction periods at the start of a teacher’s career.
+
+It combines and replaces the previously separate Initial Teacher Training (ITT) Core Content Framework (CCF) and Early Career Framework (ECF) following a review.
+
+The ITTECF sets out the entitlement of every trainee and early career teacher (ECT) to the core body of knowledge, skills and behaviours that define great teaching, and to the mentoring and support from expert colleagues they should receive throughout the three or more years at the start of their career.
 
 ## milestone_dates
 
-The deadline to submit declarations for each milestone period to receive payment from DfE. Milestone periods are the dates a declaration must be made between to be valid for payment by DfE.
+The deadline to submit declarations for each milestone period to receive payment from DfE.
+
+Milestone periods are the dates a declaration must be made between to be valid for payment by DfE.
 
 ## Participant
 
@@ -96,15 +103,21 @@ Early career teachers require QTS to be eligible for training with lead provider
 
 ## Replacement mentors
 
-A mentor starting provider-led training to replace an existing mentor for an ECT. They receive funding for their training but don't count towards the lead provider's contract performance metrics - only the first mentor for an ECT counts towards those metrics. Before 2025, these mentors were not eligible for any uplift fees.
+A mentor starting provider-led training to replace an existing mentor for an ECT. They receive funding for their training but don't count towards the lead provider's contract performance metrics - only the first mentor for an ECT counts towards those metrics.
+
+Before 2025, these mentors were not eligible for any uplift fees.
 
 ## Schedule
 
-These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor. They are then updated and corrected by lead providers via the API. Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for.
+These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor. They are then updated and corrected by lead providers via the API.
+
+Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for.
 
 ## Statement
 
-A record of output payments (based on declarations), fees, and any adjustments the DfE may pay lead providers at the end of a contractually agreed payment period. Statements sent to providers by DfE at the end of milestone periods can be used for invoicing purposes.
+A record of output payments (based on declarations), fees, and any adjustments the DfE may pay lead providers at the end of a contractually agreed payment period.
+
+Statements sent to providers by DfE at the end of milestone periods can be used for invoicing purposes.
 
 ## Output payments
 
@@ -116,7 +129,11 @@ A unique identifier issued by the Teaching Regulation Agency to an individual te
 
 ## training_status
 
-The training status is set to 'active' when an ECT or mentor is registered. Lead providers must update this status when an ECT defers or withdraws from training. The training status can impact how you can submit declarations, or update other information for withdrawn or deferred participants. Withdrawing or deferring a participant also notifies the school to update their records.
+The training status is set to 'active' when an ECT or mentor is registered. Lead providers must update this status when an ECT defers or withdraws from training.
+
+The training status can impact how you can submit declarations, or update other information for withdrawn or deferred participants.
+
+Withdrawing or deferring a participant also notifies the school to update their records.
 
 ## Transfers
 
@@ -124,6 +141,10 @@ Transfers record when an ECT or mentor leaves a school. This includes when they 
 
 ## unfunded-mentor
 
-Mentors who are mentoring ECTs that a lead provider trains, but are not eligible for funded training through that lead provider. This is typically because they have completed, or are currently doing, mentor training with a different lead provider. Lead providers will be funded to give these mentors access to learning materials to support their ECT.
+Mentors who are mentoring ECTs that a lead provider trains, but are not eligible for funded training through that lead provider.
+
+This is typically because they have completed, or are currently doing, mentor training with a different lead provider.
+
+Lead providers will be funded to give these mentors access to learning materials to support their ECT.
 
 ```
