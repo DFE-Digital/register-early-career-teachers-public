@@ -1,19 +1,20 @@
 module HaveSummaryListRow
   class Matcher
-    def initialize(key, value: "")
+    def initialize(key, value: "", visible: :visible)
       @key = key
       @value = value
+      @visible = visible
     end
 
     def matches?(page)
       @page = page
-      @rows = @page.find_all("dl.govuk-summary-list dt.govuk-summary-list__key")
+      @rows = @page.find_all("dl.govuk-summary-list dt.govuk-summary-list__key", visible: @visible)
       @matching_row = @rows.find { |it| it.text == @key }
 
       if @value.blank?
         @matching_row && @matching_row.text == @key
       else
-        @sibling = @matching_row&.sibling("dd.govuk-summary-list__value")
+        @sibling = @matching_row&.sibling("dd.govuk-summary-list__value", visible: @visible)
         @sibling && @sibling.text == @value
       end
     end
@@ -55,5 +56,5 @@ module HaveSummaryListRow
     end
   end
 
-  def have_summary_list_row(key, value: "") = Matcher.new(key, value:)
+  def have_summary_list_row(key, value: "", visible: :visible) = Matcher.new(key, value:, visible:)
 end
