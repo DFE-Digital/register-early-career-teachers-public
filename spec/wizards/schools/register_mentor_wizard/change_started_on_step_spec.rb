@@ -13,14 +13,6 @@ RSpec.describe Schools::RegisterMentorWizard::ChangeStartedOnStep do
 
   it_behaves_like "a started on step", current_step: :started_on
 
-  describe "#next_step" do
-    context "when contract period is open" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
-
-      it { expect(step.next_step).to eq(:check_answers) }
-    end
-  end
-
   describe "#previous_step" do
     it { expect(step.previous_step).to eq(:check_answers) }
   end

@@ -78,10 +78,9 @@ module Schools
       end
 
       def contract_period_enabled?
-        return false unless contract_period
         return true if started_on_as_date <= Time.zone.today
 
-        contract_period.enabled?
+        contract_period&.enabled?
       end
 
       def contract_period
