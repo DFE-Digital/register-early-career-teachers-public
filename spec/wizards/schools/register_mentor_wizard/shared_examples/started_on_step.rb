@@ -7,12 +7,8 @@ RSpec.shared_examples "a started on step" do |current_step:|
                      previous_school_mentor_at_school_periods: [])
   end
 
-  let(:ineligible) { false }
-  let(:provider_led) { true }
   let(:started_on) { { "day" => "1", "month" => "6", "year" => "2025" } }
-  let(:previous_training_period) { FactoryBot.build(:training_period) }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
-  let(:contract_period_enabled?) { contract_period.enabled }
   let(:currently_mentor_at_another_school) { false }
 
   describe "validations" do

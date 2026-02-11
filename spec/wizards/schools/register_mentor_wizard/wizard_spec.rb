@@ -325,7 +325,7 @@ describe Schools::RegisterMentorWizard::Wizard do
       end
 
       around do |example|
-        travel_to Date.new(2025, 5, 1) do
+        travel_to Date.new(2025, 6, 3) do
           example.run
         end
       end
@@ -371,11 +371,51 @@ describe Schools::RegisterMentorWizard::Wizard do
                                      cannot_register_mentor_yet])
           end
         end
+
+        context "when there is no matching contract period" do
+          let!(:contract_period) { nil }
+
+          it do
+            expect(subject).to eq(%i[find_mentor
+                                     national_insurance_number
+                                     review_mentor_details
+                                     email_address
+                                     started_on
+                                     previous_training_period_details
+                                     programme_choices
+                                     lead_provider
+                                     review_mentor_eligibility
+                                     eligibility_lead_provider
+                                     cannot_register_mentor_yet])
+          end
+        end
+      end
+
+      context "when the date is today" do
+        let(:started_on) { Date.new(2025, 6, 3) }
+        let!(:contract_period) { nil }
+
+        it do
+          expect(subject).to eq(%i[find_mentor
+                                   national_insurance_number
+                                   review_mentor_details
+                                   email_address
+                                   started_on
+                                   previous_training_period_details
+                                   programme_choices
+                                   lead_provider
+                                   review_mentor_eligibility
+                                   eligibility_lead_provider
+                                   change_mentor_details
+                                   change_email_address
+                                   check_answers
+                                   change_started_on])
+        end
       end
 
       context "when the date is in the past" do
-        let(:started_on) { Date.new(2025, 4, 1) }
-        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+        let(:started_on) { Date.new(2025, 6, 1) }
+        let!(:contract_period) { nil }
 
         it do
           expect(subject).to eq(%i[find_mentor
