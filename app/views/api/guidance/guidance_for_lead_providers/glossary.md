@@ -68,7 +68,7 @@ It combines and replaces the previously separate Initial Teacher Training (ITT) 
 
 The ITTECF sets out the entitlement of every trainee and early career teacher (ECT) to the core body of knowledge, skills and behaviours that define great teaching, and to the mentoring and support from expert colleagues they should receive throughout the three or more years at the start of their career.
 
-## milestone_dates
+## Milestone dates
 
 The deadline to submit declarations for each milestone period to receive payment from DfE.
 
@@ -78,9 +78,9 @@ Milestone periods are the dates a declaration must be made between to be valid f
 
 An early career teacher (ECT) or mentor who is registered for training.
 
-## participant_status
+## Participant status
 
-Records the participant's status as reported by the school, for example, when:
+`participant_status` records the participant's status as reported by the school, for example, when:
 
 - a school reports the participant's lead provider has changed
 - an ECT has moved to school-led training
@@ -105,7 +105,7 @@ Early career teachers require QTS to be eligible for training with lead provider
 
 A mentor starting provider-led training to replace an existing mentor for an ECT. They receive funding for their training but don't count towards the lead provider's contract performance metrics - only the first mentor for an ECT counts towards those metrics.
 
-Before 2025, these mentors were not eligible for any uplift fees.
+Replacement mentors in pre-2025 cohorts were not eligible for any uplift fees.
 
 ## Schedule
 
@@ -127,9 +127,9 @@ The sum of money paid by DfE to providers per valid declaration.
 
 A unique identifier issued by the Teaching Regulation Agency to an individual teacher.
 
-## training_status
+## Training status
 
-The training status is set to 'active' when an ECT or mentor is registered. Lead providers must update this status when an ECT defers or withdraws from training.
+The `training_status` is set to 'active' when an ECT or mentor is registered. Lead providers must update this status when an ECT defers or withdraws from training.
 
 The training status can impact how you can submit declarations, or update other information for withdrawn or deferred participants.
 
@@ -139,7 +139,7 @@ Withdrawing or deferring a participant also notifies the school to update their 
 
 Transfers record when an ECT or mentor leaves a school. This includes when they move to a new school or when they leave without a new school.
 
-## unfunded-mentor
+## Unfunded mentor
 
 Mentors who are mentoring ECTs that a lead provider trains, but are not eligible for funded training through that lead provider.
 
