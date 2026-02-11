@@ -18,6 +18,9 @@ namespace :migration do
   get "download-teacher-combinations", action: :download, controller: :teacher_combinations_export
   get "download-detected-ecf1-combinations", action: :download, controller: :detected_ecf1_combinations_export
   get "download-ecf2-migrated-combinations", action: :download, controller: :ecf2_migrated_combinations_export
+  get "download-detected-ecf1-mentorships", action: :download, controller: :detected_ecf1_mentorships_export
+  get "download-ecf2-migrated-mentorships", action: :download, controller: :ecf2_migrated_mentorships_export
+  get "download-failed-mentorships", action: :download, controller: :failed_mentorships_export
 
   constraints -> { Rails.application.config.parity_check[:enabled] } do
     resources :parity_checks, path: "parity-checks", only: %i[new create show], param: :run_id do
