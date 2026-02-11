@@ -58,7 +58,7 @@ module Navigation
           { text: "Schools", href: admin_schools_path, active_when: "/admin/schools" },
           { text: "Organisations", href: admin_organisations_path, active_when: "/admin/organisations" },
           { text: "Finance", href: admin_finance_path, active_when: "/admin/finance", if: :can_see_finance? },
-          { text: "Users", href: admin_users_path, active_when: "/admin/users" }
+          { text: "Users", href: admin_users_path, active_when: "/admin/users", if: :can_manage_users? }
         ],
         school_user: [
           { text: "ECTs", href: schools_ects_home_path, active_when: schools_ects_path },
@@ -90,7 +90,16 @@ module Navigation
     end
 
     def can_see_finance?
+      return false unless current_user_type == :dfe_staff_user
+      return false if current_user&.user_manager?
+
       current_user&.finance_access?
+    end
+
+    def can_manage_users?
+      return false unless current_user_type == :dfe_staff_user
+
+      current_user&.can_manage_users?
     end
 
     def current_user_type

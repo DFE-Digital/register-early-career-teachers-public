@@ -54,6 +54,7 @@ module RegisterEarlyCareerTeachers
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SCHOOLS_INTERFACE", false))
     config.enable_induction_tutor_prompt = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INDUCTION_TUTOR_PROMPT", false))
     config.enable_incident_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INCIDENT_BANNER", false))
+    config.enable_appropriate_body_records_to_review = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_APPROPRIATE_BODY_RECORDS_TO_REVIEW", false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))
     config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_API", false))
@@ -67,6 +68,8 @@ module RegisterEarlyCareerTeachers
       ecf_url: ENV["PARITY_CHECK_ECF_URL"],
       rect_url: ENV["PARITY_CHECK_RECT_URL"],
     }
+
+    config.raise_migration_errors = ActiveModel::Type::Boolean.new.cast(ENV.fetch("RAISE_MIGRATION_ERRORS", false))
 
     config.gias_supplemental_schools_path = Rails.root.join("config/gias/schools.csv")
     config.gias_supplemental_links_path = Rails.root.join("config/gias/links.csv")
@@ -91,6 +94,7 @@ module RegisterEarlyCareerTeachers
                                   config.dfe_sign_in_issuer].all?
 
     config.support_email_address = "teacher.induction@education.gov.uk"
+    config.school_support_email_address = "continuing-professional-development@digital.education.gov.uk"
 
     config.trs_api_base_url = ENV["TRS_API_BASE_URL"]
     config.trs_api_key = ENV["TRS_API_KEY"]

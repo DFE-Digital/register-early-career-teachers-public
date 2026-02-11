@@ -3,6 +3,12 @@ class Migration::MigrationsController < ::AdminController
     @data_migrations = DataMigration.order(model: :asc, worker: :asc).all
     @in_progress_migration = @data_migrations.present? && !@data_migrations.all?(&:complete?)
     @completed_migration = @data_migrations.present? && @data_migrations.all?(&:complete?)
+    @combinations = DataMigrationTeacherCombination.select(
+      "SUM(ecf1_ect_combinations_count) AS total_ecf1_ect_combinations,
+       SUM(ecf1_mentor_combinations_count) AS total_ecf1_mentor_combinations,
+       SUM(ecf2_ect_combinations_count) AS total_ecf2_ect_combinations,
+       SUM(ecf2_mentor_combinations_count) AS total_ecf2_mentor_combinations"
+    ).take
   end
 
   def create

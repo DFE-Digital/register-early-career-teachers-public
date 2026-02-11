@@ -1,6 +1,7 @@
 namespace :appropriate_bodies, path: "appropriate-body", as: :ab do
   resource :landing, only: :show, path: "", controller: :landing
 
+  resources :unclaimed, only: :index, path: "schools-data"
   resources :teachers, only: %i[show index] do
     match "closed", to: "teachers#index", via: :get, on: :collection, as: "closed", defaults: { status: "closed" }
     match "open", to: "teachers#index", via: :get, on: :collection, as: "open", defaults: { status: "open" }

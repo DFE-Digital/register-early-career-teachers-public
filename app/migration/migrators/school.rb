@@ -65,9 +65,15 @@ module Migrators
         gias_value = gias_school.send(gias_field)
         ecf_value = ecf_school.send(ecf_field)
         next true if gias_value.presence == ecf_value.presence
+        next true if skip_missing_field?(gias_school:, field_name: gias_field)
 
         field_mismatch(gias_school, gias_field, gias_value, ecf_value)
       }.all?
+    end
+
+    def skip_missing_field?(gias_school:, field_name:)
+      # administrative_district_name is not in the split out GIAS export for Children's Centres
+      field_name.to_s == "administrative_district_name" && gias_school.type_name.in?(GIAS::Types::CHILDRENS_CENTRE_TYPES)
     end
 
     def field_mismatch(school, field, gias_value, ecf_value)

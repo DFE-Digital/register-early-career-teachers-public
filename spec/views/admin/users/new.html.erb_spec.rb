@@ -27,7 +27,7 @@ describe "admin/users/new.html.erb" do
 
   it "lists the roles as options" do
     expect(rendered).to have_css("label.govuk-radios__label", text: "Admin")
-    expect(rendered).to have_css("label.govuk-radios__label", text: "Super admin")
+    expect(rendered).to have_css("label.govuk-radios__label", text: "User manager")
     expect(rendered).to have_css("label.govuk-radios__label", text: "Finance")
   end
 

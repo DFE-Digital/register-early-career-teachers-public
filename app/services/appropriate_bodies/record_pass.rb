@@ -8,7 +8,9 @@ module AppropriateBodies
       validate_submission(context: :record_outcome)
 
       InductionPeriod.transaction do
+        destroy_unstarted_ect_period!
         close_induction_period
+        finish_ect_period_today
         delete_submission
         sync_with_trs
         update_event_history
@@ -22,6 +24,9 @@ module AppropriateBodies
         author:,
         teacher:,
         appropriate_body:,
+        ect_at_school_period:,
+        mentorship_period:,
+        training_period:,
         induction_period: ongoing_induction_period
       )
     end

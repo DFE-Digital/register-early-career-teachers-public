@@ -11,7 +11,7 @@ module DeclarativeUpdates
       after_commit(on: on_event) do
         next if DeclarativeUpdates.skip?(:metadata)
 
-        should_touch = when_changing.blank? || when_changing.any? do |attr|
+        should_touch = destroyed? || when_changing.blank? || when_changing.any? do |attr|
           saved_change_to_attribute?(attr)
         end
 
@@ -25,7 +25,7 @@ module DeclarativeUpdates
       after_commit(on: on_event) do
         next if DeclarativeUpdates.skip?(:touch)
 
-        should_touch_based_on_changes = when_changing.blank? || when_changing.any? do |attr|
+        should_touch_based_on_changes = destroyed? || when_changing.blank? || when_changing.any? do |attr|
           saved_change_to_attribute?(attr)
         end
 

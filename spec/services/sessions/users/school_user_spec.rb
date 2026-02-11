@@ -26,7 +26,18 @@ RSpec.describe Sessions::Users::SchoolUser do
     end
   end
 
-  context "when no school is found" do
+  context "when the gias school exists but no school record has been linked yet" do
+    let(:gias_school) { FactoryBot.create(:gias_school, :open, :state_school_type) }
+    let(:school_urn) { gias_school.urn }
+
+    it "builds the user from the gias school" do
+      expect(school_user.school).to be_nil
+      expect(school_user.gias_school).to eq(gias_school)
+      expect(school_user.organisation_name).to eq(gias_school.name)
+    end
+  end
+
+  context "when no school or gias school is found" do
     let(:school_urn) { "A123456" }
 
     it do

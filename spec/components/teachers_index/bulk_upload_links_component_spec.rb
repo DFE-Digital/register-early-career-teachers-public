@@ -10,11 +10,11 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
   context "without existing bulk submissions" do
     it "links to new bulk claim page" do
-      expect(page).to have_link("Upload a CSV to claim multiple new ECTs", href: "/appropriate-body/bulk/claims/new")
+      expect(page).to have_link("Claim multiple ECTs", href: "/appropriate-body/bulk/claims/new")
     end
 
     it "links to new bulk action page" do
-      expect(page).to have_link("Upload a CSV to record outcomes", href: "/appropriate-body/bulk/actions/new")
+      expect(page).to have_link("Record outcomes for multiple ECTs", href: "/appropriate-body/bulk/actions/new")
     end
   end
 
@@ -25,7 +25,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
     end
 
     it "links to batch actions history" do
-      expect(page).to have_link("Upload a CSV to record outcomes for multiple ECTs", href: "/appropriate-body/bulk/actions")
+      expect(page).to have_link("Record outcomes for multiple ECTs", href: "/appropriate-body/bulk/actions")
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
     end
 
     it "links to bulk claims history" do
-      expect(page).to have_link("Upload a CSV to claim multiple new ECTs", href: "/appropriate-body/bulk/claims")
+      expect(page).to have_link("Claim multiple ECTs", href: "/appropriate-body/bulk/claims")
     end
   end
 end

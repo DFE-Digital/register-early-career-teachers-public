@@ -17,6 +17,7 @@ class Event < ApplicationRecord
     school_partnership_created
     school_partnership_reused
     school_partnership_updated
+    school_eligibility_changed
     school_induction_tutor_confirmed
     school_induction_tutor_updated
     statement_adjustment_added
@@ -34,6 +35,7 @@ class Event < ApplicationRecord
     teacher_passes_induction
     teacher_registered_as_ect
     teacher_left_school_as_ect
+    teacher_ect_at_school_period_deleted
     teacher_registered_as_mentor
     teacher_left_school_as_mentor
     teacher_starts_being_mentored

@@ -158,8 +158,6 @@ private
   end
 
   def then_i_see_the_confirmation_message
-    page.screenshot(path: "tmp/sucess.png")
-
     success_panel = page.locator(".govuk-panel")
     expect(success_panel).to have_text(
       "You have chosen Other Lead Provider as the new lead provider for John Doe"

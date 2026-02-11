@@ -30,7 +30,7 @@ RSpec.describe APISeedData::DeliveryPartners do
       expect(logger).to have_received(:info).with(/Planting delivery partners/).once
 
       DeliveryPartner.find_each do |delivery_partner|
-        expect(logger).to have_received(:info).with(/#{delivery_partner.name}/).once
+        expect(logger).to have_received(:info).with(/#{delivery_partner.name}$/).once
       end
     end
 

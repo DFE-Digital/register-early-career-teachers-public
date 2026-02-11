@@ -65,6 +65,41 @@ class ECTAtSchoolPeriod < ApplicationRecord
     with_expressions_of_interest_for_contract_period(year)
     .where(expression_of_interest: { lead_provider_id: })
   }
+  scope :unclaimed_by_school_reported_appropriate_body, -> {
+    current_or_future
+      .where.not(school_reported_appropriate_body_id: nil)
+      .joins(:teacher)
+      .joins(<<~SQL)
+        LEFT OUTER JOIN induction_periods
+          ON induction_periods.teacher_id = ect_at_school_periods.teacher_id
+          AND induction_periods.finished_on IS NULL
+          AND induction_periods.appropriate_body_id = ect_at_school_periods.school_reported_appropriate_body_id
+      SQL
+      .where(induction_periods: { id: nil })
+  }
+  scope :induction_not_completed, -> {
+    joins("LEFT JOIN teachers AS induction_teachers ON induction_teachers.id = ect_at_school_periods.teacher_id")
+    .where(
+      "induction_teachers.trs_induction_status NOT IN (?)
+       OR induction_teachers.trs_induction_status IS NULL",
+      %w[Passed Failed]
+    )
+  }
+  scope :claimed_by_different_appropriate_body, -> {
+    current_or_future
+      .joins(:teacher)
+      .joins(<<~SQL)
+        INNER JOIN induction_periods AS active_induction_periods
+          ON active_induction_periods.teacher_id = ect_at_school_periods.teacher_id
+          AND active_induction_periods.finished_on IS NULL
+          AND active_induction_periods.appropriate_body_id != ect_at_school_periods.school_reported_appropriate_body_id
+      SQL
+  }
+  scope :without_qts_award, -> { joins(:teacher).merge(Teacher.without_qts_award) }
+  scope :claimable, -> {
+    where.not(id: without_qts_award)
+      .where.not(id: claimed_by_different_appropriate_body)
+  }
 
   def reported_leaving_by?(school)
     reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id

@@ -98,6 +98,23 @@ describe "TrainingPeriods::Finish" do
           )
         )
       end
+
+      context "when record_event is false" do
+        subject { TrainingPeriods::Finish.ect_training(training_period:, finished_on:, author:, ect_at_school_period:, record_event: false) }
+
+        it "does not record an event" do
+          allow(Events::Record).to receive(:record_teacher_finishes_training_period_event!).and_call_original
+
+          expect {
+            subject.finish!
+            perform_enqueued_jobs
+          }.not_to change(Event, :count)
+
+          training_period.reload
+
+          expect(Events::Record).not_to have_received(:record_teacher_finishes_training_period_event!)
+        end
+      end
     end
 
     context "when mentor" do

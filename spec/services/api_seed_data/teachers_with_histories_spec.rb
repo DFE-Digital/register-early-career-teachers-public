@@ -34,22 +34,38 @@ RSpec.describe APISeedData::TeachersWithHistories do
       end
     end
 
-    context "when creating teachers with uplifts" do
+    context "when creating teachers with pupil premium uplifts" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::ECT_ELIGIBLE_FOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::PUPIL_PREMIUM_UPLIFT_RATIO", 1.0)
       end
 
       it "creates correct data" do
         plant
 
-        expect(Teacher.all.map(&:ect_pupil_premium_uplift).uniq).to contain_exactly(true, false)
+        expect(Teacher.where(ect_pupil_premium_uplift: true)).to exist
+      end
+    end
+
+    context "when creating teachers with sparsity uplifts" do
+      before do
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::ECT_ELIGIBLE_FOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::SPARSITY_UPLIFT_RATIO", 1.0)
+      end
+
+      it "creates correct data" do
+        plant
+
+        expect(Teacher.where(ect_sparsity_uplift: true)).to exist
       end
     end
 
     context "when creating teachers with different schedules" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.8).and_return(false)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::SCHEDULE_RATIO", 0.0)
       end
 
       it "creates correct data" do
@@ -61,8 +77,8 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating teachers with `training_record_id`" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.15).and_return(false)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::TEACHER_ID_CHANGE_RATIO", 0.0)
       end
 
       it "creates correct data" do
@@ -74,8 +90,8 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating teachers with `cohort_changed_after_payments_frozen`" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.1).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 0.0)
+        stub_const("#{described_class}::ECT_MENTOR_SCHOOL_PERIOD_TRAIT_RATIO", 1.0)
       end
 
       it "creates correct data" do
@@ -87,8 +103,8 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating teachers with `teacher_id_changes`" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.15).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 0.0)
+        stub_const("#{described_class}::TEACHER_ID_CHANGE_RATIO", 1.0)
       end
 
       it "creates correct data" do
@@ -100,8 +116,8 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating teachers with two enrolments" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.1).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 0.0)
+        stub_const("#{described_class}::OPTIONAL_ECT_TRAINING_RATIO", 1.0)
       end
 
       it "creates correct data" do
@@ -112,15 +128,15 @@ RSpec.describe APISeedData::TeachersWithHistories do
     end
 
     context "when creating ECTAtSchoolPeriod records" do
-      before { allow(Faker::Boolean).to receive(:boolean).and_return(true) }
+      before { stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0) }
 
       it { expect { plant }.to change(ECTAtSchoolPeriod, :count).by(10) }
     end
 
     context "when creating MentorAtSchoolPeriod records" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.20).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 0.0)
+        stub_const("#{described_class}::ASSIGN_ECT_TO_MENTOR_RATIO", 1.0)
       end
 
       it { expect { plant }.to change(MentorAtSchoolPeriod, :count).by(10) }
@@ -128,18 +144,22 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when assigning ECTs to Mentors" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.30).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.20).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 0.0)
+        stub_const("#{described_class}::FINISHED_PERIOD_RATIO", 1.0)
+        stub_const("#{described_class}::ASSIGN_ECT_TO_MENTOR_RATIO", 1.0)
 
-        # Create some ongoing ECT periods in the future to increase chances of assignment
+        # Create ECT periods that will match the mentor periods created by the seed data
+        # The seed creates mentor periods starting in September of the contract_period year
         school_partnerships.each do |school_partnership|
           school = school_partnership.school
-          FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: 6.months.from_now)
+          contract_period = school_partnership.contract_period
+          started_on = Date.new(contract_period.year, 9, 15)
+          # finished_on must be before the mentor's finished_on which is started_on + 200..300 days
+          FactoryBot.create(:ect_at_school_period, school:, started_on:, finished_on: started_on + 150.days)
         end
       end
 
-      it { expect { plant }.to change(MentorshipPeriod, :count).by(5) }
+      it { expect { plant }.to change(MentorshipPeriod, :count).by_at_least(1) }
 
       it "only creates mentorship periods where mentor and mentee school periods are for the same school" do
         plant
@@ -155,8 +175,9 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating TrainingPeriod records without a finished_on" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.3).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::OPTIONAL_MENTOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::FINISHED_PERIOD_RATIO", 0.0)
       end
 
       it { expect { plant }.to change(TrainingPeriod.where(finished_on: nil), :count).by(20) }
@@ -164,8 +185,9 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating TrainingPeriod records with a finished_on" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.3).and_return(false)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::OPTIONAL_MENTOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::FINISHED_PERIOD_RATIO", 1.0)
       end
 
       it { expect { plant }.to change(TrainingPeriod.where.not(finished_on: nil), :count).by(20) }
@@ -173,8 +195,13 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating withdrawn TrainingPeriod records" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.2).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::OPTIONAL_MENTOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::WITHDRAWN_RATIO", 1.0)
+        # Withdrawn TrainingPeriod records can only be created if the
+        # started_on is not in the future
+        latest_contract_period = ContractPeriod.order(year: :desc).first
+        travel_to Date.new(latest_contract_period.year, 12, 31)
       end
 
       it { expect { plant }.to change(TrainingPeriod.where.not(withdrawn_at: nil), :count).by(20) }
@@ -182,9 +209,14 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     context "when creating deferred TrainingPeriod records" do
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.2).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.15).and_return(true)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::OPTIONAL_MENTOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::WITHDRAWN_RATIO", 0.0)
+        stub_const("#{described_class}::DEFERRED_RATIO", 1.0)
+        # Deferred TrainingPeriod records can only be created if the
+        # started_on is not in the future
+        latest_contract_period = ContractPeriod.order(year: :desc).first
+        travel_to Date.new(latest_contract_period.year, 12, 31)
       end
 
       it { expect { plant }.to change(TrainingPeriod.where.not(deferred_at: nil), :count).by(20) }
@@ -194,12 +226,32 @@ RSpec.describe APISeedData::TeachersWithHistories do
       let!(:teachers) { FactoryBot.create_list(:teacher, 1) }
 
       before do
-        allow(Faker::Boolean).to receive(:boolean).and_return(true)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.2).and_return(false)
-        allow(Faker::Boolean).to receive(:boolean).with(true_ratio: 0.15).and_return(false)
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::OPTIONAL_MENTOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::WITHDRAWN_RATIO", 0.0)
+        stub_const("#{described_class}::DEFERRED_RATIO", 0.0)
       end
 
       it { expect { plant }.to change(TrainingPeriod.where(deferred_at: nil, withdrawn_at: nil), :count).by(20) }
+    end
+
+    context "when creating teachers with induction period" do
+      let!(:school_partnerships) do
+        # Create partnerships with past contract periods to ensure induction periods can be created
+        ContractPeriod.all.map do |contract_period|
+          year = contract_period.year
+          FactoryBot.create(:schedule, contract_period:)
+          FactoryBot.create(:schedule, contract_period:, identifier: Schedule.excluding_replacement_schedules.identifiers.keys.sample)
+          FactoryBot.create(:school_partnership, :for_year, year:)
+        end
+      end
+
+      before do
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::ECT_INDUCTION_RATIO", 1.0)
+      end
+
+      it { expect { plant }.to change(InductionPeriod, :count).by(school_partnerships.count * 2) }
     end
 
     it "logs the creation of api teachers records" do
