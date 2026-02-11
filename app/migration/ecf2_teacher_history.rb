@@ -71,6 +71,10 @@ class ECF2TeacherHistory
 
 private
 
+  def data_migration_teacher_combinations
+    @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(api_id: teacher.api_id)
+  end
+
   def find_or_create_teacher!
     found_teacher = if teacher.trn.present?
                       ::Teacher.find_by(trn: teacher.trn)
