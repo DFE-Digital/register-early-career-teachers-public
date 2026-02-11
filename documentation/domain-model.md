@@ -424,6 +424,7 @@ erDiagram
     integer banded_fee_structure_id
     datetime created_at
     datetime updated_at
+    decimal vat_rate
   }
   Contract }o--|| Contract_FlatRateFeeStructure : belongs_to
   Contract }o--|| Contract_BandedFeeStructure : belongs_to

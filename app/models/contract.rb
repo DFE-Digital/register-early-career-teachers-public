@@ -18,6 +18,9 @@ class Contract < ApplicationRecord
             uniqueness: { case_sensitive: false, message: "Contract with the same flat rate fee structure already exists" }
   validates :banded_fee_structure,
             uniqueness: { case_sensitive: false, message: "Contract with the same banded fee structure already exists" }
+  validates :vat_rate,
+            presence: { message: "VAT rate is required" },
+            numericality: { in: 0..1, message: "VAT rate must be between 0 and 1" }
   validate :active_lead_provider_consistency
 
   with_options if: :ittecf_ectp_contract_type? do
