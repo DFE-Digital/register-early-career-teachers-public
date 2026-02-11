@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_081959) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -182,6 +182,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_09_174809) do
     t.bigint "banded_fee_structure_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
     t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true
     t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true
   end
