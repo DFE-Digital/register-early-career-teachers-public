@@ -592,6 +592,10 @@
   - ecf1_mentor_combinations_count
   - ecf2_ect_combinations_count
   - ecf2_mentor_combinations_count
+  - ecf1_mentorships
+  - ecf2_mentorships
+  - ecf1_mentorships_count
+  - ecf2_mentorships_count
   :data_migration_failed_combinations:
   - id
   - trn
@@ -613,6 +617,17 @@
   - schedule_name
   - schedule_cohort_year
   - preferred_identity_email
+  - failure_message
+  - created_at
+  - updated_at
+  :data_migration_failed_mentorships:
+  - id
+  - ect_participant_profile_id
+  - mentor_participant_profile_id
+  - started_on
+  - finished_on
+  - ecf_start_induction_record_id
+  - ecf_end_induction_record_id
   - failure_message
   - created_at
   - updated_at
