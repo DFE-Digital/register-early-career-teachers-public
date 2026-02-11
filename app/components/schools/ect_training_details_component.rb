@@ -10,12 +10,14 @@ module Schools
 
     attr_reader :ect_at_school_period
 
-    def initialize(ect_at_school_period:, training_period:)
+    def initialize(ect_at_school_period:, training_period: nil)
       @ect_at_school_period = ect_at_school_period
       @training_period = training_period
     end
 
-    def render? = ect_at_school_period.display_training_period.present?
+    def render?
+      ect_at_school_period.present? && training_period.present?
+    end
 
     def call
       tag.section(id: "training-details") do
@@ -28,8 +30,14 @@ module Schools
 
   private
 
+    def presenter
+      @presenter ||= Schools::ECTTrainingPresenter.new(ect_at_school_period)
+    end
+
     def training_period
-      @training_period || ect_at_school_period.display_training_period
+      return nil if ect_at_school_period.blank?
+
+      @training_period || presenter.training_period_for_display
     end
 
     def training_details_body
@@ -39,7 +47,7 @@ module Schools
     end
 
     def withdrawn?
-      ect_at_school_period.display_training_status == :withdrawn
+      presenter.latest_started_training_status == :withdrawn
     end
 
     def withdrawn_training_details

@@ -5,22 +5,22 @@
     <% row.with_key { "Name" } %>
     <% row.with_value { teacher_full_name(@ect.teacher) } %>
     <% row.with_action(
-      text: 'Change',
+      text: "Change",
       href: schools_ects_change_name_wizard_edit_path(@ect),
-      classes: 'govuk-link--no-visited-state',
-      visually_hidden_text: 'name')
-    %>
+      classes: "govuk-link--no-visited-state",
+      visually_hidden_text: "name"
+    ) %>
   <% end %>
 
   <% list.with_row do |row| %>
     <% row.with_key { "Email address" } %>
     <% row.with_value { @ect.email } %>
     <% row.with_action(
-        text: "Change",
-        visually_hidden_text: "email address",
-        href: schools_ects_change_email_address_wizard_edit_path(@ect),
-        classes: "govuk-link--no-visited-state"
-      ) %>
+      text: "Change",
+      visually_hidden_text: "email address",
+      href: schools_ects_change_email_address_wizard_edit_path(@ect),
+      classes: "govuk-link--no-visited-state"
+    ) %>
   <% end %>
 
   <% list.with_row do |row| %>
@@ -28,27 +28,27 @@
     <% row.with_value { ect_mentor_details(@ect) } %>
     <% if current_mentor.present? %>
       <% row.with_action(
-          text: "Change",
-          visually_hidden_text: "mentor",
-          href: schools_ects_change_mentor_wizard_edit_path(@ect),
-          classes: "govuk-link--no-visited-state"
-        ) %>
+        text: "Change",
+        visually_hidden_text: "mentor",
+        href: schools_ects_change_mentor_wizard_edit_path(@ect),
+        classes: "govuk-link--no-visited-state"
+      ) %>
     <% end %>
   <% end %>
 
   <% list.with_row do |row| %>
-  <% row.with_key { "Status" } %>
-  <% row.with_value do %>
-    <% if show_withdrawn_or_deferred_status? %>
-      <%= withdrawn_or_deferred_tag %>
-      <p class="govuk-body govuk-!-margin-top-2">
-        <%= withdrawn_or_deferred_message_text %>
-      </p>
-    <% else %>
-      <%= ect_status(@ect, current_school: @current_school) %>
+    <% row.with_key { "Status" } %>
+    <% row.with_value do %>
+      <% if show_withdrawn_or_deferred_status? %>
+        <%= withdrawn_or_deferred_tag %>
+        <p class="govuk-body govuk-!-margin-top-2">
+          <%= withdrawn_or_deferred_message_text %>
+        </p>
+      <% else %>
+        <%= ect_status(@ect, current_school: @current_school) %>
+      <% end %>
     <% end %>
   <% end %>
-<% end %>
 
   <% list.with_row do |row| %>
     <% row.with_key { "School start date" } %>
@@ -59,10 +59,10 @@
     <% row.with_key { "Working pattern" } %>
     <% row.with_value { @ect.working_pattern&.humanize } %>
     <% row.with_action(
-        text: "Change",
-        visually_hidden_text: "working pattern",
-        href: schools_ects_change_working_pattern_wizard_edit_path(@ect),
-        classes: "govuk-link--no-visited-state"
-      ) %>
+      text: "Change",
+      visually_hidden_text: "working pattern",
+      href: schools_ects_change_working_pattern_wizard_edit_path(@ect),
+      classes: "govuk-link--no-visited-state"
+    ) %>
   <% end %>
 <% end %>

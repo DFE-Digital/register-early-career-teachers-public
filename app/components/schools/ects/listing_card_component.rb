@@ -6,7 +6,7 @@ module Schools
 
       attr_reader :teacher, :ect_at_school_period, :current_school
 
-      def initialize(teacher:, ect_at_school_period:, training_period:, current_school: nil)
+      def initialize(teacher:, ect_at_school_period:, training_period: nil, current_school: nil)
         @teacher = teacher
         @ect_at_school_period = ect_at_school_period
         @training_period = training_period
@@ -14,6 +14,14 @@ module Schools
       end
 
     private
+
+      def presenter
+        @presenter ||= Schools::ECTTrainingPresenter.new(ect_at_school_period)
+      end
+
+      def training_period
+        @training_period || presenter.training_period_for_display
+      end
 
       def withdrawn_warning_text
         safe_join([
@@ -27,7 +35,7 @@ module Schools
       end
 
       def withdrawn_message_text
-        lead_provider_name = display_training_lead_provider_name(ect_at_school_period)
+        lead_provider_name = training_lead_provider_name_for_display(ect_at_school_period)
         subject = lead_provider_name.presence || "The lead provider"
         verb = lead_provider_name.present? ? "have" : "has"
 
@@ -42,16 +50,16 @@ module Schools
         "#{subject} #{verb} told us that #{teacher_full_name(teacher)}'s training is paused. Contact them if you think this is an error."
       end
 
-      def display_training_status
+      def latest_started_training_status
         ect_at_school_period.latest_started_training_status
       end
 
       def withdrawn?
-        display_training_status == :withdrawn
+        latest_started_training_status == :withdrawn
       end
 
       def deferred?
-        display_training_status == :deferred
+        latest_started_training_status == :deferred
       end
 
       def mentor_required_for_card?
@@ -60,10 +68,6 @@ module Schools
 
       def show_lead_provider_delivery_partner_rows?
         !withdrawn?
-      end
-
-      def training_period
-        @training_period || ect_at_school_period.display_training_period
       end
 
       def appropriate_body_row
@@ -91,11 +95,11 @@ module Schools
       end
 
       def delivery_partner_display_text
-        display_training_delivery_partner_text(ect_at_school_period)
+        training_delivery_partner_text_for_display(ect_at_school_period)
       end
 
       def lead_provider_display_text
-        display_training_lead_provider_name(ect_at_school_period)
+        training_lead_provider_name_for_display(ect_at_school_period)
       end
 
       def left_rows

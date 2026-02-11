@@ -13,7 +13,6 @@ module Schools
 
     def show
       @ect_at_school_period = @school.ect_at_school_periods.find(params[:id])
-      @training_period = @ect_at_school_period.current_or_next_training_period
       @teacher = @ect_at_school_period.teacher
     end
   end
