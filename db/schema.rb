@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_11_081959) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_133827) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -138,7 +138,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_081959) do
     t.bigint "banded_fee_structure_id", null: false
     t.integer "min_declarations", default: 1, null: false
     t.integer "max_declarations", null: false
-    t.integer "fee_per_declaration", null: false
+    t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
     t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
     t.datetime "created_at", null: false
