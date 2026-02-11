@@ -23,6 +23,8 @@ describe Contract do
     it { is_expected.to validate_inclusion_of(:contract_type).in_array(Contract.contract_types.keys).with_message("Choose a valid contract type") }
     it { is_expected.to validate_uniqueness_of(:flat_rate_fee_structure).with_message("Contract with the same flat rate fee structure already exists") }
     it { is_expected.to validate_uniqueness_of(:banded_fee_structure).with_message("Contract with the same banded fee structure already exists") }
+    it { is_expected.to validate_presence_of(:vat_rate).with_message("VAT rate is required") }
+    it { is_expected.to validate_numericality_of(:vat_rate).is_in(0..1).with_message("VAT rate must be between 0 and 1") }
 
     context "when contract type is `ITTECF_ECTP`" do
       subject { FactoryBot.create(:contract, :for_ittecf_ectp) }
