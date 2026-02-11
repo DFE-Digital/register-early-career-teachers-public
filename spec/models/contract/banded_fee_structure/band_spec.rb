@@ -11,7 +11,7 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
     it { is_expected.to validate_numericality_of(:max_declarations).is_greater_than(:min_declarations).only_integer.with_message("Max declarations must be a number greater than min declarations") }
 
     it { is_expected.to validate_presence_of(:fee_per_declaration).with_message("Fee per declaration is required") }
-    it { is_expected.to validate_numericality_of(:fee_per_declaration).is_greater_than(0).only_integer.with_message("Fee per declaration must be a number greater than zero") }
+    it { is_expected.to validate_numericality_of(:fee_per_declaration).is_greater_than(0).with_message("Fee per declaration must be a number greater than zero") }
 
     it { is_expected.to validate_presence_of(:output_fee_ratio).with_message("Output fee ratio is required") }
     it { is_expected.to validate_numericality_of(:output_fee_ratio).is_in(0..1).with_message("Output fee ratio must be between 0 and 1") }
