@@ -95,6 +95,8 @@ class Declaration < ApplicationRecord
   }
   scope :billable, -> { where(payment_status: BILLABLE_PAYMENT_STATUSES, clawback_status: :no_clawback) }
   scope :refundable, -> { where(clawback_status: REFUNDABLE_PAYMENT_STATUSES) }
+  scope :ects, -> { joins(:training_period).where.not(training_periods: { ect_at_school_period_id: nil }) }
+  scope :mentors, -> { joins(:training_period).where.not(training_periods: { mentor_at_school_period_id: nil }) }
 
   touch -> { self },
         timestamp_attribute: :api_updated_at,
