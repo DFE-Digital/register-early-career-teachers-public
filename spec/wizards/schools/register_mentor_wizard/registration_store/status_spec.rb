@@ -324,36 +324,47 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
       end
     end
 
-    context "when the contract period is enabled" do
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
-
-      it "returns true" do
-        expect(status.contract_period_enabled?).to be(true)
-      end
-    end
-
-    context "when the contract period is disabled" do
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
-
-      it "returns false" do
-        expect(status.contract_period_enabled?).to be(false)
-      end
-    end
-
-    context "when there is no matching contract period" do
-      let(:contract_period) { nil }
-
-      it "returns nil" do
-        expect(status.contract_period_enabled?).to be_nil
-      end
-    end
-
     context "when the start date is in the past" do
       let(:started_on) { Date.new(2025, 6, 1) }
       let(:contract_period) { nil }
 
       it "returns true" do
         expect(status.contract_period_enabled?).to be(true)
+      end
+    end
+
+    context "when the start date is today" do
+      let(:started_on) { Date.new(2025, 6, 3) }
+      let(:contract_period) { nil }
+
+      it "returns true" do
+        expect(status.contract_period_enabled?).to be(true)
+      end
+    end
+
+    context "when the start date is in the future" do
+      context "when the contract period is enabled" do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+
+        it "returns true" do
+          expect(status.contract_period_enabled?).to be(true)
+        end
+      end
+
+      context "when the contract period is disabled" do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
+
+        it "returns false" do
+          expect(status.contract_period_enabled?).to be(false)
+        end
+      end
+
+      context "when there is no matching contract period" do
+        let(:contract_period) { nil }
+
+        it "returns nil" do
+          expect(status.contract_period_enabled?).to be_nil
+        end
       end
     end
 

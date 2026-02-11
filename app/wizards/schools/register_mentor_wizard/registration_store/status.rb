@@ -82,7 +82,7 @@ module Schools
         end
 
         def contract_period_enabled?
-          return true if registration_store.started_on&.to_date&.< Date.current
+          return true if registration_store.started_on&.to_date&.<= Time.zone.today
 
           queries.contract_period&.enabled
         end

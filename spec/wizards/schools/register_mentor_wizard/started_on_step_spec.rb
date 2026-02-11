@@ -21,10 +21,6 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
   it_behaves_like "a started on step", current_step: :started_on
 
   describe "#next_step" do
-    around do |example|
-      travel_to(Date.new(2025, 1, 1)) { example.run }
-    end
-
     before do
       allow(wizard.mentor).to receive_messages(provider_led_ect?: provider_led, became_ineligible_for_funding?: ineligible, previous_training_period:, contract_period_enabled?: contract_period_enabled?)
     end
@@ -39,13 +35,6 @@ RSpec.describe Schools::RegisterMentorWizard::StartedOnStep do
       let(:provider_led) { false }
 
       it { expect(step.next_step).to eq(:check_answers) }
-    end
-
-    context "when the start date is in the past" do
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
-      let(:started_on) { { "day" => "10", "month" => "9", "year" => "2024" } }
-
-      it { expect(step.next_step).to eq(:previous_training_period_details) }
     end
 
     context "when mentor is eligible, the contract period is open and ECT is provider-led" do
