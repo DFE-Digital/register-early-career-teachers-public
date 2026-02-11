@@ -22,7 +22,6 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
             presence: { message: "Fee per declaration is required" },
             numericality: {
               greater_than: 0,
-              only_integer: true,
               message: "Fee per declaration must be a number greater than zero"
             }
   validates :output_fee_ratio,

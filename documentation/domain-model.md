@@ -5,7 +5,7 @@ erDiagram
     integer banded_fee_structure_id
     integer min_declarations
     integer max_declarations
-    integer fee_per_declaration
+    decimal fee_per_declaration
     decimal output_fee_ratio
     decimal service_fee_ratio
     datetime created_at
