@@ -21,6 +21,7 @@ module Migrators
         ::Teacher.connection.execute("TRUNCATE #{::Teacher.table_name} RESTART IDENTITY CASCADE")
         ::Teacher.connection.execute("TRUNCATE #{::DataMigrationTeacherCombination.table_name} RESTART IDENTITY CASCADE")
         ::Teacher.connection.execute("TRUNCATE #{::DataMigrationFailedCombination.table_name} RESTART IDENTITY CASCADE")
+        ::Teacher.connection.execute("TRUNCATE #{::DataMigrationFailedMentorship.table_name} RESTART IDENTITY CASCADE")
       end
     end
 
