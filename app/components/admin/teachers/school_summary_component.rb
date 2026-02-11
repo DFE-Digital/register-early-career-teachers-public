@@ -81,11 +81,11 @@ module Admin
       end
 
       def mentorship_periods_for_ect
-        school_period.mentorship_periods.includes(mentor: :teacher).order(started_on: :desc)
+        school_period.mentorship_periods.includes(mentor: :teacher).order(started_on: :asc)
       end
 
       def mentorship_periods_for_mentor
-        school_period.mentorship_periods.includes(mentee: :teacher).order(started_on: :desc)
+        school_period.mentorship_periods.includes(mentee: :teacher).order(started_on: :asc)
       end
 
       def mentors_content

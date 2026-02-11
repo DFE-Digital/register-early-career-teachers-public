@@ -129,7 +129,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
           expect(rendered).to have_link(newer_name, href: admin_teacher_induction_path(newer_mentor_period.teacher))
           expect(rendered).to have_link(older_name, href: admin_teacher_induction_path(older_mentor_period.teacher))
           html = rendered.to_html
-          expect(html.index(newer_name)).to be < html.index(older_name)
+          expect(html.index(newer_name)).to be > html.index(older_name)
         end
 
         it "shows formatted start dates" do
@@ -273,7 +273,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
           expect(rendered).to have_link(newer_name, href: admin_teacher_induction_path(newer_ect_period.teacher))
           expect(rendered).to have_link(older_name, href: admin_teacher_induction_path(older_ect_period.teacher))
           html = rendered.to_html
-          expect(html.index(newer_name)).to be < html.index(older_name)
+          expect(html.index(newer_name)).to be > html.index(older_name)
         end
 
         it "shows formatted start dates" do
