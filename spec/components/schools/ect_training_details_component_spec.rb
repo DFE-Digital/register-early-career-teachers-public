@@ -12,16 +12,7 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
 
   let(:component) { described_class.new(ect_at_school_period:, training_period:) }
 
-  before do
-    if training_period.present?
-      allow(ect_at_school_period).to receive_messages(
-        display_training_period: training_period,
-        display_training_status: training_period.school_training_status
-      )
-    end
-
-    render_inline(component)
-  end
+  before { render_inline(component) }
 
   it "renders the section heading" do
     expect(page).to have_selector("h2.govuk-heading-m", text: "Training details")
@@ -34,10 +25,6 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
   context "when there is no training period" do
     let(:training_period) { nil }
     let(:component) { described_class.new(ect_at_school_period:, training_period:) }
-
-    before do
-      allow(ect_at_school_period).to receive(:display_training_period).and_return(nil)
-    end
 
     it "renders nothing" do
       render_inline(component)

@@ -94,8 +94,8 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
-  def display_training_lead_provider_name(ect)
-    training_period = ect.display_training_period
+  def training_lead_provider_name_for_display(ect)
+    training_period = training_period_for_display(ect)
     return if training_period.blank?
 
     if training_period.only_expression_of_interest?
@@ -110,8 +110,8 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
-  def display_training_delivery_partner_name(ect)
-    training_period = ect.display_training_period
+  def training_delivery_partner_name_for_display(ect)
+    training_period = training_period_for_display(ect)
     return if training_period.blank?
     return if training_period.only_expression_of_interest?
 
@@ -122,14 +122,14 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
-  def display_training_delivery_partner_text(ect)
-    training_period = ect.display_training_period
+  def training_delivery_partner_text_for_display(ect)
+    training_period = training_period_for_display(ect)
     return if training_period.blank?
 
     if training_period.only_expression_of_interest?
       "Their lead provider will confirm this"
     else
-      display_training_delivery_partner_name(ect)
+      training_delivery_partner_name_for_display(ect)
     end
   end
 
@@ -147,5 +147,9 @@ private
 
   def eligible_mentors_for_ect?(ect)
     Schools::EligibleMentors.new(ect.school).for_ect(ect).exists?
+  end
+
+  def training_period_for_display(ect)
+    Schools::ECTTrainingPresenter.new(ect).training_period_for_display
   end
 end
