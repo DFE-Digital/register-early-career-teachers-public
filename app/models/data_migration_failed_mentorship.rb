@@ -1,0 +1,2 @@
+class DataMigrationFailedMentorship < ApplicationRecord
+end
