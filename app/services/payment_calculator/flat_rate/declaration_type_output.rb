@@ -27,7 +27,7 @@ module PaymentCalculator
       total_billable_amount - total_refundable_amount
     end
 
-    private
+  private
 
     def declarations_of_matching_type
       declarations.where(declaration_type:)
