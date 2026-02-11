@@ -1,0 +1,27 @@
+<h2 class="govuk-heading-m">Mentorships</h2>
+
+<%= govuk_table(html_attributes: { class: "govuk-!-margin-bottom-9" }) do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "Processed from ECF1")
+      row.with_cell(text: "Migrated to ECF2")
+      row.with_cell(text: "Missing on ECF2")
+      row.with_cell(text: "Success Rate")
+    end
+  end
+
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: number_with_delimiter(number_of_mentorships_processed))
+      row.with_cell(text: number_with_delimiter(number_of_successful_mentorships))
+      row.with_cell(text: number_with_delimiter(number_of_missing_mentorships))
+      row.with_cell(text: rate_tag(number_of_mentorships_processed, number_of_missing_mentorships))
+    end
+  end
+end %>
+
+<% if data_downloadable %>
+  <%= govuk_button_link_to('Download detected ecf1 mentorships 💅', migration_download_detected_ecf1_mentorships_path, class: "da-pink-button") %>
+  <%= govuk_button_link_to('Download ecf2 migrated mentorships 💅', migration_download_ecf2_migrated_mentorships_path, class: "da-pink-button") %>
+  <%= govuk_button_link_to('Download failed mentorships 💅', migration_download_failed_mentorships_path, class: "da-pink-button") %>
+<% end %>

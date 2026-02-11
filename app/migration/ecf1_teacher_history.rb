@@ -14,8 +14,8 @@ class ECF1TeacherHistory
 
   def self.build(teacher_profile:)
     user_record = teacher_profile.user
-    ect_profile = teacher_profile.participant_profiles.ect.first
-    mentor_profile = teacher_profile.participant_profiles.mentor.first
+    ect_profile = teacher_profile.participant_profiles.detect(&:ect?)
+    mentor_profile = teacher_profile.participant_profiles.detect(&:mentor?)
 
     user = User.new(
       trn: teacher_profile.trn,
@@ -97,8 +97,6 @@ class ECF1TeacherHistory
                           .where(schools: { urn: urns },
                                  teachers: { api_mentor_training_record_id: mentor_profile_ids })
                           .to_a
-    # raise("No mentor at school periods!! #{::MentorAtSchoolPeriod.all.map(&:school).map(&:urn)}, #{urns}, #{::MentorAtSchoolPeriod.all.map(&:teacher).map(&:api_mentor_training_record_id)}, #{mentor_profile_ids}") if mentors.empty?
-
     mentors.map do |mentor_at_school_period|
       build_mentor_at_school_period(mentor_at_school_period:)
     end
