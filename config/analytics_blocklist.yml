@@ -643,6 +643,7 @@
   :contracts:
   - id
   - contract_type
+  - vat_rate
   - flat_rate_fee_structure_id
   - banded_fee_structure_id
   - created_at
