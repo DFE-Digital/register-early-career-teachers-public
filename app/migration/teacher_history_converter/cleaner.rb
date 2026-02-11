@@ -11,6 +11,7 @@ private
 
   def clean!
     remove_british_schools_overseas(@raw_induction_records)
+      .then { |induction_records| remove_school_funded_fip(induction_records) }
       .then { |induction_records| fix_service_start_dates(induction_records) }
       .then { |induction_records| fix_corrupted_dates(induction_records) }
       .then { |induction_records| fix_zero_day_periods(induction_records) }
@@ -18,6 +19,10 @@ private
 
   def remove_british_schools_overseas(induction_records)
     TeacherHistoryConverter::Cleaner::BritishSchoolsOverseas.new(induction_records).induction_records
+  end
+
+  def remove_school_funded_fip(induction_records)
+    TeacherHistoryConverter::Cleaner::SchoolFundedFip.new(induction_records).induction_records
   end
 
   def fix_service_start_dates(induction_records)
