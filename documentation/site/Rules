@@ -40,6 +40,24 @@ compile "/content-editors/*.md" do
   write(item.identifier.without_ext + "/index.html")
 end
 
+compile "/resources-for-release/index.md" do
+  filter(:govuk_markdown)
+  layout("/default.*")
+  write("/resources-for-release/index.html")
+end
+
+compile "/changes-for-schools/index.md" do
+  filter(:govuk_markdown)
+  layout("/default.*")
+  write("/changes-for-schools/index.html")
+end
+
+compile "/communication-emails-to-schools/index.md" do
+  filter(:govuk_markdown)
+  layout("/default.*")
+  write("/communication-emails-to-schools/index.html")
+end
+
 compile "/**/*.md" do
   filter(:govuk_markdown)
   layout("/default.*")
