@@ -4,11 +4,16 @@ title: Glossary for lead providers
 
 ## Appropriate body
 
-Appropriate bodies are responsible for assuring the quality of statutory teacher induction by ensuring that those involved understand and can fulfil their responsibilities, and that monitoring, support, assessment, and guidance arrangements are fair and appropriate. They provide the overall induction start date and induction end date, which we show over the API.
+Appropriate bodies are responsible for assuring the quality of statutory teacher induction by ensuring that those involved understand and can fulfil their responsibilities, and that monitoring, support, assessment, and guidance arrangements are fair and appropriate.
+
+They provide the overall induction start date and induction end date, which we show over the API.
 
 ## Cohort
 
-The grouping of participants who begin their induction or training in a given academic year under a given funding contract. For example, a participant who started their training in the 2024 to 2025 academic year is assigned to the 2024 cohort. This is because funding for their training comes from the 2024 to 2025 call-off contract.
+The grouping of participants who begin their induction or training in a given academic year under a given funding contract.
+
+For example, a participant who started their training in the 2024 to 2025 academic year is assigned to the 2024 cohort.
+This is because funding for their training comes from the 2024 to 2025 call-off contract.
 
 ## Declaration
 
