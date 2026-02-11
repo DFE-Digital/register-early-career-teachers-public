@@ -8,6 +8,24 @@ module APISeedData
       deferred: :yellow,
     }.freeze
 
+    ECT_MENTOR_RATIO = 0.5
+    ECT_INDUCTION_RATIO = 0.85
+    SCHEDULE_RATIO = 0.8
+    WITHDRAWN_RATIO = 0.2
+    DEFERRED_RATIO = 0.15
+    ECT_MENTOR_SCHOOL_PERIOD_TRAIT_RATIO = 0.1
+    ECT_SPECIFIC_TRAIT_RATIO = 0.1
+    OPTIONAL_MENTOR_TRAINING_RATIO = 0.1
+    OPTIONAL_ECT_TRAINING_RATIO = 0.1
+    ECT_ELIGIBLE_FOR_TRAINING_RATIO = 0.65
+    PUPIL_PREMIUM_UPLIFT_RATIO = 0.15
+    SPARSITY_UPLIFT_RATIO = 0.20
+    MENTOR_ELIGIBLE_FOR_TRAINING_RATIO = 0.65
+    TEACHER_ID_CHANGE_RATIO = 0.15
+    ASSIGN_ECT_TO_MENTOR_RATIO = 0.20
+    LATE_START_RATIO = 0.05
+    FINISHED_PERIOD_RATIO = 0.7
+
     def plant
       return unless plantable?
 
@@ -30,17 +48,19 @@ module APISeedData
 
   private
 
-    def create_teacher
+    def create_teacher(started_on:)
+      # Randomize created at time
+      created_at = started_on.to_time + rand(60 * 23).minutes
+
       teacher = FactoryBot.create(
         :teacher,
         :with_realistic_name,
         trn: Helpers::TRNGenerator.next
       ).tap do |t|
-        random_date = rand(1..100).days.ago
         t.update!(
-          created_at: random_date,
-          updated_at: random_date,
-          api_updated_at: random_date
+          created_at:,
+          updated_at: created_at,
+          api_updated_at: created_at
         )
       end
 
@@ -53,21 +73,26 @@ module APISeedData
     end
 
     def create_api_teachers_records_for(active_lead_provider)
+      contract_period = active_lead_provider.contract_period
       school_partnership = find_school_partnership(active_lead_provider)
       return if school_partnership.blank?
 
       school = school_partnership.school
-      finished_on = Faker::Boolean.boolean(true_ratio: 0.3) ? nil : 6.months.from_now.to_date
 
-      teacher = create_teacher
-      school_period = random_period_within(started_on: teacher.created_at.to_date, finished_on:)
+      school_period = random_period(contract_period:)
+      teacher = create_teacher(started_on: school_period[:started_on])
+
       training_period_data = random_period_within(**school_period)
-      training_period_traits = generate_training_period_traits
+      training_period_traits = if school_period[:started_on].future?
+                                 []
+                               else
+                                 generate_training_period_traits
+                               end
       ect_mentor_traits = generate_ect_mentor_school_period_traits
       ect_specific_traits = generate_ect_specific_traits
       schedule = find_schedule(school_partnership.contract_period)
 
-      if Faker::Boolean.boolean(true_ratio: 0.5)
+      if rand_boolean(ECT_MENTOR_RATIO)
         create_ect_and_optional_mentor_training(
           teacher,
           school,
@@ -79,6 +104,8 @@ module APISeedData
           ect_mentor_traits,
           ect_specific_traits
         )
+
+        create_induction_period(teacher:)
       else
         create_mentor_and_optional_ect_training(
           teacher,
@@ -103,7 +130,7 @@ module APISeedData
     end
 
     def find_schedule(contract_period)
-      if Faker::Boolean.boolean(true_ratio: 0.8)
+      if rand_boolean(SCHEDULE_RATIO)
         return Schedule.find_by(
           contract_period:,
           identifier: "ecf-standard-september"
@@ -119,9 +146,9 @@ module APISeedData
 
     def generate_training_period_traits
       [].tap do |traits|
-        if Faker::Boolean.boolean(true_ratio: 0.2)
+        if rand_boolean(WITHDRAWN_RATIO)
           traits << :withdrawn
-        elsif Faker::Boolean.boolean(true_ratio: 0.15)
+        elsif rand_boolean(DEFERRED_RATIO)
           traits << :deferred
         end
       end
@@ -129,13 +156,13 @@ module APISeedData
 
     def generate_ect_mentor_school_period_traits
       [].tap do |traits|
-        traits << :with_teacher_payments_frozen_year if Faker::Boolean.boolean(true_ratio: 0.10)
+        traits << :with_teacher_payments_frozen_year if rand_boolean(ECT_MENTOR_SCHOOL_PERIOD_TRAIT_RATIO)
       end
     end
 
     def generate_ect_specific_traits
       [].tap do |traits|
-        traits << :with_teacher_payments_frozen_year if Faker::Boolean.boolean(true_ratio: 0.1)
+        traits << :with_teacher_payments_frozen_year if rand_boolean(ECT_SPECIFIC_TRAIT_RATIO)
       end
     end
 
@@ -171,7 +198,7 @@ module APISeedData
       set_ect_attributes(teacher:)
       create_teacher_id_change_for(teacher:)
 
-      if Faker::Boolean.boolean(true_ratio: 0.1)
+      if rand_boolean(OPTIONAL_MENTOR_TRAINING_RATIO)
         mentor_at_school_period_record = mentor_at_school_period(
           teacher:,
           school:,
@@ -224,7 +251,7 @@ module APISeedData
       set_mentor_attributes(teacher:)
       create_teacher_id_change_for(teacher:)
 
-      if Faker::Boolean.boolean(true_ratio: 0.1)
+      if rand_boolean(OPTIONAL_ECT_TRAINING_RATIO)
         ect_at_school_period_record = ect_at_school_period(
           teacher:,
           school:,
@@ -282,12 +309,12 @@ module APISeedData
         api_ect_training_record_id: SecureRandom.uuid
       )
 
-      return unless Faker::Boolean.boolean(true_ratio: 0.65)
+      return unless rand_boolean(ECT_ELIGIBLE_FOR_TRAINING_RATIO)
 
       teacher.update!(
         ect_first_became_eligible_for_training_at: teacher.created_at + 3.months,
-        ect_pupil_premium_uplift: Faker::Boolean.boolean(true_ratio: 0.15),
-        ect_sparsity_uplift: Faker::Boolean.boolean(true_ratio: 0.20)
+        ect_pupil_premium_uplift: rand_boolean(PUPIL_PREMIUM_UPLIFT_RATIO),
+        ect_sparsity_uplift: rand_boolean(SPARSITY_UPLIFT_RATIO)
       )
     end
 
@@ -296,13 +323,13 @@ module APISeedData
         api_mentor_training_record_id: SecureRandom.uuid
       )
 
-      return unless Faker::Boolean.boolean(true_ratio: 0.65)
+      return unless rand_boolean(MENTOR_ELIGIBLE_FOR_TRAINING_RATIO)
 
       teacher.update!(mentor_first_became_eligible_for_training_at: teacher.created_at + 2.months)
     end
 
     def create_teacher_id_change_for(teacher:)
-      return unless Faker::Boolean.boolean(true_ratio: 0.15)
+      return unless rand_boolean(TEACHER_ID_CHANGE_RATIO)
 
       api_from_teacher_id = FactoryBot.create(:teacher, trs_first_name: teacher.trs_first_name, trn: Helpers::TRNGenerator.next).api_id
 
@@ -314,7 +341,7 @@ module APISeedData
     end
 
     def assign_ect_to_mentor(teacher:, school:, mentor_at_school_period_record:)
-      return unless Faker::Boolean.boolean(true_ratio: 0.20)
+      return unless rand_boolean(ASSIGN_ECT_TO_MENTOR_RATIO)
 
       # Assign an ECT to the mentor for the same period excluding ECTs who are already mentees
       ect_at_school_period = school.ect_at_school_periods.where.not(teacher_id: teacher.id).where.not(id: MentorshipPeriod.distinct.pluck(:ect_at_school_period_id)).started_on_or_after(mentor_at_school_period_record.started_on).finished_before(mentor_at_school_period_record.finished_on).last
@@ -328,9 +355,24 @@ module APISeedData
                         finished_on: ect_at_school_period.finished_on)
     end
 
+    def random_period(contract_period:)
+      # Most of the training starts in September 1 - 30
+      started_on = Date.new(contract_period.year, 9, rand(1..30))
+
+      # Some (5%) can start Oct - Jan
+      started_on += 100.days if rand_boolean(LATE_START_RATIO)
+
+      # Set 70% to finish 200-300 days after starting
+      if rand_boolean(FINISHED_PERIOD_RATIO)
+        finished_on = started_on + rand(200..300).days
+      end
+
+      { started_on:, finished_on: }
+    end
+
     def random_period_within(started_on:, finished_on:)
-      started_on = rand(started_on..(finished_on&.yesterday || Time.zone.today))
-      finished_on = finished_on.present? ? rand(started_on.tomorrow..finished_on) : nil
+      started_on = rand(started_on..(started_on + rand(100).days))
+      finished_on = rand(started_on.tomorrow..finished_on) if finished_on
 
       { started_on:, finished_on: }
     end
@@ -389,6 +431,34 @@ module APISeedData
       else
         "since #{period.started_on}"
       end
+    end
+
+    def create_induction_period(teacher:)
+      return unless rand_boolean(ECT_INDUCTION_RATIO)
+
+      # Use the earliest ECT at school period for induction
+      school_period = teacher.earliest_ect_at_school_period
+      return unless school_period
+
+      # Induction starts around the same time as school period
+      started_on = (school_period.started_on + rand(-3..3).days)
+
+      # Induction start can't be in the future
+      return if started_on.future?
+
+      # Induction finishes around 2 years after start (+- 30 days)
+      finished_on = (school_period.started_on + 2.years + rand(-30..30).days)
+      finished_on = nil if finished_on.future?
+
+      if finished_on
+        outcome = %i[pass fail].sample
+        number_of_terms = 1
+      end
+      FactoryBot.create(:induction_period, outcome:, teacher:, started_on:, finished_on:, number_of_terms:)
+    end
+
+    def rand_boolean(ratio)
+      Faker::Boolean.boolean(true_ratio: ratio)
     end
   end
 end

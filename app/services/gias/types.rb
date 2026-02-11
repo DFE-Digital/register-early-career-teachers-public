@@ -78,6 +78,11 @@ module GIAS
       "Other independent school"
     ].freeze
 
+    CHILDRENS_CENTRE_TYPES = [
+      "Children's centre",
+      "Children's centre linked site"
+    ].freeze
+
     STATE_SCHOOL_TYPES = ALL_TYPES - INDEPENDENT_SCHOOLS_TYPES
 
     NOT_IN_ENGLAND_TYPES = [

@@ -29,8 +29,10 @@ RSpec.describe Sessions::Users::DfEUser do
   describe "delegation" do
     it { is_expected.to delegate_method(:role).to(:user) }
     it { is_expected.to delegate_method(:admin?).to(:user) }
-    it { is_expected.to delegate_method(:super_admin?).to(:user) }
+    it { is_expected.to delegate_method(:user_manager?).to(:user) }
     it { is_expected.to delegate_method(:finance?).to(:user) }
+    it { is_expected.to delegate_method(:finance_access?).to(:user) }
+    it { is_expected.to delegate_method(:can_manage_users?).to(:user) }
   end
 
   describe "#provider" do

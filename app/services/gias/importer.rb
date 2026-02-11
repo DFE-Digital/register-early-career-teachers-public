@@ -122,8 +122,12 @@ module GIAS
       gias_school.assign_attributes(attributes)
       return unless gias_school.changed?
 
+      modifications = gias_school.changes
+      eligible_change = modifications["eligible"]
+
       GIAS::School.transaction do
         gias_school.save!
+        record_eligibility_change_event!(modifications) if eligible_change
         # TODO: Handle gias_school.changes such as merges etc.
         #       Simple academisations type close/reopen will be just changing the :urn on the counterpart
         #       but links that are mergers and splits will need further thought
@@ -133,6 +137,20 @@ module GIAS
     def update_school!
       @gias_school = GIAS::School.find_by(urn:)
       gias_school ? sync_changes! : import_school!
+    end
+
+    def record_eligibility_change_event!(modifications)
+      eligibility = modifications.fetch("eligible").last
+      school = gias_school.school
+      school_name = school&.name || gias_school.name
+
+      Events::Record.record_school_eligibility_changed_event!(
+        author: Events::SystemAuthor.new,
+        school:,
+        school_name:,
+        eligibility:,
+        modifications:
+      )
     end
   end
 end

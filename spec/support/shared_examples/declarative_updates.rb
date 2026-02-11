@@ -223,6 +223,20 @@ RSpec.shared_examples "a declarative touch model", :with_touches do |when_changi
           expect { instance.destroy! }.not_to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } })
         end
       end
+
+      context "when there is no saved changes" do
+        # For destroy events, the `when_changing` attributes are not relevant as the target should always be touched.
+        # However, to simulate a scenario where there are no saved changes, we mock `saved_change_to_attribute?` to always return false.
+        before do
+          allow(instance).to receive(:saved_change_to_attribute?).and_return(false)
+        end
+
+        it "touches the #{timestamp_attribute} of the associated model(s) on destroy" do
+          expect {
+            instance.destroy!
+          }.to(change { Array.wrap(target).map { |t| t.reload.send(timestamp_attribute) } }.to(all(be_within(5.seconds).of(Time.current))))
+        end
+      end
     end
   end
 end
@@ -391,6 +405,20 @@ RSpec.shared_examples "a declarative metadata model", :with_metadata do |when_ch
           instance.destroy!
 
           expect(manager).not_to have_received(:refresh_metadata!).with(target)
+        end
+      end
+
+      context "when destroying with no saved changes" do
+        # For destroy events, the `when_changing` attributes are not relevant as the metadata should always be refreshed.
+        # However, to simulate a scenario where there are no saved changes, we mock `saved_change_to_attribute?` to always return false.
+        before do
+          allow(instance).to receive(:saved_change_to_attribute?).and_return(false)
+        end
+
+        it "refreshes the metadata of the associated model(s) on destroy" do
+          instance.destroy!
+
+          expect(manager).to have_received(:refresh_metadata!).with(target)
         end
       end
     end

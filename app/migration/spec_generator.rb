@@ -246,7 +246,7 @@ private
   def ecf1_mentor_at_school_periods
     ecf1_teacher_history.ect.mentor_at_school_periods.map do |period|
       {
-        mentor_at_school_period_id: period.mentor_at_school_period.id,
+        mentor_at_school_period_id: period.mentor_at_school_period_id,
         started_on: period.started_on,
         finished_on: period.finished_on,
         created_at: period.created_at,

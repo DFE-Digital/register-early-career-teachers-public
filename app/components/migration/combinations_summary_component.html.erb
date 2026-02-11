@@ -1,0 +1,45 @@
+<h2 class="govuk-heading-m">Combinations</h2>
+
+<%= govuk_table(html_attributes: { class: "govuk-!-margin-bottom-9" }) do |table|
+  table.with_head do |head|
+    head.with_row do |row|
+      row.with_cell(text: "")
+      row.with_cell(text: "Processed from ECF1")
+      row.with_cell(text: "Migrated to ECF2")
+      row.with_cell(text: "Missing on ECF2")
+      row.with_cell(text: "Success Rate")
+    end
+  end
+
+  table.with_body do |body|
+    body.with_row do |row|
+      row.with_cell(text: "ECTs")
+      row.with_cell(text: number_with_delimiter(number_of_ect_combinations_processed))
+      row.with_cell(text: number_with_delimiter(number_of_successful_ect_combinations))
+      row.with_cell(text: number_with_delimiter(number_of_missing_ect_combinations))
+      row.with_cell(text: rate_tag(number_of_successful_ect_combinations, number_of_missing_ect_combinations))
+    end
+
+    body.with_row do |row|
+      row.with_cell(text: "Mentors")
+      row.with_cell(text: number_with_delimiter(number_of_mentor_combinations_processed))
+      row.with_cell(text: number_with_delimiter(number_of_successful_mentor_combinations))
+      row.with_cell(text: number_with_delimiter(number_of_missing_mentor_combinations))
+      row.with_cell(text: rate_tag(number_of_successful_mentor_combinations, number_of_missing_mentor_combinations))
+    end
+
+    body.with_row do |row|
+      row.with_cell(text: "Totals")
+      row.with_cell(text: number_with_delimiter(total_number_of_combinations_processed))
+      row.with_cell(text: number_with_delimiter(total_number_of_successful_combinations))
+      row.with_cell(text: number_with_delimiter(total_number_of_missing_combinations))
+      row.with_cell(text: rate_tag(total_number_of_combinations_processed, total_number_of_missing_combinations))
+    end
+  end
+end %>
+
+<% if data_downloadable %>
+  <%= govuk_button_link_to('Download detected ecf1 combinations 💅', migration_download_detected_ecf1_combinations_path, class: "da-pink-button") %>
+  <%= govuk_button_link_to('Download ecf2 migrated combinations 💅', migration_download_ecf2_migrated_combinations_path, class: "da-pink-button") %>
+  <%= govuk_button_link_to('Download failed combinations 💅', migration_download_failed_combinations_path, class: "da-pink-button") %>
+<% end %>

@@ -7,7 +7,7 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
       data[:lead_provider]&.name
     end
     field(:date) do |data|
-      data[:date].to_fs(:api)
+      data[:date]
     end
   end
 
@@ -27,7 +27,7 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
       transfer.status
     end
     field(:created_at) do |(transfer, _teacher, _options)|
-      transfer.leaving_training_period.created_at.utc.rfc3339
+      transfer.leaving_training_period.created_at
     end
     association :leaving, blueprint: TrainingPeriodSerializer do |(transfer, _teacher, _options)|
       training_period = transfer.leaving_training_period

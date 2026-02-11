@@ -83,20 +83,6 @@ RSpec.describe API::Declarations::Create, type: :model do
           it { is_expected.to have_error(:teacher_type, "Enter a '#/teacher_type'.") }
         end
 
-        context "when wrong teacher type is provided for the trainee" do
-          # Set `teacher_type` param to :ect for Mentor or :mentor for ECT
-          let(:teacher_type) { trainee_type == :ect ? :mentor : :ect }
-
-          it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
-          it { is_expected.to have_no_error(:declaration_type) }
-        end
-
-        context "when a non existing teacher type is used" do
-          let(:teacher_type) { :fake }
-
-          it { is_expected.to have_error(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.") }
-        end
-
         context "when `declaration_date` is nil" do
           let!(:declaration_date) { nil }
 

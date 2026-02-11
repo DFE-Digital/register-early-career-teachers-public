@@ -331,6 +331,7 @@
   - id
   - ecf_id
   - name
+  - vat_registered
   - created_at
   - updated_at
   :events:
@@ -462,6 +463,7 @@
   - created_at
   - updated_at
   - api_updated_at
+  - contract_id
   :api_tokens:
   - id
   - lead_provider_id
@@ -573,5 +575,76 @@
   - school_name
   - school_urn
   - message
+  - created_at
+  - updated_at
+  :data_migration_teacher_combinations:
+  - id
+  - api_id
+  - ecf1_ect_profile_id
+  - ecf1_mentor_profile_id
+  - ecf1_ect_combinations
+  - ecf1_mentor_combinations
+  - ecf2_ect_combinations
+  - ecf2_mentor_combinations
+  - created_at
+  - updated_at
+  - ecf1_ect_combinations_count
+  - ecf1_mentor_combinations_count
+  - ecf2_ect_combinations_count
+  - ecf2_mentor_combinations_count
+  :data_migration_failed_combinations:
+  - id
+  - trn
+  - profile_id
+  - profile_type
+  - induction_record_id
+  - training_programme
+  - school_urn
+  - cohort_year
+  - lead_provider_name
+  - delivery_partner_name
+  - start_date
+  - end_date
+  - induction_status
+  - training_status
+  - mentor_profile_id
+  - schedule_id
+  - schedule_identifier
+  - schedule_name
+  - schedule_cohort_year
+  - preferred_identity_email
+  - failure_message
+  - created_at
+  - updated_at
+  :contract_flat_rate_fee_structures:
+  - id
+  - recruitment_target
+  - fee_per_declaration
+  - created_at
+  - updated_at
+  :contract_banded_fee_structures:
+  - id
+  - recruitment_target
+  - uplift_fee_per_declaration
+  - monthly_service_fee
+  - setup_fee
+  - created_at
+  - updated_at
+  :contract_banded_fee_structure_bands:
+  - id
+  - banded_fee_structure_id
+  - min_declarations
+  - max_declarations
+  - fee_per_declaration
+  - output_fee_ratio
+  - service_fee_ratio
+  - created_at
+  - updated_at
+  :contracts:
+  - id
+  - contract_type
+  - vat_rate
+  - flat_rate_fee_structure_id
+  - banded_fee_structure_id
   - created_at
   - updated_at

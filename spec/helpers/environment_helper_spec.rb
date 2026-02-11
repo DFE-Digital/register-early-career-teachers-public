@@ -39,8 +39,8 @@ RSpec.describe EnvironmentHelper, type: :helper do
         expect(subject).to match("This is a new service")
       end
 
-      it "includes the support email address" do
-        expect(subject).to match("teacher.induction@education.gov.uk")
+      it "includes the support feedback form" do
+        expect(subject).to include(EnvironmentHelper::FEEDBACK_SURVEY_FORM_URL)
       end
     end
 

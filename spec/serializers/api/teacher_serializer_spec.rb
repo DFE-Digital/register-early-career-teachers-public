@@ -216,7 +216,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
               let!(:finished_induction_period) { FactoryBot.create(:induction_period, :pass, teacher:) }
 
               it "serializes `induction_end_date` from finished induction period" do
-                expect(ect_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.rfc3339)
+                expect(ect_enrolment["induction_end_date"]).to eq(finished_induction_period.finished_on.to_fs(:api))
               end
             end
 
@@ -224,7 +224,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
               before { teacher.update!(trs_induction_completed_date: Date.new(2024, 9, 18)) }
 
               it "serializes `induction_end_date` from TRS induction completed date" do
-                expect(ect_enrolment["induction_end_date"]).to eq(teacher.trs_induction_completed_date.rfc3339)
+                expect(ect_enrolment["induction_end_date"]).to eq(teacher.trs_induction_completed_date.to_fs(:api))
               end
             end
           end
@@ -234,7 +234,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
               let!(:started_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
               it "serializes `overall_induction_start_date` from started induction period" do
-                expect(ect_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.rfc3339)
+                expect(ect_enrolment["overall_induction_start_date"]).to eq(started_induction_period.started_on.to_fs(:api))
               end
             end
 
@@ -242,7 +242,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
               before { teacher.update!(trs_induction_start_date: Date.new(2024, 9, 18)) }
 
               it "serializes `overall_induction_start_date` from TRS induction start date" do
-                expect(ect_enrolment["overall_induction_start_date"]).to eq(teacher.trs_induction_start_date.rfc3339)
+                expect(ect_enrolment["overall_induction_start_date"]).to eq(teacher.trs_induction_start_date.to_fs(:api))
               end
             end
           end
@@ -309,7 +309,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
             expect(mentor_enrolment["overall_induction_start_date"]).to be_nil
 
-            expect(mentor_enrolment["mentor_funding_end_date"]).to eq(teacher.mentor_became_ineligible_for_funding_on.rfc3339)
+            expect(mentor_enrolment["mentor_funding_end_date"]).to eq(teacher.mentor_became_ineligible_for_funding_on.to_fs(:api))
 
             expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to be_present
             expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to eq(teacher.mentor_became_ineligible_for_funding_reason)

@@ -38,11 +38,20 @@ namespace :admin do
     end
   end
 
+  scope "schools/:school_urn", as: :schools, module: :schools do
+    scope path: "partnerships/add",
+          as: :add_partnership_wizard,
+          controller: "add_partnership_wizard" do
+      concerns :wizardable, wizard: Admin::Schools::AddPartnershipWizard
+    end
+  end
+
   resources :teachers, only: %i[show index] do
     scope module: :teachers do
       resource :induction, only: %i[show]
       resource :school, only: %i[show]
       resource :training, only: %i[show]
+      resources :declarations, only: %i[index]
       resources :training_periods, only: [], path: "training-periods" do
         resource :partnership, only: %i[new create], controller: :training_partnerships do
           get :no_other_partnerships, path: "no-other-partnerships"

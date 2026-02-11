@@ -1,0 +1,74 @@
+<%= govuk_details do |details| %>
+  <% details.with_summary_html do %>
+    <span class="govuk-details__summary-text govuk-!-margin-right-2"><%= declaration.declaration_type %></span>
+    <span class="govuk-body app-mono"><%= declaration.api_id %></span>
+    <%= declaration_state_tag(declaration) %>
+  <% end %>
+
+  <%=
+    govuk_summary_list(actions: false, classes: "govuk-!-margin-bottom-0") do |summary_list|
+      summary_list.with_row do |row|
+        row.with_key { "Declaration ID" }
+        row.with_value { tag.span(declaration.api_id, class: "govuk-!-margin-0 app-mono") }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Course identifier" }
+        row.with_value { tag.span(declaration_course_identifier(declaration), class: "govuk-!-margin-0 app-mono") }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Declaration type" }
+        row.with_value { tag.span(declaration.declaration_type, class: "govuk-!-margin-0 app-mono") }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "State" }
+        row.with_value { declaration_state_tag(declaration) }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Declaration date and time" }
+        row.with_value { declaration.declaration_date.to_fs(:govuk) }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Lead provider" }
+        row.with_value { declaration.lead_provider&.name }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Delivery partner" }
+        row.with_value { declaration.delivery_partner&.name || "No delivery partner recorded" }
+      end
+
+      summary_list.with_row do |row|
+        row.with_key { "Evidence held" }
+        row.with_value { tag.span(declaration.evidence_type, class: "govuk-!-margin-0 app-mono") }
+      end
+    end
+  %>
+
+  <% if declaration.events.any? %>
+    <hr class="govuk-section-break govuk-section-break--m">
+    <%=
+      govuk_table(html_attributes: { class: "govuk-!-margin-bottom-0" }) do |table|
+        table.with_caption(text: "State history", size: "s")
+        table.with_head do |head|
+          head.with_row do |row|
+            row.with_cell(text: "State")
+            row.with_cell(text: "Changed at")
+          end
+        end
+        table.with_body do |body|
+          declaration.events.earliest_first.each do |event|
+            body.with_row do |row|
+              row.with_cell(text: declaration_event_state_name(event), header: true)
+              row.with_cell(text: event.happened_at.to_fs(:govuk))
+            end
+          end
+        end
+      end
+    %>
+  <% end %>
+<% end %>

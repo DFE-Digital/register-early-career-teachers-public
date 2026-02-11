@@ -222,4 +222,216 @@ RSpec.describe APISeedData::ParticipantScenarios do
       end
     end
   end
+
+  describe "#active_participants_with_participant_status_joining" do
+    before do
+      instance.plant_only(
+        :active_participants_with_participant_status_joining,
+        count: 2,
+        contract_period_years: [2024, 2025]
+      )
+    end
+
+    it "creates active participants with joining training periods " \
+       "(to be started in the future) for each contract period" do
+      [2024, 2025].each do |year|
+        LeadProvider.find_each do |lead_provider|
+          ects_joining = Teacher
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { started_on: Time.zone.tomorrow.. })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          mentors_joining = Teacher
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { started_on: Time.zone.tomorrow.. })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          # creates 2 participants for ECTs and Mentors
+          expect(ects_joining.count).to eq(2)
+          expect(mentors_joining.count).to eq(2)
+
+          # make sure all created participants have 'joining' status
+          training_periods = (
+            ects_joining.map(&:ect_training_periods) +
+            mentors_joining.map(&:mentor_training_periods)
+          ).flatten
+          participant_statuses = training_periods.map do
+            API::TrainingPeriods::TeacherStatus.new(
+              latest_training_period: it,
+              teacher: it.teacher
+            )
+          end
+          training_statuses = training_periods.map do
+            API::TrainingPeriods::TrainingStatus.new(training_period: it)
+          end
+          expect(participant_statuses).to be_all(&:joining?)
+          expect(training_statuses).to be_all(&:active?)
+        end
+      end
+    end
+  end
+
+  describe "#active_participants_with_participant_status_leaving_in_the_future" do
+    before do
+      instance.plant_only(
+        :active_participants_with_participant_status_leaving_in_the_future,
+        count: 2,
+        contract_period_years: [2024, 2025]
+      )
+    end
+
+    it "creates active participants with leaving training periods " \
+       "(to be finished at least 4 months in the future) for each contract period" do
+      [2024, 2025].each do |year|
+        LeadProvider.find_each do |lead_provider|
+          ects_leaving = Teacher
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { finished_on: 4.months.from_now.. })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          mentors_leaving = Teacher
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { finished_on: 4.months.from_now.. })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          # creates 2 participants for ECTs and Mentors
+          expect(ects_leaving.count).to eq(2)
+          expect(mentors_leaving.count).to eq(2)
+
+          # make sure all created participants have 'leaving' status
+          training_periods = (
+            ects_leaving.map(&:ect_training_periods) +
+            mentors_leaving.map(&:mentor_training_periods)
+          ).flatten
+          participant_statuses = training_periods.map do
+            API::TrainingPeriods::TeacherStatus.new(
+              latest_training_period: it,
+              teacher: it.teacher
+            )
+          end
+          training_statuses = training_periods.map do
+            API::TrainingPeriods::TrainingStatus.new(training_period: it)
+          end
+          expect(participant_statuses).to be_all(&:leaving?)
+          expect(training_statuses).to be_all(&:active?)
+        end
+      end
+    end
+  end
+
+  describe "#withdrawn_participants_with_participant_status_left" do
+    before do
+      instance.plant_only(
+        :withdrawn_participants_with_participant_status_left,
+        count: 2,
+        contract_period_years: [2024, 2025]
+      )
+    end
+
+    it "creates withdrawn participants with finished training periods " \
+       "for each contract period" do
+      [2024, 2025].each do |year|
+        LeadProvider.find_each do |lead_provider|
+          withdrawn_ects_left = Teacher
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where.not(training_periods: { withdrawn_at: nil })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          withdrawn_mentors_left = Teacher
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where.not(training_periods: { withdrawn_at: nil })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          # creates 2 participants for ECTs and Mentors
+          expect(withdrawn_ects_left.count).to eq(2)
+          expect(withdrawn_mentors_left.count).to eq(2)
+
+          # make sure all created participants have 'leaving' status
+          training_periods = (
+            withdrawn_ects_left.map(&:ect_training_periods) +
+            withdrawn_mentors_left.map(&:mentor_training_periods)
+          ).flatten
+          participant_statuses = training_periods.map do
+            API::TrainingPeriods::TeacherStatus.new(
+              latest_training_period: it,
+              teacher: it.teacher
+            )
+          end
+          training_statuses = training_periods.map do
+            API::TrainingPeriods::TrainingStatus.new(training_period: it)
+          end
+          expect(participant_statuses).to be_all(&:left?)
+          expect(training_statuses).to be_all(&:withdrawn?)
+        end
+      end
+    end
+  end
+
+  describe "#active_participants_with_participant_status_left" do
+    before do
+      instance.plant_only(
+        :active_participants_with_participant_status_left,
+        count: 2,
+        contract_period_years: [2024, 2025]
+      )
+    end
+
+    it "creates active participants with finished training periods " \
+       "for each contract period" do
+      [2024, 2025].each do |year|
+        LeadProvider.find_each do |lead_provider|
+          active_ects_left = Teacher
+            .joins(ect_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          active_mentors_left = Teacher
+            .joins(mentor_at_school_periods: { training_periods: [:schedule, { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } }] })
+            .where(training_periods: { started_on: ..Date.current, finished_on: ..Date.current })
+            .where(training_periods: { withdrawn_at: nil, deferred_at: nil })
+            .where(schedules: { contract_period_year: year })
+            .where(active_lead_providers: { lead_provider_id: lead_provider.id })
+            .distinct
+
+          # creates 2 participants for ECTs and Mentors
+          expect(active_ects_left.count).to eq(2)
+          expect(active_mentors_left.count).to eq(2)
+
+          # make sure all created participants have 'leaving' status
+          training_periods = (
+            active_ects_left.map(&:ect_training_periods) +
+            active_mentors_left.map(&:mentor_training_periods)
+          ).flatten
+          participant_statuses = training_periods.map do
+            API::TrainingPeriods::TeacherStatus.new(
+              latest_training_period: it,
+              teacher: it.teacher
+            )
+          end
+          training_statuses = training_periods.map do
+            API::TrainingPeriods::TrainingStatus.new(training_period: it)
+          end
+          expect(participant_statuses).to be_all(&:left?)
+          expect(training_statuses).to be_all(&:active?)
+        end
+      end
+    end
+  end
 end

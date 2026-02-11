@@ -282,7 +282,6 @@ RSpec.describe "Moving School - backdated start spec", :enable_schools_interface
   end
 
   def then_i_should_be_taken_to_the_confirmation_page
-    page.screenshot(path: "tmp/screenshot.png")
     expect(page).to have_path("/school/register-ect/confirmation")
   end
 

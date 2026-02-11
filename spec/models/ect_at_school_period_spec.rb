@@ -363,9 +363,10 @@ describe ECTAtSchoolPeriod do
     let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-01-01", finished_on: "2023-06-01") }
     let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
     let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
-    let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
 
     describe ".for_school" do
+      let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
+
       it "returns only ect periods for the specified school" do
         expect(described_class.for_school(period_1.school_id)).to match_array([period_1, period_3, teacher_2_period])
       end
@@ -416,6 +417,102 @@ describe ECTAtSchoolPeriod do
 
       it "returns ect in training periods only for the specified contract period and lead provider" do
         expect(described_class.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
+      end
+    end
+
+    describe ".unclaimed_by_school_reported_appropriate_body" do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+
+      let!(:period_without_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_ongoing_induction_period_for_same_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_ongoing_induction_period_for_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_finished_induction_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: appropriate_body) }
+      let!(:finished_period) { FactoryBot.create(:ect_at_school_period, :finished, school_reported_appropriate_body: appropriate_body) }
+      let!(:period_with_different_appropriate_body) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body: other_appropriate_body) }
+
+      before do
+        FactoryBot.create(:induction_period, :ongoing, appropriate_body:, teacher: period_with_ongoing_induction_period_for_same_appropriate_body.teacher)
+        FactoryBot.create(:induction_period, :ongoing, appropriate_body: other_appropriate_body, teacher: period_with_ongoing_induction_period_for_different_appropriate_body.teacher)
+        FactoryBot.create(:induction_period, started_on: 1.year.ago, finished_on: 1.month.ago, teacher: period_with_finished_induction_period.teacher)
+      end
+
+      it "returns only current/future periods not claimed by their school_reported_appropriate_body" do
+        results = described_class.unclaimed_by_school_reported_appropriate_body
+
+        expect(results).to include(
+          period_without_induction_period,
+          period_with_finished_induction_period,
+          period_with_ongoing_induction_period_for_different_appropriate_body,
+          period_with_different_appropriate_body
+        )
+        expect(results).not_to include(
+          period_with_ongoing_induction_period_for_same_appropriate_body,
+          finished_period
+        )
+      end
+    end
+
+    describe ".induction_not_completed" do
+      let(:teacher_with_passed_induction) { FactoryBot.create(:teacher, :induction_passed) }
+      let(:teacher_with_failed_induction) { FactoryBot.create(:teacher, :induction_failed) }
+
+      let!(:period_1) { FactoryBot.create(:ect_at_school_period, :finished, teacher: teacher_with_passed_induction) }
+      let!(:period_2) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:) }
+      let!(:period_3) { FactoryBot.create(:ect_at_school_period, :finished, teacher: teacher_with_failed_induction) }
+
+      it "returns ect periods where the teacher's induction is not completed" do
+        expect(described_class.induction_not_completed).to match_array([period_2])
+      end
+    end
+
+    describe "claimable and non-claimable scopes" do
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+      let(:other_appropriate_body) { FactoryBot.create(:appropriate_body, :teaching_school_hub) }
+
+      let(:teacher_with_qts) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+      let(:teacher_without_qts) { FactoryBot.create(:teacher, trs_qts_awarded_on: nil) }
+      let(:teacher_with_qts_claimed_by_different_ab) { FactoryBot.create(:teacher, trs_qts_awarded_on: 1.year.ago) }
+
+      let!(:period_with_qts) do
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_with_qts, school_reported_appropriate_body: appropriate_body)
+      end
+      let!(:period_without_qts) do
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_without_qts, school_reported_appropriate_body: appropriate_body)
+      end
+      let!(:period_with_qts_claimed_by_different_ab) do
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher: teacher_with_qts_claimed_by_different_ab, school_reported_appropriate_body: appropriate_body)
+      end
+
+      before do
+        FactoryBot.create(:induction_period, :ongoing, appropriate_body: other_appropriate_body, teacher: teacher_with_qts_claimed_by_different_ab)
+      end
+
+      describe ".without_qts_award" do
+        it "returns only periods where the teacher has no QTS award date" do
+          results = described_class.without_qts_award
+
+          expect(results).to include(period_without_qts)
+          expect(results).not_to include(period_with_qts, period_with_qts_claimed_by_different_ab)
+        end
+      end
+
+      describe ".claimed_by_different_appropriate_body" do
+        it "returns only current/future periods with an active induction period for a different appropriate body" do
+          results = described_class.claimed_by_different_appropriate_body
+
+          expect(results).to include(period_with_qts_claimed_by_different_ab)
+          expect(results).not_to include(period_with_qts, period_without_qts)
+        end
+      end
+
+      describe ".claimable" do
+        it "returns only current/future periods with QTS and not claimed by a different appropriate body" do
+          results = described_class.claimable
+
+          expect(results).to include(period_with_qts)
+          expect(results).not_to include(period_without_qts, period_with_qts_claimed_by_different_ab)
+        end
       end
     end
   end

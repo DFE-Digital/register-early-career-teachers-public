@@ -1,5 +1,33 @@
 ```mermaid
 erDiagram
+  Contract_BandedFeeStructure_Band {
+    integer id
+    integer banded_fee_structure_id
+    integer min_declarations
+    integer max_declarations
+    integer fee_per_declaration
+    decimal output_fee_ratio
+    decimal service_fee_ratio
+    datetime created_at
+    datetime updated_at
+  }
+  Contract_BandedFeeStructure_Band }o--|| Contract_BandedFeeStructure : belongs_to
+  Contract_FlatRateFeeStructure {
+    integer id
+    integer recruitment_target
+    decimal fee_per_declaration
+    datetime created_at
+    datetime updated_at
+  }
+  Contract_BandedFeeStructure {
+    integer id
+    integer recruitment_target
+    decimal uplift_fee_per_declaration
+    decimal monthly_service_fee
+    decimal setup_fee
+    datetime created_at
+    datetime updated_at
+  }
   User {
     integer id
     string name
@@ -71,8 +99,10 @@ erDiagram
     datetime updated_at
     enum fee_type
     datetime api_updated_at
+    integer contract_id
   }
   Statement }o--|| ActiveLeadProvider : belongs_to
+  Statement }o--|| Contract : belongs_to
   SchoolPartnership {
     integer id
     datetime created_at
@@ -154,10 +184,10 @@ erDiagram
     integer mentor_payments_frozen_year
     boolean ect_pupil_premium_uplift
     boolean ect_sparsity_uplift
-    date trs_induction_start_date
-    date trs_induction_completed_date
     datetime ect_first_became_eligible_for_training_at
     datetime mentor_first_became_eligible_for_training_at
+    date trs_induction_start_date
+    date trs_induction_completed_date
     boolean trnless
     datetime api_updated_at
     datetime api_unfunded_mentor_updated_at
@@ -255,6 +285,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     uuid ecf_id
+    boolean vat_registered
   }
   InductionPeriod {
     integer id
@@ -333,6 +364,47 @@ erDiagram
   Declaration }o--|| MentorshipPeriod : belongs_to
   Declaration }o--|| Statement : belongs_to
   Declaration }o--|| Statement : belongs_to
+  DataMigrationTeacherCombination {
+    integer id
+    uuid ecf1_ect_profile_id
+    uuid ecf1_mentor_profile_id
+    jsonb ecf1_ect_combinations
+    jsonb ecf1_mentor_combinations
+    jsonb ecf2_ect_combinations
+    jsonb ecf2_mentor_combinations
+    integer ecf1_ect_combinations_count
+    integer ecf1_mentor_combinations_count
+    integer ecf2_ect_combinations_count
+    integer ecf2_mentor_combinations_count
+    datetime created_at
+    datetime updated_at
+    uuid api_id
+  }
+  DataMigrationFailedCombination {
+    integer id
+    string trn
+    uuid profile_id
+    string profile_type
+    uuid induction_record_id
+    string training_programme
+    string school_urn
+    integer cohort_year
+    string lead_provider_name
+    string delivery_partner_name
+    datetime start_date
+    datetime end_date
+    string induction_status
+    string training_status
+    uuid mentor_profile_id
+    uuid schedule_id
+    string schedule_identifier
+    string schedule_name
+    integer schedule_cohort_year
+    string preferred_identity_email
+    text failure_message
+    datetime created_at
+    datetime updated_at
+  }
   ContractPeriod {
     integer year
     datetime created_at
@@ -345,6 +417,17 @@ erDiagram
     boolean mentor_funding_enabled
     boolean detailed_evidence_types_enabled
   }
+  Contract {
+    integer id
+    enum contract_type
+    integer flat_rate_fee_structure_id
+    integer banded_fee_structure_id
+    datetime created_at
+    datetime updated_at
+    decimal vat_rate
+  }
+  Contract }o--|| Contract_FlatRateFeeStructure : belongs_to
+  Contract }o--|| Contract_BandedFeeStructure : belongs_to
   AppropriateBody {
     integer id
     string name

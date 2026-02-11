@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_081959) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -22,11 +22,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
   create_enum "appropriate_body_type", ["local_authority", "national", "teaching_school_hub"]
   create_enum "batch_status", ["pending", "processing", "processed", "completing", "completed", "failed"]
   create_enum "batch_type", ["action", "claim"]
+  create_enum "contract_types", ["ecf", "ittecf_ectp"]
   create_enum "declaration_clawback_statuses", ["no_clawback", "awaiting_clawback", "clawed_back"]
   create_enum "declaration_payment_statuses", ["no_payment", "eligible", "payable", "paid", "voided"]
   create_enum "declaration_types", ["started", "retained-1", "retained-2", "retained-3", "retained-4", "completed", "extended-1", "extended-2", "extended-3"]
   create_enum "deferral_reasons", ["bereavement", "long_term_sickness", "parental_leave", "career_break", "other"]
-  create_enum "dfe_role_type", ["admin", "super_admin", "finance"]
+  create_enum "dfe_role_type", ["admin", "user_manager", "finance"]
   create_enum "event_author_types", ["appropriate_body_user", "school_user", "dfe_staff_user", "system", "lead_provider_api"]
   create_enum "evidence_types", ["training-event-attended", "self-study-material-completed", "materials-engaged-with-offline", "75-percent-engagement-met", "75-percent-engagement-met-reduced-induction", "one-term-induction", "other"]
   create_enum "fee_types", ["output", "service"]
@@ -133,6 +134,34 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
   end
 
+  create_table "contract_banded_fee_structure_bands", force: :cascade do |t|
+    t.bigint "banded_fee_structure_id", null: false
+    t.integer "min_declarations", default: 1, null: false
+    t.integer "max_declarations", null: false
+    t.integer "fee_per_declaration", null: false
+    t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
+    t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
+  end
+
+  create_table "contract_banded_fee_structures", force: :cascade do |t|
+    t.integer "recruitment_target", null: false
+    t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
+    t.decimal "monthly_service_fee", precision: 12, scale: 2, null: false
+    t.decimal "setup_fee", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "contract_flat_rate_fee_structures", force: :cascade do |t|
+    t.integer "recruitment_target", null: false
+    t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "contract_periods", primary_key: "year", id: :serial, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -145,6 +174,58 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
     t.boolean "detailed_evidence_types_enabled", default: false, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+  end
+
+  create_table "contracts", force: :cascade do |t|
+    t.enum "contract_type", null: false, enum_type: "contract_types"
+    t.bigint "flat_rate_fee_structure_id"
+    t.bigint "banded_fee_structure_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
+    t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true
+    t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true
+  end
+
+  create_table "data_migration_failed_combinations", force: :cascade do |t|
+    t.string "trn"
+    t.uuid "profile_id"
+    t.string "profile_type"
+    t.uuid "induction_record_id"
+    t.string "training_programme"
+    t.string "school_urn"
+    t.integer "cohort_year"
+    t.string "lead_provider_name"
+    t.string "delivery_partner_name"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.string "induction_status"
+    t.string "training_status"
+    t.uuid "mentor_profile_id"
+    t.uuid "schedule_id"
+    t.string "schedule_identifier"
+    t.string "schedule_name"
+    t.integer "schedule_cohort_year"
+    t.string "preferred_identity_email"
+    t.text "failure_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "data_migration_teacher_combinations", force: :cascade do |t|
+    t.uuid "ecf1_ect_profile_id"
+    t.uuid "ecf1_mentor_profile_id"
+    t.jsonb "ecf1_ect_combinations", default: [], null: false
+    t.jsonb "ecf1_mentor_combinations", default: [], null: false
+    t.jsonb "ecf2_ect_combinations", default: [], null: false
+    t.jsonb "ecf2_mentor_combinations", default: [], null: false
+    t.virtual "ecf1_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_ect_combinations)", stored: true
+    t.virtual "ecf1_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_mentor_combinations)", stored: true
+    t.virtual "ecf2_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_ect_combinations)", stored: true
+    t.virtual "ecf2_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_mentor_combinations)", stored: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "api_id"
   end
 
   create_table "data_migrations", force: :cascade do |t|
@@ -362,6 +443,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "ecf_id"
+    t.boolean "vat_registered", default: true, null: false
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
   end
@@ -623,6 +705,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
     t.integer "induction_tutor_last_nominated_in"
     t.boolean "marked_as_eligible", default: false, null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
+    t.index ["api_updated_at"], name: "index_schools_on_api_updated_at"
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
@@ -773,7 +856,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
     t.datetime "updated_at", null: false
     t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.bigint "contract_id"
     t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
+    t.index ["contract_id"], name: "index_statements_on_contract_id"
   end
 
   create_table "support_queries", force: :cascade do |t|
@@ -837,10 +922,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
     t.integer "mentor_payments_frozen_year"
     t.boolean "ect_pupil_premium_uplift", default: false, null: false
     t.boolean "ect_sparsity_uplift", default: false, null: false
-    t.date "trs_induction_start_date"
-    t.date "trs_induction_completed_date"
     t.datetime "ect_first_became_eligible_for_training_at"
     t.datetime "mentor_first_became_eligible_for_training_at"
+    t.date "trs_induction_start_date"
+    t.date "trs_induction_completed_date"
     t.boolean "trnless", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
@@ -903,6 +988,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
 
   add_foreign_key "active_lead_providers", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "active_lead_providers", "lead_providers"
+  add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
+  add_foreign_key "contracts", "contract_banded_fee_structures", column: "banded_fee_structure_id"
+  add_foreign_key "contracts", "contract_flat_rate_fee_structures", column: "flat_rate_fee_structure_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
@@ -974,6 +1062,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_27_105556) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
   add_foreign_key "statements", "active_lead_providers"
+  add_foreign_key "statements", "contracts"
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"

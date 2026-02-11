@@ -30,7 +30,12 @@
   end
 end %>
 
+<%= render Migration::CombinationsSummaryComponent.new(@combinations) %>
+
+<h2 class="govuk-heading-m">Record counts in ECF2</h2>
+
+<%= render Migration::MigratedRecordCountsComponent.new %>
+
 <div class="govuk-!-margin-top-6">
   <%= govuk_button_link_to "View Cache Performance Statistics", cache_stats_migration_migrations_path, secondary: true %>
 </div>
-

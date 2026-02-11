@@ -9,16 +9,18 @@
       A migration is currently in-progress
     </h3>
     <p class="govuk-body">It was started <%= tag.strong(time_ago_in_words(migration_started_at(@data_migrations))) %> ago.</p>
-    
-    <%= 
+
+    <%=
       govuk_task_list do |task_list|
         @data_migrations.each do |data_migration|
           task_list.with_item(html_attributes: { class: "data-migration-#{data_migration.model.parameterize}" }, title: data_migration.name, status: data_migration_status_tag(data_migration))
         end
-      end 
+      end
     %>
   </div>
 </div>
+
+<%= render Migration::CombinationsSummaryComponent.new(@combinations, data_downloadable: false) %>
 
 <div class="govuk-!-margin-top-6">
   <%= govuk_button_link_to "View Cache Performance Statistics", cache_stats_migration_migrations_path, secondary: true %>
