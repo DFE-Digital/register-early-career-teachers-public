@@ -20,7 +20,7 @@ All users of the service will need a DfE sign-in account and approved access.
 
 <!-- You can read [guidance on using DfE Sign in](https://edd-help.signin.education.gov.uk/contact). -->
 
-<a href="../images/landing-page.png" target="blank"><img alt="The guidance page for register early career teachers" src="../images/landing-page.png" width="300"/></a>
+<a href="images/landing-page.png" target="blank"><img alt="The guidance page for register early career teachers" src="images/landing-page.png" width="300"/></a>
 
 ### Multiple users can have access to the service
 
@@ -33,7 +33,7 @@ As part of the change to the DfE Sign in, we now ask schools to tell us their in
 - when they first sign in after the opening of a new registration period  
 - any other time within the service
 
-<a href="../images/induction-tutor.png" target="blank"><img alt="View induction tutor details for school with option to change details" src="../images/induction-tutor.png" width="300"/></a>
+<a href="images/induction-tutor.png" target="blank"><img alt="View induction tutor details for school with option to change details" src="images/induction-tutor.png" width="300"/></a>
 
 ## No longer a requirement to provide ECT or mentor names when registering 
 
@@ -52,9 +52,9 @@ If the name is wrong, the school can correct it. However, they must not do this 
 
 This will be monitored after release of the service. 
  
-<a href="../images/find-an-ect.png" target="blank"><img alt="Find an ECT by entering their details" src="../images/find-an-ect.png" width="300"/></a>
+<a href="images/find-an-ect.png" target="blank"><img alt="Find an ECT by entering their details" src="images/find-an-ect.png" width="300"/></a>
 
-<a href="../images/check-ect-details.png" target="blank"><img alt="Check ECT details that have been found" src="../images/check-ect-details.png" width="300"/></a>
+<a href="images/check-ect-details.png" target="blank"><img alt="Check ECT details that have been found" src="images/check-ect-details.png" width="300"/></a>
 
 ## New questions we ask when registering ECTs 
 
@@ -68,13 +68,13 @@ This applies to their working pattern as an ECT only. For example, if the ECT wo
 
 <!-- If they work part-time as an ECT and part-time as a teaching assistant, or in another role (totalling full-time), we'd still expect schools to select part-time here. -->
 
-<a href="../images/working-pattern.png" target="blank"><img alt="Choose ECT's working pattern when adding to the service" src="../images/working-pattern.png" width="300"/></a>
+<a href="images/working-pattern.png" target="blank"><img alt="Choose ECT's working pattern when adding to the service" src="images/working-pattern.png" width="300"/></a>
 
 ### ECT start date
 
 We ask when the person started at the school as an ECT, not when they started before becoming an ECT. For example, if they started as an unqualified or trainee teacher.
 
-<a href="../images/ect-start-date.png" target="blank"><img alt="Enter the ECT's start date when adding to the service" src="../images/ect-start-date.png" width="300"/></a>
+<a href="images/ect-start-date.png" target="blank"><img alt="Enter the ECT's start date when adding to the service" src="images/ect-start-date.png" width="300"/></a>
 
 ### We ask for the lead provider when a school has not partnered with one before or chooses not to use existing ones
 
@@ -84,7 +84,7 @@ However, if they decline to use that partnership or do not have any others set u
 
 This is then approved by a lead provider over the API when they submit a partnership, and shows to schools as confirmed later on the ECTs page. 
 
-<a href="../images/select-lead-provider.png" target="blank"><img alt="Select lead provider for ECT when adding them to the service" src="../images/select-lead-provider.png" width="300"/></a>
+<a href="images/select-lead-provider.png" target="blank"><img alt="Select lead provider for ECT when adding them to the service" src="images/select-lead-provider.png" width="300"/></a>
 
 ## The appropriate body, lead provider and delivery partner are set for each ECT, not for the cohort year 
 
@@ -99,13 +99,13 @@ Schools can assign an appropriate body, lead provider and delivery partner for i
 
 <!-- In Register ECTs, we will ask for each ECT these details based on what they have most recently used to register their existing ECTs. This information will either be from the current academic year or a historic one. --> 
 
-<a href="../images/programme-choices-used-previously.png" target="blank"><img alt="View and re-use the programme choices that were used previously when adding an ECT" src="../images/programme-choices-used-previously.png" width="300"/></a>
+<a href="images/programme-choices-used-previously.png" target="blank"><img alt="View and re-use the programme choices that were used previously when adding an ECT" src="images/programme-choices-used-previously.png" width="300"/></a>
 
 ## Appropriate body is mandatory 
 
 Schools must tell us the ECT’s appropriate body. 
 
-<a href="../images/select-appropriate-body.png" target="blank"><img alt="Select an appropriate body for the ECT when adding to the service" src="../images/select-appropriate-body.png" width="300"/></a>
+<a href="images/select-appropriate-body.png" target="blank"><img alt="Select an appropriate body for the ECT when adding to the service" src="images/select-appropriate-body.png" width="300"/></a>
 
 ## Schools can make more changes without needing DfE support 
 
@@ -118,7 +118,7 @@ Before ECTs complete their induction, schools can change the following ECT infor
 - Training programme 
 - Lead provider 
 
-<a href="../images/view-ect-details.png" target="blank"><img alt="View ECT details already added to the service and change their details" src="../images/view-ect-details.png" width="300"/></a>
+<a href="images/view-ect-details.png" target="blank"><img alt="View ECT details already added to the service and change their details" src="images/view-ect-details.png" width="300"/></a>
 
 ## Schools can tell us when an ECT or mentor has left their school for any reason, not just when they’ve changed schools
 
@@ -126,10 +126,10 @@ Schools can now tell us when an ECT or mentor is leaving and not expected to ret
 
 In the existing service, schools could only tell us when an ECT or mentor was leaving to move to another school. 
 
-<a href="../images/tell-us-if-left-school.png" target="blank"><img alt="Report if ECT has left or is leaving school" src="../images/tell-us-if-left-school.png" width="300"/></a>
+<a href="images/tell-us-if-left-school.png" target="blank"><img alt="Report if ECT has left or is leaving school" src="images/tell-us-if-left-school.png" width="300"/></a>
 
 ## Mentor training eligibility
 
 When registering a mentor, we tell schools if the mentor is eligible for mentor training. We also tell them we’ll pass the mentor details on to their assigned ECT’s lead provider. They can change it to another lead provider if needed. 
 
-<a href="../images/can-receive-mentor-training.png" target="blank"><img alt="A notification telling the user that the mentor being added can receive mentor training" src="../images/can-receive-mentor-training.png" width="300"/></a>
+<a href="images/can-receive-mentor-training.png" target="blank"><img alt="A notification telling the user that the mentor being added can receive mentor training" src="images/can-receive-mentor-training.png" width="300"/></a>
