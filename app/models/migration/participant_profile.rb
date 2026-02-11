@@ -29,7 +29,7 @@ module Migration
       return nil unless cohort_changed_after_payments_frozen?
 
       induction_records
-        .find { |ir| ir.cohort.payments_frozen? && ir.cohort.id != schedule.cohort_id }
+        .detect { |ir| ir.cohort.payments_frozen? && ir.cohort.id != schedule.cohort_id }
         &.cohort&.start_year
     end
 

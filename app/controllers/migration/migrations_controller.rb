@@ -9,6 +9,11 @@ class Migration::MigrationsController < ::AdminController
        SUM(ecf2_ect_combinations_count) AS total_ecf2_ect_combinations,
        SUM(ecf2_mentor_combinations_count) AS total_ecf2_mentor_combinations"
     ).take
+
+    @mentorships = DataMigrationTeacherCombination.select(
+      "SUM(ecf1_mentorships_count) AS total_ecf1_mentorships,
+       SUM(ecf2_mentorships_count) AS total_ecf2_mentorships"
+    ).take
   end
 
   def create

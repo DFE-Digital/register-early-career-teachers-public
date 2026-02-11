@@ -20,7 +20,9 @@ describe ECF2TeacherHistory do
         finished_on: 1.week.ago.to_date,
         ecf_start_induction_record_id: SecureRandom.uuid,
         ecf_end_induction_record_id: SecureRandom.uuid,
-        mentor_at_school_period_id: SecureRandom.uuid
+        mentor_at_school_period_id: SecureRandom.uuid,
+        api_ect_training_record_id: SecureRandom.uuid,
+        api_mentor_training_record_id: SecureRandom.uuid
       )
     ]
   end
@@ -430,7 +432,9 @@ describe ECF2TeacherHistory do
               finished_on: 1.month.ago.to_date,
               ecf_start_induction_record_id: SecureRandom.uuid,
               ecf_end_induction_record_id: SecureRandom.uuid,
-              mentor_at_school_period_id: existing_mentor_at_school_period.id
+              mentor_at_school_period_id: existing_mentor_at_school_period.id,
+              api_ect_training_record_id:,
+              api_mentor_training_record_id: existing_mentor_at_school_period.teacher.api_mentor_training_record_id
             )
           end
 
