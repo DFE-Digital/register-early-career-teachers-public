@@ -25,6 +25,7 @@ RSpec.configure do |config|
   config.include AuthHelper, type: :request
   config.include APIHelper, type: :request
   config.include HaveSummaryListRow, type: :component
+  config.include HaveSummaryListRow, type: :view
   config.include SwaggerExampleParser, type: :request
 
   config.use_transactional_fixtures = true
