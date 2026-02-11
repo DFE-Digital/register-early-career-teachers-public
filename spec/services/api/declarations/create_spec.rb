@@ -150,7 +150,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
 
           it { is_expected.to have_one_error_per_attribute }
-          it { is_expected.to have_error(:teacher_api_id, "This participant withdrew from this course on #{withdrawn_at.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.") }
+          it { is_expected.to have_error(:teacher_api_id, "This participant withdrew from this course on #{withdrawn_at.utc.rfc3339}. Enter a '#/declaration_date' that's on or before the withdrawal date.") }
         end
 
         if trainee_type == :mentor
