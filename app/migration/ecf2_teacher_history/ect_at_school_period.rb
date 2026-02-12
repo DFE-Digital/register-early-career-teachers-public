@@ -62,7 +62,7 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
   end
 
   def real_appropriate_body
-    # AppropriateBody.find(appropriate_body.id)
+    # AppropriateBodyPeriod.find(appropriate_body.id)
   end
 
   def dates
