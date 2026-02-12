@@ -176,12 +176,14 @@ Use the `PUT /partnerships/{id}` endpoint to correct the `delivery_partner_id`.
 
 For example, if you made an error when creating the partnership and need to fix it.
 
-When you update a partnership, the new delivery partner ID will apply to all future declarations linked to that partnership. Any historic declarations will still use the delivery partner ID that was in place before it was corrected.
+When you update a partnership, the new delivery partner ID will apply to all future declarations linked to that partnership. Any historic declarations will still use the `delivery_partner_id` that was in place before it was corrected.
 
 #### If the delivery partner has genuinely changed
 
-Contact DfE to create a new partnership record via your Teams channel or email address. This will use a new partnership ID and enable us to understand which delivery partner the school was training with, when.
+Contact DfE to create a new partnership record via your Teams channel or email address.
 
-Creating a new partnership preserves the historic delivery partner on existing declarations, while recording the new delivery partner going forward.
+This new record will use a new partnership ID, enabling us to better understand which delivery partner the school was training with, and when.
+
+Historic declarations remain linked to the original partnership record, while future declarations use the new partnership record.
 
 For detailed technical information, view the `PUT /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/put_api_v3_partnerships__id_).
