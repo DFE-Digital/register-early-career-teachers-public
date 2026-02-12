@@ -58,3 +58,204 @@ shared:
     - claimed_count
     - released_count
     - passed_count
+  :gias_schools:
+    - urn
+    - name
+    - status
+    - address_line1
+    - address_line2
+    - address_line3
+    - postcode
+    - primary_contact_email
+    - secondary_contact_email
+    - opened_on
+    - closed_on
+    - created_at
+    - updated_at
+    - administrative_district_name
+    - local_authority_code
+    - local_authority_name
+    - establishment_number
+    - phase_name
+    - section_41_approved
+    - type_name
+    - ukprn
+    - website
+    - in_england
+    - eligible
+  :training_periods:
+    - id
+    - school_partnership_id
+    - started_on
+    - finished_on
+    - created_at
+    - updated_at
+    - ect_at_school_period_id
+    - mentor_at_school_period_id
+    - range
+    - ecf_start_induction_record_id
+    - ecf_end_induction_record_id
+    - expression_of_interest_id
+    - training_programme
+    - deferred_at
+    - deferral_reason
+    - withdrawn_at
+    - withdrawal_reason
+    - schedule_id
+    - api_transfer_updated_at
+  :schools:
+    - last_chosen_appropriate_body_id
+    - last_chosen_lead_provider_id
+    - last_chosen_training_programme
+    - id
+    - created_at
+    - updated_at
+    - api_updated_at
+    - urn
+    - induction_tutor_last_nominated_in
+    - induction_tutor_name
+    - induction_tutor_email
+    - api_id
+    - marked_as_eligible
+  :school_partnerships:
+    - id
+    - created_at
+    - updated_at
+    - lead_provider_delivery_partnership_id
+    - school_id
+    - api_id
+    - api_updated_at
+  :mentorship_periods:
+    - id
+    - ect_at_school_period_id
+    - mentor_at_school_period_id
+    - started_on
+    - finished_on
+    - created_at
+    - updated_at
+    - range
+    - ecf_start_induction_record_id
+    - ecf_end_induction_record_id
+  :mentor_at_school_periods:
+    - id
+    - school_id
+    - teacher_id
+    - started_on
+    - finished_on
+    - created_at
+    - updated_at
+    - range
+    - ecf_start_induction_record_id
+    - ecf_end_induction_record_id
+    - email
+    - reported_leaving_by_school_id
+  :lead_providers:
+    - id
+    - ecf_id
+    - name
+    - vat_registered
+    - created_at
+    - updated_at
+  :ect_at_school_periods:
+    - id
+    - school_id
+    - teacher_id
+    - started_on
+    - finished_on
+    - created_at
+    - updated_at
+    - range
+    - ecf_start_induction_record_id
+    - ecf_end_induction_record_id
+    - working_pattern
+    - email
+    - school_reported_appropriate_body_id
+    - training_programme
+    - reported_leaving_by_school_id
+  :delivery_partners:
+    - id
+    - name
+    - created_at
+    - updated_at
+    - api_updated_at
+    - api_id
+  :declarations:
+    - id
+    - training_period_id
+    - payment_statement_id
+    - clawback_statement_id
+    - declaration_type
+    - declaration_date
+    - voided_by_user_at
+    - voided_by_user_id
+    - mentorship_period_id
+    - api_id
+    - evidence_type
+    - payment_status
+    - clawback_status
+    - sparsity_uplift
+    - pupil_premium_uplift
+    - created_at
+    - updated_at
+    - api_updated_at
+  :contract_periods:
+    - year
+    - created_at
+    - updated_at
+    - started_on
+    - finished_on
+    - enabled
+    - range
+    - payments_frozen_at
+    - mentor_funding_enabled
+    - detailed_evidence_types_enabled
+  :active_lead_providers:
+    - id
+    - lead_provider_id
+    - contract_period_year
+    - created_at
+    - updated_at
+  :statement_adjustments:
+    - id
+    - statement_id
+    - ecf_id
+    - payment_type
+    - amount
+    - created_at
+    - updated_at
+  :statements:
+    - id
+    - active_lead_provider_id
+    - api_id
+    - month
+    - year
+    - deadline_date
+    - payment_date
+    - marked_as_paid_at
+    - fee_type
+    - status
+    - created_at
+    - updated_at
+    - api_updated_at
+    - contract_id
+  :lead_provider_delivery_partnerships:
+    - id
+    - active_lead_provider_id
+    - delivery_partner_id
+    - created_at
+    - updated_at
+    - ecf_id
+  :schedules:
+    - id
+    - contract_period_year
+    - identifier
+    - created_at
+    - updated_at
+  :milestones:
+    - id
+    - schedule_id
+    - declaration_type
+    - start_date
+    - milestone_date
+    - created_at
+    - updated_at
