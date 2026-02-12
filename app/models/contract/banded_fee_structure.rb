@@ -24,10 +24,10 @@ class Contract::BandedFeeStructure < ApplicationRecord
               message: "Uplift fee per declaration must be greater than or equal to zero"
             }
   validates :monthly_service_fee,
-            presence: { message: "Monthly service fee is required" },
             numericality: {
               greater_than_or_equal_to: 0,
-              message: "Monthly service fee must be greater than or equal to zero"
+              message: "Monthly service fee must be greater than or equal to zero",
+              allow_nil: true
             }
   validates :setup_fee,
             presence: { message: "Setup fee is required" },

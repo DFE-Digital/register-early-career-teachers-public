@@ -184,10 +184,10 @@ erDiagram
     integer mentor_payments_frozen_year
     boolean ect_pupil_premium_uplift
     boolean ect_sparsity_uplift
-    datetime ect_first_became_eligible_for_training_at
-    datetime mentor_first_became_eligible_for_training_at
     date trs_induction_start_date
     date trs_induction_completed_date
+    datetime ect_first_became_eligible_for_training_at
+    datetime mentor_first_became_eligible_for_training_at
     boolean trnless
     datetime api_updated_at
     datetime api_unfunded_mentor_updated_at
@@ -378,7 +378,23 @@ erDiagram
     integer ecf2_mentor_combinations_count
     datetime created_at
     datetime updated_at
+    jsonb ecf1_mentorships
+    jsonb ecf2_mentorships
+    integer ecf1_mentorships_count
+    integer ecf2_mentorships_count
     uuid api_id
+  }
+  DataMigrationFailedMentorship {
+    integer id
+    uuid ect_participant_profile_id
+    uuid mentor_participant_profile_id
+    date started_on
+    date finished_on
+    uuid ecf_start_induction_record_id
+    uuid ecf_end_induction_record_id
+    text failure_message
+    datetime created_at
+    datetime updated_at
   }
   DataMigrationFailedCombination {
     integer id
