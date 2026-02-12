@@ -14,10 +14,6 @@ class Contract < ApplicationRecord
   validates :contract_type,
             presence: { message: "Enter a contract type" },
             inclusion: { in: Contract.contract_types.keys, message: "Choose a valid contract type" }
-  validates :flat_rate_fee_structure,
-            uniqueness: { case_sensitive: false, message: "Contract with the same flat rate fee structure already exists" }
-  validates :banded_fee_structure,
-            uniqueness: { case_sensitive: false, message: "Contract with the same banded fee structure already exists" }
   validates :vat_rate,
             presence: { message: "VAT rate is required" },
             numericality: { in: 0..1, message: "VAT rate must be between 0 and 1" }
@@ -25,16 +21,19 @@ class Contract < ApplicationRecord
 
   with_options if: :ittecf_ectp_contract_type? do
     validates :flat_rate_fee_structure,
-              presence: { message: "Flat rate fee structure must be provided for ITTECF_ECTP contracts" }
+              presence: { message: "Flat rate fee structure must be provided for ITTECF_ECTP contracts" },
+              uniqueness: { message: "Contract with the same flat rate fee structure already exists" }
     validates :banded_fee_structure,
-              presence: { message: "Banded fee structure must be provided for ITTECF_ECTP contracts" }
+              presence: { message: "Banded fee structure must be provided for ITTECF_ECTP contracts" },
+              uniqueness: { message: "Contract with the same banded fee structure already exists" }
   end
 
   with_options if: :ecf_contract_type? do
     validates :flat_rate_fee_structure,
               absence: { message: "Flat rate fee structure must be blank for ECF contracts" }
     validates :banded_fee_structure,
-              presence: { message: "Banded fee structure must be provided for ECF contracts" }
+              presence: { message: "Banded fee structure must be provided for ECF contracts" },
+              uniqueness: { message: "Contract with the same banded fee structure already exists" }
   end
 
 private
