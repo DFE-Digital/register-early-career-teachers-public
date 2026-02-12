@@ -1,0 +1,11 @@
+<% page_data(
+  title: 'Teaching school hubs',
+) %>
+
+
+<%=
+teaching_school_hubs = @teaching_school_hubs.map do |tsh|
+  govuk_link_to(tsh.name, href: admin_teaching_school_hub_path(tsh))
+end
+    govuk_list(teaching_school_hubs, type: :bullet)
+%>

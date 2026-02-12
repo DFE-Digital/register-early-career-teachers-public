@@ -1,7 +1,45 @@
 ---
 :shared:
+  :dfe_sign_in_organisations:
+    - id
+    - name
+    - uuid
+    - urn
+    - address
+    - company_registration_number
+    - category
+    - organisation_type
+    - status
+    - first_authenticated_at
+    - last_authenticated_at
+    - created_at
+    - updated_at
+  :national_bodies:
+    - id
+    - name
+    - dfe_sign_in_organisation_id
+    - created_at
+    - updated_at
+  :teaching_school_hubs:
+    - id
+    - name
+    - dfe_sign_in_organisation_id
+    - lead_school_id
+    - created_at
+    - updated_at
+  :legacy_appropriate_bodies:
+    - id
+    - dqt_id
+    - name
+    - body_type
+    - appropriate_body_period_id
+    - created_at
+    - updated_at
   :appropriate_bodies:
     - body_type
+    - teaching_school_hub_id
+    - lead_school_id
+    - national_body_id
   :blazer_queries:
     - id
     - creator_id

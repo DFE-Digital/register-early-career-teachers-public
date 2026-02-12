@@ -85,6 +85,10 @@ team members can be invited or request access.
 or both roles `AppropriateBodyUser` and `SchoolUser`. On the live service a user with both
 roles is a School Induction Tutor (SIT).
 
+A user with both roles will first land on RECT as a school user but can switch in service to RIAB.
+
+In RIAB the school (lead) appears as `STEP Ahead Teaching School Hub`.
+
 - TYPE: `Establishment`
 - URN: `141666`
 - UPIN: `131651`

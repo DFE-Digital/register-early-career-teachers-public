@@ -28,7 +28,7 @@ contract-specific, to help speed up registration for SITs.
 
 ### Status ✅
 
-This has been solved by recording the link between teachers and provider partnerhsips
+This has been solved by recording the link between teachers and provider partnerships
 rather than schools and provider partnerships, via [training periods](https://github.com/DFE-Digital/register-early-career-teachers/blob/main/app/models/training_period.rb).
 
 ## A person is represented across many tables which introduces unintended duplication and confuses the source of truth

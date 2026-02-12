@@ -4,7 +4,7 @@ RSpec.describe "User roles", :enable_schools_interface do
 
   context "when the user has multiple roles (School and AB)" do
     before do
-      sign_in_as_multi_role_user(school:, appropriate_body:)
+      sign_in_as_school_induction_tutor(school:, appropriate_body:)
     end
 
     scenario "the school home page is the default" do

@@ -81,9 +81,15 @@ module Sessions
 
       # @return [Boolean]
       def appropriate_body_user?
-        organisation.id.present? &&
-          ::AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id) &&
-          dfe_sign_in_roles.include?("AppropriateBodyUser")
+        if organisation.id.present? &&
+            ::AppropriateBody.exists?(dfe_sign_in_organisation_id: organisation.id) &&
+            dfe_sign_in_roles.include?("AppropriateBodyUser")
+
+          migrate_appropriate_bodies! if Rails.application.config.enable_teaching_school_hubs
+          true
+        else
+          false
+        end
       end
 
       # @return [Sessions::Users::DfEPersona]
@@ -101,7 +107,7 @@ module Sessions
         provider == :dfe_sign_in
       end
 
-      # Query the DfE Sign In API
+      # Query the DfE Sign-In API
       # @return [Array<String>] SchoolUser, AppropriateBodyUser, DfEUser
       def dfe_sign_in_roles
         @dfe_sign_in_roles ||= ::Organisation::Access.new(user_id: uid, organisation_id: organisation.id).roles
@@ -149,6 +155,14 @@ module Sessions
         @provider ||= payload.provider.to_sym
       end
 
+      # NOTE: on test and staging apps the migrator will not run for a SchoolUser login
+      # if RECT is enabled and a matching School record exists.
+      #
+      # Create new TSHs and NB records from existing AppropriateBody records as needed
+      def migrate_appropriate_bodies!
+        AppropriateBodyMigrator.new(organisation).call unless School.count.zero?
+      end
+
       # @return [Sessions::Users::SchoolPersona]
       def school_persona
         SchoolPersona.new(email:, name:, school_urn:)
@@ -173,6 +187,8 @@ module Sessions
 
       # @return [Boolean]
       def school_user?
+        return false unless Rails.application.config.enable_schools_interface
+
         organisation.urn.present? &&
           (School.exists?(urn: organisation.urn) || GIAS::School.exists?(urn: organisation.urn)) &&
           dfe_sign_in_roles.include?("SchoolUser")

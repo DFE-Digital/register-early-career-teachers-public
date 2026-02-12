@@ -64,6 +64,16 @@ erDiagram
   TrainingPeriod }o--|| SchoolPartnership : belongs_to
   TrainingPeriod }o--|| Schedule : belongs_to
   TrainingPeriod }o--|| ActiveLeadProvider : belongs_to
+  TeachingSchoolHub {
+    integer id
+    string name
+    integer lead_school_id
+    integer dfe_sign_in_organisation_id
+    datetime created_at
+    datetime updated_at
+  }
+  TeachingSchoolHub }o--|| DfESignInOrganisation : belongs_to
+  TeachingSchoolHub }o--|| School : belongs_to
   TeacherMigrationFailure {
     integer id
     integer teacher_id
@@ -129,6 +139,7 @@ erDiagram
     integer induction_tutor_last_nominated_in
     boolean marked_as_eligible
   }
+  School }o--|| DfESignInOrganisation : belongs_to
   School }o--|| AppropriateBody : belongs_to
   School }o--|| LeadProvider : belongs_to
   School }o--|| ContractPeriod : belongs_to
@@ -229,6 +240,14 @@ erDiagram
   }
   PendingInductionSubmission }o--|| AppropriateBody : belongs_to
   PendingInductionSubmission }o--|| PendingInductionSubmissionBatch : belongs_to
+  NationalBody {
+    integer id
+    string name
+    integer dfe_sign_in_organisation_id
+    datetime created_at
+    datetime updated_at
+  }
+  NationalBody }o--|| DfESignInOrganisation : belongs_to
   Milestone {
     integer id
     integer schedule_id
@@ -269,6 +288,16 @@ erDiagram
   }
   MentorAtSchoolPeriod }o--|| School : belongs_to
   MentorAtSchoolPeriod }o--|| Teacher : belongs_to
+  LegacyAppropriateBody {
+    integer id
+    uuid dqt_id
+    string name
+    enum body_type
+    integer appropriate_body_period_id
+    datetime created_at
+    datetime updated_at
+  }
+  LegacyAppropriateBody }o--|| AppropriateBody : belongs_to
   LeadProviderDeliveryPartnership {
     integer id
     integer active_lead_provider_id
@@ -331,6 +360,21 @@ erDiagram
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
   ECTAtSchoolPeriod }o--|| AppropriateBody : belongs_to
+  DfESignInOrganisation {
+    integer id
+    string name
+    uuid uuid
+    string urn
+    string address
+    string company_registration_number
+    string category
+    string organisation_type
+    string status
+    datetime first_authenticated_at
+    datetime last_authenticated_at
+    datetime created_at
+    datetime updated_at
+  }
   DeliveryPartner {
     integer id
     string name
@@ -452,7 +496,14 @@ erDiagram
     uuid dfe_sign_in_organisation_id
     uuid dqt_id
     enum body_type
+    integer teaching_school_hub_id
+    integer lead_school_id
+    integer national_body_id
   }
+  AppropriateBody }o--|| DfESignInOrganisation : belongs_to
+  AppropriateBody }o--|| NationalBody : belongs_to
+  AppropriateBody }o--|| TeachingSchoolHub : belongs_to
+  AppropriateBody }o--|| School : belongs_to
   ActiveLeadProvider {
     integer id
     integer lead_provider_id

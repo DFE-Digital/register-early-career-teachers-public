@@ -1,4 +1,18 @@
 <%= govuk_summary_list do |sl|
+
+  if Rails.application.config.enable_teaching_school_hubs
+    sl.with_row do |row|
+      row.with_key(text: "Leading teaching school hubs")
+      row.with_value(text: govuk_list(school.led_teaching_school_hubs.map(&:name)))
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Last chosen appropriate body")
+      row.with_value(text: school.last_chosen_appropriate_body&.name || 'Not set')
+      row.with_action(text: "View", href: admin_appropriate_body_path(school.last_chosen_appropriate_body)) if school.last_chosen_appropriate_body.present?
+    end
+  end
+
   sl.with_row do |row|
     row.with_key(text: "Induction tutor")
     row.with_value(text: induction_tutor_name)

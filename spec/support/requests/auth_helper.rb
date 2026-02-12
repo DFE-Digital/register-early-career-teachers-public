@@ -59,7 +59,8 @@ private
                                                uid:,
                                                first_name:,
                                                last_name:,
-                                               organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+                                               organisation_id: appropriate_body.dfe_sign_in_organisation_id,
+                                               organisation_name: appropriate_body.name)
 
     post("/auth/dfe/callback")
     stop_mocking_dfe_sign_in_provider!
