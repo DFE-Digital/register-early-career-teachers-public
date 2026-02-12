@@ -43,34 +43,34 @@ FactoryBot.define do
 
     trait :eligible do
       payment_status { :eligible }
-      payment_statement { FactoryBot.create(:statement, :open, contract_period: training_period.contract_period) }
+      payment_statement { FactoryBot.create(:statement, :open, active_lead_provider: training_period.active_lead_provider) }
     end
 
     trait :payable do
       payment_status { :payable }
-      payment_statement { FactoryBot.create(:statement, :payable, contract_period: training_period.contract_period) }
+      payment_statement { FactoryBot.create(:statement, :payable, active_lead_provider: training_period.active_lead_provider) }
     end
 
     trait :paid do
       payment_status { :paid }
-      payment_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
+      payment_statement { FactoryBot.create(:statement, :paid, active_lead_provider: training_period.active_lead_provider) }
     end
 
     trait :voided do
       payment_status { :voided }
-      payment_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
+      payment_statement { FactoryBot.create(:statement, :paid, active_lead_provider: training_period.active_lead_provider) }
     end
 
     trait :awaiting_clawback do
       paid
       clawback_status { :awaiting_clawback }
-      clawback_statement { FactoryBot.create(:statement, :payable, contract_period: training_period.contract_period) }
+      clawback_statement { FactoryBot.create(:statement, :payable, active_lead_provider: training_period.active_lead_provider) }
     end
 
     trait :clawed_back do
       paid
       clawback_status { :clawed_back }
-      clawback_statement { FactoryBot.create(:statement, :paid, contract_period: training_period.contract_period) }
+      clawback_statement { FactoryBot.create(:statement, :paid, active_lead_provider: training_period.active_lead_provider) }
     end
   end
 end
