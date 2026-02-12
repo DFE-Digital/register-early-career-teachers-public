@@ -126,7 +126,6 @@ RSpec.describe "schools/mentors/show.html.erb" do
       FactoryBot.create(
         :training_period, :provider_led, :for_mentor, :withdrawn,
         mentor_at_school_period: mentor_period,
-        started_on: start_date, finished_on: nil,
         school_partnership:
       )
       render_view
@@ -145,7 +144,6 @@ RSpec.describe "schools/mentors/show.html.erb" do
       FactoryBot.create(
         :training_period, :provider_led, :for_mentor, :deferred,
         mentor_at_school_period: mentor_period,
-        started_on: start_date, finished_on: nil,
         school_partnership:
       )
       render_view
