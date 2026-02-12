@@ -145,7 +145,7 @@ module API::Declarations
     end
 
     def where_delivery_partner_is(delivery_partner_api_ids)
-      return if ignore?(filter: delivery_partner_api_ids)
+      return if ignore?(filter: delivery_partner_api_ids, ignore_empty_array: false)
 
       @scope = scope
         .joins(:delivery_partner)
