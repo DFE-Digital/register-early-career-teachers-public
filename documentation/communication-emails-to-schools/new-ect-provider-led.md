@@ -1,4 +1,6 @@
-# New ECT registered (provider-led)
+---
+title: New ECT registered (provider-led)
+---
 
 ---
 

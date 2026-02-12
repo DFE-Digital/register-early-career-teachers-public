@@ -1,4 +1,6 @@
-# Notice of new service (service launched, registration 2026-2027 not yet open)
+---
+title: Notice of new service (service launched, registration 2026-2027 not yet open)
+---
 
 ---
 

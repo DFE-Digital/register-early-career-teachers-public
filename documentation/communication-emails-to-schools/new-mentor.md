@@ -1,4 +1,6 @@
-# New mentor registered
+---
+title: New mentor registered
+---
 
 ---
 
