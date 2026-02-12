@@ -184,6 +184,6 @@ Contact DfE to create a new partnership record, via your Teams channel or email.
 
 This new record will use a new partnership ID, enabling us to better understand which delivery partner the school was training with, and when.
 
-Historic declarations remain linked to the original partnership record, while future declarations use the new partnership record.
+Historic declarations remain linked to the original `delivery_partner_id`, while future declarations use the new partnership record.
 
 For detailed technical information, view the `PUT /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/put_api_v3_partnerships__id_).
