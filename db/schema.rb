@@ -732,6 +732,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_124833) do
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
+  create_table "regions", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "districts", null: false, array: true
+    t.bigint "teaching_school_hub_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_regions_on_code", unique: true
+    t.index ["districts"], name: "index_regions_on_districts", using: :gin
+    t.index ["teaching_school_hub_id"], name: "index_regions_on_teaching_school_hub_id"
+  end
+
   create_table "schedules", force: :cascade do |t|
     t.integer "contract_period_year", null: false
     t.enum "identifier", null: false, enum_type: "schedule_identifiers"
@@ -1124,6 +1135,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_124833) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
+  add_foreign_key "regions", "teaching_school_hubs"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_body_periods", column: "last_chosen_appropriate_body_id"

@@ -82,13 +82,13 @@ RSpec.describe School do
     it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod") }
     it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod") }
     it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
-    it { is_expected.to have_many(:led_teaching_school_hubs).class_name("TeachingSchoolHub") }
+    it { is_expected.to have_one(:led_teaching_school_hub).class_name("TeachingSchoolHub") }
   end
 
   describe "scopes" do
     describe ".lead_schools" do
       before do
-        FactoryBot.create(:school)
+        FactoryBot.create_list(:school, 3)
         FactoryBot.create(:teaching_school_hub)
       end
 
