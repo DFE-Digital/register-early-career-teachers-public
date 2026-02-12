@@ -147,4 +147,3 @@ This is typically because they have completed, or are currently doing, mentor tr
 
 Lead providers will be funded to give these mentors access to learning materials to support their ECT.
 
-```
