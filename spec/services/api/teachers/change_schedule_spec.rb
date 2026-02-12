@@ -111,6 +111,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
           context "when participant has completed training" do
             before do
+              training_period.update!(finished_on: 1.day.ago)
               if trainee_type == :ect
                 FactoryBot.create(:induction_period, :pass, teacher:)
               else
@@ -120,7 +121,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it "returns error" do
               expect(subject).to have_one_error_per_attribute
-              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training.")
+              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training or induction.")
             end
           end
 
