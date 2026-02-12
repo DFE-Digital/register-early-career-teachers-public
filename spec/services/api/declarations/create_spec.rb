@@ -35,6 +35,7 @@ RSpec.describe API::Declarations::Create, type: :model do
         it { is_expected.to validate_presence_of(:lead_provider_id).with_message("Enter a '#/lead_provider_id'.") }
         it { is_expected.to validate_presence_of(:teacher_api_id).with_message("Enter a '#/teacher_api_id'.") }
         it { is_expected.to validate_presence_of(:teacher_type).with_message("Enter a '#/teacher_type'.") }
+        it { is_expected.to validate_inclusion_of(:declaration_type).in_array(Declaration.declaration_types.keys).with_message("Enter a valid declaration type.") }
 
         context "when the `lead_provider` does not exist" do
           let(:lead_provider_id) { 9999 }
