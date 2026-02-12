@@ -21,8 +21,6 @@ describe Contract do
 
     it { is_expected.to validate_presence_of(:contract_type).with_message("Enter a contract type") }
     it { is_expected.to validate_inclusion_of(:contract_type).in_array(Contract.contract_types.keys).with_message("Choose a valid contract type") }
-    it { is_expected.to validate_uniqueness_of(:flat_rate_fee_structure).with_message("Contract with the same flat rate fee structure already exists") }
-    it { is_expected.to validate_uniqueness_of(:banded_fee_structure).with_message("Contract with the same banded fee structure already exists") }
     it { is_expected.to validate_presence_of(:vat_rate).with_message("VAT rate is required") }
     it { is_expected.to validate_numericality_of(:vat_rate).is_in(0..1).with_message("VAT rate must be between 0 and 1") }
 
@@ -31,6 +29,8 @@ describe Contract do
 
       it { is_expected.to validate_presence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be provided for ITTECF_ECTP contracts") }
       it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ITTECF_ECTP contracts") }
+      it { is_expected.to validate_uniqueness_of(:flat_rate_fee_structure).with_message("Contract with the same flat rate fee structure already exists") }
+      it { is_expected.to validate_uniqueness_of(:banded_fee_structure).with_message("Contract with the same banded fee structure already exists") }
     end
 
     context "when contract type is `ECF`" do
@@ -38,6 +38,12 @@ describe Contract do
 
       it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ECF contracts") }
       it { is_expected.to validate_absence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be blank for ECF contracts") }
+      it { is_expected.to validate_uniqueness_of(:banded_fee_structure).with_message("Contract with the same banded fee structure already exists") }
+
+      it "allows multiple ECF contracts to have a NULL flat_rate_fee_structure" do
+        FactoryBot.create(:contract, :for_ecf, flat_rate_fee_structure: nil)
+        expect { FactoryBot.create(:contract, :for_ecf, flat_rate_fee_structure: nil) }.not_to raise_error
+      end
     end
 
     describe "active lead provider consistency" do
