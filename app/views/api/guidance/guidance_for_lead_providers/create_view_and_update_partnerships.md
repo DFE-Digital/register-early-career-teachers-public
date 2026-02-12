@@ -180,7 +180,7 @@ When you update a partnership, the new delivery partner ID will apply to all fut
 
 #### If the delivery partner has genuinely changed
 
-Contact DfE to create a new partnership record via your Teams channel or email address.
+Contact DfE to create a new partnership record, via your Teams channel or email.
 
 This new record will use a new partnership ID, enabling us to better understand which delivery partner the school was training with, and when.
 
