@@ -60,6 +60,10 @@ To be eligible for funding, a mentor must:
 - not have completed early career teacher mentor training before
 - not have been marked as ineligible for future training by DfE, for example, because they started mentor training but took too long to complete it
 
+## Expression of interest
+
+This is a term used over the API when a school has indicated they want to train one or more of their ECTs and mentors with you. Lead providers can then submit a partnership, if one doesn't already exist,  to confirm they're training at least one participant at that school.
+
 ## Initial Teacher Training and Early Career Framework​ (ITTECF)
 
 The Initial Teacher Training and Early Career Framework covers the training and induction periods at the start of a teacher’s career.
@@ -91,7 +95,7 @@ It also turns to 'left' when a lead provider defers or withdraws a participant.
 
 ## Partnership
 
-A 3 way relationship between school, lead provider, and delivery partner.
+A 3 way relationship between school, lead provider, and delivery partner. The lead provider and delivery partner are providing training for at least 1 ECT or mentor at the school.
 
 ## Partners
 
