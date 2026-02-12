@@ -1,4 +1,6 @@
-# Registration open for academic year 2026-2027
+---
+title: Registration open for academic year 2026-2027
+---
 
 ---
 

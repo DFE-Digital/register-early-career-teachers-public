@@ -1,4 +1,6 @@
-# Register early career teachers service documentation
+---
+title: Register early career teachers service documentation
+---
 
 Resources to help the support schools using the register early career teachers service.
 

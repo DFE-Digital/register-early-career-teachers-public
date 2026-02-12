@@ -1,4 +1,6 @@
-# New ECT registered (school-led)
+---
+title: New ECT registered (school-led)
+---
 
 ---
 
