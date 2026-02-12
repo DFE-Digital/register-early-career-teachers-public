@@ -47,9 +47,11 @@ module Schools
       end
 
       def finished?
+        return false if latest_training_period.status == :withdrawn
+        return false if latest_training_period.status == :deferred
         return false unless latest_training_period.finished_on
 
-        latest_training_period.finished_on < Date.current
+        latest_training_period.finished_on <= Date.current
       end
 
       def started_not_completed_reason?

@@ -91,8 +91,6 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
             :training_period, :provider_led, :for_mentor,
             :withdrawn,
             mentor_at_school_period: mentor,
-            started_on: mentor_start_date,
-            finished_on: nil,
             school_partnership:
           )
         end
@@ -114,8 +112,6 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
             :training_period, :provider_led, :for_mentor,
             :deferred,
             mentor_at_school_period: mentor,
-            started_on: mentor_start_date,
-            finished_on: nil,
             school_partnership:
           )
         end
