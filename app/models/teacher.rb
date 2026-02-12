@@ -43,8 +43,6 @@ class Teacher < ApplicationRecord
   has_one :current_appropriate_body_period, through: :ongoing_induction_period, source: :appropriate_body_period # NB or TSH through period
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: "ECTAtSchoolPeriod"
   has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
-  has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: "ECTAtSchoolPeriod"
-  has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
 
   # TODO: remove after migration complete
   has_many :teacher_migration_failures
