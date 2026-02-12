@@ -172,7 +172,7 @@ DfE needs to distinguish between correcting an error and recording a genuine cha
 
 #### If you entered the wrong delivery partner
 
-Use the `PUT /partnerships/{id}` endpoint to correct the delivery partner ID. 
+Use the `PUT /partnerships/{id}` endpoint to correct the `delivery_partner_id`. 
 
 For example, if you made an error when creating the partnership and need to fix it.
 
