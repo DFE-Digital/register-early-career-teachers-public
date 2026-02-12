@@ -22,7 +22,7 @@ RSpec.describe InductionPeriods::FullTransferInductionPeriods, :aggregate_failur
       expect(InductionPeriod.count).to be 5
 
       # transfers inductions
-      expect(InductionPeriod.all.map(&:appropriate_body_period)).to eq([
+      expect(InductionPeriod.order(:created_at).map(&:appropriate_body_period)).to eq([
         current_appropriate_body,
         current_appropriate_body,
         current_appropriate_body,
