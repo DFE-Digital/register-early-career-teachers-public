@@ -85,7 +85,7 @@ class ECF2TeacherHistory::TrainingPeriod
       .first
 
     if partnership.nil?
-      raise ActiveRecord::RecordNotFound, "No SchoolPartnership found for training period"
+      raise ActiveRecord::RecordNotFound, "No SchoolPartnership found for training period (lead_provider: #{lead_provider&.name}, delivery_partner: #{delivery_partner&.name}, contract_period: #{contract_period_year}, school: #{school.urn})}"
     end
 
     { school_partnership: partnership }

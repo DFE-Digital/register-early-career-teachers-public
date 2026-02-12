@@ -815,7 +815,7 @@ describe ECF2TeacherHistory do
         subject.save_all_ect_data!
         failure = TeacherMigrationFailure.last
 
-        expect(failure.message).to eq("No SchoolPartnership found for training period")
+        expect(failure.message).to start_with("No SchoolPartnership found for training period")
       end
 
       it "records the migration item reference" do
