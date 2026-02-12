@@ -18,10 +18,12 @@ namespace :api_seed_data do
     ]
 
     # These need to run last to avoid earlier seeds messing up the specific scenarios.
-    seeds += [
-      APISeedData::SchoolScenarios,
-      APISeedData::ParticipantScenarios
-    ]
+    unless Rails.env.review?
+      seeds += [
+        APISeedData::SchoolScenarios,
+        APISeedData::ParticipantScenarios
+      ]
+    end
 
     if Rails.env.development? || Rails.env.review? || Rails.env.staging?
       seeds += [
