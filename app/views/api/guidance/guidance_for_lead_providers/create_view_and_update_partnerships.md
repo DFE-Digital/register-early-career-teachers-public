@@ -164,8 +164,24 @@ Lead providers can use the `GET /partnerships` endpoint to see all partnerships 
 
 For detailed technical information, view the `GET /partnerships` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships) and `GET /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/get_api_v3_partnerships__id_). 
 
-## Update a partnership 
+## Updating a partnership 
 
-Lead providers can use `PUT /partnerships/{id}` endpoint to update a partnership with a new `delivery_partner_id`. 
+### Correcting a delivery partner versus changing a delivery partner
+
+DfE needs to distinguish between correcting an error and recording a genuine change to a partnership. This helps us accurately track when delivery partners have genuinely changed, so that we can pass valid data back to lead providers.
+
+#### If you entered the wrong delivery partner
+
+Use the `PUT /partnerships/{id}` endpoint to correct the delivery partner ID. 
+
+For example, if you made an error when creating the partnership and need to fix it.
+
+When you update a partnership, the new delivery partner ID applies to all declarations linked to that partnership.
+
+#### If the delivery partner has genuinely changed
+
+Contact DfE to create a new partnership record via your Teams channel or email address.
+
+Creating a new partnership preserves the historic delivery partner on existing declarations, while recording the new delivery partner going forward.
 
 For detailed technical information, view the `PUT /partnerships/{id}` [endpoint Swagger API documentation](/api/docs/v3#/Partnerships/put_api_v3_partnerships__id_).
