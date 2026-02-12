@@ -168,7 +168,7 @@ For detailed technical information, view the `GET /partnerships` [endpoint Swagg
 
 ### Correcting a delivery partner versus changing a delivery partner
 
-DfE needs to distinguish between correcting an error and recording a genuine change to a partnership. This helps us accurately track when delivery partners have genuinely changed, so that we can pass valid data back to lead providers.
+DfE needs to distinguish between correcting an error and recording a genuine change to a partnership. This helps us accurately track when delivery partners have genuinely changed for a participant's training.
 
 #### If you entered the wrong delivery partner
 
