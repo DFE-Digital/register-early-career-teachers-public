@@ -22,3 +22,15 @@ shared:
   :pending_induction_submission_batches:
     - data
     - file_name
+  :declarations:
+    - voided_by_user_id
+  :schools:
+    - induction_tutor_name
+    - induction_tutor_email
+  :mentor_at_school_periods:
+    - email
+  :ect_at_school_periods:
+    - email
+  :gias_schools:
+    - primary_contact_email
+    - secondary_contact_email
