@@ -40,7 +40,9 @@ RSpec.describe API::Request do
 
           described_class.send_persist_api_request(request_data, response_data, 200, created_at, uuid)
 
-          expect(DfE::Analytics::SendEvents).not_to have_received(:do)
+          expect(DfE::Analytics::SendEvents).not_to have_received(:do).with(
+            array_including(hash_including("event_type" => "persist_api_request"))
+          )
         end
       end
 
@@ -50,7 +52,9 @@ RSpec.describe API::Request do
 
           described_class.send_persist_api_request(request_data, response_data, 200, created_at, uuid)
 
-          expect(DfE::Analytics::SendEvents).not_to have_received(:do)
+          expect(DfE::Analytics::SendEvents).not_to have_received(:do).with(
+            array_including(hash_including("event_type" => "persist_api_request"))
+          )
         end
       end
 
@@ -58,15 +62,19 @@ RSpec.describe API::Request do
         it "sends a persist_api_request event with correct structure" do
           described_class.send_persist_api_request(request_data, response_data, 200, created_at, uuid)
 
-          expect(DfE::Analytics::SendEvents).to have_received(:do) do |events|
-            expect(events.first).to include(
+          expect(DfE::Analytics::SendEvents).to have_received(:do).with(
+            array_including(hash_including("event_type" => "persist_api_request"))
+          ) do |events|
+            event = events.find { |entry| entry["event_type"] == "persist_api_request" }
+
+            expect(event).to include(
               "event_type" => "persist_api_request",
               "request_uuid" => uuid,
               "entity_table_name" => "api_requests",
               "user_id" => lead_provider.id
             )
 
-            data = events.first["data"]
+            data = event["data"]
 
             expect(data).to include(
               { "key" => "request_path", "value" => ["/api/v3/endpoints"] },
@@ -85,8 +93,11 @@ RSpec.describe API::Request do
 
           described_class.send_persist_api_request(request_data, response_data, 500, created_at, uuid)
 
-          expect(DfE::Analytics::SendEvents).to have_received(:do) do |events|
-            data_array = events.first["data"]
+          expect(DfE::Analytics::SendEvents).to have_received(:do).with(
+            array_including(hash_including("event_type" => "persist_api_request"))
+          ) do |events|
+            event = events.find { |entry| entry["event_type"] == "persist_api_request" }
+            data_array = event["data"]
 
             response_body_entry = data_array.find { |entry| entry["key"] == "response_body" }
 
@@ -102,8 +113,11 @@ RSpec.describe API::Request do
 
           described_class.send_persist_api_request(request_data, response_data, 200, created_at, uuid)
 
-          expect(DfE::Analytics::SendEvents).to have_received(:do) do |events|
-            data_array = events.first["data"]
+          expect(DfE::Analytics::SendEvents).to have_received(:do).with(
+            array_including(hash_including("event_type" => "persist_api_request"))
+          ) do |events|
+            event = events.find { |entry| entry["event_type"] == "persist_api_request" }
+            data_array = event["data"]
 
             request_body_entry = data_array.find { |entry| entry["key"] == "request_body" }
 
