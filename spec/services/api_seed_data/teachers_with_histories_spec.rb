@@ -198,6 +198,8 @@ RSpec.describe APISeedData::TeachersWithHistories do
         stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
         stub_const("#{described_class}::OPTIONAL_MENTOR_TRAINING_RATIO", 1.0)
         stub_const("#{described_class}::WITHDRAWN_RATIO", 1.0)
+        stub_const("#{described_class}::LATE_START_RATIO", 0)
+
         # Withdrawn TrainingPeriod records can only be created if the
         # started_on is not in the future
         latest_contract_period = ContractPeriod.order(year: :desc).first
@@ -213,6 +215,8 @@ RSpec.describe APISeedData::TeachersWithHistories do
         stub_const("#{described_class}::OPTIONAL_MENTOR_TRAINING_RATIO", 1.0)
         stub_const("#{described_class}::WITHDRAWN_RATIO", 0.0)
         stub_const("#{described_class}::DEFERRED_RATIO", 1.0)
+        stub_const("#{described_class}::LATE_START_RATIO", 0)
+
         # Deferred TrainingPeriod records can only be created if the
         # started_on is not in the future
         latest_contract_period = ContractPeriod.order(year: :desc).first
