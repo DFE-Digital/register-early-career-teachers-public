@@ -5,7 +5,7 @@ RSpec.describe InductionHelper, type: :helper do
     let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
 
     it "returns true when the current induction is with the claiming body" do
-      expect(helper.claiming_body?(teacher, induction_period.appropriate_body)).to be true
+      expect(helper.claiming_body?(teacher, induction_period.appropriate_body_period)).to be true
     end
 
     it "returns false when the current induction is with another body" do

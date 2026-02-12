@@ -15,7 +15,7 @@ module InductionPeriods
       end
 
       modifications = induction_period.attributes.transform_values { |v| [v, nil] }
-      appropriate_body = induction_period.appropriate_body
+      appropriate_body_period = induction_period.appropriate_body_period
       was_only_induction_period = teacher.induction_periods.where.not(id: induction_period.id).empty?
       is_earliest_period = induction_period == teacher.induction_periods.earliest_first.first
 
@@ -25,15 +25,15 @@ module InductionPeriods
         if was_only_induction_period
           # If this was the only induction period, reset TRS status
           reset_trs_status
-          record_trs_status_reset_event(appropriate_body)
+          record_trs_status_reset_event(appropriate_body_period)
         elsif is_earliest_period
           # If this was the earliest period but there are others, update TRS start date
           next_earliest_period = teacher.induction_periods.reload.earliest_first.first
           update_trs_start_date(next_earliest_period)
-          record_teacher_trs_induction_start_date_updated_event(appropriate_body, next_earliest_period)
+          record_teacher_trs_induction_start_date_updated_event(appropriate_body_period, next_earliest_period)
         end
 
-        record_delete_event(modifications, appropriate_body)
+        record_delete_event(modifications, appropriate_body_period)
       end
 
       true
@@ -54,32 +54,32 @@ module InductionPeriods
       TRS::APIClient.build.reset_teacher_induction!(trn: teacher.trn)
     end
 
-    def record_teacher_trs_induction_start_date_updated_event(appropriate_body, induction_period)
+    def record_teacher_trs_induction_start_date_updated_event(appropriate_body_period, induction_period)
       Events::Record.record_teacher_trs_induction_start_date_updated_event!(
         author:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         induction_period:
       )
     end
 
-    def record_delete_event(modifications, appropriate_body)
+    def record_delete_event(modifications, appropriate_body_period)
       Events::Record.record_induction_period_deleted_event!(
         author:,
         body: note,
         zendesk_ticket_id:,
         modifications:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         happened_at: Time.zone.now
       )
     end
 
-    def record_trs_status_reset_event(appropriate_body)
+    def record_trs_status_reset_event(appropriate_body_period)
       Events::Record.record_teacher_induction_status_reset_event!(
         author:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         happened_at: Time.zone.now
       )
     end

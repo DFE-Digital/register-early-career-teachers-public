@@ -1,6 +1,6 @@
 FactoryBot.define do
-  factory(:appropriate_body) do
-    sequence(:name) { |n| "Appropriate Body #{n}" }
+  factory(:appropriate_body, class: "AppropriateBodyPeriod") do
+    sequence(:name) { |n| "Appropriate Body Period #{n}" }
     dfe_sign_in_organisation_id { Faker::Internet.uuid }
 
     trait :inactive do
@@ -13,7 +13,7 @@ FactoryBot.define do
     end
 
     initialize_with do
-      AppropriateBody.find_or_initialize_by(name:)
+      AppropriateBodyPeriod.find_or_initialize_by(name:)
     end
 
     trait :national do

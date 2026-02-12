@@ -12,19 +12,18 @@ RSpec.describe NationalBody, type: :model do
 
     describe "#appropriate_body_period" do
       let(:national_body) { FactoryBot.create(:national_body) }
-      let(:appropriate_body_period) { FactoryBot.build(:appropriate_body) }
-      let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period_1) { FactoryBot.create(:appropriate_body, :national) }
+      let(:appropriate_body_period_2) { FactoryBot.build(:appropriate_body, :national) }
 
       it "cannot be reassigned" do
-        appropriate_body_period.update!(national_body:)
-        expect(national_body.appropriate_body_period).to eq(appropriate_body_period)
+        appropriate_body_period_1.update!(national_body:)
+        expect(national_body.appropriate_body_period).to eq(appropriate_body_period_1)
 
         expect {
-          other_appropriate_body_period.update!(national_body:)
-        }.to raise_error(ActiveRecord::RecordInvalid)
+          appropriate_body_period_2.update!(national_body:)
+        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: A National Body can only have a single Appropriate Body period")
 
-        expect(national_body.appropriate_body_period).not_to eq(other_appropriate_body_period)
-        expect(national_body.appropriate_body_period).to eq(appropriate_body_period)
+        expect(national_body.reload.appropriate_body_period.id).to eq(appropriate_body_period_1.id)
       end
     end
   end

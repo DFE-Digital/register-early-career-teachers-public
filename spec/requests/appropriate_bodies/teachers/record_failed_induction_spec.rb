@@ -1,11 +1,11 @@
 RSpec.describe "Appropriate body recording a failed induction outcome for a teacher" do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
     FactoryBot.create(:induction_period, :ongoing,
                       teacher:,
-                      appropriate_body:)
+                      appropriate_body_period:)
   end
 
   describe "GET /appropriate-body/teachers/:id/record-failed-outcome/new" do
@@ -18,7 +18,7 @@ RSpec.describe "Appropriate body recording a failed induction outcome for a teac
     end
 
     context "when signed in as an appropriate body user" do
-      before { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      before { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       it "renders" do
         get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome/new")
@@ -56,7 +56,7 @@ RSpec.describe "Appropriate body recording a failed induction outcome for a teac
 
     context "when signed in as an appropriate body user" do
       before do
-        sign_in_as(:appropriate_body_user, appropriate_body:)
+        sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period)
 
         post("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome", params:)
       end
@@ -121,7 +121,7 @@ RSpec.describe "Appropriate body recording a failed induction outcome for a teac
     end
 
     context "when signed in as an appropriate body user" do
-      before { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      before { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       it "renders the show page for a valid teacher" do
         get("/appropriate-body/teachers/#{teacher.id}/record-failed-outcome")

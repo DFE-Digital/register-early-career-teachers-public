@@ -52,7 +52,7 @@ RSpec.describe TeacherHelper, type: :helper do
     context "when training" do
       before { FactoryBot.create(:induction_period, teacher:) }
 
-      it { expect(teacher_induction_ab_name(teacher)).to match(/Appropriate Body \d/) }
+      it { expect(teacher_induction_ab_name(teacher)).to match(/Appropriate Body Period \d/) }
     end
 
     context "when not training" do

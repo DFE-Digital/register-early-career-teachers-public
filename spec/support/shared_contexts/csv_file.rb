@@ -33,7 +33,7 @@ RSpec.shared_context "2 valid actions" do
   before do
     data.map do |row|
       teacher = FactoryBot.create(:teacher, trn: row[:trn])
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: "2024-12-01")
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: "2024-12-01")
     end
   end
 end
@@ -51,7 +51,7 @@ RSpec.shared_context "1 valid and 2 invalid actions" do
 
   before do
     valid_teacher = FactoryBot.create(:teacher, trn: "1234567")
-    FactoryBot.create(:induction_period, :ongoing, teacher: valid_teacher, appropriate_body:, started_on: "2024-12-01")
+    FactoryBot.create(:induction_period, :ongoing, teacher: valid_teacher, appropriate_body_period:, started_on: "2024-12-01")
     teacher_at_another_body = FactoryBot.create(:teacher, trn: "7654321")
     FactoryBot.create(:induction_period, :ongoing, teacher: teacher_at_another_body, started_on: "2024-12-01")
     FactoryBot.create(:teacher, trn: "0000007")

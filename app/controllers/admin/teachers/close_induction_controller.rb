@@ -18,8 +18,8 @@ module Admin
         @teacher = Teacher.find(params[:teacher_id])
       end
 
-      def appropriate_body
-        @teacher.ongoing_induction_period.appropriate_body
+      def appropriate_body_period
+        @teacher.ongoing_induction_period.appropriate_body_period
       end
     end
   end

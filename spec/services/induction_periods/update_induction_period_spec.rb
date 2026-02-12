@@ -4,12 +4,12 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
   let(:user) { FactoryBot.create(:user, email: "user@education.gov.uk") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:induction_period) do
     FactoryBot.create(
       :induction_period,
       teacher:,
-      appropriate_body:,
+      appropriate_body_period:,
       started_on: "2023-06-01",
       finished_on: "2023-12-31"
     )
@@ -39,7 +39,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
       let(:induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: "2023-01-01",
                           finished_on: "2023-12-31",
                           outcome: "pass",
@@ -118,7 +118,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
       let(:induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: "2023-01-01",
                           finished_on: "2023-12-31",
                           outcome: "fail",
@@ -227,7 +227,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
           FactoryBot.create(
             :induction_period,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             started_on: "2023-06-01",
             finished_on: nil,
             outcome: nil,
@@ -246,7 +246,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
           expect(Events::Record).to have_received(:record_teacher_trs_induction_start_date_updated_event!).with(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             induction_period:
           )
         end
@@ -257,7 +257,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
           FactoryBot.create(
             :induction_period,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             started_on: "2023-06-01",
             finished_on: "2023-12-31",
             outcome: "pass"
@@ -289,14 +289,14 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
           expect(Events::Record).to have_received(:record_teacher_trs_induction_start_date_updated_event!).with(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             induction_period:
           )
 
           expect(Events::Record).to have_received(:record_teacher_trs_induction_end_date_updated_event!).with(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             induction_period:
           )
         end
@@ -308,7 +308,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         FactoryBot.create(
           :induction_period,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           started_on: "2023-01-01",
           finished_on: "2023-12-31",
           outcome: "pass"
@@ -334,7 +334,7 @@ RSpec.describe InductionPeriods::UpdateInductionPeriod do
         expect(Events::Record).to have_received(:record_teacher_trs_induction_end_date_updated_event!).with(
           author:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           induction_period:
         )
       end

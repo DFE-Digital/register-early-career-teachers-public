@@ -37,7 +37,7 @@ module AppropriateBodies
       def manage_extensions
         @manage_extensions ||= ::InductionExtensions::Manage.new(
           author: current_user,
-          appropriate_body: @appropriate_body,
+          appropriate_body_period: @appropriate_body,
           teacher:
         )
       end

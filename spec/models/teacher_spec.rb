@@ -32,7 +32,7 @@ describe Teacher do
     it { is_expected.to have_many(:ect_training_periods).through(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_training_periods).through(:mentor_at_school_periods) }
     it { is_expected.to have_many(:induction_periods) }
-    it { is_expected.to have_many(:appropriate_bodies).through(:induction_periods) }
+    it { is_expected.to have_many(:appropriate_body_periods).through(:induction_periods) }
     it { is_expected.to have_many(:induction_extensions) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:mentor_declarations).through(:mentor_training_periods).source(:declarations) }
@@ -174,49 +174,49 @@ describe Teacher do
       end
     end
 
-    it "returns the appropriate body from the ongoing induction period" do
+    it "returns the appropriate body period from the ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
-      other_appropriate_body = FactoryBot.create(:appropriate_body)
+      other_appropriate_body_period = FactoryBot.create(:appropriate_body)
       _other_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
-        appropriate_body: other_appropriate_body,
+        appropriate_body_period: other_appropriate_body_period,
         started_on: 2.years.ago,
         finished_on: 1.year.ago
       )
-      appropriate_body = FactoryBot.create(:appropriate_body)
+      appropriate_body_period = FactoryBot.create(:appropriate_body)
       _ongoing_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         started_on: 1.year.ago,
         finished_on: nil,
         number_of_terms: nil
       )
 
-      expect(teacher.current_appropriate_body).to eq(appropriate_body)
+      expect(teacher.current_appropriate_body_period).to eq(appropriate_body_period)
     end
 
     it "returns nil when the teacher has no ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
-      other_appropriate_body = FactoryBot.create(:appropriate_body)
+      other_appropriate_body_period = FactoryBot.create(:appropriate_body)
       _other_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
-        appropriate_body: other_appropriate_body,
+        appropriate_body_period: other_appropriate_body_period,
         started_on: 2.years.ago,
         finished_on: 1.year.ago
       )
-      appropriate_body = FactoryBot.create(:appropriate_body)
+      appropriate_body_period = FactoryBot.create(:appropriate_body)
       _ongoing_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         started_on: 1.year.ago,
         finished_on: 2.weeks.ago
       )
 
-      expect(teacher.current_appropriate_body).to be_nil
+      expect(teacher.current_appropriate_body_period).to be_nil
     end
   end
 

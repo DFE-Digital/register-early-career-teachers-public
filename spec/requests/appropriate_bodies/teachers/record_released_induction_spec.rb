@@ -1,11 +1,11 @@
 RSpec.describe "Appropriate body releasing an ECT" do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   let!(:induction_period) do
     FactoryBot.create(:induction_period, :ongoing,
                       teacher:,
-                      appropriate_body:)
+                      appropriate_body_period:)
   end
 
   describe "GET /appropriate-body/teachers/:id/release/new" do
@@ -19,7 +19,7 @@ RSpec.describe "Appropriate body releasing an ECT" do
 
     context "when signed in as an appropriate body user" do
       before do
-        sign_in_as(:appropriate_body_user, appropriate_body:)
+        sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period)
       end
 
       context "and a teacher actively training" do
@@ -52,7 +52,7 @@ RSpec.describe "Appropriate body releasing an ECT" do
 
     context "when signed in as an appropriate body user" do
       before do
-        sign_in_as(:appropriate_body_user, appropriate_body:)
+        sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period)
 
         post("/appropriate-body/teachers/#{teacher.id}/release", params:)
       end

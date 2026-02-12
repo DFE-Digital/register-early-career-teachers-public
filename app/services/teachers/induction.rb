@@ -27,8 +27,8 @@ module Teachers
       teacher.induction_extensions.any?
     end
 
-    def with_appropriate_body?(appropriate_body)
-      current_induction_period&.appropriate_body == appropriate_body
+    def with_appropriate_body?(appropriate_body_period)
+      current_induction_period&.appropriate_body_period == appropriate_body_period
     end
   end
 end

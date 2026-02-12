@@ -1,9 +1,9 @@
 module Admin
   class RevertClaim
-    attr_reader :appropriate_body, :teacher, :author, :induction_period
+    attr_reader :appropriate_body_period, :teacher, :author, :induction_period
 
-    def initialize(appropriate_body:, teacher:, author:, induction_period:)
-      @appropriate_body = appropriate_body
+    def initialize(appropriate_body_period:, teacher:, author:, induction_period:)
+      @appropriate_body_period = appropriate_body_period
       @teacher = teacher
       @author = author
       @induction_period = induction_period
@@ -29,7 +29,7 @@ module Admin
     def record_teacher_induction_status_reset_event!
       Events::Record.record_teacher_induction_status_reset_event!(
         author:,
-        appropriate_body:,
+        appropriate_body_period:,
         teacher:
       )
     end

@@ -17,7 +17,7 @@ describe AppropriateBodies::Search do
 
       context "when ISTIP has not been registered" do
         it "raises an exception" do
-          expect { subject }.to raise_error(ActiveRecord::RecordNotFound, "ISTIP appropriate body not found!")
+          expect { subject }.to raise_error(ActiveRecord::RecordNotFound, "ISTIP appropriate body period not found!")
         end
       end
     end
@@ -35,7 +35,7 @@ describe AppropriateBodies::Search do
 
       context "when ESP has not been registered" do
         it "raises an exception" do
-          expect { subject }.to raise_error(ActiveRecord::RecordNotFound, "ESP appropriate body not found!")
+          expect { subject }.to raise_error(ActiveRecord::RecordNotFound, "ESP appropriate body period not found!")
         end
       end
     end
@@ -47,7 +47,7 @@ describe AppropriateBodies::Search do
         it "applies no conditions and returns all appropriate bodies" do
           subject.search
 
-          expect(subject.search.to_sql).to start_with(%(SELECT "appropriate_bodies".* FROM "appropriate_bodies" ORDER BY))
+          expect(subject.search.to_sql).to start_with(%(SELECT "appropriate_body_periods".* FROM "appropriate_body_periods" ORDER BY))
         end
       end
 
@@ -60,21 +60,21 @@ describe AppropriateBodies::Search do
       end
 
       context "ordering" do
-        before { allow(AppropriateBody).to receive(:where).and_call_original }
+        before { allow(AppropriateBodyPeriod).to receive(:where).and_call_original }
 
         it "defaults to order by name ascending" do
-          expect(subject.search.to_sql).to include(%(ORDER BY "appropriate_bodies"."name" ASC))
+          expect(subject.search.to_sql).to include(%(ORDER BY "appropriate_body_periods"."name" ASC))
         end
       end
     end
 
     describe "#find_by_dfe_sign_in_organisation_id" do
       it "uses the provided ID to find the right appropriate body" do
-        allow(AppropriateBody).to receive(:find_by).with(dfe_sign_in_organisation_id: "abc123").and_call_original
+        allow(AppropriateBodyPeriod).to receive(:find_by).with(dfe_sign_in_organisation_id: "abc123").and_call_original
 
         subject.find_by_dfe_sign_in_organisation_id("abc123")
 
-        expect(AppropriateBody).to have_received(:find_by).with(dfe_sign_in_organisation_id: "abc123")
+        expect(AppropriateBodyPeriod).to have_received(:find_by).with(dfe_sign_in_organisation_id: "abc123")
       end
     end
   end

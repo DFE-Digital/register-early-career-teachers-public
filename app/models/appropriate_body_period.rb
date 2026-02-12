@@ -1,5 +1,4 @@
-# TODO: rename to AppropriateBodyPeriod
-class AppropriateBody < ApplicationRecord
+class AppropriateBodyPeriod < ApplicationRecord
   # TODO: replace body_type with a type check on the AB (TSH or NationalBody)
   # Enums
   enum :body_type, {
@@ -24,7 +23,7 @@ class AppropriateBody < ApplicationRecord
 
   has_many :supported_schools, class_name: "School", foreign_key: "last_chosen_appropriate_body_id" # cannot be derived from induction periods which don't link to schools, therefore...
   has_many :pending_induction_submissions
-  has_many :induction_periods, inverse_of: :appropriate_body
+  has_many :induction_periods, inverse_of: :appropriate_body_period
   has_many :events
   has_many :unclaimed_ect_at_school_periods,
            -> { unclaimed_by_school_reported_appropriate_body },

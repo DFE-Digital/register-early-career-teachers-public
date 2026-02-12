@@ -16,7 +16,7 @@ RSpec.describe Sessions::User do
     context "when user session stores an appropriate body user" do
       let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
       let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
-      let!(:appropriate_body) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
+      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body, dfe_sign_in_organisation_id:) }
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::AppropriateBodyUser",
@@ -34,19 +34,19 @@ RSpec.describe Sessions::User do
         expect(session_user.name).to eql("Christopher Lee")
         expect(session_user.email).to eql("ab_user@example.com")
         expect(session_user.last_active_at).to eql(last_active_at)
-        expect(session_user.appropriate_body_id).to be(appropriate_body.id)
+        expect(session_user.appropriate_body_period_id).to be(appropriate_body_period.id)
       end
     end
 
     context "when user session stores an appropriate body persona" do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
       let(:fake_user_session) do
         {
           "type" => "Sessions::Users::AppropriateBodyPersona",
           "email" => "ab_persona@example.com",
           "name" => "Christopher Lee",
           "last_active_at" => last_active_at,
-          "appropriate_body_id" => appropriate_body.id
+          "appropriate_body_period_id" => appropriate_body_period.id
         }
       end
 
@@ -55,7 +55,7 @@ RSpec.describe Sessions::User do
         expect(session_user.name).to eql("Christopher Lee")
         expect(session_user.email).to eql("ab_persona@example.com")
         expect(session_user.last_active_at).to eql(last_active_at)
-        expect(session_user.appropriate_body_id).to be(appropriate_body.id)
+        expect(session_user.appropriate_body_period_id).to be(appropriate_body_period.id)
       end
     end
 

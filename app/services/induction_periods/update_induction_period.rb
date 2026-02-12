@@ -40,7 +40,7 @@ module InductionPeriods
 
   private
 
-    delegate :teacher, :appropriate_body, to: :induction_period
+    delegate :teacher, :appropriate_body_period, to: :induction_period
 
     # @param modifications [Hash{String => Array}]
     def record_induction_period_update_event(modifications)
@@ -49,7 +49,7 @@ module InductionPeriods
         modifications:,
         induction_period:,
         teacher:,
-        appropriate_body:
+        appropriate_body_period:
       )
     end
 
@@ -84,7 +84,7 @@ module InductionPeriods
       Events::Record.record_teacher_trs_induction_start_date_updated_event!(
         author:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         induction_period:
       )
     end
@@ -93,7 +93,7 @@ module InductionPeriods
       Events::Record.record_teacher_trs_induction_end_date_updated_event!(
         author:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         induction_period:
       )
     end

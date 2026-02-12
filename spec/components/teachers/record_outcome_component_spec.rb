@@ -4,18 +4,18 @@ RSpec.describe Teachers::RecordOutcomeComponent, type: :component do
   end
 
   let(:teacher) { FactoryBot.create(:teacher, :with_name) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+                      dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
   end
   let(:service) do
-    service_class.new(teacher:, appropriate_body:, author:)
+    service_class.new(teacher:, appropriate_body_period:, author:)
   end
 
   before do
     FactoryBot.create(:induction_period, :ongoing,
-                      appropriate_body:,
+                      appropriate_body_period:,
                       teacher:)
   end
 

@@ -18,7 +18,7 @@ RSpec.describe InductionPeriods::PartialTransferInductionPeriods, :aggregate_fai
       expect(InductionPeriod.count).to be 7
 
       # transfers inductions
-      expect(InductionPeriod.order(:created_at).map(&:appropriate_body)).to eq([
+      expect(InductionPeriod.order(:created_at).map(&:appropriate_body_period)).to eq([
         current_appropriate_body,
         current_appropriate_body,
         current_appropriate_body,

@@ -54,7 +54,7 @@ describe Teachers::RefreshTRSAttributes do
           hash_including(
             teacher:,
             author: an_instance_of(Events::SystemAuthor),
-            appropriate_body: nil
+            appropriate_body_period: nil
           )
         ).and_return(fake_manage)
       end

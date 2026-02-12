@@ -42,7 +42,7 @@ module AppropriateBodies
       def record_fail
         @record_fail = RecordFail.new(
           teacher: @teacher,
-          appropriate_body: @appropriate_body,
+          appropriate_body_period: @appropriate_body,
           author: current_user
         )
       end

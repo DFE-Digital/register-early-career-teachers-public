@@ -4,7 +4,7 @@ RSpec.describe Events::Record do
   let(:user) { FactoryBot.create(:user, name: "Christopher Biggins", email: "christopher.biggins@education.gov.uk") }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Rhys", trs_last_name: "Ifans") }
   let(:induction_period) { FactoryBot.create(:induction_period) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Burns Slant Drilling Co.") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Burns Slant Drilling Co.") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
   let(:another_dfe_user) { FactoryBot.create(:user, name: "Ian Richardson", email: "er@education.gov.uk") }
@@ -44,7 +44,7 @@ RSpec.describe Events::Record do
         induction_period:,
         teacher:,
         school: FactoryBot.create(:school),
-        appropriate_body: FactoryBot.create(:appropriate_body),
+        appropriate_body_period: FactoryBot.create(:appropriate_body),
         induction_extension: FactoryBot.create(:induction_extension),
         ect_at_school_period:,
         mentor_at_school_period:,
@@ -85,7 +85,7 @@ RSpec.describe Events::Record do
       induction_period: FactoryBot.build(:induction_period),
       teacher: FactoryBot.build(:teacher),
       school: FactoryBot.build(:school),
-      appropriate_body: FactoryBot.build(:appropriate_body),
+      appropriate_body_period: FactoryBot.build(:appropriate_body),
       induction_extension: FactoryBot.build(:induction_extension),
       ect_at_school_period: FactoryBot.build(:ect_at_school_period),
       mentor_at_school_period: FactoryBot.build(:mentor_at_school_period),
@@ -113,12 +113,12 @@ RSpec.describe Events::Record do
       raw_modifications = induction_period.changes
 
       freeze_time do
-        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body_period:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Rhys Ifans was claimed by Burns Slant Drilling Co.",
           event_type: :induction_period_opened,
           happened_at: induction_period.started_on,
@@ -131,7 +131,7 @@ RSpec.describe Events::Record do
 
     it "fails when induction period is missing" do
       expect {
-        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body:, induction_period: nil, modifications: {})
+        Events::Record.record_induction_period_opened_event!(author:, teacher:, appropriate_body_period:, induction_period: nil, modifications: {})
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -139,12 +139,12 @@ RSpec.describe Events::Record do
   describe ".record_induction_period_closed_event!" do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body_period:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Rhys Ifans was released by Burns Slant Drilling Co.",
           event_type: :induction_period_closed,
           happened_at: induction_period.finished_on,
@@ -155,7 +155,7 @@ RSpec.describe Events::Record do
 
     it "fails when induction period is missing" do
       expect {
-        Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body:, induction_period: nil)
+        Events::Record.record_induction_period_closed_event!(author:, teacher:, appropriate_body_period:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -170,12 +170,12 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body:, ect_at_school_period:, mentorship_period:, training_period:, induction_period:, body: "Correcting an error")
+        Events::Record.record_teacher_passes_induction_event!(author:, teacher:, appropriate_body_period:, ect_at_school_period:, mentorship_period:, training_period:, induction_period:, body: "Correcting an error")
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           ect_at_school_period:,
           mentorship_period:,
           training_period:,
@@ -190,7 +190,7 @@ RSpec.describe Events::Record do
 
     it "fails when induction period is missing" do
       expect {
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, ect_at_school_period:, mentorship_period:, training_period:, induction_period: nil)
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body_period:, ect_at_school_period:, mentorship_period:, training_period:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
@@ -205,12 +205,12 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, zendesk_ticket_id: "#123456")
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body_period:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, zendesk_ticket_id: "#123456")
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           ect_at_school_period:,
           mentorship_period:,
           training_period:,
@@ -225,13 +225,13 @@ RSpec.describe Events::Record do
 
     it "fails when induction period is missing" do
       expect {
-        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body:, ect_at_school_period:, mentorship_period:, training_period:, induction_period: nil)
+        Events::Record.record_teacher_fails_induction_event!(author:, teacher:, appropriate_body_period:, ect_at_school_period:, mentorship_period:, training_period:, induction_period: nil)
       }.to raise_error(Events::NoInductionPeriod)
     end
   end
 
   describe ".record_induction_period_deleted_event!" do
-    let(:raw_modifications) { { "id" => 1, "teacher_id" => teacher.id, "appropriate_body_id" => appropriate_body.id } }
+    let(:raw_modifications) { { "id" => 1, "teacher_id" => teacher.id, "appropriate_body_period_id" => appropriate_body_period.id } }
 
     context "when induction status was reset on TRS" do
       it "queues a RecordEventJob with the correct values including body" do
@@ -239,14 +239,14 @@ RSpec.describe Events::Record do
           Events::Record.record_induction_period_deleted_event!(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             modifications: raw_modifications,
             body: "Induction status was reset to 'Required to Complete' in TRS."
           )
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             heading: "Induction period deleted by admin",
             event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
@@ -265,13 +265,13 @@ RSpec.describe Events::Record do
           Events::Record.record_induction_period_deleted_event!(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             modifications: raw_modifications
           )
 
           expect(RecordEventJob).to have_received(:perform_later).with(
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             heading: "Induction period deleted by admin",
             event_type: :induction_period_deleted,
             happened_at: Time.zone.now,
@@ -292,12 +292,12 @@ RSpec.describe Events::Record do
       induction_extension.save!
 
       freeze_time do
-        Events::Record.record_induction_extension_created_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
+        Events::Record.record_induction_extension_created_event!(author:, teacher:, appropriate_body_period:, induction_extension:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_extension:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Rhys Ifans’s induction extended by 1.2 terms",
           event_type: :induction_extension_created,
           happened_at: Time.zone.now,
@@ -317,12 +317,12 @@ RSpec.describe Events::Record do
       raw_modifications = induction_extension.changes
 
       freeze_time do
-        Events::Record.record_induction_extension_updated_event!(author:, teacher:, appropriate_body:, induction_extension:, modifications: raw_modifications)
+        Events::Record.record_induction_extension_updated_event!(author:, teacher:, appropriate_body_period:, induction_extension:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_extension:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Rhys Ifans’s induction extended by 3.2 terms",
           event_type: :induction_extension_updated,
           happened_at: Time.zone.now,
@@ -344,12 +344,12 @@ RSpec.describe Events::Record do
       raw_modifications = induction_period.changes
 
       freeze_time do
-        Events::Record.record_induction_period_updated_event!(author:, teacher:, appropriate_body:, induction_period:, modifications: raw_modifications)
+        Events::Record.record_induction_period_updated_event!(author:, teacher:, appropriate_body_period:, induction_period:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           induction_period:,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Induction period updated by admin",
           event_type: :induction_period_updated,
           happened_at: Time.zone.now,
@@ -367,11 +367,11 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_name:, new_name:)
+        Events::Record.teacher_name_changed_in_trs_event!(author:, teacher:, appropriate_body_period:, old_name:, new_name:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Name changed from 'Wilfred Bramble' to 'Willy Brambs'",
           event_type: :teacher_name_updated_by_trs,
           happened_at: Time.zone.now,
@@ -387,11 +387,11 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body:, old_induction_status:, new_induction_status:)
+        Events::Record.teacher_induction_status_changed_in_trs_event!(author:, teacher:, appropriate_body_period:, old_induction_status:, new_induction_status:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Induction status changed from 'InProgress' to 'Exempt'",
           event_type: :teacher_trs_induction_status_updated,
           happened_at: Time.zone.now,
@@ -408,11 +408,11 @@ RSpec.describe Events::Record do
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:)
+        Events::Record.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body_period:, induction_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "#{teacher_name}’s induction start date was updated",
           event_type: :teacher_trs_induction_start_date_updated,
           happened_at: Time.zone.now,
@@ -426,11 +426,11 @@ RSpec.describe Events::Record do
   describe ".teacher_imported_from_trs_event!" do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body:)
+        Events::Record.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Imported from TRS",
           event_type: :teacher_imported_from_trs,
           happened_at: Time.zone.now,
@@ -550,7 +550,7 @@ RSpec.describe Events::Record do
           event = Events::Record.new(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             event_type:,
             heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
             happened_at:
@@ -563,7 +563,7 @@ RSpec.describe Events::Record do
 
           expect(event.event_type).to eq(event_type)
           expect(event.teacher).to eq(teacher)
-          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.appropriate_body_period).to eq(appropriate_body_period)
         end
       end
     end
@@ -574,7 +574,7 @@ RSpec.describe Events::Record do
           event = Events::Record.new(
             author:,
             teacher:,
-            appropriate_body:,
+            appropriate_body_period:,
             event_type:,
             heading: "#{Teachers::Name.new(teacher).full_name} was unclaimed by support",
             happened_at:
@@ -587,7 +587,7 @@ RSpec.describe Events::Record do
 
           expect(event.event_type).to eq(event_type)
           expect(event.teacher).to eq(teacher)
-          expect(event.appropriate_body).to eq(appropriate_body)
+          expect(event.appropriate_body_period).to eq(appropriate_body_period)
           expect(event.body).to be_nil
         end
       end
@@ -597,11 +597,11 @@ RSpec.describe Events::Record do
   describe ".record_teacher_induction_status_reset_event!" do
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
-        Events::Record.record_teacher_induction_status_reset_event!(author:, teacher:, appropriate_body:)
+        Events::Record.record_teacher_induction_status_reset_event!(author:, teacher:, appropriate_body_period:)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Rhys Ifans was unclaimed",
           event_type: :teacher_induction_status_reset,
           happened_at: Time.zone.now,
@@ -612,7 +612,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_induction_period_reopened_event!" do
-    let(:induction_period) { FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:) }
+    let(:induction_period) { FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body_period:) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
@@ -626,7 +626,7 @@ RSpec.describe Events::Record do
           induction_period:,
           modifications: raw_modifications,
           teacher:,
-          appropriate_body:,
+          appropriate_body_period:,
           body: "A test note",
           zendesk_ticket_id: "1234"
         )
@@ -634,7 +634,7 @@ RSpec.describe Events::Record do
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
           induction_period:,
-          appropriate_body:,
+          appropriate_body_period:,
           heading: "Induction period reopened",
           event_type: :induction_period_reopened,
           happened_at: Time.zone.now,
@@ -1396,7 +1396,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_bulk_upload_started_event!" do
-    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:) }
+    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body_period:) }
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time do
@@ -1404,7 +1404,7 @@ RSpec.describe Events::Record do
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Burns Slant Drilling Co. started a bulk action",
-          appropriate_body:,
+          appropriate_body_period:,
           pending_induction_submission_batch: batch,
           event_type: :bulk_upload_started,
           happened_at: Time.zone.now,
@@ -1415,7 +1415,7 @@ RSpec.describe Events::Record do
   end
 
   describe ".record_bulk_upload_completed_event!" do
-    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:) }
+    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body_period:) }
 
     include_context "test TRS API returns a teacher"
 
@@ -1429,7 +1429,7 @@ RSpec.describe Events::Record do
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           heading: "Burns Slant Drilling Co. completed a bulk claim",
-          appropriate_body:,
+          appropriate_body_period:,
           pending_induction_submission_batch: batch,
           event_type: :bulk_upload_completed,
           happened_at: Time.zone.now,

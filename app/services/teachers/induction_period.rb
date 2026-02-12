@@ -26,7 +26,7 @@ class Teachers::InductionPeriod
   def appropriate_body_name
     return unless last_induction_period
 
-    last_induction_period.appropriate_body.name
+    last_induction_period.appropriate_body_period.name
   end
 
   # FIXME: this works if finished_on cannot be set to a future date

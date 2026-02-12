@@ -19,7 +19,7 @@ RSpec.describe "schools/ects/show.html.erb" do
   let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: current_ect_period.school) }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body, name: "Alpha Teaching School Hub") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Alpha Teaching School Hub") }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Barry", trs_last_name: "White", corrected_name: "Baz White") }
   let(:previous_school) { FactoryBot.create(:school, urn: "123456") }
   let(:current_school) { FactoryBot.create(:school, :state_funded, urn: "987654") }
@@ -114,7 +114,7 @@ RSpec.describe "schools/ects/show.html.erb" do
 
   describe "Induction details" do
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:)
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
       teacher.reload # Reload to pick up the new induction period
     end
 

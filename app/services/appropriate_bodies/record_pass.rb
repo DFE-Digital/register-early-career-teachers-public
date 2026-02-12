@@ -23,7 +23,7 @@ module AppropriateBodies
       Events::Record.record_teacher_passes_induction_event!(
         author:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         ect_at_school_period:,
         mentorship_period:,
         training_period:,
