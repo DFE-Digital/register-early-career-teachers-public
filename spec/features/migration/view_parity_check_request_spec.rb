@@ -67,6 +67,20 @@ RSpec.describe "View parity check request" do
     expect(page.get_by_text("There was 1 ID returned by RECT that were not returned by ECF.")).to be_visible
     ids = page.locator(".body-ids-diff span.green")
     expect(ids).to have_text("456")
+
+    expect(page.get_by_role("heading", name: "Response bodies")).to be_visible
+    expect(page.get_by_text("To render a large diff of the first #{ParityCheck::Request::MAX_RESPONSES_TO_DIFF} response bodies (ignoring missing/extra items) click here and be prepared to wait 🙃")).to be_visible
+  end
+
+  scenario "Viewing a parity check request with different attributes for the same items in the response" do
+    run = FactoryBot.create(:parity_check_run, :completed)
+    response = FactoryBot.create(:parity_check_response, ecf_body: { data: [{ id: 123, foo: "bar" }] }.to_json, rect_body: { data: [{ id: 123, bar: "baz" }] }.to_json)
+    request = FactoryBot.create(:parity_check_request, :completed, run:, responses: [response])
+
+    page.goto(migration_parity_check_request_path(run, request, params: { big_diff: "true" }))
+
+    expect(page.get_by_text("Response bodies")).to be_visible
+    expect(page.locator(".body-diff")).to be_visible
   end
 
   scenario "Paginating the parity check responses when there are many" do

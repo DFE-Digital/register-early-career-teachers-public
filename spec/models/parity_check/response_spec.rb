@@ -69,7 +69,7 @@ describe ParityCheck::Response do
 
         let(:response) { FactoryBot.create(:parity_check_response, ecf_body:, rect_body:, ecf_status_code: 200, rect_status_code: 200) }
 
-        it { is_expected.to eq(81) }
+        it { is_expected.to eq(76) }
       end
 
       context "when the response bodies are the same but the status codes are different" do

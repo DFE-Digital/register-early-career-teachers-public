@@ -107,13 +107,19 @@ module ParityCheck
   private
 
     def calculate_match_rate
-      return self.match_rate = 100 if matching?
-      return self.match_rate = 0 if ecf_status_code != rect_status_code
+      Rails.cache.fetch(["response", id, created_at, "match_rate"]) do
+        return self.match_rate = 0 if ecf_status_code != rect_status_code
+        return self.match_rate = 100 if matching?
 
-      total_lines = ecf_body.to_s.lines.size + rect_body.to_s.lines.size
-      diff_lines  = body_diff.count { |line| line.start_with?("+", "-") }
+        ecf_lines  = ecf_body.to_s.lines.to_set
+        rect_lines = rect_body.to_s.lines.to_set
 
-      self.match_rate = (100 * (1 - diff_lines.to_f / total_lines)).floor
+        diff_lines = (ecf_lines ^ rect_lines).size
+        total_lines = ecf_lines.size + rect_lines.size
+
+        self.match_rate =
+          (100 * (1 - diff_lines.to_f / total_lines)).floor
+      end
     end
 
     def format_body(body)

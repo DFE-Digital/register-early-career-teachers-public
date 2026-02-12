@@ -1,0 +1,11 @@
+<% if params.key?(:big_diff) %>
+  <% if request.response_bodies_different? %>
+    <span class="body-diff"><%= sanitize_diff(request.response_bodies_diff.to_s(:html)) %></span>
+  <% else %>
+    <p class="no-differences govuk-!-font-size-27">No differences found (excluding missing/extra) 🙌</p>
+  <% end %>
+<% else %>
+  <p>
+    To render a large diff of the first <%= ParityCheck::Request::MAX_RESPONSES_TO_DIFF %> response bodies (ignoring missing/extra items) click <%= link_to("here", "?big_diff") %> and be prepared to wait 🙃
+  </p>
+<% end %>
