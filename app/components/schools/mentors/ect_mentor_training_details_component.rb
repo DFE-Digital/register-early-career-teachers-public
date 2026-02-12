@@ -20,7 +20,7 @@ module Schools
       end
 
       def show_list?
-        %i[active withdrawn].include?(training_status)
+        %i[active deferred].include?(training_status)
       end
 
       def training_status
