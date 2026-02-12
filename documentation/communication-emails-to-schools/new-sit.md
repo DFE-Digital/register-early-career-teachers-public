@@ -1,4 +1,6 @@
-# New school induction tutor
+---
+title: New school induction tutor
+---
 
 ---
 
