@@ -97,7 +97,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
           )
         end
 
-        it "renders the deferred message and does not show lead provider details" do
+        it "renders the withdrawn message and does not show lead provider details" do
           render_inline(component)
 
           expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
@@ -120,7 +120,7 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
           )
         end
 
-        it "renders the withdrawn message and shows lead provider details" do
+        it "renders the deferred message and shows lead provider details" do
           render_inline(component)
 
           expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
