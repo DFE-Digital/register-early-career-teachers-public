@@ -16,9 +16,9 @@
         <% when :active %>
           <p class="govuk-body"><%= teacher_name %> is registered for ECTE mentor training with:</p>
           <%= govuk_summary_list(borders: false, rows: training_period_summary_rows) %>
-        <% when :withdrawn %>
-          <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %>'s ECTE mentor training is paused. Contact them if you think this is an error.</p>
         <% when :deferred %>
+          <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %>'s ECTE mentor training is paused. Contact them if you think this is an error.</p>
+        <% when :withdrawn %>
           <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %> is not registered for ECTE mentor training with them. Contact them if you think this is an error.</p>
           <p class="govuk-body">Tell us if <%= teacher_name %> <%= link_to_mentor("will be training with another lead provider") %>.</p>
         <% end %>

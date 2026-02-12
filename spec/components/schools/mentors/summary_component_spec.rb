@@ -155,8 +155,8 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
       expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Delivery partner")
     end
 
-    context "when the latest training period is withdrawn" do
-      let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :withdrawn, mentor_at_school_period:, started_on: 1.week.ago) }
+    context "when the latest training period is deferred" do
+      let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :deferred, mentor_at_school_period:, started_on: 1.week.ago) }
 
       it "shows withdrawn message" do
         render_inline(described_class.new(mentor:, school:))
@@ -164,8 +164,8 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
       end
     end
 
-    context "when the latest training period is deferred" do
-      let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :deferred, mentor_at_school_period:, started_on: 1.week.ago) }
+    context "when the latest training period is withdrawn" do
+      let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :withdrawn, mentor_at_school_period:, started_on: 1.week.ago) }
 
       it "shows withdrawn message" do
         render_inline(described_class.new(mentor:, school:))

@@ -85,11 +85,11 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
         end
       end
 
-      context "when the training period is deferred" do
+      context "when the training period is withdrawn" do
         before do
           FactoryBot.create(
             :training_period, :provider_led, :for_mentor,
-            :deferred,
+            :withdrawn,
             mentor_at_school_period: mentor,
             started_on: mentor_start_date,
             finished_on: nil,
@@ -108,11 +108,11 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
         end
       end
 
-      context "when the training period is withdrawn" do
+      context "when the training period is deferred" do
         before do
           FactoryBot.create(
             :training_period, :provider_led, :for_mentor,
-            :withdrawn,
+            :deferred,
             mentor_at_school_period: mentor,
             started_on: mentor_start_date,
             finished_on: nil,

@@ -121,26 +121,7 @@ RSpec.describe "schools/mentors/show.html.erb" do
     end
   end
 
-  context "when the training period is deferred" do
-    before do
-      FactoryBot.create(
-        :training_period, :provider_led, :for_mentor, :deferred,
-        mentor_at_school_period: mentor_period,
-        started_on: start_date, finished_on: nil,
-        school_partnership:
-      )
-      render_view
-    end
-
-    it "shows the deferred message and hides the summary list" do
-      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
-      expect(rendered).to have_css(".govuk-body", text: "Hidden leaf village have told us that Naruto Uzumaki is not registered for ECTE mentor training with them.")
-      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
-      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
-    end
-  end
-
-  context "when the training period has been withdrawn" do
+  context "when the training period is withdrawn" do
     before do
       FactoryBot.create(
         :training_period, :provider_led, :for_mentor, :withdrawn,
@@ -151,7 +132,26 @@ RSpec.describe "schools/mentors/show.html.erb" do
       render_view
     end
 
-    it "shows the withdrawn message and shows the summary list" do
+    it "shows the withdrawn message and hides the summary list" do
+      expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
+      expect(rendered).to have_css(".govuk-body", text: "Hidden leaf village have told us that Naruto Uzumaki is not registered for ECTE mentor training with them.")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
+      expect(rendered).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+    end
+  end
+
+  context "when the training period has been deferred" do
+    before do
+      FactoryBot.create(
+        :training_period, :provider_led, :for_mentor, :deferred,
+        mentor_at_school_period: mentor_period,
+        started_on: start_date, finished_on: nil,
+        school_partnership:
+      )
+      render_view
+    end
+
+    it "shows the deferred message and shows the summary list" do
       expect(rendered).to have_css("h2.govuk-heading-m", text: "ECTE mentor training details")
       expect(rendered).to have_css(".govuk-body", text: "Hidden leaf village have told us that Naruto Uzumaki’s ECTE mentor training is paused.")
       expect(rendered).to have_css("dt.govuk-summary-list__key", text: "Lead provider")
