@@ -1,17 +1,17 @@
 RSpec.describe "Claiming an ECT" do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:other_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher, trn: "1234567") }
   let(:pending_induction_submission) { PendingInductionSubmission.last }
 
-  before { sign_in_as_appropriate_body_user(appropriate_body:) }
+  before { sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period) }
 
   describe "when the teacher has not passed the induction" do
     let!(:induction_period) do
       FactoryBot.create(:induction_period, teacher:,
                                            started_on: 14.months.ago,
                                            finished_on: 13.months.ago,
-                                           appropriate_body: other_body)
+                                           appropriate_body_period: other_body)
     end
 
     include_context "test TRS API returns a teacher with specific induction status", "InProgress"
@@ -35,7 +35,7 @@ RSpec.describe "Claiming an ECT" do
     include_context "test TRS API returns a teacher with specific induction status", "InProgress"
 
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body: other_body)
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_body)
     end
 
     scenario "the teacher cannot be claimed" do

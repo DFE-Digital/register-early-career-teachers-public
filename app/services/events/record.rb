@@ -12,7 +12,7 @@ module Events
                 :school,
                 :induction_period,
                 :teacher,
-                :appropriate_body,
+                :appropriate_body_period,
                 :induction_extension,
                 :ect_at_school_period,
                 :mentor_at_school_period,
@@ -42,7 +42,7 @@ module Events
       school: nil,
       induction_period: nil,
       teacher: nil,
-      appropriate_body: nil,
+      appropriate_body_period: nil,
       induction_extension: nil,
       ect_at_school_period: nil,
       mentor_at_school_period: nil,
@@ -71,7 +71,7 @@ module Events
       @school = school
       @induction_period = induction_period
       @teacher = teacher
-      @appropriate_body = appropriate_body
+      @appropriate_body_period = appropriate_body_period
       @induction_extension = induction_extension
       @ect_at_school_period = ect_at_school_period
       @mentor_at_school_period = mentor_at_school_period
@@ -100,98 +100,98 @@ module Events
 
     # Induction Period Events
 
-    def self.record_induction_period_opened_event!(author:, appropriate_body:, induction_period:, teacher:, modifications:)
+    def self.record_induction_period_opened_event!(author:, appropriate_body_period:, induction_period:, teacher:, modifications:)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :induction_period_opened
       happened_at = induction_period.started_on
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} was claimed by #{appropriate_body.name}"
+      heading = "#{teacher_name} was claimed by #{appropriate_body_period.name}"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:, modifications:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, heading:, happened_at:, modifications:).record_event!
     end
 
-    def self.record_induction_period_closed_event!(author:, appropriate_body:, induction_period:, teacher:)
+    def self.record_induction_period_closed_event!(author:, appropriate_body_period:, induction_period:, teacher:)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :induction_period_closed
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name} was released by #{appropriate_body.name}"
+      heading = "#{teacher_name} was released by #{appropriate_body_period.name}"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body:, happened_at: Time.zone.now)
+    def self.record_induction_period_updated_event!(author:, modifications:, induction_period:, teacher:, appropriate_body_period:, happened_at: Time.zone.now)
       event_type = :induction_period_updated
       heading = "Induction period updated by admin" if author.dfe_user?
       heading = "Induction period updated by appropriate body" if author.appropriate_body_user?
 
-      new(event_type:, modifications:, author:, appropriate_body:, induction_period:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, modifications:, author:, appropriate_body_period:, induction_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body:, body: nil, zendesk_ticket_id: nil, happened_at: Time.zone.now)
+    def self.record_induction_period_deleted_event!(author:, modifications:, teacher:, appropriate_body_period:, body: nil, zendesk_ticket_id: nil, happened_at: Time.zone.now)
       event_type = :induction_period_deleted
       heading = "Induction period deleted by admin"
 
-      new(event_type:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
+      new(event_type:, modifications:, author:, appropriate_body_period:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     # Teacher Status Events
 
-    def self.record_teacher_passes_induction_event!(author:, appropriate_body:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
+    def self.record_teacher_passes_induction_event!(author:, appropriate_body_period:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_passes_induction
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} passed induction by admin" if author.dfe_user?
-      heading = "#{teacher_name} passed induction by #{appropriate_body.name}" if author.appropriate_body_user?
+      heading = "#{teacher_name} passed induction by #{appropriate_body_period.name}" if author.appropriate_body_user?
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
-    def self.record_teacher_fails_induction_event!(author:, appropriate_body:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
+    def self.record_teacher_fails_induction_event!(author:, appropriate_body_period:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, teacher:, body: nil, zendesk_ticket_id: nil)
       fail(NoInductionPeriod) unless induction_period
 
       event_type = :teacher_fails_induction
       happened_at = induction_period.finished_on
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} failed induction by admin" if author.dfe_user?
-      heading = "#{teacher_name} failed induction by #{appropriate_body.name}" if author.appropriate_body_user?
+      heading = "#{teacher_name} failed induction by #{appropriate_body_period.name}" if author.appropriate_body_user?
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, ect_at_school_period:, mentorship_period:, training_period:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
-    def self.record_teacher_induction_status_reset_event!(author:, appropriate_body:, teacher:, happened_at: Time.zone.now)
+    def self.record_teacher_induction_status_reset_event!(author:, appropriate_body_period:, teacher:, happened_at: Time.zone.now)
       event_type = :teacher_induction_status_reset
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name} was unclaimed"
 
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, heading:, happened_at:).record_event!
     end
 
     # Teacher TRS Events
 
-    def self.teacher_name_changed_in_trs_event!(old_name:, new_name:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_name_changed_in_trs_event!(old_name:, new_name:, author:, teacher:, appropriate_body_period: nil, happened_at: Time.zone.now)
       event_type = :teacher_name_updated_by_trs
       heading = TransitionDescription.for("name", from: old_name, to: new_name)
 
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_induction_status_changed_in_trs_event!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_induction_status_changed_in_trs_event!(old_induction_status:, new_induction_status:, author:, teacher:, appropriate_body_period: nil, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_status_updated
       heading = TransitionDescription.for("induction_status", from: old_induction_status, to: new_induction_status)
 
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body: nil, happened_at: Time.zone.now)
+    def self.teacher_imported_from_trs_event!(author:, teacher:, appropriate_body_period: nil, happened_at: Time.zone.now)
       event_type = :teacher_imported_from_trs
       heading = "Imported from TRS"
 
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, heading:, happened_at:).record_event!
     end
 
     def self.teacher_trs_attributes_updated_event!(author:, teacher:, modifications:, happened_at: Time.zone.now)
@@ -235,54 +235,54 @@ module Events
       new(event_type:, author:, teacher:, heading:, body:, happened_at:).record_event!
     end
 
-    def self.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:, happened_at: Time.zone.now)
+    def self.record_teacher_trs_induction_start_date_updated_event!(author:, teacher:, appropriate_body_period:, induction_period:, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_start_date_updated
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}’s induction start date was updated"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
-    def self.record_teacher_trs_induction_end_date_updated_event!(author:, teacher:, appropriate_body:, induction_period:, happened_at: Time.zone.now)
+    def self.record_teacher_trs_induction_end_date_updated_event!(author:, teacher:, appropriate_body_period:, induction_period:, happened_at: Time.zone.now)
       event_type = :teacher_trs_induction_end_date_updated
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}’s induction end date was updated"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_period:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_period:, heading:, happened_at:).record_event!
     end
 
     # Induction Extension Events
 
-    def self.record_induction_extension_created_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+    def self.record_induction_extension_created_event!(author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_created
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_extension_updated_event!(author:, appropriate_body:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
+    def self.record_induction_extension_updated_event!(author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_updated
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms"
 
-      new(event_type:, author:, appropriate_body:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_extension_deleted_event!(author:, appropriate_body:, teacher:, number_of_terms:, happened_at: Time.zone.now)
+    def self.record_induction_extension_deleted_event!(author:, appropriate_body_period:, teacher:, number_of_terms:, happened_at: Time.zone.now)
       event_type = :induction_extension_deleted
       teacher_name = Teachers::Name.new(teacher).full_name
       heading = "#{teacher_name}’s induction extension of #{number_of_terms} terms was deleted"
 
-      new(event_type:, author:, appropriate_body:, teacher:, heading:, happened_at:).record_event!
+      new(event_type:, author:, appropriate_body_period:, teacher:, heading:, happened_at:).record_event!
     end
 
-    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body:, body:, zendesk_ticket_id:)
+    def self.record_induction_period_reopened_event!(author:, induction_period:, modifications:, teacher:, appropriate_body_period:, body:, zendesk_ticket_id:)
       event_type = :induction_period_reopened
       happened_at = Time.zone.now
       heading = "Induction period reopened"
 
-      new(event_type:, induction_period:, modifications:, author:, appropriate_body:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
+      new(event_type:, induction_period:, modifications:, author:, appropriate_body_period:, teacher:, heading:, happened_at:, body:, zendesk_ticket_id:).record_event!
     end
 
     # ECT and mentor events
@@ -572,16 +572,16 @@ module Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)
       event_type = :bulk_upload_started
-      heading = "#{batch.appropriate_body.name} started a bulk #{batch.batch_type}"
+      heading = "#{batch.appropriate_body_period.name} started a bulk #{batch.batch_type}"
 
-      new(event_type:, author:, appropriate_body: batch.appropriate_body, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
+      new(event_type:, author:, appropriate_body_period: batch.appropriate_body_period, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
     end
 
     def self.record_bulk_upload_completed_event!(author:, batch:)
       event_type = :bulk_upload_completed
-      heading = "#{batch.appropriate_body.name} completed a bulk #{batch.batch_type}"
+      heading = "#{batch.appropriate_body_period.name} completed a bulk #{batch.batch_type}"
 
-      new(event_type:, author:, appropriate_body: batch.appropriate_body, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
+      new(event_type:, author:, appropriate_body_period: batch.appropriate_body_period, pending_induction_submission_batch: batch, heading:, happened_at: Time.zone.now).record_event!
     end
 
     # API Token Events
@@ -959,7 +959,7 @@ module Events
         school:,
         induction_period:,
         teacher:,
-        appropriate_body:,
+        appropriate_body_period:,
         induction_extension:,
         ect_at_school_period:,
         mentor_at_school_period:,

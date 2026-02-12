@@ -1,7 +1,7 @@
 RSpec.describe TeachersIndexComponent, type: :component do
   subject(:component) do
     TeachersIndexComponent.new(
-      appropriate_body:,
+      appropriate_body_period:,
       teachers:,
       pagy:,
       status:,
@@ -9,30 +9,30 @@ RSpec.describe TeachersIndexComponent, type: :component do
     )
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
 
   let!(:teacher_1) do
     teacher = FactoryBot.create(:teacher, trs_first_name: "Alice", trs_last_name: "Smith", trn: "1234567")
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 3.months.ago)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 3.months.ago)
     teacher
   end
 
   let!(:teacher_2) do
     teacher = FactoryBot.create(:teacher, trs_first_name: "Bob", trs_last_name: "Jones", trn: "2345678")
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:, started_on: 2.months.ago)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 2.months.ago)
     teacher
   end
 
   let!(:teacher_3_closed) do
     teacher = FactoryBot.create(:teacher, trs_first_name: "Carol", trs_last_name: "Brown", trn: "3456789")
-    FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 6)
+    FactoryBot.create(:induction_period, :pass, teacher:, appropriate_body_period:, started_on: 6.months.ago, finished_on: 1.month.ago, number_of_terms: 6)
     teacher
   end
 
   let!(:teacher_4_other_ab) do
     teacher = FactoryBot.create(:teacher, trs_first_name: "David", trs_last_name: "Wilson", trn: "4567890")
-    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body: other_appropriate_body, started_on: 1.month.ago)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: other_appropriate_body, started_on: 1.month.ago)
     teacher
   end
 
@@ -264,7 +264,7 @@ RSpec.describe TeachersIndexComponent, type: :component do
 
   describe "ECTs service integration" do
     it "uses AppropriateBodies::ECTs service for calculating counts" do
-      expect(AppropriateBodies::ECTs).to receive(:new).with(appropriate_body).and_call_original
+      expect(AppropriateBodies::ECTs).to receive(:new).with(appropriate_body_period).and_call_original
       render_inline(component)
     end
 
@@ -292,7 +292,7 @@ RSpec.describe TeachersIndexComponent, type: :component do
 
     it "correctly counts closed inductions for the appropriate body" do
       component_closed = TeachersIndexComponent.new(
-        appropriate_body:,
+        appropriate_body_period:,
         teachers: [],
         pagy:,
         status: "closed",

@@ -1,7 +1,7 @@
 RSpec.describe AppropriateBodies::ECTs do
-  subject { AppropriateBodies::ECTs.new(appropriate_body) }
+  subject { AppropriateBodies::ECTs.new(appropriate_body_period) }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -10,7 +10,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body: other_appropriate_body,
+                          appropriate_body_period: other_appropriate_body,
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
                           number_of_terms: 3,
@@ -20,7 +20,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:latest_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: 6.months.ago,
                           finished_on: 1.month.ago,
                           outcome: "pass",
@@ -37,7 +37,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
                           number_of_terms: 3,
@@ -47,7 +47,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:latest_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body: other_appropriate_body,
+                          appropriate_body_period: other_appropriate_body,
                           started_on: 6.months.ago,
                           finished_on: 1.month.ago,
                           outcome: "pass", # pass or fail should be on last IP
@@ -64,7 +64,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body: other_appropriate_body,
+                          appropriate_body_period: other_appropriate_body,
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
                           number_of_terms: 3,
@@ -74,7 +74,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:ongoing_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: 6.months.ago,
                           finished_on: nil,
                           number_of_terms: nil,
@@ -90,7 +90,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:earlier_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
                           outcome: "pass",
@@ -101,7 +101,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:failed_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: 6.months.ago,
                           finished_on: 1.month.ago,
                           outcome: "fail",
@@ -118,7 +118,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:induction_period_without_outcome) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           started_on: 6.months.ago,
                           finished_on: 1.month.ago,
                           outcome: nil,
@@ -137,7 +137,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:finished_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           finished_on: 1.month.ago,
                           number_of_terms: 3,
                           induction_programme: "fip")
@@ -152,7 +152,7 @@ RSpec.describe AppropriateBodies::ECTs do
       let!(:ongoing_induction_period) do
         FactoryBot.create(:induction_period,
                           teacher:,
-                          appropriate_body:,
+                          appropriate_body_period:,
                           finished_on: nil,
                           number_of_terms: nil,
                           induction_programme: "fip")

@@ -97,7 +97,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::PreviousRegistrati
 
   describe "#previous_appropriate_body_name" do
     context "when a previous appropriate body exists" do
-      let(:previous_appropriate_body) { instance_double(AppropriateBody, name: "North Springfield Hub") }
+      let(:previous_appropriate_body) { instance_double(AppropriateBodyPeriod, name: "North Springfield Hub") }
 
       it "returns the appropriate body name" do
         expect(previous_registration.previous_appropriate_body_name).to eq("North Springfield Hub")

@@ -1,8 +1,8 @@
 RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
   before { render_inline(component) }
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:component) { described_class.new(appropriate_body:) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:component) { described_class.new(appropriate_body_period:) }
 
   it "links to Find ECTs" do
     expect(page).to have_link("Find and claim a new ECT", href: "/appropriate-body/claim-an-ect/find-ect/new")
@@ -20,7 +20,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
   context "with existing bulk action submissions" do
     before do
-      FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body:)
+      FactoryBot.create(:pending_induction_submission_batch, :action, appropriate_body_period:)
       render_inline(component)
     end
 
@@ -31,7 +31,7 @@ RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
 
   context "with existing bulk claim submissions" do
     before do
-      FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:)
+      FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body_period:)
       render_inline(component)
     end
 

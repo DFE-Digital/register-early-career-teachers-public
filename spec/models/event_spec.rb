@@ -1,7 +1,7 @@
 describe Event do
   describe "associations" do
     it { is_expected.to belong_to(:teacher).optional }
-    it { is_expected.to belong_to(:appropriate_body).optional }
+    it { is_expected.to belong_to(:appropriate_body_period).optional }
     it { is_expected.to belong_to(:induction_period).optional }
     it { is_expected.to belong_to(:induction_extension).optional }
 

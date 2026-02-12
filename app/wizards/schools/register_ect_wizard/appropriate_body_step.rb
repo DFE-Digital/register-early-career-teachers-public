@@ -8,7 +8,7 @@ module Schools
       def self.permitted_params = %i[appropriate_body_id]
 
       def appropriate_body
-        @appropriate_body ||= AppropriateBody.find_by_id(appropriate_body_id) if appropriate_body_id
+        @appropriate_body ||= AppropriateBodyPeriod.find_by_id(appropriate_body_id) if appropriate_body_id
       end
 
       def appropriate_body_type = appropriate_body&.body_type

@@ -1,7 +1,7 @@
 RSpec.describe "Process bulk actions" do
   include_context "test TRS API returns a teacher"
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   let(:file_name) { "valid_complete_action.csv" }
   let(:file_path) { Rails.root.join("spec/fixtures/#{file_name}").to_s }
@@ -9,7 +9,7 @@ RSpec.describe "Process bulk actions" do
   include ActiveJob::TestHelper
 
   before do
-    sign_in_as_appropriate_body_user(appropriate_body:)
+    sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period)
     page.goto(new_ab_batch_action_path)
   end
 
@@ -17,7 +17,7 @@ RSpec.describe "Process bulk actions" do
     let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
     let(:batch) do
       FactoryBot.create(:pending_induction_submission_batch, :claim,
-                        appropriate_body: other_appropriate_body)
+                        appropriate_body_period: other_appropriate_body)
     end
 
     before { page.goto(ab_batch_claim_path(batch.id)) }
@@ -48,10 +48,10 @@ RSpec.describe "Process bulk actions" do
         expect(page.get_by_text("0%")).to be_visible
 
         teacher = FactoryBot.create(:teacher, trn: "1234567")
-        FactoryBot.create(:induction_period, teacher:, appropriate_body:)
+        FactoryBot.create(:induction_period, teacher:, appropriate_body_period:)
         batch = PendingInductionSubmissionBatch.last
         batch.processing!
-        batch.pending_induction_submissions.create!(appropriate_body:,
+        batch.pending_induction_submissions.create!(appropriate_body_period:,
                                                     trn: "1234567",
                                                     date_of_birth: "1981-06-30",
                                                     finished_on: "2025-01-30",

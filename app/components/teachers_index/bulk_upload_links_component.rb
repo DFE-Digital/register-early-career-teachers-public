@@ -1,13 +1,13 @@
 class TeachersIndex::BulkUploadLinksComponent < ApplicationComponent
   include Rails.application.routes.url_helpers
 
-  def initialize(appropriate_body:)
-    @appropriate_body = appropriate_body
+  def initialize(appropriate_body_period:)
+    @appropriate_body_period = appropriate_body_period
   end
 
 private
 
-  attr_reader :appropriate_body
+  attr_reader :appropriate_body_period
 
   def batch_claim_path
     has_existing_batch_claims? ? ab_batch_claims_path : new_ab_batch_claim_path
@@ -26,6 +26,6 @@ private
   end
 
   def batches
-    PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body)
+    PendingInductionSubmissionBatch.for_appropriate_body_period(appropriate_body_period)
   end
 end

@@ -1,7 +1,7 @@
 RSpec.describe "Appropriate Body teacher extensions index", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
 
   describe "when not signed in" do
     it "redirects to the root page" do
@@ -12,7 +12,7 @@ RSpec.describe "Appropriate Body teacher extensions index", type: :request do
   end
 
   describe "when signed in as an appropriate body user" do
-    let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+    let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
     describe "GET /appropriate-body/teachers/:id/extensions" do
       it "displays the extensions list" do

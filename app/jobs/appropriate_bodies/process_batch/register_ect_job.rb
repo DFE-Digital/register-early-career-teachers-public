@@ -9,18 +9,18 @@ module AppropriateBodies
       def perform(pending_induction_submission_id, author_email, author_name)
         pending_induction_submission = PendingInductionSubmission.find(pending_induction_submission_id)
         pending_induction_submission_batch = pending_induction_submission.pending_induction_submission_batch
-        appropriate_body = pending_induction_submission_batch.appropriate_body
+        appropriate_body_period = pending_induction_submission_batch.appropriate_body_period
 
         author = Events::AppropriateBodyBatchAuthor.new(
           email: author_email,
           name: author_name,
-          appropriate_body_id: appropriate_body.id,
+          appropriate_body_period_id: appropriate_body_period.id,
           batch_id: pending_induction_submission_batch.id
         )
 
         # OPTIMIZE: params effectively passed in twice
         ClaimAnECT::RegisterECT.new(
-          appropriate_body:,
+          appropriate_body_period:,
           pending_induction_submission:,
           author:
         ).register(

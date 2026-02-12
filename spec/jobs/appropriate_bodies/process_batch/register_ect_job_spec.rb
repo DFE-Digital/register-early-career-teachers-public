@@ -8,7 +8,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
   include_context "test TRS API returns a teacher"
 
   let(:pending_induction_submission_batch) do
-    FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body:)
+    FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body_period:)
   end
 
   let(:pending_induction_submission) do
@@ -18,7 +18,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
                       training_programme: "provider_led")
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:author_email) { "barry@not-a-clue.co.uk" }
   let(:author_name) { "Barry Cryer" }
   let(:teacher) { Teacher.find_by(trn: pending_induction_submission.trn) }
@@ -55,7 +55,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RegisterECTJob, type: :job do
     perform_enqueued_jobs
 
     expect(Events::Record).to have_received(:record_induction_period_opened_event!).with(
-      appropriate_body:,
+      appropriate_body_period:,
       teacher:,
       induction_period:,
       author: an_instance_of(::Events::AppropriateBodyBatchAuthor),

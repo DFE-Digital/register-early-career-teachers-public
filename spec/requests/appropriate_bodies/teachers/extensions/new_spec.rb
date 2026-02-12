@@ -1,8 +1,8 @@
 RSpec.describe "Appropriate Body teacher extensions new", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
-  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body:) }
-  let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
+  let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
   describe "GET /appropriate-body/teachers/:id/extensions/new" do
     it "displays the new extension form" do

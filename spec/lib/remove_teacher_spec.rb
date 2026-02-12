@@ -5,7 +5,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
 
   it "#has_many_associations" do
     expect(remove_teacher.has_many_associations).to eq(%i[
-      appropriate_bodies
+      appropriate_body_periods
       ect_at_school_periods
       ect_declarations
       ect_training_periods
@@ -29,13 +29,13 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
     let!(:induction_period) do
       FactoryBot.create(:induction_period,
                         teacher:,
-                        appropriate_body: first_appropriate_body)
+                        appropriate_body_period: first_appropriate_body)
     end
 
     let!(:ongoing_induction_period) do
       FactoryBot.create(:induction_period, :ongoing,
                         teacher:,
-                        appropriate_body: second_appropriate_body,
+                        appropriate_body_period: second_appropriate_body,
                         started_on: 1.week.ago)
     end
 
@@ -44,21 +44,21 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
     let!(:passed_induction_period) do
       FactoryBot.create(:induction_period, :pass,
                         teacher: other_teacher,
-                        appropriate_body: second_appropriate_body)
+                        appropriate_body_period: second_appropriate_body)
     end
 
     before do
       FactoryBot.create(:event,
                         teacher:,
-                        appropriate_body: first_appropriate_body)
+                        appropriate_body_period: first_appropriate_body)
 
       FactoryBot.create(:event,
                         teacher:,
-                        appropriate_body: second_appropriate_body)
+                        appropriate_body_period: second_appropriate_body)
 
       FactoryBot.create(:event,
                         teacher: other_teacher,
-                        appropriate_body: second_appropriate_body)
+                        appropriate_body_period: second_appropriate_body)
     end
 
     describe "unrelated records" do
@@ -76,7 +76,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
       it do
         expect {
           remove_teacher.call
-        }.to not_change(AppropriateBody, :count)
+        }.to not_change(AppropriateBodyPeriod, :count)
           .and not_change(API::Token, :count)
           .and not_change(ContractPeriod, :count)
           .and not_change(DeliveryPartner, :count)
@@ -92,7 +92,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
       # Original
       expect(Teacher.count).to eq(2)
       expect(InductionPeriod.count).to eq(3)
-      expect(AppropriateBody.count).to eq(2)
+      expect(AppropriateBodyPeriod.count).to eq(2)
       expect(Event.count).to eq(3)
 
       # Remove
@@ -110,7 +110,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
       # Result
       expect(Teacher.count).to eq(1)
       expect(InductionPeriod.count).to eq(1)
-      expect(AppropriateBody.count).to eq(2)
+      expect(AppropriateBodyPeriod.count).to eq(2)
       expect(Event.count).to eq(1)
     end
   end

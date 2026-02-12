@@ -1,6 +1,6 @@
 RSpec.describe TeachersIndex::ReviewSectionComponent, type: :component do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-  let(:component) { described_class.new(appropriate_body:) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:component) { described_class.new(appropriate_body_period:) }
   let(:number_of_ect_records_to_review) { 0 }
 
   context "when disabled" do

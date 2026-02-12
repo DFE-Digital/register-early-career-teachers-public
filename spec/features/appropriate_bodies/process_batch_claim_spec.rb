@@ -1,7 +1,7 @@
 RSpec.describe "Process bulk claims" do
   include_context "test TRS API returns a teacher"
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   let(:file_name) { "valid_complete_claim.csv" }
   let(:file_path) { Rails.root.join("spec/fixtures/#{file_name}").to_s }
@@ -9,13 +9,13 @@ RSpec.describe "Process bulk claims" do
   include ActiveJob::TestHelper
 
   before do
-    sign_in_as_appropriate_body_user(appropriate_body:)
+    sign_in_as_appropriate_body_user(appropriate_body: appropriate_body_period)
     page.goto(new_ab_batch_claim_path)
   end
 
   context "when batch is owned by another appropriate body" do
-    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body: other_appropriate_body) }
+    let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:batch) { FactoryBot.create(:pending_induction_submission_batch, :claim, appropriate_body_period: other_appropriate_body_period) }
 
     before { page.goto(ab_batch_claim_path(batch.id)) }
 

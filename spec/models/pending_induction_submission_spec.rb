@@ -5,7 +5,7 @@ RSpec.describe PendingInductionSubmission do
   it_behaves_like "an induction period"
 
   describe "associations" do
-    it { is_expected.to belong_to(:appropriate_body) }
+    it { is_expected.to belong_to(:appropriate_body_period) }
     it { is_expected.to belong_to(:pending_induction_submission_batch).optional }
   end
 
@@ -55,7 +55,7 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe "validations" do
-    it { is_expected.to allow_value(nil).for(:appropriate_body_id) }
+    it { is_expected.to allow_value(nil).for(:appropriate_body_period_id) }
 
     describe "#trn" do
       it { is_expected.to validate_presence_of(:trn).on(:find_ect).with_message("Enter a TRN") }
@@ -121,6 +121,8 @@ RSpec.describe PendingInductionSubmission do
     describe "#number_of_terms" do
       subject { FactoryBot.build(:pending_induction_submission, finished_on: Date.current) }
 
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+
       it { is_expected.to validate_presence_of(:number_of_terms).with_message("Enter a number of terms").on(%i[release_ect record_outcome]) }
       it { is_expected.to validate_inclusion_of(:number_of_terms).in_range(0..16).with_message("Number of terms must be between 0 and 16").on(%i[release_ect record_outcome]) }
 
@@ -135,9 +137,7 @@ RSpec.describe PendingInductionSubmission do
       end
 
       context "when number_of_terms has more than 1 decimal place" do
-        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.45, finished_on: Date.current) }
-
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        subject { FactoryBot.build(:pending_induction_submission, appropriate_body_period:, number_of_terms: 3.45, finished_on: Date.current) }
 
         it "is invalid on release_ect" do
           expect(subject.valid?(:release_ect)).to be false
@@ -151,9 +151,7 @@ RSpec.describe PendingInductionSubmission do
       end
 
       context "when number_of_terms has 1 decimal place" do
-        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3.5, finished_on: Date.current) }
-
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        subject { FactoryBot.build(:pending_induction_submission, appropriate_body_period:, number_of_terms: 3.5, finished_on: Date.current) }
 
         it "is valid on release_ect" do
           expect(subject.valid?(:release_ect)).to be true
@@ -166,9 +164,7 @@ RSpec.describe PendingInductionSubmission do
       end
 
       context "when number_of_terms is an integer" do
-        subject { FactoryBot.build(:pending_induction_submission, appropriate_body:, number_of_terms: 3, finished_on: Date.current) }
-
-        let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+        subject { FactoryBot.build(:pending_induction_submission, appropriate_body_period:, number_of_terms: 3, finished_on: Date.current) }
 
         it "is valid on release_ect" do
           expect(subject.valid?(:release_ect)).to be true
@@ -381,8 +377,8 @@ RSpec.describe PendingInductionSubmission do
   end
 
   describe "#playback_errors" do
-    let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
-    let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, appropriate_body:, finished_on: 1.day.ago) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:pending_induction_submission) { FactoryBot.build(:pending_induction_submission, appropriate_body_period:, finished_on: 1.day.ago) }
 
     before do
       pending_induction_submission.playback_errors unless pending_induction_submission.save(context: :record_outcome)

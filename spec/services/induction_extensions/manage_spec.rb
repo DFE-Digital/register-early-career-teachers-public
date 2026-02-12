@@ -1,19 +1,19 @@
 RSpec.describe InductionExtensions::Manage do
   subject(:service) do
-    described_class.new(author:, teacher:, appropriate_body:)
+    described_class.new(author:, teacher:, appropriate_body_period:)
   end
 
   let(:author) do
     Sessions::Users::AppropriateBodyPersona.new(
       email: user.email,
       name: user.name,
-      appropriate_body_id: appropriate_body.id
+      appropriate_body_period_id: appropriate_body_period.id
     )
   end
 
   let(:user) { FactoryBot.create(:user, name: "Christopher Biggins", email: "christopher.biggins@education.gov.uk") }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Andy", trs_last_name: "Zaltzman") }
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   describe "#create_or_update!" do
     before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
@@ -27,7 +27,7 @@ RSpec.describe InductionExtensions::Manage do
           expect(teacher.induction_extensions.last.number_of_terms).to eq(1)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
-            appropriate_body:,
+            appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_name: "Christopher Biggins",
             author_type: :appropriate_body_user,
@@ -53,7 +53,7 @@ RSpec.describe InductionExtensions::Manage do
           expect(induction_extension.reload.number_of_terms).to eq(4.6)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
-            appropriate_body:,
+            appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_name: "Christopher Biggins",
             author_type: :appropriate_body_user,
@@ -83,7 +83,7 @@ RSpec.describe InductionExtensions::Manage do
           }.to change(InductionExtension, :count).by(-1)
 
           expect(RecordEventJob).to have_received(:perform_later).with(
-            appropriate_body:,
+            appropriate_body_period:,
             author_email: "christopher.biggins@education.gov.uk",
             author_name: "Christopher Biggins",
             author_type: :appropriate_body_user,

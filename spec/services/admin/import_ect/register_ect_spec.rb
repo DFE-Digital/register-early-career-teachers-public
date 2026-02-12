@@ -11,7 +11,7 @@ RSpec.describe Admin::ImportECT::RegisterECT do
     allow(author).to receive(:is_a?).with(any_args).and_call_original
   end
 
-  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body: nil) }
+  let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, appropriate_body_period: nil) }
   let(:admin_user) { FactoryBot.create(:user, :admin) }
   let(:author) do
     Sessions::Users::DfEUser.new(

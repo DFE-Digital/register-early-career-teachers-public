@@ -1,7 +1,7 @@
 # Name, DQT ID and type of Appropriate Body from imported legacy data
 class LegacyAppropriateBody < ApplicationRecord
   # Associations
-  belongs_to :appropriate_body_period, class_name: "AppropriateBody"
+  belongs_to :appropriate_body_period
 
   # Validations
   validates :name,

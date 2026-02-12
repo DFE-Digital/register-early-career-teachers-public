@@ -1,16 +1,16 @@
 RSpec.shared_context "it closes an induction" do
   subject(:service) do
-    described_class.new(teacher:, appropriate_body:, author:)
+    described_class.new(teacher:, appropriate_body_period:, author:)
   end
 
   include_context "test TRS API returns a teacher"
 
   let(:author) do
     FactoryBot.create(:appropriate_body_user,
-                      dfe_sign_in_organisation_id: appropriate_body.dfe_sign_in_organisation_id)
+                      dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
   end
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { FactoryBot.create(:school) }
 
@@ -20,7 +20,7 @@ RSpec.shared_context "it closes an induction" do
 
   let!(:induction_period) do
     FactoryBot.create(:induction_period, :ongoing,
-                      appropriate_body:,
+                      appropriate_body_period:,
                       teacher:)
   end
 

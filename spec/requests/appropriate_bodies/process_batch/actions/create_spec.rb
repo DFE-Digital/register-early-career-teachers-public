@@ -1,16 +1,16 @@
 RSpec.describe "Appropriate Body bulk actions upload", type: :request do
   include ActionDispatch::TestProcess
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
-  let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+  let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
   let(:csv_file) do
     fixture_file_upload("spec/fixtures/valid_complete_action.csv", "text/csv")
   end
 
   let(:batch) do
-    PendingInductionSubmissionBatch.for_appropriate_body(appropriate_body).last
+    PendingInductionSubmissionBatch.for_appropriate_body_period(appropriate_body_period).last
   end
 
   include_context "test TRS API returns a teacher"

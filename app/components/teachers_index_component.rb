@@ -3,11 +3,11 @@ class TeachersIndexComponent < ApplicationComponent
   include EmptyStateMessage
 
   renders_one :bulk_upload_links, -> {
-    TeachersIndex::BulkUploadLinksComponent.new(appropriate_body:)
+    TeachersIndex::BulkUploadLinksComponent.new(appropriate_body_period:)
   }
 
   renders_one :review_section, -> {
-    TeachersIndex::ReviewSectionComponent.new(appropriate_body:)
+    TeachersIndex::ReviewSectionComponent.new(appropriate_body_period:)
   }
 
   renders_one :header, -> {
@@ -33,10 +33,10 @@ class TeachersIndexComponent < ApplicationComponent
     )
   }
 
-  attr_reader :appropriate_body, :teachers, :pagy, :status, :query
+  attr_reader :appropriate_body_period, :teachers, :pagy, :status, :query
 
-  def initialize(appropriate_body:, teachers:, pagy:, status: "open", query: nil)
-    @appropriate_body = appropriate_body
+  def initialize(appropriate_body_period:, teachers:, pagy:, status: "open", query: nil)
+    @appropriate_body_period = appropriate_body_period
     @teachers = teachers
     @pagy = pagy
     @status = normalize_status(status)
@@ -72,7 +72,7 @@ private
   end
 
   def ects_service
-    @ects_service ||= AppropriateBodies::ECTs.new(appropriate_body)
+    @ects_service ||= AppropriateBodies::ECTs.new(appropriate_body_period)
   end
 
   # Return filtered counts when searching, total counts when not searching
@@ -104,7 +104,7 @@ private
   def filtered_open_count
     @filtered_open_count ||= Teachers::Search.new(
       query_string: query,
-      appropriate_bodies: appropriate_body,
+      appropriate_bodies: appropriate_body_period,
       status: "open"
     ).count
   end
@@ -112,7 +112,7 @@ private
   def filtered_closed_count
     @filtered_closed_count ||= Teachers::Search.new(
       query_string: query,
-      appropriate_bodies: appropriate_body,
+      appropriate_bodies: appropriate_body_period,
       status: "closed"
     ).count
   end

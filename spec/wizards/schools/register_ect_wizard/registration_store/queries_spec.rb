@@ -162,7 +162,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     before do
       FactoryBot.create(:induction_period,
                         teacher:,
-                        appropriate_body: previous_appropriate_body,
+                        appropriate_body_period: previous_appropriate_body,
                         started_on: previous_ect_period.started_on,
                         finished_on: previous_ect_period.finished_on)
     end

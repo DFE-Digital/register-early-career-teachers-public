@@ -22,7 +22,7 @@ RSpec.describe AppropriateBodies::RecordRelease do
       service_call
 
       expect(Events::Record).to have_received(:record_induction_period_closed_event!).with(
-        appropriate_body:,
+        appropriate_body_period:,
         teacher:,
         induction_period:,
         author:

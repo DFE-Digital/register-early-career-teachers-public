@@ -26,7 +26,7 @@ module Admin
 
   private
 
-    delegate :teacher, :appropriate_body, to: :induction_period
+    delegate :teacher, :appropriate_body_period, to: :induction_period
 
     def check_can_reopen_period!
       check_induction_period_is_complete!
@@ -56,7 +56,7 @@ module Admin
         induction_period:,
         modifications:,
         teacher:,
-        appropriate_body:
+        appropriate_body_period:
       )
     end
 

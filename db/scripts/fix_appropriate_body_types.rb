@@ -1,10 +1,10 @@
 # Correct the body_type of LA records
 #
 
-AppropriateBody.where("name LIKE ?", "% LA").find_each do |ab|
+AppropriateBodyPeriod.where("name LIKE ?", "% LA").find_each do |ab|
   ab.update!(body_type: "local_authority")
 end
 
-AppropriateBody.where("name LIKE ?", "% Local Authority").find_each do |ab|
+AppropriateBodyPeriod.where("name LIKE ?", "% Local Authority").find_each do |ab|
   ab.update!(body_type: "local_authority")
 end

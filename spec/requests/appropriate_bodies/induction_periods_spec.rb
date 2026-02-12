@@ -1,10 +1,11 @@
 RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request do
   include_context "sign in as non-DfE user"
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
   let(:teacher) { FactoryBot.create(:teacher, :with_name, trs_qts_awarded_on: 1.year.ago) }
+
   let!(:induction_period) do
-    FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: 9.months.ago)
+    FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 9.months.ago)
   end
 
   describe "GET /appropriate-body/teachers/:teacher_id/induction-periods/:id/edit" do
@@ -22,7 +23,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
         induction_period: {
           started_on:,
           induction_programme:,
-          appropriate_body_id: appropriate_body.id
+          appropriate_body_period_id: appropriate_body_period.id
         }
       }
     end
@@ -43,7 +44,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
         expect(induction_period.induction_programme).to eq(induction_programme)
 
         expect(induction_period.training_programme).to eq("provider_led")
-        expect(induction_period.appropriate_body).to eq(appropriate_body)
+        expect(induction_period.appropriate_body_period).to eq(appropriate_body_period)
       end
 
       it "records an induction period updated event" do
@@ -60,7 +61,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
             {
               induction_period:,
               teacher: induction_period.teacher,
-              appropriate_body: induction_period.appropriate_body,
+              appropriate_body_period: induction_period.appropriate_body_period,
               modifications: expected_modifications,
               author: kind_of(Sessions::User),
             }
@@ -74,7 +75,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
             induction_period: {
               started_on:,
               training_programme:,
-              appropriate_body_id: appropriate_body.id
+              appropriate_body_period_id: appropriate_body_period.id
             }
           }
         end
@@ -92,7 +93,7 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
           expect(induction_period.induction_programme).to eq("unknown")
 
           expect(induction_period.training_programme).to eq(training_programme)
-          expect(induction_period.appropriate_body).to eq(appropriate_body)
+          expect(induction_period.appropriate_body_period).to eq(appropriate_body_period)
         end
       end
     end

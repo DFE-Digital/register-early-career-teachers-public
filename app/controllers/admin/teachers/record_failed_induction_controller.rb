@@ -4,7 +4,7 @@ module Admin
       def new
         @record_fail = RecordFail.new(
           teacher: @teacher,
-          appropriate_body:,
+          appropriate_body_period:,
           author: current_user
         )
 
@@ -15,7 +15,7 @@ module Admin
         if @teacher.ongoing_induction_period.present?
           @record_fail = RecordFail.new(
             teacher: @teacher,
-            appropriate_body:,
+            appropriate_body_period:,
             author: current_user,
             **auditable_params
           )

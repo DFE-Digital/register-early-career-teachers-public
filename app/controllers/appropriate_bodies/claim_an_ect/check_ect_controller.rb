@@ -2,7 +2,7 @@ module AppropriateBodies
   module ClaimAnECT
     class CheckECTController < AppropriateBodiesController
       def edit
-        @current_appropriate_body = current_user.appropriate_body
+        @current_appropriate_body = current_user.appropriate_body_period
         @pending_induction_submission = find_pending_induction_submission
         @teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
       end
@@ -26,12 +26,12 @@ module AppropriateBodies
     private
 
       def find_pending_induction_submission
-        PendingInductionSubmissions::Search.new(appropriate_body: @appropriate_body).pending_induction_submissions.find(params[:id])
+        PendingInductionSubmissions::Search.new(appropriate_body_period: @appropriate_body).pending_induction_submissions.find(params[:id])
       end
 
       def check_ect
         @check_ect ||= CheckECT.new(
-          appropriate_body: @appropriate_body,
+          appropriate_body_period: @appropriate_body,
           pending_induction_submission: @pending_induction_submission
         )
       end

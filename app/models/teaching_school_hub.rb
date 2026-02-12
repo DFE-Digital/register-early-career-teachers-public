@@ -6,7 +6,7 @@ class TeachingSchoolHub < ApplicationRecord
   belongs_to :dfe_sign_in_organisation
   belongs_to :lead_school, class_name: "School"
 
-  has_many :appropriate_body_periods, class_name: "AppropriateBody"
+  has_many :appropriate_body_periods
 
   # Validations
   validates :name,

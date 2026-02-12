@@ -1,6 +1,6 @@
 RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
   include_context "test TRS API returns a teacher"
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
 
   let(:page_heading) { "Find an early career teacher" }
 
@@ -13,7 +13,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
     end
 
     context "when signed in as an appropriate body user" do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       it "instantiates a new PendingInductionSubmission and renders the page" do
         allow(PendingInductionSubmission).to receive(:new).and_call_original
@@ -36,7 +36,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
     end
 
     context "when signed in" do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
       let(:birth_year_param) { "2001" }
       let(:trn) { "1234567" }
       let(:pending_induction_submission) { PendingInductionSubmission.last }
@@ -56,7 +56,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
       end
 
       it "passes the parameters to the AppropriateBodies::ClaimAnECT::FindECT service and redirects" do
-        expect(AppropriateBodies::ClaimAnECT::FindECT).to have_received(:new).with(appropriate_body:, pending_induction_submission:)
+        expect(AppropriateBodies::ClaimAnECT::FindECT).to have_received(:new).with(appropriate_body_period:, pending_induction_submission:)
         expect(response).to redirect_to("/appropriate-body/claim-an-ect/check-ect/#{pending_induction_submission.id}/edit")
       end
 
@@ -82,7 +82,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
 
         context "with the current AB" do
           let!(:induction_period) do
-            FactoryBot.create(:induction_period, :ongoing, appropriate_body:, teacher:, started_on: Date.parse("2 October 2022"))
+            FactoryBot.create(:induction_period, :ongoing, appropriate_body_period:, teacher:, started_on: Date.parse("2 October 2022"))
           end
 
           before do
