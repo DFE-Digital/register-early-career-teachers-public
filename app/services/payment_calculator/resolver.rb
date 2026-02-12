@@ -1,5 +1,5 @@
 module PaymentCalculator
-  class ForContract
+  class Resolver
     class ContractTypeNotSupportedError < StandardError; end
 
     include ActiveModel::Model
