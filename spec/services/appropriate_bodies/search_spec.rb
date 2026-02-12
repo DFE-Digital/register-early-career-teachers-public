@@ -22,6 +22,24 @@ describe AppropriateBodies::Search do
       end
     end
 
+    describe ".esp" do
+      subject { described_class.esp }
+
+      context "when ESP has been registered" do
+        let!(:esp) { FactoryBot.create(:appropriate_body, :esp) }
+
+        it "returns it" do
+          expect(subject).to eq(esp)
+        end
+      end
+
+      context "when ESP has not been registered" do
+        it "raises an exception" do
+          expect { subject }.to raise_error(ActiveRecord::RecordNotFound, "ESP appropriate body not found!")
+        end
+      end
+    end
+
     describe "#search" do
       context "when the search string is blank" do
         let(:query_string) { " " }

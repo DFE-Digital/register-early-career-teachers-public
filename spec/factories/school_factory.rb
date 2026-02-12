@@ -64,5 +64,11 @@ FactoryBot.define do
       induction_tutor_name { "Induction Tutor" }
       induction_tutor_email { "induction.tutor@a-very-nice-school.sch.uk" }
     end
+
+    trait :with_dsi do
+      dfe_sign_in_organisation do
+        association :dfe_sign_in_organisation, name: gias_school.name, urn:
+      end
+    end
   end
 end

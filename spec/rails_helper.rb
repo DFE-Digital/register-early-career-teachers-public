@@ -32,10 +32,14 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
 
+  # RECT: live service
   config.before(:each, :enable_schools_interface) do
-    allow(Rails.application.config)
-      .to receive(:enable_schools_interface)
-      .and_return(true)
+    allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
+  end
+
+  # RIAB: new data model
+  config.before do
+    allow(Rails.application.config).to receive(:enable_teaching_school_hubs).and_return(true)
   end
 
   config.before(:each, :enable_induction_tutor_prompt) do
