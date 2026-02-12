@@ -170,7 +170,6 @@ shared:
     - working_pattern
     - email
     - school_reported_appropriate_body_id
-    - training_programme
     - reported_leaving_by_school_id
   :delivery_partners:
     - id
