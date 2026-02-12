@@ -957,22 +957,6 @@ FactoryBot.create(:training_period,
                   school_partnership: teach_first_grain_brookfield_2021,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
-print_seed_info("George Cole (mentor) at Ashford Independent School", indent: 2, colour: MENTOR_COLOUR)
-
-george_cole_mentoring_at_ashford = FactoryBot.create(:mentor_at_school_period,
-                                                     teacher: george_cole,
-                                                     school: ashford_independent_school,
-                                                     started_on: Date.new(2024, 9, 1),
-                                                     finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
-
-FactoryBot.create(:training_period,
-                  :for_mentor,
-                  :with_schedule,
-                  mentor_at_school_period: george_cole_mentoring_at_ashford,
-                  started_on: Date.new(2024, 9, 1),
-                  finished_on: nil,
-                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
-
 print_seed_info("Stephen Griddle (ECT) at Ashford Independent School", indent: 2, colour: ECT_COLOUR)
 
 stephen_griddle_ect_at_ashford = FactoryBot.create(:ect_at_school_period,
