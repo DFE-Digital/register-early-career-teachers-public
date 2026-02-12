@@ -1,5 +1,8 @@
 RSpec.describe APISeedData::Helpers::SchoolURNGenerator, type: :helper do
-  before { FactoryBot.create_list(:school, 5) }
+  before do
+    described_class.reset!
+    FactoryBot.create_list(:school, 5)
+  end
 
   describe ".next" do
     it "produces a new unassigned value" do

@@ -10,6 +10,11 @@ module APISeedData
           sprintf("%06d", next_urn)
         end
 
+        def reset!
+          @available = nil
+          @taken = nil
+        end
+
       private
 
         def add_to_taken_stack(next_urn)
