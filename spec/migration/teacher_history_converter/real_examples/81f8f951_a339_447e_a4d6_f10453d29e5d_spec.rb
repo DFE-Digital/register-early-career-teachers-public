@@ -17,7 +17,7 @@ describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d" do
         payments_frozen_cohort_start_year: :ignore,
         induction_records: [
           {
-            start_date: Time.zone.local(2023, 6, 1, 1, 0, 0),
+            start_date: Date.new(2023, 6, 1),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2023,

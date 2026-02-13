@@ -26,7 +26,7 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
         ],
         induction_records: [
           {
-            start_date: Time.zone.local(2025, 6, 1, 1, 0, 0),
+            start_date: Date.new(2025, 6, 1),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2025,
