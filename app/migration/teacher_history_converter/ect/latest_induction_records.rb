@@ -5,13 +5,14 @@
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods
+  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states
 
-  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:)
+  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @mentor_at_school_periods = mentor_at_school_periods
+    @states = states
   end
 
   # Returns [ECF2TeacherHistory::ECTAtSchoolPeriod[], String[]]
