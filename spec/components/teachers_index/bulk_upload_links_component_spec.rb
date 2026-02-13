@@ -1,7 +1,7 @@
 RSpec.describe TeachersIndex::BulkUploadLinksComponent, type: :component do
   before { render_inline(component) }
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:component) { described_class.new(appropriate_body_period:) }
 
   it "links to Find ECTs" do

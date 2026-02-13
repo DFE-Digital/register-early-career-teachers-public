@@ -47,7 +47,7 @@ RSpec.describe Schools::RegisterECTWizard::AppropriateBodyStep, type: :model do
     end
 
     context "when the appropriate_body is a local authority" do
-      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body, :local_authority) }
+      let(:appropriate_body_id) { FactoryBot.create(:appropriate_body_period, :local_authority) }
 
       it "adds an error" do
         expect(subject).not_to be_valid

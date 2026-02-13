@@ -10,7 +10,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
     allow(author).to receive(:is_a?).with(any_args).and_call_original
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
   let(:author) do
     FactoryBot.create(:appropriate_body_user,

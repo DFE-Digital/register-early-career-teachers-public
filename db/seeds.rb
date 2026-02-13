@@ -11,7 +11,7 @@ end
 priority_seeds = %w[
   contract_periods
   lead_providers
-  appropriate_bodies
+  appropriate_body_periods
   delivery_partners
   schools
   lead_provider_delivery_partnerships

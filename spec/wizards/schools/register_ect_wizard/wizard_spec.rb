@@ -457,7 +457,7 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
   describe "change step logic" do
     context "when ECT has completed the flow" do
-      let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body) { FactoryBot.create(:appropriate_body_period) }
 
       before do
         wizard.ect.update!(

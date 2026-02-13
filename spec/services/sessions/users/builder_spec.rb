@@ -3,7 +3,7 @@ RSpec.describe Sessions::Users::Builder do
     subject(:session_user) { described_class.new(omniauth_payload:).session_user }
 
     let(:email) { Faker::Internet.email }
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
     let(:school) { FactoryBot.create(:school) }
 
     let(:omniauth_payload) do

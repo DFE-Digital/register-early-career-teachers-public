@@ -1,7 +1,7 @@
 RSpec.describe AppropriateBodies::ProcessBatch::Download do
   subject(:service) { described_class.new(pending_induction_submission_batch:) }
 
-  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
 
   let(:pending_induction_submission_batch) do
     FactoryBot.build(:pending_induction_submission_batch, :action,

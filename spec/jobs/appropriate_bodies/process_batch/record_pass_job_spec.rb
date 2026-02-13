@@ -19,7 +19,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::RecordPassJob, type: :job do
                       outcome: "pass")
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:author_email) { "barry@not-a-clue.co.uk" }
   let(:author_name) { "Barry Cryer" }
   let(:teacher) { pending_induction_submission.teacher }

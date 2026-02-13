@@ -1,6 +1,6 @@
 RSpec.describe Region, type: :model do
   describe "associations" do
-    it { is_expected.to belong_to(:teaching_school_hub) }
+    it { is_expected.to belong_to(:appropriate_body) }
   end
 
   describe "validations" do

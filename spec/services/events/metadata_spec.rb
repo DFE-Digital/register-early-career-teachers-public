@@ -29,7 +29,7 @@ describe "Events::Metadata" do
 
       context "when no author is present but an appropriate body is" do
         let(:author) { nil }
-        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
         it "fails with MissingAuthorError" do
           expect { subject }.to raise_error(Events::Metadata::MissingAuthorError)
@@ -47,7 +47,7 @@ describe "Events::Metadata" do
 
       context "when both author and appropriate_body are present" do
         let(:author) { FactoryBot.create(:appropriate_body_user, :at_random_appropriate_body) }
-        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+        let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
         it "assigns both the author and appropriate body correctly" do
           expect(subject.author).to eql(author)
@@ -61,7 +61,7 @@ describe "Events::Metadata" do
     subject { Events::Metadata.with_author_and_appropriate_body(author:, appropriate_body_period:) }
 
     let(:author) { FactoryBot.create(:appropriate_body_user, :at_random_appropriate_body) }
-    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+    let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
     it "returns a hash containing the author and appropriate body" do
       expect(subject.to_hash).to eql({ author:, appropriate_body_period: })

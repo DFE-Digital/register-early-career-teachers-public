@@ -19,7 +19,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
   let(:outcome) { "pass" }
   let(:error) { nil }
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   let(:teacher) do
     FactoryBot.create(:teacher, :with_corrected_name,
@@ -289,7 +289,7 @@ RSpec.describe AppropriateBodies::ProcessBatch::Action do
     end
 
     context "with an ongoing induction at another Appropriate Body" do
-      let(:other_body) { FactoryBot.create(:appropriate_body, name: "Acme") }
+      let(:other_body) { FactoryBot.create(:appropriate_body_period, name: "Acme") }
 
       let!(:induction_period) do
         FactoryBot.create(:induction_period, :ongoing,

@@ -1,5 +1,5 @@
 RSpec.describe "AppropriateBodies::UnclaimedController", type: :request do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "GET /appropriate-body/schools-data" do
     context "when not signed in" do

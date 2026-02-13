@@ -139,7 +139,7 @@ RSpec.describe Sessions::Manager do
 
     before do
       school = FactoryBot.create(:school, :eligible)
-      FactoryBot.create(:appropriate_body, name: school.name, dfe_sign_in_organisation_id: user.dfe_sign_in_organisation_id)
+      FactoryBot.create(:appropriate_body_period, name: school.name, dfe_sign_in_organisation_id: user.dfe_sign_in_organisation_id)
       service.begin_session!(user)
     end
 

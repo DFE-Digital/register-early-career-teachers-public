@@ -10,7 +10,7 @@ RSpec.shared_context "it closes an induction" do
                       dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:school) { FactoryBot.create(:school) }
 

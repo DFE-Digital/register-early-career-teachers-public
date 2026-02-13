@@ -91,7 +91,7 @@ RSpec.describe Teachers::Induction do
   end
 
   describe "#with_appropriate_body?" do
-    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+    let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
     let(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:) }
 
     it "returns true when the current induction is with the body" do

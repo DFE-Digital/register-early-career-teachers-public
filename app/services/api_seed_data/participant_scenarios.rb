@@ -723,7 +723,7 @@ module APISeedData
 
     def random_or_create_appropriate_body
       AppropriateBodyPeriod.order(Arel.sql("RANDOM()")).first ||
-        FactoryBot.create(:appropriate_body)
+        FactoryBot.create(:appropriate_body_period)
     end
 
     def find_random_statement(active_lead_provider)

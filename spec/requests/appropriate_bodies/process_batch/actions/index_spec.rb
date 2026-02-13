@@ -1,5 +1,5 @@
 RSpec.describe "Appropriate Body bulk actions index page", type: :request do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "GET /appropriate-body/bulk/actions" do
     context "when not signed in" do

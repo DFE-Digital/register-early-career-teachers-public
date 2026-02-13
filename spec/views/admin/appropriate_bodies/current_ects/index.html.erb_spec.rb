@@ -1,18 +1,18 @@
 RSpec.describe "admin/appropriate_bodies/current_ects/index.html.erb" do
   include Pagy::Backend
 
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:number_of_teachers) { 2 }
   let!(:teachers) { FactoryBot.create_list(:teacher, number_of_teachers) }
 
   before do
     pagy, teachers = pagy(Teacher.all)
 
-    assign(:appropriate_body, appropriate_body)
+    assign(:appropriate_body, appropriate_body_period)
     assign(:teachers, teachers)
     assign(:pagy, pagy)
 
-    controller.request.path_parameters[:appropriate_body_id] = appropriate_body.id
+    controller.request.path_parameters[:appropriate_body_id] = appropriate_body_period.id
   end
 
   it "contains a list of teachers" do

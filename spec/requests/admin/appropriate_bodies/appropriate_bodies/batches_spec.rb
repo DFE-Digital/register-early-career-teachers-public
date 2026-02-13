@@ -1,5 +1,5 @@
 describe "Admin::AppropriateBodies::BatchesController", type: :request do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Busy Body") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Busy Body") }
 
   describe "GET /admin/organisations/appropriate-bodies/:appropriate_body_id/batches" do
     context "when not authenticated" do

@@ -1,5 +1,5 @@
 RSpec.describe "Recording a passed outcome for an ECT" do
-  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher, :with_name) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
   let(:today) { Time.zone.today }
