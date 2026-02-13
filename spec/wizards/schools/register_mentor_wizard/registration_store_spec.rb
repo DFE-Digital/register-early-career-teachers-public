@@ -480,4 +480,74 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
       end
     end
   end
+
+  describe "#contract_period_enabled?" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled:) }
+
+    around do |example|
+      travel_to(Date.new(2025, 6, 3)) do
+        example.run
+      end
+    end
+
+    context "when the started_on date is not set" do
+      let(:enabled) { true }
+
+      before { store.started_on = nil }
+
+      it "falls back to today to find the contract period" do
+        expect(registration_store.contract_period_enabled?).to be(true)
+      end
+    end
+
+    context "when the started_on date is set" do
+      before { store.started_on = started_on }
+
+      context "when the started_on date is in the future" do
+        let(:started_on) { Date.new(2025, 7, 1) }
+
+        context "when contract period is enabled" do
+          let(:enabled) { true }
+
+          it "returns true" do
+            expect(registration_store.contract_period_enabled?).to be(true)
+          end
+        end
+
+        context "when contract period is disabled" do
+          let(:enabled) { false }
+
+          it "returns false" do
+            expect(registration_store.contract_period_enabled?).to be(false)
+          end
+        end
+
+        context "when there is no matching contract period" do
+          let!(:contract_period) { nil }
+
+          it "returns nil" do
+            expect(registration_store.contract_period_enabled?).to be_nil
+          end
+        end
+      end
+
+      context "when the started_on date is today" do
+        let(:started_on) { Date.new(2025, 6, 3) }
+        let!(:contract_period) { nil }
+
+        it "returns true" do
+          expect(registration_store.contract_period_enabled?).to be(true)
+        end
+      end
+
+      context "when the started_on date is in the past" do
+        let(:started_on) { Date.new(2025, 6, 1) }
+        let!(:contract_period) { nil }
+
+        it "returns true" do
+          expect(registration_store.contract_period_enabled?).to be(true)
+        end
+      end
+    end
+  end
 end
