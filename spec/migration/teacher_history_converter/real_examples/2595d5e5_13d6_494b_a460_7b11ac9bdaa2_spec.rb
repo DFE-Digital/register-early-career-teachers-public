@@ -17,8 +17,8 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
         payments_frozen_cohort_start_year: :ignore,
         induction_records: [
           {
-            start_date: Time.zone.local(2022, 6, 1, 1, 0, 0),
-            end_date: Time.zone.local(2022, 12, 20, 16, 44, 41),
+            start_date: Date.new(2022, 6, 1),
+            end_date: Date.new(2022, 12, 20),
             training_programme: "full_induction_programme",
             cohort_year: 2022,
             school: {
@@ -48,8 +48,8 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
             }
           },
           {
-            start_date: Time.zone.local(2022, 12, 1, 14, 7, 17),
-            end_date: Time.zone.local(2023, 2, 20, 8, 15, 59),
+            start_date: Date.new(2022, 12, 1),
+            end_date: Date.new(2023, 2, 20),
             training_programme: "full_induction_programme",
             cohort_year: 2022,
             school: {
@@ -79,8 +79,8 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
             }
           },
           {
-            start_date: Time.zone.local(2022, 12, 20, 16, 44, 41),
-            end_date: Time.zone.local(2022, 12, 1, 14, 7, 17),
+            start_date: Date.new(2022, 12, 20),
+            end_date: Date.new(2022, 12, 1),
             training_programme: "full_induction_programme",
             cohort_year: 2022,
             school: {
@@ -110,8 +110,8 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
             }
           },
           {
-            start_date: Time.zone.local(2023, 2, 20, 8, 15, 59),
-            end_date: Time.zone.local(2023, 2, 20, 8, 16, 11),
+            start_date: Date.new(2023, 2, 20),
+            end_date: Date.new(2023, 2, 20),
             training_programme: "full_induction_programme",
             cohort_year: 2022,
             school: {
@@ -141,7 +141,7 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
             }
           },
           {
-            start_date: Time.zone.local(2023, 2, 20, 8, 16, 11),
+            start_date: Date.new(2023, 2, 20),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2022,
