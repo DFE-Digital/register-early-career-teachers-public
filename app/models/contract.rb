@@ -1,4 +1,6 @@
 class Contract < ApplicationRecord
+  attr_readonly :active_lead_provider_id
+
   # Enums
   enum :contract_type,
        { ecf: "ecf", ittecf_ectp: "ittecf_ectp" },
@@ -6,18 +8,19 @@ class Contract < ApplicationRecord
        suffix: true
 
   # Associations
+  belongs_to :active_lead_provider
   belongs_to :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", optional: true
   belongs_to :banded_fee_structure, class_name: "Contract::BandedFeeStructure", optional: true
   has_many :statements, inverse_of: :contract
 
   # Validations
+  validates :active_lead_provider, presence: { message: "An active lead provider must be set" }
   validates :contract_type,
             presence: { message: "Enter a contract type" },
             inclusion: { in: Contract.contract_types.keys, message: "Choose a valid contract type" }
   validates :vat_rate,
             presence: { message: "VAT rate is required" },
             numericality: { in: 0..1, message: "VAT rate must be between 0 and 1" }
-  validate :active_lead_provider_consistency
 
   with_options if: :ittecf_ectp_contract_type? do
     validates :flat_rate_fee_structure,
@@ -34,15 +37,5 @@ class Contract < ApplicationRecord
     validates :banded_fee_structure,
               presence: { message: "Banded fee structure must be provided for ECF contracts" },
               uniqueness: { message: "Contract with the same banded fee structure already exists" }
-  end
-
-private
-
-  def active_lead_provider_consistency
-    active_lead_provider_ids = statements.pluck(:active_lead_provider_id).uniq
-
-    return if active_lead_provider_ids.size <= 1
-
-    errors.add(:base, "This contract is associated with other statements linked to different lead providers/contract periods.")
   end
 end
