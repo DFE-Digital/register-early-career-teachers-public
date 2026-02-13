@@ -13,7 +13,7 @@ module Migrators
     end
 
     def self.dependencies
-      %i[lead_provider contract_period active_lead_provider]
+      %i[lead_provider contract_period active_lead_provider contract]
     end
 
     def self.reset!
@@ -33,9 +33,11 @@ module Migrators
 
       lead_provider_id = find_lead_provider_id!(ecf_id: ecf_statement.lead_provider.id)
       contract_period_year = ecf_statement.cohort.start_year
+      active_lead_provider_id = find_active_lead_provider_id!(lead_provider_id:, contract_period_year:)
 
       statement.update!(
-        active_lead_provider_id: find_active_lead_provider_id!(lead_provider_id:, contract_period_year:),
+        active_lead_provider_id:,
+        contract_id: find_contract_id!(active_lead_provider_id, ecf_statement.contract_version, ecf_statement.sanitized_mentor_contract_version),
         month: Date::MONTHNAMES.find_index(ecf_statement.name.split[0]),
         year: ecf_statement.name.split[1],
         deadline_date: ecf_statement.deadline_date,
@@ -51,6 +53,11 @@ module Migrators
     end
 
   private
+
+    def find_contract_id!(active_lead_provider_id, ecf_contract_version, ecf_mentor_contract_version)
+      ::Contract.where(active_lead_provider_id:, ecf_contract_version:, ecf_mentor_contract_version:).pick(:id) ||
+        raise(ActiveRecord::RecordNotFound, "Unable to find contract for active_lead_provider_id: #{active_lead_provider_id}, ecf_contract_version: #{ecf_contract_version}, ecf_mentor_contract_version: #{ecf_mentor_contract_version}")
+    end
 
     def status(ecf_statement)
       case ecf_statement.type
