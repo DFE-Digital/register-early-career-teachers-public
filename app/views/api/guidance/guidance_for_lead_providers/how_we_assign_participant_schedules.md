@@ -1,5 +1,5 @@
 ---
-title: Schedules and milestone dates
+title: How we assign participant schedules
 ---
 
 ## Purpose and scope of this guidance
