@@ -335,6 +335,26 @@ describe Declaration do
         end
       end
     end
+
+    describe ".ects" do
+      let!(:ect_declaration) { FactoryBot.create(:declaration, training_period: FactoryBot.create(:training_period, :for_ect)) }
+      let!(:mentor_declaration) { FactoryBot.create(:declaration, training_period: FactoryBot.create(:training_period, :for_mentor)) }
+
+      it "returns only ECT declarations" do
+        expect(described_class.ects).to include(ect_declaration)
+        expect(described_class.ects).not_to include(mentor_declaration)
+      end
+    end
+
+    describe ".mentors" do
+      let!(:ect_declaration) { FactoryBot.create(:declaration, training_period: FactoryBot.create(:training_period, :for_ect)) }
+      let!(:mentor_declaration) { FactoryBot.create(:declaration, training_period: FactoryBot.create(:training_period, :for_mentor)) }
+
+      it "returns only mentor declarations" do
+        expect(described_class.mentors).to include(mentor_declaration)
+        expect(described_class.mentors).not_to include(ect_declaration)
+      end
+    end
   end
 
   describe "enums" do
