@@ -160,20 +160,11 @@ describe "Real data check for user 1ed6d4d4-fc15-4536-bcbc-bc6250f859da (with a 
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2025, 9, 4),
-                  finished_on: nil
+                  finished_on: nil,
+                  withdrawn_at: Time.zone.local(2025, 9, 4, 10, 1, 6),
+                  withdrawal_reason: "other"
                 )
-              ),
-              # FIXME: 👇️
-              # cross reference with the states array, maybe only class it as
-              # a perfect match if:
-              # - the induction record's `training_status == withdrawn`
-              # - the state's `created_at` matches the induction_records's `created_at` (at
-              #   least approximately)
-              #
-              # ECF1 does it like this:
-              # https://github.com/DFE-Digital/early-careers-framework/blob/main/app/serializers/api/v3/ecf/participant_serializer.rb#L37-L41
-              withdrawn_on: Date.new(2025, 9, 4),
-              withdrawn_reason: "other"
+              )
             )
           )
         )

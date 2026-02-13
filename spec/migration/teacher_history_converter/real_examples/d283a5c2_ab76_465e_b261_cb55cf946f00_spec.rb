@@ -361,7 +361,9 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
                   finished_on: Date.new(2025, 8, 5),
                   lead_provider_info: hash_including(name: "Best Practice Network"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
-                  contract_period_year: 2024
+                  contract_period_year: 2024,
+                  withdrawn_at: Time.zone.local(2025, 8, 21, 16, 1, 13),
+                  withdrawal_reason: "other",
                 )
               )
             ),
