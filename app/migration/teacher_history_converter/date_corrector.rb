@@ -17,7 +17,7 @@ class TeacherHistoryConverter::DateCorrector
   # - For subsequent records: just use start_date
   def corrected_start_date(induction_record, sequence_number)
     date = if sequence_number.zero?
-             if induction_record.start_date.to_date == INDUCTION_RECORDS_ADDED_DATE
+             if induction_record.start_date == INDUCTION_RECORDS_ADDED_DATE
                SERVICE_START_DATE
              else
                [induction_record.start_date, induction_record.created_at.to_date].min
@@ -27,7 +27,7 @@ class TeacherHistoryConverter::DateCorrector
            end
 
     # Ensure date is never earlier than SERVICE_START_DATE
-    [date.to_date, SERVICE_START_DATE].max
+    [date, SERVICE_START_DATE].max
   end
 
   # Corrects end dates for school periods (ECTAtSchoolPeriod/MentorAtSchoolPeriod)
@@ -43,12 +43,12 @@ class TeacherHistoryConverter::DateCorrector
     return induction_record.updated_at.to_date if last_and_leaving_and_flipping_dates?(induction_record, induction_records)
     return first_created_induction_record(induction_records).updated_at.to_date if two_induction_records_and_last_completed?(induction_records)
 
-    induction_record.end_date&.to_date
+    induction_record.end_date
   end
 
   # Corrects end dates for training periods
   def corrected_training_period_end_date(induction_record, induction_records, participant_type:)
-    candidate_end_date = induction_record.end_date&.to_date
+    candidate_end_date = induction_record.end_date
 
     return first_created_induction_record(induction_records).end_date if two_irs_at_a_school_and_only_last_deferred_or_withdrawn?(induction_records)
     return candidate_end_date if induction_records.count > 1

@@ -37,8 +37,8 @@ private
   #   school period out of them are received in reverse order of start_date)
   def process(mentor_at_school_periods, induction_record)
     first_school_period = mentor_at_school_periods.first
-    started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date.to_date].compact.min
-    finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date&.to_date].compact.min
+    started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date].compact.min
+    finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date].compact.min
     training_period = build_training_period(induction_record, { started_on:, finished_on: })
 
     mentor_at_school_periods.unshift(
@@ -57,8 +57,8 @@ private
     return if training_programme != "provider_led"
 
     training_attrs = {
-      started_on: induction_record.start_date.to_date,
-      finished_on: induction_record.end_date&.to_date,
+      started_on: induction_record.start_date,
+      finished_on: induction_record.end_date,
       created_at: induction_record.created_at,
       school: induction_record.school,
       training_programme:,

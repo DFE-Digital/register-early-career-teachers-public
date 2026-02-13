@@ -26,6 +26,6 @@ private
   end
 
   def duration_greater_than_zero?(induction_record)
-    induction_record.end_date.to_date > induction_record.start_date.to_date
+    induction_record.end_date > induction_record.start_date
   end
 end
