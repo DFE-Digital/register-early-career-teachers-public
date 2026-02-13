@@ -21,7 +21,8 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
       :trs_date_of_birth,
       :trs_prohibited_from_teaching,
       :store,
-      :ect_lead_provider
+      :ect_lead_provider,
+      :started_on
     ).new(
       email,
       trn,
@@ -31,7 +32,8 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
       trs_date_of_birth,
       trs_prohibited_from_teaching,
       store,
-      ect_lead_provider
+      ect_lead_provider,
+      started_on
     )
   end
 
@@ -39,6 +41,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
   let(:previous_school_periods_relation) { MentorAtSchoolPeriod.none }
   let(:contract_period) { nil }
   let(:ect) { nil }
+  let(:started_on) { nil }
   let(:queries) do
     instance_double(Schools::RegisterMentorWizard::RegistrationStore::Queries,
                     mentor_at_school_periods: mentor_periods_relation,
@@ -308,6 +311,68 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Status do
 
       it "returns false" do
         expect(status.mentoring_at_new_school_only?).to be(false)
+      end
+    end
+  end
+
+  describe "#contract_period_enabled?" do
+    let(:started_on) { Date.new(2025, 7, 1) }
+
+    around do |example|
+      travel_to(Date.new(2025, 6, 3)) do
+        example.run
+      end
+    end
+
+    context "when the start date is in the past" do
+      let(:started_on) { Date.new(2025, 6, 1) }
+      let(:contract_period) { nil }
+
+      it "returns true" do
+        expect(status.contract_period_enabled?).to be(true)
+      end
+    end
+
+    context "when the start date is today" do
+      let(:started_on) { Date.new(2025, 6, 3) }
+      let(:contract_period) { nil }
+
+      it "returns true" do
+        expect(status.contract_period_enabled?).to be(true)
+      end
+    end
+
+    context "when the start date is in the future" do
+      context "when the contract period is enabled" do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+
+        it "returns true" do
+          expect(status.contract_period_enabled?).to be(true)
+        end
+      end
+
+      context "when the contract period is disabled" do
+        let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
+
+        it "returns false" do
+          expect(status.contract_period_enabled?).to be(false)
+        end
+      end
+
+      context "when there is no matching contract period" do
+        let(:contract_period) { nil }
+
+        it "returns nil" do
+          expect(status.contract_period_enabled?).to be_nil
+        end
+      end
+    end
+
+    context "when the start date has not been set" do
+      let(:started_on) { nil }
+
+      it "returns nil" do
+        expect(status.contract_period_enabled?).to be_nil
       end
     end
   end

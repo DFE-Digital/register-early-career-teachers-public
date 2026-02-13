@@ -1,0 +1,10 @@
+<% page_data(
+  title: "You cannot register #{@mentor.full_name} yet", 
+  error: false,
+  backlink_href: @wizard.previous_step_path,
+) %>
+
+<p class="govuk-body">Registration for the <%= formatted_year_range_for_registration_date(@mentor.started_on.to_date) %> academic year is not open.</p>
+<p class="govuk-body">We’ll email you to let you know when registration will open. This is usually in June.</p>
+
+<p class="govuk-body"><%= govuk_link_to("Back to ECTs", schools_ects_home_path) %></p>

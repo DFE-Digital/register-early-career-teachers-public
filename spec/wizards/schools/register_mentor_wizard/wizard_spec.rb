@@ -10,7 +10,9 @@ describe Schools::RegisterMentorWizard::Wizard do
   let(:trs_date_of_birth) { "1977-02-03" }
   let(:trs_first_name) { "Mentor" }
   let(:trs_last_name) { "LastName" }
+  let(:started_on) { nil }
   let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:, ect_id:) }
+  let!(:contract_period) { FactoryBot.create(:contract_period, :current, enabled: true) }
 
   describe "#allowed_steps" do
     subject { wizard.allowed_steps }
@@ -299,6 +301,137 @@ describe Schools::RegisterMentorWizard::Wizard do
                                    change_mentor_details
                                    change_email_address
                                    check_answers])
+        end
+      end
+    end
+
+    context "when only TRN, DoB, Nino, change name (and maybe corrected name), email address, and start date have been set" do
+      let(:mentor_date_of_birth) { "2000-01-01" }
+
+      let(:store) do
+        FactoryBot.build(:session_repository,
+                         school_urn:,
+                         trn: mentor_trn,
+                         date_of_birth: mentor_date_of_birth,
+                         national_insurance_number: "ZZ123456A",
+                         trs_prohibited_from_teaching:,
+                         trs_date_of_birth:,
+                         trs_first_name:,
+                         trs_last_name:,
+                         change_name: "yes",
+                         corrected_name: "Mentor CorrectedName",
+                         email: "any@email.address",
+                         started_on:)
+      end
+
+      around do |example|
+        travel_to Date.new(2025, 6, 3) do
+          example.run
+        end
+      end
+
+      context "when the start date is in the future" do
+        let(:started_on) { Date.new(2025, 7, 1) }
+
+        context "when the contract period is enabled" do
+          let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+
+          it do
+            expect(subject).to eq(%i[find_mentor
+                                     national_insurance_number
+                                     review_mentor_details
+                                     email_address
+                                     started_on
+                                     previous_training_period_details
+                                     programme_choices
+                                     lead_provider
+                                     review_mentor_eligibility
+                                     eligibility_lead_provider
+                                     change_mentor_details
+                                     change_email_address
+                                     check_answers
+                                     change_started_on])
+          end
+        end
+
+        context "when the contract period is not enabled" do
+          let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
+
+          it do
+            expect(subject).to eq(%i[find_mentor
+                                     national_insurance_number
+                                     review_mentor_details
+                                     email_address
+                                     started_on
+                                     previous_training_period_details
+                                     programme_choices
+                                     lead_provider
+                                     review_mentor_eligibility
+                                     eligibility_lead_provider
+                                     cannot_register_mentor_yet])
+          end
+        end
+
+        context "when there is no matching contract period" do
+          let!(:contract_period) { nil }
+
+          it do
+            expect(subject).to eq(%i[find_mentor
+                                     national_insurance_number
+                                     review_mentor_details
+                                     email_address
+                                     started_on
+                                     previous_training_period_details
+                                     programme_choices
+                                     lead_provider
+                                     review_mentor_eligibility
+                                     eligibility_lead_provider
+                                     cannot_register_mentor_yet])
+          end
+        end
+      end
+
+      context "when the date is today" do
+        let(:started_on) { Date.new(2025, 6, 3) }
+        let!(:contract_period) { nil }
+
+        it do
+          expect(subject).to eq(%i[find_mentor
+                                   national_insurance_number
+                                   review_mentor_details
+                                   email_address
+                                   started_on
+                                   previous_training_period_details
+                                   programme_choices
+                                   lead_provider
+                                   review_mentor_eligibility
+                                   eligibility_lead_provider
+                                   change_mentor_details
+                                   change_email_address
+                                   check_answers
+                                   change_started_on])
+        end
+      end
+
+      context "when the date is in the past" do
+        let(:started_on) { Date.new(2025, 6, 1) }
+        let!(:contract_period) { nil }
+
+        it do
+          expect(subject).to eq(%i[find_mentor
+                                   national_insurance_number
+                                   review_mentor_details
+                                   email_address
+                                   started_on
+                                   previous_training_period_details
+                                   programme_choices
+                                   lead_provider
+                                   review_mentor_eligibility
+                                   eligibility_lead_provider
+                                   change_mentor_details
+                                   change_email_address
+                                   check_answers
+                                   change_started_on])
         end
       end
     end
