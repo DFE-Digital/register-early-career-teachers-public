@@ -21,34 +21,20 @@ describe Statement do
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
 
     describe "contract active lead provider consistency" do
-      subject(:statement) { FactoryBot.create(:statement, contract:) }
+      subject(:statement) { FactoryBot.build(:statement, contract:, active_lead_provider:) }
 
-      let(:active_lead_provider) { statement.active_lead_provider }
-      let!(:contract) { FactoryBot.create(:contract) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
 
-      it "is valid when there are no contract associated with the statement" do
-        expect(statement).to be_valid
-      end
+      it { is_expected.to be_valid }
 
-      it "is valid when all other statements associated with the same contract have the same lead provider and contract period" do
-        FactoryBot.create(:statement, contract:, active_lead_provider:)
-        FactoryBot.create(:statement, contract:, active_lead_provider:)
+      context "when the contract has a different active lead provider" do
+        let(:contract) { FactoryBot.create(:contract) }
 
-        statement.reload
-
-        expect(statement).to be_valid
-      end
-
-      it "is invalid when there are other statements associated with the same contract that have different lead providers or contract periods" do
-        FactoryBot.create(:statement, contract:, active_lead_provider:)
-
-        another_contract_statement = FactoryBot.create(:statement, active_lead_provider: FactoryBot.create(:active_lead_provider))
-        another_contract_statement.update_columns(contract_id: contract.id)
-
-        statement.reload
-
-        expect(statement).not_to be_valid
-        expect(statement.errors[:contract]).to include("This contract is associated with other statements linked to different lead providers/contract periods.")
+        it "returns an error" do
+          expect(subject).to be_invalid
+          expect(statement.errors[:contract]).to include("This contract must have the same active lead provider as the statement.")
+        end
       end
     end
   end

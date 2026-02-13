@@ -476,7 +476,9 @@ erDiagram
     datetime created_at
     datetime updated_at
     decimal vat_rate
+    integer active_lead_provider_id
   }
+  Contract }o--|| ActiveLeadProvider : belongs_to
   Contract }o--|| Contract_FlatRateFeeStructure : belongs_to
   Contract }o--|| Contract_BandedFeeStructure : belongs_to
   AppropriateBodyPeriod {
@@ -491,7 +493,6 @@ erDiagram
   }
   AppropriateBodyPeriod }o--|| DfESignInOrganisation : belongs_to
   AppropriateBodyPeriod }o--|| AppropriateBody : belongs_to
-  AppropriateBodyPeriod }o--|| School : belongs_to
   AppropriateBody {
     integer id
     string name

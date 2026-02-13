@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_12_124833) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_12_185120) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -193,6 +193,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_124833) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
+    t.bigint "active_lead_provider_id"
+    t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"
     t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true, where: "(banded_fee_structure_id IS NOT NULL)"
     t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true, where: "(flat_rate_fee_structure_id IS NOT NULL)"
   end
@@ -1058,6 +1060,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_124833) do
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
+  add_foreign_key "contracts", "active_lead_providers"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"
