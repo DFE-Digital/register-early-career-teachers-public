@@ -11,7 +11,7 @@ class DfESignInOrganisation < ApplicationRecord
           foreign_key: :urn,
           primary_key: :urn
 
-  has_one :national_body
+  has_one :appropriate_body
 
   # Validations
   validates :name,
@@ -23,8 +23,8 @@ class DfESignInOrganisation < ApplicationRecord
             uniqueness: true
 
   # Scopes
-  scope :national_bodies, -> { joins(:national_body) }
-  scope :schools, -> { includes(:school).where.not(urn: nil) }
+  scope :national_bodies, -> { where(urn: nil) }
+  scope :schools, -> { where.not(urn: nil) }
 
   def last_authenticated_at=(datetime)
     self.first_authenticated_at ||= datetime

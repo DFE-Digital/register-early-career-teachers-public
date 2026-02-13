@@ -1,5 +1,5 @@
 RSpec.describe "Appropriate Body teacher show page", type: :request do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:) }
 
@@ -31,7 +31,7 @@ RSpec.describe "Appropriate Body teacher show page", type: :request do
       end
 
       context "when the teacher is not associated with the appropriate body" do
-        let(:other_appropriate_body) { FactoryBot.create(:appropriate_body) }
+        let(:other_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
         let(:other_teacher) { FactoryBot.create(:teacher) }
 
         # Create an induction period that is finished and has no outcome

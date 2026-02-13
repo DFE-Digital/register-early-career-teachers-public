@@ -3,7 +3,7 @@ RSpec.describe AppropriateBodies::ClaimECTEligibilityComponent, type: :component
     described_class.new(pending_induction_submission:, appropriate_body_period:, teacher:)
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:trs_induction_status) { "None" }
   let(:pending_induction_submission) do
     FactoryBot.create(:pending_induction_submission,

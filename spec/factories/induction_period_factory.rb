@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory(:induction_period) do
-    association :appropriate_body_period, factory: :appropriate_body
+    association :appropriate_body_period
     association :teacher
 
     started_on { 1.year.ago }

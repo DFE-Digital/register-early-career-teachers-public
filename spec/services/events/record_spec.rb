@@ -4,7 +4,7 @@ RSpec.describe Events::Record do
   let(:user) { FactoryBot.create(:user, name: "Christopher Biggins", email: "christopher.biggins@education.gov.uk") }
   let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Rhys", trs_last_name: "Ifans") }
   let(:induction_period) { FactoryBot.create(:induction_period) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Burns Slant Drilling Co.") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Burns Slant Drilling Co.") }
   let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
   let(:author_params) { { author_id: author.id, author_name: author.name, author_email: author.email, author_type: :dfe_staff_user } }
   let(:another_dfe_user) { FactoryBot.create(:user, name: "Ian Richardson", email: "er@education.gov.uk") }
@@ -44,7 +44,7 @@ RSpec.describe Events::Record do
         induction_period:,
         teacher:,
         school: FactoryBot.create(:school),
-        appropriate_body_period: FactoryBot.create(:appropriate_body),
+        appropriate_body_period: FactoryBot.create(:appropriate_body_period),
         induction_extension: FactoryBot.create(:induction_extension),
         ect_at_school_period:,
         mentor_at_school_period:,
@@ -85,7 +85,7 @@ RSpec.describe Events::Record do
       induction_period: FactoryBot.build(:induction_period),
       teacher: FactoryBot.build(:teacher),
       school: FactoryBot.build(:school),
-      appropriate_body_period: FactoryBot.build(:appropriate_body),
+      appropriate_body_period: FactoryBot.build(:appropriate_body_period),
       induction_extension: FactoryBot.build(:induction_extension),
       ect_at_school_period: FactoryBot.build(:ect_at_school_period),
       mentor_at_school_period: FactoryBot.build(:mentor_at_school_period),

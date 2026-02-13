@@ -3,7 +3,7 @@ RSpec.describe "Admin deleting an induction" do
 
   include_context "test TRS API returns a teacher"
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
 
   before do

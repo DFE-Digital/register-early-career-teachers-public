@@ -2,7 +2,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
   subject(:registration_store) { described_class.new(store) }
 
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, :national) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :national) }
   let(:school) { FactoryBot.create(:school, :independent) }
   let(:store) do
     FactoryBot.build(:session_repository,
@@ -355,8 +355,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
 
     describe "#previous_appropriate_body_name" do
       context "when the teacher has induction periods" do
-        let!(:older_body) { FactoryBot.create(:appropriate_body, name: "Older Body") }
-        let!(:more_recent_body) { FactoryBot.create(:appropriate_body, name: "More Recent Body") }
+        let!(:older_body) { FactoryBot.create(:appropriate_body_period, name: "Older Body") }
+        let!(:more_recent_body) { FactoryBot.create(:appropriate_body_period, name: "More Recent Body") }
 
         before do
           FactoryBot.create(:induction_period, teacher:, started_on: Date.new(2023, 6, 10), finished_on: Date.new(2023, 9, 30), appropriate_body_period: older_body)

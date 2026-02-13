@@ -20,7 +20,7 @@ RSpec.describe "Registering an ECT", :enable_schools_interface do
 
   def given_i_am_logged_in_as_an_independent_school_user
     school = FactoryBot.create(:school, :independent)
-    FactoryBot.create(:appropriate_body, :istip)
+    FactoryBot.create(:appropriate_body_period, :istip)
     sign_in_as_school_user(school:)
   end
 

@@ -53,7 +53,7 @@ RSpec.describe DebugSessionComponent, type: :component do
     end
 
     context "and the user is not a DfE user" do
-      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+      let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
       let(:current_user) do
         FactoryBot.create(:appropriate_body_user,
                           dfe_sign_in_organisation_id: appropriate_body_period.dfe_sign_in_organisation_id)

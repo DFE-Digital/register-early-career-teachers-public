@@ -11,7 +11,7 @@ RSpec.describe InductionPeriods::DeleteInductionPeriod do
   let(:note) { "Induction period created in error" }
   let(:zendesk_ticket_id) { "#123456" }
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:user) { FactoryBot.create(:user) }
   let(:trs_client) { instance_double(TRS::APIClient) }

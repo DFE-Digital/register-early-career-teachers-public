@@ -1,5 +1,5 @@
 RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body, name: "Alpha Teaching School Hub") }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Alpha Teaching School Hub") }
   let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe") }
   let(:ect) do
     FactoryBot.create(:ect_at_school_period,

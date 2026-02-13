@@ -1,7 +1,7 @@
 RSpec.describe AppropriateBodies::ClaimAnECT::CheckECT do
   subject { AppropriateBodies::ClaimAnECT::CheckECT.new(appropriate_body_period:, pending_induction_submission:) }
 
-  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.build(:appropriate_body_period) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
 
   describe "#initialize" do

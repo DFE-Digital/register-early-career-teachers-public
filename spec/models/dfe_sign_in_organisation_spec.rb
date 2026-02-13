@@ -3,7 +3,7 @@ RSpec.describe DfESignInOrganisation, type: :model do
   describe "associations" do
     it { is_expected.to have_one(:school) }
     it { is_expected.to have_one(:appropriate_body_period) } # to be removed
-    it { is_expected.to have_one(:national_body) }
+    it { is_expected.to have_one(:appropriate_body) }
   end
 
   describe "validations" do
@@ -16,12 +16,12 @@ RSpec.describe DfESignInOrganisation, type: :model do
   end
 
   describe "scopes" do
-    let(:nb_1) { FactoryBot.create(:national_body) }
-    let(:nb_2) { FactoryBot.create(:national_body) }
-    let(:nb_3) { FactoryBot.create(:national_body) }
-    let(:school_1) { FactoryBot.create(:school, :with_dsi) }
-    let(:school_2) { FactoryBot.create(:school, :with_dsi) }
-    let(:school_3) { FactoryBot.create(:school, :with_dsi) }
+    let!(:nb_1) { FactoryBot.create(:appropriate_body, :with_dsi) }
+    let!(:nb_2) { FactoryBot.create(:appropriate_body, :with_dsi) }
+    let!(:nb_3) { FactoryBot.create(:appropriate_body, :with_dsi) }
+    let!(:school_1) { FactoryBot.create(:school, :with_dsi) }
+    let!(:school_2) { FactoryBot.create(:school, :with_dsi) }
+    let!(:school_3) { FactoryBot.create(:school, :with_dsi) }
 
     describe ".national_bodies" do
       let(:scope) { described_class.national_bodies }

@@ -177,13 +177,13 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     end
 
     context "when school-led is chosen and last chosen appropriate body is present" do
-      let!(:appropriate_body) { FactoryBot.create(:appropriate_body, :national) }
+      let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :national) }
 
       before do
         allow(school).to receive_messages(
           provider_led_training_programme_chosen?: false,
           school_led_training_programme_chosen?: true,
-          last_chosen_appropriate_body_id: appropriate_body.id
+          last_chosen_appropriate_body_id: appropriate_body_period.id
         )
       end
 
@@ -370,7 +370,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         allow(school).to receive_messages(
           provider_led_training_programme_chosen?: false,
           school_led_training_programme_chosen?: true,
-          last_chosen_appropriate_body_id: FactoryBot.create(:appropriate_body, :national).id
+          last_chosen_appropriate_body_id: FactoryBot.create(:appropriate_body_period, :national).id
         )
       end
 

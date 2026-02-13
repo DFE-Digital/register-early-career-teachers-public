@@ -2,7 +2,7 @@ RSpec.describe "Admin::InductionPeriodsController", type: :request do
   include_context "sign in as DfE user"
 
   let(:teacher) { FactoryBot.create(:teacher, :with_name, trs_qts_awarded_on: 1.year.ago) }
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "POST /admin/teachers/:teacher_id/induction-periods" do
     context "with valid parameters" do

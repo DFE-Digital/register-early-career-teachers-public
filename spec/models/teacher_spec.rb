@@ -176,7 +176,7 @@ describe Teacher do
 
     it "returns the appropriate body period from the ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
-      other_appropriate_body_period = FactoryBot.create(:appropriate_body)
+      other_appropriate_body_period = FactoryBot.create(:appropriate_body_period)
       _other_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
@@ -184,7 +184,7 @@ describe Teacher do
         started_on: 2.years.ago,
         finished_on: 1.year.ago
       )
-      appropriate_body_period = FactoryBot.create(:appropriate_body)
+      appropriate_body_period = FactoryBot.create(:appropriate_body_period)
       _ongoing_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
@@ -199,7 +199,7 @@ describe Teacher do
 
     it "returns nil when the teacher has no ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
-      other_appropriate_body_period = FactoryBot.create(:appropriate_body)
+      other_appropriate_body_period = FactoryBot.create(:appropriate_body_period)
       _other_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,
@@ -207,7 +207,7 @@ describe Teacher do
         started_on: 2.years.ago,
         finished_on: 1.year.ago
       )
-      appropriate_body_period = FactoryBot.create(:appropriate_body)
+      appropriate_body_period = FactoryBot.create(:appropriate_body_period)
       _ongoing_induction_period = FactoryBot.create(
         :induction_period,
         teacher:,

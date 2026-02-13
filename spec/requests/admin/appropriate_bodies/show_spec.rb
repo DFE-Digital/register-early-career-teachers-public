@@ -1,9 +1,9 @@
 RSpec.describe "Viewing the appropriate bodies index", type: :request do
-  let!(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let!(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "GET /admin/appropriate-bodies/:id" do
     it "redirects to sign in path" do
-      get "/admin/organisations/appropriate-bodies/#{appropriate_body.id}"
+      get "/admin/organisations/appropriate-bodies/#{appropriate_body_period.id}"
       expect(response).to redirect_to(sign_in_path)
     end
 
@@ -11,7 +11,7 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
       include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
-        get "/admin/organisations/appropriate-bodies/#{appropriate_body.id}"
+        get "/admin/organisations/appropriate-bodies/#{appropriate_body_period.id}"
 
         expect(response.status).to eq(401)
       end
@@ -21,10 +21,10 @@ RSpec.describe "Viewing the appropriate bodies index", type: :request do
       include_context "sign in as DfE user"
 
       it "display appropriate bodies" do
-        get "/admin/organisations/appropriate-bodies/#{appropriate_body.id}"
+        get "/admin/organisations/appropriate-bodies/#{appropriate_body_period.id}"
 
         expect(response.status).to eq(200)
-        expect(response.body).to include(appropriate_body.name)
+        expect(response.body).to include(appropriate_body_period.name)
       end
     end
   end

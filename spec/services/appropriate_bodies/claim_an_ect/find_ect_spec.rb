@@ -3,7 +3,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
     AppropriateBodies::ClaimAnECT::FindECT.new(appropriate_body_period:, pending_induction_submission:)
   end
 
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
   let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission) }
 
   describe "#initialize" do
@@ -46,7 +46,7 @@ RSpec.describe AppropriateBodies::ClaimAnECT::FindECT do
         let(:pending_induction_submission) { FactoryBot.create(:pending_induction_submission, trn: teacher.trn) }
 
         context "with another AB" do
-          let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body) }
+          let(:other_appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
           before do
             FactoryBot.create(:induction_period, :ongoing,

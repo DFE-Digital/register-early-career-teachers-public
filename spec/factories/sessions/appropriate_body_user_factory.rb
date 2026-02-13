@@ -11,7 +11,7 @@ FactoryBot.define do
     dfe_sign_in_roles { %w[AppropriateBodyUser] }
 
     trait(:at_random_appropriate_body) do
-      dfe_sign_in_organisation_id { FactoryBot.create(:appropriate_body).dfe_sign_in_organisation_id }
+      dfe_sign_in_organisation_id { FactoryBot.create(:appropriate_body_period).dfe_sign_in_organisation_id }
     end
   end
 end
