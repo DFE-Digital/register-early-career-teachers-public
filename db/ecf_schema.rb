@@ -1111,6 +1111,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_28_135429) do
     t.uuid "cohort_id", null: false
     t.boolean "output_fee", default: true
     t.string "contract_version", default: "0.0.1"
+    t.string "mentor_contract_version", default: "0.0.1"
     t.decimal "reconcile_amount", default: "0.0", null: false
     t.datetime "marked_as_paid_at"
     t.index ["cohort_id"], name: "index_statements_on_cohort_id"

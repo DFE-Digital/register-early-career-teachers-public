@@ -29,6 +29,8 @@ class Contract < ApplicationRecord
     validates :banded_fee_structure,
               presence: { message: "Banded fee structure must be provided for ITTECF_ECTP contracts" },
               uniqueness: { message: "Contract with the same banded fee structure already exists" }
+    validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ITTECF_ECTP contracts" }
+    validates :ecf_mentor_contract_version, presence: { message: "ECF mentor contract version must be provided for ITTECF_ECTP contracts" }
   end
 
   with_options if: :ecf_contract_type? do
@@ -37,5 +39,6 @@ class Contract < ApplicationRecord
     validates :banded_fee_structure,
               presence: { message: "Banded fee structure must be provided for ECF contracts" },
               uniqueness: { message: "Contract with the same banded fee structure already exists" }
+    validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ECF contracts" }
   end
 end
