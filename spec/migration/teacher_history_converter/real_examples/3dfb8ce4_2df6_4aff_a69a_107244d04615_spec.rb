@@ -31,8 +31,8 @@ describe "Real data check for user 3dfb8ce4-2df6-4aff-a69a-107244d04615", skip: 
         ],
         induction_records: [
           {
-            start_date: Time.zone.local(2021, 12, 1, 0, 0, 0),
-            end_date: Time.zone.local(2025, 6, 6, 10, 5, 40),
+            start_date: Date.new(2021, 12, 1),
+            end_date: Date.new(2025, 6, 6),
             training_programme: "full_induction_programme",
             cohort_year: 2021,
             school: {
@@ -62,7 +62,7 @@ describe "Real data check for user 3dfb8ce4-2df6-4aff-a69a-107244d04615", skip: 
             }
           },
           {
-            start_date: Time.zone.local(2025, 2, 19, 1, 56, 44),
+            start_date: Date.new(2025, 2, 19),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2024,
@@ -83,8 +83,8 @@ describe "Real data check for user 3dfb8ce4-2df6-4aff-a69a-107244d04615", skip: 
             }
           },
           {
-            start_date: Time.zone.local(2025, 6, 6, 10, 5, 40),
-            end_date: Time.zone.local(2025, 2, 19, 1, 56, 44),
+            start_date: Date.new(2025, 6, 6),
+            end_date: Date.new(2025, 2, 19),
             training_programme: "full_induction_programme",
             cohort_year: 2021,
             school: {

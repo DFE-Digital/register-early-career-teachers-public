@@ -26,7 +26,7 @@ describe "Real data check for user 20cbfbe5-ac8e-4536-a2a3-c385954e3757" do
         ],
         induction_records: [
           {
-            start_date: Time.zone.local(2024, 6, 1, 1, 0, 0),
+            start_date: Date.new(2024, 6, 1),
             end_date: :ignore,
             training_programme: "core_induction_programme",
             cohort_year: 2024,

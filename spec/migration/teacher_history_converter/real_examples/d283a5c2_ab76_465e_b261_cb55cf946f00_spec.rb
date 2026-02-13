@@ -32,8 +32,8 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
         induction_records: [
           {
             induction_record_id: "c2fc9f49-4af7-49b3-a0a8-0fca30fcc883",
-            start_date: Time.zone.local(2024, 6, 1, 1, 0, 0),
-            end_date: Time.zone.local(2024, 7, 22, 11, 9, 46),
+            start_date: Date.new(2024, 6, 1),
+            end_date: Date.new(2024, 7, 22),
             training_programme: "full_induction_programme",
             cohort_year: 2024,
             school: {
@@ -64,8 +64,8 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
           },
           {
             induction_record_id: "1c2e83fc-1585-486b-a785-d28e3d5c5d0c",
-            start_date: Time.zone.local(2024, 7, 22, 11, 9, 46),
-            end_date: Time.zone.local(2025, 8, 21, 16, 1, 13),
+            start_date: Date.new(2024, 7, 22),
+            end_date: Date.new(2025, 8, 21),
             training_programme: "full_induction_programme",
             cohort_year: 2024,
             school: {
@@ -96,7 +96,7 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
           },
           {
             induction_record_id: "c08e63ee-22c4-4340-8a77-a1d060949188",
-            start_date: Time.zone.local(2025, 8, 6, 14, 6, 51),
+            start_date: Date.new(2025, 8, 6),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2024,
@@ -128,8 +128,8 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
           },
           {
             induction_record_id: "554f599d-2aa9-423c-a37c-f6c0454d08a5",
-            start_date: Time.zone.local(2025, 8, 21, 16, 1, 13),
-            end_date: Time.zone.local(2025, 8, 6, 14, 6, 51),
+            start_date: Date.new(2025, 8, 21),
+            end_date: Date.new(2025, 8, 6),
             training_programme: "full_induction_programme",
             cohort_year: 2024,
             school: {
@@ -239,8 +239,8 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
           induction_records: [
             {
               induction_record_id: "09daac5d-27e5-49a3-b72e-eb3f6440f91e",
-              start_date: Time.zone.local(2024, 6, 1, 0, 0, 0),
-              end_date: Time.zone.local(2025, 8, 21, 16, 0, 58),
+              start_date: Date.new(2024, 6, 1),
+              end_date: Date.new(2025, 8, 21),
               training_programme: "full_induction_programme",
               cohort_year: 2024,
               school: {
@@ -271,7 +271,7 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
             },
             {
               induction_record_id: "7b816792-06da-4960-885a-f450c152cb7f",
-              start_date: Time.zone.local(2025, 8, 6, 12, 52, 14),
+              start_date: Date.new(2025, 8, 6),
               end_date: :ignore,
               training_programme: "full_induction_programme",
               cohort_year: 2024,
@@ -303,8 +303,8 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
             },
             {
               induction_record_id: "6d54cb13-75b4-449a-8ae1-75f8f4a65095",
-              start_date: Time.zone.local(2025, 8, 21, 16, 0, 58),
-              end_date: Time.zone.local(2025, 8, 6, 12, 52, 14),
+              start_date: Date.new(2025, 8, 21),
+              end_date: Date.new(2025, 8, 6),
               training_programme: "full_induction_programme",
               cohort_year: 2024,
               school: {
