@@ -105,7 +105,6 @@ For example, a 2025 cohort ECT who started on 1 September 2025 and is completing
 | Milestone | Start date | Declaration deadline | Declaration type | Payment date |
 | --------- | ---------- | -------------------- | ---------------- | ------------ |
 | Participant Start | 1 Jun 2025 | 31 Oct 2025<br><br>31 Dec 2025 | started | 30 Nov 2025<br><br>31 Jan 2026 |
-| Participant Start | 1 Jun 2025 | 31 Dec 2025 | started | 31 Jan 2026 |
 | Retention Point 1 | 1 Jan 2026 | 31 Mar 2026 | retained-1 | 30 Apr 2026 |
 | Retention Point 2 | 1 Apr 2026 | 31 Jul 2026 | retained-2 | 31 Aug 2026 |
 | Retention Point 3 | 1 Aug 2026 | 31 Dec 2026 | retained-3 | 31 Jan 2027 |
