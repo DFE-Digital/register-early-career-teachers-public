@@ -27,8 +27,8 @@ This table defines terms used throughout this guidance. For other contractual te
 | Milestone validation | The API's process to validate declarations submitted by providers for participants in standard training schedules |
 | Output payment | The payment amount that DfE publishes on a finance statement, which is based on valid declarations |
 | Payment date | The date that DfE aims to process frozen statements by, so that payments can be made |
-| Schedule | Schedules are timed sequences of expected milestone and payment points.<br>These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor.<br>They are then updated and corrected by lead providers via the API.<br>Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for |
-| Extended schedule | A non-standard training schedule for participants who expect to complete the induction over a period greater than 2 years. Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body. Mentors can also be assigned extended schedules |
+| Schedule | Schedules are timed sequences of expected milestone and payment points.<br><br>These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor.<br><br>They are then updated and corrected by lead providers via the API.<br>Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for |
+| Extended schedule | A non-standard training schedule for participants who expect to complete the induction over a period greater than 2 years.<br><br>Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body. Mentors can also be assigned extended schedules |
 | Reduced schedule | A non-standard training schedule for ECTs who expect to complete the induction over a period less than 2 years. Examples include those with previous experience |
 | Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training. The mentor must be completely new to provider-led mentor training |
 | Standard schedule | The default training schedule for participants completing a standard 2 year induction, starting in September, January or April |
@@ -104,7 +104,7 @@ For example, a 2025 cohort ECT who started on 1 September 2025 and is completing
 
 | Milestone | Start date | Declaration deadline | Declaration type | Payment date |
 | --------- | ---------- | -------------------- | ---------------- | ------------ |
-| Participant Start | 1 Jun 2025 | 31 Oct 2025 | started | 30 Nov 2025 |
+| Participant Start | 1 Jun 2025 | 31 Oct 2025<br><br>31 Dec 2025 | started | 30 Nov 2025<br><br>31 Jan 2026 |
 | Participant Start | 1 Jun 2025 | 31 Dec 2025 | started | 31 Jan 2026 |
 | Retention Point 1 | 1 Jan 2026 | 31 Mar 2026 | retained-1 | 30 Apr 2026 |
 | Retention Point 2 | 1 Apr 2026 | 31 Jul 2026 | retained-2 | 31 Aug 2026 |
