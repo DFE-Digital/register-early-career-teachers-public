@@ -30,7 +30,7 @@ private
     return induction_record.end_date unless end_date_before_service_start?(induction_record)
 
     if next_induction_record && start_date_on_or_after_service_start?(next_induction_record)
-      next_induction_record.start_date.to_date
+      next_induction_record.start_date
     else
       induction_record.created_at.to_date
     end
