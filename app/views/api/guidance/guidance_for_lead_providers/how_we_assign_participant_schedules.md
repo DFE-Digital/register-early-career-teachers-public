@@ -27,7 +27,7 @@ This table defines terms used throughout this guidance. For other contractual te
 | Milestone validation | The API's process to validate declarations submitted by providers for participants in standard training schedules |
 | Output payment | The payment amount that DfE publishes on a finance statement, which is based on valid declarations |
 | Payment date | The date that DfE aims to process frozen statements by, so that payments can be made |
-| Schedule | Schedules are timed sequences of expected milestone and payment points. These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor. They are then updated and corrected by lead providers via the API. Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for |
+| Schedule | Schedules are timed sequences of expected milestone and payment points.<br>These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor.<br>They are then updated and corrected by lead providers via the API.<br>Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for |
 | Extended schedule | A non-standard training schedule for participants who expect to complete the induction over a period greater than 2 years. Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body. Mentors can also be assigned extended schedules |
 | Reduced schedule | A non-standard training schedule for ECTs who expect to complete the induction over a period less than 2 years. Examples include those with previous experience |
 | Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training. The mentor must be completely new to provider-led mentor training |
@@ -96,7 +96,9 @@ DfE pays lead providers based on agreed contractual schedules and training deliv
 
 Output payments are based on valid declarations submitted by the declaration deadline for each milestone. Milestone dates correspond to each participant's schedule.
 
-Contract management circulates milestone dates and payment guidance to lead providers. For example, a 2025 cohort ECT who started on 1 September 2025 and is completing training over 2 academic years would be on the standard September schedule.
+Contract management circulates milestone dates and payment guidance to lead providers.
+
+For example, a 2025 cohort ECT who started on 1 September 2025 and is completing training over 2 academic years would be on the standard September schedule.
 
 `"schedule_identifier": "standard-september"`
 
