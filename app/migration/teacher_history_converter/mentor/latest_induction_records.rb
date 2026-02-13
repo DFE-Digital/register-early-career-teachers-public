@@ -69,7 +69,8 @@ private
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
-      combination: build_combination(induction_record:, training_programme:)
+      combination: build_combination(induction_record:, training_programme:),
+      **withdrawal_data(training_status: induction_record.training_status)
     }.merge(overrides)
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
@@ -78,5 +79,9 @@ private
   def build_combination(induction_record:, **overrides)
     ECF2TeacherHistory::Combination
       .from_induction_record(trn:, profile_id:, profile_type: "mentor", induction_record:, **overrides)
+  end
+
+  def withdrawal_data(training_status:)
+    TeacherHistoryConverter::WithdrawalData.new(training_status:, states:).withdrawal_data
   end
 end
