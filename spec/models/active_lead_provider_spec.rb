@@ -8,6 +8,7 @@ describe ActiveLeadProvider do
     it { is_expected.to have_many(:delivery_partners).through(:lead_provider_delivery_partnerships) }
     it { is_expected.to have_many(:expressions_of_interest).class_name("TrainingPeriod").inverse_of(:expression_of_interest) }
     it { is_expected.to have_many(:events) }
+    it { is_expected.to have_many(:contracts) }
   end
 
   describe "validations" do

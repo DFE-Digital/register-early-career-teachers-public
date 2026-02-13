@@ -11,6 +11,7 @@ describe Contract do
   end
 
   describe "associations" do
+    it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to belong_to(:banded_fee_structure).class_name("Contract::BandedFeeStructure").optional }
     it { is_expected.to belong_to(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").optional }
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
@@ -23,6 +24,15 @@ describe Contract do
     it { is_expected.to validate_inclusion_of(:contract_type).in_array(Contract.contract_types.keys).with_message("Choose a valid contract type") }
     it { is_expected.to validate_presence_of(:vat_rate).with_message("VAT rate is required") }
     it { is_expected.to validate_numericality_of(:vat_rate).is_in(0..1).with_message("VAT rate must be between 0 and 1") }
+
+    context "when active_lead_provider is nil" do
+      subject(:contract) { FactoryBot.build(:contract, active_lead_provider: nil) }
+
+      it "is not valid" do
+        expect(contract).not_to be_valid
+        expect(contract.errors[:active_lead_provider]).to include("An active lead provider must be set")
+      end
+    end
 
     context "when contract type is `ITTECF_ECTP`" do
       subject { FactoryBot.create(:contract, :for_ittecf_ectp) }
@@ -45,34 +55,28 @@ describe Contract do
         expect { FactoryBot.create(:contract, :for_ecf, flat_rate_fee_structure: nil) }.not_to raise_error
       end
     end
+  end
 
-    describe "active lead provider consistency" do
-      let!(:contract) { FactoryBot.create(:contract) }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  describe "immutable active_lead_provider_id" do
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
-      it "is valid when there are no statements associated with the contract" do
-        expect(contract).to be_valid
+    context "when creating a new contract" do
+      let(:contract) { FactoryBot.build(:contract, active_lead_provider:) }
+
+      it "assigns the active lead provider" do
+        expect { contract.save! }.not_to raise_error
+        expect(contract.active_lead_provider).to eq(active_lead_provider)
       end
+    end
 
-      it "is valid when all other statements associated with the same contract have the same lead provider and contract period" do
-        FactoryBot.create(:statement, contract:, active_lead_provider:)
-        FactoryBot.create(:statement, contract:, active_lead_provider:)
+    context "when updating an existing contract" do
+      let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+      let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
 
-        contract.reload
-
-        expect(contract).to be_valid
-      end
-
-      it "is invalid when there are other statements associated with the same contract that have different lead providers or contract periods" do
-        FactoryBot.create(:statement, contract:, active_lead_provider:)
-
-        another_contract_statement = FactoryBot.create(:statement, active_lead_provider: FactoryBot.create(:active_lead_provider))
-        another_contract_statement.update_columns(contract_id: contract.id)
-
-        contract.reload
-
-        expect(contract).not_to be_valid
-        expect(contract.errors[:base]).to include("This contract is associated with other statements linked to different lead providers/contract periods.")
+      it "raises an error" do
+        expect { contract.update!(active_lead_provider: other_active_lead_provider) }
+          .to raise_error(ActiveRecord::ReadonlyAttributeError)
+        expect(contract.active_lead_provider).to eq(active_lead_provider)
       end
     end
   end

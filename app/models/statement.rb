@@ -67,8 +67,8 @@ class Statement < ApplicationRecord
   end
 
   def contract_active_lead_provider_consistency
-    return unless contract&.statements&.any? { it.active_lead_provider != active_lead_provider }
+    return unless contract && contract.active_lead_provider != active_lead_provider
 
-    errors.add(:contract, "This contract is associated with other statements linked to different lead providers/contract periods.")
+    errors.add(:contract, "This contract must have the same active lead provider as the statement.")
   end
 end

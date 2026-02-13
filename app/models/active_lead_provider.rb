@@ -7,6 +7,7 @@ class ActiveLeadProvider < ApplicationRecord
   has_many :statements
   has_many :expressions_of_interest, class_name: "TrainingPeriod", foreign_key: "expression_of_interest_id", inverse_of: :expression_of_interest
   has_many :events
+  has_many :contracts
 
   validates :contract_period_year,
             presence: { message: "Choose a contract period" },
