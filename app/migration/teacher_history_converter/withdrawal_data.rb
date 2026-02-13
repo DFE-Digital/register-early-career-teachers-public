@@ -18,6 +18,12 @@ class TeacherHistoryConverter::WithdrawalData
     #
     # but sometimes the withdrawal happened earlier, and ECF1 takes care of this by searching for the most recent
     # withdrawal event for the teacher
+    #
+    # In ECF1 we're also finding the most recent 'withdrawn' profile state
+    #
+    # https://github.com/DFE-Digital/early-careers-framework/blob/main/app/serializers/api/v3/ecf/participant_serializer.rb#L37-L41
+    #
+    # FIXME: perhaps we should be linking to the LP here too? If we do, hardcode the list rather than do a DB lookup...
     if (matching_state = states.find { it.state == "withdrawn" })
       {
         withdrawal_reason: matching_state.reason.to_s,
