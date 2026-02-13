@@ -26,7 +26,7 @@ describe "Real data check for user bb7234c4-d75c-4fd0-be9f-77cfa254535c (one ECT
         ],
         induction_records: [
           {
-            start_date: Time.zone.local(2025, 9, 1, 1, 0, 0),
+            start_date: Date.new(2025, 9, 1),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2025,
@@ -67,7 +67,7 @@ describe "Real data check for user bb7234c4-d75c-4fd0-be9f-77cfa254535c (one ECT
         payments_frozen_cohort_start_year: :ignore,
         induction_records: [
           {
-            start_date: Time.zone.local(2021, 9, 1, 1, 0, 0),
+            start_date: Date.new(2021, 9, 1),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2021,

@@ -70,8 +70,8 @@ class ECF1TeacherHistory
   def self.build_induction_record(induction_record:)
     InductionRecord.new(
       induction_record_id: induction_record.id,
-      start_date: induction_record.start_date,
-      end_date: induction_record.end_date,
+      start_date: induction_record.start_date.to_date,
+      end_date: induction_record.end_date&.to_date,
       created_at: induction_record.created_at,
       updated_at: induction_record.updated_at,
       cohort_year: induction_record.schedule.cohort.start_year,
@@ -83,7 +83,9 @@ class ECF1TeacherHistory
       induction_status: induction_record.induction_status,
       training_programme: induction_record.induction_programme.training_programme,
       training_provider_info: build_training_provider_info(induction_record:),
-      appropriate_body: build_appropriate_body(induction_record:)
+      appropriate_body: build_appropriate_body(induction_record:),
+      start_timestamp: induction_record.start_date,
+      end_timestamp: induction_record.end_date
     )
   end
 

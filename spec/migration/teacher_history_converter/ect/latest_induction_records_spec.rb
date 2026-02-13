@@ -317,8 +317,8 @@ describe "Latest induction records mode conversion" do
       let(:induction_records) do
         data[:induction_records].map do |induction_record|
           {
-            start_date: Time.zone.parse(induction_record[:start_date]),
-            end_date: (induction_record[:end_date] == :ignore ? :ignore : Time.zone.parse(induction_record[:end_date])),
+            start_date: Date.parse(induction_record[:start_date]),
+            end_date: (induction_record[:end_date] == :ignore ? :ignore : Date.parse(induction_record[:end_date])),
             school: schools.find { |school| school[:urn] == induction_record[:urn] },
             training_provider_info: {
               lead_provider: lead_provider_a,
@@ -375,8 +375,8 @@ describe "Latest induction records mode conversion" do
     let(:induction_records) do
       [
         {
-          start_date: Time.zone.parse("2024-1-1"),
-          end_date: Time.zone.parse("2024-5-5"),
+          start_date: Date.parse("2024-1-1"),
+          end_date: Date.parse("2024-5-5"),
           school: school_a,
           training_provider_info: {
             lead_provider: lead_provider_a,
@@ -385,8 +385,8 @@ describe "Latest induction records mode conversion" do
           }
         },
         {
-          start_date: Time.zone.parse("2024-3-3"),
-          end_date: Time.zone.parse("2024-6-6"),
+          start_date: Date.parse("2024-3-3"),
+          end_date: Date.parse("2024-6-6"),
           school: school_b,
           mentor_profile_id:,
           training_provider_info: {

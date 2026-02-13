@@ -17,8 +17,8 @@ describe "Real data check for user b4f7ab45-04bc-408d-a8bc-7c6757321226" do
         payments_frozen_cohort_start_year: :ignore,
         induction_records: [
           {
-            start_date: Time.zone.local(2021, 9, 1, 1, 0, 0),
-            end_date: Time.zone.local(2021, 9, 1, 1, 0, 0),
+            start_date: Date.new(2021, 9, 1),
+            end_date: Date.new(2021, 9, 1),
             training_programme: "core_induction_programme",
             cohort_year: 2021,
             school: {
@@ -38,8 +38,8 @@ describe "Real data check for user b4f7ab45-04bc-408d-a8bc-7c6757321226" do
             }
           },
           {
-            start_date: Time.zone.local(2021, 9, 1, 1, 0, 0),
-            end_date: Time.zone.local(2022, 9, 7, 9, 45, 48),
+            start_date: Date.new(2021, 9, 1),
+            end_date: Date.new(2022, 9, 7),
             training_programme: "full_induction_programme",
             cohort_year: 2021,
             school: {
@@ -69,7 +69,7 @@ describe "Real data check for user b4f7ab45-04bc-408d-a8bc-7c6757321226" do
             }
           },
           {
-            start_date: Time.zone.local(2022, 9, 7, 9, 45, 48),
+            start_date: Date.new(2022, 9, 7),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2021,

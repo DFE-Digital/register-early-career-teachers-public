@@ -41,8 +41,8 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
         ],
         induction_records: [
           {
-            start_date: Time.zone.local(2022, 9, 1, 1, 0, 0),
-            end_date: Time.zone.local(2023, 9, 1, 1, 0, 0),
+            start_date: Date.new(2022, 9, 1),
+            end_date: Date.new(2023, 9, 1),
             training_programme: "full_induction_programme",
             cohort_year: 2022,
             school: {
@@ -72,7 +72,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
             }
           },
           {
-            start_date: Time.zone.local(2024, 8, 20, 3, 50, 29),
+            start_date: Date.new(2024, 8, 20),
             end_date: :ignore,
             training_programme: "full_induction_programme",
             cohort_year: 2022,
