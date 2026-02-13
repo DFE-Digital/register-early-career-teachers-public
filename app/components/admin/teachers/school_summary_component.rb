@@ -13,7 +13,7 @@ module Admin
 
       def call
         govuk_summary_card(title: card_title) do |card|
-          card.with_summary_list do |list|
+          card.with_summary_list(actions: false) do |list|
             rows.each do |row|
               list.with_row do |r|
                 r.with_key(text: row[:key][:text])
@@ -57,14 +57,14 @@ module Admin
       def ect_rows
         base_rows.tap do |rows|
           rows << summary_row("Appropriate body", appropriate_body_text)
-          rows << summary_row("Assigned mentor", mentors_text, html: true)
           rows << summary_row("Working pattern", working_pattern_text)
+          rows << summary_row("Mentor", mentors_content, html: true)
         end
       end
 
       def mentor_rows
         base_rows.tap do |rows|
-          rows << summary_row("Assigned ECTs", mentees_text, html: true)
+          rows << summary_row("Assigned ECTs", mentees_content, html: true)
         end
       end
 
@@ -81,39 +81,48 @@ module Admin
       end
 
       def mentorship_periods_for_ect
-        school_period.mentorship_periods.includes(mentor: :teacher).order(started_on: :desc)
+        school_period.mentorship_periods.includes(mentor: :teacher).order(started_on: :asc)
       end
 
       def mentorship_periods_for_mentor
-        school_period.mentorship_periods.includes(mentee: :teacher).order(started_on: :desc)
+        school_period.mentorship_periods.includes(mentee: :teacher).order(started_on: :asc)
       end
 
-      def mentors_text
-        mentor_links = mentorship_periods_for_ect.map { |period| mentor_link(period) }.compact
-        return "None assigned" if mentor_links.empty?
+      def mentors_content
+        periods = mentorship_periods_for_ect
+        return "None assigned" if periods.empty?
 
-        safe_join(mentor_links, tag.br)
+        mentorship_table(periods, :mentor)
       end
 
-      def mentees_text
-        mentee_links = mentorship_periods_for_mentor.map { |period| mentee_link(period) }.compact
-        return "None assigned" if mentee_links.empty?
+      def mentees_content
+        periods = mentorship_periods_for_mentor
+        return "None assigned" if periods.empty?
 
-        safe_join(mentee_links, tag.br)
+        mentorship_table(periods, :mentee)
       end
 
-      def mentor_link(mentorship_period)
-        mentor_teacher = mentorship_period.mentor&.teacher
-        return unless mentor_teacher
-
-        govuk_link_to(teacher_full_name(mentor_teacher), admin_teacher_induction_path(mentor_teacher))
+      def mentorship_table(periods, role)
+        govuk_table(
+          first_cell_is_header: false,
+          head: ["Name", "Start date", "End date"],
+          rows: periods.filter_map { mentorship_table_row(it, role) }
+        )
       end
 
-      def mentee_link(mentorship_period)
-        ect_teacher = mentorship_period.mentee&.teacher
-        return unless ect_teacher
+      def mentorship_table_row(mentorship_period, role)
+        teacher = role == :mentor ? mentorship_period.mentor&.teacher : mentorship_period.mentee&.teacher
+        return unless teacher
 
-        govuk_link_to(teacher_full_name(ect_teacher), admin_teacher_induction_path(ect_teacher))
+        [
+          govuk_link_to(teacher_full_name(teacher), admin_teacher_induction_path(teacher)),
+          mentorship_period.started_on.to_fs(:govuk),
+          mentorship_end_date_text(mentorship_period)
+        ]
+      end
+
+      def mentorship_end_date_text(mentorship_period)
+        mentorship_period.finished_on.present? ? mentorship_period.finished_on.to_fs(:govuk) : "Present"
       end
 
       def working_pattern_text
