@@ -6,7 +6,7 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
 
   let(:school_partnership) do
-    make_partnership_for(school, contract_period, lead_provider_name: "Naruto Ninja Academy")
+    make_partnership_for(school, contract_period, lead_provider_name: "Naruto Ninja Academy", delivery_partner_name: "Shinobi Training Co")
   end
 
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:) }
@@ -56,6 +56,13 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
       render
     end
 
+    it "does not show the delivery partner row" do
+      render
+
+      expect(rendered).not_to have_element(:dt, text: "Delivery partner")
+      expect(rendered).not_to have_element(:dd, text: "Shinobi Training Co")
+    end
+
     it "shows the explanatory text" do
       expect(rendered).to have_text(
         "Naruto Ninja Academy will confirm if they’ll be working with your school and which delivery partner will deliver training events."
@@ -67,6 +74,13 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
     before do
       allow(mentor).to receive(:expression_of_interest?).and_return(false)
       render
+    end
+
+    it "shows the delivery partner row" do
+      render
+
+      expect(rendered).to have_element(:dt, text: "Delivery partner")
+      expect(rendered).to have_element(:dd, text: "Shinobi Training Co")
     end
 
     it "does not show explanatory text" do
