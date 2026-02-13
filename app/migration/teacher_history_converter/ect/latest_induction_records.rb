@@ -102,7 +102,8 @@ private
       is_ect: true,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
-      combination: build_combination(induction_record:, training_programme:)
+      combination: build_combination(induction_record:, training_programme:),
+      **withdrawal_data(training_status: induction_record.training_status)
     }.merge(overrides)
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
@@ -124,5 +125,9 @@ private
     end
 
     OVERLAPPING_MENTOR_PERIODS_SORTING.call(overlapping_mentor_periods).last
+  end
+
+  def withdrawal_data(training_status:)
+    TeacherHistoryConverter::WithdrawalData.new(training_status:, states:).withdrawal_data
   end
 end

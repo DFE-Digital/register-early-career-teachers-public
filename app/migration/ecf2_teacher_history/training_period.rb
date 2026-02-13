@@ -72,7 +72,9 @@ class ECF2TeacherHistory::TrainingPeriod
       ecf_start_induction_record_id:,
       lead_provider_info: lead_provider_info.to_h,
       delivery_partner_info: delivery_partner_info.to_h,
-      contract_period_year:
+      contract_period_year:,
+      withdrawal_reason:,
+      withdrawn_at:
     }
   end
 
