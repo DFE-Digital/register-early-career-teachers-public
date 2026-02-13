@@ -58,11 +58,11 @@ RSpec.describe InductionPeriods::PartialTransferInductionPeriods, :aggregate_fai
 
   describe "rollback: true" do
     it "persists no changes" do
-      expect(Event.all[2].heading).to eq("partial_in_progress_induction: Current AB")
+      expect(Event.order(:created_at)[2].heading).to eq("partial_in_progress_induction: Current AB")
 
       service.call(rollback: true)
 
-      expect(Event.all[2].reload.heading).to eq("partial_in_progress_induction: Current AB")
+      expect(Event.order(:created_at)[2].reload.heading).to eq("partial_in_progress_induction: Current AB")
     end
   end
 end
