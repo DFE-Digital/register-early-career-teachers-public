@@ -176,12 +176,14 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 10, 6, 14, 24, 58)
+            created_at: Time.zone.local(2022, 10, 6, 14, 24, 58),
+            cpd_lead_provider_id: "22727fdc-816a-4a3c-9675-030e724bbf89"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 10, 6, 14, 24, 58)
+            created_at: Time.zone.local(2022, 10, 6, 14, 24, 58),
+            cpd_lead_provider_id: "22727fdc-816a-4a3c-9675-030e724bbf89"
           }
         ]
       }

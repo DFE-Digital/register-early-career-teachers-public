@@ -21,12 +21,14 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2024, 7, 19, 9, 21, 40)
+            created_at: Time.zone.local(2024, 7, 19, 9, 21, 40),
+            cpd_lead_provider_id: "dfad2a9c-527d-4d71-ae9a-492ab307e6c3"
           },
           {
             state: "withdrawn",
             reason: "other",
-            created_at: Time.zone.local(2025, 8, 21, 16, 1, 13)
+            created_at: Time.zone.local(2025, 8, 21, 16, 1, 13),
+            cpd_lead_provider_id: "dfad2a9c-527d-4d71-ae9a-492ab307e6c3"
           }
         ],
         induction_records: [
