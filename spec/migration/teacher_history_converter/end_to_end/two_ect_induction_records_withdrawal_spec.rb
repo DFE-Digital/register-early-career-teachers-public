@@ -112,7 +112,7 @@ describe "Two ECT induction records (with the second being a withdrawal)" do
 
       aggregate_failures do
         expect(withdrawal_training_period.withdrawn_at).to eql(ecf1_participant_profile_state.created_at)
-        expect(withdrawal_training_period.withdrawal_reason).to eql(ecf1_participant_profile_state.reason)
+        expect(withdrawal_training_period.withdrawal_reason).to eql(ecf1_participant_profile_state.reason.underscore)
       end
     end
   end
