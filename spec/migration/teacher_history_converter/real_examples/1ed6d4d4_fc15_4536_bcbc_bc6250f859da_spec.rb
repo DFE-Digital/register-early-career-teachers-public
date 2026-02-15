@@ -31,7 +31,8 @@ describe "Real data check for user 1ed6d4d4-fc15-4536-bcbc-bc6250f859da (with a 
           {
             state: "withdrawn",
             reason: "other",
-            created_at: Time.zone.local(2025, 9, 4, 10, 1, 6)
+            created_at: Time.zone.local(2025, 9, 4, 10, 1, 6),
+            cpd_lead_provider_id: "dfad2a9c-527d-4d71-ae9a-492ab307e6c3"
           }
         ],
         induction_records: [
