@@ -126,7 +126,7 @@ describe "Real data check for user c82e38f1-920b-4ad0-98a3-5d69ee7f7b83" do
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   contract_period_year: 2022,
                   withdrawn_at: Time.zone.local(2024, 1, 8, 11, 40, 7),
-                  withdrawal_reason: "switched-to-school-led"
+                  withdrawal_reason: "switched_to_school_led"
                 )
               )
             )

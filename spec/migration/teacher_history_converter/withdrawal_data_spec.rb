@@ -21,7 +21,7 @@ describe TeacherHistoryConverter::WithdrawalData do
     ECF1TeacherHistory::ProfileState.new(
       state: "withdrawn",
       created_at: 1.year.ago.round,
-      reason: "left_teaching_profession",
+      reason: "left-teaching-profession",
       cpd_lead_provider_id: bpn_cpd_lead_provider_id
     )
   end
@@ -35,11 +35,13 @@ describe TeacherHistoryConverter::WithdrawalData do
     )
   end
 
+  let(:edt_reason) { "other" }
+
   let(:edt_withdrawn_1) do
     ECF1TeacherHistory::ProfileState.new(
       state: "withdrawn",
       created_at: 3.years.ago.round,
-      reason: "other",
+      reason: edt_reason,
       cpd_lead_provider_id: edt_cpd_lead_provider_id
     )
   end
@@ -79,6 +81,27 @@ describe TeacherHistoryConverter::WithdrawalData do
 
       it "returns an empty hash" do
         expect(subject).to eql({})
+      end
+    end
+
+    describe "reason mappings" do
+      let(:lead_provider_id) { edt_id }
+
+      {
+        "left-teaching-profession" => "left_teaching_profession",
+        "moved-school" => "moved_school",
+        "mentor-no-longer-being-mentor" => "mentor_no_longer_being_mentor",
+        "switched-to-school-led" => "switched_to_school_led",
+        nil => "other",
+        "any-other-value" => "other"
+      }.each do |ecf1_value, ecf2_value|
+        context "when the reason in ECF1 is #{ecf1_value || 'nil'}" do
+          let(:edt_reason) { ecf1_value }
+
+          it "returns #{ecf2_value}" do
+            expect(subject).to eql({ withdrawal_reason: ecf2_value, withdrawn_at: 3.years.ago.round })
+          end
+        end
       end
     end
   end
