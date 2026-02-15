@@ -147,7 +147,12 @@ class ECF1TeacherHistory
 
   def self.build_profile_states(participant_profile:)
     participant_profile.participant_profile_states.order(:created_at).map do |profile_state|
-      ECF1TeacherHistory::ProfileState.new(state: profile_state.state, reason: profile_state.reason, created_at: profile_state.created_at)
+      ECF1TeacherHistory::ProfileState.new(
+        state: profile_state.state,
+        reason: profile_state.reason,
+        created_at: profile_state.created_at,
+        cpd_lead_provider_id: profile_state.cpd_lead_provider_id
+      )
     end
   end
 

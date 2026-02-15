@@ -58,7 +58,9 @@ class ECF2TeacherHistory::TrainingPeriod
       training_programme:,
       schedule: ecf2_schedule,
       created_at:,
-      ecf_start_induction_record_id:
+      ecf_start_induction_record_id:,
+      withdrawal_reason:,
+      withdrawn_at:
     }
   end
 

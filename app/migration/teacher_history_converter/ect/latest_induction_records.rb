@@ -90,20 +90,22 @@ private
   def build_training_period(induction_record:, **overrides)
     training_programme = convert_training_programme_name(induction_record.training_programme)
 
+    training_provider_info = induction_record.training_provider_info
+
     training_attrs = {
       started_on: induction_record.start_date,
       finished_on: induction_record.end_date,
       created_at: induction_record.created_at,
       school: induction_record.school,
       training_programme:,
-      lead_provider_info: induction_record.training_provider_info&.lead_provider_info,
-      delivery_partner_info: induction_record.training_provider_info&.delivery_partner_info,
+      lead_provider_info: training_provider_info&.lead_provider_info,
+      delivery_partner_info: training_provider_info&.delivery_partner_info,
       contract_period_year: induction_record.cohort_year,
       is_ect: true,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
       combination: build_combination(induction_record:, training_programme:),
-      **withdrawal_data(training_status: induction_record.training_status)
+      **withdrawal_data(training_status: induction_record.training_status, lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id)
     }.merge(overrides)
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
@@ -127,7 +129,7 @@ private
     OVERLAPPING_MENTOR_PERIODS_SORTING.call(overlapping_mentor_periods).last
   end
 
-  def withdrawal_data(training_status:)
-    TeacherHistoryConverter::WithdrawalData.new(training_status:, states:).withdrawal_data
+  def withdrawal_data(training_status:, lead_provider_id:)
+    TeacherHistoryConverter::WithdrawalData.new(training_status:, states:, lead_provider_id:).withdrawal_data
   end
 end
