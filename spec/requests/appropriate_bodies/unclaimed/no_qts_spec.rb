@@ -1,5 +1,5 @@
 RSpec.describe "AppropriateBodies::Unclaimed::NoQtsController", type: :request do
-  let(:appropriate_body) { FactoryBot.create(:appropriate_body) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
 
   describe "GET /appropriate-body/schools-data/no-qts" do
     context "when not signed in" do
@@ -10,7 +10,7 @@ RSpec.describe "AppropriateBodies::Unclaimed::NoQtsController", type: :request d
     end
 
     context "when signed in as an appropriate body user" do
-      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body:) }
+      let!(:user) { sign_in_as(:appropriate_body_user, appropriate_body: appropriate_body_period) }
 
       it "returns a successful response" do
         get("/appropriate-body/schools-data/no-qts")

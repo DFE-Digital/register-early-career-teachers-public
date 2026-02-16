@@ -1,4 +1,20 @@
 <% page_data(
-      title: "Check ECTs who are currently claimed by another AB",
-      backlink_href: ab_unclaimed_path
-    ) %>
+  title: "Check ECTs who are currently claimed by another AB",
+  backlink_href: ab_unclaimed_path
+) %>
+
+<p class="govuk-body">
+  The school has told us you are the appropriate body (AB) for these ECTs. You may want to confirm this with the school. The other AB will need to release the ECT before you can claim their induction.
+</p>
+<%= govuk_section_break(visible: false, size: "l") %>
+
+<%= render UnclaimedIndex::SearchSectionComponent.new(
+  query: @query,
+  form_url: ab_unclaimed_claimed_by_another_index_path
+) %>
+
+<%= render UnclaimedIndex::TableSectionComponent.new(
+  ect_at_school_periods: @ect_at_school_periods,
+  pagy: @pagy,
+  row_component: UnclaimedIndex::ClaimedByAnother::TableRowComponent
+) %>
