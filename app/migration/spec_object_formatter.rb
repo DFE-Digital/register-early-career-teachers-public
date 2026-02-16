@@ -62,7 +62,7 @@ private
     end
   end
 
-  def fake_school(urn:, name:)
+  def fake_school(urn:, name:, **)
     school = if (matching_school = fake_schools.find { |fs| fs.original_urn == urn.to_s })
                matching_school
              else

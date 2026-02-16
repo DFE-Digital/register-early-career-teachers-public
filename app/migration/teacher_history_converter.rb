@@ -59,10 +59,11 @@ private
     raw_induction_records = ecf1_teacher_history.ect.induction_records
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
     mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
+    states = ecf1_teacher_history.ect.states
 
     case migration_mode
     when :latest_induction_records
-      TeacherHistoryConverter::ECT::LatestInductionRecords.new(trn:, profile_id:, induction_records:, mentor_at_school_periods:)
+      TeacherHistoryConverter::ECT::LatestInductionRecords.new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
         .ect_at_school_periods
         .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.ect.created_at) }
     when :all_induction_records
@@ -81,10 +82,11 @@ private
     profile_id = ecf1_teacher_history.mentor.participant_profile_id
     raw_induction_records = ecf1_teacher_history.mentor.induction_records
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
+    states = ecf1_teacher_history.mentor.states
 
     case migration_mode
     when :latest_induction_records
-      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(trn:, profile_id:, induction_records:)
+      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(trn:, profile_id:, induction_records:, states:)
         .mentor_at_school_periods
         .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
     when :all_induction_records
