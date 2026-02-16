@@ -16,6 +16,11 @@ RSpec.describe Declarations::Clawback do
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let!(:next_available_output_fee_statement) { FactoryBot.create(:statement, :output_fee, active_lead_provider:) }
 
+  before do
+    # make payment statement precede clawback statement
+    declaration.payment_statement.update!(deadline_date: Date.yesterday)
+  end
+
   describe "#clawback" do
     subject(:clawback) { instance.clawback }
 
@@ -87,11 +92,13 @@ RSpec.describe Declarations::Clawback do
     end
 
     context "when there is no next available output fee statement" do
-      let(:next_available_output_fee_statement) { nil }
-
-      before { instance.clawback }
+      before do
+        next_available_output_fee_statement.destroy!
+        instance.clawback
+      end
 
       it "is invalid" do
+        # binding.irb
         expect(instance).to have_error(:next_available_output_fee_statement)
       end
 

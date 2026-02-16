@@ -44,4 +44,16 @@ module DeclarationHelper
       "ecf-mentor"
     end
   end
+
+  def declaration_voided_by_caption(declaration, event)
+    return unless event.event_type.in?(%w[teacher_declaration_voided teacher_declaration_clawed_back])
+
+    text = if declaration.voided_by_user.present?
+             "Voided by #{declaration.voided_by_user.name} (#{declaration.voided_by_user.email})"
+           else
+             "Voided by lead provider"
+           end
+
+    tag.span(text, class: "govuk-caption-m")
+  end
 end

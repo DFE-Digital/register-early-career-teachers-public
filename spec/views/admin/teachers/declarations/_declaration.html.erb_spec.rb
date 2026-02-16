@@ -18,7 +18,8 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
         for_ect?: true,
         for_mentor?: false,
         overall_status: "no_payment",
-        events: Event.none
+        events: Event.none,
+        billable_or_changeable?: false
       )
     end
   end
@@ -85,6 +86,55 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
           expect(page).to have_css("td", text: "16 January 2024, 12:00pm")
         end
       end
+
+      context "when voided by an admin user" do
+        let(:admin_user) { FactoryBot.build_stubbed(:user, name: "Admin User", email: "admin@example.com") }
+
+        before do
+          allow(declaration).to receive(:voided_by_user).and_return(admin_user)
+          render locals: { declaration: }
+        end
+
+        it "shows who voided the declaration" do
+          within "table tbody tr:nth-child(2)" do
+            expect(page).to have_content("Voided by Admin User (admin@example.com)")
+          end
+        end
+      end
+
+      context "when voided by a lead provider" do
+        before do
+          allow(declaration).to receive(:voided_by_user).and_return(nil)
+          render locals: { declaration: }
+        end
+
+        it "shows it was voided by lead provider" do
+          within "table tbody tr:nth-child(2)" do
+            expect(page).to have_content("Voided by lead provider")
+          end
+        end
+      end
+    end
+  end
+
+  describe "void declaration button" do
+    subject { rendered }
+
+    before do
+      allow(declaration).to receive(:billable_or_changeable?).and_return(billable_or_changeable)
+      render locals: { declaration: }
+    end
+
+    context "when the declaration can be voided by admin" do
+      let(:billable_or_changeable) { true }
+
+      it { is_expected.to have_css("a.govuk-button--warning", text: "Void declaration", visible: :all) }
+    end
+
+    context "when the declaration cannot be voided by admin" do
+      let(:billable_or_changeable) { false }
+
+      it { is_expected.not_to have_link("Void declaration", visible: :all) }
     end
   end
 end
