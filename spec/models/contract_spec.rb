@@ -14,6 +14,7 @@ describe Contract do
     it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to belong_to(:banded_fee_structure).class_name("Contract::BandedFeeStructure").optional }
     it { is_expected.to belong_to(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").optional }
+    it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
   end
 
