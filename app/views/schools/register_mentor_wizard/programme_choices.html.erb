@@ -19,7 +19,7 @@
     )
   end
   
-  unless @mentor.expression_of_interest?
+  if @mentor.school_partnership?
     summary_list.with_row do |row|
       row.with_key(text: "Delivery partner")
       row.with_value(
