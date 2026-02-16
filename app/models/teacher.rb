@@ -132,8 +132,4 @@ class Teacher < ApplicationRecord
   def eligible_for_funding?
     Teachers::MentorFundingEligibility.new(trn:).eligible?
   end
-
-  def ect_at_school_period_for_list
-    current_or_next_ect_at_school_period || latest_ect_at_school_period
-  end
 end

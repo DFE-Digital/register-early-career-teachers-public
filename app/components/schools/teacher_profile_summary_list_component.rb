@@ -41,14 +41,14 @@ module Schools
     end
 
     def lead_provider_subject_and_verb
-      lead_provider_name = @ect.latest_started_lead_provider_name
+      lead_provider_name = @ect.latest_lead_provider_name
       subject = lead_provider_name.presence || "The lead provider"
       verb = lead_provider_name.present? ? "have" : "has"
       [subject, verb]
     end
 
     def training_status
-      @training_status ||= @ect.latest_started_training_status
+      @training_status ||= @ect.latest_training_status
     end
 
     def withdrawn?
