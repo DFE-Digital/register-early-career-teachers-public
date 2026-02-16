@@ -55,6 +55,8 @@ class InductionPeriod < ApplicationRecord
   scope :with_outcome, -> { where.not(outcome: nil) }
   scope :without_outcome, -> { where(outcome: nil) }
 
+  delegate :name, to: :appropriate_body_period, prefix: :appropriate_body
+
   def siblings
     return InductionPeriod.none unless teacher
 

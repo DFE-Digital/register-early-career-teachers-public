@@ -1,9 +1,10 @@
 module AppropriateBodies
   module Unclaimed
-    class ClaimableController < AppropriateBodiesController
-      layout "full", only: :index
+    class ClaimableController < BaseUnclaimedDetailsController
+    private
 
-      def index
+      def initial_ect_at_school_periods
+        @appropriate_body.unclaimed_ect_at_school_periods.claimable.with_teacher.with_school
       end
     end
   end

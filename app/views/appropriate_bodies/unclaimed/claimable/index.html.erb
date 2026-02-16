@@ -1,4 +1,24 @@
 <% page_data(
-      title: "Check an claim an ECT induction",
-      backlink_href: ab_unclaimed_path
-    ) %>
+  title: "Check and claim an ECT induction",
+  backlink_href: ab_unclaimed_path
+) %>
+
+<p class="govuk-body">
+  You can check these records are correct and claim an ECT on or after the induction start date.
+</p>
+<p class="govuk-body">
+  If you want to claim multiple ECTs you can
+  <%= govuk_link_to "upload a CSV", (PendingInductionSubmissionBatch.for_appropriate_body_period(@appropriate_body).any? ? ab_batch_claims_path : new_ab_batch_claim_path), no_visited_state: true %>
+</p>
+<%= govuk_section_break(visible:true, size: "l") %>
+
+<%= render UnclaimedIndex::SearchSectionComponent.new(
+  query: @query,
+  form_url: ab_unclaimed_claimable_index_path
+) %>
+
+<%= render UnclaimedIndex::TableSectionComponent.new(
+  ect_at_school_periods: @ect_at_school_periods,
+  pagy: @pagy,
+  row_component: UnclaimedIndex::Claimable::TableRowComponent
+) %>

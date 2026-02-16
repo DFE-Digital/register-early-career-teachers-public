@@ -1,0 +1,9 @@
+<% row.with_cell(text: teacher_name) %>
+<% row.with_cell(text: teacher_trn) %>
+<% row.with_cell(text: school_name) %>
+<% row.with_cell(text: period_started_on) %>
+<% row.with_cell(text: induction_tutor_email) %>
+<% row.with_cell(text: trs_initial_teacher_training_provider_name) %>
+<% row.with_cell do
+  govuk_link_to "Claim", new_ab_claim_an_ect_find_path(trn: teacher_trn), no_visited_state: true
+end %>
