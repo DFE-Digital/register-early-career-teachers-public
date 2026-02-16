@@ -12,10 +12,10 @@ module API::Teachers
     validate :change_to_different_schedule
     validate :schedule_applicable_for_trainee
     validate :school_partnership_exists_if_changing_contract_period
+    validate :trainee_not_completed
     validate :lead_provider_is_currently_training_teacher
     validate :no_future_training_periods_exist
     validate :can_move_to_frozen_cohort
-    validate :trainee_not_completed
     validate :schedule_does_not_invalidate_declarations
 
     def change_schedule
@@ -138,7 +138,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period&.teacher_completed_training?
 
-      errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training.")
+      errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training or induction.")
     end
 
     def schedule_does_not_invalidate_declarations
