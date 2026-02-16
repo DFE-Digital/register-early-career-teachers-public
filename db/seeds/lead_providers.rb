@@ -19,15 +19,12 @@ lead_providers_data = [
 ]
 
 lead_providers_data.each do |data|
-  lead_provider = LeadProvider.find_or_initialize_by(name: data.fetch(:name))
-  lead_provider.vat_registered = data.fetch(:vat_registered)
-  lead_provider.ecf_id ||= SecureRandom.uuid if lead_provider.has_attribute?(:ecf_id)
-  lead_provider.save!
+  lead_provider = LeadProvider.find_or_create_by!(data.slice(:name, :vat_registered))
 
-  data.fetch(:years).each do |year|
+  data[:years].each do |year|
     contract_period = ContractPeriod.find_by!(year:)
     ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
   end
 
-  describe_lead_provider(lead_provider, data.fetch(:years))
+  describe_lead_provider(lead_provider, data[:years])
 end

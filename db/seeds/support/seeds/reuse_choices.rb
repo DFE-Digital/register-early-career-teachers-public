@@ -1,3 +1,4 @@
+# db/seeds/support/seeds/reuse_choices.rb
 module Seeds
   class ReuseChoices
     BASE_URN = 9_100_100
@@ -26,6 +27,7 @@ module Seeds
       ensure_contract_periods!
       ensure_schedules!
       ensure_reference_data!
+      ensure_matrix_appropriate_body_period!
       ensure_target_year_availability_for_reusable_lead_provider!
 
       seed_blank_control_school!
@@ -36,6 +38,14 @@ module Seeds
   private
 
     attr_reader :contract_period_year
+
+    def years
+      (2021..contract_period_year).to_a
+    end
+
+    def target_contract_period
+      @target_contract_period ||= ContractPeriod.find_by!(year: contract_period_year)
+    end
 
     def ensure_contract_periods!
       existing = ContractPeriod.where(year: years).index_by(&:year)
@@ -53,13 +63,15 @@ module Seeds
     end
 
     def ensure_schedules!
-      contract_periods_by_year = ContractPeriod.where(year: years).index_by(&:year)
+      existing_by_year = Schedule
+        .where(contract_period_year: years, identifier: SCHEDULE_IDENTIFIER)
+        .index_by(&:contract_period_year)
 
       years.each do |year|
-        contract_period = contract_periods_by_year.fetch(year)
+        next if existing_by_year.key?(year)
 
-        Schedule.find_or_create_by!(
-          contract_period:,
+        Schedule.create!(
+          contract_period_year: year,
           identifier: SCHEDULE_IDENTIFIER
         )
       end
@@ -80,21 +92,12 @@ module Seeds
       )
     end
 
-    def years
-      (2021..contract_period_year).to_a
-    end
-
-    def target_contract_period
-      @target_contract_period ||= ContractPeriod.find_by!(year: contract_period_year)
-    end
-
     def reusable_lead_provider
       @reusable_lead_provider ||= LeadProvider.find_by!(name: LEAD_PROVIDER_REUSABLE_NAME)
     end
 
     def lead_provider_not_available_in_target_year
-      @lead_provider_not_available_in_target_year ||=
-        LeadProvider.find_by!(name: LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
+      @lead_provider_not_available_in_target_year ||= LeadProvider.find_by!(name: LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
     end
 
     def reusable_delivery_partner
@@ -105,25 +108,38 @@ module Seeds
       @not_reusable_delivery_partner ||= DeliveryPartner.find_by!(name: DELIVERY_PARTNER_NOT_REUSABLE_NAME)
     end
 
-    def matrix_appropriate_body
-      @matrix_appropriate_body ||=
-        AppropriateBody.find_by(name: PREFERRED_APPROPRIATE_BODY_NAME) ||
-        AppropriateBody.first ||
-        raise("No AppropriateBody exists. Run appropriate_bodies seeds first.")
+    def ensure_matrix_appropriate_body_period!
+      matrix_appropriate_body_period
     end
 
     def matrix_appropriate_body_period
-      return unless School.reflect_on_association(:last_chosen_appropriate_body_period)
+      @matrix_appropriate_body_period ||= begin
+        abp = AppropriateBodyPeriod.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME)
 
-      @matrix_appropriate_body_period ||= AppropriateBodyPeriod.find_or_create_by!(
-        appropriate_body: matrix_appropriate_body,
-        started_on: Date.new(2020, 1, 1)
-      ) do |p|
-        p.finished_on = nil if p.respond_to?(:finished_on=)
+        abp.body_type = "teaching_school_hub" if abp.has_attribute?(:body_type) && abp.body_type != "teaching_school_hub"
+
+        if abp.has_attribute?(:dfe_sign_in_organisation_id) && abp.dfe_sign_in_organisation_id.present?
+          abp.dfe_sign_in_organisation_id = nil
+        end
+
+        if abp.has_attribute?(:appropriate_body_id) && abp.appropriate_body_id.present?
+          abp.appropriate_body_id = nil
+        end
+
+        abp.save! if abp.changed?
+        abp
       end
     end
 
+    def set_last_chosen_appropriate_body!(school, chosen:)
+      return unless school.has_attribute?(:last_chosen_appropriate_body_id)
+
+      school.last_chosen_appropriate_body_id = chosen ? matrix_appropriate_body_period.id : nil
+    end
+
+    #
     # Scenario group 1 – blank slate school
+    #
     def seed_blank_control_school!
       school = ensure_scenario_school!(
         offset: 0,
@@ -140,7 +156,9 @@ module Seeds
       )
     end
 
+    #
     # Scenario group 2 – previous programme reusable in target year
+    #
     def seed_reusable_previous_scenarios!
       scenarios = [
         { offset: 1, previous_year: 2024, type: :partnership },
@@ -150,7 +168,7 @@ module Seeds
         { offset: 5, previous_year: 2022, type: :partnership },
         { offset: 6, previous_year: 2022, type: :eoi },
         { offset: 7, previous_year: 2021, type: :partnership },
-        { offset: 8, previous_year: 2021, type: :eoi },
+        { offset: 8, previous_year: 2021, type: :eoi }
       ]
 
       scenarios.each { |scenario| seed_reusable_previous_scenario!(**scenario) }
@@ -173,29 +191,28 @@ module Seeds
         delivery_partner_for_partnership: reusable_delivery_partner
       )
 
-      case type
-      when :partnership
+      if type == :partnership
         ensure_school_partnership!(
           school:,
           lead_provider: reusable_lead_provider,
           delivery_partner: reusable_delivery_partner,
           year: contract_period_year
         )
-      when :eoi
+      else
         ActiveLeadProvider.find_or_create_by!(
           lead_provider: reusable_lead_provider,
           contract_period: target_contract_period
         )
-      else
-        raise ArgumentError, "Unknown type: #{type.inspect}"
       end
     end
 
+    #
     # Scenario group 3 – previous programme NOT reusable in target year
     #
     # Rules:
     # - partnership NOT reusable: LP exists in target year BUT pairing does NOT
     # - EOI NOT reusable: LP does NOT exist in target year (no ALP in target year)
+    #
     def seed_not_reusable_previous_scenarios!
       scenarios = [
         { offset: 9,  previous_year: 2024, type: :partnership },
@@ -205,7 +222,7 @@ module Seeds
         { offset: 13, previous_year: 2022, type: :partnership },
         { offset: 14, previous_year: 2022, type: :eoi },
         { offset: 15, previous_year: 2021, type: :partnership },
-        { offset: 16, previous_year: 2021, type: :eoi },
+        { offset: 16, previous_year: 2021, type: :eoi }
       ]
 
       scenarios.each { |scenario| seed_not_reusable_previous_scenario!(**scenario) }
@@ -214,7 +231,7 @@ module Seeds
     def seed_not_reusable_previous_scenario!(offset:, previous_year:, type:)
       label = "Reuse scenario – #{previous_year} #{type_label(type)} (not reusable)"
       last_chosen_lead_provider =
-        (type == :partnership) ? reusable_lead_provider : lead_provider_not_available_in_target_year
+        type == :partnership ? reusable_lead_provider : lead_provider_not_available_in_target_year
 
       school = ensure_scenario_school!(
         offset:,
@@ -231,19 +248,16 @@ module Seeds
         delivery_partner_for_partnership: not_reusable_delivery_partner
       )
 
-      case type
-      when :partnership
+      if type == :partnership
         ActiveLeadProvider.find_or_create_by!(
           lead_provider: reusable_lead_provider,
           contract_period: target_contract_period
         )
-      when :eoi
-        ActiveLeadProvider.where(
+      else
+        ActiveLeadProvider.find_by(
           lead_provider: lead_provider_not_available_in_target_year,
           contract_period: target_contract_period
-        ).delete_all
-      else
-        raise ArgumentError, "Unknown type: #{type.inspect}"
+        )&.destroy!
       end
     end
 
@@ -255,11 +269,13 @@ module Seeds
       end
     end
 
+    #
     # ONE ECT + ONE TrainingPeriod per school (+ InductionPeriod)
+    #
     def seed_previous_teacher_and_training!(school:, previous_year:, mode:, lead_provider:, delivery_partner_for_partnership:)
       previous_contract_period = ContractPeriod.find_by!(year: previous_year)
       previous_schedule = Schedule.find_by!(contract_period: previous_contract_period, identifier: SCHEDULE_IDENTIFIER)
-      ab = matrix_appropriate_body
+      abp = matrix_appropriate_body_period
 
       teacher = FactoryBot.create(:teacher)
 
@@ -271,7 +287,7 @@ module Seeds
           teacher:,
           started_on: Date.new(previous_year, 9, 1),
           finished_on: Date.new(previous_year + 1, 7, 31),
-          school_reported_appropriate_body: ab
+          school_reported_appropriate_body: abp
         )
 
       InductionPeriod.find_or_create_by!(
@@ -279,7 +295,7 @@ module Seeds
         started_on: ect_period.started_on
       ) do |ip|
         ip.finished_on = ect_period.finished_on
-        ip.appropriate_body = ab
+        ip.appropriate_body_period = abp
         ip.induction_programme = "fip"
         ip.training_programme = "provider_led"
         ip.number_of_terms = 3
@@ -291,21 +307,14 @@ module Seeds
           contract_period: previous_contract_period
         )
 
-      attrs = {
-        last_chosen_training_programme: "provider_led",
-        last_chosen_lead_provider: active_lead_provider.lead_provider,
-      }
-
-      if school.respond_to?(:last_chosen_appropriate_body_period=) && matrix_appropriate_body_period
-        attrs[:last_chosen_appropriate_body_period] = matrix_appropriate_body_period
-      elsif school.respond_to?(:last_chosen_appropriate_body=)
-        attrs[:last_chosen_appropriate_body] = ab
+      if school.has_attribute?(:last_chosen_training_programme)
+        school.last_chosen_training_programme = "provider_led"
       end
+      school.last_chosen_lead_provider = active_lead_provider.lead_provider
+      set_last_chosen_appropriate_body!(school, chosen: true)
+      school.save!
 
-      school.update!(attrs)
-
-      case mode
-      when :partnership
+      if mode == :partnership
         school_partnership =
           ensure_school_partnership!(
             school:,
@@ -324,9 +333,9 @@ module Seeds
           tp.school_partnership = school_partnership
           tp.expression_of_interest = nil
           tp.finished_on = ect_period.finished_on
+          tp.finished_on = tp.started_on + 1.day if tp.finished_on.present? && tp.finished_on <= tp.started_on
         end
-
-      when :eoi
+      else
         TrainingPeriod.find_or_create_by!(
           ect_at_school_period: ect_period,
           mentor_at_school_period: nil,
@@ -337,42 +346,28 @@ module Seeds
           tp.school_partnership = nil
           tp.expression_of_interest = active_lead_provider
           tp.finished_on = ect_period.finished_on
+          tp.finished_on = tp.started_on + 1.day if tp.finished_on.present? && tp.finished_on <= tp.started_on
         end
-
-      else
-        raise ArgumentError, "Unknown mode: #{mode.inspect}"
       end
     end
 
     def ensure_scenario_school!(offset:, gias_name:, set_provider_led_last_chosen:, last_chosen_lead_provider:)
       urn = BASE_URN + offset
-      ab = matrix_appropriate_body
-
       ensure_gias_school!(urn:, name: gias_name)
 
       school = School.find_or_initialize_by(urn:)
-
       school.induction_tutor_name ||= "Reuse Tutor"
       school.induction_tutor_email ||= "reuse@example.com"
 
       if set_provider_led_last_chosen
         school.last_chosen_training_programme = "provider_led" if school.has_attribute?(:last_chosen_training_programme)
-        school.last_chosen_lead_provider = last_chosen_lead_provider if school.respond_to?(:last_chosen_lead_provider=)
-
-        if school.respond_to?(:last_chosen_appropriate_body_period=) && matrix_appropriate_body_period
-          school.last_chosen_appropriate_body_period = matrix_appropriate_body_period
-        elsif school.respond_to?(:last_chosen_appropriate_body=)
-          school.last_chosen_appropriate_body = ab
-        end
+        school.last_chosen_lead_provider = last_chosen_lead_provider
+        set_last_chosen_appropriate_body!(school, chosen: true)
       else
         school.last_chosen_training_programme = nil if school.has_attribute?(:last_chosen_training_programme)
         school.last_chosen_lead_provider_id = nil if school.has_attribute?(:last_chosen_lead_provider_id)
-
-        if school.respond_to?(:last_chosen_appropriate_body_period=)
-          school.last_chosen_appropriate_body_period = nil
-        elsif school.respond_to?(:last_chosen_appropriate_body=)
-          school.last_chosen_appropriate_body = nil
-        end
+        school.last_chosen_lead_provider = nil
+        set_last_chosen_appropriate_body!(school, chosen: false)
       end
 
       school.save!

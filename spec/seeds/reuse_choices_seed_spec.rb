@@ -41,7 +41,6 @@ RSpec.describe "Reuse choices scenarios seed" do
 
       expect(school.last_chosen_training_programme).to be_nil
       expect(school.last_chosen_lead_provider).to be_nil
-      expect(school.last_chosen_appropriate_body).to be_nil
     end
 
     it "has at least one partnership option in the target year so the school can proceed" do
@@ -67,7 +66,7 @@ RSpec.describe "Reuse choices scenarios seed" do
       { offset: 5, previous_year: 2022, type: :partnership },
       { offset: 6, previous_year: 2022, type: :eoi },
       { offset: 7, previous_year: 2021, type: :partnership },
-      { offset: 8, previous_year: 2021, type: :eoi },
+      { offset: 8, previous_year: 2021, type: :eoi }
     ]
 
     scenarios.each do |scenario|
@@ -78,13 +77,12 @@ RSpec.describe "Reuse choices scenarios seed" do
 
         expect(school.last_chosen_training_programme).to eq("provider_led")
         expect(school.last_chosen_lead_provider).to eq(reuse_reference_lead_provider)
-        expect(school.last_chosen_appropriate_body).to eq(reuse_reference_appropriate_body)
 
         ect_period = scenario_ect_period_for_school!(school:, previous_year:)
         expect(ect_period.school_reported_appropriate_body).to eq(reuse_reference_appropriate_body)
 
         induction_period = ect_period.teacher.induction_periods.find_by!(started_on: ect_period.started_on)
-        expect(induction_period.appropriate_body).to eq(reuse_reference_appropriate_body)
+        expect(induction_period.appropriate_body_period).to eq(reuse_reference_appropriate_body)
         expect(induction_period.number_of_terms).to be_present
 
         training_period = scenario_provider_led_training_period_for_school!(school:, previous_year:)
@@ -130,7 +128,7 @@ RSpec.describe "Reuse choices scenarios seed" do
       { offset: 13, previous_year: 2022, type: :partnership },
       { offset: 14, previous_year: 2022, type: :eoi },
       { offset: 15, previous_year: 2021, type: :partnership },
-      { offset: 16, previous_year: 2021, type: :eoi },
+      { offset: 16, previous_year: 2021, type: :eoi }
     ]
 
     scenarios.each do |scenario|
@@ -140,11 +138,10 @@ RSpec.describe "Reuse choices scenarios seed" do
         type = scenario.fetch(:type)
 
         expect(school.last_chosen_training_programme).to eq("provider_led")
-        expect(school.last_chosen_appropriate_body).to eq(reuse_reference_appropriate_body)
 
         ect_period = scenario_ect_period_for_school!(school:, previous_year:)
         induction_period = ect_period.teacher.induction_periods.find_by!(started_on: ect_period.started_on)
-        expect(induction_period.appropriate_body).to eq(reuse_reference_appropriate_body)
+        expect(induction_period.appropriate_body_period).to eq(reuse_reference_appropriate_body)
 
         training_period = scenario_provider_led_training_period_for_school!(school:, previous_year:)
         expect(training_period.schedule.identifier).to eq(reuse_choices_schedule_identifier)
