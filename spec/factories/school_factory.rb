@@ -3,14 +3,14 @@ FactoryBot.define do
     urn { Faker::Number.unique.number(digits: 6) }
     independent
 
-    initialize_with do
-      School.find_or_initialize_by(urn:)
+    induction_tutor_name { "Induction Tutor" }
+    induction_tutor_email { "induction.tutor@st-trinians.org.uk" }
+    induction_tutor_last_nominated_in do
+      association(:contract_period, :current)
     end
 
-    after(:build) do |school|
-      school.induction_tutor_name ||= "Induction Tutor"
-      school.induction_tutor_email ||= "induction.tutor@a-very-nice-school.sch.uk"
-      school.induction_tutor_last_nominated_in ||= build(:contract_period, :current)
+    initialize_with do
+      School.find_or_initialize_by(urn:)
     end
 
     trait :independent do
@@ -68,7 +68,10 @@ FactoryBot.define do
 
     trait :with_induction_tutor do
       induction_tutor_name { "Induction Tutor" }
-      induction_tutor_email { "induction.tutor@a-very-nice-school.sch.uk" }
+      induction_tutor_email { "induction.tutor@st-trinians.org.uk" }
+      induction_tutor_last_nominated_in do
+        association(:contract_period, :current)
+      end
     end
 
     trait :with_unconfirmed_induction_tutor do

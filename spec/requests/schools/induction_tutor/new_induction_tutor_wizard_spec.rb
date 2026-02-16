@@ -1,5 +1,5 @@
 describe "Schools::InductionTutor::NewInductionTutorWizardController", :enable_schools_interface do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, :with_unconfirmed_induction_tutor) }
   let(:params) { {} }
   let(:induction_tutor_name) { "Old Induction Tutor Name" }
   let(:induction_tutor_email) { "old.name@gmail.com" }
