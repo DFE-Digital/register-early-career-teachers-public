@@ -2,7 +2,7 @@ module AppropriateBodies
   module ClaimAnECT
     class FindECTController < AppropriateBodiesController
       def new
-        @pending_induction_submission = PendingInductionSubmission.new
+        @pending_induction_submission = PendingInductionSubmission.new trn: params[:trn]
       end
 
       def create
