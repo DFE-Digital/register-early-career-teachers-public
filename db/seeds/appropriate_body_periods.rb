@@ -22,6 +22,10 @@ def dfe_sign_in_env
   Rails.application.config.dfe_sign_in_issuer.include?("test") ? :test : :pp
 end
 
+def seed_appropriate_body_with_dsi?
+  ActiveModel::Type::Boolean.new.cast(ENV.fetch("SEED_DFE_SIGN_IN_ORG", false))
+end
+
 appropriate_body_periods = [
   # National Organisations
   # ----------------------------------------------------------------------------
@@ -232,12 +236,6 @@ appropriate_body_periods.each do |data|
                                               dqt_id:,
                                               dfe_sign_in_organisation_id:)
 
-  # Skip seeding new Appropriate Body models
-  if ENV["SEED_NEW_APPROPRIATE_BODY_MODELS"] != "y"
-    describe_appropriate_body_period(appropriate_body_period)
-    next
-  end
-
   # Legacy Appropriate Body
   if dfe_sign_in_organisation_id.present?
     FactoryBot.create(:legacy_appropriate_body,
@@ -251,7 +249,7 @@ appropriate_body_periods.each do |data|
   next if dfe_sign_in_organisation_id.blank?
 
   # Teaching School Hubs
-  if appropriate_body_period.teaching_school_hub? && appropriate_body_period.appropriate_body.blank?
+  if appropriate_body_period.teaching_school_hub?
     school_name = data.dig(:lead_school, :name)
     urn = data.dig(:lead_school, :urn)
     regions = data[:regions]
@@ -260,22 +258,30 @@ appropriate_body_periods.each do |data|
                                     name: school_name,
                                     urn:)
 
-    school = FactoryBot.create(:school, :eligible, :with_dsi,
-                               urn:,
-                               gias_school:)
+    if seed_appropriate_body_with_dsi?
+      school = FactoryBot.create(:school, :eligible, :with_dsi,
+                                 urn:,
+                                 gias_school:)
 
-    appropriate_body = FactoryBot.create(:appropriate_body,
-                                         name:,
-                                         dfe_sign_in_organisation: school.dfe_sign_in_organisation)
+      appropriate_body = FactoryBot.create(:appropriate_body,
+                                           name:,
+                                           dfe_sign_in_organisation: school.dfe_sign_in_organisation)
 
-    regions.each do |region|
-      FactoryBot.create(:region,
-                        code: region[:code],
-                        districts: region[:districts].split(", "),
-                        appropriate_body:)
+      regions.each do |region|
+        FactoryBot.create(:region,
+                          code: region[:code],
+                          districts: region[:districts].split(", "),
+                          appropriate_body:)
+      end
+
+      appropriate_body_period.update!(appropriate_body:)
+
+    else
+      FactoryBot.create(:school, :eligible,
+                        urn:,
+                        gias_school:)
+
     end
-
-    appropriate_body_period.update!(appropriate_body:)
 
     # Delivery Partner role for TSH
     FactoryBot.create(:delivery_partner,
@@ -283,7 +289,7 @@ appropriate_body_periods.each do |data|
   end
 
   # National Bodies
-  if appropriate_body_period.national? && appropriate_body_period.appropriate_body.blank?
+  if appropriate_body_period.national? && seed_appropriate_body_with_dsi?
     appropriate_body = FactoryBot.create(:appropriate_body, :with_dsi,
                                          name:)
     appropriate_body_period.update!(appropriate_body:)
