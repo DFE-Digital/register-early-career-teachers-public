@@ -1,15 +1,20 @@
 module Declarations
   class Clawback
-    attr_reader :author, :declaration, :voided_by_user_id, :next_available_output_fee_statement
+    include ActiveModel::Model
 
-    def initialize(author:, declaration:, next_available_output_fee_statement:, voided_by_user_id: nil)
+    attr_reader :author, :declaration, :voided_by_user_id
+
+    validates :next_available_output_fee_statement, presence: true
+
+    def initialize(author:, declaration:, voided_by_user_id: nil)
       @author = author
       @declaration = declaration
       @voided_by_user_id = voided_by_user_id
-      @next_available_output_fee_statement = next_available_output_fee_statement
     end
 
     def clawback
+      return false unless valid?
+
       ActiveRecord::Base.transaction do
         if voided_by_user_id
           declaration.voided_by_user_at = Time.current
@@ -25,7 +30,23 @@ module Declarations
       declaration
     end
 
+    def next_available_output_fee_statement
+      @next_available_output_fee_statement ||= Statements::Search
+        .new(
+          lead_provider_id: lead_provider.id,
+          contract_period_years: contract_period.year,
+          fee_type: "output",
+          deadline_date: Date.current..,
+          order: :deadline_date
+        )
+        .statements
+        .first
+    end
+
   private
+
+    delegate :training_period, to: :declaration
+    delegate :contract_period, :lead_provider, to: :training_period
 
     def complete_mentor!
       MentorCompletion.new(author:, declaration:).perform
