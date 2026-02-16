@@ -57,8 +57,8 @@ RSpec.describe Schools::InductionTutorDetails do
         previous_contract_period = FactoryBot.create(:contract_period, :previous)
 
         school.update!(induction_tutor_last_nominated_in: previous_contract_period,
-                        induction_tutor_name: "Alastair Sim",
-                        induction_tutor_email: "alastair.sim@st-trinians.org.uk")
+                       induction_tutor_name: "Alastair Sim",
+                       induction_tutor_email: "alastair.sim@st-trinians.org.uk")
       end
 
       it "returns true" do
@@ -70,8 +70,8 @@ RSpec.describe Schools::InductionTutorDetails do
       before do
         current_contract_period = FactoryBot.create(:contract_period, :current)
         school.update!(induction_tutor_last_nominated_in: current_contract_period,
-                        induction_tutor_name: "Alastair Sim",
-                        induction_tutor_email: "alastair.sim@st-trinians.org.uk")
+                       induction_tutor_name: "Alastair Sim",
+                       induction_tutor_email: "alastair.sim@st-trinians.org.uk")
       end
 
       it "returns false" do
@@ -91,6 +91,7 @@ RSpec.describe Schools::InductionTutorDetails do
 
     context "when the school does not have an induction tutor nominted" do
       let(:school) { FactoryBot.create(:school, :without_induction_tutor) }
+
       it "returns the new induction tutor wizard path" do
         expect(service.wizard_path).to eq("/school/induction-tutor/new-induction-tutor/edit")
       end

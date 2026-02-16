@@ -1,9 +1,16 @@
 RSpec.shared_examples "an induction redirectable route" do
   context "induction redirection" do
     let(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
-    let!(:induction_tutor_last_nominated_in) { FactoryBot.create(:contract_period, year:) }
     let(:year) { current_contract_period.year }
-    let!(:school) { FactoryBot.create(:school, induction_tutor_last_nominated_in:, induction_tutor_name:, induction_tutor_email:) }
+
+    let!(:school) do
+      FactoryBot.create(:school, :without_induction_tutor,
+                        induction_tutor_last_nominated_in:,
+                        induction_tutor_name:,
+                        induction_tutor_email:)
+    end
+
+    let!(:induction_tutor_last_nominated_in) { FactoryBot.create(:contract_period, year:) }
     let(:induction_tutor_name) { Faker::Name.name }
     let(:induction_tutor_email) { Faker::Internet.email }
 

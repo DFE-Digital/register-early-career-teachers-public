@@ -94,7 +94,7 @@ RSpec.describe "Confirming an existing induction tutor", :enable_schools_interfa
     and_the_induction_tutor_details_should_have_changed
     and_the_induction_tutor_details_should_be_confirmed_in_the_current_contract_period
   end
-  
+
   def given_there_is_a_school_in_the_service
     @school = FactoryBot.create(:school, :with_unconfirmed_induction_tutor, urn: "1234567")
   end
