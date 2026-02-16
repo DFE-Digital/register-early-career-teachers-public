@@ -85,14 +85,7 @@ module Seeds
     def ensure_test_appropriate_body!
       return if AppropriateBody.exists?
 
-      org_assoc = AppropriateBody.reflect_on_association(:dfe_sign_in_organisation)
-
-      if org_assoc
-        org = org_assoc.klass.create!(name: "Test DfE Sign-in Org")
-        AppropriateBody.create!(name: "Test Appropriate Body", dfe_sign_in_organisation: org)
-      else
-        AppropriateBody.create!(name: "Test Appropriate Body", dfe_sign_in_organisation_id: SecureRandom.uuid)
-      end
+      FactoryBot.create(:appropriate_body)
     end
   end
 end
