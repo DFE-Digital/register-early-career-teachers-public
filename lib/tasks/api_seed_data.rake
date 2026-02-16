@@ -5,6 +5,7 @@ namespace :api_seed_data do
       APISeedData::ContractPeriods,
       APISeedData::LeadProviders,
       APISeedData::SchedulesAndMilestones,
+      APISeedData::Contracts,
       APISeedData::Statements,
       APISeedData::Schools,
       APISeedData::DeliveryPartners,

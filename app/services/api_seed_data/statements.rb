@@ -23,16 +23,23 @@ module APISeedData
         active_lead_providers.each do |active_lead_provider|
           years = years(active_lead_provider.contract_period.year)
 
-          statements += years.product(MONTHS).map { |year, month|
+          statements += years.product(MONTHS).each_with_index.map { |(year, month), index|
             deadline_date = deadline_date(year, month)
             random_fee_type = fee_type
 
             next if active_lead_provider.contract_period.payments_frozen? &&
               random_fee_type == "output"
 
+            # Distribute contracts across statements evenly and in order, so if there are
+            # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
+            # second, and the final 1/3rd get the third.
+            contract_index = (index * active_lead_provider.contracts.size) / (years.size * MONTHS.size)
+            contract = active_lead_provider.contracts[contract_index]
+
             Statement.find_by(active_lead_provider:, month:, year:, deadline_date:) ||
               FactoryBot.create(:statement,
                                 active_lead_provider:,
+                                contract:,
                                 month:,
                                 year:,
                                 deadline_date:,
