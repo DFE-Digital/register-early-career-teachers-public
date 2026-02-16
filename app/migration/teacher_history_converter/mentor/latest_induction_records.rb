@@ -57,14 +57,16 @@ private
     training_programme = convert_training_programme_name(induction_record.training_programme)
     return if training_programme != "provider_led"
 
+    training_provider_info = induction_record.training_provider_info
+
     training_attrs = {
       started_on: induction_record.start_date,
       finished_on: induction_record.end_date,
       created_at: induction_record.created_at,
       school: induction_record.school,
       training_programme:,
-      lead_provider_info: induction_record.training_provider_info.lead_provider_info,
-      delivery_partner_info: induction_record.training_provider_info.delivery_partner_info,
+      lead_provider_info: training_provider_info&.lead_provider_info,
+      delivery_partner_info: training_provider_info&.delivery_partner_info,
       contract_period_year: induction_record.cohort_year,
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
@@ -72,7 +74,7 @@ private
       combination: build_combination(induction_record:, training_programme:),
       **withdrawal_data(
         training_status: induction_record.training_status,
-        lead_provider_id: induction_record.training_provider_info.lead_provider_info.ecf1_id
+        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       )
     }.merge(overrides)
 

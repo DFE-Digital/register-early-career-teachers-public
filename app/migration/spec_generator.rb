@@ -301,7 +301,7 @@ private
         preferred_identity_email: ir.preferred_identity_email,
         mentor_profile_id: ir.mentor_profile_id,
         training_provider_info: ir.training_provider_info.then do |tpi|
-          if ir.training_programme == "full_induction_programme"
+          if ir.training_programme == "full_induction_programme" && tpi.present?
             {
               lead_provider: tpi.lead_provider_info.to_h,
               delivery_partner: tpi.delivery_partner_info.to_h,
