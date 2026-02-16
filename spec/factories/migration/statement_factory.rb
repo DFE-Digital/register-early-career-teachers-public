@@ -6,6 +6,7 @@ FactoryBot.define do
     cohort { FactoryBot.create(:migration_cohort) }
     type { "Finance::Statement::ECF" }
     contract_version { "1.0" }
+    mentor_contract_version { "mentor_1.0" }
     association :cpd_lead_provider, factory: :migration_cpd_lead_provider
   end
 end
