@@ -10,19 +10,35 @@ describe PaymentCalculator::Resolver do
 
       it { expect(calculators.size).to eq(1) }
       it { is_expected.to be_a(PaymentCalculator::FlatRate) }
-      it { expect(calculator).to have_attributes(statement:, flat_rate_fee_structure: contract.flat_rate_fee_structure) }
+
+      it {
+        expect(calculator).to have_attributes(statement:,
+                                              flat_rate_fee_structure: contract.flat_rate_fee_structure,
+                                              fee_proportions: { started: 0.5, completed: 0.5 })
+      }
 
       describe "declaration_selector" do
-        it "filters declarations to mentors only" do
-          school_partnership = FactoryBot.create(:school_partnership, :for_year, year: statement.contract_period.year)
+        let(:contract_period) { FactoryBot.create(:contract_period, mentor_funding_enabled: false) }
+        let(:statement) { FactoryBot.create(:statement, :open, contract_period:) }
+
+        it "filters started/completed declarations to mentors only" do
+          active_lead_provider = FactoryBot.create(:active_lead_provider, contract_period:)
+          lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
+          school_partnership = FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
 
           ect_training_period = FactoryBot.create(:training_period, :for_ect, school_partnership:)
           FactoryBot.create(:declaration, training_period: ect_training_period)
 
           mentor_training_period = FactoryBot.create(:training_period, :for_mentor, school_partnership:)
-          mentor_declaration = FactoryBot.create(:declaration, training_period: mentor_training_period)
+          mentor_started_declaration = FactoryBot.create(:declaration, declaration_type: :started, training_period: mentor_training_period)
+          mentor_completed_declaration = FactoryBot.create(:declaration, declaration_type: :completed, training_period: mentor_training_period)
 
-          expect(calculator.declaration_selector.call(Declaration.all)).to contain_exactly(mentor_declaration)
+          # create declarations for other declaration types to ensure they are not included by the selector
+          Declaration.declaration_types.keys.reject { |type| %w[started completed].include?(type) }.each do |declaration_type|
+            FactoryBot.create(:declaration, declaration_type:, training_period: mentor_training_period)
+          end
+
+          expect(calculator.declaration_selector.call(Declaration.all)).to contain_exactly(mentor_started_declaration, mentor_completed_declaration)
         end
       end
     end
