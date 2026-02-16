@@ -15,7 +15,8 @@ module PaymentCalculator
           FlatRate.new(
             statement:,
             flat_rate_fee_structure: contract.flat_rate_fee_structure,
-            declaration_selector: ->(declarations) { declarations.mentors }
+            declaration_selector: ->(declarations) { declarations.mentors.with_declaration_types(%i[started completed]) },
+            fee_proportions: { started: 0.5, completed: 0.5 }
           )
         ]
       else
