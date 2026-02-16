@@ -1,4 +1,8 @@
 module ECTHelper
+  NOT_AVAILABLE = "Not available"
+  EOI_DELIVERY_PARTNER_TEXT = "Their lead provider will confirm this"
+  YET_TO_BE_REPORTED = "Yet to be reported by the lead provider"
+
   # @param ect [ECTAtSchoolPeriod]
   def current_mentor_name(ect)
     ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
@@ -6,7 +10,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_delivery_partner_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || "Their lead provider will confirm this"
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || EOI_DELIVERY_PARTNER_TEXT
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -22,6 +26,47 @@ module ECTHelper
   # @param ect [ECTAtSchoolPeriod]
   def latest_eoi_lead_provider_name(ect)
     ECTAtSchoolPeriods::CurrentTraining.new(ect).expression_of_interest_lead_provider_name
+  end
+
+  # @param training_period [TrainingPeriod]
+  def training_period_lead_provider_name(training_period)
+    if training_period.only_expression_of_interest?
+      training_period.expression_of_interest_lead_provider&.name
+    else
+      training_period.lead_provider_name
+    end
+  end
+
+  # @param training_period [TrainingPeriod]
+  def training_period_lead_provider_display_text(training_period)
+    training_period_lead_provider_name(training_period).presence || NOT_AVAILABLE
+  end
+
+  # @param training_period [TrainingPeriod]
+  def training_period_delivery_partner_display_text(training_period)
+    return EOI_DELIVERY_PARTNER_TEXT if training_period.only_expression_of_interest?
+
+    training_period.delivery_partner_name.presence || YET_TO_BE_REPORTED
+  end
+
+  # @param teacher_name [String]
+  # @param training_period [TrainingPeriod]
+  def training_period_withdrawn_message_text(teacher_name:, training_period:)
+    lp_name = training_period_lead_provider_name(training_period)
+    subject = lp_name.presence || "The lead provider"
+    verb = lp_name.present? ? "have" : "has"
+
+    "#{subject} #{verb} told us that #{teacher_name} is no longer training with them. Contact them if you think this is an error."
+  end
+
+  # @param teacher_name [String]
+  # @param training_period [TrainingPeriod]
+  def training_period_deferred_message_text(teacher_name:, training_period:)
+    lp_name = training_period_lead_provider_name(training_period)
+    subject = lp_name.presence || "The lead provider"
+    verb = lp_name.present? ? "have" : "has"
+
+    "#{subject} #{verb} told us that #{teacher_name}'s training is paused. Contact them if you think this is an error."
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -93,46 +138,6 @@ module ECTHelper
     end
   end
 
-  # @param ect [ECTAtSchoolPeriod]
-  def training_lead_provider_name_for_display(ect)
-    training_period = training_period_for_display(ect)
-    return if training_period.blank?
-
-    if training_period.only_expression_of_interest?
-      training_period.expression_of_interest&.lead_provider&.name
-    else
-      training_period.school_partnership
-        &.lead_provider_delivery_partnership
-        &.active_lead_provider
-        &.lead_provider
-        &.name
-    end
-  end
-
-  # @param ect [ECTAtSchoolPeriod]
-  def training_delivery_partner_name_for_display(ect)
-    training_period = training_period_for_display(ect)
-    return if training_period.blank?
-    return if training_period.only_expression_of_interest?
-
-    training_period.school_partnership
-      &.lead_provider_delivery_partnership
-      &.delivery_partner
-      &.name
-  end
-
-  # @param ect [ECTAtSchoolPeriod]
-  def training_delivery_partner_text_for_display(ect)
-    training_period = training_period_for_display(ect)
-    return if training_period.blank?
-
-    if training_period.only_expression_of_interest?
-      "Their lead provider will confirm this"
-    else
-      training_delivery_partner_name_for_display(ect)
-    end
-  end
-
 private
 
   def assign_or_create_mentor_link(ect)
@@ -147,9 +152,5 @@ private
 
   def eligible_mentors_for_ect?(ect)
     Schools::EligibleMentors.new(ect.school).for_ect(ect).exists?
-  end
-
-  def training_period_for_display(ect)
-    Schools::ECTTrainingPresenter.new(ect).training_period_for_display
   end
 end

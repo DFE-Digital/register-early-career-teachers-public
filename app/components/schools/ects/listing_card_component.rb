@@ -4,9 +4,9 @@ module Schools
       include TeacherHelper
       include ECTHelper
 
-      attr_reader :teacher, :ect_at_school_period, :current_school
+      attr_reader :teacher, :ect_at_school_period, :training_period, :current_school
 
-      def initialize(teacher:, ect_at_school_period:, training_period: nil, current_school: nil)
+      def initialize(teacher:, ect_at_school_period:, training_period:, current_school: nil)
         @teacher = teacher
         @ect_at_school_period = ect_at_school_period
         @training_period = training_period
@@ -15,19 +15,11 @@ module Schools
 
     private
 
-      def presenter
-        @presenter ||= Schools::ECTTrainingPresenter.new(ect_at_school_period)
-      end
-
-      def training_period
-        @training_period || presenter.training_period_for_display
-      end
-
       def withdrawn_warning_text
         safe_join([
           "Tell us if #{teacher_full_name(teacher)} will be ",
           govuk_link_to(
-            "continuing their training or if they have left your school",
+            "continuing their training or if they have left your school.",
             "#{schools_ect_path(ect_at_school_period)}#training-details",
             no_visited_state: true
           )
@@ -35,7 +27,7 @@ module Schools
       end
 
       def withdrawn_message_text
-        lead_provider_name = training_lead_provider_name_for_display(ect_at_school_period)
+        lead_provider_name = training_period_lead_provider_name(training_period)
         subject = lead_provider_name.presence || "The lead provider"
         verb = lead_provider_name.present? ? "have" : "has"
 
@@ -43,23 +35,37 @@ module Schools
       end
 
       def deferred_message_text
-        lead_provider_name = ect_at_school_period.latest_started_lead_provider_name
+        lead_provider_name = lead_provider_name_for_message
         subject = lead_provider_name.presence || "The lead provider"
         verb = lead_provider_name.present? ? "have" : "has"
 
         "#{subject} #{verb} told us that #{teacher_full_name(teacher)}'s training is paused. Contact them if you think this is an error."
       end
 
-      def latest_started_training_status
-        ect_at_school_period.latest_started_training_status
+      def lead_provider_name_for_message
+        return nil if training_period.blank?
+
+        if training_period_only_expression_of_interest?
+          latest_eoi_lead_provider_name(ect_at_school_period)
+        else
+          latest_lead_provider_name(ect_at_school_period)
+        end
       end
 
       def withdrawn?
-        latest_started_training_status == :withdrawn
+        training_period&.training_status == :withdrawn
       end
 
       def deferred?
-        latest_started_training_status == :deferred
+        training_period&.training_status == :deferred
+      end
+
+      def leaving_school?
+        current_school && ect_at_school_period.leaving_reported_for_school?(current_school)
+      end
+
+      def exempt?
+        ect_at_school_period.teacher.trs_induction_status == "Exempt"
       end
 
       def mentor_required_for_card?
@@ -95,11 +101,23 @@ module Schools
       end
 
       def delivery_partner_display_text
-        training_delivery_partner_text_for_display(ect_at_school_period)
+        if training_period_only_expression_of_interest?
+          "Their lead provider will confirm this"
+        else
+          latest_delivery_partner_name(ect_at_school_period)
+        end
       end
 
       def lead_provider_display_text
-        training_lead_provider_name_for_display(ect_at_school_period)
+        if training_period_only_expression_of_interest?
+          latest_eoi_lead_provider_name(ect_at_school_period)
+        else
+          latest_lead_provider_name(ect_at_school_period)
+        end
+      end
+
+      def training_period_only_expression_of_interest?
+        training_period&.only_expression_of_interest?
       end
 
       def left_rows
@@ -127,8 +145,13 @@ module Schools
       end
 
       def status_row
+        return normal_status_row if leaving_school? || exempt?
         return status_override_row if withdrawn? || deferred? || mentor_required_for_card?
 
+        normal_status_row
+      end
+
+      def normal_status_row
         { key: { text: "Status" }, value: { text: ect_status(ect_at_school_period, current_school:) } }
       end
 
