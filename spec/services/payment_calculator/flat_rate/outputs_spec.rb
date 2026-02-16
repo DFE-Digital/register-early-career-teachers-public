@@ -2,7 +2,8 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
   subject(:outputs) do
     described_class.new(
       declarations: Declaration.all,
-      fee_per_declaration:
+      fee_per_declaration:,
+      fee_proportions: { started: 0.5, completed: 0.5 }
     )
   end
 
@@ -25,21 +26,22 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
 
   describe "#total_billable_amount" do
     it "sums billable amounts across all declaration types" do
-      # 2x declaration types, 3x payment statuses, 100.0 fee per declaration
-      expect(outputs.total_billable_amount).to eq(2 * 3 * 100.0)
+      # 2x declaration types, 3x payment statuses, 100.0 fee per declaration, 0.5 fee proportion for each declaration type
+      expect(outputs.total_billable_amount).to eq(2 * 3 * 100.0 * 0.5)
     end
   end
 
   describe "#total_refundable_amount" do
     it "sums refundable amounts across all declaration types" do
-      # 2x declaration types, 2x refund statuses, 100.0 fee per declaration
-      expect(outputs.total_refundable_amount).to eq(2 * 2 * 100.0)
+      # 2x declaration types, 2x refund statuses, 100.0 fee per declaration, 0.5 fee proportion for each declaration type
+      expect(outputs.total_refundable_amount).to eq(2 * 2 * 100.0 * 0.5)
     end
   end
 
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
-      expect(outputs.total_net_amount).to eq(200.0)
+      # 1x started and 1x completed declarations, fee per declaration of 100.0 and fee proportion of 0.5
+      expect(outputs.total_net_amount).to eq(100.0)
     end
   end
 
