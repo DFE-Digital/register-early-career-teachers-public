@@ -105,7 +105,10 @@ private
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
       combination: build_combination(induction_record:, training_programme:),
-      **withdrawal_data(training_status: induction_record.training_status, lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id)
+      **withdrawal_data(
+        training_status: induction_record.training_status,
+        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+      )
     }.merge(overrides)
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
