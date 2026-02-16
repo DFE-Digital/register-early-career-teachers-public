@@ -25,17 +25,17 @@
   tags:
     - api-update
   body: |
-    We have changed how delivery partner information is recorded on declarations in the register early career teachers (RECT) API.
+    We've changed how delivery partner information is recorded on declarations in the register early career teachers (RECT) API. It now works the same way as the ‘Manage training for early career teachers’ API.
     
     ## What's changed
     
-    When you submit a declaration, the system now records which delivery partner was assigned at that time. This information will not change, even if you later update the delivery partner through the partnership API.
+    When you submit a declaration, the system now records which delivery partner was assigned at that time. This information will not change, even if you later update the delivery partner through `PUT /partnerships/{id}`.
     
     The delivery partner shown on a declaration is now the delivery partner that was assigned when the declaration was submitted.
     
     ## Why we've made this change
     
-    This change ensures that DfE a consistent record of which delivery partner was responsible for each declaration at the time it was made.
+    This change ensures that you have a consistent record of which delivery partner was responsible for each declaration at the time it was made.
     
     This is particularly important when:
     
