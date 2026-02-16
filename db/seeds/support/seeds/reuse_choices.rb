@@ -112,6 +112,17 @@ module Seeds
         raise("No AppropriateBody exists. Run appropriate_bodies seeds first.")
     end
 
+    def matrix_appropriate_body_period
+      return unless School.reflect_on_association(:last_chosen_appropriate_body_period)
+
+      @matrix_appropriate_body_period ||= AppropriateBodyPeriod.find_or_create_by!(
+        appropriate_body: matrix_appropriate_body,
+        started_on: Date.new(2020, 1, 1)
+      ) do |p|
+        p.finished_on = nil if p.respond_to?(:finished_on=)
+      end
+    end
+
     # Scenario group 1 – blank slate school
     def seed_blank_control_school!
       school = ensure_scenario_school!(
@@ -280,11 +291,18 @@ module Seeds
           contract_period: previous_contract_period
         )
 
-      school.update!(
+      attrs = {
         last_chosen_training_programme: "provider_led",
         last_chosen_lead_provider: active_lead_provider.lead_provider,
-        last_chosen_appropriate_body: ab
-      )
+      }
+
+      if school.respond_to?(:last_chosen_appropriate_body_period=) && matrix_appropriate_body_period
+        attrs[:last_chosen_appropriate_body_period] = matrix_appropriate_body_period
+      elsif school.respond_to?(:last_chosen_appropriate_body=)
+        attrs[:last_chosen_appropriate_body] = ab
+      end
+
+      school.update!(attrs)
 
       case mode
       when :partnership
@@ -340,11 +358,21 @@ module Seeds
       if set_provider_led_last_chosen
         school.last_chosen_training_programme = "provider_led" if school.has_attribute?(:last_chosen_training_programme)
         school.last_chosen_lead_provider = last_chosen_lead_provider if school.respond_to?(:last_chosen_lead_provider=)
-        school.last_chosen_appropriate_body = ab if school.has_attribute?(:last_chosen_appropriate_body_id)
+
+        if school.respond_to?(:last_chosen_appropriate_body_period=) && matrix_appropriate_body_period
+          school.last_chosen_appropriate_body_period = matrix_appropriate_body_period
+        elsif school.respond_to?(:last_chosen_appropriate_body=)
+          school.last_chosen_appropriate_body = ab
+        end
       else
         school.last_chosen_training_programme = nil if school.has_attribute?(:last_chosen_training_programme)
         school.last_chosen_lead_provider_id = nil if school.has_attribute?(:last_chosen_lead_provider_id)
-        school.last_chosen_appropriate_body = nil if school.has_attribute?(:last_chosen_appropriate_body_id)
+
+        if school.respond_to?(:last_chosen_appropriate_body_period=)
+          school.last_chosen_appropriate_body_period = nil
+        elsif school.respond_to?(:last_chosen_appropriate_body=)
+          school.last_chosen_appropriate_body = nil
+        end
       end
 
       school.save!
