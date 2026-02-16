@@ -497,5 +497,7 @@
   - active_lead_provider_id
   - flat_rate_fee_structure_id
   - banded_fee_structure_id
+  - ecf_contract_version
+  - ecf_mentor_contract_version
   - created_at
   - updated_at
