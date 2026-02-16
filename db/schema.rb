@@ -290,8 +290,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
     t.boolean "pupil_premium_uplift", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.enum "payment_status", default: "no_payment", null: false, enum_type: "declaration_payment_statuses"
+    t.bigint "delivery_partner_when_created_id", null: false
     t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
+    t.index ["delivery_partner_when_created_id"], name: "index_declarations_on_delivery_partner_when_created_id"
     t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
     t.index ["payment_statement_id"], name: "index_declarations_on_payment_statement_id"
     t.index ["training_period_id", "declaration_type", "payment_status"], name: "idx_unique_declarations", unique: true, where: "((payment_status = ANY (ARRAY['no_payment'::declaration_payment_statuses, 'eligible'::declaration_payment_statuses, 'payable'::declaration_payment_statuses, 'paid'::declaration_payment_statuses])) AND (clawback_status = 'no_clawback'::declaration_clawback_statuses))"
@@ -1064,6 +1066,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
   add_foreign_key "contracts", "active_lead_providers"
+  add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"

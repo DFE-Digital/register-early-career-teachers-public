@@ -21,7 +21,7 @@ RSpec.describe "Partnerships API", type: :request do
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
     it_behaves_like "a filter by updated_since endpoint"
-    it_behaves_like "a filter by delivery_partner_id endpoint"
+    it_behaves_like "a filter by delivery_partner_id endpoint", :delivery_partner
     it_behaves_like "an index endpoint"
     it_behaves_like "a sortable endpoint"
   end
@@ -35,7 +35,7 @@ RSpec.describe "Partnerships API", type: :request do
     it_behaves_like "a show endpoint"
     it_behaves_like "a does not filter by cohort endpoint"
     it_behaves_like "a does not filter by updated_since endpoint"
-    it_behaves_like "a does not filter by delivery_partner_id endpoint"
+    it_behaves_like "a does not filter by delivery_partner_id endpoint", :delivery_partner
   end
 
   describe "#create" do

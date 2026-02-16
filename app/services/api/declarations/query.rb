@@ -45,11 +45,11 @@ module API::Declarations
         .includes(
           :payment_statement,
           :clawback_statement,
+          :delivery_partner_when_created,
           mentorship_period: { mentor: :teacher },
           training_period: [
             { ect_at_school_period: :teacher },
             { mentor_at_school_period: :teacher },
-            :delivery_partner,
             :lead_provider,
           ]
         )
@@ -148,8 +148,8 @@ module API::Declarations
       return if ignore?(filter: delivery_partner_api_ids, ignore_empty_array: false)
 
       @scope = scope
-        .joins(:delivery_partner)
-        .where(delivery_partners: { api_id: delivery_partner_api_ids })
+        .joins(:delivery_partner_when_created)
+        .where(delivery_partner_when_created: { api_id: delivery_partner_api_ids })
     end
 
     def where_updated_since(updated_since)
