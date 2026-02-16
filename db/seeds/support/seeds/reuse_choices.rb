@@ -72,10 +72,7 @@ module Seeds
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_REUSABLE_NAME)
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_NOT_REUSABLE_NAME)
 
-      AppropriateBody.find_or_create_by!(
-        name: APPROPRIATE_BODY_NAME,
-        body_type: "teaching_school_hub"
-      )
+      AppropriateBody.find_or_create_by!(name: APPROPRIATE_BODY_NAME)
     end
 
     def ensure_target_year_availability_for_reusable_lead_provider!
