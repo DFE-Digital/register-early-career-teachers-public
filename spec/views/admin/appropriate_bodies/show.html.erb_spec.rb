@@ -1,5 +1,5 @@
 RSpec.describe "admin/appropriate_bodies/show.html.erb" do
-  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period) }
+  let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :with_lead_school) }
 
   before do
     assign(:appropriate_body, appropriate_body_period)

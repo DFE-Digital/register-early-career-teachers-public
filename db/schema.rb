@@ -84,6 +84,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
     t.uuid "dqt_id"
     t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
     t.bigint "appropriate_body_id"
+    t.date "started_on"
+    t.date "finished_on"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.index ["appropriate_body_id"], name: "index_appropriate_body_periods_on_appropriate_body_id"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
   end
@@ -495,6 +498,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
     t.boolean "vat_registered", default: true, null: false
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
+  end
+
+  create_table "lead_school_periods", force: :cascade do |t|
+    t.bigint "school_id"
+    t.bigint "appropriate_body_id"
+    t.date "started_on", null: false
+    t.date "finished_on"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appropriate_body_id"], name: "index_lead_school_periods_on_appropriate_body_id"
+    t.index ["school_id"], name: "index_lead_school_periods_on_school_id"
   end
 
   create_table "legacy_appropriate_bodies", force: :cascade do |t|
@@ -1095,6 +1110,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
   add_foreign_key "induction_extensions", "teachers"
   add_foreign_key "induction_periods", "appropriate_body_periods"
   add_foreign_key "induction_periods", "teachers"
+  add_foreign_key "lead_school_periods", "appropriate_bodies"
+  add_foreign_key "lead_school_periods", "schools"
   add_foreign_key "legacy_appropriate_bodies", "appropriate_body_periods"
   add_foreign_key "mentor_at_school_periods", "schools"
   add_foreign_key "mentor_at_school_periods", "schools", column: "reported_leaving_by_school_id"

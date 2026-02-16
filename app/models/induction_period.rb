@@ -73,6 +73,11 @@ class InductionPeriod < ApplicationRecord
     super
   end
 
+  # @return [School] AB's lead school at time of induction (not enforced at database level)
+  def lead_school
+    appropriate_body_period.lead_school_periods.containing_period(self).limit(1).first.school
+  end
+
 private
 
   # Ensure admin users inserting new induction periods include end dates.

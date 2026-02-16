@@ -41,5 +41,15 @@ FactoryBot.define do
       body_type { "local_authority" }
       dqt_id { Faker::Internet.uuid }
     end
+
+    trait :with_lead_school do
+      association :appropriate_body
+
+      after(:create) do |_period, evaluator|
+        FactoryBot.create(:lead_school_period, :ongoing,
+                          school: FactoryBot.create(:school),
+                          appropriate_body: evaluator.appropriate_body)
+      end
+    end
   end
 end

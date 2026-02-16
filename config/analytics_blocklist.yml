@@ -21,6 +21,15 @@
     - lead_school_id
     - created_at
     - updated_at
+  :lead_school_periods:
+    - id
+    - school_id
+    - appropriate_body_id
+    - started_on
+    - finished_on
+    - range
+    - created_at
+    - updated_at    
   :regions:
     - id
     - code
@@ -39,6 +48,9 @@
   :appropriate_body_periods:
     - body_type
     - appropriate_body_id
+    - started_on
+    - finished_on
+    - range
   :blazer_queries:
     - id
     - creator_id
