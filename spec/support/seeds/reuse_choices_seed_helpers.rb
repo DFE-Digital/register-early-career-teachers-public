@@ -85,7 +85,13 @@ module Seeds
     def ensure_test_appropriate_body!
       return if AppropriateBody.exists?
 
-      FactoryBot.create(:appropriate_body)
+      test_uuid = "83173E6F-BA28-4654-A3DF-8279D573AB09"
+
+      AppropriateBody.create!(
+        name: Seeds::ReuseChoices::PREFERRED_APPROPRIATE_BODY_NAME, # "Golden Leaf Teaching School Hub"
+        body_type: "teaching_school_hub",
+        dfe_sign_in_organisation_id: test_uuid
+      )
     end
   end
 end
