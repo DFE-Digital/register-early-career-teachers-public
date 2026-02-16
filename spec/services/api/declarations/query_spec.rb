@@ -343,6 +343,24 @@ RSpec.describe API::Declarations::Query, :with_metadata do
           expect(query.declarations).to be_empty
         end
 
+        it "returns empty if no declarations are found for random UUID" do
+          query = described_class.new(delivery_partner_api_ids: SecureRandom.uuid)
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for invalid UUID" do
+          query = described_class.new(delivery_partner_api_ids: "XXX123")
+
+          expect(query.declarations).to be_empty
+        end
+
+        it "returns empty if no declarations are found for empty array" do
+          query = described_class.new(delivery_partner_api_ids: [])
+
+          expect(query.declarations).to be_empty
+        end
+
         it "does not filter by `delivery_partner_api_ids` if an empty string is supplied" do
           query = described_class.new(delivery_partner_api_ids: " ")
 
