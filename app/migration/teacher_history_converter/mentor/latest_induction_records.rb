@@ -5,12 +5,13 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records
+  attr_reader :trn, :profile_id, :induction_records, :states
 
-  def initialize(trn:, profile_id:, induction_records:)
+  def initialize(trn:, profile_id:, induction_records:, states:)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
+    @states = states
   end
 
   # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
@@ -68,7 +69,11 @@ private
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
-      combination: build_combination(induction_record:, training_programme:)
+      combination: build_combination(induction_record:, training_programme:),
+      **withdrawal_data(
+        training_status: induction_record.training_status,
+        lead_provider_id: induction_record.training_provider_info.lead_provider_info.ecf1_id
+      )
     }.merge(overrides)
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
@@ -77,5 +82,9 @@ private
   def build_combination(induction_record:, **overrides)
     ECF2TeacherHistory::Combination
       .from_induction_record(trn:, profile_id:, profile_type: "mentor", induction_record:, **overrides)
+  end
+
+  def withdrawal_data(training_status:, lead_provider_id:)
+    TeacherHistoryConverter::WithdrawalData.new(training_status:, states:, lead_provider_id:).withdrawal_data
   end
 end

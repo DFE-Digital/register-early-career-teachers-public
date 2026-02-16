@@ -21,7 +21,8 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
           {
             state: "active",
             reason: nil,
-            created_at: Time.zone.local(2026, 1, 19, 22, 50, 43)
+            created_at: Time.zone.local(2026, 1, 19, 22, 50, 43),
+            cpd_lead_provider_id: "51ff9a95-3f48-4117-8466-4cd5b91fcd5c"
           }
         ],
         induction_records: [

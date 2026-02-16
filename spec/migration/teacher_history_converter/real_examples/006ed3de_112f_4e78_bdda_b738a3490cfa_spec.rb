@@ -26,12 +26,14 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 8, 11, 11, 29, 20)
+            created_at: Time.zone.local(2022, 8, 11, 11, 29, 20),
+            cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 8, 11, 11, 29, 20)
+            created_at: Time.zone.local(2022, 8, 11, 11, 29, 20),
+            cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
           },
           {
             state: "active",
