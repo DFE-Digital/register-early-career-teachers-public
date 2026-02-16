@@ -355,6 +355,39 @@ describe Declaration do
         expect(described_class.mentors).not_to include(ect_declaration)
       end
     end
+
+    describe ".with_declaration_types" do
+      let!(:started_declaration) { FactoryBot.create(:declaration, declaration_type: "started") }
+      let!(:completed_declaration) { FactoryBot.create(:declaration, declaration_type: "completed") }
+      let!(:retained_1_declaration) { FactoryBot.create(:declaration, declaration_type: "retained-1") }
+      let!(:extended_1_declaration) { FactoryBot.create(:declaration, declaration_type: "extended-1") }
+
+      context "with a single declaration type" do
+        it "returns declarations matching the given type" do
+          result = described_class.with_declaration_types("started")
+
+          expect(result).to include(started_declaration)
+          expect(result).not_to include(completed_declaration, retained_1_declaration)
+        end
+      end
+
+      context "with multiple declaration types" do
+        it "returns declarations matching any of the given types" do
+          result = described_class.with_declaration_types(%w[started completed])
+
+          expect(result).to include(started_declaration, completed_declaration)
+          expect(result).not_to include(retained_1_declaration, extended_1_declaration)
+        end
+      end
+
+      context "with no matching declarations" do
+        it "returns empty" do
+          result = described_class.with_declaration_types("retained-2")
+
+          expect(result).to be_empty
+        end
+      end
+    end
   end
 
   describe "enums" do
