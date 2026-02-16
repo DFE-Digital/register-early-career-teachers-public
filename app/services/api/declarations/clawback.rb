@@ -9,14 +9,17 @@ module API::Declarations
     def clawback
       return false unless valid?
 
-      Declarations::Clawback.new(
-        author:,
-        declaration:,
-        next_available_output_fee_statement:
-      ).clawback
+      clawback_service.clawback
     end
 
   private
+
+    def clawback_service
+      @clawback_service ||= Declarations::Clawback.new(
+        author:,
+        declaration:
+      )
+    end
 
     def paid
       return if errors[:declaration_api_id].any?
@@ -34,7 +37,7 @@ module API::Declarations
 
     def output_fee_statement_available
       return if errors[:declaration_api_id].any?
-      return if next_available_output_fee_statement.present?
+      return if clawback_service.next_available_output_fee_statement.present?
 
       no_output_fee_statement_error_message = <<~TXT.squish
         You cannot submit or void declarations for the #{contract_period_year}
@@ -42,19 +45,6 @@ module API::Declarations
         ended. Get in touch if you need to discuss this with us
       TXT
       errors.add(:declaration_api_id, no_output_fee_statement_error_message)
-    end
-
-    def next_available_output_fee_statement
-      @next_available_output_fee_statement ||= Statements::Search
-        .new(
-          lead_provider_id: declaration.training_period.lead_provider.id,
-          contract_period_years: contract_period_year,
-          fee_type: "output",
-          deadline_date: Date.current..,
-          order: :deadline_date
-        )
-        .statements
-        .first
     end
 
     def contract_period_year = declaration.training_period.contract_period.year
