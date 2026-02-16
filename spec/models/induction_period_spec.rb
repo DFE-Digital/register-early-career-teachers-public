@@ -27,6 +27,26 @@ RSpec.describe InductionPeriod do
 
     it { is_expected.to validate_presence_of(:started_on).with_message("Enter a start date") }
     it { is_expected.to validate_presence_of(:appropriate_body_period_id).with_message("Select an appropriate body") }
+    it { is_expected.not_to validate_absence_of(:outcome).with_message("Outcome cannot be set for ongoing induction periods") }
+
+    context "when induction period is ongoing" do
+      subject { FactoryBot.build(:induction_period, :ongoing) }
+
+      it { is_expected.to validate_absence_of(:outcome).with_message("Outcome cannot be set for ongoing induction periods") }
+    end
+
+    context "when the induction period has an outcome and there is another induction period with an outcome for the same teacher" do
+      subject(:induction_period) { FactoryBot.build(:induction_period, :fail) }
+
+      before do
+        FactoryBot.create(:induction_period, :pass, teacher: induction_period.teacher)
+      end
+
+      it "is invalid" do
+        expect(induction_period).to be_invalid
+        expect(induction_period.errors[:outcome]).to include("An induction period with an outcome already exists for this teacher")
+      end
+    end
 
     describe "overlapping periods" do
       let(:started_on_message) { "Start date cannot overlap another induction period" }
@@ -115,7 +135,7 @@ RSpec.describe InductionPeriod do
           end
 
           it "returns true if it is not the first induction period but outcome is set on creation" do
-            second_induction_period = FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: "2023-01-01", outcome: "pass")
+            second_induction_period = FactoryBot.create(:induction_period, teacher:, appropriate_body_period:, started_on: "2023-01-01", outcome: "pass")
 
             expect(second_induction_period.send(:touch_teacher?)).to be(true)
           end

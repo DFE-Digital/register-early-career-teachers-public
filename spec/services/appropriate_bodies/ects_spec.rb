@@ -93,8 +93,6 @@ RSpec.describe AppropriateBodies::ECTs do
                           appropriate_body_period:,
                           started_on: 1.year.ago,
                           finished_on: 6.months.ago,
-                          outcome: "pass",
-                          number_of_terms: 3,
                           induction_programme: "fip")
       end
 
