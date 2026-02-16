@@ -32,31 +32,9 @@ module Sessions
       @current_user ||= load_from_session
     end
 
-    # NB: when switching between School and AB roles we need to set the record identifier
-    # - URN for SchoolUser
-    # - DfE Org ID for AppropriateBodyUser
-    #
-    # OPTIMIZE: this would be trivial if we saved the dfe_sign_in_organisation_id on the School record the same way we do for AppropriateBody
-    #
     def switch_role!
-      new_role = current_user.dfe_sign_in_roles.find { |role| role != current_user.last_active_role }
-
-      session["user_session"]["last_active_role"] = new_role # replace the last active role
-      session["user_session"]["type"] = "Sessions::Users::#{new_role}" # update the user type in the session
-
-      if current_user.dfe_sign_in_organisation_id
-        appropriate_body = AppropriateBodyPeriod.find_by(dfe_sign_in_organisation_id: current_user.dfe_sign_in_organisation_id)
-        gias_school = GIAS::School.find_by(name: appropriate_body.name)
-
-        session["user_session"]["school_urn"] ||= gias_school.urn
-
-      elsif current_user.school_urn
-        gias_school = GIAS::School.find_by(urn: current_user.school_urn)
-        appropriate_body = AppropriateBodyPeriod.find_by(name: gias_school.name)
-
-        session["user_session"]["dfe_sign_in_organisation_id"] ||= appropriate_body.dfe_sign_in_organisation_id
-      end
-
+      session["user_session"]["last_active_role"] = other_dfe_sign_in_role
+      session["user_session"]["type"] = "Sessions::Users::#{other_dfe_sign_in_role}"
       @current_user = load_from_session
     end
 
@@ -74,6 +52,11 @@ module Sessions
     end
 
   private
+
+    # @return [String]
+    def other_dfe_sign_in_role
+      current_user.dfe_sign_in_roles.find { |role| role != current_user.last_active_role }
+    end
 
     # @see https://github.com/DFE-Digital/login.dfe.public-api
     # @param session_user [Sessions::User]
