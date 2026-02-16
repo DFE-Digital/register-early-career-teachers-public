@@ -70,9 +70,9 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
     end
   end
 
-  context "when mentor does not have expression_of_interest?" do
+  context "when mentor's school has a school_partnership" do
     before do
-      allow(mentor).to receive(:expression_of_interest?).and_return(false)
+      allow(mentor).to receive(:school_partnership?).and_return(true)
       render
     end
 
