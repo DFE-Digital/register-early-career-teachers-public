@@ -38,18 +38,25 @@ module Seeds
     attr_reader :contract_period_year
 
     def ensure_contract_periods!
+      existing = ContractPeriod.where(year: years).index_by(&:year)
+
       years.each do |year|
-        ContractPeriod.find_or_create_by!(year:) do |cp|
-          cp.started_on = Date.new(year, 6, 1)
-          cp.finished_on = Date.new(year + 1, 5, 31)
-          cp.enabled = true
-        end
+        next if existing.key?(year)
+
+        ContractPeriod.create!(
+          year:,
+          started_on: Date.new(year, 6, 1),
+          finished_on: Date.new(year + 1, 5, 31),
+          enabled: true
+        )
       end
     end
 
     def ensure_schedules!
+      contract_periods_by_year = ContractPeriod.where(year: years).index_by(&:year)
+
       years.each do |year|
-        contract_period = ContractPeriod.find_by!(year:)
+        contract_period = contract_periods_by_year.fetch(year)
 
         Schedule.find_or_create_by!(
           contract_period:,
