@@ -66,7 +66,10 @@ end
   {
     urn: 6_384_201,
     name: "Greyfriars School",
-    type: :state_school_type
+    type: :state_school_type,
+    induction_tutor_email: nil,
+    induction_tutor_name: nil,
+    induction_tutor_last_nominated_in: nil,
   }
 ].uniq { |h| h[:urn] }.map do |data|
   type = data[:type]
@@ -87,6 +90,7 @@ end
     ).except(
       :induction_tutor_name,
       :induction_tutor_email,
+      :induction_tutor_last_nominated_in,
       :section_41_approved,
       :type
     )
