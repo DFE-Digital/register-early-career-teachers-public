@@ -206,10 +206,22 @@ describe API::SchoolPartnerships::Query do
           expect(query.school_partnerships).to be_empty
         end
 
-        it "ignores invalid `delivery_partner_api_ids`" do
-          query = described_class.new(delivery_partner_api_ids: [school_partnership1.delivery_partner.api_id, "invalid_api_id"])
+        it "returns empty if no school partnerships are found for random UUID" do
+          query = described_class.new(delivery_partner_api_ids: SecureRandom.uuid)
 
-          expect(query.school_partnerships).to contain_exactly(school_partnership1)
+          expect(query.school_partnerships).to be_empty
+        end
+
+        it "returns empty if no school partnerships are found for invalid UUID" do
+          query = described_class.new(delivery_partner_api_ids: "XXX123")
+
+          expect(query.school_partnerships).to be_empty
+        end
+
+        it "returns empty if no school partnerships are found for empty array" do
+          query = described_class.new(delivery_partner_api_ids: [])
+
+          expect(query.school_partnerships).to be_empty
         end
 
         it "does not filter by `delivery_partner_api_ids` if blank" do
