@@ -130,10 +130,18 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
   end
 
   context "when provider-led with expression of interest only" do
-    let(:school) { FactoryBot.create(:school, :provider_led_last_chosen) }
+    let(:school) { FactoryBot.create(:school, :provider_led_last_chosen, create_contract_period: false) }
     let(:contract_start_date) { Date.new(2025, 9, 1) }
 
     before do
+      # ensure a valid contract period includes that date
+      FactoryBot.create(
+        :contract_period,
+        started_on: Date.new(2025, 9, 1),
+        finished_on: Date.new(2026, 8, 31),
+        enabled: true
+      )
+
       choices = double(
         "Schools::LatestRegistrationChoices",
         lead_provider: last_chosen_lead_provider,
@@ -151,12 +159,6 @@ RSpec.shared_examples "a use previous ect choices view" do |current_step:, back_
       assign(:school, school)
       assign(:decorated_school, decorated_school)
       render
-    end
-
-    around do |example|
-      travel_to(contract_start_date) do
-        example.run
-      end
     end
 
     it "renders the lead provider row with the EOI name" do
