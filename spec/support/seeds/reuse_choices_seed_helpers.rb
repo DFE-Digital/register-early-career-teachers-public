@@ -1,44 +1,44 @@
 module Seeds
   module ReuseChoicesSeedHelpers
+    BASE_URN = Seeds::ReuseChoices::BASE_URN
+
     def run_reuse_choices_seed!(contract_period_year:)
+      ensure_test_appropriate_body!
       Seeds::ReuseChoices.new(contract_period_year:).call
     end
 
-    def reuse_choices_base_urn
-      Seeds::ReuseChoices::BASE_URN
+    def reuse_choices_urns
+      (BASE_URN..(BASE_URN + 16)).to_a
+    end
+
+    def reuse_school(offset:)
+      School.find_by!(urn: BASE_URN + offset)
+    end
+
+    def reuse_reference_lead_provider
+      find_by_name!(LeadProvider, Seeds::ReuseChoices::LEAD_PROVIDER_REUSABLE_NAME)
+    end
+
+    def reuse_reference_lead_provider_not_available
+      find_by_name!(LeadProvider, Seeds::ReuseChoices::LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
+    end
+
+    def reuse_reference_delivery_partner
+      find_by_name!(DeliveryPartner, Seeds::ReuseChoices::DELIVERY_PARTNER_REUSABLE_NAME)
+    end
+
+    def reuse_reference_delivery_partner_not_reusable
+      find_by_name!(DeliveryPartner, Seeds::ReuseChoices::DELIVERY_PARTNER_NOT_REUSABLE_NAME)
+    end
+
+    def reuse_reference_appropriate_body
+      AppropriateBody.find_by(name: Seeds::ReuseChoices::PREFERRED_APPROPRIATE_BODY_NAME) ||
+        AppropriateBody.first ||
+        raise("Expected an AppropriateBody to exist for seed scenarios")
     end
 
     def reuse_choices_schedule_identifier
       Seeds::ReuseChoices::SCHEDULE_IDENTIFIER
-    end
-
-    def reuse_choices_urns
-      base = reuse_choices_base_urn
-      (base..(base + 16)).to_a
-    end
-
-    def reuse_school(offset:)
-      School.find_by!(urn: reuse_choices_base_urn + offset)
-    end
-
-    def reuse_reference_lead_provider
-      LeadProvider.find_by!(name: Seeds::ReuseChoices::LEAD_PROVIDER_REUSABLE_NAME)
-    end
-
-    def reuse_reference_lead_provider_not_available
-      LeadProvider.find_by!(name: Seeds::ReuseChoices::LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
-    end
-
-    def reuse_reference_delivery_partner
-      DeliveryPartner.find_by!(name: Seeds::ReuseChoices::DELIVERY_PARTNER_REUSABLE_NAME)
-    end
-
-    def reuse_reference_delivery_partner_not_reusable
-      DeliveryPartner.find_by!(name: Seeds::ReuseChoices::DELIVERY_PARTNER_NOT_REUSABLE_NAME)
-    end
-
-    def reuse_reference_appropriate_body
-      AppropriateBody.find_by!(name: Seeds::ReuseChoices::APPROPRIATE_BODY_NAME)
     end
 
     def scenario_ect_period_for_school!(school:, previous_year:)
@@ -74,6 +74,25 @@ module Seeds
         .where(lead_provider:)
         .where(contract_periods: { year: contract_period_year })
         .exists?
+    end
+
+  private
+
+    def find_by_name!(klass, name)
+      klass.find_by!(name:)
+    end
+
+    def ensure_test_appropriate_body!
+      return if AppropriateBody.exists?
+
+      org_assoc = AppropriateBody.reflect_on_association(:dfe_sign_in_organisation)
+
+      if org_assoc
+        org = org_assoc.klass.create!(name: "Test DfE Sign-in Org")
+        AppropriateBody.create!(name: "Test Appropriate Body", dfe_sign_in_organisation: org)
+      else
+        AppropriateBody.create!(name: "Test Appropriate Body", dfe_sign_in_organisation_id: SecureRandom.uuid)
+      end
     end
   end
 end

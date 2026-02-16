@@ -15,8 +15,8 @@ module Seeds
     DELIVERY_PARTNER_NOT_REUSABLE_NAME =
       "Reuse – Delivery Partner Two"
 
-    APPROPRIATE_BODY_NAME =
-      "Reuse – Appropriate Body"
+    PREFERRED_APPROPRIATE_BODY_NAME =
+      "Golden Leaf Teaching School Hub"
 
     def initialize(contract_period_year:)
       @contract_period_year = contract_period_year
@@ -71,8 +71,6 @@ module Seeds
 
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_REUSABLE_NAME)
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_NOT_REUSABLE_NAME)
-
-      AppropriateBody.find_or_create_by!(name: APPROPRIATE_BODY_NAME)
     end
 
     def ensure_target_year_availability_for_reusable_lead_provider!
@@ -108,7 +106,10 @@ module Seeds
     end
 
     def matrix_appropriate_body
-      @matrix_appropriate_body ||= AppropriateBody.find_by!(name: APPROPRIATE_BODY_NAME)
+      @matrix_appropriate_body ||=
+        AppropriateBody.find_by(name: PREFERRED_APPROPRIATE_BODY_NAME) ||
+        AppropriateBody.first ||
+        raise("No AppropriateBody exists. Run appropriate_bodies seeds first.")
     end
 
     # Scenario group 1 – blank slate school
@@ -247,6 +248,7 @@ module Seeds
     def seed_previous_teacher_and_training!(school:, previous_year:, mode:, lead_provider:, delivery_partner_for_partnership:)
       previous_contract_period = ContractPeriod.find_by!(year: previous_year)
       previous_schedule = Schedule.find_by!(contract_period: previous_contract_period, identifier: SCHEDULE_IDENTIFIER)
+      ab = matrix_appropriate_body
 
       teacher = FactoryBot.create(:teacher)
 
@@ -258,7 +260,7 @@ module Seeds
           teacher:,
           started_on: Date.new(previous_year, 9, 1),
           finished_on: Date.new(previous_year + 1, 7, 31),
-          school_reported_appropriate_body: matrix_appropriate_body
+          school_reported_appropriate_body: ab
         )
 
       InductionPeriod.find_or_create_by!(
@@ -266,7 +268,7 @@ module Seeds
         started_on: ect_period.started_on
       ) do |ip|
         ip.finished_on = ect_period.finished_on
-        ip.appropriate_body = matrix_appropriate_body
+        ip.appropriate_body = ab
         ip.induction_programme = "fip"
         ip.training_programme = "provider_led"
         ip.number_of_terms = 3
@@ -281,7 +283,7 @@ module Seeds
       school.update!(
         last_chosen_training_programme: "provider_led",
         last_chosen_lead_provider: active_lead_provider.lead_provider,
-        last_chosen_appropriate_body: matrix_appropriate_body
+        last_chosen_appropriate_body: ab
       )
 
       case mode
@@ -326,6 +328,7 @@ module Seeds
 
     def ensure_scenario_school!(offset:, gias_name:, set_provider_led_last_chosen:, last_chosen_lead_provider:)
       urn = BASE_URN + offset
+      ab = matrix_appropriate_body
 
       ensure_gias_school!(urn:, name: gias_name)
 
@@ -337,7 +340,7 @@ module Seeds
       if set_provider_led_last_chosen
         school.last_chosen_training_programme = "provider_led" if school.has_attribute?(:last_chosen_training_programme)
         school.last_chosen_lead_provider = last_chosen_lead_provider if school.respond_to?(:last_chosen_lead_provider=)
-        school.last_chosen_appropriate_body = matrix_appropriate_body if school.has_attribute?(:last_chosen_appropriate_body_id)
+        school.last_chosen_appropriate_body = ab if school.has_attribute?(:last_chosen_appropriate_body_id)
       else
         school.last_chosen_training_programme = nil if school.has_attribute?(:last_chosen_training_programme)
         school.last_chosen_lead_provider_id = nil if school.has_attribute?(:last_chosen_lead_provider_id)
