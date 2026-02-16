@@ -42,12 +42,6 @@ RSpec.configure do |config|
     allow(Rails.application.config).to receive(:enable_teaching_school_hubs).and_return(true)
   end
 
-  config.before(:each, :enable_induction_tutor_prompt) do
-    allow(Rails.application.config)
-      .to receive(:enable_induction_tutor_prompt)
-      .and_return(true)
-  end
-
   config.around do |example|
     declarative_updates_to_skip = %i[metadata touch]
 
