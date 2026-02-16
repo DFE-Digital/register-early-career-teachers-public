@@ -50,9 +50,9 @@ RSpec.describe "schools/register_mentor_wizard/programme_choices.html.erb" do
     expect(rendered).to have_element(:dd, text: "Naruto Ninja Academy")
   end
 
-  context "when mentor has expression_of_interest?" do
+  context "when mentor has only an expression_of_interest?" do
     before do
-      allow(mentor).to receive(:expression_of_interest?).and_return(true)
+      allow(mentor).to receive_messages(expression_of_interest?: true, school_partnership?: false)
       render
     end
 
