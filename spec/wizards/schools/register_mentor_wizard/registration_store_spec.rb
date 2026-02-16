@@ -1,7 +1,7 @@
 describe Schools::RegisterMentorWizard::RegistrationStore do
   subject(:registration_store) { described_class.new(store) }
 
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, create_contract_period: false) }
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:store) do
     FactoryBot.build(

@@ -5,8 +5,15 @@ FactoryBot.define do
 
     induction_tutor_name { "Induction Tutor" }
     induction_tutor_email { "induction.tutor@st-trinians.org.uk" }
+
+    transient do
+      create_contract_period { true }
+    end
+
     induction_tutor_last_nominated_in do
-      association(:contract_period, :current)
+      if create_contract_period
+        association(:contract_period, :current)
+      end
     end
 
     initialize_with do
@@ -75,10 +82,12 @@ FactoryBot.define do
     end
 
     trait :with_unconfirmed_induction_tutor do
+      create_contract_period { false }
       induction_tutor_last_nominated_in { nil }
     end
 
     trait :without_induction_tutor do
+      create_contract_period { false }
       induction_tutor_name { nil }
       induction_tutor_email { nil }
       induction_tutor_last_nominated_in { nil }

@@ -43,7 +43,7 @@ RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
   end
 
   def given_there_is_a_school_with_no_induction_tutor_in_the_service
-    @school = FactoryBot.create(:school, urn: "1234567")
+    @school = FactoryBot.create(:school, :without_induction_tutor, urn: "1234567")
   end
 
   def and_i_should_see_a_confirmation_message

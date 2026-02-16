@@ -1,7 +1,8 @@
 describe Schools::RegisterMentorWizard::Wizard do
   let(:current_step) { :find_mentor }
   let(:ect_teacher) { FactoryBot.create(:teacher, trn: "7654321") }
-  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher, school:) }
+  let(:school) { FactoryBot.create(:school, create_contract_period: false, urn: school_urn) }
   let(:ect_id) { ect.id }
   let(:mentor_trn) { "1234567" }
   let(:mentor_date_of_birth) { "1977-02-03" }

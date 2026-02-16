@@ -1,5 +1,5 @@
 RSpec.describe Admin::Schools::OverviewComponent, type: :component do
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, :without_induction_tutor) }
   let(:component) { described_class.new(school:) }
 
   describe "#induction_tutor_name" do

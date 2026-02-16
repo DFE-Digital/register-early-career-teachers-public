@@ -7,7 +7,7 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     )
   end
 
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, create_contract_period: false) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:store) { FactoryBot.build(:session_repository, lead_provider_id: lead_provider.id) }
 
