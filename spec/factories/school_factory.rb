@@ -7,6 +7,12 @@ FactoryBot.define do
       School.find_or_initialize_by(urn:)
     end
 
+    after(:build) do |school|
+      school.induction_tutor_name ||= "Induction Tutor"
+      school.induction_tutor_email ||= "induction.tutor@a-very-nice-school.sch.uk"
+      school.induction_tutor_last_nominated_in ||= build(:contract_period, :current)
+    end
+
     trait :independent do
       gias_school { association :gias_school, :independent_school_type, :section_41, urn: }
     end
@@ -63,6 +69,16 @@ FactoryBot.define do
     trait :with_induction_tutor do
       induction_tutor_name { "Induction Tutor" }
       induction_tutor_email { "induction.tutor@a-very-nice-school.sch.uk" }
+    end
+
+    trait :with_unconfirmed_induction_tutor do
+      induction_tutor_last_nominated_in { nil }
+    end
+
+    trait :without_induction_tutor do
+      induction_tutor_name { nil }
+      induction_tutor_email { nil }
+      induction_tutor_last_nominated_in { nil }
     end
 
     trait :with_dsi do

@@ -10,36 +10,30 @@ RSpec.shared_examples "an induction redirectable route" do
     context "when signed in as a school user" do
       before { sign_in_as(:school_user, school:) }
 
-      context "when the feature is disabled" do
-        it_behaves_like "does not redirect to wizard"
+      context "when the school's induction tutor has never been confirmed" do
+        let(:induction_tutor_last_nominated_in) { nil }
+
+        it_behaves_like "redirects to confirmation wizard"
       end
 
-      context "when the feature is enabled", :enable_induction_tutor_prompt do
-        context "when the school's induction tutor has never been confirmed" do
-          let(:induction_tutor_last_nominated_in) { nil }
+      context "when the school's induction tutor is not set" do
+        let(:induction_tutor_last_nominated_in) { nil }
+        let(:induction_tutor_name) { nil }
+        let(:induction_tutor_email) { nil }
 
-          it_behaves_like "redirects to confirmation wizard"
-        end
+        it_behaves_like "redirects to new wizard"
+      end
 
-        context "when the school's induction tutor is not set" do
-          let(:induction_tutor_last_nominated_in) { nil }
-          let(:induction_tutor_name) { nil }
-          let(:induction_tutor_email) { nil }
+      context "when the school's induction tutor needs to update information" do
+        let(:year) { current_contract_period.year - 1 }
 
-          it_behaves_like "redirects to new wizard"
-        end
+        before { current_contract_period }
 
-        context "when the school's induction tutor needs to update information" do
-          let(:year) { current_contract_period.year - 1 }
+        it_behaves_like "redirects to confirmation wizard"
+      end
 
-          before { current_contract_period }
-
-          it_behaves_like "redirects to confirmation wizard"
-        end
-
-        context "when the school's induction tutor does not need to update information" do
-          it_behaves_like "does not redirect to wizard"
-        end
+      context "when the school's induction tutor does not need to update information" do
+        it_behaves_like "does not redirect to wizard"
       end
     end
 
@@ -48,32 +42,26 @@ RSpec.shared_examples "an induction redirectable route" do
 
       before { sign_in_as(:dfe_user, user:) }
 
-      context "when the feature is disabled" do
+      context "when the school's induction tutor has never been confirmed" do
+        let(:induction_tutor_last_nominated_in) { nil }
+
         it_behaves_like "does not redirect to wizard"
       end
 
-      context "when the feature is enabled", :enable_induction_tutor_prompt do
-        context "when the school's induction tutor has never been confirmed" do
-          let(:induction_tutor_last_nominated_in) { nil }
+      context "when the school's induction tutor is not set" do
+        let(:induction_tutor_last_nominated_in) { nil }
+        let(:induction_tutor_name) { nil }
+        let(:induction_tutor_email) { nil }
 
-          it_behaves_like "does not redirect to wizard"
-        end
+        it_behaves_like "does not redirect to wizard"
+      end
 
-        context "when the school's induction tutor is not set" do
-          let(:induction_tutor_last_nominated_in) { nil }
-          let(:induction_tutor_name) { nil }
-          let(:induction_tutor_email) { nil }
+      context "when the school's induction tutor needs to update information" do
+        let(:year) { current_contract_period.year - 1 }
 
-          it_behaves_like "does not redirect to wizard"
-        end
+        before { current_contract_period }
 
-        context "when the school's induction tutor needs to update information" do
-          let(:year) { current_contract_period.year - 1 }
-
-          before { current_contract_period }
-
-          it_behaves_like "does not redirect to wizard"
-        end
+        it_behaves_like "does not redirect to wizard"
       end
     end
 
@@ -82,32 +70,26 @@ RSpec.shared_examples "an induction redirectable route" do
 
       before { sign_in_as(:appropriate_body_user, appropriate_body:) }
 
-      context "when the feature is disabled" do
+      context "when the school's induction tutor has never been confirmed" do
+        let(:induction_tutor_last_nominated_in) { nil }
+
         it_behaves_like "does not redirect to wizard"
       end
 
-      context "when the feature is enabled", :enable_induction_tutor_prompt do
-        context "when the school's induction tutor has never been confirmed" do
-          let(:induction_tutor_last_nominated_in) { nil }
+      context "when the school's induction tutor is not set" do
+        let(:induction_tutor_last_nominated_in) { nil }
+        let(:induction_tutor_name) { nil }
+        let(:induction_tutor_email) { nil }
 
-          it_behaves_like "does not redirect to wizard"
-        end
+        it_behaves_like "does not redirect to wizard"
+      end
 
-        context "when the school's induction tutor is not set" do
-          let(:induction_tutor_last_nominated_in) { nil }
-          let(:induction_tutor_name) { nil }
-          let(:induction_tutor_email) { nil }
+      context "when the school's induction tutor needs to update information" do
+        let(:year) { current_contract_period.year - 1 }
 
-          it_behaves_like "does not redirect to wizard"
-        end
+        before { current_contract_period }
 
-        context "when the school's induction tutor needs to update information" do
-          let(:year) { current_contract_period.year - 1 }
-
-          before { current_contract_period }
-
-          it_behaves_like "does not redirect to wizard"
-        end
+        it_behaves_like "does not redirect to wizard"
       end
     end
   end
