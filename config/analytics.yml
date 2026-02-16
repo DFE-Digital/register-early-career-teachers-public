@@ -188,6 +188,7 @@ shared:
     - voided_by_user_at
     - voided_by_user_id
     - mentorship_period_id
+    - delivery_partner_when_created_id
     - api_id
     - evidence_type
     - payment_status
