@@ -20,7 +20,50 @@
 #     [links](https://www.gov.uk)
 #
 #     **bold** and _italic_ text
-
+- title: Delivery partner now recorded on declaration submission
+  date: 2026-02-16
+  tags:
+    - api-update
+  body: |
+    We have changed how delivery partner information is recorded on declarations in the register early career teachers (RECT) API.
+    
+    ## What's changed
+    
+    When you submit a declaration, the system now records which delivery partner was assigned at that time. This information will not change, even if you later update the delivery partner through the partnership API.
+    
+    The delivery partner shown on a declaration is now the delivery partner that was assigned when the declaration was submitted.
+    
+    ## Why we've made this change
+    
+    This change ensures that DfE a consistent record of which delivery partner was responsible for each declaration at the time it was made.
+    
+    This is particularly important when:
+    
+    * correcting errors in partnership records using `PUT /partnerships/{id}`
+    * understanding how declarations are paid out
+    
+    ## Impact on lead providers
+    
+    You don't need to make any changes to your integration. The only change comes in the approach to updating a delivery partner:
+    
+    ### When correcting a mistakenly entered delivery partner
+    
+    Use the `PUT /partnerships/{id}` endpoint to correct the `delivery_partner_id`. 
+    
+    For example, if you made an error when creating the partnership and need to fix it.
+    
+    When you update a partnership, the new delivery partner ID will apply to all future declarations linked to that partnership. Any historic declarations will still use the `delivery_partner_id` that was in place before it was corrected.
+    
+    ### When the delivery partner has genuinely changed
+    
+    Contact DfE to create a new partnership record, via your Teams channel or email.
+    
+    This new record will use a new partnership ID, enabling us to better understand which delivery partner the school was training with, and when.
+    
+    Historic declarations remain linked to the original `delivery_partner_id`, while future declarations use the new partnership record.
+    
+    For more information, see the [partnerships guidance](link to guidance).
+    
 - title: Declaration endpoints added, completing the RECT API in sandbox
   date: 2026-01-19
   tags:
