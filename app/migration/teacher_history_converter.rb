@@ -105,6 +105,11 @@ private
     at_school_periods
   end
 
+  # This needs to work on all induction records so before any grouping wnd pre-washing
+  def clean_top_level_induction_records(induction_records)
+    TeacherHistoryConverter::Cleaner::IndependentNonSection41.new(induction_records).induction_records
+  end
+
   # def build_mentorship_periods(induction_record)
   #   return [] if induction_record.mentor_profile_id.blank?
   #
