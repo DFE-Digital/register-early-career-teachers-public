@@ -16,6 +16,7 @@ private
       .then { |induction_records| fix_service_start_dates(induction_records) }
       .then { |induction_records| fix_corrupted_dates(induction_records) }
       .then { |induction_records| fix_zero_day_periods(induction_records) }
+      .then { |induction_records| fix_first_start_date(induction_records) }
   end
 
   def remove_british_schools_overseas(induction_records)
@@ -40,5 +41,9 @@ private
 
   def fix_zero_day_periods(induction_records)
     TeacherHistoryConverter::Cleaner::ZeroDay.new(induction_records).induction_records
+  end
+
+  def fix_first_start_date(induction_records)
+    TeacherHistoryConverter::Cleaner::FixFirstStartDate.new(induction_records).induction_records
   end
 end
