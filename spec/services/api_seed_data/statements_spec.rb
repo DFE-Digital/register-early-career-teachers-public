@@ -11,6 +11,7 @@ RSpec.describe APISeedData::Statements do
   describe "#plant" do
     let(:contract_period) { FactoryBot.create(:contract_period, year: Time.zone.now.year - 1) }
     let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    let!(:contracts) { FactoryBot.create_list(:contract, 3, :for_ittecf_ectp, active_lead_provider:) }
 
     it "creates statements for active lead providers with the correct attributes" do
       instance.plant
@@ -19,15 +20,17 @@ RSpec.describe APISeedData::Statements do
       years = (registration_year...(registration_year + described_class::YEARS_TO_CREATE)).to_a
       months = described_class::MONTHS.to_a
 
-      years.product(months).each do |year, month|
+      years.product(months).each_with_index do |(year, month), index|
         statement = Statement.find_by(year:, month:)
         expected_deadline_date = Date.new(year, month).end_of_month
+        expected_contract = contracts[(index * contracts.size) / (years.size * months.size)]
 
         expect(statement).to have_attributes(
           active_lead_provider:,
           deadline_date: expected_deadline_date,
           payment_date: be_between(expected_deadline_date, expected_deadline_date + 2.months),
-          status: be_in(%w[open payable paid])
+          status: be_in(%w[open payable paid]),
+          contract: expected_contract
         )
       end
     end
