@@ -28,9 +28,9 @@ This table defines terms used throughout this guidance. For other contractual te
 | Output payment | The payment amount that DfE publishes on a finance statement, which is based on valid declarations |
 | Payment date | The date that DfE aims to process frozen statements by, so that payments can be made |
 | Schedule | Schedules are timed sequences of expected milestone and payment points.<br><br>These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor.<br><br>They are then updated and corrected by lead providers via the API.<br>Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for |
-| Extended schedule | A non-standard training schedule for participants who expect to complete the induction over a period greater than 2 years.<br><br>Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body. Mentors can also be assigned extended schedules |
+| Extended schedule | A non-standard training schedule for participants who expect to complete the induction over a period greater than 2 years.<br><br>Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body.<br><br>Mentors can also be assigned extended schedules if:<br><br>- they deferred their training and came back later<br><br>- they’re doing the training part-time |
 | Reduced schedule | A non-standard training schedule for ECTs who expect to complete the induction over a period less than 2 years. Examples include those with previous experience |
-| Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training. The mentor must be completely new to provider-led mentor training |
+| Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training. The mentor must be completely new to provider-led mentor training<br><br> |
 | Standard schedule | The default training schedule for participants completing a standard 2 year induction, starting in September, January or April |
 
 ## Standard schedules and dates
@@ -63,6 +63,8 @@ For participants who started their training on or before 31 December 2024, refer
 If a school registers a replacement mentor for an ECT, we'll assign a replacement mentor schedule based on when they're first registered as the ECT's mentor (`replacement-september`, `replacement-january` or `replacement-april`).
 
 It will be up to providers to check these automatically assigned replacement schedules. If a newly assigned replacement mentor later supports a new ECT doing provider-led training as their first mentor before the end of the next milestone period, and before the mentor's first started declaration is due, providers must update the mentor's schedule to a standard one.
+
+Replacement mentors are not eligible for uplift fees. If any uplift fees are added, DfE will manually remove them before any payment is made.
 
 ### Extended schedules
 
