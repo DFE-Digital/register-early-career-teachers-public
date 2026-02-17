@@ -128,7 +128,7 @@ describe ECF1TeacherHistory do
               expect(historic_period.finished_on).to eq(mentor_at_school_period&.finished_on)
               expect(historic_period.created_at).to be_within(1.second).of(mentor_at_school_period.created_at)
               expect(historic_period.updated_at).to be_within(1.second).of(mentor_at_school_period.updated_at)
-              expect(historic_period.school.urn).to eq(mentor_at_school_period.school.urn)
+              expect(historic_period.school.urn).to eq(mentor_at_school_period.school.urn.to_s)
               expect(historic_period.teacher.trn).to eq(mentor_at_school_period.teacher.trn)
               expect(historic_period.teacher.api_mentor_training_record_id).to eq(mentor_at_school_period.teacher.api_mentor_training_record_id)
             end

@@ -56,7 +56,7 @@ class ECF1TeacherHistory
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
       induction_records:,
-      mentor_at_school_periods: build_mentor_at_school_periods(induction_records:)
+      mentor_at_school_periods: SchoolMentorsForECT.new(induction_records:).mentor_at_school_periods
     )
   end
 
@@ -89,33 +89,6 @@ class ECF1TeacherHistory
     )
   end
 
-  def self.build_mentor_at_school_periods(induction_records:)
-    urns = induction_records.map(&:school).map(&:urn).uniq
-    mentor_profile_ids = induction_records.map(&:mentor_profile_id).compact.uniq
-
-    # raise("No mentor_profile_ids!!") if mentor_profile_ids.empty?
-
-    mentors = ::MentorAtSchoolPeriod.joins(:school, :teacher)
-                          .where(schools: { urn: urns },
-                                 teachers: { api_mentor_training_record_id: mentor_profile_ids })
-                          .to_a
-    mentors.map do |mentor_at_school_period|
-      build_mentor_at_school_period(mentor_at_school_period:)
-    end
-  end
-
-  def self.build_mentor_at_school_period(mentor_at_school_period:)
-    MentorAtSchoolPeriod.new(
-      mentor_at_school_period_id: mentor_at_school_period.id,
-      started_on: mentor_at_school_period.started_on,
-      finished_on: mentor_at_school_period.finished_on,
-      created_at: mentor_at_school_period.created_at,
-      updated_at: mentor_at_school_period.updated_at,
-      school: build_school_data(mentor_at_school_period.school),
-      teacher: build_teacher_data(mentor_at_school_period.teacher)
-    )
-  end
-
   def self.build_school_data(school)
     Types::SchoolData.new(urn: school.urn, name: school.name, school_type_name: school_type_name_for(school))
   end
@@ -126,10 +99,6 @@ class ECF1TeacherHistory
     elsif school.respond_to?(:type_name)
       school.type_name
     end
-  end
-
-  def self.build_teacher_data(teacher)
-    Types::TeacherData.new(trn: teacher.trn, api_mentor_training_record_id: teacher.api_mentor_training_record_id)
   end
 
   def self.build_mentor_data(participant_profile:)
