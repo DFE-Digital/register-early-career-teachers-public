@@ -671,5 +671,27 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         expect(wizard.allowed_steps).not_to include(:cannot_register_ect_yet)
       end
     end
+
+    context "when start date is last day of contract period" do
+      let(:start_date_value) { Date.new(2026, 5, 31).strftime("%Y-%m-%d") }
+
+      let!(:contract_period_2025) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          started_on: Date.new(2025, 6, 1),
+          finished_on: Date.new(2026, 5, 31),
+          enabled: true
+        )
+      end
+
+      it "includes working_pattern step" do
+        expect(wizard.allowed_steps).to include(:working_pattern)
+      end
+
+      it "does not include cannot_register_ect_yet step" do
+        expect(wizard.allowed_steps).not_to include(:cannot_register_ect_yet)
+      end
+    end
   end
 end
