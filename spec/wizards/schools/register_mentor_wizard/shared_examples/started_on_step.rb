@@ -124,7 +124,7 @@ RSpec.shared_examples "a started on step" do |current_step:|
         let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
         let(:started_on) { contract_period.finished_on }
         let(:today) { contract_period.finished_on - 1.day }
-  
+
         it { expect(step.next_step).to eq(:check_answers) }
       end
     end
