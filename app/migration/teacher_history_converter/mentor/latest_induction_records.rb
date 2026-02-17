@@ -59,6 +59,8 @@ private
 
     training_provider_info = induction_record.training_provider_info
 
+    raise(StandardError, "No training provider info for #{induction_record.induction_record_id}") if training_provider_info.nil?
+
     training_attrs = {
       started_on: induction_record.start_date,
       finished_on: induction_record.end_date,
