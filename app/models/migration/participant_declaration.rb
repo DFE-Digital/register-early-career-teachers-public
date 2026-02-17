@@ -1,6 +1,5 @@
 module Migration
   class ParticipantDeclaration < Migration::Base
-
     BILLABLE_STATES = %w[eligible payable paid voided].freeze
     REFUNDABLE_STATES = %w[awaiting_clawback clawed_back].freeze
 

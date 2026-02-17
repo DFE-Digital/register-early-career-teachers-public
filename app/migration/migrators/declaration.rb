@@ -72,7 +72,7 @@ module Migrators
     end
 
     def payment_statement(participant_declaration:)
-      if ecf_payment_statement_id = participant_declaration.payment_statement&.id
+      if (ecf_payment_statement_id = participant_declaration.payment_statement&.id)
         statement_from_ecf_id(ecf_payment_statement_id)
       end
     end
