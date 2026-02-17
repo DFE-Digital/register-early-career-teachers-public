@@ -1,4 +1,3 @@
-# db/seeds/support/seeds/reuse_choices.rb
 module Seeds
   class ReuseChoices
     BASE_URN = 9_100_100
