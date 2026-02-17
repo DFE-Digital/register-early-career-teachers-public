@@ -6,5 +6,9 @@ FactoryBot.define do
     fee_per_declaration { Faker::Number.between(from: 20, to: 200) }
     output_fee_ratio { 0.75 }
     service_fee_ratio { 0.25 }
+
+    before(:create) do |band|
+      band.banded_fee_structure&.bands&.reset
+    end
   end
 end
