@@ -162,6 +162,28 @@ describe ECTAtSchoolPeriods::CurrentTraining do
     end
   end
 
+  describe "#school_partnership?" do
+    subject { described_class.new(ect_at_school_period).school_partnership? }
+
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 3.years.ago) }
+
+    context "when the ect has had no training ever" do
+      it { is_expected.to be(false) }
+    end
+
+    context "when the ect has a training period with a school partnership" do
+      let!(:training_period_with_school_partnership) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
+
+      it { is_expected.to be(true) }
+    end
+
+    context "when the ect has a training period which is an expression of interest" do
+      let!(:expression_of_interest_training_period) { FactoryBot.create(:training_period, :ongoing, :with_only_expression_of_interest, ect_at_school_period:) }
+
+      it { is_expected.to be(false) }
+    end
+  end
+
   describe "#expression_of_interest?" do
     subject { described_class.new(ect_at_school_period).expression_of_interest? }
 
