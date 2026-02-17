@@ -175,7 +175,7 @@ RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interf
         subject
 
         expect(response).to be_successful
-        expect(sanitize(response.body)).to include("You've assigned #{Teachers::Name.new(mentor.teacher).full_name} as a mentor")
+        expect(sanitize(response.body)).to include("You’ve assigned #{Teachers::Name.new(mentor.teacher).full_name} as a mentor")
       end
     end
   end
