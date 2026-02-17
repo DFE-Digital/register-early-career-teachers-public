@@ -18,22 +18,8 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
 
   describe "#band_allocations" do
     context "with no declarations" do
-      it "returns an allocation for every band and declaration type combination" do
-        expect(allocator.band_allocations.keys.size).to eq(Declaration.declaration_types.size)
-        allocator.band_allocations.each_value do |allocations|
-          expect(allocations.size).to eq(bands.size)
-        end
-      end
-
-      it "has all counts at zero" do
-        allocator.band_allocations.each_value do |allocations|
-          expect(allocations).to all have_attributes(
-            previous_billable_count: 0,
-            previous_refundable_count: 0,
-            billable_count: 0,
-            refundable_count: 0
-          )
-        end
+      it "returns an empty hash when no declaration types are present" do
+        expect(allocator.band_allocations).to eq({})
       end
     end
 
