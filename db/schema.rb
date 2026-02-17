@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_17_082651) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -193,7 +193,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
-    t.bigint "active_lead_provider_id"
+    t.bigint "active_lead_provider_id", null: false
     t.string "ecf_contract_version", default: "1.0.0", null: false
     t.string "ecf_mentor_contract_version"
     t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"
@@ -918,7 +918,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
   end
 
   create_table "statements", force: :cascade do |t|
-    t.bigint "active_lead_provider_id", null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.integer "month", null: false
     t.integer "year", null: false
@@ -930,8 +929,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
     t.datetime "updated_at", null: false
     t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
-    t.bigint "contract_id"
-    t.index ["active_lead_provider_id"], name: "index_statements_on_active_lead_provider_id"
+    t.bigint "contract_id", null: false
     t.index ["contract_id"], name: "index_statements_on_contract_id"
   end
 
@@ -1141,7 +1139,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "statement_adjustments", "statements"
-  add_foreign_key "statements", "active_lead_providers"
   add_foreign_key "statements", "contracts"
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"

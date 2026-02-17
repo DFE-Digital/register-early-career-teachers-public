@@ -225,7 +225,6 @@ shared:
     - updated_at
   :statements:
     - id
-    - active_lead_provider_id
     - api_id
     - month
     - year
