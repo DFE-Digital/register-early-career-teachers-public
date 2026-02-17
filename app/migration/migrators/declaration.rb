@@ -32,22 +32,25 @@ module Migrators
     end
 
     def migrate_one!(participant_declaration:)
-      ::Declaration.create(api_id: participant_declaration.id,
-                           api_updated_at: participant_declaration.updated_at,
-                           created_at: participant_declaration.created_at,
-                           clawback_statement_id: clawback_statement(participant_declaration:)&.id,
-                           clawback_status: participant_declaration.clawback_status,
-                           declaration_date: participant_declaration.declaration_date,
-                           declaration_type: participant_declaration.declaration_type,
-                           delivery_partner_when_created_id: delivery_partner_when_created(participant_declaration:)&.id,
-                           evidence_type: participant_declaration.evidence_held,
-                           payment_statement_id: payment_statement(participant_declaration:)&.id,
-                           payment_status: participant_declaration.payment_status,
-                           pupil_premium_uplift: participant_declaration.pupil_premium_uplift,
-                           sparsity_uplift: participant_declaration.sparsity_uplift,
-                           training_period_id: training_period(participant_declaration:)&.id,
-                           updated_at: participant_declaration.updated_at,
-                           voided_by_user_at: participant_declaration.voided_at)
+      training_period = training_period(participant_declaration:)
+
+      declaration = ::Declaration
+                      .find_or_initialize_by(api_id: participant_declaration.id,
+                                             delivery_partner_when_created_id: training_period&.delivery_partner&.id)
+      declaration.update!(api_updated_at: participant_declaration.updated_at,
+                          created_at: participant_declaration.created_at,
+                          clawback_statement_id: clawback_statement(participant_declaration:)&.id,
+                          clawback_status: participant_declaration.clawback_status,
+                          declaration_date: participant_declaration.declaration_date,
+                          declaration_type: participant_declaration.declaration_type,
+                          evidence_type: participant_declaration.evidence_held,
+                          payment_statement_id: payment_statement(participant_declaration:)&.id,
+                          payment_status: participant_declaration.payment_status,
+                          pupil_premium_uplift: participant_declaration.pupil_premium_uplift,
+                          sparsity_uplift: participant_declaration.sparsity_uplift,
+                          training_period_id: training_period&.id,
+                          updated_at: participant_declaration.updated_at,
+                          voided_by_user_at: participant_declaration.voided_at)
     end
 
   private
@@ -99,24 +102,17 @@ module Migrators
       teacher = teacher(participant_declaration:)
       training_periods = participant_declaration.ect? ? teacher.ect_training_periods : teacher.mentor_training_periods
 
-      # via_eoi = training_periods
-      #             .joins(active_lead_provider: %i[lead_provider contract_period])
-      #             .where(lead_providers: { name: participant_declaration.cpd_lead_provider.name },
-      #                    contract_periods: { year: participant_declaration.cohort.start_year })
-      #             .closest_to(participant_declaration.declaration_date)
-
-      via_school_partnership = training_periods
-                                 .joins(school_partnership: {
-                                   lead_provider_delivery_partnership: {
-                                     active_lead_provider: %i[lead_provider contract_period]
-                                   }
-                                 })
-                                 .where(lead_provider: { ecf_id: participant_declaration.cpd_lead_provider.lead_provider.id },
-                                        contract_period: { year: participant_declaration.cohort.start_year })
-                                 .closest_to(participant_declaration.declaration_date)
-
-      # (via_school_partnership.first || via_eoi.first)&.id
-      via_school_partnership.first
+      training_periods
+        .joins(school_partnership: {
+          lead_provider_delivery_partnership: [
+            :delivery_partner,
+            { active_lead_provider: %i[lead_provider contract_period] }
+          ]
+        })
+        .where(lead_provider: { ecf_id: participant_declaration.cpd_lead_provider.lead_provider.id },
+               contract_period: { year: participant_declaration.cohort.start_year })
+        .closest_to(participant_declaration.declaration_date)
+        .first
     end
   end
 end
