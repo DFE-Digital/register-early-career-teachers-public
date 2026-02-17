@@ -18,7 +18,7 @@ RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
     it "creates the correct number of lead provider delivery partnerships" do
       minimum_records = described_class::DELIVERY_PARTNERS_PER_LEAD_PROVIDER
       maximum_records = minimum_records + described_class::SHARED_DELIVERY_PARTNERS_PER_LEAD_PROVIDER
-      expect { instance.plant }.to(change(LeadProviderDeliveryPartnership, :count).by(minimum_records..maximum_records))
+      expect { instance.plant }.to(change(LeadProviderDeliveryPartnership, :count).by(be_between(minimum_records, maximum_records)))
     end
 
     it "does not create data when already present" do
