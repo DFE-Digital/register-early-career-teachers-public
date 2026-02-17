@@ -146,6 +146,15 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
         expect(queries.contract_period).to eq(contract_period)
       end
     end
+
+    context "when started_on is the end of a contract period" do
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:started_on) { contract_period.finished_on.to_s }
+
+      it "returns the period containing the provided date" do
+        expect(queries.contract_period).to eq(contract_period)
+      end
+    end
   end
 
   describe "#ect" do
