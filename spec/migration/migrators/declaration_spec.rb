@@ -87,4 +87,3 @@ describe Migrators::Declaration do
     end
   end
 end
-

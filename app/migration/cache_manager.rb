@@ -103,9 +103,9 @@ class CacheManager
   def cache_teachers
     return if [@teachers_by_trn, @teachers_by_api_ect_training_record_id, @teachers_by_api_mentor_training_record_id].all?(&:present?)
 
-    @teachers_by_trn ||= ::Teacher.all.index_by(&:trn)
-    @teachers_by_api_ect_training_record_id ||= ::Teacher.all.index_by(&:api_ect_training_record_id)
-    @teachers_by_api_mentor_training_record_id ||= ::Teacher.all.index_by(&:api_mentor_training_record_id)
+    @teachers_by_trn = ::Teacher.all.index_by(&:trn)
+    @teachers_by_api_ect_training_record_id = ::Teacher.all.index_by(&:api_ect_training_record_id)
+    @teachers_by_api_mentor_training_record_id = ::Teacher.all.index_by(&:api_mentor_training_record_id)
 
     @cache_loads[:teachers] += 1
   end

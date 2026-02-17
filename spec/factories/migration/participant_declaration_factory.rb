@@ -5,7 +5,7 @@ FactoryBot.define do
     cohort { FactoryBot.create(:migration_cohort) }
 
     declaration_type { "started" }
-    declaration_date { Faker::Date.between(from: 2.years.ago, to: 1.day.ago) }
+    declaration_date { Time.zone.today }
     course_identifier { "ecf-induction" }
     evidence_held { "other" }
     state { "submitted" }
