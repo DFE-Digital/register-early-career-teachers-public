@@ -25,7 +25,7 @@
   tags:
     - api-update
   body: |
-    We've changed how delivery partner information is recorded on declarations in the register early career teachers (RECT) API. It now works the same way as the ‘Manage training for early career teachers’ service.
+    We've changed how delivery partner information is recorded on declarations in the register early career teachers (RECT) API. It now works the same way as the manage training for early career teachers service.
     
     ## What's changed
     
