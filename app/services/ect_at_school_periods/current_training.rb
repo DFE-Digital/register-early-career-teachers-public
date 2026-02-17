@@ -15,6 +15,10 @@ module ECTAtSchoolPeriods
       lead_provider || expression_of_interest_lead_provider
     end
 
+    def school_partnership?
+      school_partnership.present?
+    end
+
     # school_partnership
     delegate :school_partnership, to: :current_or_next_training_period, allow_nil: true
 

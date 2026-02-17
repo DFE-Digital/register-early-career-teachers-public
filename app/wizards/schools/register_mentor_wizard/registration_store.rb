@@ -52,6 +52,8 @@ module Schools
                to: :status
 
       delegate :expression_of_interest?, to: :ect_training_service
+      delegate :school_partnership?, to: :ect_training_service
+      delegate :delivery_partner_name, to: :ect_training_service, prefix: :ect
 
       def register!(author:)
         Schools::RegisterMentor.new(trs_first_name:,

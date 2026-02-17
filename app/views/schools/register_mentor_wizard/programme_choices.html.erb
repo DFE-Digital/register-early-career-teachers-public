@@ -18,6 +18,15 @@
       text: @mentor.ect_lead_provider.name,
     )
   end
+  
+  if @mentor.school_partnership?
+    summary_list.with_row do |row|
+      row.with_key(text: "Delivery partner")
+      row.with_value(
+        text: @mentor.ect_delivery_partner_name,
+      )
+    end
+  end
 end %>
 
 <% if @mentor.expression_of_interest? %>
