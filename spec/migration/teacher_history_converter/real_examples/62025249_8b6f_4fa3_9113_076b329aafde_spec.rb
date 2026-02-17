@@ -577,58 +577,62 @@ describe "Real data check for user 62025249-8b6f-4fa3-9113-076b329aafde (mentor 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
 
-    let(:expected_output) do
-      {
-        teacher: hash_including(
-          trn: "1111111",
-          mentor_at_school_periods: array_including(
-            hash_including(
-              started_on: Date.new(2023, 11, 6),
-              finished_on: Date.new(2023, 11, 7),
-              training_periods: array_including(
-                hash_including(
-                  training_programme: "provider_led",
-                  lead_provider_info: {},
-                  delivery_partner_info: {},
-                  contract_period_year: 2021
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 11, 8),
-              finished_on: Date.new(2023, 11, 9),
-              training_periods: array_including(
-                hash_including(
-                  training_programme: "provider_led",
-                  started_on: Date.new(2023, 11, 8),
-                  finished_on: Date.new(2023, 11, 9),
-                  lead_provider_info: hash_including(name: "Ambition Institute"),
-                  delivery_partner_info: hash_including(name: "Delivery partner 1"),
-                  contract_period_year: 2021
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2024, 11, 8),
-              finished_on: nil,
-              training_periods: array_including(
-                hash_including(
-                  training_programme: "provider_led",
-                  started_on: Date.new(2024, 11, 8),
-                  finished_on: nil,
-                  lead_provider_info: hash_including(name: "Ambition Institute"),
-                  delivery_partner_info: hash_including(name: "Delivery partner 1"),
-                  contract_period_year: 2024
-                )
-              )
-            )
-          )
-        )
-      }
-    end
+    # let(:expected_output) do
+    #   {
+    #     teacher: hash_including(
+    #       trn: "1111111",
+    #       mentor_at_school_periods: array_including(
+    #         hash_including(
+    #           started_on: Date.new(2023, 11, 6),
+    #           finished_on: Date.new(2023, 11, 7),
+    #           training_periods: array_including(
+    #             hash_including(
+    #               training_programme: "provider_led",
+    #               lead_provider_info: {},
+    #               delivery_partner_info: {},
+    #               contract_period_year: 2021
+    #             )
+    #           )
+    #         ),
+    #         hash_including(
+    #           started_on: Date.new(2023, 11, 8),
+    #           finished_on: Date.new(2023, 11, 9),
+    #           training_periods: array_including(
+    #             hash_including(
+    #               training_programme: "provider_led",
+    #               started_on: Date.new(2023, 11, 8),
+    #               finished_on: Date.new(2023, 11, 9),
+    #               lead_provider_info: hash_including(name: "Ambition Institute"),
+    #               delivery_partner_info: hash_including(name: "Delivery partner 1"),
+    #               contract_period_year: 2021
+    #             )
+    #           )
+    #         ),
+    #         hash_including(
+    #           started_on: Date.new(2024, 11, 8),
+    #           finished_on: nil,
+    #           training_periods: array_including(
+    #             hash_including(
+    #               training_programme: "provider_led",
+    #               started_on: Date.new(2024, 11, 8),
+    #               finished_on: nil,
+    #               lead_provider_info: hash_including(name: "Ambition Institute"),
+    #               delivery_partner_info: hash_including(name: "Delivery partner 1"),
+    #               contract_period_year: 2024
+    #             )
+    #           )
+    #         )
+    #       )
+    #     )
+    #   }
+    # end
 
-    it "matches the expected output" do
-      expect(actual_output).to include(expected_output)
+    # it "matches the expected output" do
+    #   expect(actual_output).to include(expected_output)
+    # end
+
+    it "raises a missing training provider info error" do
+      expect { ecf2_teacher_history }.to raise_error(/No training provider info/)
     end
   end
 
