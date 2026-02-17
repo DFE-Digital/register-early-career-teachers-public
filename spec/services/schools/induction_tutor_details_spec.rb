@@ -82,7 +82,7 @@ RSpec.describe Schools::InductionTutorDetails do
 
   describe "#wizard_path" do
     context "when the school has an unconfirmed induction tutor" do
-      let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
+      let(:school) { FactoryBot.create(:school, :with_unconfirmed_induction_tutor) }
 
       it "returns the confirm existing induction tutor wizard path" do
         expect(service.wizard_path).to eq("/school/induction-tutor/confirm-existing-induction-tutor/edit")
