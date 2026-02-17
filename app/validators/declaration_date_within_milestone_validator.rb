@@ -7,6 +7,7 @@ private
 
   def declaration_within_milestone(record)
     return if record.errors[:declaration_date].any?
+    return if record.errors[:declaration_type].any?
 
     return unless record.milestone && record.declaration_date.present?
 

@@ -53,6 +53,7 @@ private
 
   def evidence_type_is_valid_detailed_evidence_type(record)
     return if record.errors[:evidence_type].any?
+    return if record.errors[:declaration_type].any?
     return if record.evidence_type.blank?
 
     evidences = if record.training_period.for_ect?

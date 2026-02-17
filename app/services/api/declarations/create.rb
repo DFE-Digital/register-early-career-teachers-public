@@ -18,13 +18,17 @@ module API::Declarations
       message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
     validate :teacher_type_exists
+    validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }
+    validates :declaration_type, inclusion: {
+      in: Declaration.declaration_types.keys,
+      message: "Enter a valid declaration type."
+    }, allow_blank: true
     validates :declaration_date, presence: { message: "Enter a '#/declaration_date'." }
     validate :declaration_date_in_the_past
     validates :declaration_date,
               declaration_date_within_milestone: true,
               api_date_time_format: true,
               allow_blank: true
-    validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }
     validates :evidence_type, evidence_type: true
     validate :validate_only_started_or_completed_if_mentor
     validate :teacher_not_withdrawn_before_declaration_date
@@ -169,6 +173,7 @@ module API::Declarations
     end
 
     def validates_billable_slot_available
+      return if errors[:declaration_type].any?
       return unless training_period
       return unless existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
 
