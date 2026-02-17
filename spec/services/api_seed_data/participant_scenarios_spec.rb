@@ -21,6 +21,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
       FactoryBot.create_list(:lead_provider_delivery_partnership, 5, :for_year, lead_provider:, year: contract_period_2025.year)
     end
     FactoryBot.create_list(:appropriate_body, 5)
+    APISeedData::Contracts.new.plant
     APISeedData::Statements.new.plant
     APISeedData::Schools.new.plant
     APISeedData::SchoolPartnerships.new.plant

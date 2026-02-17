@@ -36,7 +36,6 @@ module Migrators
       active_lead_provider_id = find_active_lead_provider_id!(lead_provider_id:, contract_period_year:)
 
       statement.update!(
-        active_lead_provider_id:,
         contract_id: find_contract_id!(active_lead_provider_id, ecf_statement.contract_version, ecf_statement.sanitized_mentor_contract_version),
         month: Date::MONTHNAMES.find_index(ecf_statement.name.split[0]),
         year: ecf_statement.name.split[1],

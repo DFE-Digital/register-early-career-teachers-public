@@ -13,7 +13,7 @@ describe Migrators::ReconcileAdjustment do
       lead_provider = FactoryBot.create(:lead_provider, name: ecf_lp.name, ecf_id: ecf_lp.id)
       contract_period = FactoryBot.create(:contract_period, year: ecf_cohort.start_year)
       active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-      FactoryBot.create(:statement, api_id: migration_resource.id, lead_provider:, contract_period:, active_lead_provider:)
+      FactoryBot.create(:statement, api_id: migration_resource.id, active_lead_provider:)
     end
 
     def setup_failure_state
