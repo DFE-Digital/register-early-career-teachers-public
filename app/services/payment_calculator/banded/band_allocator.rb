@@ -36,10 +36,14 @@ module PaymentCalculator
 
     private
 
+      def declaration_types
+        (previous_declarations.pluck(:declaration_type) + declarations.pluck(:declaration_type)).uniq
+      end
+
       def build_band_allocations
         # Initialize band allocations for every (declaration_type, band) pair
-        allocations_by_declaration_types = Declaration.declaration_types.each_key.with_object({}) do |declaration_type, hash|
-          hash[declaration_type] = bands.map { |band| BandAllocation.new(band:, declaration_type:) }
+        allocations_by_declaration_types = declaration_types.index_with do |declaration_type|
+          bands.map { |band| BandAllocation.new(band:, declaration_type:) }
         end
 
         # Run allocate for each declaration type
