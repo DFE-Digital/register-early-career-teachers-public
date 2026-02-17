@@ -46,7 +46,12 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
     months = (1..12).to_a
     years = [registration_year, registration_year + 1]
 
-    years.product(months).map do |year, month|
+    years.product(months).each_with_index.map do |(year, month), index|
+      # Distribute contracts across statements evenly and in order, so if there are
+      # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
+      # second, and the final 1/3rd get the third.
+      contract_index = (index * alp.contracts.size) / (years.size * months.size)
+      contract = alp.contracts[contract_index]
       deadline_date = Date.new(year, month, 1).prev_day
       payment_date = Date.new(year, month, 25)
       fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
@@ -60,6 +65,7 @@ grouped_active_lead_providers.each do |lead_provider, active_lead_providers|
 
       FactoryBot.create(
         :statement,
+        contract:,
         active_lead_provider: alp,
         month:,
         year:,
