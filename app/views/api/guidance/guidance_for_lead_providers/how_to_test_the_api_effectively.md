@@ -72,18 +72,14 @@ The `X-With-Server-Date` header lets you simulate future dates, and therefore al
 
 It's only valid in the sandbox environment. Attempts to submit future declarations in the production environment (or without this header in sandbox) will be rejected as part of milestone validation.
 
-### How to use the header
-
 To test declaration submission functionality, include:
 
 - the header `X-With-Server-Date` as part of your declaration submission request
 - the value of your chosen date in ISO8601 Date with time and Timezone (RFC3339 format)
 
-For example:
+### Example
 
-```
-X-With-Server-Date: 2025-01-10T10:42:00Z
-```
+Make a declaration submission using this header: `X-With-Server-Date: 2027-01-10T10:42:00Z`
 
 ### Response
 
