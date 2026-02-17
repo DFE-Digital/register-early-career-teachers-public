@@ -1066,7 +1066,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
   add_foreign_key "contracts", "contract_banded_fee_structures", column: "banded_fee_structure_id"
-  add_foreign_key "contracts", "contract_flat_rate_fee_structures", column: "flat_rate_fee_structure_id"  
+  add_foreign_key "contracts", "contract_flat_rate_fee_structures", column: "flat_rate_fee_structure_id"
   add_foreign_key "contracts", "active_lead_providers"
   add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
