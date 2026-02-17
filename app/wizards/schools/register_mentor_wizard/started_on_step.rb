@@ -84,7 +84,7 @@ module Schools
       end
 
       def contract_period
-        @contract_period ||= ContractPeriod.containing_date(started_on_as_date)
+        @contract_period ||= ContractPeriod.containing_date_end_inclusive(started_on_as_date)
       end
     end
   end

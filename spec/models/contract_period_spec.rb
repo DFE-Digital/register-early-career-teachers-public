@@ -24,7 +24,7 @@ describe ContractPeriod do
       before { FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 2, 2)) }
 
       it "allows new records that do not overlap" do
-        non_overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 2, 3), finished_on: Date.new(2024, 3, 3))
+        non_overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 2, 2), finished_on: Date.new(2024, 3, 3))
         expect(non_overlapping).to be_valid
       end
 
@@ -54,8 +54,32 @@ describe ContractPeriod do
         expect(ContractPeriod.containing_date(Date.new(2024, 9, 1))).to eq(period)
       end
 
+      it "excludes the end date in the period" do
+        expect(ContractPeriod.containing_date(Date.new(2025, 8, 31))).to be_nil
+      end
+    end
+  end
+
+  describe ".containing_date_end_inclusive" do
+    let!(:period) do
+      FactoryBot.create(:contract_period, started_on: Date.new(2024, 9, 1), finished_on: Date.new(2025, 8, 31))
+    end
+
+    it "returns the contract_period containing the given date" do
+      expect(ContractPeriod.containing_date_end_inclusive(Date.new(2025, 1, 1))).to eq(period)
+    end
+
+    it "returns nil when no period contains the date" do
+      expect(ContractPeriod.containing_date_end_inclusive(Date.new(2023, 1, 1))).to be_nil
+    end
+
+    context "when the date is on the boundary of a period" do
+      it "includes the start date in the period" do
+        expect(ContractPeriod.containing_date_end_inclusive(Date.new(2024, 9, 1))).to eq(period)
+      end
+
       it "includes the end date in the period" do
-        expect(ContractPeriod.containing_date(Date.new(2025, 8, 31))).to eq(period)
+        expect(ContractPeriod.containing_date_end_inclusive(Date.new(2025, 8, 31))).to eq(period)
       end
     end
   end

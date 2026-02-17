@@ -195,7 +195,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       let(:start_date) { { 1 => period_2023.year, 2 => "07", 3 => "01" } }
 
       before do
-        allow(ContractPeriod).to receive(:containing_date).and_return(nil)
+        allow(ContractPeriod).to receive(:containing_date_end_inclusive).and_return(nil)
       end
 
       it "returns the cannot register ect yet step" do

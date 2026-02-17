@@ -32,6 +32,10 @@ class ContractPeriod < ApplicationRecord
     find_by(*date_in_range(date))
   end
 
+  def self.containing_date_end_inclusive(date)
+    find_by(*date_in_range_inclusive_start_inclusive_end(date))
+  end
+
   def self.current
     containing_date(Time.zone.today)
   end
