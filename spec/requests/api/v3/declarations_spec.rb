@@ -75,7 +75,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
           type: "participant-declaration",
           attributes: {
             participant_id: teacher.api_id,
-            declaration_type: "started",
+            declaration_type:,
             declaration_date: declaration_date.rfc3339,
             course_identifier:,
             evidence_held: "other"
@@ -83,6 +83,7 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
         }
       }
     end
+    let(:declaration_type) { "started" }
 
     %i[ect mentor].each do |teacher_type|
       context "for #{teacher_type}" do
@@ -93,6 +94,20 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
 
         it_behaves_like "a token authenticated endpoint", :post
         it_behaves_like "an API create endpoint"
+
+        context "when the `declaration_type` is invalid" do
+          let(:declaration_type) { "invalid" }
+
+          it "returns `unprocessable_content`" do
+            authenticated_api_post(path, params:)
+
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(parsed_response[:errors]).to contain_exactly(
+              title: "declaration_type",
+              detail: "Enter a valid declaration type."
+            )
+          end
+        end
       end
     end
   end
