@@ -227,7 +227,8 @@ module Migrators
         started_at: Time.zone.now,
         total_count:,
         processed_count: 0,
-        failure_count: 0
+        failure_count: 0,
+        completed_at: nil
       )
       log_info("Migration started")
     end
