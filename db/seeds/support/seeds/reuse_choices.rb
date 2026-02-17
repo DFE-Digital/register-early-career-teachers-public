@@ -273,7 +273,7 @@ module Seeds
     #
     def seed_previous_teacher_and_training!(school:, previous_year:, mode:, lead_provider:, delivery_partner_for_partnership:)
       previous_contract_period = ContractPeriod.find_by!(year: previous_year)
-      previous_schedule = Schedule.find_by!(contract_period: previous_contract_period, identifier: SCHEDULE_IDENTIFIER)
+      previous_schedule = Schedule.find_by!(contract_period_year: previous_year, identifier: SCHEDULE_IDENTIFIER)
       abp = matrix_appropriate_body_period
 
       teacher = FactoryBot.create(:teacher)
@@ -289,7 +289,9 @@ module Seeds
           school_reported_appropriate_body: abp
         )
 
-      InductionPeriod.find_or_create_by!(
+      ect_period.update!(school_reported_appropriate_body: abp) if ect_period.school_reported_appropriate_body_id != abp.id
+
+      induction_period = InductionPeriod.find_or_create_by!(
         teacher: ect_period.teacher,
         started_on: ect_period.started_on
       ) do |ip|
@@ -299,6 +301,8 @@ module Seeds
         ip.training_programme = "provider_led"
         ip.number_of_terms = 3
       end
+
+      induction_period.update!(appropriate_body_period: abp) if induction_period.appropriate_body_period_id != abp.id
 
       active_lead_provider =
         ActiveLeadProvider.find_or_create_by!(
