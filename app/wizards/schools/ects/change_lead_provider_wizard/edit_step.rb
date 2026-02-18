@@ -38,7 +38,7 @@ module Schools
 
         def contract_period
           @contract_period ||= ContractPeriod
-            .containing_date(ect_at_school_period.started_on)
+            .containing_date_end_inclusive(ect_at_school_period.started_on)
         end
 
         def current_lead_provider

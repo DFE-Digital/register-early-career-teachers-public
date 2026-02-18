@@ -32,7 +32,7 @@ module Schools
         end
 
         def contract_period
-          ContractPeriod.containing_date(ect_at_school_period.started_on)
+          ContractPeriod.containing_date_end_inclusive(ect_at_school_period.started_on)
         end
       end
     end
