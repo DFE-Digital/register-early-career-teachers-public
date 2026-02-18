@@ -9,37 +9,51 @@ RSpec.describe "Admin::Users" do
       sign_in_as(:dfe_user, user:)
     end
 
-    it "redirects GET /admin/users with an alert" do
+    it "returns unauthorised for GET /admin/users with the users access error message" do
       get admin_users_path
-      expect(response).to redirect_to(admin_path)
-      expect(flash[:alert]).to eq(error_message)
+
+      aggregate_failures do
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+        expect(response.body).to include(error_message)
+      end
     end
 
-    it "redirects GET /admin/users/new with an alert" do
+    it "returns unauthorised for GET /admin/users/new with the users access error message" do
       get new_admin_user_path
-      expect(response).to redirect_to(admin_path)
-      expect(flash[:alert]).to eq(error_message)
+
+      aggregate_failures do
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+        expect(response.body).to include(error_message)
+      end
     end
 
-    it "redirects POST /admin/users with an alert and does not create a user" do
+    it "returns unauthorised for POST /admin/users and does not create a user" do
       user_params = FactoryBot.attributes_for(:user)
 
       expect {
         post admin_users_path, params: { user: user_params }
       }.not_to change(User, :count)
 
-      expect(response).to redirect_to(admin_path)
-      expect(flash[:alert]).to eq(error_message)
+      aggregate_failures do
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+        expect(response.body).to include(error_message)
+      end
     end
 
-    it "redirects PATCH /admin/users/:id with an alert and does not update the user" do
+    it "returns unauthorised for PATCH /admin/users/:id and does not update the user" do
       user_record = FactoryBot.create(:user)
 
       patch admin_user_path(user_record), params: { user: { email: "hacked@example.com" } }
 
-      expect(response).to redirect_to(admin_path)
-      expect(flash[:alert]).to eq(error_message)
-      expect(user_record.reload.email).not_to eq("hacked@example.com")
+      aggregate_failures do
+        expect(response).to have_http_status(:unauthorized)
+        expect(response.body).to include("You are not authorised to access this page")
+        expect(response.body).to include(error_message)
+        expect(user_record.reload.email).not_to eq("hacked@example.com")
+      end
     end
   end
 
