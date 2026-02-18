@@ -1,10 +1,10 @@
-describe TeacherHistoryConverter::Cleaner::FixFirstStartDate do
+describe TeacherHistoryConverter::Cleaner::AdjustInitialInductionRecordStartDates do
   subject do
-    TeacherHistoryConverter::Cleaner::FixFirstStartDate.new(induction_records).induction_records
+    TeacherHistoryConverter::Cleaner::AdjustInitialInductionRecordStartDates.new(induction_records).induction_records
   end
 
-  let(:induction_records) { [first_induction_record, second_induction_record] }
   let(:second_induction_record) { FactoryBot.build(:ecf1_teacher_history_induction_record_row) }
+  let(:induction_records) { [first_induction_record, second_induction_record] }
 
   context "when there are no induction records" do
     let(:induction_records) { [] }
@@ -14,18 +14,18 @@ describe TeacherHistoryConverter::Cleaner::FixFirstStartDate do
     end
   end
 
-  context "when the first IR start date is later than the created_at" do
+  context "when the first IR start date is 2022-02-09" do
     let(:first_induction_record) do
       FactoryBot.build(
         :ecf1_teacher_history_induction_record_row,
-        start_date: 1.year.ago.to_date,
+        start_date: Date.new(2022, 2, 9),
         end_date: 6.months.ago.to_date,
         created_at: 2.years.ago
       )
     end
 
     it "overwrites the first induction record's start date with the created_at date" do
-      expect(subject[0].start_date).to eql(first_induction_record.created_at.to_date)
+      expect(subject[0].start_date).to eql(Date.new(2021, 9, 1))
     end
 
     it "doesn't change the second induction record's start date" do
@@ -33,11 +33,11 @@ describe TeacherHistoryConverter::Cleaner::FixFirstStartDate do
     end
   end
 
-  context "when the first IR start date is earlier than the created_at" do
+  context "when the first IR start date another date 2022-02-10" do
     let(:first_induction_record) do
       FactoryBot.build(
         :ecf1_teacher_history_induction_record_row,
-        start_date: 3.years.ago.to_date,
+        start_date: Date.new(2022, 2, 10),
         end_date: 6.months.ago.to_date,
         created_at: 2.years.ago
       )
