@@ -39,7 +39,7 @@ You’ll be the school’s point of contact for the ECTE. We share your name and
 
 You’ll be responsible for:
 
-- registering ECTs and mentors for training as part of their ECTE< 
+- registering ECTs and mentors for training as part of their ECTE 
 - managing ECT and mentor changes during ECTE
 
 We need this information to arrange the correct funding and access to training.
@@ -52,7 +52,7 @@ Find out what you need to do with our [setting up and managing early career teac
 
 You’ll need to use our [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/) service to register and manage changes.</p>
 
-To use the service, you’ll need a [DfE Sign-in](https://services.signin.education.gov.uk/) account with approved access to:</p>
+To use the service, you’ll need a [DfE Sign-in](https://services.signin.education.gov.uk/) account with approved access to:
 
 - your school (organisation)    
 - the register early career teachers service

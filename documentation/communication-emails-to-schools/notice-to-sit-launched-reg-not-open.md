@@ -39,9 +39,8 @@ DfE Sign-in is a single sign-on service that provides access to DfE services. Yo
 
 ### How DfE Sign-in works
 
- 1. Schools need to appoint a DfE Sign-in approver. This person verifies the identity of users before giving access to services. The approver is often the headteacher or administrator.   
+1. Schools need to appoint a DfE Sign-in approver. This person verifies the identity of users before giving access to services. The approver is often the headteacher or administrator.   
 2. Users who want access to DfE services need to create a DfE Sign-in account. They use their account to select their school and request access to services.
- </ul>
 
 You can get help with [DfE Sign-in](https://edd-help.signin.education.gov.uk/contact).
 
