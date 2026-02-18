@@ -116,4 +116,42 @@ describe Schools::ECTs::ChangeMentorWizard::LeadProviderStep do
       end
     end
   end
+
+  describe "#lead_providers_for_select" do
+    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
+    let!(:other_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
+    let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2026) }
+    let(:mentor_at_school_period) do
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :ongoing,
+        school:,
+        started_on:
+      )
+    end
+
+    context "when there are no active lead providers in contract period containing the mentor's start date" do
+      let(:started_on) { Date.new(2024, 6, 1) }
+
+      it "returns an empty array" do
+        expect(current_step.lead_providers_for_select).to be_empty
+      end
+    end
+
+    context "when there are active lead providers in contract period containing the mentor's start date" do
+      let(:started_on) { Date.new(2025, 6, 1) }
+
+      it "returns the active lead providers in the contract period" do
+        expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
+      end
+
+      context "when the mentor started on the last day of the contract period" do
+        let(:started_on) { Date.new(2026, 5, 31) }
+
+        it "returns the active lead providers in the contract period" do
+          expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
+        end
+      end
+    end
+  end
 end
