@@ -29,7 +29,7 @@ This is a reminder to tell us about ECT and mentor changes this term.
 - your school gets the correct funding   
 - early career teachers (ECTs) and mentors can get access to training and materials
 
-Tell us about changes with [register early career teacher](https://staging.register-early-career-teachers.education.gov.uk). 
+Tell us about changes with [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk). 
 
 ## What you need to tell us
 

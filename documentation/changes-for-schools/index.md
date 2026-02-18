@@ -1,8 +1,8 @@
 ---
-title: "Register early career teacher service: changes for schools"
+title: "Register early career teachers service: changes for schools"
 ---
 
-The launch of the register early career teacher service means a number of changes for schools. 
+The launch of the register early career teachers service means a number of changes for schools. 
 
 This page describes these changes.
 
