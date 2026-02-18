@@ -33,7 +33,7 @@ This table defines terms used throughout this guidance. For other contractual te
 | Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training. The mentor must be completely new to provider-led mentor training<br><br> |
 | Standard schedule | The default training schedule for ECTs completing a standard 2 year induction, or mentors completing a standard 1 year of training, starting in September, January or April |
 
-## Standard schedules and dates
+## How the service assigns standard schedules
 
 The service will assign a standard September, January or April schedule based on the date the ECT started at their school, or the date they were registered for training (if later).
 
@@ -56,7 +56,7 @@ We'll use the same date boundaries for mentors, based on when they're first regi
 
 For participants who started their training on or before 31 December 2024, refer to the guidance provided by contract management for those cohorts.
 
-## Non-standard schedules and dates
+## How the service assigns non-standard schedules
 
 ### Replacement mentor schedules
 
