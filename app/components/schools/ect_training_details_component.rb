@@ -37,7 +37,7 @@ module Schools
     end
 
     def withdrawn?
-      training_period&.training_status == :withdrawn
+      training_period&.status == :withdrawn
     end
 
     def withdrawn_training_details

@@ -120,7 +120,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   end
 
   def latest_training_status
-    latest_training_period&.training_status
+    latest_training_period&.status
   end
 
   def latest_lead_provider_name
