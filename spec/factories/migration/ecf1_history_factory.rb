@@ -229,6 +229,8 @@ FactoryBot.define do
     updated_at { 6.months.ago }
     states { [FactoryBot.build(:ecf1_teacher_history_profile_state_row)] }
     induction_records { [] }
+    ero_mentor { false }
+    ero_declarations { false }
 
     payments_frozen_cohort_start_year { nil }
 
@@ -240,6 +242,8 @@ FactoryBot.define do
           updated_at:,
           states:,
           induction_records:,
+          ero_mentor:,
+          ero_declarations:,
           payments_frozen_cohort_start_year:)
     end
   end
