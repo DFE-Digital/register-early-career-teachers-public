@@ -2,9 +2,9 @@ FactoryBot.define do
   factory(:statement) do
     transient do
       contract_period { FactoryBot.create(:contract_period) }
+      active_lead_provider { association(:active_lead_provider, contract_period:) }
     end
 
-    active_lead_provider { association(:active_lead_provider, contract_period:) }
     contract { association(:contract, :for_ittecf_ectp, active_lead_provider:) }
     api_id { SecureRandom.uuid }
     sequence(:month) { |n| ((n - 1) % 12) + 1 }
@@ -17,7 +17,15 @@ FactoryBot.define do
     output_fee
 
     initialize_with do
-      Statement.find_or_initialize_by(active_lead_provider:, month:, year:)
+      Statement
+        .joins(:contract)
+        .where(contracts: { active_lead_provider_id: active_lead_provider.id })
+        .find_or_initialize_by(
+          month:,
+          year:
+        ) do |statement|
+          statement.contract = contract
+        end
     end
 
     trait :open do

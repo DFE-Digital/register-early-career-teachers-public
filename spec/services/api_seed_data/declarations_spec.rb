@@ -19,6 +19,7 @@ RSpec.describe APISeedData::Declarations do
     allow(Logger).to receive(:new).with($stdout) { ignored_logger }
 
     APISeedData::ContractPeriods.new.plant
+    APISeedData::Contracts.new.plant
     APISeedData::Statements.new.plant
     APISeedData::SchedulesAndMilestones.new.plant
 
