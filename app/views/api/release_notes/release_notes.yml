@@ -23,7 +23,7 @@
 - title: Delivery partner now recorded on declaration submission
   date: 2026-02-16
   tags:
-    - api-update
+    - sandbox-release
   body: |
     We've changed how delivery partner information is recorded on declarations in the register early career teachers (RECT) API. It now works the same way as the manage training for early career teachers service.
     
