@@ -3,20 +3,11 @@ module Seeds
     BASE_URN = 9_100_100
     SCHEDULE_IDENTIFIER = "ecf-standard-september"
 
-    LEAD_PROVIDER_REUSABLE_NAME =
-      "Reuse – Lead Provider One"
-
-    LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME =
-      "Reuse – Lead Provider X (not available in target year)"
-
-    DELIVERY_PARTNER_REUSABLE_NAME =
-      "Reuse – Delivery Partner One"
-
-    DELIVERY_PARTNER_NOT_REUSABLE_NAME =
-      "Reuse – Delivery Partner Two"
-
-    PREFERRED_APPROPRIATE_BODY_NAME =
-      "Golden Leaf Teaching School Hub"
+    LEAD_PROVIDER_REUSABLE_NAME = "Reuse – Lead Provider One"
+    LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME = "Reuse – Lead Provider X (not available in target year)"
+    DELIVERY_PARTNER_REUSABLE_NAME = "Reuse – Delivery Partner One"
+    DELIVERY_PARTNER_NOT_REUSABLE_NAME = "Reuse – Delivery Partner Two"
+    PREFERRED_APPROPRIATE_BODY_NAME = "Golden Leaf Teaching School Hub"
 
     def initialize(contract_period_year:)
       @contract_period_year = contract_period_year
@@ -69,17 +60,13 @@ module Seeds
       years.each do |year|
         next if existing_by_year.key?(year)
 
-        Schedule.create!(
-          contract_period_year: year,
-          identifier: SCHEDULE_IDENTIFIER
-        )
+        Schedule.create!(contract_period_year: year, identifier: SCHEDULE_IDENTIFIER)
       end
     end
 
     def ensure_reference_data!
       LeadProvider.find_or_create_by!(name: LEAD_PROVIDER_REUSABLE_NAME)
       LeadProvider.find_or_create_by!(name: LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME)
-
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_REUSABLE_NAME)
       DeliveryPartner.find_or_create_by!(name: DELIVERY_PARTNER_NOT_REUSABLE_NAME)
     end
@@ -111,19 +98,20 @@ module Seeds
       matrix_appropriate_body_period
     end
 
+    def clear_attr!(record, attr_name)
+      record[attr_name] = nil if record.has_attribute?(attr_name)
+    end
+
     def matrix_appropriate_body_period
       @matrix_appropriate_body_period ||= begin
         abp = AppropriateBodyPeriod.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME)
 
-        abp.body_type = "teaching_school_hub" if abp.has_attribute?(:body_type) && abp.body_type != "teaching_school_hub"
-
-        if abp.has_attribute?(:dfe_sign_in_organisation_id) && abp.dfe_sign_in_organisation_id.present?
-          abp.dfe_sign_in_organisation_id = nil
+        if abp.has_attribute?(:body_type) && abp.body_type != "teaching_school_hub"
+          abp.body_type = "teaching_school_hub"
         end
 
-        if abp.has_attribute?(:appropriate_body_id) && abp.appropriate_body_id.present?
-          abp.appropriate_body_id = nil
-        end
+        clear_attr!(abp, :dfe_sign_in_organisation_id)
+        clear_attr!(abp, :appropriate_body_id)
 
         abp.save! if abp.changed?
         abp
@@ -208,10 +196,6 @@ module Seeds
     #
     # Scenario group 3 – previous programme NOT reusable in target year
     #
-    # Rules:
-    # - partnership NOT reusable: LP exists in target year BUT pairing does NOT
-    # - EOI NOT reusable: LP does NOT exist in target year (no ALP in target year)
-    #
     def seed_not_reusable_previous_scenarios!
       scenarios = [
         { offset: 9,  previous_year: 2024, type: :partnership },
@@ -229,8 +213,7 @@ module Seeds
 
     def seed_not_reusable_previous_scenario!(offset:, previous_year:, type:)
       label = "Reuse scenario – #{previous_year} #{type_label(type)} (not reusable)"
-      last_chosen_lead_provider =
-        type == :partnership ? reusable_lead_provider : lead_provider_not_available_in_target_year
+      last_chosen_lead_provider = type == :partnership ? reusable_lead_provider : lead_provider_not_available_in_target_year
 
       school = ensure_scenario_school!(
         offset:,
