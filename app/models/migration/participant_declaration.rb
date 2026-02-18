@@ -1,6 +1,6 @@
 module Migration
   class ParticipantDeclaration < Migration::Base
-    BILLABLE_STATES = %w[eligible payable paid voided].freeze
+    BILLABLE_STATES = %w[eligible payable paid].freeze
     REFUNDABLE_STATES = %w[awaiting_clawback clawed_back].freeze
 
     self.inheritance_column = :ignore
@@ -14,30 +14,25 @@ module Migration
     scope :not_superseded, -> { where(superseded_by_id: nil) }
     scope :not_ineligible, -> { where.not(state: "ineligible") }
 
+    # state
     def billable? = BILLABLE_STATES.include?(state)
-
-    def clawback_statement
-      refundable_line_item&.statement if refundable?
-    end
-
-    def clawback_status = refundable? ? state : "no_clawback"
-
-    def ect? = type == "ParticipantDeclaration::ECT"
-
-    def payment_statement
-      billable_line_item&.statement if refundable? || billable?
-    end
-
-    def payment_status
-      return "no_payment" if submitted?
-      return "paid" if refundable?
-
-      state
-    end
 
     def refundable? = REFUNDABLE_STATES.include?(state)
 
     def submitted? = state == "submitted"
+
+    # status
+    def clawback_status = refundable_line_item&.state || "no_clawback"
+
+    def payment_status = billable_line_item&.state || "no_payment"
+
+    # statements
+    def clawback_statement = refundable_line_item&.statement
+
+    def payment_statement = billable_line_item&.statement
+
+    # type predicates
+    def ect? = type == "ParticipantDeclaration::ECT"
 
   private
 

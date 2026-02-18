@@ -33,10 +33,10 @@ module Migrators
 
     def migrate_one!(participant_declaration:)
       training_period = training_period(participant_declaration:)
-
       declaration = ::Declaration
                       .find_or_initialize_by(api_id: participant_declaration.id,
                                              delivery_partner_when_created_id: training_period&.delivery_partner&.id)
+
       declaration.update!(api_updated_at: participant_declaration.updated_at,
                           created_at: participant_declaration.created_at,
                           clawback_statement_id: clawback_statement(participant_declaration:)&.id,
