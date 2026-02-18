@@ -1,6 +1,9 @@
 class TeacherHistoryConverter::Cleaner
-  def initialize(raw_induction_records)
+  attr_reader :induction_completion_date
+
+  def initialize(raw_induction_records, induction_completion_date: nil)
     @raw_induction_records = raw_induction_records
+    @induction_completion_date = induction_completion_date
   end
 
   def induction_records
@@ -18,6 +21,7 @@ private
       .then { fix_zero_day_periods(it) }
       .then { override_first_start_date_with_creation_date_if_earlier(it) }
       .then { override_first_start_date_for_induction_record_introduction(it) }
+      .then { snip_ongoing_records_to_induction_completion_date(it, induction_completion_date:) }
   end
 
   def remove_british_schools_overseas(induction_records)
@@ -50,5 +54,9 @@ private
 
   def override_first_start_date_for_induction_record_introduction(induction_records)
     TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction.new(induction_records).induction_records
+  end
+
+  def snip_ongoing_records_to_induction_completion_date(induction_records, induction_completion_date:)
+    TeacherHistoryConverter::Cleaner::SnipOngoingRecordsToInductionCompletionDate.new(induction_records, induction_completion_date:).induction_records
   end
 end
