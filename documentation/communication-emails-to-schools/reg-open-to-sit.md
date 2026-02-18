@@ -25,7 +25,7 @@ Hello ((sit_name)),
 
 We’re sending you this email as our records show that you’re the induction tutor for ((school_name)).
 
-You can now register early career teachers (ECTs) and mentors for the 2026-2027 academic year with [register early career teacher](https://staging.register-early-career-teachers.education.gov.uk). 
+You can now register early career teachers (ECTs) and mentors for the 2026-2027 academic year with [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk). 
 
 <p>To use the service you’ll need:</p>
 
