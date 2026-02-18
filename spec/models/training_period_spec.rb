@@ -1031,7 +1031,7 @@ describe TrainingPeriod do
   end
 
   describe "#training_status" do
-    subject(:status) { training_period.training_status }
+    subject(:status) { training_period.status }
 
     let(:training_period) { FactoryBot.build(:training_period, withdrawn_at:, deferred_at:) }
 
