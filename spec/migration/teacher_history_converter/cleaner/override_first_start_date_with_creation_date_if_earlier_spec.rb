@@ -1,6 +1,6 @@
-describe TeacherHistoryConverter::Cleaner::FixFirstStartDate do
+describe TeacherHistoryConverter::Cleaner::OverrideFirstStartDateWithCreationDateIfEarlier do
   subject do
-    TeacherHistoryConverter::Cleaner::FixFirstStartDate.new(induction_records).induction_records
+    TeacherHistoryConverter::Cleaner::OverrideFirstStartDateWithCreationDateIfEarlier.new(induction_records).induction_records
   end
 
   let(:induction_records) { [first_induction_record, second_induction_record] }
@@ -43,7 +43,7 @@ describe TeacherHistoryConverter::Cleaner::FixFirstStartDate do
       )
     end
 
-    it "overwrites the first induction record's start date with the created_at date" do
+    it "doesn't change the first induction record's start date" do
       expect(subject[0].start_date).to eql(first_induction_record.start_date)
     end
 
