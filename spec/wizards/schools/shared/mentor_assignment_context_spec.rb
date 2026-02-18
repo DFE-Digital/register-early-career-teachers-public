@@ -102,5 +102,15 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     it "returns only lead providers within the ECTs contract period" do
       expect(context.lead_providers_within_contract_period).to contain_exactly(lead_provider_1, lead_provider_2)
     end
+
+    context "when the ECT starts on the last day of the contract period" do
+      let(:ect_at_school_period) do
+        FactoryBot.create(:ect_at_school_period, school:, teacher: ect_teacher, started_on: Date.new(2025, 12, 31))
+      end
+
+      it "returns only lead providers within the ECTs contract period" do
+        expect(context.lead_providers_within_contract_period).to contain_exactly(lead_provider_1, lead_provider_2)
+      end
+    end
   end
 end
