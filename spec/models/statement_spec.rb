@@ -1,40 +1,42 @@
 describe Statement do
   describe "associations" do
-    it { is_expected.to belong_to(:active_lead_provider) }
+    it { is_expected.to have_one(:active_lead_provider).through(:contract) }
     it { is_expected.to have_many(:adjustments) }
     it { is_expected.to have_many(:payment_declarations).class_name("Declaration").inverse_of(:payment_statement) }
     it { is_expected.to have_many(:clawback_declarations).class_name("Declaration").inverse_of(:clawback_statement) }
     it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
-    it { is_expected.to belong_to(:contract).optional }
+    it { is_expected.to belong_to(:contract) }
   end
 
   describe "validations" do
     subject { FactoryBot.create(:statement) }
 
+    it { is_expected.to validate_presence_of(:contract).with_message("Contract is required") }
     it { is_expected.to validate_presence_of(:fee_type).with_message("Enter a fee type") }
     it { is_expected.to allow_values("output", "service").for(:fee_type).with_message("Fee type must be output or service") }
     it { is_expected.not_to allow_value(nil).for(:fee_type).with_message("Fee type must be output or service") }
     it { is_expected.to validate_numericality_of(:month).only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(12).with_message("Month must be a number between 1 and 12") }
     it { is_expected.to validate_numericality_of(:year).only_integer.is_greater_than_or_equal_to(2020).with_message("Year must be on or after 2020 and on or before #{described_class.maximum_year}") }
-    it { is_expected.to validate_uniqueness_of(:active_lead_provider_id).scoped_to(:year, :month).with_message("Statement with the same month and year already exists for the lead provider") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
 
-    describe "contract active lead provider consistency" do
-      subject(:statement) { FactoryBot.build(:statement, contract:, active_lead_provider:) }
+    describe "uniqueness of month and year for the same active lead provider" do
+      let(:active_lead_provider) { contract.active_lead_provider }
+      let(:contract) { FactoryBot.create(:contract) }
 
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-      let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+      before { FactoryBot.create(:statement, active_lead_provider:, month: 5, year: 2024) }
 
-      it { is_expected.to be_valid }
+      it "is not valid to create another statement with the same month and year for the same active lead provider" do
+        statement = described_class.new(contract:, month: 5, year: 2024)
+        expect(statement).not_to be_valid
+        expect(statement.errors[:base]).to include("Statement with the same month and year already exists for this active lead provider")
+      end
 
-      context "when the contract has a different active lead provider" do
-        let(:contract) { FactoryBot.create(:contract) }
-
-        it "returns an error" do
-          expect(subject).to be_invalid
-          expect(statement.errors[:contract]).to include("This contract must have the same active lead provider as the statement.")
-        end
+      it "is valid to create another statement with the same month and year for a different active lead provider" do
+        other_active_lead_provider = FactoryBot.create(:active_lead_provider)
+        other_contract = FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider)
+        statement = described_class.new(contract: other_contract, month: 5, year: 2024)
+        expect(statement).to be_valid
       end
     end
   end

@@ -62,9 +62,10 @@ describe Admin::StatementPresenter do
   end
 
   describe "#page_title" do
-    let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Some LP") }
-    let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, lead_provider:) }
-    let(:statement) { FactoryBot.build(:statement, active_lead_provider:, month: 5, year: 2023) }
+    let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+    let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+    let(:statement) { FactoryBot.build(:statement, contract:, month: 5, year: 2023) }
 
     it "returns the lead provider, month and year in a string" do
       expect(subject.page_title).to eql("Some LP - May 2023")
@@ -72,9 +73,10 @@ describe Admin::StatementPresenter do
   end
 
   describe "#lead_provider_name" do
-    let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Some LP") }
-    let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, lead_provider:) }
-    let(:statement) { FactoryBot.build(:statement, active_lead_provider:) }
+    let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+    let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+    let(:statement) { FactoryBot.build(:statement, contract:) }
 
     it "returns the lead provider name" do
       expect(subject.lead_provider_name).to eql("Some LP")
@@ -82,9 +84,10 @@ describe Admin::StatementPresenter do
   end
 
   describe "#contract_period_year" do
-    let(:contract_period) { FactoryBot.build(:contract_period, year: 2022) }
-    let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, contract_period:) }
-    let(:statement) { FactoryBot.build(:statement, active_lead_provider:) }
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2022) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+    let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+    let(:statement) { FactoryBot.build(:statement, contract:) }
 
     it "returns the lead provider name" do
       expect(subject.contract_period_year).to eql("2022")

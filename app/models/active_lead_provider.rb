@@ -4,10 +4,10 @@ class ActiveLeadProvider < ApplicationRecord
   has_many :lead_provider_delivery_partnerships
   has_many :school_partnerships, through: :lead_provider_delivery_partnerships
   has_many :delivery_partners, through: :lead_provider_delivery_partnerships
-  has_many :statements
   has_many :expressions_of_interest, class_name: "TrainingPeriod", foreign_key: "expression_of_interest_id", inverse_of: :expression_of_interest
   has_many :events
   has_many :contracts
+  has_many :statements, through: :contracts
 
   validates :contract_period_year,
             presence: { message: "Choose a contract period" },
