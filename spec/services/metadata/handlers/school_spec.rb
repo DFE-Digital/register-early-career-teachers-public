@@ -1,6 +1,6 @@
 RSpec.describe Metadata::Handlers::School do
   let(:instance) { described_class.new(school) }
-  let(:school) { FactoryBot.create(:school) }
+  let(:school) { FactoryBot.create(:school, create_contract_period: false) }
   let(:school_partnership) { FactoryBot.create(:school_partnership, school:) }
   let!(:lead_provider) { school_partnership.lead_provider }
   let!(:contract_period) { school_partnership.contract_period }

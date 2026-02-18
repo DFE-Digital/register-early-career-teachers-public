@@ -218,7 +218,6 @@ RSpec.describe School do
     end
 
     context "induction tutor" do
-      it { is_expected.to allow_value(nil).for(:induction_tutor_email) }
       it { is_expected.to allow_value("test@example.com").for(:induction_tutor_email) }
       it { is_expected.not_to allow_value("invalid_email").for(:induction_tutor_email) }
 
@@ -230,7 +229,7 @@ RSpec.describe School do
       end
 
       context "when induction_tutor_email and induction_tutor_name is blank" do
-        subject { FactoryBot.build(:school, induction_tutor_name: nil, induction_tutor_email: nil) }
+        subject { FactoryBot.build(:school, induction_tutor_name: nil, induction_tutor_email: nil, induction_tutor_last_nominated_in: nil) }
 
         it { is_expected.to be_valid }
       end
