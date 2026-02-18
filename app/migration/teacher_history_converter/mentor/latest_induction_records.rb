@@ -5,13 +5,14 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :states
+  attr_reader :trn, :profile_id, :induction_records, :states, :exclude_training_periods
 
-  def initialize(trn:, profile_id:, induction_records:, states:)
+  def initialize(trn:, profile_id:, induction_records:, states:, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @states = states
+    @exclude_training_periods = exclude_training_periods
   end
 
   # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
@@ -40,7 +41,9 @@ private
     first_school_period = mentor_at_school_periods.first
     started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date].compact.min
     finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date].compact.min
-    training_period = build_training_period(induction_record, { started_on:, finished_on: })
+
+    # we do not want to add training periods for ERO mentors (unless they have paid or clawed_back declarations)
+    training_period = build_training_period(induction_record, { started_on:, finished_on: }) unless exclude_training_periods
 
     mentor_at_school_periods.unshift(
       ECF2TeacherHistory::MentorAtSchoolPeriod.new(
