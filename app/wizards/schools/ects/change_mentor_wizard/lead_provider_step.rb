@@ -47,7 +47,7 @@ module Schools
 
         def contract_period
           @contract_period ||= ContractPeriod
-            .containing_date(selected_mentor_at_school_period.started_on)
+            .containing_date_end_inclusive(selected_mentor_at_school_period.started_on)
         end
 
         def lead_provider_for_ect_at_school_period
