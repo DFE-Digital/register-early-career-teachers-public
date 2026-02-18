@@ -50,8 +50,8 @@ module Admin
     def require_users_access!
       return if current_user&.dfe_user? && current_user.can_manage_users?
 
-      flash[:alert] = "This is to access internal user information for Register early career teachers. To gain access, contact the product team."
-      redirect_to admin_path
+      @unauthorised_context = :users
+      render "errors/unauthorised", status: :unauthorized
     end
   end
 end
