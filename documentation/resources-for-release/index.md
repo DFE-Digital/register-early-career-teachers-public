@@ -1,5 +1,5 @@
 ---
-title: Resources for release of Register ECTs
+title: Resources for release of register early career teachers service
 ---
 
 Resources to help support schools using the register early career teachers service.
