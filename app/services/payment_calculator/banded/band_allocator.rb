@@ -1,5 +1,5 @@
 module PaymentCalculator
-  module Banded
+  class Banded::BandAllocator
     # Allocates declaration counts into tiered pricing bands for a single
     # contract period and lead provider, broken down by declaration type.
     #
@@ -18,111 +18,109 @@ module PaymentCalculator
     # every statement up to and including the current one.
     #
     # Returns a Hash of { declaration_type => [BandAllocation, ...] }.
-    class BandAllocator
-      include ActiveModel::Model
-      include ActiveModel::Attributes
+    include ActiveModel::Model
+    include ActiveModel::Attributes
 
-      attribute :bands                  # ordered bands by min/max count
-      attribute :previous_declarations  # previous statements declarations
-      attribute :declarations           # current statements declarations
+    attribute :bands                  # ordered bands by min/max count
+    attribute :previous_declarations  # previous statements declarations
+    attribute :declarations           # current statements declarations
 
-      def band_allocations
-        @band_allocations ||= build_band_allocations
+    def band_allocations
+      @band_allocations ||= build_band_allocations
+    end
+
+    def allocations_for(declaration_type)
+      band_allocations.fetch(declaration_type)
+    end
+
+  private
+
+    def declaration_types
+      (previous_declarations.pluck(:declaration_type) + declarations.pluck(:declaration_type)).uniq
+    end
+
+    def build_band_allocations
+      # Initialize band allocations for every (declaration_type, band) pair
+      allocations_by_declaration_types = declaration_types.index_with do |declaration_type|
+        bands.map { |band| Banded::BandAllocation.new(band:, declaration_type:) }
       end
 
-      def allocations_for(declaration_type)
-        band_allocations.fetch(declaration_type)
+      # Run allocate for each declaration type
+      allocations_by_declaration_types.each do |declaration_type, allocations|
+        allocate_for_declaration_type(declaration_type, allocations)
       end
 
-    private
+      allocations_by_declaration_types
+    end
 
-      def declaration_types
-        (previous_declarations.pluck(:declaration_type) + declarations.pluck(:declaration_type)).uniq
+    def allocate_for_declaration_type(declaration_type, allocations)
+      # Step 1: Add previous billable declarations A-D
+      count = previous_billable_count(declaration_type)
+      add_previous_billable_to_bands(allocations, count)
+
+      # Step 2: Remove previous refundable declarations D-A
+      count = previous_refundable_count(declaration_type)
+      remove_previous_refundable_from_bands(allocations, count)
+
+      # Step 3: Add current billable declarations A-D
+      count = current_billable_count(declaration_type)
+      add_billable_to_bands(allocations, count)
+
+      # Step 4: Remove current refundable declarations D-A
+      count = current_refundable_count(declaration_type)
+      remove_refundable_from_bands(allocations, count)
+    end
+
+    def add_previous_billable_to_bands(allocations, count)
+      remaining = count
+      allocations.each do |allocation|
+        break if remaining.zero?
+
+        remaining -= allocation.add_previous_billable(remaining)
       end
+    end
 
-      def build_band_allocations
-        # Initialize band allocations for every (declaration_type, band) pair
-        allocations_by_declaration_types = declaration_types.index_with do |declaration_type|
-          bands.map { |band| BandAllocation.new(band:, declaration_type:) }
-        end
+    def remove_previous_refundable_from_bands(allocations, count)
+      remaining = count
+      allocations.reverse_each do |allocation|
+        break if remaining.zero?
 
-        # Run allocate for each declaration type
-        allocations_by_declaration_types.each do |declaration_type, allocations|
-          allocate_for_declaration_type(declaration_type, allocations)
-        end
-
-        allocations_by_declaration_types
+        remaining -= allocation.remove_previous_refundable(remaining)
       end
+    end
 
-      def allocate_for_declaration_type(declaration_type, allocations)
-        # Step 1: Add previous billable declarations A-D
-        count = previous_billable_count(declaration_type)
-        add_previous_billable_to_bands(allocations, count)
+    def add_billable_to_bands(allocations, count)
+      remaining = count
+      allocations.each do |allocation|
+        break if remaining.zero?
 
-        # Step 2: Remove previous refundable declarations D-A
-        count = previous_refundable_count(declaration_type)
-        remove_previous_refundable_from_bands(allocations, count)
-
-        # Step 3: Add current billable declarations A-D
-        count = current_billable_count(declaration_type)
-        add_billable_to_bands(allocations, count)
-
-        # Step 4: Remove current refundable declarations D-A
-        count = current_refundable_count(declaration_type)
-        remove_refundable_from_bands(allocations, count)
+        remaining -= allocation.add_billable(remaining)
       end
+    end
 
-      def add_previous_billable_to_bands(allocations, count)
-        remaining = count
-        allocations.each do |allocation|
-          break if remaining.zero?
+    def remove_refundable_from_bands(allocations, count)
+      remaining = count
+      allocations.reverse_each do |allocation|
+        break if remaining.zero?
 
-          remaining -= allocation.add_previous_billable(remaining)
-        end
+        remaining -= allocation.remove_refundable(remaining)
       end
+    end
 
-      def remove_previous_refundable_from_bands(allocations, count)
-        remaining = count
-        allocations.reverse_each do |allocation|
-          break if remaining.zero?
+    def previous_billable_count(declaration_type)
+      previous_declarations.billable.where(declaration_type:).count
+    end
 
-          remaining -= allocation.remove_previous_refundable(remaining)
-        end
-      end
+    def previous_refundable_count(declaration_type)
+      previous_declarations.refundable.where(declaration_type:).count
+    end
 
-      def add_billable_to_bands(allocations, count)
-        remaining = count
-        allocations.each do |allocation|
-          break if remaining.zero?
+    def current_billable_count(declaration_type)
+      declarations.billable.where(declaration_type:).count
+    end
 
-          remaining -= allocation.add_billable(remaining)
-        end
-      end
-
-      def remove_refundable_from_bands(allocations, count)
-        remaining = count
-        allocations.reverse_each do |allocation|
-          break if remaining.zero?
-
-          remaining -= allocation.remove_refundable(remaining)
-        end
-      end
-
-      def previous_billable_count(declaration_type)
-        previous_declarations.billable.where(declaration_type:).count
-      end
-
-      def previous_refundable_count(declaration_type)
-        previous_declarations.refundable.where(declaration_type:).count
-      end
-
-      def current_billable_count(declaration_type)
-        declarations.billable.where(declaration_type:).count
-      end
-
-      def current_refundable_count(declaration_type)
-        declarations.refundable.where(declaration_type:).count
-      end
+    def current_refundable_count(declaration_type)
+      declarations.refundable.where(declaration_type:).count
     end
   end
 end
