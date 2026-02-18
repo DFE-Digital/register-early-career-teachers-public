@@ -17,7 +17,7 @@ RSpec.describe APISeedData::SchoolPartnerships do
       FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
     end
     FactoryBot.create_list(:delivery_partner, 2)
-    FactoryBot.create_list(:school, 2)
+    FactoryBot.create_list(:school, 2, create_contract_period: false)
   end
 
   describe "#plant" do

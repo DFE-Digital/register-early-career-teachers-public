@@ -3,6 +3,19 @@ FactoryBot.define do
     urn { Faker::Number.unique.number(digits: 6) }
     independent
 
+    induction_tutor_name { "Induction Tutor" }
+    induction_tutor_email { "induction.tutor@st-trinians.org.uk" }
+
+    transient do
+      create_contract_period { true }
+    end
+
+    induction_tutor_last_nominated_in do
+      if create_contract_period
+        association(:contract_period, :current)
+      end
+    end
+
     initialize_with do
       School.find_or_initialize_by(urn:)
     end
@@ -62,7 +75,22 @@ FactoryBot.define do
 
     trait :with_induction_tutor do
       induction_tutor_name { "Induction Tutor" }
-      induction_tutor_email { "induction.tutor@a-very-nice-school.sch.uk" }
+      induction_tutor_email { "induction.tutor@st-trinians.org.uk" }
+      induction_tutor_last_nominated_in do
+        association(:contract_period, :current)
+      end
+    end
+
+    trait :with_unconfirmed_induction_tutor do
+      create_contract_period { false }
+      induction_tutor_last_nominated_in { nil }
+    end
+
+    trait :without_induction_tutor do
+      create_contract_period { false }
+      induction_tutor_name { nil }
+      induction_tutor_email { nil }
+      induction_tutor_last_nominated_in { nil }
     end
 
     trait :with_dsi do
