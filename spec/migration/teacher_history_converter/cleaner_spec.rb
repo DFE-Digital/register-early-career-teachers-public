@@ -8,8 +8,8 @@ describe TeacherHistoryConverter::Cleaner do
       TeacherHistoryConverter::Cleaner::ServiceStartDate,
       TeacherHistoryConverter::Cleaner::CorruptedDates,
       TeacherHistoryConverter::Cleaner::ZeroDay,
-      TeacherHistoryConverter::Cleaner::FixFirstStartDate,
-      TeacherHistoryConverter::Cleaner::AdjustInitialInductionRecordStartDates
+      TeacherHistoryConverter::Cleaner::OverrideFirstStartDateWithCreationDateIfEarlier,
+      TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction
     ]
   end
 

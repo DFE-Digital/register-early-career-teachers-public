@@ -11,14 +11,13 @@ private
 
   def clean!
     remove_british_schools_overseas(@raw_induction_records)
-      .then { |induction_records| remove_school_funded_fip(induction_records) }
-      .then { |induction_records| remove_independent_non_section_41(induction_records) }
-      .then { |induction_records| fix_service_start_dates(induction_records) }
-      .then { |induction_records| fix_corrupted_dates(induction_records) }
-      .then { |induction_records| fix_zero_day_periods(induction_records) }
-      .then { |induction_records| fix_first_start_date(induction_records) }
-      .then { |induction_records| fix_first_start_date(induction_records) }
-      .then { |induction_records| adjust_initial_induction_record_start_date(induction_records) }
+      .then { remove_school_funded_fip(it) }
+      .then { remove_independent_non_section_41(it) }
+      .then { fix_service_start_dates(it) }
+      .then { fix_corrupted_dates(it) }
+      .then { fix_zero_day_periods(it) }
+      .then { override_first_start_date_with_creation_date_if_earlier(it) }
+      .then { override_first_start_date_for_induction_record_introduction(it) }
   end
 
   def remove_british_schools_overseas(induction_records)
@@ -45,11 +44,11 @@ private
     TeacherHistoryConverter::Cleaner::ZeroDay.new(induction_records).induction_records
   end
 
-  def fix_first_start_date(induction_records)
-    TeacherHistoryConverter::Cleaner::FixFirstStartDate.new(induction_records).induction_records
+  def override_first_start_date_with_creation_date_if_earlier(induction_records)
+    TeacherHistoryConverter::Cleaner::OverrideFirstStartDateWithCreationDateIfEarlier.new(induction_records).induction_records
   end
 
-  def adjust_initial_induction_record_start_date(induction_records)
-    TeacherHistoryConverter::Cleaner::AdjustInitialInductionRecordStartDates.new(induction_records).induction_records
+  def override_first_start_date_for_induction_record_introduction(induction_records)
+    TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction.new(induction_records).induction_records
   end
 end

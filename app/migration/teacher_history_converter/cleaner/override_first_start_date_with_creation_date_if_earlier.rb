@@ -1,4 +1,4 @@
-class TeacherHistoryConverter::Cleaner::FixFirstStartDate
+class TeacherHistoryConverter::Cleaner::OverrideFirstStartDateWithCreationDateIfEarlier
   def initialize(raw_induction_records)
     @raw_induction_records = raw_induction_records
   end
