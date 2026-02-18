@@ -133,6 +133,8 @@ class ECF1TeacherHistory
   end
 
   def self.build_mentor_data(participant_profile:)
+    ero_check = EROMentorChecker.new(participant_profile:)
+
     Mentor.new(
       participant_profile_id: participant_profile.id,
       created_at: participant_profile.created_at,
@@ -141,7 +143,9 @@ class ECF1TeacherHistory
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_records(participant_profile:)
+      induction_records: build_induction_records(participant_profile:),
+      ero_mentor: ero_check.ero_mentor?,
+      ero_declarations: ero_check.ero_mentor_with_declarations?
     )
   end
 
