@@ -73,5 +73,16 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
         )
       end
     end
+
+    context "when leaving date is invalid" do
+      let(:leaving_on) { { 1 => 2025, 2 => 2, 3 => 30 } }
+
+      it "is invalid with the correct error message" do
+        expect(step).not_to be_valid
+        expect(step.errors[:leaving_on].map(&:squish)).to include(
+          "Enter the date in the correct format, for example 30 06 2001"
+        )
+      end
+    end
   end
 end

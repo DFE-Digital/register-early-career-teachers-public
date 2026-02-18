@@ -50,5 +50,14 @@ RSpec.describe Schools::Validation::LeavingDate do
         expect(validator.error_message).to be_blank
       end
     end
+
+    context "when the date is invalid" do
+      let(:date_as_hash) { { 1 => 2025, 2 => 2, 3 => 30 } }
+
+      it "is invalid with the missing message" do
+        expect(subject).not_to be_valid
+        expect(subject.error_message).to eq("Enter the date in the correct format, for example 30 06 2001")
+      end
+    end
   end
 end

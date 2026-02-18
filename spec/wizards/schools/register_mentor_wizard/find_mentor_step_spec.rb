@@ -48,7 +48,8 @@ describe Schools::RegisterMentorWizard::FindMentorStep, type: :model do
     end
 
     [
-      { 1 => "invalid", 2 => "02", 3 => "30" },
+      { 1 => "invalid", 2 => "02", 3 => "01" },
+      { 1 => "1981", 2 => "02", 3 => "30" },
       { 1 => "3000", 2 => "02", 3 => "15" },
       { 1 => (Date.current.year + 1).to_s, 2 => "02", 3 => "15" },
       nil,
