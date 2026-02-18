@@ -64,6 +64,25 @@ By default, the API returns up to 100 items per page. You need to test fetching 
 
 Try calling `GET /participants?page[per_page]=100&page[page]=2` to make sure your system correctly follows pagination links and doesn’t stop after the first batch.
 
+## Test declaration submissions using X-With-Server-Date
+
+`X-With-Server-Date` is a custom JSON header supported in the sandbox environment. It lets you test your integrations and ensure you're able to submit declarations for future milestone dates.
+
+The `X-With-Server-Date` header lets you simulate future dates, and therefore allows you to test declaration submissions for future milestone dates.
+
+It's only valid in the sandbox environment. Attempts to submit future declarations in the production environment (or without this header in sandbox) will be rejected as part of milestone validation.
+
+To test declaration submission functionality, include:
+
+- the header `X-With-Server-Date` as part of your declaration submission request
+- the value of your chosen date in ISO8601 Date with time and Timezone (RFC3339 format)
+
+### Example
+
+Make a declaration submission using this header: `X-With-Server-Date: 2027-01-10T10:42:00Z`
+
+[View more information on declaration states](https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/ecf/definitions-and-states/#declaration-states).
+
 ## Check seed data is adequate or request seed data that’s more tailored to your needs 
 
 Make sure the test data (seed data) in the sandbox fits what you need to test. If it doesn’t, ask DfE for adjustments. 
