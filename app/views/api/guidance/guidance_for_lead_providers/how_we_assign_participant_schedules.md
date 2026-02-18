@@ -1,10 +1,10 @@
 ---
-title: How we assign participant schedules
+title: Schedules and milestones guidance
 ---
 
 ## Purpose and scope of this guidance
 
-This guidance explains how schedules and milestone dates operate within the Register Early Career Teachers service.
+This guidance explains how schedules and milestone dates operate within the register early career teachers service.
 
 Schedules and milestone dates are contractually determined and owned by the Department for Education (DfE). This guidance should be read alongside the Payment Guidance issued by contract management, which remains the authoritative source for payment dates, liability, and contractual requirements.
 
@@ -21,17 +21,17 @@ This table defines terms used throughout this guidance. For other contractual te
 
 | Concept | Definition |
 | ------- | ---------- |
-| Milestone | Contractual retention periods during which providers must submit relevant declarations evidencing training delivery and participant retention |
-| Milestone dates | The deadline date a valid declaration can be made for a given milestone in order for DfE to be liable to make a payment the following month. Milestone dates are dependent on the participant's schedule |
-| Milestone period | The period of time between the milestone start date and deadline date. This period is also referred to as a declaration window |
-| Milestone validation | The API's process to validate declarations submitted by providers for participants in standard training schedules |
-| Output payment | The payment amount that DfE publishes on a finance statement, which is based on valid declarations |
-| Payment date | The date that DfE aims to process frozen statements by, so that payments can be made |
-| Schedule | Schedules are timed sequences of expected milestone and payment points.<br><br>These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor.<br><br>They are then updated and corrected by lead providers via the API.<br>Schedules give DfE information about how participants are being trained, and can also set the milestone periods when lead providers can submit declarations for |
-| Extended schedule | A non-standard training schedule for ECTs who expect to complete the induction over a period greater than 2 years.<br><br>Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body.<br><br>Mentors can also be assigned extended schedules if:<br><br>- they deferred their training and came back later<br><br>- they’re doing the training part-time |
-| Reduced schedule | A non-standard training schedule for ECTs who expect to complete the induction over a period less than 2 years. Examples include those with previous experience teaching. Mentors should not be placed on a reduced schedule |
-| Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training. The mentor must be completely new to provider-led mentor training<br><br> |
-| Standard schedule | The default training schedule for ECTs completing a standard 2 year induction, or mentors completing a standard 1 year of training, starting in September, January or April |
+| Milestone | Contractual retention periods during which providers must submit relevant declarations evidencing training delivery and participant retention. |
+| Milestone dates | The deadline date a valid declaration can be made for a given milestone in order for DfE to be liable to make a payment the following month. Milestone dates are dependent on the participant's schedule. |
+| Milestone period | The period of time between the milestone start date and deadline date. This period is also referred to as a declaration window. |
+| Milestone validation | The API's process to validate declarations submitted by providers for participants in standard training schedules. |
+| Output payment | The payment amount that DfE publishes on a finance statement, which is based on valid declarations. |
+| Payment date | The date that DfE aims to process frozen statements by, so that payments can be made. |
+| Schedule | Schedules are timed sequences of expected milestone and payment points.<br><br>These are set when new early career teachers or mentors are registered, based on when they are starting at a school, when they're registered, and if they're a replacement mentor.<br><br>They are then updated and corrected by lead providers via the API.<br><br>Schedules also give DfE information about how participants are being trained. |
+| Extended schedule | A non-standard training schedule for ECTs who expect to complete the induction over a period greater than 2 years.<br><br>Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body.<br><br>Mentors can also be assigned extended schedules if they deferred their training and came back later, or they’re doing the training part-time. |
+| Reduced schedule | A non-standard training schedule for ECTs who expect to complete the induction over a period less than 2 years. Examples include those with previous experience teaching.<br><br>Mentors should not be placed on a reduced schedule. |
+| Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training.<br><br>The mentor must be completely new to provider-led mentor training. |
+| Standard schedule | The default training schedule for ECTs completing a standard 2 year induction, or mentors completing a standard 1 year of training, starting in September, January or April. |
 
 ## How the service assigns standard schedules
 
