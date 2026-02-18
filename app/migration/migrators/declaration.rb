@@ -37,20 +37,22 @@ module Migrators
                       .find_or_initialize_by(api_id: participant_declaration.id,
                                              delivery_partner_when_created_id: training_period&.delivery_partner&.id)
 
-      declaration.update!(api_updated_at: participant_declaration.updated_at,
-                          created_at: participant_declaration.created_at,
-                          clawback_statement_id: clawback_statement(participant_declaration:)&.id,
-                          clawback_status: participant_declaration.clawback_status,
-                          declaration_date: participant_declaration.declaration_date,
-                          declaration_type: participant_declaration.declaration_type,
-                          evidence_type: participant_declaration.evidence_held,
-                          payment_statement_id: payment_statement(participant_declaration:)&.id,
-                          payment_status: participant_declaration.payment_status,
-                          pupil_premium_uplift: participant_declaration.pupil_premium_uplift,
-                          sparsity_uplift: participant_declaration.sparsity_uplift,
-                          training_period_id: training_period&.id,
-                          updated_at: participant_declaration.updated_at,
-                          voided_by_user_at: participant_declaration.voided_at)
+      declaration.assign_attributes(api_updated_at: participant_declaration.updated_at,
+                                    created_at: participant_declaration.created_at,
+                                    clawback_statement_id: clawback_statement(participant_declaration:)&.id,
+                                    clawback_status: participant_declaration.clawback_status,
+                                    declaration_date: participant_declaration.declaration_date,
+                                    declaration_type: participant_declaration.declaration_type,
+                                    evidence_type: participant_declaration.evidence_held,
+                                    payment_statement_id: payment_statement(participant_declaration:)&.id,
+                                    payment_status: participant_declaration.payment_status,
+                                    pupil_premium_uplift: participant_declaration.pupil_premium_uplift,
+                                    sparsity_uplift: participant_declaration.sparsity_uplift,
+                                    training_period_id: training_period&.id,
+                                    updated_at: participant_declaration.updated_at,
+                                    voided_by_user_at: participant_declaration.voided_at)
+
+      declaration.save!(context: :being_migrated)
     end
 
   private
