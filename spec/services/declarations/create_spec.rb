@@ -67,25 +67,38 @@ RSpec.describe Declarations::Create do
           expect(declaration).not_to be_payment_status_eligible
         end
 
-        if trainee_type == :ect
-          it "sets pupil premium and sparsity uplifts" do
-            teacher.update!("ect_pupil_premium_uplift": true, "ect_sparsity_uplift": true)
+        context "when pupil premium and sparsity uplifts are set on the teacher" do
+          before { teacher.update!(ect_pupil_premium_uplift: true, ect_sparsity_uplift: true) }
 
+          it "sets pupil premium and sparsity uplifts on the declaration" do
             declaration = create_declaration
 
             expect(declaration.reload.pupil_premium_uplift).to be(true)
             expect(declaration.reload.sparsity_uplift).to be(true)
           end
-        end
 
-        if trainee_type == :mentor
-          it "does not set pupil premium and sparsity uplifts" do
-            teacher.update!("ect_pupil_premium_uplift": true, "ect_sparsity_uplift": true)
+          context "when the declaration type is not started" do
+            let(:declaration_type) { "completed" }
 
-            declaration = create_declaration
+            it "does not set pupil premium and sparsity uplifts on the declaration" do
+              allow(Declarations::MentorCompletion).to receive(:new) { instance_double(Declarations::MentorCompletion, perform: nil) }
 
-            expect(declaration.reload.pupil_premium_uplift).to be(false)
-            expect(declaration.reload.sparsity_uplift).to be(false)
+              declaration = create_declaration
+
+              expect(declaration.reload.pupil_premium_uplift).to be(false)
+              expect(declaration.reload.sparsity_uplift).to be(false)
+            end
+          end
+
+          context "when the contract period does not have uplift fees enabled" do
+            before { contract_period.update!(uplift_fees_enabled: false) }
+
+            it "does not set pupil premium and sparsity uplifts on the declaration" do
+              declaration = create_declaration
+
+              expect(declaration.reload.pupil_premium_uplift).to be(false)
+              expect(declaration.reload.sparsity_uplift).to be(false)
+            end
           end
         end
 

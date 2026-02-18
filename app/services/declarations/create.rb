@@ -78,7 +78,8 @@ module Declarations
     end
 
     def update_uplifts!(declaration)
-      return unless declaration.for_ect?
+      return unless declaration.declaration_type_started?
+      return unless training_period.contract_period.uplift_fees_enabled?
 
       declaration.update!(
         pupil_premium_uplift: teacher.ect_pupil_premium_uplift,
