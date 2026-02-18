@@ -98,7 +98,6 @@ RSpec.describe Declarations::Clawback do
       end
 
       it "is invalid" do
-        # binding.irb
         expect(instance).to have_error(:next_available_output_fee_statement)
       end
 
