@@ -1,4 +1,4 @@
-class TeacherHistoryConverter::Cleaner::AdjustInitialInductionRecordStartDates
+class TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction
   INDUCTION_RECORD_INTRODUCTION_DATE = Date.new(2022, 2, 9).freeze
   REPLACEMENT_START_DATE = Date.new(2021, 9, 1).freeze
 

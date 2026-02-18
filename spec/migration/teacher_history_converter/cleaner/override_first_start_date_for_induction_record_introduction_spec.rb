@@ -1,6 +1,6 @@
-describe TeacherHistoryConverter::Cleaner::AdjustInitialInductionRecordStartDates do
+describe TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction do
   subject do
-    TeacherHistoryConverter::Cleaner::AdjustInitialInductionRecordStartDates.new(induction_records).induction_records
+    TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction.new(induction_records).induction_records
   end
 
   let(:second_induction_record) { FactoryBot.build(:ecf1_teacher_history_induction_record_row) }
