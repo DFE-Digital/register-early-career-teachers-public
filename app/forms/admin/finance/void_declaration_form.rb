@@ -10,6 +10,7 @@ module Admin
 
       validates :confirmed, acceptance: { message: "Confirm you want to void this declaration", allow_nil: false }
 
+      validate :declaration_voidable
       validate :clawback_statement_available, if: :paid_declaration?
 
       def void!
@@ -23,6 +24,12 @@ module Admin
       end
 
     private
+
+      def declaration_voidable
+        return if declaration.billable_or_changeable?
+
+        errors.add(:declaration, "This declaration cannot be voided")
+      end
 
       def paid_declaration?
         declaration&.payment_status_paid?
