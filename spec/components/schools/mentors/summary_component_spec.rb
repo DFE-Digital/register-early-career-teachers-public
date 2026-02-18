@@ -137,6 +137,42 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
       expect(rendered_content).not_to have_css(".govuk-summary-list__value", text: full_name(ect2_teacher))
     end
   end
+
+  it "shows a message saying mentor is not registered for training" do
+    render_inline(described_class.new(mentor:, school:))
+    expect(rendered_content).to have_text("#{full_name(mentor)} is not currently registered for ECTE mentor training with a lead provider")
+  end
+
+  context "when the mentor has training periods" do
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, mentor_at_school_period:, started_on: 1.week.ago) }
+    let!(:old_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, mentor_at_school_period:, started_on:, finished_on: 2.weeks.ago) }
+    let(:lead_provider_name) { training_period.school_partnership.lead_provider.name }
+
+    it "shows lead provider and delivery partner for the latest training period" do
+      render_inline(described_class.new(mentor:, school:))
+      expect(rendered_content).to have_text("#{full_name(mentor)} is registered for ECTE mentor training with:")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_css(".govuk-summary-list__row", text: "Delivery partner")
+    end
+
+    context "when the latest training period is deferred" do
+      let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :deferred, mentor_at_school_period:, started_on: 1.week.ago) }
+
+      it "shows withdrawn message" do
+        render_inline(described_class.new(mentor:, school:))
+        expect(rendered_content).to have_text("#{lead_provider_name} have told us that #{full_name(mentor)}'s ECTE mentor training is paused")
+      end
+    end
+
+    context "when the latest training period is withdrawn" do
+      let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, :withdrawn, mentor_at_school_period:, started_on: 1.week.ago) }
+
+      it "shows withdrawn message" do
+        render_inline(described_class.new(mentor:, school:))
+        expect(rendered_content).to have_text("#{lead_provider_name} have told us that #{full_name(mentor)} is not registered for ECTE mentor training with them")
+      end
+    end
+  end
 end
 
 def full_name(teacher)

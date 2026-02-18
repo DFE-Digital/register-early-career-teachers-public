@@ -25,10 +25,9 @@
         <p class="govuk-body">There are no mentors that match your search.</p>
 
       <% else %>
-
         <%= render Schools::Mentors::SummaryComponent.with_collection(@filtered_mentors, school: @school) %>
-        <%= govuk_pagination pagy: @pagy %>
 
+        <%= govuk_pagination pagy: @pagy %>
       <% end %>
     <% end %>
   </div>

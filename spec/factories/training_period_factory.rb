@@ -114,12 +114,16 @@ FactoryBot.define do
     end
 
     trait :withdrawn do
-      withdrawn_at { Faker::Date.between(from: started_on, to: (finished_on || Date.current)) }
+      started_on { period_start_date }
+      finished_on { period_end_date  }
+      withdrawn_at { Faker::Date.between(from: started_on, to: (period_end_date)) }
       withdrawal_reason { TrainingPeriod.withdrawal_reasons.values.sample }
     end
 
     trait :deferred do
-      deferred_at { Faker::Date.between(from: started_on, to: (finished_on || Date.current)) }
+      started_on { period_start_date }
+      finished_on { period_end_date  }
+      deferred_at { Faker::Date.between(from: started_on, to: (period_end_date)) }
       deferral_reason { TrainingPeriod.deferral_reasons.values.sample }
     end
   end

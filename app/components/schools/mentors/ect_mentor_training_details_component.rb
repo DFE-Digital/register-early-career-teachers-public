@@ -16,7 +16,20 @@ module Schools
       end
 
       def render?
-        ineligible_for_training? || mentor_training_period.present?
+        training_status != :finished
+      end
+
+      def show_list?
+        %i[active deferred].include?(training_status)
+      end
+
+      def training_status
+        return :completed if completed_reason?
+        return :started_not_completed if started_not_completed_reason?
+        return :not_registered if not_registered?
+        return :finished if finished?
+
+        latest_training_period.status
       end
 
       def ineligible_for_training?
@@ -24,10 +37,26 @@ module Schools
       end
 
       def completed_reason?
+        return unless ineligible_for_training?
+
         COMPLETED_REASONS.include?(teacher.mentor_became_ineligible_for_funding_reason)
       end
 
+      def not_registered?
+        latest_training_period.nil?
+      end
+
+      def finished?
+        return false if latest_training_period.status == :withdrawn
+        return false if latest_training_period.status == :deferred
+        return false unless latest_training_period.finished_on
+
+        latest_training_period.finished_on <= Date.current
+      end
+
       def started_not_completed_reason?
+        return unless ineligible_for_training?
+
         teacher.mentor_became_ineligible_for_funding_reason == "started_not_completed"
       end
 
@@ -35,29 +64,32 @@ module Schools
         teacher.mentor_became_ineligible_for_funding_on&.to_fs(:govuk)
       end
 
-      def mentor_training_period
-        @mentor_training_period ||= TrainingPeriod
-          .current_or_future
-          .provider_led_training_programme
-          .for_mentor(@mentor.id)
-          .order(:started_on)
-          .first
+      def latest_training_period
+        @latest_training_period ||= @mentor&.latest_training_period
       end
 
       def partnership_confirmed?
-        @partnership_confirmed ||= mentor_training_period&.school_partnership.present?
+        @partnership_confirmed ||= latest_training_period&.school_partnership.present?
       end
 
       def lead_provider_name
         if partnership_confirmed?
-          mentor_training_period&.lead_provider_name
+          latest_training_period&.lead_provider_name
         else
-          mentor_training_period&.expression_of_interest_lead_provider&.name
+          latest_training_period&.expression_of_interest_lead_provider&.name
         end
       end
 
+      def change_lead_provider_link
+        govuk_link_to("select a lead provider", schools_mentors_change_lead_provider_wizard_edit_path(@mentor))
+      end
+
       def delivery_partner_name
-        mentor_training_period&.delivery_partner_name
+        latest_training_period&.delivery_partner_name
+      end
+
+      def teacher_name
+        teacher_full_name(teacher)
       end
     end
   end
