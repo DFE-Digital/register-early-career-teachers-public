@@ -78,6 +78,53 @@ describe ECF1TeacherHistory do
       expect(history.mentor.participant_profile_id).to eq(mentor_profile.id)
     end
 
+    describe "ERO mentor attributes" do
+      let(:state) { :payable }
+      let!(:declaration) { FactoryBot.create(:migration_participant_declaration, participant_profile: mentor_profile, state:) }
+
+      context "when the mentor did not participate in the ECF1 ERO phase" do
+        it "the ero_mentor flag is not set" do
+          expect(history.mentor.ero_mentor).to be_falsey
+        end
+
+        it "does not set the ero_declarations flag" do
+          expect(history.mentor.ero_declarations).to be_falsey
+        end
+      end
+
+      context "when the mentor participated in ECF1 ERO phase" do
+        before do
+          FactoryBot.create(:migration_ecf_ineligible_participant, trn: teacher_profile.trn)
+        end
+
+        it "sets the ero_mentor flag" do
+          expect(history.mentor.ero_mentor).to be_truthy
+        end
+
+        context "when the mentor does not have any 'paid' or 'clawed_back' declarations" do
+          it "does not set the ero_declarations flag" do
+            expect(history.mentor.ero_declarations).to be_falsey
+          end
+        end
+
+        context "when the mentor does have 'paid' declarations" do
+          let(:state) { :paid }
+
+          it "sets the ero_declarations flag" do
+            expect(history.mentor.ero_declarations).to be_truthy
+          end
+        end
+
+        context "when the mentor does have 'clawed_back' declarations" do
+          let(:state) { :clawed_back }
+
+          it "sets the ero_declarations flag" do
+            expect(history.mentor.ero_declarations).to be_truthy
+          end
+        end
+      end
+    end
+
     describe "setting up induction records correctly" do
       describe "ECT induction records" do
         it "creates the right number" do
