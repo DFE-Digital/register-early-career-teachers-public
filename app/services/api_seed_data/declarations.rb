@@ -78,7 +78,7 @@ module APISeedData
           clawback_statement:,
           training_period:,
           mentorship_period:,
-          **uplifts(training_period:)
+          **uplifts(training_period:, declaration_type:)
         )
 
         next if existing_declarations.billable_or_changeable.where(declaration_type:).exists?
@@ -88,8 +88,8 @@ module APISeedData
       end
     end
 
-    def uplifts(training_period:)
-      return {} unless training_period.for_ect?
+    def uplifts(training_period:, declaration_type:)
+      return {} unless training_period.contract_period.uplift_fees_enabled? && declaration_type == "started"
 
       { sparsity_uplift: Faker::Boolean.boolean, pupil_premium_uplift: Faker::Boolean.boolean }
     end
