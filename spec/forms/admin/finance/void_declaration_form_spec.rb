@@ -26,6 +26,17 @@ RSpec.describe Admin::Finance::VoidDeclarationForm, type: :model do
       let(:confirmed) { "0" }
 
       it { is_expected.to be false }
+      it { expect(form).to have_error(:confirmed) }
+
+      include_examples "does not call the void service"
+      include_examples "does not call the clawback service"
+    end
+
+    context "when the declaration is not voidable" do
+      let(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+      it { is_expected.to be false }
+      it { expect(form).to have_error(:declaration) }
 
       include_examples "does not call the void service"
       include_examples "does not call the clawback service"
