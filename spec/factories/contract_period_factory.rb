@@ -26,6 +26,7 @@ FactoryBot.define do
     finished_on { Date.new(year.next, *FINISH_MONTH_AND_DAY) }
     mentor_funding_enabled { true }
     detailed_evidence_types_enabled { true }
+    uplift_fees_enabled { true }
 
     initialize_with do
       ContractPeriod.find_or_create_by(year:)
