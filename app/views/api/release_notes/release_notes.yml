@@ -62,7 +62,7 @@
     
     Historic declarations remain linked to the original `delivery_partner_id`, while future declarations use the new partnership record.
     
-    For more information, see the [partnerships guidance](link to guidance).
+    Read the [partnerships guidance](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/create-view-and-update-partnerships) for more information on creating, viewing, and updating partnerships.
     
 - title: Declaration endpoints added, completing the RECT API in sandbox
   date: 2026-01-19
