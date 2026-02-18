@@ -6,6 +6,14 @@ describe TeacherHistoryConverter::Cleaner::FixFirstStartDate do
   let(:induction_records) { [first_induction_record, second_induction_record] }
   let(:second_induction_record) { FactoryBot.build(:ecf1_teacher_history_induction_record_row) }
 
+  context "when there are no induction records" do
+    let(:induction_records) { [] }
+
+    it "returns an empty array without crashing" do
+      expect(subject).to eql([])
+    end
+  end
+
   context "when the first IR start date is later than the created_at" do
     let(:first_induction_record) do
       FactoryBot.build(
