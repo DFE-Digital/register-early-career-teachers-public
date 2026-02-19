@@ -16,12 +16,12 @@ private
     remove_british_schools_overseas(@raw_induction_records)
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
+      .then { snip_ongoing_records_to_induction_completion_date(it, induction_completion_date:) }
       .then { fix_service_start_dates(it) }
       .then { fix_corrupted_dates(it) }
       .then { fix_zero_day_periods(it) }
       .then { override_first_start_date_with_creation_date_if_earlier(it) }
       .then { override_first_start_date_for_induction_record_introduction(it) }
-      .then { snip_ongoing_records_to_induction_completion_date(it, induction_completion_date:) }
   end
 
   def remove_british_schools_overseas(induction_records)
