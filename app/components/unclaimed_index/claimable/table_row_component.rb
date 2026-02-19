@@ -7,11 +7,7 @@ module UnclaimedIndex
         ["Name", "TRN", "School name", "School start date", "Induction tutor email", "ITT provider", ""]
       end
 
-    private
-
-      def trs_initial_teacher_training_provider_name
-        ect_at_school_period.trs_initial_teacher_training_provider_name
-      end
+      delegate :trs_initial_teacher_training_provider_name, to: :ect_at_school_period
     end
   end
 end

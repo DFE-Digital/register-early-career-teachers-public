@@ -9,24 +9,13 @@ module UnclaimedIndex
 
     attr_reader :row, :ect_at_school_period
 
+    delegate :trn, to: :ect_at_school_period, prefix: :teacher
+    delegate :school_name, :school, :teacher, to: :ect_at_school_period
+    delegate :induction_tutor_email, to: :school
+    delegate :started_on, to: :ect_at_school_period, prefix: true
+
     def teacher_name
       Teachers::Name.new(ect_at_school_period.teacher).full_name
-    end
-
-    def teacher_trn
-      ect_at_school_period.trn
-    end
-
-    def school_name
-      ect_at_school_period.school_name
-    end
-
-    def period_started_on
-      ect_at_school_period.started_on&.to_fs(:govuk)
-    end
-
-    def induction_tutor_email
-      ect_at_school_period.school.induction_tutor_email
     end
   end
 end
