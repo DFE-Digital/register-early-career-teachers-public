@@ -29,10 +29,6 @@ module PaymentCalculator
       @band_allocations ||= build_band_allocations
     end
 
-    def allocations_for(declaration_type)
-      band_allocations.fetch(declaration_type)
-    end
-
   private
 
     def declaration_types

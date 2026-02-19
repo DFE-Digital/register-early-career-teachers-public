@@ -33,6 +33,6 @@ module PaymentCalculator
       @band_allocations ||= band_allocator.band_allocations.values.flatten
     end
 
-    delegate :bands, to: :banded_fee_structure
+    delegate :bands, to: :banded_fee_structure, private: true
   end
 end
