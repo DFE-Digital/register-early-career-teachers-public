@@ -127,10 +127,17 @@ module ECTHelper
     when "Exempt"
       govuk_tag(text: "Exempt", colour: "grey")
     else
-      if current_mentor_name(ect)
+      if current_mentor_name(ect).present?
         govuk_tag(text: "Registered", colour: "green")
       else
-        govuk_tag(text: "Mentor required", colour: "red")
+        teacher_name = teacher_full_name(ect.teacher)
+
+        safe_join(
+          [
+            govuk_tag(text: "Action required", colour: "red"),
+            tag.p("A mentor needs to be assigned to #{teacher_name}.", class: "govuk-body govuk-!-margin-top-2"),
+          ]
+        )
       end
     end
   end
