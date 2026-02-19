@@ -1,4 +1,9 @@
 class OTPSessionsController < ApplicationController
+  INTERNAL_ADMIN_EMAIL_DOMAINS = %w[
+    education.gov.uk
+    digital.education.gov.uk
+  ].freeze
+
   before_action :build_otp_form, except: %i[new request_code]
 
   def new
@@ -23,19 +28,23 @@ class OTPSessionsController < ApplicationController
   end
 
   def verify_code
-    if @otp_form.valid?(:verify)
-      clean_up_session
+    unless @otp_form.valid?(:verify)
+      render :request_code and return
+    end
 
-      session_manager.begin_session!(session_user)
+    if otp_access_blocked?
+      @otp_form.errors.add(:base, "This account is not enabled for migration testing")
+      render :request_code and return
+    end
 
-      if authenticated?
-        redirect_to(post_login_redirect_path)
-      else
-        session_manager.end_session!
-        redirect_to(otp_sign_in_path)
-      end
+    clean_up_session
+    session_manager.begin_session!(session_user)
+
+    if authenticated?
+      redirect_to(post_login_redirect_path)
     else
-      render :request_code
+      session_manager.end_session!
+      redirect_to(otp_sign_in_path)
     end
   end
 
@@ -65,11 +74,30 @@ private
   def session_user
     return otp_school_user if migration_and_urn?
 
-    Sessions::Users::DfEUser.new(email: @otp_form.email)
+    Sessions::Users::DfEUser.new(email: otp_user.email)
   end
 
   def migration_and_urn?
-    Rails.application.config.enable_migration_testing && Rails.env.migration? && otp_user&.urn.present?
+    migration_testing_enabled? && otp_user&.urn.present?
+  end
+
+  def otp_access_blocked?
+    return false unless migration_testing_enabled?
+    return false if otp_user&.urn.present?
+    return false if internal_admin_email?
+
+    true
+  end
+
+  def internal_admin_email?
+    domain = otp_user&.email.to_s.split("@", 2).last
+    return false if domain.blank?
+
+    INTERNAL_ADMIN_EMAIL_DOMAINS.include?(domain)
+  end
+
+  def migration_testing_enabled?
+    Rails.env.migration? && Rails.application.config.enable_migration_testing
   end
 
   def otp_school_user
