@@ -72,6 +72,49 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       expect(current_step.old_lead_provider_name)
         .to eq(old_lead_provider.name)
     end
+
+    context "when current training lead provider cannot be resolved" do
+      let(:withdrawn_lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:withdrawn_active_lead_provider) do
+        FactoryBot.create(
+          :active_lead_provider,
+          lead_provider: withdrawn_lead_provider,
+          contract_period:
+        )
+      end
+
+      let!(:training_period) do
+        tp = FactoryBot.create(
+          :training_period,
+          :ongoing,
+          :provider_led,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on,
+          expression_of_interest: withdrawn_active_lead_provider
+        )
+        tp.update!(
+          withdrawn_at: Time.zone.today,
+          withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
+        )
+        tp
+      end
+
+      before do
+        current_training = instance_double(ECTAtSchoolPeriods::CurrentTraining)
+
+        allow(ECTAtSchoolPeriods::CurrentTraining).to receive(:new)
+          .with(ect_at_school_period)
+          .and_return(current_training)
+
+        allow(current_training).to receive(:lead_provider_via_school_partnership_or_eoi)
+          .and_raise(ECTAtSchoolPeriods::NoTrainingPeriodError)
+      end
+
+      it "falls back to the withdrawn lead provider" do
+        expect(current_step.old_lead_provider_name).to eq(withdrawn_lead_provider.name)
+      end
+    end
   end
 
   describe "#new_lead_provider_name" do
