@@ -93,7 +93,7 @@ namespace :admin do
       collection do
         resources :statements, as: "finance_statements", only: %i[index show] do
           collection { post :choose }
-          member { post :authorise_payment }
+          resources :authorisations, only: %i[new create]
 
           resources :adjustments, only: %i[new create edit update destroy] do
             member { get :delete }
