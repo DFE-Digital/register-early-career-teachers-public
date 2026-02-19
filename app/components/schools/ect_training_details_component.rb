@@ -73,7 +73,7 @@ module Schools
     end
 
     def change_to_school_led_paragraph
-      ect_name = teacher_full_name(ect_at_school_period.teacher)
+      teacher_full_name(ect_at_school_period.teacher)
 
       tag.p(
         safe_join([
