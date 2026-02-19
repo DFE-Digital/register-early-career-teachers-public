@@ -39,7 +39,7 @@
 
       summary_list.with_row do |row|
         row.with_key { "Delivery partner" }
-        row.with_value { declaration.delivery_partner&.name || "No delivery partner recorded" }
+        row.with_value { declaration.delivery_partner_when_created.name }
       end
 
       summary_list.with_row do |row|

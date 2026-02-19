@@ -30,6 +30,13 @@ FactoryBot.define do
       end
     end
     declaration_type { Declaration.declaration_types.keys.first }
+    delivery_partner_when_created do
+      if training_period.present?
+        training_period.delivery_partner
+      else
+        association :delivery_partner
+      end
+    end
 
     trait :voided_by_user do
       payment_status { :voided }

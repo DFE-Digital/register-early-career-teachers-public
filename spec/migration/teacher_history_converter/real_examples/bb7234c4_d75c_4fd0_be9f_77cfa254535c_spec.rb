@@ -21,7 +21,8 @@ describe "Real data check for user bb7234c4-d75c-4fd0-be9f-77cfa254535c (one ECT
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2025, 10, 16, 12, 44, 59)
+            created_at: Time.zone.local(2025, 10, 16, 12, 44, 59),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           }
         ],
         induction_records: [

@@ -29,10 +29,10 @@ describe Declaration do
     it { is_expected.to belong_to(:training_period) }
     it { is_expected.to belong_to(:voided_by_user).class_name("User").optional }
     it { is_expected.to belong_to(:mentorship_period).optional }
+    it { is_expected.to belong_to(:delivery_partner_when_created).class_name("DeliveryPartner") }
     it { is_expected.to belong_to(:payment_statement).optional }
     it { is_expected.to belong_to(:clawback_statement).optional }
     it { is_expected.to have_one(:lead_provider).through(:training_period) }
-    it { is_expected.to have_one(:delivery_partner).through(:training_period) }
     it { is_expected.to have_one(:contract_period).through(:training_period) }
     it { is_expected.to have_one(:ect_at_school_period).through(:training_period) }
     it { is_expected.to have_one(:mentor_at_school_period).through(:training_period) }
@@ -57,6 +57,7 @@ describe Declaration do
     it { is_expected.to validate_inclusion_of(:clawback_status).in_array(described_class.clawback_statuses.keys).with_message("Choose a valid clawback status") }
     it { is_expected.to validate_inclusion_of(:evidence_type).in_array(described_class.evidence_types.keys).with_message("Choose a valid evidence type").allow_nil }
     it { is_expected.to validate_uniqueness_of(:api_id).with_message("API id already exists for another declaration").case_insensitive }
+    it { is_expected.to validate_presence_of(:delivery_partner_when_created).with_message("Delivery partner when the declaration was created must be specified") }
     it { is_expected.not_to validate_presence_of(:voided_by_user) }
     it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
@@ -286,6 +287,36 @@ describe Declaration do
     end
   end
 
+  describe "immutable delivery_partner_when_created_id" do
+    let(:delivery_partner_when_created) { FactoryBot.create(:delivery_partner) }
+
+    context "when creating a new record" do
+      let(:declaration) do
+        FactoryBot.build(:declaration, delivery_partner_when_created:)
+      end
+
+      it "assigns the delivery partner" do
+        expect { declaration.save! }.not_to raise_error
+        expect(declaration.delivery_partner_when_created)
+          .to eq(delivery_partner_when_created)
+      end
+    end
+
+    context "when updating an existing record" do
+      let(:other_delivery_partner) { FactoryBot.create(:delivery_partner) }
+      let(:declaration) do
+        FactoryBot.create(:declaration, delivery_partner_when_created:)
+      end
+
+      it "raises an error" do
+        expect { declaration.update!(delivery_partner_when_created: other_delivery_partner) }
+          .to raise_error(ActiveRecord::ReadonlyAttributeError)
+        expect(declaration.delivery_partner_when_created)
+          .to eq(delivery_partner_when_created)
+      end
+    end
+  end
+
   describe "scopes" do
     describe "payment and clawback status scopes" do
       let(:all_payment_traits) { %i[no_payment eligible payable paid voided awaiting_clawback clawed_back] }
@@ -353,6 +384,39 @@ describe Declaration do
       it "returns only mentor declarations" do
         expect(described_class.mentors).to include(mentor_declaration)
         expect(described_class.mentors).not_to include(ect_declaration)
+      end
+    end
+
+    describe ".with_declaration_types" do
+      let!(:started_declaration) { FactoryBot.create(:declaration, declaration_type: "started") }
+      let!(:completed_declaration) { FactoryBot.create(:declaration, declaration_type: "completed") }
+      let!(:retained_1_declaration) { FactoryBot.create(:declaration, declaration_type: "retained-1") }
+      let!(:extended_1_declaration) { FactoryBot.create(:declaration, declaration_type: "extended-1") }
+
+      context "with a single declaration type" do
+        it "returns declarations matching the given type" do
+          result = described_class.with_declaration_types("started")
+
+          expect(result).to include(started_declaration)
+          expect(result).not_to include(completed_declaration, retained_1_declaration)
+        end
+      end
+
+      context "with multiple declaration types" do
+        it "returns declarations matching any of the given types" do
+          result = described_class.with_declaration_types(%w[started completed])
+
+          expect(result).to include(started_declaration, completed_declaration)
+          expect(result).not_to include(retained_1_declaration, extended_1_declaration)
+        end
+      end
+
+      context "with no matching declarations" do
+        it "returns empty" do
+          result = described_class.with_declaration_types("retained-2")
+
+          expect(result).to be_empty
+        end
       end
     end
   end

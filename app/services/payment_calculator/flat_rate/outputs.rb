@@ -5,10 +5,11 @@ module PaymentCalculator
 
     attribute :declarations
     attribute :fee_per_declaration
+    attribute :fee_proportions
 
     def declaration_type_outputs
-      @declaration_type_outputs ||= Declaration.declaration_types.keys.map do |declaration_type|
-        FlatRate::DeclarationTypeOutput.new(declarations:, declaration_type:, fee_per_declaration:)
+      @declaration_type_outputs ||= declaration_types.map do |declaration_type|
+        FlatRate::DeclarationTypeOutput.new(declarations:, declaration_type:, fee_per_declaration:, fee_proportions:)
       end
     end
 
@@ -22,6 +23,12 @@ module PaymentCalculator
 
     def total_net_amount
       @total_net_amount ||= declaration_type_outputs.sum(&:total_net_amount)
+    end
+
+  private
+
+    def declaration_types
+      declarations.pluck("DISTINCT declaration_type")
     end
   end
 end

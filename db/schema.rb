@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_12_185120) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_12_230241) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -194,6 +194,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_185120) do
     t.datetime "updated_at", null: false
     t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
     t.bigint "active_lead_provider_id"
+    t.string "ecf_contract_version", default: "1.0.0", null: false
+    t.string "ecf_mentor_contract_version"
     t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"
     t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true, where: "(banded_fee_structure_id IS NOT NULL)"
     t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true, where: "(flat_rate_fee_structure_id IS NOT NULL)"
@@ -288,8 +290,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_185120) do
     t.boolean "pupil_premium_uplift", default: false, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.enum "payment_status", default: "no_payment", null: false, enum_type: "declaration_payment_statuses"
+    t.bigint "delivery_partner_when_created_id", null: false
     t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
+    t.index ["delivery_partner_when_created_id"], name: "index_declarations_on_delivery_partner_when_created_id"
     t.index ["mentorship_period_id"], name: "index_declarations_on_mentorship_period_id"
     t.index ["payment_statement_id"], name: "index_declarations_on_payment_statement_id"
     t.index ["training_period_id", "declaration_type", "payment_status"], name: "idx_unique_declarations", unique: true, where: "((payment_status = ANY (ARRAY['no_payment'::declaration_payment_statuses, 'eligible'::declaration_payment_statuses, 'payable'::declaration_payment_statuses, 'paid'::declaration_payment_statuses])) AND (clawback_status = 'no_clawback'::declaration_clawback_statuses))"
@@ -469,6 +473,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_185120) do
     t.date "fail_confirmation_sent_on"
     t.index ["appropriate_body_period_id"], name: "index_induction_periods_on_appropriate_body_period_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
+    t.index ["teacher_id"], name: "index_induction_periods_one_outcome_per_teacher", unique: true, where: "(outcome IS NOT NULL)"
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
@@ -1060,7 +1065,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_12_185120) do
   add_foreign_key "appropriate_bodies", "dfe_sign_in_organisations"
   add_foreign_key "appropriate_body_periods", "appropriate_bodies"
   add_foreign_key "contract_banded_fee_structure_bands", "contract_banded_fee_structures", column: "banded_fee_structure_id", on_delete: :cascade
+  add_foreign_key "contracts", "contract_banded_fee_structures", column: "banded_fee_structure_id"
+  add_foreign_key "contracts", "contract_flat_rate_fee_structures", column: "flat_rate_fee_structure_id"
   add_foreign_key "contracts", "active_lead_providers"
+  add_foreign_key "declarations", "delivery_partners", column: "delivery_partner_when_created_id"
   add_foreign_key "declarations", "statements", column: "clawback_statement_id"
   add_foreign_key "declarations", "statements", column: "payment_statement_id"
   add_foreign_key "declarations", "users", column: "voided_by_user_id"

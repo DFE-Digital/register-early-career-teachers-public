@@ -6,6 +6,7 @@ module PaymentCalculator
     attribute :statement
     attribute :flat_rate_fee_structure
     attribute :declaration_selector
+    attribute :fee_proportions
 
     def total_amount(with_vat: false)
       if with_vat
@@ -16,7 +17,7 @@ module PaymentCalculator
     end
 
     def outputs
-      @outputs ||= Outputs.new(declarations: filtered_declarations, fee_per_declaration:)
+      @outputs ||= Outputs.new(declarations: filtered_declarations, fee_per_declaration:, fee_proportions:)
     end
 
   private

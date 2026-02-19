@@ -52,7 +52,8 @@ describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2023, 9, 6, 15, 45, 0)
+            created_at: Time.zone.local(2023, 9, 6, 15, 45, 0),
+            cpd_lead_provider_id: ""
           },
           {
             state: "active",
