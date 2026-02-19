@@ -35,6 +35,7 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::CheckAnsw
 
   describe "#save!" do
     context "when the induction tutor details are confirmed as correct" do
+      
       before { store.are_these_details_correct = true }
 
       it "updates the school's induction tutor details and sets induction_tutor_last_nominated_in" do
@@ -79,6 +80,35 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::CheckAnsw
       it "sends a confirmation email" do
         expect { current_step.save! }
           .to have_enqueued_mail(Schools::InductionTutorConfirmationMailer, :confirmation)
+      end
+    end
+
+    context "on the last day of the contract period" do
+      around do |example|
+        travel_to current_contract_period.finished_on do
+          example.run
+        end
+      end
+
+      it "finds the contract period and saves to the database" do
+        expect(current_step.save!).to be_truthy
+      end
+
+      it "records an event linked to the correct contract period" do
+        freeze_time
+
+        expect(Events::Record)
+          .to receive(:record_school_induction_tutor_updated_event!)
+          .with(
+            author:,
+            school:,
+            old_name: school.induction_tutor_name,
+            new_name: induction_tutor_name,
+            new_email: induction_tutor_email,
+            contract_period_year: current_contract_period.year
+          )
+
+        current_step.save!
       end
     end
   end

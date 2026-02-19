@@ -40,6 +40,10 @@ class ContractPeriod < ApplicationRecord
     containing_date(Time.zone.today)
   end
 
+  def self.current_end_inclusive
+    containing_date_end_inclusive(Time.zone.today)
+  end
+
   def self.earliest_permitted_start_date
     return unless current
 
