@@ -92,9 +92,7 @@ private
   end
 
   def internal_admin_email?
-    domain = otp_user&.email.to_s.split("@", 2).last
-    return false if domain.blank?
-
+    domain = otp_user&.email.to_s.split("@", 2).last&.downcase
     INTERNAL_ADMIN_EMAIL_DOMAINS.include?(domain)
   end
 
