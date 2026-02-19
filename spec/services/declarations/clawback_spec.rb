@@ -52,7 +52,7 @@ RSpec.describe Declarations::Clawback do
 
     it "records an event" do
       expect(Events::Record)
-        .to receive(:record_teacher_declaration_clawed_back!)
+        .to receive(:record_teacher_declaration_awaiting_clawback!)
         .with(
           author:,
           teacher: declaration.training_period.teacher,
