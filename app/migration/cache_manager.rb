@@ -4,6 +4,7 @@ class CacheManager
   attr_reader :active_lead_providers_by_key, :delivery_partners_by_name,
               :lead_providers_by_name, :school_partnerships_by_key,
               :schools_by_urn, :statements_by_api_id, :teachers_by_trn,
+              :teachers_by_api_ect_training_record_id, :teachers_by_api_mentor_training_record_id,
               :lead_provider_delivery_partnerships_by_key, :lead_providers_by_ecf_id,
               :delivery_partners_by_api_id, :contract_periods_by_year
 
@@ -16,6 +17,8 @@ class CacheManager
     @schools_by_urn = {}
     @statements_by_api_id = {}
     @teachers_by_trn = {}
+    @teachers_by_api_ect_training_record_id = {}
+    @teachers_by_api_mentor_training_record_id = {}
     @lead_provider_delivery_partnerships_by_key = {}
     @lead_providers_by_ecf_id = {}
     @delivery_partners_by_api_id = {}
@@ -30,6 +33,8 @@ class CacheManager
   def clear_all_caches!
     @schools_by_urn.clear
     @teachers_by_trn.clear
+    @teachers_by_api_ect_training_record_id.clear
+    @teachers_by_api_mentor_training_record_id.clear
     @lead_providers_by_name.clear
     @delivery_partners_by_name.clear
     @active_lead_providers_by_key.clear
@@ -96,9 +101,11 @@ class CacheManager
   end
 
   def cache_teachers
-    return if @teachers_by_trn.present?
+    return if [@teachers_by_trn, @teachers_by_api_ect_training_record_id, @teachers_by_api_mentor_training_record_id].all?(&:present?)
 
     @teachers_by_trn = ::Teacher.all.index_by(&:trn)
+    @teachers_by_api_ect_training_record_id = ::Teacher.all.index_by(&:api_ect_training_record_id)
+    @teachers_by_api_mentor_training_record_id = ::Teacher.all.index_by(&:api_mentor_training_record_id)
 
     @cache_loads[:teachers] += 1
   end
@@ -148,6 +155,8 @@ class CacheManager
   # Single caching methods
   def cache_teacher(teacher)
     @teachers_by_trn[teacher.trn] = teacher
+    @teachers_by_api_ect_training_record_id[teacher.api_ect_training_record_id] = teacher
+    @teachers_by_api_mentor_training_record_id[teacher.api_mentor_training_record_id] = teacher
   end
 
   # Cache lookup methods with fallback to database
@@ -224,6 +233,30 @@ class CacheManager
     @cache_misses[:teachers] += 1
     teacher = ::Teacher.find_by(trn:)
     @teachers_by_trn[trn] = teacher if teacher
+    teacher
+  end
+
+  def find_teacher_by_api_ect_training_record_id(api_ect_training_record_id)
+    if @teachers_by_api_ect_training_record_id.key?(api_ect_training_record_id)
+      @cache_hits[:teachers] += 1
+      return @teachers_by_api_ect_training_record_id[api_ect_training_record_id]
+    end
+
+    @cache_misses[:teachers] += 1
+    teacher = ::Teacher.find_by(api_ect_training_record_id:)
+    @teachers_by_api_ect_training_record_id[api_ect_training_record_id] = teacher if teacher
+    teacher
+  end
+
+  def find_teacher_by_api_mentor_training_record_id(api_mentor_training_record_id)
+    if @teachers_by_api_mentor_training_record_id.key?(api_mentor_training_record_id)
+      @cache_hits[:teachers] += 1
+      return @teachers_by_api_mentor_training_record_id[api_mentor_training_record_id]
+    end
+
+    @cache_misses[:teachers] += 1
+    teacher = ::Teacher.find_by(api_mentor_training_record_id:)
+    @teachers_by_api_mentor_training_record_id[api_mentor_training_record_id] = teacher if teacher
     teacher
   end
 
@@ -330,7 +363,7 @@ class CacheManager
         lead_providers: @lead_providers_by_name.size,
         school_partnerships: @school_partnerships_by_key.size,
         schools: @schools_by_urn.size,
-        teachers: @teachers_by_trn.size,
+        teachers: @teachers_by_trn.size + @teachers_by_api_ect_training_record_id.size + @teachers_by_api_mentor_training_record_id.size,
         statements: @statements_by_api_id.size,
         lead_provider_delivery_partnerships: @lead_provider_delivery_partnerships_by_key.size,
         lead_providers_by_ecf_id: @lead_providers_by_ecf_id.size,

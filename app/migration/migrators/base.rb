@@ -143,6 +143,20 @@ module Migrators
       teacher
     end
 
+    def find_teacher_by_api_ect_training_record_id!(id)
+      teacher = cache_manager.find_teacher_by_api_ect_training_record_id(id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find Teacher with api_ect_training_record_id!: #{id}") unless teacher
+
+      teacher
+    end
+
+    def find_teacher_by_api_mentor_training_record_id!(id)
+      teacher = cache_manager.find_teacher_by_api_mentor_training_record_id(id)
+      raise(ActiveRecord::RecordNotFound, "Couldn't find Teacher with api_mentor_training_record_id!: #{id}") unless teacher
+
+      teacher
+    end
+
     def find_statement_by_api_id!(api_id)
       statement = cache_manager.find_statement_by_api_id(api_id)
       raise(ActiveRecord::RecordNotFound, "Couldn't find Statement with API ID: #{api_id}") unless statement
