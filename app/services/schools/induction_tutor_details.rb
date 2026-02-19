@@ -12,7 +12,7 @@ module Schools
       return if user.dfe_user_impersonating_school_user?
       return unless school
 
-      last_updated_year.blank? || last_updated_year < ContractPeriod.current.year
+      last_updated_year.blank? || last_updated_year < ContractPeriod.current_end_inclusive.year
     end
 
     def wizard_path
