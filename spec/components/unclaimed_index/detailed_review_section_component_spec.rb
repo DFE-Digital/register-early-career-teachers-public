@@ -21,16 +21,16 @@ RSpec.describe UnclaimedIndex::DetailedReviewSectionComponent, type: :component 
 
   it "displays the number of claimable ECT records" do
     expect(page).to have_css("h3", text: "5")
-    expect(page).to have_css(".govuk-body", text: "Check and claim ECT")
+    expect(page).to have_css(".govuk-caption-l", text: "Check and claim ECT")
   end
 
   it "displays the number of missing QTS records" do
     expect(page).to have_css("h3", text: "3")
-    expect(page).to have_css(".govuk-body", text: "No QTS")
+    expect(page).to have_css(".govuk-caption-l", text: "No QTS")
   end
 
   it "displays the number of records claimed by another appropriate body" do
     expect(page).to have_css("h3", text: "2")
-    expect(page).to have_css(".govuk-body", text: "Currently claimed by another AB")
+    expect(page).to have_css(".govuk-caption-l", text: "Currently claimed by another AB")
   end
 end
