@@ -7,6 +7,9 @@ RSpec.describe "Payment authorisation for statement" do
     when_i_visit_the_finance_statement_page
     and_i_click_authorise_for_payment_button
 
+    then_i_see_the_confirmation_form
+    and_i_confirm_authorisation
+
     then_i_see_payment_authorised_notice
     and_i_see_payment_authorised_text
     and_statement_is_payment_authorised
@@ -21,6 +24,15 @@ RSpec.describe "Payment authorisation for statement" do
   end
 
   def and_i_click_authorise_for_payment_button
+    page.get_by_role("link", name: "Authorise for payment").click
+  end
+
+  def then_i_see_the_confirmation_form
+    expect(page.get_by_text("Check and authorise statement for payment")).to be_visible
+  end
+
+  def and_i_confirm_authorisation
+    page.get_by_role("checkbox", name: "I confirm I've completed all assurance checks and I authorise payment").click
     page.get_by_role("button", name: "Authorise for payment").click
   end
 
