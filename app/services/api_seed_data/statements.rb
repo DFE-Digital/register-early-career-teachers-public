@@ -19,6 +19,9 @@ module APISeedData
 
       active_lead_providers_by_lead_provider.each do |lead_provider, active_lead_providers|
         statements = []
+        existing_statements = Statement
+          .joins(contract: :active_lead_provider)
+          .where(contract: { active_lead_provider: active_lead_providers })
 
         active_lead_providers.each do |active_lead_provider|
           years = years(active_lead_provider.contract_period.year)
@@ -36,7 +39,7 @@ module APISeedData
             contract_index = (index * active_lead_provider.contracts.size) / (years.size * MONTHS.size)
             contract = active_lead_provider.contracts[contract_index]
 
-            Statement.find_by(active_lead_provider:, month:, year:, deadline_date:) ||
+            existing_statements.find { |s| s.month == month && s.year == year && s.deadline_date == deadline_date } ||
               FactoryBot.create(:statement,
                                 active_lead_provider:,
                                 contract:,

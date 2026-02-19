@@ -8,11 +8,12 @@ describe TeacherHistoryConverter::Cleaner do
       TeacherHistoryConverter::Cleaner::ServiceStartDate,
       TeacherHistoryConverter::Cleaner::CorruptedDates,
       TeacherHistoryConverter::Cleaner::ZeroDay,
-      TeacherHistoryConverter::Cleaner::FixFirstStartDate
+      TeacherHistoryConverter::Cleaner::OverrideFirstStartDateWithCreationDateIfEarlier,
+      TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction
     ]
   end
 
-  it "calls both ServiceStartDate and CorruptedDates cleaners" do
+  it "calls all of the cleaner steps once" do
     cleaner_steps.each { allow(TeacherHistoryConverter::Cleaner::ServiceStartDate).to receive(:new).and_call_original }
     TeacherHistoryConverter::Cleaner.new(induction_records).induction_records
     cleaner_steps.each { expect(TeacherHistoryConverter::Cleaner::ServiceStartDate).to have_received(:new).once }

@@ -2,7 +2,7 @@
 title: Communication emails to schools
 ---
 
-Emails to schools in relation to the register early career teacher service.
+Emails to schools in relation to the register early career teachers service.
 
 ## Outside service
 
