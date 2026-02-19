@@ -17,7 +17,7 @@ module Schools
       end
 
       def current_contract_period
-        ContractPeriod.current
+        ContractPeriod.current_end_inclusive
       end
 
       def send_confirmation_email?

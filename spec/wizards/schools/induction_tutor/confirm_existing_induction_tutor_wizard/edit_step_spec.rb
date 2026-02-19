@@ -185,6 +185,19 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::EditStep 
 
         current_step.save!
       end
+
+      context "on the last day of the contract period" do
+        around do |example|
+          travel_to current_contract_period.finished_on do
+            example.run
+          end
+        end
+  
+        it "finds the contract period and saves to the database" do
+          current_step.save!
+          expect(school.reload.induction_tutor_last_nominated_in).to eq(current_contract_period)
+        end
+      end
     end
 
     context "when the user has changed the details" do
