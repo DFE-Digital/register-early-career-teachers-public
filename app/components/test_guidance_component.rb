@@ -20,6 +20,7 @@ class TestGuidanceComponent < ApplicationComponent
         "7000008 (teacher has failed their induction)",
         "7000009 (teacher is exempt from training)",
         "7000010 (teacher has failed their induction in Wales)",
+        "7000011 (teacher has been merged in TRS)",
       ]
     end
   end

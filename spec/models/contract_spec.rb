@@ -14,6 +14,7 @@ describe Contract do
     it { is_expected.to belong_to(:active_lead_provider) }
     it { is_expected.to belong_to(:banded_fee_structure).class_name("Contract::BandedFeeStructure").optional }
     it { is_expected.to belong_to(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").optional }
+    it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
     it { is_expected.to have_many(:statements).inverse_of(:contract) }
   end
 
@@ -37,6 +38,8 @@ describe Contract do
     context "when contract type is `ITTECF_ECTP`" do
       subject { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
+      it { is_expected.to validate_presence_of(:ecf_contract_version).with_message("ECF contract version must be provided for ITTECF_ECTP contracts") }
+      it { is_expected.to validate_presence_of(:ecf_mentor_contract_version).with_message("ECF mentor contract version must be provided for ITTECF_ECTP contracts") }
       it { is_expected.to validate_presence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be provided for ITTECF_ECTP contracts") }
       it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ITTECF_ECTP contracts") }
       it { is_expected.to validate_uniqueness_of(:flat_rate_fee_structure).with_message("Contract with the same flat rate fee structure already exists") }
@@ -46,6 +49,7 @@ describe Contract do
     context "when contract type is `ECF`" do
       subject { FactoryBot.create(:contract, :for_ecf) }
 
+      it { is_expected.to validate_presence_of(:ecf_contract_version).with_message("ECF contract version must be provided for ECF contracts") }
       it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ECF contracts") }
       it { is_expected.to validate_absence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be blank for ECF contracts") }
       it { is_expected.to validate_uniqueness_of(:banded_fee_structure).with_message("Contract with the same banded fee structure already exists") }

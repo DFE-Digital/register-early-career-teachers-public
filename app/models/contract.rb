@@ -9,6 +9,7 @@ class Contract < ApplicationRecord
 
   # Associations
   belongs_to :active_lead_provider
+  has_one :contract_period, through: :active_lead_provider
   belongs_to :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", optional: true
   belongs_to :banded_fee_structure, class_name: "Contract::BandedFeeStructure", optional: true
   has_many :statements, inverse_of: :contract
@@ -29,6 +30,8 @@ class Contract < ApplicationRecord
     validates :banded_fee_structure,
               presence: { message: "Banded fee structure must be provided for ITTECF_ECTP contracts" },
               uniqueness: { message: "Contract with the same banded fee structure already exists" }
+    validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ITTECF_ECTP contracts" }
+    validates :ecf_mentor_contract_version, presence: { message: "ECF mentor contract version must be provided for ITTECF_ECTP contracts" }
   end
 
   with_options if: :ecf_contract_type? do
@@ -37,5 +40,6 @@ class Contract < ApplicationRecord
     validates :banded_fee_structure,
               presence: { message: "Banded fee structure must be provided for ECF contracts" },
               uniqueness: { message: "Contract with the same banded fee structure already exists" }
+    validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ECF contracts" }
   end
 end

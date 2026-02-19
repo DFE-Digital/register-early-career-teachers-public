@@ -1,6 +1,6 @@
 RSpec.describe PaymentCalculator::FlatRate do
   subject(:flat_rate) do
-    described_class.new(statement:, flat_rate_fee_structure:, declaration_selector:)
+    described_class.new(statement:, flat_rate_fee_structure:, declaration_selector:, fee_proportions:)
   end
 
   let(:school_partnership) do
@@ -66,6 +66,7 @@ RSpec.describe PaymentCalculator::FlatRate do
   let(:declaration_selector) do
     ->(declarations) { declarations.select(&:for_mentor?) }
   end
+  let(:fee_proportions) { { started: 0.5, completed: 0.5 } }
 
   describe "#total_amount" do
     subject { flat_rate.total_amount(with_vat:) }
@@ -98,7 +99,8 @@ RSpec.describe PaymentCalculator::FlatRate do
             mentor_billable_declaration,
             mentor_refundable_declaration
           ),
-          fee_per_declaration: flat_rate_fee_structure.fee_per_declaration
+          fee_per_declaration: flat_rate_fee_structure.fee_per_declaration,
+          fee_proportions:
         )
 
       flat_rate.outputs

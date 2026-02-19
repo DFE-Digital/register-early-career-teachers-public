@@ -83,17 +83,20 @@ describe "Real data check for user c82e38f1-920b-4ad0-98a3-5d69ee7f7b83" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 8, 11, 11, 27, 20)
+            created_at: Time.zone.local(2022, 8, 11, 11, 27, 20),
+            cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 8, 11, 11, 27, 20)
+            created_at: Time.zone.local(2022, 8, 11, 11, 27, 20),
+            cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
           },
           {
             state: "withdrawn",
             reason: "switched-to-school-led",
-            created_at: Time.zone.local(2024, 1, 8, 11, 40, 7)
+            created_at: Time.zone.local(2024, 1, 8, 11, 40, 7),
+            cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
           }
         ]
       }
@@ -121,7 +124,9 @@ describe "Real data check for user c82e38f1-920b-4ad0-98a3-5d69ee7f7b83" do
                   finished_on: nil,
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
-                  contract_period_year: 2022
+                  contract_period_year: 2022,
+                  withdrawn_at: Time.zone.local(2024, 1, 8, 11, 40, 7),
+                  withdrawal_reason: "switched_to_school_led"
                 )
               )
             )

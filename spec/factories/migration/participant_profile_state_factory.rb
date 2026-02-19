@@ -16,7 +16,7 @@ FactoryBot.define do
 
     trait :withdrawn do
       state { "withdrawn" }
-      reason { "mistake" }
+      reason { "left-teaching-profession" }
     end
   end
 end

@@ -98,11 +98,13 @@ RSpec.describe Teachers::Details::CurrentInductionPeriodComponent, type: :compon
                               teacher:,
                               appropriate_body_period:,
                               started_on: 6.months.ago,
+                              finished_on: 3.months.ago,
+                              number_of_terms: 3,
                               outcome: "pass",
                               induction_programme: "cip")
           end
 
-          it { expect(page).to have_link("Edit") }
+          it { expect(page).not_to have_link("Edit") }
         end
       end
 

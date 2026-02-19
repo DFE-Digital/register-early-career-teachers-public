@@ -3,12 +3,14 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
     described_class.new(
       declarations: Declaration.all,
       declaration_type:,
-      fee_per_declaration:
+      fee_per_declaration:,
+      fee_proportions:
     )
   end
 
   let(:fee_per_declaration) { 100.0 }
   let(:declaration_type) { "started" }
+  let(:fee_proportions) { { started: 0.25, completed: 0.75 } }
 
   before do
     traits = %i[no_payment eligible payable paid voided awaiting_clawback clawed_back]
@@ -33,20 +35,20 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
   end
 
   describe "#total_billable_amount" do
-    it "returns billable_count multiplied by fee_per_declaration" do
-      expect(output.total_billable_amount).to eq(3 * 100.0)
+    it "returns billable_count multiplied by fee_per_declaration and fee proportion" do
+      expect(output.total_billable_amount).to eq(3 * 100.0 * 0.25)
     end
   end
 
   describe "#total_refundable_amount" do
-    it "returns refundable_count multiplied by fee_per_declaration" do
-      expect(output.total_refundable_amount).to eq(2 * 100.0)
+    it "returns refundable_count multiplied by fee_per_declaration and fee proportion" do
+      expect(output.total_refundable_amount).to eq(2 * 100.0 * 0.25)
     end
   end
 
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
-      expect(output.total_net_amount).to eq(100.0)
+      expect(output.total_net_amount).to eq(25.0)
     end
   end
 
@@ -57,6 +59,26 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
       expect(output.total_billable_amount).to eq(0.0)
       expect(output.total_refundable_amount).to eq(0.0)
       expect(output.total_net_amount).to eq(0.0)
+    end
+  end
+
+  context "when a fee proportion is not set for a declaration type" do
+    let(:fee_proportions) { { "completed": 0.5, "retained-1": 0.5 } }
+
+    it "raises a DeclarationTypeNotSupportedError" do
+      expect {
+        output.total_net_amount
+      }.to raise_error(described_class::DeclarationTypeNotSupportedError).with_message("No fee proportion defined for declaration type: #{declaration_type}")
+    end
+  end
+
+  context "when fee proportions are inconsistent" do
+    let(:fee_proportions) { { "started": 0.5, "completed": 0.6 } }
+
+    it "raises a FeeProportionsInconsistencyError" do
+      expect {
+        output.total_net_amount
+      }.to raise_error(described_class::FeeProportionsInconsistencyError).with_message("Fee proportions are inconsistent. Sum of proportions must be 1.")
     end
   end
 end
