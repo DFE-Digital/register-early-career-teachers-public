@@ -121,8 +121,19 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       expect(page).to have_link("select a lead provider")
     end
 
+    it "links 'select a lead provider' to the change lead provider journey start" do
+      expect(page).to have_link(
+        "select a lead provider",
+        href: schools_ects_change_lead_provider_wizard_edit_path(ect_id: ect_at_school_period.id)
+      )
+    end
+
     it "shows a link to change programme type to school-led" do
       expect(page).to have_link("changing their programme type to school-led")
+    end
+
+    it "links 'changing their programme type to school-led' to the change training programme journey start" do
+      expect(page).to have_link("changing their programme type to school-led", href: schools_ects_change_training_programme_wizard_edit_path(ect_id: ect_at_school_period.id))
     end
 
     it "does not render the normal summary list" do
@@ -157,6 +168,35 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     it "still shows lead provider and delivery partner rows" do
       expect(page).to have_summary_list_row("Lead provider")
       expect(page).to have_summary_list_row("Delivery partner")
+    end
+
+    context "when the latest training period is an expression of interest only" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on,
+          finished_on: nil,
+          deferred_at: Time.zone.today,
+          deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+        ) do |tp|
+          tp.school_partnership = nil
+          tp.expression_of_interest = FactoryBot.create(:active_lead_provider)
+        end
+      end
+
+      it "shows lead provider information with awaiting confirmation status" do
+        expect(page).to have_summary_list_row("Lead provider")
+        expect(page).to have_text("Awaiting confirmation by")
+      end
+
+      it "shows the delivery partner fallback text" do
+        expect(page).to have_summary_list_row(
+          "Delivery partner",
+          value: "Yet to be reported by the lead provider"
+        )
+      end
     end
   end
 

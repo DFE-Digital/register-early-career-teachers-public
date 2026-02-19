@@ -29,22 +29,19 @@ module Schools
 
     def withdrawn_or_deferred_message_text
       return unless withdrawn? || deferred?
+      return if training_period.blank?
 
-      subject, verb = lead_provider_subject_and_verb
-      name = teacher_full_name(@ect.teacher)
+      teacher_name = teacher_full_name(@ect.teacher)
 
       if withdrawn?
-        "#{subject} #{verb} told us that #{name} is no longer training with them. Contact them if you think this is an error."
+        training_period_withdrawn_message_text(teacher_name:, training_period:)
       else
-        "#{subject} #{verb} told us that #{name}'s training is paused. Contact them if you think this is an error."
+        training_period_deferred_message_text(teacher_name:, training_period:)
       end
     end
 
-    def lead_provider_subject_and_verb
-      lead_provider_name = @ect.latest_lead_provider_name
-      subject = lead_provider_name.presence || "The lead provider"
-      verb = lead_provider_name.present? ? "have" : "has"
-      [subject, verb]
+    def training_period
+      @training_period ||= @ect.latest_training_period
     end
 
     def training_status
