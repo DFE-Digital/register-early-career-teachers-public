@@ -78,6 +78,29 @@ RSpec.describe Schools::InductionTutorDetails do
         expect(service).not_to be_update_required
       end
     end
+
+    context "when it is the last day of the current contract period" do
+      let(:school) { FactoryBot.create(:school, :with_unconfirmed_induction_tutor) }
+      let(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
+
+      before do
+        previous_contract_period = FactoryBot.create(:contract_period, :previous)
+
+        school.update!(induction_tutor_last_nominated_in: previous_contract_period,
+                       induction_tutor_name: "Alastair Sim",
+                       induction_tutor_email: "alastair.sim@st-trinians.org.uk")
+      end
+
+      around do |example|
+        travel_to(current_contract_period.finished_on) do
+          example.run
+        end
+      end
+
+      it "returns true" do
+        expect(service).to be_update_required
+      end
+    end
   end
 
   describe "#wizard_path" do
