@@ -16,10 +16,10 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
   let(:current_declaration_ids) { [] }
   let(:previous_declaration_ids) { [] }
 
-  describe "#band_allocations" do
+  describe "#band_allocations_by_declaration_type" do
     context "with no declarations" do
       it "returns an empty hash when no declaration types are present" do
-        expect(allocator.band_allocations).to eq({})
+        expect(allocator.band_allocations_by_declaration_type).to eq([])
       end
     end
 
@@ -28,7 +28,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_declarations.map(&:id) }
 
       it "allocates entirely to band A" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         expect(started[0].billable_count).to eq(1)
         expect(started[1].billable_count).to eq(0)
@@ -41,7 +41,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_declarations.map(&:id) }
 
       it "fills band A to capacity then overflows to band B" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         expect(started[0].billable_count).to eq(2)
         expect(started[1].billable_count).to eq(1)
@@ -57,7 +57,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_declarations.map(&:id) }
 
       it "places current billable into remaining capacity" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         expect(started[0]).to have_attributes(previous_billable_count: 1, billable_count: 1)
         expect(started[1]).to have_attributes(previous_billable_count: 0, billable_count: 1)
@@ -73,7 +73,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_declarations.map(&:id) }
 
       it "drains refundable from band B before band A" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         expect(started[0]).to have_attributes(previous_billable_count: 2, refundable_count: 1)
         expect(started[1]).to have_attributes(previous_billable_count: 1, refundable_count: 1)
@@ -89,7 +89,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_declarations.map(&:id) }
 
       it "fills previous first then current into remaining capacity" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         # Step 1: prev eligible added to A(2), B(1)
         # Step 3: curr eligible added to B(1), C(2)
@@ -109,7 +109,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_billable.map(&:id) + current_refundable.map(&:id) }
 
       it "accounts for refunds when allocating" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         # Step 1: prev eligible added to A(2), B(1)
         # Step 2: prev awaiting_clawback removed from B(1) → B net=0, avail=2
@@ -135,7 +135,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_declarations.map(&:id) }
 
       it "fills all bands to capacity and ignores the excess" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         expect(started[0].billable_count).to eq(2)
         expect(started[1].billable_count).to eq(2)
@@ -151,7 +151,7 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { current_declarations.map(&:id) }
 
       it "drains only what is fetch and ignores the excess" do
-        started = allocator.band_allocations.fetch("started")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
 
         expect(started[0]).to have_attributes(previous_billable_count: 1, refundable_count: 1)
         expect(started[1]).to have_attributes(refundable_count: 0)
@@ -165,8 +165,8 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
       let(:current_declaration_ids) { started_billable.map(&:id) + completed_billable.map(&:id) }
 
       it "allocates each type independently" do
-        started = allocator.band_allocations.fetch("started")
-        completed = allocator.band_allocations.fetch("completed")
+        started = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "started" }
+        completed = allocator.band_allocations_by_declaration_type.select { it.declaration_type == "completed" }
 
         expect(started[0].billable_count).to eq(2)
         expect(started[1].billable_count).to eq(1)
