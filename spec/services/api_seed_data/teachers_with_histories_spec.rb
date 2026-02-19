@@ -44,7 +44,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
       it "creates correct data" do
         plant
 
-        expect(Teacher.where(ect_pupil_premium_uplift: true)).to exist
+        expect(Teacher.where(pupil_premium_uplift: true)).to exist
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
       it "creates correct data" do
         plant
 
-        expect(Teacher.where(ect_sparsity_uplift: true)).to exist
+        expect(Teacher.where(sparsity_uplift: true)).to exist
       end
     end
 

@@ -68,7 +68,7 @@ RSpec.describe Declarations::Create do
         end
 
         context "when pupil premium and sparsity uplifts are set on the teacher" do
-          before { teacher.update!(ect_pupil_premium_uplift: true, ect_sparsity_uplift: true) }
+          before { teacher.update!(pupil_premium_uplift: true, sparsity_uplift: true) }
 
           it "sets pupil premium and sparsity uplifts on the declaration" do
             declaration = create_declaration

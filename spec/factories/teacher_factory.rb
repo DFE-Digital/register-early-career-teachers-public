@@ -24,11 +24,11 @@ FactoryBot.define do
     end
 
     trait :with_sparsity_uplift do
-      ect_sparsity_uplift { true }
+      sparsity_uplift { true }
     end
 
     trait :with_pupil_premium_uplift do
-      ect_pupil_premium_uplift { true }
+      pupil_premium_uplift { true }
     end
 
     trait :with_uplifts do

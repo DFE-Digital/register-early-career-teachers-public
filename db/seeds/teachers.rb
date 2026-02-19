@@ -25,7 +25,7 @@ def describe_teacher(teacher)
                end
 
   uplift =
-    if teacher.ect_pupil_premium_uplift || teacher.ect_sparsity_uplift
+    if teacher.pupil_premium_uplift || teacher.sparsity_uplift
       Colourize.text("yes", :green)
     else
       Colourize.text("no", :red)
@@ -40,8 +40,8 @@ early_roll_out_mentor_attrs = {
 }
 
 uplift_attrs = {
-  ect_sparsity_uplift: true,
-  ect_pupil_premium_uplift: true,
+  sparsity_uplift: true,
+  pupil_premium_uplift: true,
 }
 
 teachers = [
