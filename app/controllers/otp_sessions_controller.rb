@@ -32,8 +32,8 @@ class OTPSessionsController < ApplicationController
       render :request_code and return
     end
 
-    if otp_access_blocked?
-      @otp_form.errors.add(:base, "This account is not enabled for migration testing")
+    unless otp_access_allowed?
+      @otp_form.errors.add(:base, "This account is not enabled for one time password sign in")
       render :request_code and return
     end
 
@@ -70,23 +70,25 @@ private
     params.expect(sessions_otp_sign_in_form: %i[email code])
   end
 
-  # TODO: Remove otp_school_user path after UR completes.
   def session_user
-    return otp_school_user if migration_and_urn?
+    return otp_school_user if otp_school_sign_in?
 
     Sessions::Users::DfEUser.new(email: otp_user.email)
   end
 
-  def migration_and_urn?
-    migration_testing_enabled? && otp_user&.urn.present?
+  def otp_school_sign_in?
+    otp_school_sign_in_flag_enabled? && otp_user&.urn.present?
   end
 
-  def otp_access_blocked?
-    return false unless migration_testing_enabled?
-    return false if otp_user&.urn.present?
-    return false if internal_admin_email?
+  def otp_access_allowed?
+    return false unless otp_user
+    return true if internal_admin_email?
 
-    true
+    if otp_school_sign_in_flag_enabled?
+      otp_user.otp_school_urn.present?
+    else
+      false
+    end
   end
 
   def internal_admin_email?
@@ -96,8 +98,8 @@ private
     INTERNAL_ADMIN_EMAIL_DOMAINS.include?(domain)
   end
 
-  def migration_testing_enabled?
-    Rails.env.migration? && Rails.application.config.enable_migration_testing
+  def otp_school_sign_in_flag_enabled?
+    Rails.application.config.enable_otp_school_sign_in
   end
 
   def otp_school_user
