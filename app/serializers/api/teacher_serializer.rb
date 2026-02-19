@@ -45,11 +45,19 @@ class API::TeacherSerializer < Blueprinter::Base
           teacher.mentor_first_became_eligible_for_training_at.present?
         end
       end
-      field(:pupil_premium_uplift) do |(training_period, teacher, _)|
-        training_period.for_ect? && teacher.pupil_premium_uplift
+      field(:pupil_premium_uplift) do |(training_period, teacher, metadata)|
+        if training_period.for_ect?
+          metadata.latest_ect_contract_period.uplift_fees_enabled? && teacher.pupil_premium_uplift
+        else
+          metadata.latest_mentor_contract_period.uplift_fees_enabled? && teacher.pupil_premium_uplift
+        end
       end
-      field(:sparsity_uplift) do |(training_period, teacher, _)|
-        training_period.for_ect? && teacher.sparsity_uplift
+      field(:sparsity_uplift) do |(training_period, teacher, metadata)|
+        if training_period.for_ect?
+          metadata.latest_ect_contract_period.uplift_fees_enabled? && teacher.sparsity_uplift
+        else
+          metadata.latest_mentor_contract_period.uplift_fees_enabled? && teacher.sparsity_uplift
+        end
       end
       field(:schedule_identifier) do |(training_period, _, _)|
         training_period.schedule.identifier
