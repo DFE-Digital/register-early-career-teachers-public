@@ -82,10 +82,10 @@ RSpec.describe DeclarationHelper, type: :helper do
       it { is_expected.to eq("Voided") }
     end
 
-    context "when the event type is 'teacher_declaration_clawed_back'" do
-      let(:event_type) { "teacher_declaration_clawed_back" }
+    context "when the event type is 'teacher_declaration_awaiting_clawback'" do
+      let(:event_type) { "teacher_declaration_awaiting_clawback" }
 
-      it { is_expected.to eq("Clawed back") }
+      it { is_expected.to eq("Awaiting clawback") }
     end
 
     context "when the event type is not recognised" do
@@ -142,8 +142,8 @@ RSpec.describe DeclarationHelper, type: :helper do
       end
     end
 
-    context "when the event type is 'teacher_declaration_clawed_back'" do
-      let(:event_type) { "teacher_declaration_clawed_back" }
+    context "when the event type is 'teacher_declaration_awaiting_clawback'" do
+      let(:event_type) { "teacher_declaration_awaiting_clawback" }
 
       context "when clawed back by an admin user" do
         let(:admin_user) { instance_double(User, name: "Finance User", email: "finance@example.com") }

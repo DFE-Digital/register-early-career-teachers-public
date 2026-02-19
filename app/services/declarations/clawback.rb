@@ -57,7 +57,7 @@ module Declarations
     end
 
     def record_clawback_event!
-      Events::Record.record_teacher_declaration_clawed_back!(
+      Events::Record.record_teacher_declaration_awaiting_clawback!(
         author:,
         teacher: declaration.training_period.teacher,
         training_period: declaration.training_period,
