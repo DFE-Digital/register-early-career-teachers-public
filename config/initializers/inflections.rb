@@ -19,6 +19,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "ECF2" # Early Career Framework 2 (the new service, Register ECTs)
   inflect.acronym "ECT" # Early Career Teacher
   inflect.acronym "ECTs" # Early Career Teachers
+  inflect.acronym "ERO" # Early Roll Out (ECF1 pre-launch mentor participants)
   inflect.acronym "GIAS" # Get Information About Schools
   inflect.acronym "ITT" # Initial teacher training
   inflect.acronym "OmniAuth"

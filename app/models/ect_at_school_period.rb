@@ -100,6 +100,11 @@ class ECTAtSchoolPeriod < ApplicationRecord
     where.not(id: without_qts_award)
       .where.not(id: claimed_by_different_appropriate_body)
   }
+  scope :with_school, -> { includes(school: :gias_school) }
+  scope :with_teacher, -> { includes(:teacher) }
+  scope :with_teacher_current_induction_period_appropriate_body, -> {
+    includes(teacher: { current_or_next_induction_period: :appropriate_body_period })
+  }
 
   def reported_leaving_by?(school)
     reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id
@@ -134,7 +139,8 @@ class ECTAtSchoolPeriod < ApplicationRecord
     end
   end
 
-  delegate :trn, to: :teacher
+  delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher
+  delegate :name, to: :school, prefix: true
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
   delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
 

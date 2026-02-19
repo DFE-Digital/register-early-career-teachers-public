@@ -104,7 +104,8 @@ RSpec.describe API::Declarations::Clawback, type: :model do
 private
 
   def ensure_active_lead_providers_are_consistent
-    active_lead_provider = declaration.training_period.active_lead_provider
-    declaration.payment_statement.update!(active_lead_provider:)
+    # Using update_all bypasses the readonly check on that attribute.
+    active_lead_provider_id = declaration.training_period.active_lead_provider.id
+    Contract.where(id: declaration.payment_statement.contract).update_all(active_lead_provider_id:)
   end
 end

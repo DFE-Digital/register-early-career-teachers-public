@@ -17,13 +17,13 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
     context "when fetching statement_id" do
       let(:identifier) { :statement_id }
-      let!(:statement) { FactoryBot.create(:statement, :output_fee, lead_provider:) }
+      let!(:statement) { FactoryBot.create(:statement, :output_fee, active_lead_provider:) }
 
       before do
         # Statement for different lead provider should not be used.
         FactoryBot.create(:statement)
         # Statement for service fee should not be used
-        FactoryBot.create(:statement, :service_fee, lead_provider:)
+        FactoryBot.create(:statement, :service_fee, active_lead_provider:)
       end
 
       it { is_expected.to eq(statement.api_id) }
@@ -239,7 +239,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
 
     context "when fetching the same identifier more than once" do
       let(:identifier) { :statement_id }
-      let!(:statement) { FactoryBot.create(:statement, :output_fee, lead_provider:) }
+      let!(:statement) { FactoryBot.create(:statement, :output_fee, active_lead_provider:) }
 
       it "memoises the returned value for the same identifier in subsequent calls" do
         expect(API::Statements::Query).to receive(:new).once.and_call_original

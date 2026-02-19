@@ -13,9 +13,11 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
     ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.years.ago, finished_on: nil, teacher:, school: school_partnership.school)
     training_period = FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: 1.year.ago, finished_on: nil, school_partnership:)
 
-    declaration = FactoryBot.create(:declaration, declaration_trait, training_period:)
-    declaration.payment_statement&.update!(active_lead_provider:)
-    declaration
+    FactoryBot.create(:declaration, declaration_trait, training_period:).tap do |declaration|
+      # Using update_all bypasses the readonly check on that attribute.
+      active_lead_provider_id = active_lead_provider.id
+      Contract.where(id: declaration.payment_statement&.contract).update_all(active_lead_provider_id:)
+    end
   end
 
   describe "#index" do

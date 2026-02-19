@@ -32,7 +32,8 @@ RSpec.describe API::Statements::Query do
   end
 
   describe "#statements" do
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+    let(:lead_provider) { active_lead_provider.lead_provider }
 
     it "returns all statements" do
       statement = FactoryBot.create(:statement)
@@ -53,7 +54,7 @@ RSpec.describe API::Statements::Query do
 
     describe "filtering" do
       describe "by `lead_provider`" do
-        let!(:statement1) { FactoryBot.create(:statement, lead_provider:) }
+        let!(:statement1) { FactoryBot.create(:statement, active_lead_provider:) }
         let!(:statement2) { FactoryBot.create(:statement) }
         let!(:statement3) { FactoryBot.create(:statement) }
 
@@ -147,8 +148,8 @@ RSpec.describe API::Statements::Query do
         let(:updated_since) { 1.day.ago }
 
         it "filters by `updated_since`" do
-          FactoryBot.create(:statement, lead_provider:, api_updated_at: 2.days.ago)
-          statement2 = FactoryBot.create(:statement, lead_provider:, api_updated_at: Time.zone.now)
+          FactoryBot.create(:statement, active_lead_provider:, api_updated_at: 2.days.ago)
+          statement2 = FactoryBot.create(:statement, active_lead_provider:, api_updated_at: Time.zone.now)
 
           query = described_class.new(lead_provider_id: lead_provider.id, updated_since:)
 
@@ -246,10 +247,11 @@ RSpec.describe API::Statements::Query do
   end
 
   describe "#statement_by_api_id" do
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+    let(:lead_provider) { active_lead_provider.lead_provider }
 
     it "returns the statement for a Lead Provider" do
-      statement = FactoryBot.create(:statement, lead_provider:)
+      statement = FactoryBot.create(:statement, active_lead_provider:)
       query = described_class.new
 
       expect(query.statement_by_api_id(statement.api_id)).to eq(statement)
@@ -262,8 +264,8 @@ RSpec.describe API::Statements::Query do
     end
 
     it "raises an error if the statement is not in the filtered query" do
-      other_lead_provider = FactoryBot.create(:lead_provider)
-      other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
+      other_active_lead_provider = FactoryBot.create(:active_lead_provider)
+      other_statement = FactoryBot.create(:statement, active_lead_provider: other_active_lead_provider)
 
       query = described_class.new(lead_provider_id: lead_provider.id)
 
@@ -276,10 +278,11 @@ RSpec.describe API::Statements::Query do
   end
 
   describe "#statement_by_id" do
-    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+    let(:lead_provider) { active_lead_provider.lead_provider }
 
     it "returns the statement for a Lead Provider" do
-      statement = FactoryBot.create(:statement, lead_provider:)
+      statement = FactoryBot.create(:statement, active_lead_provider:)
       query = described_class.new
 
       expect(query.statement_by_id(statement.id)).to eq(statement)
@@ -292,8 +295,8 @@ RSpec.describe API::Statements::Query do
     end
 
     it "raises an error if the statement is not in the filtered query" do
-      other_lead_provider = FactoryBot.create(:lead_provider)
-      other_statement = FactoryBot.create(:statement, lead_provider: other_lead_provider)
+      other_active_lead_provider = FactoryBot.create(:active_lead_provider)
+      other_statement = FactoryBot.create(:statement, active_lead_provider: other_active_lead_provider)
 
       query = described_class.new(lead_provider_id: lead_provider.id)
 
