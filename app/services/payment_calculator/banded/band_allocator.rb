@@ -17,7 +17,7 @@ module PaymentCalculator
     # The result is an overall band count per declaration type that reflects
     # every statement up to and including the current one.
     #
-    # Returns a Hash of { declaration_type => [BandAllocation, ...] }.
+    # Returns an Array of BandAllocation objects.
     include ActiveModel::Model
     include ActiveModel::Attributes
 
@@ -25,8 +25,8 @@ module PaymentCalculator
     attribute :previous_declarations  # previous statements declarations
     attribute :declarations           # current statements declarations
 
-    def band_allocations
-      @band_allocations ||= build_band_allocations
+    def band_allocations_by_declaration_type
+      @band_allocations_by_declaration_type ||= build_band_allocations_by_declaration_type
     end
 
   private
@@ -35,18 +35,18 @@ module PaymentCalculator
       (previous_declarations.pluck(:declaration_type) + declarations.pluck(:declaration_type)).uniq
     end
 
-    def build_band_allocations
+    def build_band_allocations_by_declaration_type
       # Initialize band allocations for every (declaration_type, band) pair
-      allocations_by_declaration_types = declaration_types.index_with do |declaration_type|
-        bands.map { |band| Banded::BandAllocation.new(band:, declaration_type:) }
-      end
+      declaration_types.flat_map do |declaration_type|
+        allocations = bands.map do |band|
+          Banded::BandAllocation.new(band:, declaration_type:)
+        end
 
-      # Run allocate for each declaration type
-      allocations_by_declaration_types.each do |declaration_type, allocations|
+        # Run allocate for each declaration type
         allocate_for_declaration_type(declaration_type, allocations)
-      end
 
-      allocations_by_declaration_types
+        allocations
+      end
     end
 
     def allocate_for_declaration_type(declaration_type, allocations)
