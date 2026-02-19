@@ -34,13 +34,26 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
   context "when latest started training is deferred" do
     before do
-      FactoryBot.create(
+      training_period = FactoryBot.create(
         :training_period,
         :provider_led,
         ect_at_school_period: mentee,
         started_on: mentee.started_on,
         deferred_at: Time.zone.today,
         deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+      )
+
+      lead_provider = FactoryBot.create(:lead_provider, name: "Ambition Institute")
+
+      active_lead_provider = FactoryBot.create(
+        :active_lead_provider,
+        lead_provider:,
+        contract_period: training_period.schedule.contract_period
+      )
+
+      training_period.update!(
+        school_partnership: nil,
+        expression_of_interest: active_lead_provider
       )
 
       render_inline(described_class.new(mentee, current_school: school))
@@ -50,11 +63,15 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       expect(page).to have_text("Training paused")
       expect(page).to have_text("training is paused")
     end
+
+    it "includes the lead provider name" do
+      expect(page).to have_text("Ambition Institute")
+    end
   end
 
   context "when training is withdrawn" do
     before do
-      FactoryBot.create(
+      training_period = FactoryBot.create(
         :training_period,
         :provider_led,
         ect_at_school_period: mentee,
@@ -63,12 +80,29 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
         withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
       )
 
+      lead_provider = FactoryBot.create(:lead_provider, name: "Ambition Institute")
+
+      active_lead_provider = FactoryBot.create(
+        :active_lead_provider,
+        lead_provider:,
+        contract_period: training_period.schedule.contract_period
+      )
+
+      training_period.update!(
+        school_partnership: nil,
+        expression_of_interest: active_lead_provider
+      )
+
       render_inline(described_class.new(mentee, current_school: school))
     end
 
     it "shows action required status" do
       expect(page).to have_text("Action required")
       expect(page).to have_text(/no longer training with them/i)
+    end
+
+    it "includes the lead provider name" do
+      expect(page).to have_text("Ambition Institute")
     end
   end
 
@@ -90,6 +124,26 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       expect(page).to have_text("Action required")
       expect(page).to have_text(/no longer training with them/i)
 
+      expect(page).not_to have_text("Mentor required")
+    end
+  end
+
+  context "when training is deferred and the ECT has no mentor assigned" do
+    before do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period: mentee,
+        started_on: mentee.started_on,
+        deferred_at: Time.zone.today,
+        deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+      )
+
+      render_inline(described_class.new(mentee, current_school: school))
+    end
+
+    it "shows training paused instead of mentor required" do
+      expect(page).to have_text("Training paused")
       expect(page).not_to have_text("Mentor required")
     end
   end
@@ -116,6 +170,28 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     end
   end
 
+  context "when deferred but also reported as leaving" do
+    before do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period: mentee,
+        started_on: mentee.started_on,
+        deferred_at: Time.zone.today,
+        deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+      )
+
+      mentee.update!(finished_on: 1.day.from_now.to_date, reported_leaving_by_school_id: school.id)
+
+      render_inline(described_class.new(mentee, current_school: school))
+    end
+
+    it "shows leaving school instead of training paused" do
+      expect(page).to have_text("Leaving school")
+      expect(page).not_to have_text("Training paused")
+    end
+  end
+
   context "when withdrawn but induction status is exempt" do
     before do
       FactoryBot.create(
@@ -135,6 +211,28 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     it "shows exempt status instead of action required" do
       expect(page).to have_text("Exempt")
       expect(page).not_to have_text("Action required")
+    end
+  end
+
+  context "when deferred but induction status is exempt" do
+    before do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period: mentee,
+        started_on: mentee.started_on,
+        deferred_at: Time.zone.today,
+        deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+      )
+
+      mentee_teacher.update!(trs_induction_status: "Exempt")
+
+      render_inline(described_class.new(mentee, current_school: school))
+    end
+
+    it "shows exempt status instead of training paused" do
+      expect(page).to have_text("Exempt")
+      expect(page).not_to have_text("Training paused")
     end
   end
 end

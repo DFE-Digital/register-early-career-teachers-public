@@ -30,6 +30,8 @@ module ECTHelper
 
   # @param training_period [TrainingPeriod]
   def training_period_lead_provider_name(training_period)
+    return nil if training_period.blank?
+
     if training_period.only_expression_of_interest?
       training_period.expression_of_interest_lead_provider&.name
     else
@@ -37,21 +39,24 @@ module ECTHelper
     end
   end
 
-  # @param training_period [TrainingPeriod]
+  # @param training_period [TrainingPeriod, nil]
   def training_period_lead_provider_display_text(training_period)
     training_period_lead_provider_name(training_period).presence || NOT_AVAILABLE
   end
 
-  # @param training_period [TrainingPeriod]
+  # @param training_period [TrainingPeriod, nil]
   def training_period_delivery_partner_display_text(training_period)
+    return YET_TO_BE_REPORTED if training_period.blank?
     return EOI_DELIVERY_PARTNER_TEXT if training_period.only_expression_of_interest?
 
     training_period.delivery_partner_name.presence || YET_TO_BE_REPORTED
   end
 
   # @param teacher_name [String]
-  # @param training_period [TrainingPeriod]
+  # @param training_period [TrainingPeriod, nil]
   def training_period_withdrawn_message_text(teacher_name:, training_period:)
+    return nil if training_period.blank?
+
     lp_name = training_period_lead_provider_name(training_period)
     subject = lp_name.presence || "The lead provider"
     verb = lp_name.present? ? "have" : "has"
@@ -60,8 +65,10 @@ module ECTHelper
   end
 
   # @param teacher_name [String]
-  # @param training_period [TrainingPeriod]
+  # @param training_period [TrainingPeriod, nil]
   def training_period_deferred_message_text(teacher_name:, training_period:)
+    return nil if training_period.blank?
+
     lp_name = training_period_lead_provider_name(training_period)
     subject = lp_name.presence || "The lead provider"
     verb = lp_name.present? ? "have" : "has"

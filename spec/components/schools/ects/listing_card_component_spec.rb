@@ -161,6 +161,22 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
   end
 
+  context "when training is withdrawn and the ECT has a mentor assigned" do
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+
+    before do
+      FactoryBot.create(:mentorship_period, :ongoing, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
+      training_period.update!(withdrawn_at: Time.zone.today, withdrawal_reason: valid_withdrawal_reason)
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
+    end
+
+    it "shows withdrawn action required instead of registered" do
+      expect(rendered_content).to have_text("Action required")
+      expect(rendered_content).to match(/no longer training with them/i)
+      expect(rendered_content).not_to have_text("Registered")
+    end
+  end
+
   context "when training is deferred and the ECT has no mentor assigned" do
     let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
 

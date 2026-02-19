@@ -63,7 +63,7 @@ module Schools
           "You can ".html_safe,
           govuk_link_to(
             "select a lead provider",
-            schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
+            change_lead_provider_path,
             no_visited_state: true
           ),
           " for #{ect_name} if they will be continuing provider-led training.".html_safe
@@ -73,12 +73,14 @@ module Schools
     end
 
     def change_to_school_led_paragraph
+      ect_name = teacher_full_name(ect_at_school_period.teacher)
+
       tag.p(
         safe_join([
           "You can tell us if they are ".html_safe,
           govuk_link_to(
             "changing their programme type to school-led",
-            schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
+            change_training_programme_path,
             no_visited_state: true
           ),
           ".".html_safe
@@ -127,7 +129,7 @@ module Schools
         actions: [{
           text: "Change",
           visually_hidden_text: "training programme",
-          href: schools_ects_change_training_programme_wizard_edit_path(ect_at_school_period),
+          href: change_training_programme_path,
           classes: "govuk-link--no-visited-state"
         }]
       }
@@ -140,7 +142,7 @@ module Schools
         actions: [{
           text: "Change",
           visually_hidden_text: "lead provider",
-          href: schools_ects_change_lead_provider_wizard_edit_path(ect_at_school_period),
+          href: change_lead_provider_path,
           classes: "govuk-link--no-visited-state"
         }]
       }
@@ -202,6 +204,14 @@ module Schools
 
     def training_programme_display_name
       TRAINING_PROGRAMME.fetch(training_period.training_programme, "Unknown")
+    end
+
+    def change_lead_provider_path
+      schools_ects_change_lead_provider_wizard_edit_path(ect_id: ect_at_school_period.id)
+    end
+
+    def change_training_programme_path
+      schools_ects_change_training_programme_wizard_edit_path(ect_id: ect_at_school_period.id)
     end
   end
 end
