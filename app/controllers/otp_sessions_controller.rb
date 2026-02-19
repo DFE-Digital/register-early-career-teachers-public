@@ -12,7 +12,7 @@ class OTPSessionsController < ApplicationController
   end
 
   def create
-    render :new and return unless @otp_form.valid?
+    return render :new unless @otp_form.valid?
 
     if @otp_form.user.present?
       @otp_form.generate_and_email_code_to_user!
@@ -29,12 +29,12 @@ class OTPSessionsController < ApplicationController
 
   def verify_code
     unless @otp_form.valid?(:verify)
-      render :request_code and return
+      return render :request_code
     end
 
     unless otp_access_allowed?
       @otp_form.errors.add(:base, "This account is not enabled for one time password sign in")
-      render :request_code and return
+      return render :request_code
     end
 
     clean_up_session
