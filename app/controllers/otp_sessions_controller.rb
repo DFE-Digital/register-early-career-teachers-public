@@ -61,7 +61,22 @@ private
     params.expect(sessions_otp_sign_in_form: %i[email code])
   end
 
+  # TODO: Remove otp_school_user path after UR completes.
   def session_user
+    return otp_school_user if migration_and_urn?
+
     Sessions::Users::DfEUser.new(email: @otp_form.email)
+  end
+
+  def migration_and_urn?
+    Rails.application.config.enable_migration_testing && Rails.env.migration? && otp_user&.urn.present?
+  end
+
+  def otp_school_user
+    Sessions::Users::OTPSchoolUser.new(email: otp_user.email, name: otp_user.name, school_urn: otp_user.urn)
+  end
+
+  def otp_user
+    @otp_user ||= @otp_form.user
   end
 end
