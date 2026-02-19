@@ -64,7 +64,7 @@ module Schedules
     end
 
     def contract_period_year
-      ContractPeriod.containing_date(latest_start_date)&.year || raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
+      ContractPeriod.containing_date_end_inclusive(latest_start_date)&.year || raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
     end
 
     def identifier
