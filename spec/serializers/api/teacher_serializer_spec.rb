@@ -164,10 +164,10 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(ect_enrolment["participant_status"]).to eq(mock_teacher_status.status)
 
             expect(ect_enrolment["pupil_premium_uplift"]).to be_present
-            expect(ect_enrolment["pupil_premium_uplift"]).to eq(teacher.ect_pupil_premium_uplift)
+            expect(ect_enrolment["pupil_premium_uplift"]).to eq(teacher.pupil_premium_uplift)
 
             expect(ect_enrolment["sparsity_uplift"]).to be_present
-            expect(ect_enrolment["sparsity_uplift"]).to eq(teacher.ect_sparsity_uplift)
+            expect(ect_enrolment["sparsity_uplift"]).to eq(teacher.sparsity_uplift)
 
             expect(ect_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
 

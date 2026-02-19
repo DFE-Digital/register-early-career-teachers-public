@@ -102,8 +102,8 @@ describe ECF2TeacherHistory do
       let(:api_ect_training_record_id) { SecureRandom.uuid }
       let(:api_mentor_training_record_id) { SecureRandom.uuid }
       let(:migration_mode) { "latest_induction_records" }
-      let(:ect_pupil_premium_uplift) { true }
-      let(:ect_sparsity_uplift) { true }
+      let(:pupil_premium_uplift) { true }
+      let(:sparsity_uplift) { true }
       let(:ect_first_became_eligible_for_training_at) { 3.years.ago.round(2) }
       let(:ect_payments_frozen_year) { contract_period.year }
 
@@ -120,8 +120,8 @@ describe ECF2TeacherHistory do
 
           migration_mode:,
 
-          ect_pupil_premium_uplift:,
-          ect_sparsity_uplift:,
+          pupil_premium_uplift:,
+          sparsity_uplift:,
           ect_first_became_eligible_for_training_at:,
           ect_payments_frozen_year:
         )
@@ -143,8 +143,8 @@ describe ECF2TeacherHistory do
           expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
 
           expect(teacher.migration_mode).to eql(migration_mode)
-          expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
-          expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
+          expect(teacher.pupil_premium_uplift).to eql(pupil_premium_uplift)
+          expect(teacher.sparsity_uplift).to eql(sparsity_uplift)
           expect(teacher.ect_first_became_eligible_for_training_at).to eql(ect_first_became_eligible_for_training_at)
           expect(teacher.ect_payments_frozen_year).to eql(ect_payments_frozen_year)
         end
@@ -189,8 +189,8 @@ describe ECF2TeacherHistory do
           aggregate_failures do
             expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
             expect(teacher.migration_mode).to eql(migration_mode)
-            expect(teacher.ect_pupil_premium_uplift).to eql(ect_pupil_premium_uplift)
-            expect(teacher.ect_sparsity_uplift).to eql(ect_sparsity_uplift)
+            expect(teacher.pupil_premium_uplift).to eql(pupil_premium_uplift)
+            expect(teacher.sparsity_uplift).to eql(sparsity_uplift)
           end
         end
       end
@@ -534,8 +534,8 @@ describe ECF2TeacherHistory do
           expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
           expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
 
-          expect(teacher.ect_pupil_premium_uplift).to be(false)
-          expect(teacher.ect_sparsity_uplift).to be(false)
+          expect(teacher.pupil_premium_uplift).to be(false)
+          expect(teacher.sparsity_uplift).to be(false)
 
           expect(teacher.migration_mode).to eql(migration_mode)
           expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)

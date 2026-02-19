@@ -46,10 +46,10 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:pupil_premium_uplift) do |(training_period, teacher, _)|
-        training_period.for_ect? && teacher.ect_pupil_premium_uplift
+        training_period.for_ect? && teacher.pupil_premium_uplift
       end
       field(:sparsity_uplift) do |(training_period, teacher, _)|
-        training_period.for_ect? && teacher.ect_sparsity_uplift
+        training_period.for_ect? && teacher.sparsity_uplift
       end
       field(:schedule_identifier) do |(training_period, _, _)|
         training_period.schedule.identifier
