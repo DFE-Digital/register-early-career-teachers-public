@@ -19,6 +19,8 @@ module Migration
 
     def refundable? = REFUNDABLE_STATES.include?(state)
 
+    def started? = declaration_type == "started"
+
     def submitted? = state == "submitted"
 
     # status
@@ -31,12 +33,17 @@ module Migration
 
     def payment_statement = billable_line_item&.statement
 
-    # type predicates
+    # others
     def ect? = type == "ParticipantDeclaration::ECT"
+
+    def migrated_pupil_premium_uplift = migrated_uplift_flag(pupil_premium_uplift)
+    def migrated_sparsity_uplift = migrated_uplift_flag(sparsity_uplift)
 
   private
 
     def billable_line_item = @billable_line_item ||= statement_line_items.detect(&:billable?)
+
+    def migrated_uplift_flag(flag) = flag && started? && cohort.start_year < 2025
 
     def refundable_line_item = @refundable_line_item ||= statement_line_items.detect(&:refundable?)
   end
