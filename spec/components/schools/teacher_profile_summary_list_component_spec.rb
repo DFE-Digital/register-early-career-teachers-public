@@ -235,4 +235,16 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       expect(page).not_to have_text("Training paused")
     end
   end
+
+  context "when the ECT has no mentor assigned" do
+    before do
+      render_inline(described_class.new(mentee, current_school: school))
+    end
+
+    it "shows action required with mentor assignment message" do
+      expect(page).to have_text("Action required")
+      expect(page).to have_text("A mentor needs to be assigned to Kakarot SSJ.")
+      expect(page).not_to have_text("Mentor required")
+    end
+  end
 end
