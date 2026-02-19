@@ -4,8 +4,8 @@ RSpec.describe "OTP sessions", type: :request do
   let(:otp_school_sign_in_enabled) { true }
   let(:email) { "user@example.com" }
   let(:name) { "Test User" }
-  let(:urn) { nil }
-  let(:user) { FactoryBot.create(:user, email:, name:, urn:) }
+  let(:otp_school_urn) { nil }
+  let(:user) { FactoryBot.create(:user, email:, name:, otp_school_urn:) }
 
   let(:sign_in_with_otp) do
     post(otp_sign_in_path, params: { sessions_otp_sign_in_form: { email: user.email } })
@@ -40,10 +40,10 @@ RSpec.describe "OTP sessions", type: :request do
 
     context "when the user has a school urn that exists in GIAS" do
       let(:email) { "user@external.com" }
-      let(:urn) { "123456" }
+      let(:otp_school_urn) { "123456" }
 
       before do
-        FactoryBot.create(:gias_school, :open, :state_school_type, urn:)
+        FactoryBot.create(:gias_school, :open, :state_school_type, urn: otp_school_urn)
       end
 
       it "allows school access" do
@@ -72,10 +72,10 @@ RSpec.describe "OTP sessions", type: :request do
 
     context "when the user has a school urn that exists in GIAS and a non DfE email" do
       let(:email) { "user@external.com" }
-      let(:urn) { "123456" }
+      let(:otp_school_urn) { "123456" }
 
       before do
-        FactoryBot.create(:gias_school, :open, :state_school_type, urn:)
+        FactoryBot.create(:gias_school, :open, :state_school_type, urn: otp_school_urn)
       end
 
       it "blocks access" do

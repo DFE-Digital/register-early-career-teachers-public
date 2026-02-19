@@ -77,7 +77,7 @@ private
   end
 
   def otp_school_sign_in?
-    otp_school_sign_in_flag_enabled? && otp_user&.urn.present?
+    otp_school_sign_in_flag_enabled? && otp_user&.otp_school_urn.present?
   end
 
   def otp_access_allowed?
@@ -103,7 +103,7 @@ private
   end
 
   def otp_school_user
-    Sessions::Users::OTPSchoolUser.new(email: otp_user.email, name: otp_user.name, school_urn: otp_user.urn)
+    Sessions::Users::OTPSchoolUser.new(email: otp_user.email, name: otp_user.name, school_urn: otp_user.otp_school_urn)
   end
 
   def otp_user
