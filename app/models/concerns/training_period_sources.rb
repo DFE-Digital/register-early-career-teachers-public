@@ -1,8 +1,9 @@
 module TrainingPeriodSources
   extend ActiveSupport::Concern
 
+  # TO TEST FULLY
   def contract_period
-    @contract_period ||= ContractPeriod.current
+    @contract_period ||= ContractPeriod.current_end_inclusive
   end
 
   def active_lead_provider

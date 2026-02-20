@@ -19,6 +19,19 @@ RSpec.describe Schools::DecoratedSchool do
     it "returns a Schools::LatestRegistrationChoices object" do
       expect(decorated_school.latest_registration_choices(contract_period:)).to eql(fake_latest_registration_choices)
     end
+
+    context "when we are on the last day of the contract period" do
+      around do |example|
+        travel_to(contract_period.finished_on) do
+          example.run
+        end
+      end
+
+      it "finds a contract period and returns a Schools::LatestRegistrationChoices object" do
+        expect(Schools::LatestRegistrationChoices).to receive(:new).with(school: decorated_school, contract_period:)
+        decorated_school.latest_registration_choices
+      end
+    end
   end
 
   describe "#has_partnership_with?" do
