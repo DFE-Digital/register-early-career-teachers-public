@@ -22,21 +22,10 @@ class TeacherHistoryConverter::ECT::AllInductionRecords
 
 private
 
-  # Add a new school_period period to the beginning of ect_at_school_periods with:
-  #  - start_date: the earliest of the induction_record.start_date and the first school_period start_date - 2.days
-  #  - end_date: the earliest of the induction_record.end_date and the first school_period start_date - 1.day
-  #
-  # This is so that we are either creating:
-  #  - a mirror school_period from the induction record if their dates range are before the first school_period dates
-  #  - a truncated school_period from the induction record if their dates cover only the start_date of the first school_period dates
-  #  - a stub school_period from the induction record if its start date is covered by the first school period
-  #
-  # We can't have an induction_period past the first school_period because the induction records (and therefore the
-  #   school period out of them are received in reverse order of start_date)
   def process(ect_at_school_periods, induction_record)
-    first_school_period = ect_at_school_periods.first
-    started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date].compact.min
-    finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date].compact.min
+    started_on = induction_record.start_date
+    finished_on = induction_record.end_date
+
     training_period = build_training_period(induction_record:, started_on:, finished_on:)
 
     mentorship_period = build_mentorship_period(induction_record:,
