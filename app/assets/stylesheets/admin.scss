@@ -194,3 +194,8 @@ $_current-link-border-width: govuk-spacing(1);
   background-color: $govuk-template-background-colour;
   white-space: pre-wrap;
 }
+
+.finance-panel {
+  background-color: govuk-colour("light-grey");
+  padding: 20px;
+}
