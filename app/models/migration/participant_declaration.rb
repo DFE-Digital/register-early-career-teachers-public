@@ -2,6 +2,19 @@ module Migration
   class ParticipantDeclaration < Migration::Base
     BILLABLE_STATES = %w[eligible payable paid].freeze
     REFUNDABLE_STATES = %w[awaiting_clawback clawed_back].freeze
+    MIGRATED_EVIDENCE_HELD = {
+      "75-percent-engagement-met" => "75-percent-engagement-met",
+      "75-percent-engagement-met-reduced-induction" => "75-percent-engagement-met-reduced-induction",
+      "materials-engaged-with-offline" => "materials-engaged-with-offline",
+      "one-term-induction" => "one-term-induction",
+      "other" => "other",
+      "self-study-material completed" => "self-study-material-completed",
+      "self-study-material-completed" => "self-study-material-completed",
+      "training_event_attendance" => "training-event-attended",
+      "training-event-attended" => "training-event-attended",
+      "" => nil
+    }.tap { |mapping| mapping.default_proc = ->(_h, k) { k } }
+     .freeze
 
     self.inheritance_column = :ignore
 
@@ -36,6 +49,7 @@ module Migration
     # others
     def ect? = type == "ParticipantDeclaration::ECT"
 
+    def migrated_evidence_held = MIGRATED_EVIDENCE_HELD[evidence_held]
     def migrated_pupil_premium_uplift = migrated_uplift_flag(pupil_premium_uplift)
     def migrated_sparsity_uplift = migrated_uplift_flag(sparsity_uplift)
 
