@@ -13,7 +13,7 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   let(:statement) do
-    FactoryBot.create(:statement, active_lead_provider:, contract:, year: 2025, month: 6)
+    FactoryBot.create(:statement, active_lead_provider:, contract:, year: 2025, month: 6, payment_date: Date.new(2025, 7, 1))
   end
 
   let(:banded_fee_structure) do
@@ -62,31 +62,64 @@ RSpec.describe PaymentCalculator::Banded do
   let(:declaration_selector) { ->(declarations) { declarations } }
 
   describe "#outputs" do
-    it "calls Banded::Outputs with filtered declarations, previous declarations, and banded_fee_structure" do
-      expect(PaymentCalculator::Banded::Outputs)
-        .to receive(:new)
-        .with(
-          declarations: contain_exactly(billable_declaration, refundable_declaration),
-          previous_declarations: be_a(ActiveRecord::Relation),
-          banded_fee_structure:
-        )
-        .and_call_original
+    let(:previous_statement) do
+      FactoryBot.create(:statement, active_lead_provider:, contract:, year: 2025, month: 5, payment_date: Date.new(2025, 6, 1))
+    end
 
-      banded.outputs
+    let(:previous_training_period) do
+      FactoryBot.create(:training_period, :for_ect, school_partnership:)
+    end
+
+    let!(:previous_billable_declaration) do
+      FactoryBot.create(
+        :declaration,
+        :payable,
+        declaration_type: :started,
+        training_period: previous_training_period,
+        payment_statement: previous_statement
+      )
+    end
+
+    let!(:previous_refundable_declaration) do
+      FactoryBot.create(
+        :declaration,
+        :awaiting_clawback,
+        declaration_type: :completed,
+        training_period: previous_training_period,
+        clawback_statement: previous_statement
+      )
+    end
+
+    let!(:previous_non_billable_declaration) do
+      FactoryBot.create(
+        :declaration,
+        :no_payment,
+        declaration_type: "retained-1",
+        training_period: previous_training_period,
+        payment_statement: previous_statement
+      )
+    end
+
+    it "initializes with the current statement declarations" do
+      expect(banded.outputs.declarations).to contain_exactly(billable_declaration, refundable_declaration)
+    end
+
+    it "initializes with previous billable and refundable declarations" do
+      expect(banded.outputs.previous_declarations).to contain_exactly(previous_billable_declaration, previous_refundable_declaration)
+    end
+
+    it "initializes with the banded fee structure" do
+      expect(banded.outputs.banded_fee_structure).to eq(banded_fee_structure)
     end
   end
 
   describe "#uplifts" do
-    it "calls Banded::Uplifts with filtered declarations and uplift_fee_per_declaration" do
-      expect(PaymentCalculator::Banded::Uplifts)
-        .to receive(:new)
-        .with(
-          declarations: contain_exactly(billable_declaration, refundable_declaration),
-          uplift_fee_per_declaration: banded_fee_structure.uplift_fee_per_declaration
-        )
-        .and_call_original
+    it "initializes with the current statement declarations" do
+      expect(banded.uplifts.declarations).to contain_exactly(billable_declaration, refundable_declaration)
+    end
 
-      banded.uplifts
+    it "initializes with the uplift fee per declaration" do
+      expect(banded.uplifts.uplift_fee_per_declaration).to eq(banded_fee_structure.uplift_fee_per_declaration)
     end
   end
 
@@ -103,17 +136,23 @@ RSpec.describe PaymentCalculator::Banded do
           :contract_banded_fee_structure,
           :with_bands,
           monthly_service_fee: nil,
-          setup_fee: 500,
-          uplift_fee_per_declaration: 50,
           recruitment_target: 100,
-          declaration_boundaries: [{ min: 1, max: 200 }]
+          declaration_boundaries: [{ min: 1, max: 60 }, { min: 61, max: 120 }]
         )
       end
 
-      it "calculates from bands" do
-        band = banded_fee_structure.bands.first
-        filled = [100, band.capacity].min
-        expected = (filled * band.fee_per_declaration * band.service_fee_ratio) / 29
+      it "fills bands in order up to recruitment target and divides by 29 payments" do
+        band_a, band_b = banded_fee_structure.bands.order(:min_declarations)
+
+        # recruitment_target = 100
+        # Band A: capacity 60, fills 60, remaining = 40
+        # Band B: capacity 60, fills 40, remaining = 0
+        # total = (60 * band_a.fee * band_a.ratio) + (40 * band_b.fee * band_b.ratio)
+        # monthly = total / 29
+        expected = (
+          (60 * band_a.fee_per_declaration * band_a.service_fee_ratio) +
+          (40 * band_b.fee_per_declaration * band_b.service_fee_ratio)
+        ) / 29
 
         expect(banded.monthly_service_fee).to eq(expected)
       end
