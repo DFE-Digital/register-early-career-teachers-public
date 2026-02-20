@@ -43,7 +43,7 @@ module Migrators
                                     clawback_status: participant_declaration.clawback_status,
                                     declaration_date: participant_declaration.declaration_date,
                                     declaration_type: participant_declaration.declaration_type,
-                                    evidence_type: participant_declaration.evidence_held,
+                                    evidence_type: participant_declaration.migrated_evidence_held,
                                     payment_statement_id: payment_statement(participant_declaration:)&.id,
                                     payment_status: participant_declaration.payment_status,
                                     pupil_premium_uplift: participant_declaration.migrated_pupil_premium_uplift,
