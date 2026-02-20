@@ -11,11 +11,12 @@ GIT
 
 GIT
   remote: https://github.com/DFE-Digital/dfe-wizard.git
-  revision: 3562819461b1e81765c5fd82ba625379699b4c18
+  revision: 449473a0ffb69b63832f11cab7e5555513edfb21
   specs:
-    dfe-wizard (0.1.1)
+    dfe-wizard (1.0.0.beta)
       activemodel
       activesupport
+      ruby-graphviz
 
 GEM
   remote: https://rubygems.org/
@@ -722,6 +723,8 @@ GEM
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
       rubocop-rspec (~> 3.5)
+    ruby-graphviz (1.2.5)
+      rexml
     ruby-progressbar (1.13.0)
     rubypants (0.7.1)
     rubyzip (3.2.2)
