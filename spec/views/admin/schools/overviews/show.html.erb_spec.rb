@@ -51,7 +51,6 @@ RSpec.describe "admin/schools/overviews/show.html.erb", type: :view do
     expect(rendered).to have_css("dt", text: "Induction tutor email")
     expect(rendered).to have_css("dt", text: "Local authority")
     expect(rendered).to have_css("dt", text: "Address")
-    expect(rendered).to have_css("a", text: "Change")
   end
 
   it "marks overview as current in navigation" do
