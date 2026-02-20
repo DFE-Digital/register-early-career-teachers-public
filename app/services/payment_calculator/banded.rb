@@ -83,8 +83,7 @@ module PaymentCalculator
       remaining = banded_fee_structure.recruitment_target
 
       total = banded_fee_structure.bands.sum do |band|
-        capacity = band.max_declarations - band.min_declarations + 1
-        filled = [remaining, capacity].min
+        filled = [remaining, band.capacity].min
         remaining -= filled
         filled * band.fee_per_declaration * band.service_fee_ratio
       end

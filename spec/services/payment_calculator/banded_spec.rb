@@ -112,8 +112,7 @@ RSpec.describe PaymentCalculator::Banded do
 
       it "calculates from bands" do
         band = banded_fee_structure.bands.first
-        capacity = band.max_declarations - band.min_declarations + 1
-        filled = [100, capacity].min
+        filled = [100, band.capacity].min
         expected = (filled * band.fee_per_declaration * band.service_fee_ratio) / 29
 
         expect(banded.monthly_service_fee).to eq(expected)
