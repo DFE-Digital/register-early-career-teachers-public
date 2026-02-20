@@ -72,8 +72,8 @@ module PaymentCalculator
     end
 
     def previous_statements
-      Statement
-        .where(active_lead_provider: statement.active_lead_provider)
+      Statement.joins(:contract)
+        .where(contracts: { active_lead_provider_id: statement.active_lead_provider.id })
         .where(payment_date: ...statement.payment_date)
     end
 
