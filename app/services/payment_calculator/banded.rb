@@ -3,8 +3,6 @@ module PaymentCalculator
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    NUMBER_OF_SERVICE_FEE_PAYMENTS = 29
-
     attribute :statement
     attribute :banded_fee_structure
     attribute :declaration_selector
@@ -25,7 +23,7 @@ module PaymentCalculator
     end
 
     def monthly_service_fee
-      banded_fee_structure.monthly_service_fee || calculated_monthly_service_fee
+      banded_fee_structure.monthly_service_fee || service_fees.monthly_amount
     end
 
     delegate :setup_fee, to: :banded_fee_structure
@@ -79,16 +77,8 @@ module PaymentCalculator
         .where(payment_date: ...statement.payment_date)
     end
 
-    def calculated_monthly_service_fee
-      remaining = banded_fee_structure.recruitment_target
-
-      total = banded_fee_structure.bands.sum do |band|
-        filled = [remaining, band.capacity].min
-        remaining -= filled
-        filled * band.fee_per_declaration * band.service_fee_ratio
-      end
-
-      total / NUMBER_OF_SERVICE_FEE_PAYMENTS
+    def service_fees
+      @service_fees ||= PaymentCalculator::ServiceFees.new(banded_fee_structure:)
     end
 
     def uplift_fee_per_declaration
