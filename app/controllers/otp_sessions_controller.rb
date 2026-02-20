@@ -1,4 +1,9 @@
 class OTPSessionsController < ApplicationController
+  INTERNAL_ADMIN_EMAIL_DOMAINS = %w[
+    education.gov.uk
+    digital.education.gov.uk
+  ].freeze
+
   before_action :build_otp_form, except: %i[new request_code]
 
   def new
@@ -7,7 +12,7 @@ class OTPSessionsController < ApplicationController
   end
 
   def create
-    render :new and return unless @otp_form.valid?
+    return render :new unless @otp_form.valid?
 
     if @otp_form.user.present?
       @otp_form.generate_and_email_code_to_user!
@@ -23,19 +28,23 @@ class OTPSessionsController < ApplicationController
   end
 
   def verify_code
-    if @otp_form.valid?(:verify)
-      clean_up_session
+    unless @otp_form.valid?(:verify)
+      return render :request_code
+    end
 
-      session_manager.begin_session!(session_user)
+    unless otp_access_allowed?
+      @otp_form.errors.add(:base, "This account is not enabled for one time password sign in")
+      return render :request_code
+    end
 
-      if authenticated?
-        redirect_to(post_login_redirect_path)
-      else
-        session_manager.end_session!
-        redirect_to(otp_sign_in_path)
-      end
+    clean_up_session
+    session_manager.begin_session!(session_user)
+
+    if authenticated?
+      redirect_to(post_login_redirect_path)
     else
-      render :request_code
+      session_manager.end_session!
+      redirect_to(otp_sign_in_path)
     end
   end
 
@@ -62,6 +71,40 @@ private
   end
 
   def session_user
-    Sessions::Users::DfEUser.new(email: @otp_form.email)
+    return otp_school_user if otp_school_sign_in?
+
+    Sessions::Users::DfEUser.new(email: otp_user.email)
+  end
+
+  def otp_school_sign_in?
+    otp_school_sign_in_flag_enabled? && otp_user&.otp_school_urn.present?
+  end
+
+  def otp_access_allowed?
+    return false unless otp_user
+    return true if internal_admin_email?
+
+    if otp_school_sign_in_flag_enabled?
+      otp_user.otp_school_urn.present?
+    else
+      false
+    end
+  end
+
+  def internal_admin_email?
+    domain = otp_user&.email.to_s.split("@", 2).last&.downcase
+    INTERNAL_ADMIN_EMAIL_DOMAINS.include?(domain)
+  end
+
+  def otp_school_sign_in_flag_enabled?
+    Rails.application.config.enable_otp_school_sign_in
+  end
+
+  def otp_school_user
+    Sessions::Users::OTPSchoolUser.new(email: otp_user.email, name: otp_user.name, school_urn: otp_user.otp_school_urn)
+  end
+
+  def otp_user
+    @otp_user ||= @otp_form.user
   end
 end

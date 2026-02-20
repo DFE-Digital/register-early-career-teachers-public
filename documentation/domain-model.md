@@ -37,6 +37,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     enum role
+    string otp_school_urn
   }
   TrainingPeriod {
     integer id
@@ -87,7 +88,6 @@ erDiagram
   TeacherIdChange }o--|| Teacher : belongs_to
   Statement {
     integer id
-    integer active_lead_provider_id
     uuid api_id
     integer month
     integer year
@@ -101,7 +101,6 @@ erDiagram
     datetime api_updated_at
     integer contract_id
   }
-  Statement }o--|| ActiveLeadProvider : belongs_to
   Statement }o--|| Contract : belongs_to
   SchoolPartnership {
     integer id
@@ -393,10 +392,12 @@ erDiagram
     boolean pupil_premium_uplift
     datetime api_updated_at
     enum payment_status
+    integer delivery_partner_when_created_id
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| User : belongs_to
   Declaration }o--|| MentorshipPeriod : belongs_to
+  Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| Statement : belongs_to
   Declaration }o--|| Statement : belongs_to
   DataMigrationTeacherCombination {
@@ -477,6 +478,8 @@ erDiagram
     datetime updated_at
     decimal vat_rate
     integer active_lead_provider_id
+    string ecf_contract_version
+    string ecf_mentor_contract_version
   }
   Contract }o--|| ActiveLeadProvider : belongs_to
   Contract }o--|| Contract_FlatRateFeeStructure : belongs_to

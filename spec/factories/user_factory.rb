@@ -9,8 +9,18 @@ FactoryBot.define do
       User.find_or_initialize_by(email:)
     end
 
-    trait(:admin) { role { "admin" } }
-    trait(:user_manager) { role { "user_manager" } }
-    trait(:finance) { role { "finance" } }
+    trait :admin do
+      role { "admin" }
+      sequence(:email) { |n| "admin.user#{n}@education.gov.uk" }
+    end
+    trait :user_manager do
+      role { "user_manager" }
+      sequence(:email) { |n| "user.manager#{n}@education.gov.uk" }
+    end
+
+    trait :finance do
+      role { "finance" }
+      sequence(:email) { |n| "finance.user#{n}@education.gov.uk" }
+    end
   end
 end
