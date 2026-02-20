@@ -99,6 +99,10 @@ namespace :admin do
             member { get :delete }
           end
         end
+
+        resources :declarations, only: [] do
+          resources :voids, only: %i[new create]
+        end
       end
     end
   end

@@ -79,7 +79,7 @@ class Declaration < ApplicationRecord
   validates :declaration_type, inclusion: { in: Declaration.declaration_types.keys, message: "Choose a valid declaration type" }
   validates :evidence_type, inclusion: { in: Declaration.evidence_types.keys, message: "Choose a valid evidence type" }, allow_nil: true
   validates :mentorship_period, absence: { message: "Mentor teacher can only be assigned to declarations for ECTs" }, if: :for_mentor?
-  validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: :payment_status_no_payment?
+  validates :payment_statement, presence: { message: "Payment statement must be associated for declarations with a payment status" }, unless: -> { payment_status_no_payment? || payment_status_voided? }
   validates :clawback_statement, presence: { message: "Clawback statement must be associated for declarations with a clawback status" }, unless: :clawback_status_no_clawback?
   validates :delivery_partner_when_created, presence: { message: "Delivery partner when the declaration was created must be specified" }
   validate :mentorship_period_belongs_to_teacher

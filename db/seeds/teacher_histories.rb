@@ -586,10 +586,10 @@ FactoryBot.create(:declaration,
                     happened_at: alan_rickman_completed_date.at_midday,
                     **alan_rickman_lp_author)
   FactoryBot.create(:event,
-                    event_type: "teacher_declaration_clawed_back",
+                    event_type: "teacher_declaration_awaiting_clawback",
                     declaration: decl,
                     teacher: alan_rickman,
-                    heading: "Declaration clawed back",
+                    heading: "Declaration awaiting clawback",
                     happened_at: alan_rickman_completed_date.at_midday + 30.days,
                     **alan_rickman_lp_author)
   describe_declaration(decl)
