@@ -154,6 +154,37 @@ describe Migration::ParticipantDeclaration, type: :model do
     end
   end
 
+  describe "#migrated_evidende_held" do
+    subject { participant_declaration.migrated_evidence_held }
+
+    let(:participant_declaration) { FactoryBot.build(:migration_participant_declaration, evidence_held:) }
+
+    {
+      "75-percent-engagement-met" => "75-percent-engagement-met",
+      "75-percent-engagement-met-reduced-induction" => "75-percent-engagement-met-reduced-induction",
+      "materials-engaged-with-offline" => "materials-engaged-with-offline",
+      "one-term-induction" => "one-term-induction",
+      "other" => "other",
+      "self-study-material completed" => "self-study-material-completed",
+      "self-study-material-completed" => "self-study-material-completed",
+      "training_event_attendance" => "training-event-attended",
+      "training-event-attended" => "training-event-attended",
+      "" => nil
+    }.each do |ecf_value, rect_value|
+      context "when the value is '#{ecf_value}'" do
+        let(:evidence_held) { ecf_value }
+
+        it { is_expected.to eq(rect_value) }
+      end
+
+      context "any other value" do
+        let(:evidence_held) { "other_value" }
+
+        it { is_expected.to eq(evidence_held) }
+      end
+    end
+  end
+
   describe "#migrated_pupil_premium_uplift" do
     subject { participant_declaration.migrated_pupil_premium_uplift }
 
