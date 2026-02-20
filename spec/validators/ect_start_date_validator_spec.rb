@@ -95,7 +95,7 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
 
-    it "should be invalid for a date before the two previous contract periods" do
+    it "is invalid for a date before the two previous contract periods" do
       expect(subject).not_to be_valid
     end
   end
