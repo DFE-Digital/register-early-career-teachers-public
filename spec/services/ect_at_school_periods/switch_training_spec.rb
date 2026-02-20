@@ -233,6 +233,21 @@ module ECTAtSchoolPeriods
             expect(new_training_period.school_partnership).to eq(school_partnership)
             expect(new_training_period.expression_of_interest).to be_nil
           end
+
+          context "when the switch happens on the last day of the current contract period" do
+            around do |example|
+              travel_to(Date.new(2025, 5, 31)) do
+                example.run
+              end
+            end
+
+            it "finds the existing partnership and assigns it" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = ect_at_school_period.training_periods.last
+              expect(new_training_period.school_partnership).to eq(school_partnership)
+            end
+          end
         end
 
         context "when there is no confirmed school partnership" do
@@ -252,6 +267,21 @@ module ECTAtSchoolPeriods
             new_training_period = ect_at_school_period.training_periods.last
             expect(new_training_period.school_partnership).to be_nil
             expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+          end
+
+          context "when the switch happens on the last day of the current contract period" do
+            around do |example|
+              travel_to(Date.new(2025, 5, 31)) do
+                example.run
+              end
+            end
+
+            it "finds the active_lead_provider with the correct contract period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = ect_at_school_period.training_periods.last
+              expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+            end
           end
         end
 
@@ -412,6 +442,21 @@ module ECTAtSchoolPeriods
                   happened_at: Time.current
                 )
             end
+
+            context "when the switch happens on the last day of the current contract period" do
+              around do |example|
+                travel_to(Date.new(2025, 5, 31)) do
+                  example.run
+                end
+              end
+
+              it "finds the active lead provider with the correct contract period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = mentor_at_school_period.training_periods.last
+                expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+              end
+            end
           end
 
           context "when there is a confirmed school partnership" do
@@ -438,6 +483,21 @@ module ECTAtSchoolPeriods
               expect(new_training_period.expression_of_interest).to be_nil
               expect(new_training_period.started_on).to eq(Date.current)
               expect(new_training_period.schedule.contract_period.year).to eq(contract_period.year)
+            end
+
+            context "when the switch happens on the last day of the current contract period" do
+              around do |example|
+                travel_to(Date.new(2025, 5, 31)) do
+                  example.run
+                end
+              end
+
+              it "finds the existing lead provider" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = mentor_at_school_period.training_periods.last
+                expect(new_training_period.school_partnership).to eq(school_partnership)
+              end
             end
           end
 

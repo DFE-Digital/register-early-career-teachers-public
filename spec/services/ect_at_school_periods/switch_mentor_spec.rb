@@ -2,6 +2,8 @@ module ECTAtSchoolPeriods
   describe SwitchMentor do
     include_context "safe_schedules"
 
+    # TODO: Test this one
+
     subject(:switch_mentor) do
       SwitchMentor.switch(
         ect_at_school_period,

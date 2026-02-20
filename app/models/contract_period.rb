@@ -28,7 +28,7 @@ class ContractPeriod < ApplicationRecord
   validates :mentor_funding_enabled,
             :detailed_evidence_types_enabled, inclusion: { in: [true, false] }
 
-  def self.containing_date(date)
+  def self.containing_date_end_exclusive(date)
     find_by(*date_in_range(date))
   end
 
@@ -36,18 +36,24 @@ class ContractPeriod < ApplicationRecord
     find_by(*date_in_range_inclusive_start_inclusive_end(date))
   end
 
-  def self.current
-    containing_date(Time.zone.today)
+  def self.containing_date(date)
+    containing_date_end_inclusive(date)
+  end
+
+  def self.current_end_exclusive
+    containing_date_end_exclusive(Time.zone.today)
   end
 
   def self.current_end_inclusive
     containing_date_end_inclusive(Time.zone.today)
   end
 
-  def self.earliest_permitted_start_date
-    return unless current_end_inclusive
+  def self.current = current_end_inclusive
 
-    current_end_inclusive
+  def self.earliest_permitted_start_date
+    return unless current
+
+    current
       .predecessors
       .latest_first
       .offset(1)
@@ -59,7 +65,7 @@ class ContractPeriod < ApplicationRecord
     current_contract_period = current
     return current_contract_period unless current_contract_period && start_date.is_a?(Date)
 
-    contract_period_from_start_date = containing_date(start_date)
+    contract_period_from_start_date = containing_date_end_inclusive(start_date)
     return current_contract_period if contract_period_from_start_date.nil?
     return current_contract_period if contract_period_from_start_date.year < current_contract_period.year
 

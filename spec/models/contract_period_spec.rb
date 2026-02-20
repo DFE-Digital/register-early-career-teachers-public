@@ -36,6 +36,31 @@ describe ContractPeriod do
     end
   end
 
+  describe ".containing_date_end_exclusive" do
+    let!(:period) do
+      FactoryBot.create(:contract_period, started_on: Date.new(2024, 9, 1), finished_on: Date.new(2025, 8, 31))
+    end
+
+    it "returns the contract_period containing the given date" do
+      expect(ContractPeriod.containing_date_end_exclusive(Date.new(2025, 1, 1))).to eq(period)
+    end
+
+    it "returns nil when no period contains the date" do
+      expect(ContractPeriod.containing_date_end_exclusive(Date.new(2023, 1, 1))).to be_nil
+    end
+
+    context "when the date is on the boundary of a period" do
+      it "includes the start date in the period" do
+        expect(ContractPeriod.containing_date_end_exclusive(Date.new(2024, 9, 1))).to eq(period)
+      end
+
+      it "excludes the end date in the period" do
+        expect(ContractPeriod.containing_date_end_exclusive(Date.new(2025, 8, 31))).to be_nil
+      end
+    end
+  end
+
+  # aka containing_date_end_inclusive
   describe ".containing_date" do
     let!(:period) do
       FactoryBot.create(:contract_period, started_on: Date.new(2024, 9, 1), finished_on: Date.new(2025, 8, 31))
@@ -54,32 +79,40 @@ describe ContractPeriod do
         expect(ContractPeriod.containing_date(Date.new(2024, 9, 1))).to eq(period)
       end
 
-      it "excludes the end date in the period" do
-        expect(ContractPeriod.containing_date(Date.new(2025, 8, 31))).to be_nil
+      it "includes the end date in the period" do
+        expect(ContractPeriod.containing_date(Date.new(2025, 8, 31))).to eq(period)
       end
     end
   end
 
-  describe ".containing_date_end_inclusive" do
-    let!(:period) do
-      FactoryBot.create(:contract_period, started_on: Date.new(2024, 9, 1), finished_on: Date.new(2025, 8, 31))
-    end
-
-    it "returns the contract_period containing the given date" do
-      expect(ContractPeriod.containing_date_end_inclusive(Date.new(2025, 1, 1))).to eq(period)
-    end
-
-    it "returns nil when no period contains the date" do
-      expect(ContractPeriod.containing_date_end_inclusive(Date.new(2023, 1, 1))).to be_nil
-    end
-
-    context "when the date is on the boundary of a period" do
-      it "includes the start date in the period" do
-        expect(ContractPeriod.containing_date_end_inclusive(Date.new(2024, 9, 1))).to eq(period)
+  describe ".current_end_exclusive" do
+    context "when there is a current contract period" do
+      let!(:period) do
+        FactoryBot.create(:contract_period, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31))
       end
 
-      it "includes the end date in the period" do
-        expect(ContractPeriod.containing_date_end_inclusive(Date.new(2025, 8, 31))).to eq(period)
+      it "returns the current contract period" do
+        FactoryBot.create(:contract_period, started_on: Date.new(2023, 6, 1), finished_on: Date.new(2024, 5, 31))
+
+        travel_to Date.new(2024, 6, 1) do
+          expect(ContractPeriod.current_end_exclusive).to eq(period)
+        end
+      end
+
+      context "when we are on the last day of the contract period" do
+        it "returns nil" do
+          travel_to period.finished_on do
+            expect(ContractPeriod.current_end_exclusive).to be_nil
+          end
+        end
+      end
+    end
+
+    context "when there is no current contract period" do
+      it "returns nil" do
+        travel_to Date.new(2025, 6, 1) do
+          expect(ContractPeriod.current_end_exclusive).to be_nil
+        end
       end
     end
   end
@@ -95,6 +128,14 @@ describe ContractPeriod do
 
         travel_to Date.new(2024, 6, 1) do
           expect(ContractPeriod.current).to eq(period)
+        end
+      end
+
+      context "when we are on the last day of the contract period" do
+        it "returns the current contract period" do
+          travel_to period.finished_on do
+            expect(ContractPeriod.current).to eq(period)
+          end
         end
       end
     end

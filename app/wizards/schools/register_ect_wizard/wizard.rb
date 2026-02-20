@@ -211,7 +211,7 @@ module Schools
       def start_date_contract_period
         return nil unless ect.start_date
 
-        ContractPeriod.containing_date_end_inclusive(Date.parse(ect.start_date))
+        ContractPeriod.containing_date(Date.parse(ect.start_date))
       end
 
       def can_reach_check_answers?
