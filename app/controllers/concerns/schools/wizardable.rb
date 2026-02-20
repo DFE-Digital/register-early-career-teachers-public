@@ -28,6 +28,10 @@ module Schools
                     unless: -> { wizard_class.step?(@previous_step) },
                     only: :new
 
+      before_action :set_sentry_context,
+                    if: -> { Rails.application.config.enable_sentry },
+                    unless: -> { Rails.env.production? }
+
     private
 
       def set_steps
@@ -56,6 +60,12 @@ module Schools
           store: @store,
           wizard_record_name => instance_variable_get("@#{wizard_record_name}")
         )
+      end
+
+      def set_sentry_context
+        Sentry.configure_scope do |scope|
+          scope.set_context("wizard_session_#{FORM_KEY}", store.data)
+        end
       end
 
       def wizard_class
