@@ -1,6 +1,8 @@
 module Schools
   class ECTTrainingDetailsComponent < ApplicationComponent
     include ProgrammeHelper
+    include TeacherHelper
+    include ECTHelper
 
     NOT_AVAILABLE = "Not available"
     YET_TO_BE_REPORTED = "Yet to be reported by the lead provider"
@@ -13,21 +15,106 @@ module Schools
       @training_period = training_period
     end
 
-    def render? = @training_period.present?
+    def render?
+      ect_at_school_period.present? && training_period.present?
+    end
 
     def call
-      safe_join([
-        tag.h2("Training details", class: "govuk-heading-m"),
-        govuk_summary_list(rows:)
-      ])
+      tag.section(id: "training-details") do
+        safe_join([
+          tag.h2("Training details", class: "govuk-heading-m"),
+          training_details_body
+        ])
+      end
     end
 
   private
 
+    def training_details_body
+      return withdrawn_training_details if withdrawn?
+
+      govuk_summary_list(rows:)
+    end
+
+    def withdrawn?
+      training_period&.status == :withdrawn
+    end
+
+    def withdrawn_training_details
+      safe_join([
+        withdrawn_intro_paragraph,
+        select_lead_provider_paragraph,
+        change_to_school_led_paragraph
+      ])
+    end
+
+    def withdrawn_intro_paragraph
+      tag.p(
+        withdrawn_training_details_message,
+        class: "govuk-body govuk-!-margin-top-2"
+      )
+    end
+
+    def select_lead_provider_paragraph
+      ect_name = teacher_full_name(ect_at_school_period.teacher)
+
+      tag.p(
+        safe_join([
+          "You can ".html_safe,
+          govuk_link_to(
+            "select a lead provider",
+            change_lead_provider_path,
+            no_visited_state: true
+          ),
+          " for #{ect_name} if they will be continuing provider-led training.".html_safe
+        ]),
+        class: "govuk-body"
+      )
+    end
+
+    def change_to_school_led_paragraph
+      teacher_full_name(ect_at_school_period.teacher)
+
+      tag.p(
+        safe_join([
+          "You can tell us if they are ".html_safe,
+          govuk_link_to(
+            "changing their programme type to school-led",
+            change_training_programme_path,
+            no_visited_state: true
+          ),
+          ".".html_safe
+        ]),
+        class: "govuk-body"
+      )
+    end
+
+    def withdrawn_training_details_message
+      lead_provider_name = withdrawn_lead_provider_name
+      subject = lead_provider_name.presence || "The lead provider"
+      verb = lead_provider_name.present? ? "have" : "has"
+      ect_name = teacher_full_name(ect_at_school_period.teacher)
+
+      "#{subject} #{verb} told us that #{ect_name} is no longer training with them. Contact them if you think this is an error."
+    end
+
+    def withdrawn_lead_provider_name
+      current_training_period = training_period
+      return nil if current_training_period.blank?
+
+      if current_training_period.only_expression_of_interest?
+        expression_of_interest = current_training_period.expression_of_interest
+        lead_provider = expression_of_interest&.lead_provider
+        lead_provider&.name
+      else
+        current_training_period.lead_provider_name
+      end
+    end
+
     def rows
       base_rows = [training_programme_row]
 
-      if training_period.provider_led_training_programme?
+      if training_period&.provider_led_training_programme?
         base_rows << lead_provider_row
         base_rows << delivery_partner_row
       end
@@ -42,7 +129,7 @@ module Schools
         actions: [{
           text: "Change",
           visually_hidden_text: "training programme",
-          href: schools_ects_change_training_programme_wizard_edit_path(@ect_at_school_period),
+          href: change_training_programme_path,
           classes: "govuk-link--no-visited-state"
         }]
       }
@@ -55,7 +142,7 @@ module Schools
         actions: [{
           text: "Change",
           visually_hidden_text: "lead provider",
-          href: schools_ects_change_lead_provider_wizard_edit_path(@ect_at_school_period),
+          href: change_lead_provider_path,
           classes: "govuk-link--no-visited-state"
         }]
       }
@@ -117,6 +204,14 @@ module Schools
 
     def training_programme_display_name
       TRAINING_PROGRAMME.fetch(training_period.training_programme, "Unknown")
+    end
+
+    def change_lead_provider_path
+      schools_ects_change_lead_provider_wizard_edit_path(ect_id: ect_at_school_period.id)
+    end
+
+    def change_training_programme_path
+      schools_ects_change_training_programme_wizard_edit_path(ect_id: ect_at_school_period.id)
     end
   end
 end

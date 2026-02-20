@@ -1,4 +1,6 @@
 RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
   let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Test Delivery Partner") }
   let(:active_lead_provider) { FactoryBot.build(:active_lead_provider, lead_provider:) }
@@ -95,6 +97,106 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
 
     it "does not show delivery partner information" do
       expect(page).not_to have_summary_list_row("Delivery partner")
+    end
+  end
+
+  context "when training is withdrawn" do
+    let(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period:,
+        started_on: 1.year.ago.to_date,
+        finished_on: nil,
+        withdrawn_at: Time.zone.today,
+        withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
+      )
+    end
+
+    it "shows the action required tag and withdrawn message" do
+      expect(page).to have_text("is no longer training with them")
+    end
+
+    it "shows a link to select a lead provider" do
+      expect(page).to have_link("select a lead provider")
+    end
+
+    it "links 'select a lead provider' to the change lead provider journey start" do
+      expect(page).to have_link(
+        "select a lead provider",
+        href: schools_ects_change_lead_provider_wizard_edit_path(ect_id: ect_at_school_period.id)
+      )
+    end
+
+    it "shows a link to change programme type to school-led" do
+      expect(page).to have_link("changing their programme type to school-led")
+    end
+
+    it "links 'changing their programme type to school-led' to the change training programme journey start" do
+      expect(page).to have_link("changing their programme type to school-led", href: schools_ects_change_training_programme_wizard_edit_path(ect_id: ect_at_school_period.id))
+    end
+
+    it "does not render the normal summary list" do
+      expect(page).to have_no_css(".govuk-summary-list")
+      expect(page).not_to have_text("Training programme")
+      expect(page).not_to have_text("Lead provider")
+      expect(page).not_to have_text("Delivery partner")
+    end
+  end
+
+  context "when training is deferred" do
+    let(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        :provider_led,
+        ect_at_school_period:,
+        started_on: ect_at_school_period.started_on,
+        finished_on: nil,
+        deferred_at: Time.zone.today,
+        deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+      )
+    end
+
+    it "renders the normal training details summary list" do
+      expect(page).to have_css(".govuk-summary-list")
+    end
+
+    it "shows the training programme row" do
+      expect(page).to have_summary_list_row("Training programme")
+    end
+
+    it "still shows lead provider and delivery partner rows" do
+      expect(page).to have_summary_list_row("Lead provider")
+      expect(page).to have_summary_list_row("Delivery partner")
+    end
+
+    context "when the latest training period is an expression of interest only" do
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on,
+          finished_on: nil,
+          deferred_at: Time.zone.today,
+          deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+        ) do |tp|
+          tp.school_partnership = nil
+          tp.expression_of_interest = FactoryBot.create(:active_lead_provider)
+        end
+      end
+
+      it "shows lead provider information with awaiting confirmation status" do
+        expect(page).to have_summary_list_row("Lead provider")
+        expect(page).to have_text("Awaiting confirmation by")
+      end
+
+      it "shows the delivery partner fallback text" do
+        expect(page).to have_summary_list_row(
+          "Delivery partner",
+          value: "Yet to be reported by the lead provider"
+        )
+      end
     end
   end
 

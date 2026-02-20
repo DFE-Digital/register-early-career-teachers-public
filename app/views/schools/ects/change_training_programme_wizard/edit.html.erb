@@ -1,4 +1,4 @@
-<% if @wizard.ect_at_school_period.provider_led_training_programme? %>
+<% if @wizard.ect_at_school_period.provider_led_training_programme? || @wizard.ect_at_school_period.latest_training_period&.status == :withdrawn %>
   <%= render "provider_to_school_led" %>
 <% else %>
   <%= render "school_to_provider_led" %>

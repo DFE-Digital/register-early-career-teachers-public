@@ -1029,4 +1029,47 @@ describe TrainingPeriod do
       end
     end
   end
+
+  describe "#training_status" do
+    subject(:status) { training_period.status }
+
+    let(:training_period) { FactoryBot.build(:training_period, withdrawn_at:, deferred_at:) }
+
+    context "when neither withdrawn nor deferred" do
+      let(:withdrawn_at) { nil }
+      let(:deferred_at) { nil }
+
+      it { is_expected.to eq(:active) }
+    end
+
+    context "when withdrawn only" do
+      let(:withdrawn_at) { Time.zone.parse("2025-01-01") }
+      let(:deferred_at) { nil }
+
+      it { is_expected.to eq(:withdrawn) }
+    end
+
+    context "when deferred only" do
+      let(:withdrawn_at) { nil }
+      let(:deferred_at) { Time.zone.parse("2025-01-01") }
+
+      it { is_expected.to eq(:deferred) }
+    end
+
+    context "when both withdrawn and deferred are present" do
+      context "and withdrawn_at is later than deferred_at" do
+        let(:deferred_at) { Time.zone.parse("2025-01-01") }
+        let(:withdrawn_at) { Time.zone.parse("2025-02-01") }
+
+        it { is_expected.to eq(:withdrawn) }
+      end
+
+      context "and deferred_at is later than withdrawn_at" do
+        let(:withdrawn_at) { Time.zone.parse("2025-01-01") }
+        let(:deferred_at) { Time.zone.parse("2025-02-01") }
+
+        it { is_expected.to eq(:deferred) }
+      end
+    end
+  end
 end

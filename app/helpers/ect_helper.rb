@@ -1,4 +1,8 @@
 module ECTHelper
+  NOT_AVAILABLE = "Not available"
+  EOI_DELIVERY_PARTNER_TEXT = "Their lead provider will confirm this"
+  YET_TO_BE_REPORTED = "Yet to be reported by the lead provider"
+
   # @param ect [ECTAtSchoolPeriod]
   def current_mentor_name(ect)
     ECTAtSchoolPeriods::Mentorship.new(ect).current_mentor_name
@@ -6,7 +10,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_delivery_partner_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || "Their lead provider will confirm this"
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || EOI_DELIVERY_PARTNER_TEXT
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -22,6 +26,54 @@ module ECTHelper
   # @param ect [ECTAtSchoolPeriod]
   def latest_eoi_lead_provider_name(ect)
     ECTAtSchoolPeriods::CurrentTraining.new(ect).expression_of_interest_lead_provider_name
+  end
+
+  # @param training_period [TrainingPeriod]
+  def training_period_lead_provider_name(training_period)
+    return nil if training_period.blank?
+
+    if training_period.only_expression_of_interest?
+      training_period.expression_of_interest_lead_provider&.name
+    else
+      training_period.lead_provider_name
+    end
+  end
+
+  # @param training_period [TrainingPeriod, nil]
+  def training_period_lead_provider_display_text(training_period)
+    training_period_lead_provider_name(training_period).presence || NOT_AVAILABLE
+  end
+
+  # @param training_period [TrainingPeriod, nil]
+  def training_period_delivery_partner_display_text(training_period)
+    return YET_TO_BE_REPORTED if training_period.blank?
+    return EOI_DELIVERY_PARTNER_TEXT if training_period.only_expression_of_interest?
+
+    training_period.delivery_partner_name.presence || YET_TO_BE_REPORTED
+  end
+
+  # @param teacher_name [String]
+  # @param training_period [TrainingPeriod, nil]
+  def training_period_withdrawn_message_text(teacher_name:, training_period:)
+    return nil if training_period.blank?
+
+    lp_name = training_period_lead_provider_name(training_period)
+    subject = lp_name.presence || "The lead provider"
+    verb = lp_name.present? ? "have" : "has"
+
+    "#{subject} #{verb} told us that #{teacher_name} is no longer training with them. Contact them if you think this is an error."
+  end
+
+  # @param teacher_name [String]
+  # @param training_period [TrainingPeriod, nil]
+  def training_period_deferred_message_text(teacher_name:, training_period:)
+    return nil if training_period.blank?
+
+    lp_name = training_period_lead_provider_name(training_period)
+    subject = lp_name.presence || "The lead provider"
+    verb = lp_name.present? ? "have" : "has"
+
+    "#{subject} #{verb} told us that #{teacher_name}'s training is paused. Contact them if you think this is an error."
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -52,6 +104,16 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
+  def mentor_required?(ect, current_school: nil)
+    return false if current_school && ect.leaving_reported_for_school?(current_school)
+
+    induction_status = ect.teacher.trs_induction_status
+    return false if induction_status.in?(%w[Passed Failed Exempt])
+
+    current_mentor_name(ect).blank?
+  end
+
+  # @param ect [ECTAtSchoolPeriod]
   def ect_status(ect, current_school: nil)
     return govuk_tag(text: "Leaving school", colour: "yellow") if current_school && ect.leaving_reported_for_school?(current_school)
 
@@ -65,10 +127,17 @@ module ECTHelper
     when "Exempt"
       govuk_tag(text: "Exempt", colour: "grey")
     else
-      if current_mentor_name(ect)
+      if current_mentor_name(ect).present?
         govuk_tag(text: "Registered", colour: "green")
       else
-        govuk_tag(text: "Mentor required", colour: "red")
+        teacher_name = teacher_full_name(ect.teacher)
+
+        safe_join(
+          [
+            govuk_tag(text: "Action required", colour: "red"),
+            tag.p("A mentor needs to be assigned to #{teacher_name}.", class: "govuk-body govuk-!-margin-top-2"),
+          ]
+        )
       end
     end
   end

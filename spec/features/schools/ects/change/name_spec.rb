@@ -3,6 +3,16 @@ RSpec.describe "Changing an ECT's name", :enable_schools_interface do
     FactoryBot.create(:ect_at_school_period, :not_started_yet, school:, teacher:)
   end
 
+  let!(:training_period) do
+    FactoryBot.create(
+      :training_period,
+      :school_led,
+      ect_at_school_period:,
+      started_on: ect_at_school_period.started_on,
+      finished_on: ect_at_school_period.finished_on
+    )
+  end
+
   let(:teacher) do
     FactoryBot.create(:teacher, trs_first_name: "Miriam", trs_last_name: "Margolyes")
   end
