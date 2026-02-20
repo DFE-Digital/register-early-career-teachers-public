@@ -57,6 +57,7 @@ class ECF1TeacherHistory
       states: build_profile_states(participant_profile:),
       induction_records:,
       mentor_at_school_periods: SchoolMentorsForECT.new(induction_records:).mentor_at_school_periods
+      transfers: BuildParticipantTransfers.new(participant_profile:).transfers
     )
   end
 
@@ -114,7 +115,8 @@ class ECF1TeacherHistory
       states: build_profile_states(participant_profile:),
       induction_records: build_induction_records(participant_profile:),
       ero_mentor: ero_check.ero_mentor?,
-      ero_declarations: ero_check.ero_mentor_with_declarations?
+      ero_declarations: ero_check.ero_mentor_with_declarations?,
+      transfers: BuildParticipantTransfers.new(participant_profile:).transfers
     )
   end
 
