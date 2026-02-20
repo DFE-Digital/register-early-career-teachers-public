@@ -1,19 +1,34 @@
 require "csv"
 
 module AppropriateBodies::Importers
-  class InductionPeriodImporter
-    IMPORT_ERROR_LOG = "log/induction_period_error.log"
-    ECF_CUTOFF = Date.new(2021, 9, 1).freeze
+  class InductionPeriodParser
+    PARSER_ERROR_LOG = "log/dqt_induction_period_parser.log"
 
-    attr_accessor :csv, :data, :logger
+    # 2 legacy teachers with inductions have already been imported manually
+    UNWANTED_TEACHER_IDS = [76_075, 93_314].freeze
 
-    ClaimEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
+    # TODO: describe dates
+    ECF_CUTOFF = Date.new(2021, 9, 1).freeze # induction programme type pre-Sept
+    CUTOFF_DATE = Date.new(2024, 8, 31).freeze
+
+    InductionEvent = Struct.new(
+      :appropriate_body_period_id,
+      :induction_period_id,
+      :teacher_id,
+      :happened_at,
+      :metadata,
+      keyword_init: true
+    ) do
+      def self.event_type
+        raise NotImplementedError, "Subclasses must define event_type"
+      end
+
       def to_h
         {
           author_type: "system",
           heading: "placeholder",
-          event_type: "induction_period_opened",
-          body: nil,
+          event_type: self.class.event_type,
+          body: "Imported from DQT",
           appropriate_body_period_id:,
           induction_period_id:,
           teacher_id:,
@@ -23,31 +38,29 @@ module AppropriateBodies::Importers
       end
     end
 
-    ReleaseEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
-      def to_h
-        {
-          author_type: "system",
-          heading: "placeholder",
-          event_type: "induction_period_closed",
-          body: nil,
-          appropriate_body_period_id:,
-          induction_period_id:,
-          teacher_id:,
-          metadata:,
-          happened_at:,
-        }
-      end
+    class ClaimEvent < InductionEvent
+      def self.event_type = "induction_period_opened"
+    end
+
+    class ReleaseEvent < InductionEvent
+      def self.event_type = "induction_period_closed"
+    end
+
+    class PassEvent < InductionEvent
+      def self.event_type = "teacher_passes_induction"
+    end
+
+    class FailEvent < InductionEvent
+      def self.event_type = "teacher_fails_induction"
     end
 
     ImportEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :metadata, :heading, :body, keyword_init: true) do
-      def event_type = :import_from_dqt
-
       def to_h
         {
           appropriate_body_period_id:,
           author_type: "system",
           body:,
-          event_type:,
+          event_type: "import_from_dqt",
           happened_at: Time.zone.now,
           heading:,
           induction_period_id:,
@@ -57,7 +70,7 @@ module AppropriateBodies::Importers
       end
     end
 
-    Row = Struct.new(:legacy_appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, :teacher_id, :appropriate_body_period_id, :id, keyword_init: true) do
+    Row = Struct.new(:legacy_appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, :teacher_id, :appropriate_body_period_id, :id, :induction_status, keyword_init: true) do
       def range
         started_on...finished_on
       end
@@ -74,6 +87,24 @@ module AppropriateBodies::Importers
         !finished?
       end
 
+      def outcome
+        return :pass if passed?
+
+        :fail if failed?
+      end
+
+      def released?
+        finished? && induction_status.blank?
+      end
+
+      def passed?
+        finished? && induction_status.to_s.eql?("Passed")
+      end
+
+      def failed?
+        finished? && induction_status.to_s.starts_with?("Failed")
+      end
+
       # used in notes
       def to_h
         { legacy_appropriate_body_id:, started_on:, finished_on:, induction_programme:, number_of_terms: }
@@ -81,13 +112,30 @@ module AppropriateBodies::Importers
 
       # used for comparisons in tests
       def to_hash
-        { appropriate_body_period_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
+        {
+          appropriate_body_period_id:,
+          started_on:,
+          finished_on: fixed_finished_on,
+          induction_programme: convert_induction_programme,
+          number_of_terms: fixed_number_of_terms,
+          outcome:
+        }
       end
 
+      # Inserted into database
       def to_record
-        { teacher_id:, appropriate_body_period_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
+        {
+          teacher_id:,
+          appropriate_body_period_id:,
+          started_on:,
+          finished_on: fixed_finished_on,
+          induction_programme: convert_induction_programme,
+          number_of_terms: fixed_number_of_terms,
+          outcome:
+        }
       end
 
+      # @return [Array<Hash>]
       def events
         common_values = { teacher_id:, appropriate_body_period_id:, induction_period_id: id }
 
@@ -95,7 +143,9 @@ module AppropriateBodies::Importers
 
         [
           ClaimEvent.new(happened_at: started_on, **common_values),
-          (ReleaseEvent.new(happened_at: finished_on, **common_values) if finished_on.present?),
+          (ReleaseEvent.new(happened_at: finished_on, **common_values) if released?),
+          (PassEvent.new(happened_at: finished_on, **common_values) if passed?),
+          (FailEvent.new(happened_at: finished_on, **common_values) if failed?),
           *import_events
         ].compact.map(&:to_h)
       end
@@ -121,80 +171,109 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, dqt_csv_filename, csv: nil, dqt_csv: nil, logger: nil)
-      @csv = csv || CSV.read(filename, headers: true)
-      @dqt_csv = dqt_csv || CSV.read(dqt_csv_filename, headers: true)
+    attr_accessor :csv,
+                  :data_csv,
+                  :logger,
+                  :offshore_dqt_uuids,
+                  :all_dqt_uuids,
+                  :trns_already_persisted_with_inductions
 
-      File.open(IMPORT_ERROR_LOG, "w") { |f| f.truncate(0) }
-      @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
+    def initialize(data_csv:, logger: nil)
+      @data_csv = data_csv
+      @offshore_dqt_uuids = OFFSHORE_DQT_UUIDS.to_set
+      @all_dqt_uuids = AppropriateBodyPeriod.pluck(:dqt_id).to_set
+      @trns_already_persisted_with_inductions = Teacher.where(id: UNWANTED_TEACHER_IDS).pluck(:trn).to_set
+
+      File.open(PARSER_ERROR_LOG, "w") { |f| f.truncate(0) }
+      @logger = logger || Logger.new(PARSER_ERROR_LOG, File::CREAT)
     end
 
+    # @return [Array<Struct>] all rows
     def rows
-      @rows ||= @csv.map { |row| Row.new(**build(row)) }
+      @rows ||= csv_rows.map { |row| Row.new(**build(row)) }
     end
 
-    def old_abs
-      @old_abs ||= @dqt_csv.map { |r| r["dqt_id"].downcase }
-    end
-
-    def build(row)
-      {
-        legacy_appropriate_body_id: row["appropriate_body_id"]&.downcase,
-        started_on: extract_date(row["started_on"]),
-        finished_on: extract_date(row["finished_on"]),
-        induction_programme: row["induction_programme_choice"],
-        number_of_terms: row["number_of_terms"].to_i,
-        trn: row["trn"],
-        notes: [],
-        appropriate_body_period_id: nil,
-        teacher_id: nil
-      }
-    end
-
+    # @return [Hash{String => Array<Struct>}] filtered rows
     def periods_by_trn
       rows
-        .reject { |ip|
-          if ip.started_on.nil?
-            log_error("cannot be imported because started_on is nil", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
+        .reject { |row|
+          if row.trn.nil? || row.legacy_appropriate_body_id.nil?
+            log_error("cannot be imported because TRN or AB is missing",
+                      trn: row.trn,
+                      legacy_appropriate_body_id: row.legacy_appropriate_body_id)
           else
             false
           end
         }
-        .reject { |ip|
-          if ip.started_on == Date.new(1, 1, 1)
-            log_error("cannot be imported because started_on is 0001-01-01", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
+        .reject { |row|
+          if row.started_on.nil?
+            log_error("cannot be imported because started_on is nil",
+                      trn: row.trn,
+                      legacy_appropriate_body_id: row.legacy_appropriate_body_id)
           else
             false
           end
         }
-        .reject { |ip|
-          if ip.finished_on && ip.started_on > ip.finished_on
-            log_error("cannot be imported because started_on is greater than finished_on", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
+        .reject { |row|
+          if row.finished_on.nil?
+            log_error("cannot be imported because finished_on is nil",
+                      trn: row.trn,
+                      legacy_appropriate_body_id: row.legacy_appropriate_body_id)
           else
             false
           end
         }
+        .reject { |row|
+          if row.started_on == Date.new(1, 1, 1)
+            log_error("cannot be imported because started_on is 0001-01-01",
+                      trn: row.trn,
+                      legacy_appropriate_body_id: row.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
+        .reject { |row|
+          if row.finished_on && row.started_on > row.finished_on
+            log_error("cannot be imported because started_on is greater than finished_on",
+                      trn: row.trn,
+                      legacy_appropriate_body_id: row.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
+        .reject { |row|
+          if row.legacy_appropriate_body_id.in?(offshore_dqt_uuids)
+            log_error("cannot be imported because legacy_appropriate_body_id is offshore",
+                      trn: row.trn,
+                      legacy_appropriate_body_id: row.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
+        .reject { |row|
+          if row.trn.in?(trns_already_persisted_with_inductions)
+            log_error("cannot be imported because teacher already exists with inductions",
+                      trn: row.trn,
+                      legacy_appropriate_body_id: row.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
+        .sort_by(&:trn)
         .group_by(&:trn)
-        .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_period_id] } }
-        .each_with_object({}) do |(trn, rows), h|
+        .transform_values { |periods| periods.sort_by { |p| [p.started_on, p.length, p.appropriate_body_period_id] } } # CONFIRM that the last one is at the end
+        .each_with_object({}) do |(trn, periods), hashmap|
           keep = []
 
-          cutoff_date = Date.new(2024, 8, 31)
-
-          rows.each do |current|
-            if current.legacy_appropriate_body_id.in?(old_abs) && (current.finished_on.nil? || current.finished_on > cutoff_date)
+          periods.each do |current|
+            if current.legacy_appropriate_body_id.in?(all_dqt_uuids) && (current.finished_on.nil? || current.finished_on > CUTOFF_DATE)
               current.notes << {
                 heading: "Amended while importing from DQT",
                 body: "Induction period curtailed because it finished after appropriate body status lost",
                 data: { originals: [current.dup] }
               }
 
-              current.finished_on = if current.started_on >= cutoff_date
-                                      # NOTE: this only affects one record
-                                      current.started_on + 1
-                                    else
-                                      cutoff_date
-                                    end
+              current.finished_on = current.started_on >= CUTOFF_DATE ? current.started_on + 1 : CUTOFF_DATE
 
               keep << current
               next
@@ -358,16 +437,48 @@ module AppropriateBodies::Importers
               end
           end
 
-          h[trn] = keep
+          hashmap[trn] = keep
         end
     end
 
+    # @return [Hash{String => Array<Hash>}] filtered rows as hashes
     def periods_as_hashes_by_trn
       periods_by_trn.transform_values { |v| v.map(&:to_hash) }
     end
 
   private
 
+    # @param row [CSV::Row]
+    # @return [Hash]
+    def build(row)
+      {
+        legacy_appropriate_body_id: row["appropriate_body_id"]&.downcase,
+        started_on: extract_date(row["started_on"]),
+        finished_on: extract_date(row["finished_on"]),
+        induction_programme: row["induction_programme_choice"],
+        number_of_terms: row["number_of_terms"].to_i,
+        trn: row["trn"],
+        notes: [],
+        appropriate_body_period_id: nil,
+        teacher_id: nil,
+        induction_status: nil,
+      }
+    end
+
+    # @return [CSV::Table]
+    def csv_rows
+      genuine_data? ? CSV.read(data_csv, headers: true) : CSV.parse(data_csv, headers: true)
+    end
+
+    # @return [Boolean]
+    def genuine_data?
+      data_csv.to_s.ends_with?("inductionperiods.csv")
+    end
+
+    # @param message [String]
+    # @param trn [String, nil]
+    # @param legacy_appropriate_body_id [String, nil]
+    # @return [void]
     def log_error(message, trn:, legacy_appropriate_body_id:)
       logger.error(
         [
@@ -378,6 +489,8 @@ module AppropriateBodies::Importers
       )
     end
 
+    # @param datetime [String]
+    # @return [Date, nil]
     def extract_date(datetime)
       return if datetime.blank?
 
