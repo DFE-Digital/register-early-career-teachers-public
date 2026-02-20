@@ -13,7 +13,7 @@ module AppropriateBodies::Importers
           author_type: "system",
           heading: "placeholder",
           event_type: "induction_period_opened",
-          body: nil,
+          body: "Imported from ECF1",
           appropriate_body_period_id:,
           induction_period_id:,
           teacher_id:,
@@ -29,7 +29,39 @@ module AppropriateBodies::Importers
           author_type: "system",
           heading: "placeholder",
           event_type: "induction_period_closed",
-          body: nil,
+          body: "Imported from ECF1",
+          appropriate_body_period_id:,
+          induction_period_id:,
+          teacher_id:,
+          metadata:,
+          happened_at:,
+        }
+      end
+    end
+
+    PassEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
+      def to_h
+        {
+          author_type: "system",
+          heading: "placeholder",
+          event_type: "teacher_passes_induction",
+          body: "Imported from ECF1",
+          appropriate_body_period_id:,
+          induction_period_id:,
+          teacher_id:,
+          metadata:,
+          happened_at:,
+        }
+      end
+    end
+
+    FailEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
+      def to_h
+        {
+          author_type: "system",
+          heading: "placeholder",
+          event_type: "teacher_fails_induction",
+          body: "Imported from ECF1",
           appropriate_body_period_id:,
           induction_period_id:,
           teacher_id:,
@@ -40,14 +72,12 @@ module AppropriateBodies::Importers
     end
 
     ImportEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :metadata, :heading, :body, keyword_init: true) do
-      def event_type = :import_from_dqt
-
       def to_h
         {
           appropriate_body_period_id:,
           author_type: "system",
           body:,
-          event_type:,
+          event_type: "import_from_dqt",
           happened_at: Time.zone.now,
           heading:,
           induction_period_id:,
@@ -57,7 +87,7 @@ module AppropriateBodies::Importers
       end
     end
 
-    Row = Struct.new(:legacy_appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, :teacher_id, :appropriate_body_period_id, :id, keyword_init: true) do
+    Row = Struct.new(:legacy_appropriate_body_id, :started_on, :finished_on, :induction_programme, :number_of_terms, :trn, :notes, :teacher_id, :appropriate_body_period_id, :id, :induction_status, keyword_init: true) do
       def range
         started_on...finished_on
       end
@@ -74,6 +104,24 @@ module AppropriateBodies::Importers
         !finished?
       end
 
+      def outcome
+        return :pass if passed?
+
+        :fail if failed?
+      end
+
+      def released?
+        finished? && induction_status.blank?
+      end
+
+      def passed?
+        finished? && induction_status == "Passed"
+      end
+
+      def failed?
+        finished? && induction_status == "Failed"
+      end
+
       # used in notes
       def to_h
         { legacy_appropriate_body_id:, started_on:, finished_on:, induction_programme:, number_of_terms: }
@@ -81,11 +129,27 @@ module AppropriateBodies::Importers
 
       # used for comparisons in tests
       def to_hash
-        { appropriate_body_period_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
+        {
+          appropriate_body_period_id:,
+          started_on:,
+          finished_on: fixed_finished_on,
+          induction_programme: convert_induction_programme,
+          number_of_terms: fixed_number_of_terms,
+          outcome:
+        }
       end
 
+      # Inserted into database
       def to_record
-        { teacher_id:, appropriate_body_period_id:, started_on:, finished_on: fixed_finished_on, induction_programme: convert_induction_programme, number_of_terms: fixed_number_of_terms }
+        {
+          teacher_id:,
+          appropriate_body_period_id:,
+          started_on:,
+          finished_on: fixed_finished_on,
+          induction_programme: convert_induction_programme,
+          number_of_terms: fixed_number_of_terms,
+          outcome:
+        }
       end
 
       def events
@@ -95,7 +159,9 @@ module AppropriateBodies::Importers
 
         [
           ClaimEvent.new(happened_at: started_on, **common_values),
-          (ReleaseEvent.new(happened_at: finished_on, **common_values) if finished_on.present?),
+          (ReleaseEvent.new(happened_at: finished_on, **common_values) if released?),
+          (PassEvent.new(happened_at: finished_on, **common_values) if passed?),
+          (FailEvent.new(happened_at: finished_on, **common_values) if failed?),
           *import_events
         ].compact.map(&:to_h)
       end
@@ -147,7 +213,8 @@ module AppropriateBodies::Importers
         trn: row["trn"],
         notes: [],
         appropriate_body_period_id: nil,
-        teacher_id: nil
+        teacher_id: nil,
+        induction_status: nil,
       }
     end
 

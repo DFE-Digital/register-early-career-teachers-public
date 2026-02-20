@@ -10,6 +10,7 @@ module AppropriateBodies::Importers
           trn:,
           trs_first_name: first_name_with_fallback,
           trs_last_name: last_name_with_fallback,
+          trs_induction_status: induction_status, # new value we expect not to change on the next sync
         }
       end
 
@@ -49,7 +50,7 @@ module AppropriateBodies::Importers
         seek = sorted_trns_with_induction_periods.shift
       end
 
-      @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name extension_length extension_length_unit induction_status])
+      @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name extension_length extension_length_unit induction_status]) # TODO: remove headers if we update the file before using it
 
       File.open(IMPORT_ERROR_LOG, "w") { |f| f.truncate(0) }
       @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
@@ -60,8 +61,8 @@ module AppropriateBodies::Importers
     end
 
     def rows_with_wanted_statuses
-      wanted_statuses = (%w[RequiredToComplete InProgress])
-      rows.reject { |row| row.induction_status.in?(wanted_statuses) }
+      unwanted_statuses = %w[RequiredToComplete InProgress]
+      rows.reject { |row| row.induction_status.in?(unwanted_statuses) }
     end
 
   private
@@ -103,7 +104,6 @@ module AppropriateBodies::Importers
                           value / 65.0
                         end
 
-      # FIXME: don't bother recording anything that rounds to 0
       converted_value.round(1)
     end
   end

@@ -26,6 +26,12 @@ module AppropriateBodies::Importers
       end
     end
 
+    def teacher_trn_to_status
+      @teacher_trn_to_status ||= Teacher.all.select(:trn, :trs_induction_status).each_with_object({}) do |t, h|
+        h[t[:trn]] = t[:trs_induction_status]
+      end
+    end
+
     def ab_legacy_id_to_id
       @ab_legacy_id_to_id ||= AppropriateBodyPeriod.all.select(:id, :dqt_id).each_with_object({}) do |ab, h|
         h[ab[:dqt_id]] = ab[:id]
@@ -80,6 +86,16 @@ module AppropriateBodies::Importers
             next
           end
 
+          # The final induction needs the outcome
+          begin
+            if induction_periods.max_by(&:finished_on).eql?(ip)
+              ip.induction_status = teacher_trn_to_status.fetch(trn)
+            end
+          rescue KeyError
+            Rails.logger.error("Unable to set status '#{teacher_trn_to_status.fetch(trn)}' for trn: #{trn}")
+            next
+          end
+
           induction_period_rows << ip
         end
       end
@@ -124,7 +140,7 @@ module AppropriateBodies::Importers
     end
 
     def update_event_titles
-      statements = [<<~CLAIM, <<~RELEASE]
+      statements = [<<~CLAIMED, <<~RELEASED, <<~PASSED, <<~FAILED]
         update events e
         set heading = t.trs_first_name || ' ' || t.trs_last_name || ' was claimed by ' || ab.name
         from teachers t, appropriate_body_periods ab
@@ -132,7 +148,7 @@ module AppropriateBodies::Importers
         and e.event_type = 'induction_period_opened'
         and e.teacher_id = t.id
         and e.appropriate_body_period_id = ab.id;
-      CLAIM
+      CLAIMED
         update events e
         set heading = t.trs_first_name || ' ' || t.trs_last_name || ' was released by ' || ab.name
         from teachers t, appropriate_body_periods ab
@@ -140,7 +156,23 @@ module AppropriateBodies::Importers
         and e.event_type = 'induction_period_closed'
         and e.teacher_id = t.id
         and e.appropriate_body_period_id = ab.id;
-      RELEASE
+      RELEASED
+        update events e
+        set heading = t.trs_first_name || ' ' || t.trs_last_name || ' passed induction'
+        from teachers t, appropriate_body_periods ab
+        where e.heading = 'placeholder'
+        and e.event_type = 'teacher_passes_induction'
+        and e.teacher_id = t.id
+        and e.appropriate_body_period_id = ab.id;
+      PASSED
+        update events e
+        set heading = t.trs_first_name || ' ' || t.trs_last_name || ' failed induction'
+        from teachers t, appropriate_body_periods ab
+        where e.heading = 'placeholder'
+        and e.event_type = 'teacher_fails_induction'
+        and e.teacher_id = t.id
+        and e.appropriate_body_period_id = ab.id;
+      FAILED
 
       ActiveRecord::Base.connection.execute(statements.join(";"))
     end
