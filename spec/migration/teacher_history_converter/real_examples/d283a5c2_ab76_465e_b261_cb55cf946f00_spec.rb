@@ -194,7 +194,7 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   let(:mentor_at_school_period_id) { SecureRandom.uuid }
 
