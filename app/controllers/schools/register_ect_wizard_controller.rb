@@ -6,6 +6,9 @@ module Schools
     before_action :initialize_wizard, only: %i[new create]
     before_action :reset_wizard, only: :new
     before_action :check_allowed_step, except: %i[start]
+    before_action :set_sentry_context,
+                  if: -> { Rails.application.config.enable_sentry },
+                  unless: -> { Rails.env.production? }
 
     FORM_KEY = :register_ect_wizard
     WIZARD_CLASS = Schools::RegisterECTWizard::Wizard.freeze
@@ -26,6 +29,12 @@ module Schools
     end
 
   private
+
+    def set_sentry_context
+      Sentry.configure_scope do |scope|
+        scope.set_context("wizard_session_#{FORM_KEY}", store.data)
+      end
+    end
 
     def initialize_wizard
       @wizard = WIZARD_CLASS.new(
