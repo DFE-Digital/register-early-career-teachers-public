@@ -131,6 +131,14 @@ RSpec.describe Schedules::Find do
                 expect(service.identifier).to include("january")
               end
             end
+
+            context "when the start date is the last day of the contract period" do
+              let(:started_on) { Date.new(year, 5, 31) }
+
+              it "assigns the schedule based on the start date of the current training period" do
+                expect(service.identifier).to include("april")
+              end
+            end
           end
 
           context "when there is one previous training period" do

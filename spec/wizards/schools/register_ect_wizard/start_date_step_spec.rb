@@ -182,6 +182,15 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       end
     end
 
+    context "when the start date is the last day of a contract period" do
+      let(:start_date) { { 1 => "2025", 2 => "05", 3 => "31" } }
+      let(:enabled_2025) { true }
+
+      it "returns the working pattern step" do
+        expect(subject.next_step).to eq(:working_pattern)
+      end
+    end
+
     context "when the start date is in the past but the contract period lookup returns nil" do
       let(:start_date) { { 1 => period_2023.year, 2 => "07", 3 => "01" } }
 

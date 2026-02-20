@@ -140,5 +140,18 @@ RSpec.describe Schools::AssignExistingMentorWizard::LeadProviderStep do
         expect(training_period.schedule.identifier).to eq("ecf-replacement-september")
       end
     end
+
+    context "on the last day of the contract period" do
+      let(:travel_date) { contract_period.finished_on }
+      let(:started_on) { travel_date }
+
+      it "persists provider, assigns mentor, and records events" do
+        expect { step.save! }
+          .to change(store, :lead_provider_id).from(nil).to(lead_provider_id)
+          .and change { mentor_at_school_period.reload.mentorship_periods.count }.from(0).to(1)
+          .and change { mentor_at_school_period.reload.training_periods.count }.from(0).to(1)
+          .and change(Event, :count).by(4)
+      end
+    end
   end
 end

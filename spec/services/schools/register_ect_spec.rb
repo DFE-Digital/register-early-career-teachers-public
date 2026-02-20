@@ -45,6 +45,15 @@ RSpec.describe Schools::RegisterECT do
         expect(created_teacher.corrected_name).to eq(corrected_name)
         expect(created_teacher.api_ect_training_record_id).to be_present
       end
+
+      context "when we log a teacher to start on the last day of the current contract period" do
+        let(:travel_date) { contract_period.finished_on }
+        let(:started_on) { travel_date }
+
+        it "creates a new Teacher record" do
+          expect { service.register! }.to change(Teacher, :count).by(1)
+        end
+      end
     end
 
     context "when provider led" do
@@ -111,6 +120,15 @@ RSpec.describe Schools::RegisterECT do
 
             expect(teacher.ect_at_school_periods.count).to eq(3) # 2 existing + 1 new
           end
+
+          context "on the last day of the current contract period" do
+            let(:travel_date) { contract_period.finished_on }
+            let(:started_on) { travel_date }
+
+            it "allows registration at a third school (multiple transfers)" do
+              expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+            end
+          end
         end
 
         context "when a Teacher record with the same TRN has an ongoing period at different school and finished period at current school" do
@@ -133,6 +151,15 @@ RSpec.describe Schools::RegisterECT do
             # New period at current school should be created
             new_period = teacher.ect_at_school_periods.find_by(school:, finished_on: nil)
             expect(new_period.started_on).to eq(started_on)
+          end
+
+          context "on the last day of the current contract period" do
+            let(:travel_date) { contract_period.finished_on }
+            let(:started_on) { travel_date }
+
+            it "allows registration at a third school (multiple transfers)" do
+              expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+            end
           end
         end
 

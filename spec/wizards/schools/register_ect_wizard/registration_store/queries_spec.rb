@@ -54,6 +54,44 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         expect(queries.contract_start_date).to be_nil
       end
     end
+
+    context "when the start_date is the last day of a contract period" do
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:start_date) { contract_period.finished_on.to_s }
+
+      it "returns the contract period" do
+        expect(queries.contract_start_date).to eq(contract_period)
+      end
+    end
+  end
+
+  describe "#registration_contract_period" do
+    context "when the start_date is blank" do
+      it "returns nil" do
+        expect(queries.registration_contract_period).to be_nil
+      end
+    end
+
+    context "when the start_date is present" do
+      let!(:previous_contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+
+      context "when the start_date is the last day of a contract period" do
+        let(:start_date) { Date.new(2027, 5, 31) }
+
+        context "today is the last day of the previous contract period" do
+          around do |example|
+            travel_to(Date.new(2026, 5, 31)) do
+              example.run
+            end
+          end
+
+          it "returns the current contract period" do
+            expect(queries.registration_contract_period).to eq(contract_period)
+          end
+        end
+      end
+    end
   end
 
   describe "#lead_providers_within_contract_period" do
