@@ -35,7 +35,6 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::CheckAnsw
 
   describe "#save!" do
     context "when the induction tutor details are confirmed as correct" do
-      
       before { store.are_these_details_correct = true }
 
       it "updates the school's induction tutor details and sets induction_tutor_last_nominated_in" do
