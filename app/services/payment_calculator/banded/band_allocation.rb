@@ -13,9 +13,7 @@ module PaymentCalculator
       @refundable_count = 0
     end
 
-    def capacity
-      band.max_declarations - band.min_declarations + 1
-    end
+    delegate :capacity, to: :band
 
     def net_billable_count
       (previous_billable_count + billable_count) - (previous_refundable_count + refundable_count)
