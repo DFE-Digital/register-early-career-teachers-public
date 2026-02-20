@@ -68,4 +68,35 @@ RSpec.describe ECTStartDateValidator, type: :model do
       end
     end
   end
+
+  context "on the last day of the contract period" do
+    subject { test_class.new(start_date:) }
+
+    around do |example|
+      travel_to Date.new(2026, 5, 31) do
+        example.run
+      end
+    end
+
+    before do
+      FactoryBot.create(:contract_period, year: 2025)
+      FactoryBot.create(:contract_period, year: 2024)
+      FactoryBot.create(:contract_period, year: 2023)
+      FactoryBot.create(:contract_period, year: 2022)
+    end
+
+    let(:start_date) { { 1 => 2023, 2 => 5, 3 => 31 } }
+    let(:test_class) do
+      Class.new do
+        include ActiveModel::Model
+        attr_accessor :start_date
+
+        validates :start_date, ect_start_date: { current_date: Date.new(2026, 5, 31) }
+      end
+    end
+
+    it "should be invalid for a date before the two previous contract periods" do
+      expect(subject).not_to be_valid
+    end
+  end
 end

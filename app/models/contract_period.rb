@@ -45,9 +45,9 @@ class ContractPeriod < ApplicationRecord
   end
 
   def self.earliest_permitted_start_date
-    return unless current
+    return unless current_end_inclusive
 
-    current
+    current_end_inclusive
       .predecessors
       .latest_first
       .offset(1)
