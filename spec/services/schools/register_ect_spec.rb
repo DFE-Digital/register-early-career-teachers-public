@@ -47,7 +47,7 @@ RSpec.describe Schools::RegisterECT do
       end
 
       context "when we log a teacher to start on the last day of the current contract period" do
-        let(:travel_date) { contract_period.finished_on}
+        let(:travel_date) { contract_period.finished_on }
         let(:started_on) { travel_date }
 
         it "creates a new Teacher record" do
@@ -122,9 +122,9 @@ RSpec.describe Schools::RegisterECT do
           end
 
           context "on the last day of the current contract period" do
-            let(:travel_date) { contract_period.finished_on}
+            let(:travel_date) { contract_period.finished_on }
             let(:started_on) { travel_date }
-    
+
             it "allows registration at a third school (multiple transfers)" do
               expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
             end
@@ -154,9 +154,9 @@ RSpec.describe Schools::RegisterECT do
           end
 
           context "on the last day of the current contract period" do
-            let(:travel_date) { contract_period.finished_on}
+            let(:travel_date) { contract_period.finished_on }
             let(:started_on) { travel_date }
-    
+
             it "allows registration at a third school (multiple transfers)" do
               expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
             end
