@@ -156,12 +156,14 @@ describe "Real data check for user 1ed6d4d4-fc15-4536-bcbc-bc6250f859da (with a 
           trn: "1111111",
           ect_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2025, 9, 4),
-              finished_on: nil,
+              # NOTE: here, the final induction record above has been converted to a stub because
+              #       the induction_completion_date is before the start's end date
+              started_on: Date.new(2025, 7, 22),
+              finished_on: Date.new(2025, 7, 23),
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2025, 9, 4),
-                  finished_on: nil,
+                  started_on: Date.new(2025, 7, 22),
+                  finished_on: Date.new(2025, 7, 23),
                   withdrawn_at: Time.zone.local(2025, 9, 4, 10, 1, 6),
                   withdrawal_reason: "other"
                 )
