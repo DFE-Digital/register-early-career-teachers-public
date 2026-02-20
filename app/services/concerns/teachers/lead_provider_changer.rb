@@ -96,6 +96,7 @@ module Teachers
       existing_schedule.contract_period != contract_period_at_transition
     end
 
+    # TODO: test this
     def contract_period_at_transition
       @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
     end
