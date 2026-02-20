@@ -19,6 +19,7 @@ priority_seeds = %w[
   schedules_and_milestones
   teachers
   contracts
+  bulk_uploads
 ]
 
 seed_files = Dir["db/seeds/*.rb"].sort_by do |path|

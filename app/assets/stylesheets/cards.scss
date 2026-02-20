@@ -1,26 +1,76 @@
-.action-card {
-  background: govuk-colour('light-grey');
-  padding: 20px;
-  border: 1px solid govuk-colour('mid-grey');
-  transition: background-color 0.2s ease;
+@use "sass:map";
 
-  .govuk-heading-l {
-    color: govuk-colour('blue');
-  }
+$colour-variants: (
+  red: (
+    background: govuk-tint(govuk-colour('red'), 85),
+    heading: govuk-shade(govuk-colour('red'), 40),
+    caption: govuk-shade(govuk-colour('red'), 40),    
+    border: govuk-colour('red'),
+  ),
+  yellow: (
+    background: govuk-tint(govuk-colour('yellow'), 85),
+    heading: govuk-shade(govuk-colour('yellow'), 70),
+    caption: govuk-shade(govuk-colour('yellow'), 70),  
+    border: govuk-colour('yellow'),
+  ),
+  green: (
+    background: govuk-tint(govuk-colour('green'), 85),
+    heading: govuk-shade(govuk-colour('green'), 50),
+    caption: govuk-shade(govuk-colour('green'), 50),    
+    border: govuk-colour('green'),
+  ),
+  grey-and-blue: (
+    background: govuk-colour('light-grey'),
+    heading: govuk-colour('blue'),
+    caption: govuk-colour('black'),    
+    border: govuk-colour('mid-grey'),
+  ),  
+  grey: (
+    background: govuk-colour('light-grey'),
+    heading: govuk-colour('black'),
+    caption: govuk-colour('black'),    
+    border: govuk-colour('mid-grey'),
+  ),
+  blue: (
+    background: govuk-tint(govuk-colour('blue'), 85),
+    heading: govuk-colour('black'),
+    caption: govuk-colour('black'),    
+    border: govuk-colour('blue'),
+  ),
+);
 
-  .govuk-body {
-    color: govuk-colour('black');
-  }
-
-  &:hover {
-    background: govuk-colour('blue');
+@each $name, $colours in $colour-variants {
+  // append the name to an empty string to avoid Sass warnings about incorrectly
+  // interpolating colours here
+  .app-card--#{"" + $name} {
+    background: map.get($colours, background);
+    padding: 20px;
+    border: 1px solid map.get($colours, border);    
 
     .govuk-heading-l {
-      color: govuk-colour('white');
+      color: map.get($colours, heading);
+      margin-bottom: 0;       
     }
 
-    .govuk-body {
-      color: govuk-colour('white');
+    .govuk-caption-l {
+      color: map.get($colours, caption);
+      @include govuk-font($size: 19);
+      margin-top: govuk-spacing(3);      
+    }
+  }
+}
+
+.action-card {
+  text-decoration: none;
+
+  .card {
+    &:hover {
+      background: govuk-colour('blue');
+
+      .govuk-heading-l,
+      .govuk-caption-l {
+        color: govuk-colour('white');
+      }
     }
   }
 }

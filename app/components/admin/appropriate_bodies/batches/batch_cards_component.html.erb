@@ -1,34 +1,25 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-7">
   <div class="govuk-grid-column-one-third">
-    <div class="app-card--red">
-      <h3 class="govuk-heading-l">
-        <%= batch.tally[:errored_count] %>
-      </h3>
-      <p class="govuk-body">
-        <%= pluralize(batch.tally[:errored_count], 'error').split.last %>
-      </p>
-    </div>
+    <%= render Shared::CountCardComponent.new(
+      count: batch.tally[:errored_count],
+      description: pluralize(batch.tally[:errored_count], 'error').split.last,
+      colour: :red
+    ) %>
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <div class="app-card--green">
-      <h3 class="govuk-heading-l">
-        <%= batch.recorded_count %>
-      </h3>
-      <p class="govuk-body">
-        <%= pluralize(batch.recorded_count, 'row').split.last + ' completed' %>
-      </p>
-    </div>
+    <%= render Shared::CountCardComponent.new(
+      count: batch.recorded_count,
+      description: pluralize(batch.recorded_count, 'row').split.last + ' completed',
+      colour: :green
+    ) %>
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <div class="app-card--yellow">
-      <h3 class="govuk-heading-l">
-        <%= error_rate %>
-      </h3>
-      <p class="govuk-body">
-        error rate
-      </p>
-    </div>
+    <%= render Shared::CountCardComponent.new(
+      count: error_rate,
+      description: "error rate",
+      colour: :yellow
+    ) %>
   </div>
 </div>
