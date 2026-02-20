@@ -92,7 +92,8 @@ private
         .mentor_at_school_periods
         .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
     when :all_induction_records
-      TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
+      TeacherHistoryConverter::Mentor::AllInductionRecords.new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:)
+        .mentor_at_school_periods
     end
   end
 

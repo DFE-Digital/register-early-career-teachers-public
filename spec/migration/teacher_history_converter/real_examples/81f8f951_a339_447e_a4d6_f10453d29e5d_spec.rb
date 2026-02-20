@@ -1,4 +1,4 @@
-describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d" do
+describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d (one mentor induction record)" do
   subject(:actual_output) { ecf2_teacher_history.to_h }
 
   let(:input) do
@@ -66,7 +66,7 @@ describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
@@ -95,18 +95,44 @@ describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d" do
       }
     end
 
+    it "marks the teacher as economy" do
+      expect(ecf2_teacher_history).to be_economy
+    end
+
     it "matches the expected output" do
       expect(actual_output).to include(expected_output)
     end
   end
 
-  context "when using the premium migrator", skip: "Implement the premium migrator" do
+  context "when using the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
     let(:expected_output) do
       {
-        teacher: hash_including(trn: "1111111")
+        teacher: hash_including(
+          trn: "1111111",
+          mentor_at_school_periods: array_including(
+            hash_including(
+              started_on: Date.new(2023, 6, 1),
+              finished_on: nil,
+              school: hash_including(urn: "100001", name: "School 1"),
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2023, 6, 1),
+                  finished_on: nil,
+                  lead_provider_info: hash_including(name: "Ambition Institute"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 1"),
+                  contract_period_year: 2023
+                )
+              )
+            )
+          )
+        )
       }
+    end
+
+    it "marks the teacher as premium" do
+      expect(ecf2_teacher_history).to be_premium
     end
 
     it "matches the expected output" do
