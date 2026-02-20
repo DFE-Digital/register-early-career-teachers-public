@@ -153,4 +153,72 @@ describe Migration::ParticipantDeclaration, type: :model do
       end
     end
   end
+
+  describe "#migrated_pupil_premium_uplift" do
+    subject { participant_declaration.migrated_pupil_premium_uplift }
+
+    let(:start_year) { 2022 }
+    let(:cohort) { FactoryBot.create(:migration_cohort, start_year:) }
+    let(:participant_declaration) { FactoryBot.build(:migration_participant_declaration, declaration_type:, cohort:) }
+
+    %w[started].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        context "when the cohort is earlier than 2025/2026" do
+          let(:start_year) { 2024 }
+
+          it { is_expected.to eq(participant_declaration.pupil_premium_uplift) }
+        end
+
+        context "when the cohort is not earlier than 2025/2026" do
+          let(:start_year) { 2025 }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
+    %w[retained-1 retained-2 retained-3 retained-4 completed extended-1 extended-2 extended-3].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
+
+  describe "#migrated_sparsity_uplift" do
+    subject { participant_declaration.migrated_sparsity_uplift }
+
+    let(:start_year) { 2022 }
+    let(:cohort) { FactoryBot.create(:migration_cohort, start_year:) }
+    let(:participant_declaration) { FactoryBot.build(:migration_participant_declaration, declaration_type:, cohort:) }
+
+    %w[started].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        context "when the cohort is earlier than 2025/2026" do
+          let(:start_year) { 2024 }
+
+          it { is_expected.to eq(participant_declaration.sparsity_uplift) }
+        end
+
+        context "when the cohort is not earlier than 2025/2026" do
+          let(:start_year) { 2025 }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
+    %w[retained-1 retained-2 retained-3 retained-4 completed extended-1 extended-2 extended-3].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
 end

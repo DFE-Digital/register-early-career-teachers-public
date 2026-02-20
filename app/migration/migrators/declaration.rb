@@ -46,8 +46,8 @@ module Migrators
                                     evidence_type: participant_declaration.evidence_held,
                                     payment_statement_id: payment_statement(participant_declaration:)&.id,
                                     payment_status: participant_declaration.payment_status,
-                                    pupil_premium_uplift: participant_declaration.pupil_premium_uplift,
-                                    sparsity_uplift: participant_declaration.sparsity_uplift,
+                                    pupil_premium_uplift: participant_declaration.migrated_pupil_premium_uplift,
+                                    sparsity_uplift: participant_declaration.migrated_sparsity_uplift,
                                     training_period_id: training_period&.id,
                                     updated_at: participant_declaration.updated_at,
                                     voided_by_user_at: participant_declaration.voided_at)
