@@ -163,11 +163,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
             expect(ect_enrolment["participant_status"]).to eq(mock_teacher_status.status)
 
-            expect(ect_enrolment["pupil_premium_uplift"]).to be_present
-            expect(ect_enrolment["pupil_premium_uplift"]).to eq(teacher.ect_pupil_premium_uplift)
-
-            expect(ect_enrolment["sparsity_uplift"]).to be_present
-            expect(ect_enrolment["sparsity_uplift"]).to eq(teacher.ect_sparsity_uplift)
+            expect(ect_enrolment["pupil_premium_uplift"]).to be(true)
+            expect(ect_enrolment["sparsity_uplift"]).to be(true)
 
             expect(ect_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
 
@@ -185,6 +182,15 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(ect_enrolment["mentor_became_ineligible_for_funding_reason"]).to be_nil
 
             expect(ect_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.ect_payments_frozen_year.present?)
+          end
+
+          context "when `uplift_fees_enabled` is `false` for the contract period" do
+            before { ect_training_period.school_partnership.contract_period.update!(uplift_fees_enabled: false) }
+
+            it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
+              expect(ect_enrolment["pupil_premium_uplift"]).to be(false)
+              expect(ect_enrolment["sparsity_uplift"]).to be(false)
+            end
           end
 
           context "when there is no latest mentor training period" do
@@ -294,9 +300,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
             expect(mentor_enrolment["participant_status"]).to eq(mock_teacher_status.status)
 
-            expect(mentor_enrolment["pupil_premium_uplift"]).to be(false)
-
-            expect(mentor_enrolment["sparsity_uplift"]).to be(false)
+            expect(mentor_enrolment["pupil_premium_uplift"]).to be(true)
+            expect(mentor_enrolment["sparsity_uplift"]).to be(true)
 
             expect(mentor_enrolment["schedule_identifier"]).to eq("ecf-standard-september")
 
@@ -315,6 +320,15 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to eq(teacher.mentor_became_ineligible_for_funding_reason)
 
             expect(mentor_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.mentor_payments_frozen_year.present?)
+          end
+
+          context "when `uplift_fees_enabled` is `false` for the contract period" do
+            before { mentor_training_period.school_partnership.contract_period.update!(uplift_fees_enabled: false) }
+
+            it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
+              expect(mentor_enrolment["pupil_premium_uplift"]).to be(false)
+              expect(mentor_enrolment["sparsity_uplift"]).to be(false)
+            end
           end
 
           context "when `eligible_for_funding` is true" do

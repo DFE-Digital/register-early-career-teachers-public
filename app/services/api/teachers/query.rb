@@ -57,16 +57,18 @@ module API::Teachers
                 { lead_provider_delivery_partnership: :delivery_partner }
               ],
               ect_at_school_period: [],
-              schedule: []
+              schedule: [],
             },
+            latest_ect_contract_period: [],
             latest_mentor_training_period: {
               school_partnership: [
                 :school,
                 { lead_provider_delivery_partnership: :delivery_partner }
               ],
               mentor_at_school_period: [],
-              schedule: []
-            }
+              schedule: [],
+            },
+            latest_mentor_contract_period: []
           }
         )
     end

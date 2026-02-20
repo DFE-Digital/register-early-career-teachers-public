@@ -29,12 +29,6 @@ RSpec.describe PaymentCalculator::Banded::Uplifts do
       pupil_premium_uplift: false
     )
   end
-  let!(:completed_paid_declaration) do
-    FactoryBot.create(:declaration, :paid, :completed, sparsity_uplift: true)
-  end
-  let!(:completed_awaiting_clawback_declaration) do
-    FactoryBot.create(:declaration, :awaiting_clawback, :completed, sparsity_uplift: true)
-  end
   let(:clawed_back_declaration_without_uplift) do
     FactoryBot.create(
       :declaration,

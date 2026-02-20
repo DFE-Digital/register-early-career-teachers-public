@@ -192,8 +192,8 @@ erDiagram
     uuid api_mentor_training_record_id
     integer ect_payments_frozen_year
     integer mentor_payments_frozen_year
-    boolean ect_pupil_premium_uplift
-    boolean ect_sparsity_uplift
+    boolean pupil_premium_uplift
+    boolean sparsity_uplift
     date trs_induction_start_date
     date trs_induction_completed_date
     datetime ect_first_became_eligible_for_training_at
@@ -393,10 +393,12 @@ erDiagram
     boolean pupil_premium_uplift
     datetime api_updated_at
     enum payment_status
+    integer delivery_partner_when_created_id
   }
   Declaration }o--|| TrainingPeriod : belongs_to
   Declaration }o--|| User : belongs_to
   Declaration }o--|| MentorshipPeriod : belongs_to
+  Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| Statement : belongs_to
   Declaration }o--|| Statement : belongs_to
   DataMigrationTeacherCombination {
@@ -467,6 +469,7 @@ erDiagram
     datetime payments_frozen_at
     boolean mentor_funding_enabled
     boolean detailed_evidence_types_enabled
+    boolean uplift_fees_enabled
   }
   Contract {
     integer id
@@ -477,6 +480,8 @@ erDiagram
     datetime updated_at
     decimal vat_rate
     integer active_lead_provider_id
+    string ecf_contract_version
+    string ecf_mentor_contract_version
   }
   Contract }o--|| ActiveLeadProvider : belongs_to
   Contract }o--|| Contract_FlatRateFeeStructure : belongs_to
