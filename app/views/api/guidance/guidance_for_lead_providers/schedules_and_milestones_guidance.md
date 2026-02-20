@@ -70,7 +70,7 @@ Replacement mentors are not eligible for uplift fees. If any uplift fees are add
 
 We'll reassign partially trained ECTs from closed cohorts to an active cohort if there's evidence that they require further training.
 
-In these cases, we'll assign an extended September schedule (`extended_september`).
+In these cases, we'll assign an extended September schedule (`extended-september`).
 
 This follows the same approach used in the Manage training for ECTs service.
 
