@@ -23,7 +23,7 @@ module Schools
         end
 
         def contract_start_date
-          @contract_start_date ||= ContractPeriod.containing_date_end_inclusive(registration_store.start_date&.to_date)
+          @contract_start_date ||= ContractPeriod.containing_date(registration_store.start_date&.to_date)
         end
 
         def registration_contract_period

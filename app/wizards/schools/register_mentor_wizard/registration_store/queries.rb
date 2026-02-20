@@ -41,7 +41,7 @@ module Schools
         end
 
         def contract_period
-          @contract_period ||= ContractPeriod.containing_date_end_inclusive(registration_store.started_on&.to_date || Date.current)
+          @contract_period ||= ContractPeriod.containing_date(registration_store.started_on&.to_date || Date.current)
         end
 
         def mentor_at_school_periods
