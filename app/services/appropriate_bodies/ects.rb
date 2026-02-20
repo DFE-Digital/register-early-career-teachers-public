@@ -25,7 +25,7 @@ module AppropriateBodies
     end
 
     def former
-      @scope.merge(InductionPeriod.finished.without_outcome)
+      @scope.merge(InductionPeriod.released)
     end
 
     def all
