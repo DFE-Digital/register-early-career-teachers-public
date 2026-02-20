@@ -126,8 +126,26 @@ describe ContractPeriod do
         FactoryBot.create(:contract_period, year: 2025)
       end
 
-      it "returns the start date of the contract period two periods before the current one" do
-        freeze_time do
+      context "during the current contract period" do
+        around do |example|
+          travel_to(Date.new(2025, 9, 1)) do
+            example.run
+          end
+        end
+
+        it "returns the start date of the contract period two periods before the current one" do
+          expect(ContractPeriod.earliest_permitted_start_date).to eq(third_oldest.started_on)
+        end
+      end
+
+      context "on the last day of the contract period" do
+        around do |example|
+          travel_to(current.finished_on) do
+            example.run
+          end
+        end
+
+        it "returns the start date of the contract period two periods before the current one" do
           expect(ContractPeriod.earliest_permitted_start_date).to eq(third_oldest.started_on)
         end
       end
