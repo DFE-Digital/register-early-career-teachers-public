@@ -192,7 +192,7 @@ describe Schools::InductionTutor::ConfirmExistingInductionTutorWizard::EditStep 
             example.run
           end
         end
-  
+
         it "finds the contract period and saves to the database" do
           current_step.save!
           expect(school.reload.induction_tutor_last_nominated_in).to eq(current_contract_period)
