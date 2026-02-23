@@ -119,4 +119,11 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
       end
     end
   end
+
+  describe "#capacity" do
+    it "returns max_declarations - min_declarations + 1" do
+      band = FactoryBot.build_stubbed(:contract_banded_fee_structure_band, min_declarations: 1, max_declarations: 100)
+      expect(band.capacity).to eq(100)
+    end
+  end
 end
