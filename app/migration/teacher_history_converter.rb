@@ -20,7 +20,10 @@ class TeacherHistoryConverter
 private
 
   def select_migration_mode
-    MigrationStrategy.new(ecf1_teacher_history).strategy
+    # FIXME: Holding off premium for a little more time...
+    # MigrationStrategy.new(ecf1_teacher_history).strategy
+
+    :latest_induction_records
   end
 
   def date_corrector
