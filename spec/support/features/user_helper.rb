@@ -102,7 +102,7 @@ module UserHelper
     user ||= FactoryBot.create(:user, role, name: Faker::Name.name)
 
     domain = user.email.to_s.split("@", 2).last&.downcase
-    unless OTPSessionsController::INTERNAL_ADMIN_EMAIL_DOMAINS.include?(domain)
+    unless Sessions::OTPAccessPolicy::INTERNAL_ADMIN_EMAIL_DOMAINS.include?(domain)
       raise ArgumentError, "sign_in_as_dfe_user requires an internal DfE email, got: #{user.email}"
     end
 
