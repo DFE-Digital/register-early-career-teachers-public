@@ -134,27 +134,17 @@ RSpec.describe PaymentCalculator::Banded do
       let(:banded_fee_structure) do
         FactoryBot.create(
           :contract_banded_fee_structure,
-          :with_bands,
-          monthly_service_fee: nil,
-          recruitment_target: 100,
-          declaration_boundaries: [{ min: 1, max: 60 }, { min: 61, max: 120 }]
+          monthly_service_fee: nil
         )
       end
 
-      it "fills bands in order up to recruitment target and divides by 29 payments" do
-        band_a, band_b = banded_fee_structure.bands.order(:min_declarations)
+      it "delegates to ServiceFees#monthly_amount" do
+        allow(PaymentCalculator::ServiceFees)
+          .to receive(:new)
+          .with(banded_fee_structure:)
+          .and_return(double(monthly_amount: 750))
 
-        # recruitment_target = 100
-        # Band A: capacity 60, fills 60, remaining = 40
-        # Band B: capacity 60, fills 40, remaining = 0
-        # total = (60 * band_a.fee * band_a.ratio) + (40 * band_b.fee * band_b.ratio)
-        # monthly = total / 29
-        expected = (
-          (60 * band_a.fee_per_declaration * band_a.service_fee_ratio) +
-          (40 * band_b.fee_per_declaration * band_b.service_fee_ratio)
-        ) / 29
-
-        expect(banded.monthly_service_fee).to eq(expected)
+        expect(banded.monthly_service_fee).to eq(750)
       end
     end
   end
