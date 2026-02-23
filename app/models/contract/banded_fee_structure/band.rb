@@ -42,6 +42,10 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
   validate :declaration_boundaries_sequential_without_gaps,
            if: -> { min_declarations? && max_declarations? }
 
+  def capacity
+    max_declarations - min_declarations + 1
+  end
+
 private
 
   def sum_of_ratios_equals_one
