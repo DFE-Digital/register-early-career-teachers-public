@@ -30,7 +30,7 @@
     
     ## What's changed
     
-    Both ECTs or mentors in the cohort 2024 or earlier, when at schools eligible for uplifts, will show on GET participants:
+    Both ECTs and mentors in the cohort 2024 or earlier, when at schools eligible for uplifts, will show on GET participants:
     
     * sparsity_uplift: true
     * pupil_premium_uplift: true
@@ -41,7 +41,7 @@
 
     Other declaration types, like retained-1 or completed, will show as uplift_paid: false, as uplifts are only paid for started declarations.
 
-    Participants in 2025 cohorts or later will always be shown as:
+    Participants in the 2025 cohort or later will always be shown as:
 
     * sparsity_uplift: false
     * pupil_premium_uplift: false
