@@ -214,7 +214,6 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             expect(ActiveLeadProvider)
             .to receive(:exists?)
             .with(
-
               contract_period_year: 2026,
               lead_provider_id: active_lead_provider_2026.lead_provider_id
             ).and_call_original
