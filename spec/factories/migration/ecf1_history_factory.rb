@@ -251,16 +251,4 @@ FactoryBot.define do
           transfers:)
     end
   end
-
-  factory :ecf1_teacher_history_transfer_data, class: "Types::TransferData" do
-    training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info) }
-    sequence(:school_data) { |n| Types::SchoolData.new(urn: 100_000 + n, name: "School #{n}") }
-    updated_at { 6.months.ago }
-
-    initialize_with do
-      new(training_provider_info:,
-          school_data:,
-          updated_at:)
-    end
-  end
 end
