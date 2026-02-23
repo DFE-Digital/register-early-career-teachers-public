@@ -94,7 +94,7 @@ private
     training_provider_info = induction_record.training_provider_info
     school = induction_record.school
 
-    if training_provider_info&.lead_provider_info&.present?
+    if training_provider_info&.lead_provider_info.present?
       api_transfer_updated_at = transfers[training_provider_info.lead_provider_info.ecf1_id]
     end
 

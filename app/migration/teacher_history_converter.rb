@@ -90,7 +90,7 @@ private
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
     states = ecf1_teacher_history.mentor.states
     exclude_training_periods = exclude_ero_training_periods?
-    transfers = ecf1_teacher_history.ect.transfers
+    transfers = ecf1_teacher_history.mentor.transfers
 
     case migration_mode
     when :latest_induction_records
