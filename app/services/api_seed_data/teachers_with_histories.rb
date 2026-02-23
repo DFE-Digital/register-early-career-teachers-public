@@ -313,8 +313,8 @@ module APISeedData
 
       teacher.update!(
         ect_first_became_eligible_for_training_at: teacher.created_at + 3.months,
-        ect_pupil_premium_uplift: rand_boolean(PUPIL_PREMIUM_UPLIFT_RATIO),
-        ect_sparsity_uplift: rand_boolean(SPARSITY_UPLIFT_RATIO)
+        pupil_premium_uplift: rand_boolean(PUPIL_PREMIUM_UPLIFT_RATIO),
+        sparsity_uplift: rand_boolean(SPARSITY_UPLIFT_RATIO)
       )
     end
 

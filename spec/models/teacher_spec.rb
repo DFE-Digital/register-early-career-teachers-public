@@ -20,8 +20,8 @@ describe Teacher do
                                                                    mentor_became_ineligible_for_funding_reason
                                                                    ect_first_became_eligible_for_training_at
                                                                    mentor_first_became_eligible_for_training_at
-                                                                   ect_pupil_premium_uplift
-                                                                   ect_sparsity_uplift
+                                                                   pupil_premium_uplift
+                                                                   sparsity_uplift
                                                                    ect_payments_frozen_year
                                                                    mentor_payments_frozen_year], timestamp_attribute: :api_updated_at
   end

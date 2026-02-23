@@ -62,6 +62,47 @@ describe Declaration do
     it { is_expected.not_to validate_presence_of(:voided_by_user_at) }
     it { is_expected.not_to validate_absence_of(:mentorship_period) }
 
+    describe "uplift rules" do
+      subject(:declaration) { FactoryBot.build(:declaration, declaration_type:, training_period:, sparsity_uplift:, pupil_premium_uplift:) }
+
+      let(:contract_period) { FactoryBot.create(:contract_period, uplift_fees_enabled:) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+      let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
+      let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+      let(:training_period) { FactoryBot.create(:training_period, school_partnership:) }
+      let(:declaration_type) { :started }
+      let(:uplift_fees_enabled) { true }
+      let(:sparsity_uplift) { true }
+      let(:pupil_premium_uplift) { true }
+
+      it { is_expected.to be_valid }
+
+      context "when uplift_fee_enabled is false for the contract period" do
+        let(:uplift_fees_enabled) { false }
+
+        it "is not valid" do
+          expect(declaration).not_to be_valid
+          expect(declaration.errors[:base]).to include("Uplifts are only applicable to started declarations in an uplift enabled contract period")
+        end
+
+        context "when uplifts are not present" do
+          let(:sparsity_uplift) { nil }
+          let(:pupil_premium_uplift) { nil }
+
+          it { is_expected.to be_valid }
+        end
+      end
+
+      context "when declaration type is not started" do
+        let(:declaration_type) { :completed }
+
+        it "is not valid" do
+          expect(declaration).not_to be_valid
+          expect(declaration.errors[:base]).to include("Uplifts are only applicable to started declarations in an uplift enabled contract period")
+        end
+      end
+    end
+
     context "training period unique index" do
       subject { FactoryBot.create(:declaration) }
 
@@ -269,20 +310,6 @@ describe Declaration do
         before { FactoryBot.create(:declaration, :voided, training_period:, declaration_type: :completed) }
 
         it { is_expected.to be_valid }
-      end
-    end
-
-    describe "uplifts absent for mentor declarations" do
-      subject(:declaration) { FactoryBot.build(:declaration, training_period:, sparsity_uplift: true, pupil_premium_uplift: true) }
-
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.month.ago) }
-      let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on: 1.month.ago) }
-
-      it "is not valid" do
-        expect(declaration).to be_invalid
-        expect(declaration).to have_one_error_per_attribute
-        expect(declaration).to have_error(:sparsity_uplift, "must be absent for mentor declarations.")
-        expect(declaration).to have_error(:pupil_premium_uplift, "must be absent for mentor declarations.")
       end
     end
   end
@@ -658,55 +685,42 @@ describe Declaration do
   end
 
   describe "#uplift_paid?" do
-    subject(:declaration) { FactoryBot.build(:declaration, training_period:, declaration_type:, payment_status:, sparsity_uplift:, pupil_premium_uplift:) }
+    subject(:declaration) { FactoryBot.build(:declaration, payment_status:, sparsity_uplift:, pupil_premium_uplift:) }
 
-    let(:training_period) { FactoryBot.build_stubbed(:training_period) }
-    let(:declaration_type) { Declaration.declaration_types.values.sample }
-    let(:payment_status) { Declaration.payment_statuses.values.sample }
-    let(:sparsity_uplift) { [true, false].sample }
-    let(:pupil_premium_uplift) { [true, false].sample }
+    let(:payment_status) { :paid }
+    let(:sparsity_uplift) { true }
+    let(:pupil_premium_uplift) { true }
+    let(:uplift_fees_enabled) { true }
 
-    context "when ECT" do
-      before { allow(training_period).to receive(:for_ect?).and_return(true) }
+    it { is_expected.to be_uplift_paid }
 
-      context "when declaration_type is `started`" do
-        let(:declaration_type) { "started" }
+    context "when pupils premium uplift false and sparsity uplift true" do
+      let(:pupil_premium_uplift) { false }
+      let(:sparsity_uplift) { true }
 
-        context "when payment_status is `paid`" do
-          let(:payment_status) { "paid" }
-
-          [true, false].each do |s_uplift|
-            context "when sparsity_uplift is `#{s_uplift}`" do
-              [true, false].each do |p_uplift|
-                context "when pupil_premium_uplift is `#{p_uplift}`" do
-                  let(:sparsity_uplift) { s_uplift }
-                  let(:pupil_premium_uplift) { p_uplift }
-
-                  it { expect(declaration.uplift_paid?).to be(s_uplift || p_uplift) }
-                end
-              end
-            end
-          end
-        end
-
-        context "when payment status is not `paid`" do
-          let(:payment_status) { Declaration.payment_statuses.values.excluding("paid").sample }
-
-          it { expect(declaration.uplift_paid?).to be(false) }
-        end
-      end
-
-      context "when declaration_type is not `started`" do
-        let(:declaration_type) { Declaration.declaration_types.values.excluding("started").sample }
-
-        it { expect(declaration.uplift_paid?).to be(false) }
-      end
+      it { is_expected.to be_uplift_paid }
     end
 
-    context "when Mentor" do
-      before { allow(training_period).to receive(:for_ect?).and_return(false) }
+    context "when pupils premium uplift true and sparsity uplift false" do
+      let(:pupil_premium_uplift) { true }
+      let(:sparsity_uplift) { false }
 
-      it { expect(declaration.uplift_paid?).to be(false) }
+      it { is_expected.to be_uplift_paid }
+    end
+
+    context "when pupils premium uplift and sparsity uplift are false" do
+      let(:pupil_premium_uplift) { false }
+      let(:sparsity_uplift) { false }
+
+      it { is_expected.not_to be_uplift_paid }
+    end
+
+    described_class.payment_statuses.values.excluding("paid").each do |status|
+      context "when payment_status is `#{status}`" do
+        let(:payment_status) { status }
+
+        it { is_expected.not_to be_uplift_paid }
+      end
     end
   end
 

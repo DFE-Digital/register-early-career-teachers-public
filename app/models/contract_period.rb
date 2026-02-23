@@ -26,7 +26,8 @@ class ContractPeriod < ApplicationRecord
   validates :started_on, presence: { message: "Enter a start date" }
   validates :finished_on, presence: { message: "Enter an end date" }
   validates :mentor_funding_enabled,
-            :detailed_evidence_types_enabled, inclusion: { in: [true, false] }
+            :detailed_evidence_types_enabled,
+            :uplift_fees_enabled, inclusion: { in: [true, false] }
 
   def self.containing_date(date)
     find_by(*date_in_range(date))
