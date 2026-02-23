@@ -238,16 +238,4 @@ private
       errors.add(:declaration_type, "Only 'started' or 'completed' declaration types are allowed for mentor funding enabled contract periods.")
     end
   end
-
-  def uplifts_absent_for_mentor
-    return unless for_mentor?
-
-    if sparsity_uplift.present?
-      errors.add(:sparsity_uplift, "must be absent for mentor declarations.")
-    end
-
-    if pupil_premium_uplift.present?
-      errors.add(:pupil_premium_uplift, "must be absent for mentor declarations.")
-    end
-  end
 end
