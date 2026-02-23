@@ -28,11 +28,11 @@ class OTPSessionsController < ApplicationController
   end
 
   def verify_code
-    unless @otp_form.valid?(:verify)
+    if @otp_form.invalid?(:verify)
       return render :request_code
     end
 
-    unless otp_access_allowed?
+    if otp_access_denied?
       @otp_form.errors.add(:base, "This account is not enabled for one time password sign in")
       return render :request_code
     end
@@ -89,6 +89,10 @@ private
     else
       false
     end
+  end
+
+  def otp_access_denied?
+    !otp_access_allowed?
   end
 
   def internal_admin_email?
