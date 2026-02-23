@@ -40,7 +40,7 @@ RSpec.describe "OTP sessions", type: :request do
 
     context "when the user has a school urn that exists in GIAS" do
       let(:email) { "user@external.com" }
-      let(:otp_school_urn) { "123456" }
+      let(:otp_school_urn) { 123_456 }
 
       before do
         FactoryBot.create(:gias_school, :open, :state_school_type, urn: otp_school_urn)
@@ -72,7 +72,7 @@ RSpec.describe "OTP sessions", type: :request do
 
     context "when the user has a school urn that exists in GIAS and a non DfE email" do
       let(:email) { "user@external.com" }
-      let(:otp_school_urn) { "123456" }
+      let(:otp_school_urn) { 123_456 }
 
       before do
         FactoryBot.create(:gias_school, :open, :state_school_type, urn: otp_school_urn)
@@ -100,7 +100,7 @@ RSpec.describe "OTP sessions", type: :request do
 
     context "when the user has a school urn and a DfE email" do
       let(:email) { "user@education.gov.uk" }
-      let(:otp_school_urn) { "123456" }
+      let(:otp_school_urn) { 123_456 }
 
       before do
         FactoryBot.create(:gias_school, :open, :state_school_type, urn: otp_school_urn)

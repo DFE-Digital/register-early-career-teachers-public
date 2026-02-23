@@ -23,14 +23,14 @@ RSpec.describe Sessions::OTPAccessPolicy do
 
     context "when user has otp_school_urn and flag enabled" do
       let(:otp_school_sign_in_enabled) { true }
-      let(:otp_school_urn) { "123456" }
+      let(:otp_school_urn) { 123_456 }
 
       it { expect(policy.allowed?).to be(true) }
     end
 
     context "when user has otp_school_urn and flag disabled" do
       let(:otp_school_sign_in_enabled) { false }
-      let(:otp_school_urn) { "123456" }
+      let(:otp_school_urn) { 123_456 }
 
       it { expect(policy.allowed?).to be(false) }
     end
@@ -56,14 +56,14 @@ RSpec.describe Sessions::OTPAccessPolicy do
   describe "#school_sign_in?" do
     context "when flag enabled and user has otp_school_urn" do
       let(:otp_school_sign_in_enabled) { true }
-      let(:otp_school_urn) { "123456" }
+      let(:otp_school_urn) { 123_456 }
 
       it { expect(policy.school_sign_in?).to be(true) }
     end
 
     context "when flag disabled and user has otp_school_urn" do
       let(:otp_school_sign_in_enabled) { false }
-      let(:otp_school_urn) { "123456" }
+      let(:otp_school_urn) { 123_456 }
 
       it { expect(policy.school_sign_in?).to be(false) }
     end
