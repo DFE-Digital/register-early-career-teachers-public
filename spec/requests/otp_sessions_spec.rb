@@ -97,5 +97,21 @@ RSpec.describe "OTP sessions", type: :request do
         expect(session.dig("user_session", "type")).to eq("Sessions::Users::DfEUser")
       end
     end
+
+    context "when the user has a school urn and a DfE email" do
+      let(:email) { "user@education.gov.uk" }
+      let(:otp_school_urn) { "123456" }
+
+      before do
+        FactoryBot.create(:gias_school, :open, :state_school_type, urn: otp_school_urn)
+      end
+
+      it "allows admin access" do
+        sign_in_with_otp
+
+        expect(response).to redirect_to(admin_path)
+        expect(session.dig("user_session", "type")).to eq("Sessions::Users::DfEUser")
+      end
+    end
   end
 end
