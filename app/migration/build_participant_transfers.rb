@@ -3,10 +3,12 @@ class BuildParticipantTransfers
 
   def initialize(participant_profile:)
     @participant_profile = participant_profile
-    @leaving_induction_record = nil
-    @joining_induction_record = nil
   end
 
+  # returns a hash keyed on ecf1 lead_provider_id with either the:
+  #  -  most recent leaving/joining induction_record.updated_at
+  #  -  the user.updated_at if no leaving/joining
+  #
   def transfers
     @transfers ||= build_transfers
   end
@@ -14,10 +16,12 @@ class BuildParticipantTransfers
 private
 
   def build_transfers
-    transfer_list = []
     traversed_induction_records = []
+    participating_providers = []
+    transfer_list = {}
 
     sorted_induction_records.each do |induction_record|
+      participating_providers << induction_record.induction_programme.partnership&.lead_provider_id
       next unless induction_record.induction_status == "leaving"
 
       ## set leaving induction record and mark as traversed
@@ -29,16 +33,28 @@ private
       joining_induction_record = select_joining_induction_record(leaving_induction_record:, remaining_induction_records:)
       traversed_induction_records << joining_induction_record if joining_induction_record.present?
 
-      transfer = {
-        leaving: build_transfer_data(leaving_induction_record),
-        joining: build_transfer_data(joining_induction_record)
-      }
+      calc_most_recent_value(leaving_induction_record, transfer_list)
+      calc_most_recent_value(joining_induction_record, transfer_list)
+    end
 
-      ## add complete or incomplete transfer
-      transfer_list << transfer
+    user_updated_at = participant_profile.teacher_profile.user.updated_at
+
+    # if there are no leaving/joining records use the default user.updated_at timestamp
+    (participating_providers.compact.uniq - transfer_list.keys).each do |lead_provider_id|
+      transfer_list[lead_provider_id] = user_updated_at
     end
 
     transfer_list
+  end
+
+  def calc_most_recent_value(induction_record, transfer_list)
+    return if induction_record.blank?
+
+    lead_provider_id = induction_record.induction_programme.partnership&.lead_provider_id
+    return unless lead_provider_id
+
+    last_updated_at = [transfer_list[lead_provider_id], induction_record.updated_at].compact.max
+    transfer_list[lead_provider_id] = last_updated_at
   end
 
   def select_joining_induction_record(leaving_induction_record:, remaining_induction_records:)
@@ -54,29 +70,6 @@ private
     end
 
     joining_induction_record
-  end
-
-  def build_transfer_data(induction_record)
-    return if induction_record.blank?
-
-    training_provider_info = build_training_provider_info(induction_record.induction_programme.partnership)
-    school_data = build_school_data(induction_record.induction_programme.school_cohort.school)
-
-    Types::TransferData.new(training_provider_info:, school_data:, updated_at: induction_record.updated_at)
-  end
-
-  def build_training_provider_info(partnership)
-    return if partnership.blank?
-
-    lead_provider_info = Types::LeadProviderInfo.new(ecf1_id: partnership.lead_provider_id, name: partnership.lead_provider.name)
-    delivery_partner_info = Types::DeliveryPartnerInfo.new(ecf1_id: partnership.delivery_partner_id, name: partnership.delivery_partner&.name)
-    cohort_year = partnership.cohort.start_year
-
-    ECF1TeacherHistory::TrainingProviderInfo.new(lead_provider_info:, delivery_partner_info:, cohort_year:)
-  end
-
-  def build_school_data(school)
-    Types::SchoolData.new(urn: school.urn, name: school.name, school_type_name: school.school_type_name)
   end
 
   def sorted_induction_records
