@@ -9,16 +9,13 @@ module Admin::Finance
     end
 
     def create
-      render :new, status: :unprocessable_content and return unless @form.valid?
-
-      # TODO: run in a background job
-      flash[:alert] = if Statements::AuthorisePayment.new(@statement.__getobj__, author: current_user).authorise!
-                        "Statement authorised"
-                      else
-                        "Unable to authorise statement"
-                      end
-
-      redirect_to admin_finance_statement_path(@statement)
+      if @form.valid?
+        authorise_payment!
+        flash[:alert] = "Statement authorisation processing"
+        redirect_to admin_finance_statement_path(@statement)
+      else
+        render :new, status: :unprocessable_content
+      end
     end
 
   private
@@ -36,6 +33,11 @@ module Admin::Finance
       return {} unless params.key?(:admin_finance_authorise_payment_form)
 
       params.expect(admin_finance_authorise_payment_form: [:confirmed])
+    end
+
+    def authorise_payment!
+      # TODO: run in a background job
+      Statements::AuthorisePayment.new(@statement.__getobj__, author: current_user).authorise!
     end
   end
 end

@@ -37,7 +37,7 @@ RSpec.describe "Payment authorisation for statement" do
   end
 
   def then_i_see_payment_authorised_notice
-    expect(page.get_by_text("Statement authorised")).to be_visible
+    expect(page.get_by_text("Statement authorisation processing")).to be_visible
   end
 
   def and_i_see_payment_authorised_text
