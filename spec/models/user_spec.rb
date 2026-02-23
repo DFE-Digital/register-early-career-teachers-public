@@ -7,6 +7,16 @@ describe User do
     it { is_expected.to validate_presence_of(:name).with_message("Enter a name") }
     it { is_expected.to validate_inclusion_of(:role).in_array(%i[admin finance user_manager]).with_message("Must be admin, finance or user_manager") }
     it { is_expected.to validate_presence_of(:role).with_message("Choose a role") }
+
+    it { is_expected.to allow_value(nil).for(:otp_school_urn) }
+
+    %w[12345 20001 123456 212345 412345].each do |urn|
+      it { is_expected.to allow_value(urn).for(:otp_school_urn) }
+    end
+
+    %w[1234 1234567 abc123 -12345].each do |urn|
+      it { is_expected.not_to allow_value(urn).for(:otp_school_urn).with_message("URN must be 5 or 6 numbers") }
+    end
   end
 
   describe "associations" do
