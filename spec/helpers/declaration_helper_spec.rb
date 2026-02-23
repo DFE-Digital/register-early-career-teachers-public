@@ -82,10 +82,10 @@ RSpec.describe DeclarationHelper, type: :helper do
       it { is_expected.to eq("Voided") }
     end
 
-    context "when the event type is 'teacher_declaration_clawed_back'" do
-      let(:event_type) { "teacher_declaration_clawed_back" }
+    context "when the event type is 'teacher_declaration_awaiting_clawback'" do
+      let(:event_type) { "teacher_declaration_awaiting_clawback" }
 
-      it { is_expected.to eq("Clawed back") }
+      it { is_expected.to eq("Awaiting clawback") }
     end
 
     context "when the event type is not recognised" do
@@ -110,6 +110,54 @@ RSpec.describe DeclarationHelper, type: :helper do
       end
 
       it { is_expected.to eq("ecf-mentor") }
+    end
+  end
+
+  describe "#declaration_voided_by_caption" do
+    subject { helper.declaration_voided_by_caption(declaration, event) }
+
+    let(:event) { instance_double(Event, event_type:) }
+
+    context "when the event type is not a voided or clawed_back event" do
+      let(:event_type) { "teacher_declaration_created" }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the event type is 'teacher_declaration_voided'" do
+      let(:event_type) { "teacher_declaration_voided" }
+
+      context "when voided by an admin user" do
+        let(:admin_user) { instance_double(User, name: "Admin User", email: "admin@example.com") }
+
+        before { allow(declaration).to receive(:voided_by_user).and_return(admin_user) }
+
+        it { is_expected.to include("Voided by Admin User (admin@example.com)") }
+      end
+
+      context "when voided by a lead provider" do
+        before { allow(declaration).to receive(:voided_by_user).and_return(nil) }
+
+        it { is_expected.to include("Voided by lead provider") }
+      end
+    end
+
+    context "when the event type is 'teacher_declaration_awaiting_clawback'" do
+      let(:event_type) { "teacher_declaration_awaiting_clawback" }
+
+      context "when clawed back by an admin user" do
+        let(:admin_user) { instance_double(User, name: "Finance User", email: "finance@example.com") }
+
+        before { allow(declaration).to receive(:voided_by_user).and_return(admin_user) }
+
+        it { is_expected.to include("Voided by Finance User (finance@example.com)") }
+      end
+
+      context "when clawed back by a lead provider" do
+        before { allow(declaration).to receive(:voided_by_user).and_return(nil) }
+
+        it { is_expected.to include("Voided by lead provider") }
+      end
     end
   end
 end

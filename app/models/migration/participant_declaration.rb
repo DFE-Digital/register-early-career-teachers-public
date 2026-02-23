@@ -2,6 +2,19 @@ module Migration
   class ParticipantDeclaration < Migration::Base
     BILLABLE_STATES = %w[eligible payable paid].freeze
     REFUNDABLE_STATES = %w[awaiting_clawback clawed_back].freeze
+    MIGRATED_EVIDENCE_HELD = {
+      "75-percent-engagement-met" => "75-percent-engagement-met",
+      "75-percent-engagement-met-reduced-induction" => "75-percent-engagement-met-reduced-induction",
+      "materials-engaged-with-offline" => "materials-engaged-with-offline",
+      "one-term-induction" => "one-term-induction",
+      "other" => "other",
+      "self-study-material completed" => "self-study-material-completed",
+      "self-study-material-completed" => "self-study-material-completed",
+      "training_event_attendance" => "training-event-attended",
+      "training-event-attended" => "training-event-attended",
+      "" => nil
+    }.tap { |mapping| mapping.default_proc = ->(_h, k) { k } }
+     .freeze
 
     self.inheritance_column = :ignore
 
@@ -19,6 +32,8 @@ module Migration
 
     def refundable? = REFUNDABLE_STATES.include?(state)
 
+    def started? = declaration_type == "started"
+
     def submitted? = state == "submitted"
 
     # status
@@ -31,12 +46,18 @@ module Migration
 
     def payment_statement = billable_line_item&.statement
 
-    # type predicates
+    # others
     def ect? = type == "ParticipantDeclaration::ECT"
+
+    def migrated_evidence_held = MIGRATED_EVIDENCE_HELD[evidence_held]
+    def migrated_pupil_premium_uplift = migrated_uplift_flag(pupil_premium_uplift)
+    def migrated_sparsity_uplift = migrated_uplift_flag(sparsity_uplift)
 
   private
 
     def billable_line_item = @billable_line_item ||= statement_line_items.detect(&:billable?)
+
+    def migrated_uplift_flag(flag) = flag && started? && cohort.start_year < 2025
 
     def refundable_line_item = @refundable_line_item ||= statement_line_items.detect(&:refundable?)
   end

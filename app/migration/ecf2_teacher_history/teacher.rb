@@ -9,8 +9,8 @@ class ECF2TeacherHistory::Teacher
               :api_mentor_training_record_id,
               :api_updated_at,
               :migration_mode,
-              :ect_pupil_premium_uplift,
-              :ect_sparsity_uplift,
+              :pupil_premium_uplift,
+              :sparsity_uplift,
               :ect_first_became_eligible_for_training_at,
               :ect_payments_frozen_year,
               :mentor_became_ineligible_for_funding_on,
@@ -30,8 +30,8 @@ class ECF2TeacherHistory::Teacher
                  api_mentor_training_record_id: nil,
                  api_updated_at: nil,
                  migration_mode: nil,
-                 ect_pupil_premium_uplift: nil,
-                 ect_sparsity_uplift: nil,
+                 pupil_premium_uplift: nil,
+                 sparsity_uplift: nil,
                  ect_first_became_eligible_for_training_at: nil,
                  ect_payments_frozen_year: nil,
                  mentor_became_ineligible_for_funding_on: nil,
@@ -50,8 +50,8 @@ class ECF2TeacherHistory::Teacher
     @api_mentor_training_record_id = api_mentor_training_record_id
     @api_updated_at = api_updated_at
     @migration_mode = migration_mode
-    @ect_pupil_premium_uplift = ect_pupil_premium_uplift
-    @ect_sparsity_uplift = ect_sparsity_uplift
+    @pupil_premium_uplift = pupil_premium_uplift
+    @sparsity_uplift = sparsity_uplift
     @ect_first_became_eligible_for_training_at = ect_first_became_eligible_for_training_at
     @ect_payments_frozen_year = ect_payments_frozen_year
     @mentor_became_ineligible_for_funding_on = mentor_became_ineligible_for_funding_on
@@ -76,8 +76,8 @@ class ECF2TeacherHistory::Teacher
       api_updated_at:,
 
       migration_mode:,
-      ect_pupil_premium_uplift:,
-      ect_sparsity_uplift:,
+      pupil_premium_uplift:,
+      sparsity_uplift:,
       ect_first_became_eligible_for_training_at:,
       ect_payments_frozen_year:,
 

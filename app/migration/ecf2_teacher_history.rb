@@ -78,6 +78,14 @@ class ECF2TeacherHistory
                                      .map(&:summary)
   end
 
+  def economy?
+    teacher.migration_mode == :latest_induction_records
+  end
+
+  def premium?
+    teacher.migration_mode == :all_induction_records
+  end
+
 private
 
   def data_migration_teacher_combinations

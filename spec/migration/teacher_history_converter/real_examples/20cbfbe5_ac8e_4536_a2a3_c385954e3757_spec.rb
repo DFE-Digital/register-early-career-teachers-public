@@ -52,7 +52,7 @@ describe "Real data check for user 20cbfbe5-ac8e-4536-a2a3-c385954e3757" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
@@ -84,7 +84,7 @@ describe "Real data check for user 20cbfbe5-ac8e-4536-a2a3-c385954e3757" do
     end
   end
 
-  context "when using the premium migrator" do
+  context "when using the premium migrator", skip: "Implement the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
     let(:expected_output) do

@@ -88,16 +88,40 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
       }
     end
 
+    it "marks the teacher as economy" do
+      expect(ecf2_teacher_history).to be_economy
+    end
+
     it "matches the expected output" do
       expect(actual_output).to include(expected_output)
     end
   end
 
-  context "when using the premium migrator", skip: "Implement the premium migrator" do
+  context "when using the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
     let(:expected_output) do
-      {}
+      {
+        teacher: hash_including(
+          trn: "1111111",
+          ect_at_school_periods: array_including(
+            hash_including(
+              started_on: Date.new(2025, 6, 1),
+              finished_on: nil,
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2025, 6, 1),
+                  finished_on: nil
+                )
+              )
+            )
+          )
+        )
+      }
+    end
+
+    it "marks the teacher as premium" do
+      expect(ecf2_teacher_history).to be_premium
     end
 
     it "matches the expected output" do

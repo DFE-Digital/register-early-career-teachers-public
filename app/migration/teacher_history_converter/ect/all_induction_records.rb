@@ -1,30 +1,120 @@
 class TeacherHistoryConverter::ECT::AllInductionRecords
-  def initialize(ecf1_teacher_history:, ecf2_teacher_history:)
-    @ecf1_teacher_history = ecf1_teacher_history
-    @ecf2_teacher_history = ecf2_teacher_history
+  include TeacherHistoryConverter::CalculatedAttributes
+
+  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states
+
+  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+    @trn = trn
+    @profile_id = profile_id
+    @induction_records = induction_records
+    @mentor_at_school_periods = mentor_at_school_periods
+    @states = states
   end
 
-  def convert
-    ecf1_teacher_history.induction_records.each_with_index do |induction_record, _i|
-      add_induction_record_to_ecf2_teacher_history(induction_record)
+  # Returns [ECF2TeacherHistory::ECTAtSchoolPeriod[], String[]]
+  def ect_at_school_periods
+    @ect_at_school_periods ||= induction_records
+                                 .reverse
+                                 .each_with_object([]) do |induction_record, periods|
+                                   process(periods, induction_record)
     end
   end
 
 private
 
-  def add_induction_record_to_ecf2_teacher_history(induction_record)
-    # Step 1
-    #
-    # ECT at school period - do we:
-    # - extend an existing ECT at school period?
-    # - create a new ECT at school period?
-    # - do nothing
-    #
-    # Step 2:
-    #
-    # Training period - do we:
-    # - extend an existing training period?
-    # - create a new training period
-    # - do nothing
+  def process(ect_at_school_periods, induction_record)
+    started_on = induction_record.start_date
+    finished_on = induction_record.end_date
+
+    training_period = build_training_period(induction_record:, started_on:, finished_on:)
+
+    mentorship_period = build_mentorship_period(induction_record:,
+                                                ect_started_on: started_on,
+                                                ect_finished_on: finished_on)
+
+    ect_at_school_periods.unshift(
+      ECF2TeacherHistory::ECTAtSchoolPeriod.new(
+        started_on:,
+        finished_on:,
+        school: induction_record.school,
+        email: induction_record.preferred_identity_email,
+        mentorship_periods: [mentorship_period].compact,
+        training_periods: [training_period].compact
+      )
+    )
+  end
+
+  def build_mentorship_period(induction_record:, ect_started_on:, ect_finished_on:)
+    mentor_at_school_period = find_overlapping_mentor_period(started_on: ect_started_on,
+                                                             finished_on: ect_finished_on,
+                                                             mentor_profile_id: induction_record.mentor_profile_id,
+                                                             urn: induction_record.school.urn)
+
+    if mentor_at_school_period
+      mentor_started_on = mentor_at_school_period.started_on
+      mentor_finished_on = mentor_at_school_period.finished_on
+
+      mentorship_started_on = [ect_started_on, mentor_started_on].max
+      mentorship_finished_on = [ect_finished_on, mentor_finished_on].compact.min
+
+      ECF2TeacherHistory::MentorshipPeriod.new(
+        started_on: mentorship_started_on,
+        finished_on: mentorship_finished_on,
+        ecf_start_induction_record_id: induction_record.induction_record_id,
+        ecf_end_induction_record_id: induction_record.induction_record_id,
+        mentor_at_school_period_id: mentor_at_school_period.mentor_at_school_period_id,
+        api_ect_training_record_id: profile_id,
+        api_mentor_training_record_id: mentor_at_school_period.teacher.api_mentor_training_record_id
+      )
+    end
+  end
+
+  def build_training_period(induction_record:, **overrides)
+    training_programme = convert_training_programme_name(induction_record.training_programme)
+
+    training_provider_info = induction_record.training_provider_info
+
+    training_attrs = {
+      started_on: induction_record.start_date,
+      finished_on: induction_record.end_date,
+      created_at: induction_record.created_at,
+      school: induction_record.school,
+      training_programme:,
+      lead_provider_info: training_provider_info&.lead_provider_info,
+      delivery_partner_info: training_provider_info&.delivery_partner_info,
+      contract_period_year: induction_record.cohort_year,
+      is_ect: true,
+      ecf_start_induction_record_id: induction_record.induction_record_id,
+      schedule_info: induction_record.schedule_info,
+      combination: build_combination(induction_record:, training_programme:),
+      **withdrawal_data(
+        training_status: induction_record.training_status,
+        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+      )
+    }.merge(overrides)
+
+    training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
+
+    ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
+  end
+
+  def build_combination(induction_record:, **overrides)
+    ECF2TeacherHistory::Combination
+      .from_induction_record(trn:, profile_id:, profile_type: "ect", induction_record:, **overrides)
+  end
+
+  # Find the last MentorAtSchoolPeriod overlapping started_on..finished_on for the teacher and school identifiers given
+  def find_overlapping_mentor_period(started_on:, finished_on:, mentor_profile_id:, urn:)
+    overlapping_mentor_periods = mentor_at_school_periods.select do
+      it.school.urn.to_i == urn.to_i &&
+        it.teacher.api_mentor_training_record_id == mentor_profile_id &&
+        it.range.overlaps?(started_on..finished_on)
+    end
+
+    OVERLAPPING_MENTOR_PERIODS_SORTING.call(overlapping_mentor_periods).last
+  end
+
+  def withdrawal_data(training_status:, lead_provider_id:)
+    TeacherHistoryConverter::WithdrawalData.new(training_status:, states:, lead_provider_id:).withdrawal_data
   end
 end

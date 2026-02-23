@@ -8,7 +8,7 @@ module API
         { title: "Create, view and update partnerships", path: "create-view-and-update-partnerships" },
         { title: "Keeping data in sync", path: "keeping-data-in-sync" },
         { title: "How to test the API effectively", path: "how-to-test-the-api-effectively" },
-        { title: "How we assign participant schedules", path: "how-we-assign-participant-schedules" },
+        { title: "Schedules and milestones guidance", path: "schedules-and-milestones-guidance" },
         { title: "Update participant data", path: "update-participant-data" },
         { title: "View participant data", path: "view-participant-data" },
         { title: "Glossary", path: "glossary" },
