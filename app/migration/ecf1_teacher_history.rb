@@ -56,7 +56,7 @@ class ECF1TeacherHistory
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
       induction_records:,
-      mentor_at_school_periods: SchoolMentorsForECT.new(induction_records:).mentor_at_school_periods
+      mentor_at_school_periods: SchoolMentorsForECT.new(induction_records:).mentor_at_school_periods,
       transfers: BuildParticipantTransfers.new(participant_profile:).transfers
     )
   end
