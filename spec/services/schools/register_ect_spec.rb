@@ -47,7 +47,7 @@ RSpec.describe Schools::RegisterECT do
       end
 
       context "when we log a teacher to start on the last day of the current contract period" do
-        let(:travel_date) { contract_period.finished_on }
+        let(:travel_date) { Date.new(2026, 5, 31) }
         let(:started_on) { travel_date }
 
         it "creates a new Teacher record" do
@@ -122,7 +122,7 @@ RSpec.describe Schools::RegisterECT do
           end
 
           context "on the last day of the current contract period" do
-            let(:travel_date) { contract_period.finished_on }
+            let(:travel_date) { Date.new(2026, 5, 31) }
             let(:started_on) { travel_date }
 
             it "allows registration at a third school (multiple transfers)" do
@@ -154,10 +154,10 @@ RSpec.describe Schools::RegisterECT do
           end
 
           context "on the last day of the current contract period" do
-            let(:travel_date) { contract_period.finished_on }
+            let(:travel_date) { Date.new(2026, 5, 31) }
             let(:started_on) { travel_date }
 
-            it "allows registration at a third school (multiple transfers)" do
+            it "registers the teach with the correct contrat period" do
               expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
             end
           end
@@ -228,6 +228,21 @@ RSpec.describe Schools::RegisterECT do
             expect(training_period.school_partnership).to be_nil
             expect(training_period.training_programme).to eq(training_programme)
           end
+
+          context "on the last day of the contract period" do
+            let(:travel_date) { Date.new(2026, 5, 31) }
+            let(:started_on) { travel_date }
+
+            it "finds the correct contract period and schedule" do
+              expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+              training_period = TrainingPeriod.find_by!(started_on:)
+
+              expect(training_period.started_on).to eq(started_on)
+              expect(training_period.schedule.identifier).to eql("ecf-standard-april")
+              expect(training_period.schedule.contract_period_year).to be(2025)
+            end
+          end
         end
 
         context "when the ECT start date is backdated before the registration contract period" do
@@ -257,6 +272,21 @@ RSpec.describe Schools::RegisterECT do
 
             expect(training_period.expression_of_interest).to be_nil
             expect(training_period.school_partnership).to eq(school_partnership)
+          end
+
+          context "on the last day of the contract period" do
+            let(:travel_date) { Date.new(2026, 5, 31) }
+            let(:started_on) { travel_date }
+
+            it "finds the correct contract period and schedule" do
+              expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+              training_period = TrainingPeriod.find_by!(started_on:)
+
+              expect(training_period.started_on).to eq(started_on)
+              expect(training_period.schedule.identifier).to eql("ecf-standard-april")
+              expect(training_period.schedule.contract_period_year).to be(2025)
+            end
           end
         end
 
