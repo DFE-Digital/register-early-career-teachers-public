@@ -182,7 +182,7 @@ module Schools
     end
 
     def registration_contract_period
-      @registration_contract_period ||= ContractPeriod.current_end_inclusive
+      @registration_contract_period ||= ContractPeriod.current
     end
   end
 end
