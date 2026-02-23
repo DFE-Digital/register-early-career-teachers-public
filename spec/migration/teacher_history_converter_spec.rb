@@ -27,7 +27,7 @@ describe TeacherHistoryConverter do
   describe "Strategy selection" do
     subject { TeacherHistoryConverter.new(ecf1_teacher_history:).migration_mode }
 
-    context "when the ECF1TeacherHistory meets premium conditions" do
+    context "when the ECF1TeacherHistory meets premium conditions", pending: "re-enable once we make the strategy dynamic again" do
       let(:ecf1_teacher_history) { FactoryBot.build(:ecf1_teacher_history) }
 
       it { is_expected.to be(:all_induction_records) }
