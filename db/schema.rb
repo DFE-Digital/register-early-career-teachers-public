@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_17_082651) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_19_105250) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -182,6 +182,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_17_082651) do
     t.datetime "payments_frozen_at"
     t.boolean "mentor_funding_enabled", default: false, null: false
     t.boolean "detailed_evidence_types_enabled", default: false, null: false
+    t.boolean "uplift_fees_enabled", default: true, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
@@ -992,8 +993,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_17_082651) do
     t.uuid "api_mentor_training_record_id"
     t.integer "ect_payments_frozen_year"
     t.integer "mentor_payments_frozen_year"
-    t.boolean "ect_pupil_premium_uplift", default: false, null: false
-    t.boolean "ect_sparsity_uplift", default: false, null: false
+    t.boolean "pupil_premium_uplift", default: false, null: false
+    t.boolean "sparsity_uplift", default: false, null: false
     t.date "trs_induction_start_date"
     t.date "trs_induction_completed_date"
     t.datetime "ect_first_became_eligible_for_training_at"

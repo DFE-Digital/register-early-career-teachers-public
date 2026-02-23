@@ -3,18 +3,23 @@ RSpec.describe Declarations::Clawback do
     described_class.new(
       author:,
       declaration:,
-      voided_by_user_id:,
-      next_available_output_fee_statement:
+      voided_by_user_id:
     )
   end
 
   let(:declaration) { FactoryBot.create(:declaration, :paid) }
-  let(:author) do
-    lead_provider = declaration.training_period.lead_provider
-    Events::LeadProviderAPIAuthor.new(lead_provider:)
-  end
+  let(:author) { Events::LeadProviderAPIAuthor.new(lead_provider:) }
   let(:voided_by_user_id) { FactoryBot.create(:user).id }
-  let(:next_available_output_fee_statement) { declaration.payment_statement }
+
+  let(:lead_provider) { declaration.training_period.lead_provider }
+  let(:contract_period) { declaration.training_period.contract_period }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+  let!(:next_available_output_fee_statement) { FactoryBot.create(:statement, :output_fee, active_lead_provider:) }
+
+  before do
+    # make payment statement precede clawback statement
+    declaration.payment_statement.update!(deadline_date: Date.yesterday)
+  end
 
   describe "#clawback" do
     subject(:clawback) { instance.clawback }
@@ -47,7 +52,7 @@ RSpec.describe Declarations::Clawback do
 
     it "records an event" do
       expect(Events::Record)
-        .to receive(:record_teacher_declaration_clawed_back!)
+        .to receive(:record_teacher_declaration_awaiting_clawback!)
         .with(
           author:,
           teacher: declaration.training_period.teacher,
@@ -83,6 +88,21 @@ RSpec.describe Declarations::Clawback do
 
       it "does not touch the voided_by_user_at timestamp" do
         expect { clawback }.not_to(change(declaration, :voided_by_user_at))
+      end
+    end
+
+    context "when there is no next available output fee statement" do
+      before do
+        next_available_output_fee_statement.destroy!
+        instance.clawback
+      end
+
+      it "is invalid" do
+        expect(instance).to have_error(:next_available_output_fee_statement)
+      end
+
+      it "does not clawback the declaration" do
+        expect(declaration.clawback_status).to eq("no_clawback")
       end
     end
   end

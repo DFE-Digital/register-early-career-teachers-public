@@ -153,4 +153,103 @@ describe Migration::ParticipantDeclaration, type: :model do
       end
     end
   end
+
+  describe "#migrated_evidende_held" do
+    subject { participant_declaration.migrated_evidence_held }
+
+    let(:participant_declaration) { FactoryBot.build(:migration_participant_declaration, evidence_held:) }
+
+    {
+      "75-percent-engagement-met" => "75-percent-engagement-met",
+      "75-percent-engagement-met-reduced-induction" => "75-percent-engagement-met-reduced-induction",
+      "materials-engaged-with-offline" => "materials-engaged-with-offline",
+      "one-term-induction" => "one-term-induction",
+      "other" => "other",
+      "self-study-material completed" => "self-study-material-completed",
+      "self-study-material-completed" => "self-study-material-completed",
+      "training_event_attendance" => "training-event-attended",
+      "training-event-attended" => "training-event-attended",
+      "" => nil
+    }.each do |ecf_value, rect_value|
+      context "when the value is '#{ecf_value}'" do
+        let(:evidence_held) { ecf_value }
+
+        it { is_expected.to eq(rect_value) }
+      end
+
+      context "any other value" do
+        let(:evidence_held) { "other_value" }
+
+        it { is_expected.to eq(evidence_held) }
+      end
+    end
+  end
+
+  describe "#migrated_pupil_premium_uplift" do
+    subject { participant_declaration.migrated_pupil_premium_uplift }
+
+    let(:start_year) { 2022 }
+    let(:cohort) { FactoryBot.create(:migration_cohort, start_year:) }
+    let(:participant_declaration) { FactoryBot.build(:migration_participant_declaration, declaration_type:, cohort:) }
+
+    %w[started].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        context "when the cohort is earlier than 2025/2026" do
+          let(:start_year) { 2024 }
+
+          it { is_expected.to eq(participant_declaration.pupil_premium_uplift) }
+        end
+
+        context "when the cohort is not earlier than 2025/2026" do
+          let(:start_year) { 2025 }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
+    %w[retained-1 retained-2 retained-3 retained-4 completed extended-1 extended-2 extended-3].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
+
+  describe "#migrated_sparsity_uplift" do
+    subject { participant_declaration.migrated_sparsity_uplift }
+
+    let(:start_year) { 2022 }
+    let(:cohort) { FactoryBot.create(:migration_cohort, start_year:) }
+    let(:participant_declaration) { FactoryBot.build(:migration_participant_declaration, declaration_type:, cohort:) }
+
+    %w[started].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        context "when the cohort is earlier than 2025/2026" do
+          let(:start_year) { 2024 }
+
+          it { is_expected.to eq(participant_declaration.sparsity_uplift) }
+        end
+
+        context "when the cohort is not earlier than 2025/2026" do
+          let(:start_year) { 2025 }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
+    %w[retained-1 retained-2 retained-3 retained-4 completed extended-1 extended-2 extended-3].each do |checked_declaration_type|
+      context "when the declaration is '#{checked_declaration_type}'" do
+        let(:declaration_type) { checked_declaration_type }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
 end

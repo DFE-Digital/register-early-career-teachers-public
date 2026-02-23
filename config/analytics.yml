@@ -209,6 +209,7 @@ shared:
     - payments_frozen_at
     - mentor_funding_enabled
     - detailed_evidence_types_enabled
+    - uplift_fees_enabled
   :active_lead_providers:
     - id
     - lead_provider_id

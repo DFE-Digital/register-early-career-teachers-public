@@ -42,8 +42,8 @@ private
       api_mentor_training_record_id: ecf1_teacher_history.mentor&.participant_profile_id,
       api_updated_at: participant_api_updated_at(ecf1_teacher_history:),
       migration_mode:,
-      ect_pupil_premium_uplift: ecf1_teacher_history.ect&.pupil_premium_uplift,
-      ect_sparsity_uplift: ecf1_teacher_history.ect&.sparsity_uplift,
+      pupil_premium_uplift: ecf1_teacher_history.ect&.pupil_premium_uplift,
+      sparsity_uplift: ecf1_teacher_history.ect&.sparsity_uplift,
       ect_payments_frozen_year: ecf1_teacher_history.ect&.payments_frozen_cohort_start_year,
       mentor_payments_frozen_year: ecf1_teacher_history.mentor&.payments_frozen_cohort_start_year,
       created_at: ecf1_teacher_history.user.created_at,
@@ -57,7 +57,8 @@ private
     trn = ecf1_teacher_history.user.trn
     profile_id = ecf1_teacher_history.ect.participant_profile_id
     raw_induction_records = ecf1_teacher_history.ect.induction_records
-    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records).induction_records
+    induction_completion_date = ecf1_teacher_history.ect.induction_completion_date
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, induction_completion_date:).induction_records
     mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
     states = ecf1_teacher_history.ect.states
 
@@ -67,7 +68,8 @@ private
         .ect_at_school_periods
         .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.ect.created_at) }
     when :all_induction_records
-      TeacherHistoryConverter::ECT::AllInductionRecords.new(induction_records).ect_at_school_periods
+      TeacherHistoryConverter::ECT::AllInductionRecords.new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+        .ect_at_school_periods
     end
   end
 
@@ -91,7 +93,8 @@ private
         .mentor_at_school_periods
         .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
     when :all_induction_records
-      TeacherHistoryConverter::Mentor::AllInductionRecords.new(induction_records).mentor_at_school_periods
+      TeacherHistoryConverter::Mentor::AllInductionRecords.new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:)
+        .mentor_at_school_periods
     end
   end
 

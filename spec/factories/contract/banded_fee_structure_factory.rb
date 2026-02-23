@@ -8,7 +8,7 @@ FactoryBot.define do
     trait :with_bands do
       transient do
         declaration_boundaries do
-          min = 0
+          min = 1
 
           Array.new(Faker::Number.between(from: 3, to: 4)) do
             max = min + Faker::Number.between(from: 20, to: 200)
