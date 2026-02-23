@@ -19,6 +19,5 @@ module PaymentCalculator
     def filtered_declarations = declarations
       .where(pupil_premium_uplift: true)
       .or(declarations.where(sparsity_uplift: true))
-      .declaration_type_started
   end
 end

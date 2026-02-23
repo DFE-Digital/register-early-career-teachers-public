@@ -190,8 +190,8 @@ erDiagram
     uuid api_mentor_training_record_id
     integer ect_payments_frozen_year
     integer mentor_payments_frozen_year
-    boolean ect_pupil_premium_uplift
-    boolean ect_sparsity_uplift
+    boolean pupil_premium_uplift
+    boolean sparsity_uplift
     date trs_induction_start_date
     date trs_induction_completed_date
     datetime ect_first_became_eligible_for_training_at
@@ -467,6 +467,7 @@ erDiagram
     datetime payments_frozen_at
     boolean mentor_funding_enabled
     boolean detailed_evidence_types_enabled
+    boolean uplift_fees_enabled
   }
   Contract {
     integer id
