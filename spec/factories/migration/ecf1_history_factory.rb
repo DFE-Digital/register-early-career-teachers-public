@@ -171,6 +171,7 @@ FactoryBot.define do
     pupil_premium_uplift { false }
     sparsity_uplift { false }
     payments_frozen_cohort_start_year { nil }
+    transfers { {} }
 
     initialize_with do
       new(participant_profile_id:,
@@ -183,7 +184,8 @@ FactoryBot.define do
           mentor_at_school_periods:,
           pupil_premium_uplift:,
           sparsity_uplift:,
-          payments_frozen_cohort_start_year:)
+          payments_frozen_cohort_start_year:,
+          transfers:)
     end
 
     trait :one_induction_record do
@@ -231,6 +233,7 @@ FactoryBot.define do
     induction_records { [] }
     ero_mentor { false }
     ero_declarations { false }
+    transfers { {} }
 
     payments_frozen_cohort_start_year { nil }
 
@@ -244,7 +247,20 @@ FactoryBot.define do
           induction_records:,
           ero_mentor:,
           ero_declarations:,
-          payments_frozen_cohort_start_year:)
+          payments_frozen_cohort_start_year:,
+          transfers:)
+    end
+  end
+
+  factory :ecf1_teacher_history_transfer_data, class: "Types::TransferData" do
+    training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info) }
+    sequence(:school_data) { |n| Types::SchoolData.new(urn: 100_000 + n, name: "School #{n}") }
+    updated_at { 6.months.ago }
+
+    initialize_with do
+      new(training_provider_info:,
+          school_data:,
+          updated_at:)
     end
   end
 end

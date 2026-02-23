@@ -78,6 +78,54 @@ describe ECF1TeacherHistory do
       expect(history.mentor.participant_profile_id).to eq(mentor_profile.id)
     end
 
+    describe "transfers" do
+      it "builds the transfers timestamps for the ECT profile" do
+        expect(history.ect.transfers[induction_programme.partnership.lead_provider_id]).to eq user.updated_at
+      end
+
+      it "builds the transfers timestamps for the Mentor profile" do
+        expect(history.mentor.transfers[induction_programme.partnership.lead_provider_id]).to eq user.updated_at
+      end
+
+      context "when the ECT has a school transfer" do
+        let(:induction_programme_2) { FactoryBot.create(:migration_induction_programme, :provider_led) }
+        let(:induction_record_1) do
+          FactoryBot.create(:migration_induction_record, :with_mentor, participant_profile: ect_profile, induction_programme:,
+                                                                       updated_at: 3.weeks.ago, induction_status: "leaving", start_date: 1.month.ago, end_date: 3.weeks.ago)
+        end
+        let(:induction_record_2) do
+          FactoryBot.create(:migration_induction_record, :with_mentor, participant_profile: ect_profile,
+                                                                       induction_programme: induction_programme_2, updated_at: 1.hour.ago, school_transfer: true,
+                                                                       start_date: 3.weeks.ago, end_date: nil)
+        end
+        let!(:ect_induction_records) { [induction_record_1, induction_record_2] }
+
+        it "builds the transfers timestamps for the ECT" do
+          expect(history.ect.transfers[induction_programme.partnership.lead_provider_id]).to eq induction_record_1.updated_at
+          expect(history.ect.transfers[induction_programme_2.partnership.lead_provider_id]).to eq induction_record_2.updated_at
+        end
+      end
+
+      context "when the Mentor has a school transfer" do
+        let(:induction_programme_2) { FactoryBot.create(:migration_induction_programme, :provider_led) }
+        let(:induction_record_1) do
+          FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile, induction_programme:,
+                                                         updated_at: 3.weeks.ago, induction_status: "leaving", start_date: 1.month.ago, end_date: 3.weeks.ago)
+        end
+        let(:induction_record_2) do
+          FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile,
+                                                         induction_programme: induction_programme_2, updated_at: 1.hour.ago, school_transfer: true,
+                                                         start_date: 3.weeks.ago, end_date: nil)
+        end
+        let!(:mentor_induction_records) { [induction_record_1, induction_record_2] }
+
+        it "builds the transfers timestamps for the Mentor" do
+          expect(history.mentor.transfers[induction_programme.partnership.lead_provider_id]).to eq induction_record_1.updated_at
+          expect(history.mentor.transfers[induction_programme_2.partnership.lead_provider_id]).to eq induction_record_2.updated_at
+        end
+      end
+    end
+
     describe "ERO mentor attributes" do
       let(:state) { :payable }
       let!(:declaration) { FactoryBot.create(:migration_participant_declaration, participant_profile: mentor_profile, state:) }

@@ -7,5 +7,4 @@ module Types
   end
   ScheduleInfo = Data.define(:schedule_id, :identifier, :name, :cohort_year)
   TeacherData = Data.define(:trn, :api_mentor_training_record_id)
-  TransferData = Data.define(:training_provider_info, :school_data, :updated_at)
 end

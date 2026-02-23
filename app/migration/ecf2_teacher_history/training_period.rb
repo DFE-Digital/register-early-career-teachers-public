@@ -12,6 +12,7 @@ class ECF2TeacherHistory::TrainingPeriod
               :created_at,
               :ecf_start_induction_record_id,
               :is_ect,
+              :api_transfer_updated_at,
               :school,
               :combination
 
@@ -31,6 +32,7 @@ class ECF2TeacherHistory::TrainingPeriod
                  withdrawal_reason: nil,
                  ecf_start_induction_record_id: nil,
                  is_ect: false,
+                 api_transfer_updated_at: nil,
                  school: nil,
                  combination: nil)
     @started_on = started_on
@@ -47,6 +49,7 @@ class ECF2TeacherHistory::TrainingPeriod
     @withdrawal_reason = withdrawal_reason
     @ecf_start_induction_record_id = ecf_start_induction_record_id
     @is_ect = is_ect
+    @api_transfer_updated_at = api_transfer_updated_at
     @school = school
     @combination = combination
   end
@@ -59,6 +62,7 @@ class ECF2TeacherHistory::TrainingPeriod
       schedule: ecf2_schedule,
       created_at:,
       ecf_start_induction_record_id:,
+      api_transfer_updated_at:,
       withdrawal_reason:,
       withdrawn_at:
     }
@@ -75,6 +79,7 @@ class ECF2TeacherHistory::TrainingPeriod
       lead_provider_info: lead_provider_info.to_h,
       delivery_partner_info: delivery_partner_info.to_h,
       contract_period_year:,
+      api_transfer_updated_at:,
       withdrawal_reason:,
       withdrawn_at:
     }

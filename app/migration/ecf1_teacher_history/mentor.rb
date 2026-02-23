@@ -9,11 +9,12 @@ class ECF1TeacherHistory::Mentor
               :payments_frozen_cohort_start_year,
               :states,
               :ero_mentor,
-              :ero_declarations
+              :ero_declarations,
+              :transfers
 
   attr_accessor :induction_records
 
-  def initialize(participant_profile_id:, created_at:, updated_at:, mentor_completion_date:, mentor_completion_reason:, payments_frozen_cohort_start_year:, states:, induction_records:, ero_mentor:, ero_declarations:)
+  def initialize(participant_profile_id:, created_at:, updated_at:, mentor_completion_date:, mentor_completion_reason:, payments_frozen_cohort_start_year:, states:, induction_records:, ero_mentor:, ero_declarations:, transfers: {})
     @participant_profile_id = participant_profile_id
     @created_at = created_at
     @updated_at = updated_at
@@ -24,6 +25,7 @@ class ECF1TeacherHistory::Mentor
     @induction_records = induction_records
     @ero_mentor = ero_mentor
     @ero_declarations = ero_declarations
+    @transfers = transfers
   end
 
   def self.from_hash(hash)
