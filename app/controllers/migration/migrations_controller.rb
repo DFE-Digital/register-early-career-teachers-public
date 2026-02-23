@@ -14,6 +14,11 @@ class Migration::MigrationsController < ::AdminController
       "SUM(ecf1_mentorships_count) AS total_ecf1_mentorships,
        SUM(ecf2_mentorships_count) AS total_ecf2_mentorships"
     ).take
+
+    @teachers_via_latest_induction_records = Teacher.where(migration_mode: "latest_induction_records").count
+    @teachers_via_all_induction_records = Teacher.where(migration_mode: "all_induction_records").count
+    @not_migrated_teachers = Teacher.where(migration_mode: "not_migrated").count
+    @all_teachers = Teacher.count
   end
 
   def create
