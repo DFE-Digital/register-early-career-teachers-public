@@ -37,6 +37,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     enum role
+    integer otp_school_urn
   }
   TrainingPeriod {
     integer id

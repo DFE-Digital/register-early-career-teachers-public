@@ -16,6 +16,13 @@ class User < ApplicationRecord
             presence: { message: "Enter an email address" },
             uniqueness: { message: "Email address already used, enter another" },
             notify_email: true
+  validates :otp_school_urn,
+            reference_number_format: {
+              allow_blank: true,
+              minimum: 5,
+              maximum: 6,
+              message: "URN must be 5 or 6 numbers"
+            }
 
   # Associations
   has_many :events
