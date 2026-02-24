@@ -44,7 +44,14 @@ module Admin
   private
 
     def user_params
-      params.expect(user: %i[name email role])
+      permitted_attributes = %i[name email role]
+      permitted_attributes << :otp_school_urn if otp_school_sign_in_enabled?
+
+      params.expect(user: permitted_attributes)
+    end
+
+    def otp_school_sign_in_enabled?
+      Rails.application.config.enable_otp_school_sign_in
     end
 
     def require_users_access!
