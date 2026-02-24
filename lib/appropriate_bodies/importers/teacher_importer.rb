@@ -56,13 +56,23 @@ module AppropriateBodies::Importers
       @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
+    # @return [Array<Struct>]
     def rows
       @rows ||= @csv.reject { |row| row["trn"].nil? }.map { |row| Row.new(**build(row)) }
     end
 
+    # TODO: combine methods and rename to :filtered_rows
+    # ignore statuses from the first import
     def rows_with_wanted_statuses
       unwanted_statuses = %w[RequiredToComplete InProgress]
       rows.reject { |row| row.induction_status.in?(unwanted_statuses) }
+      # rows_with_missing_teachers.reject { |row| row.induction_status.in?(unwanted_statuses) }
+    end
+
+    # ignore TRNs already in the service
+    def rows_with_missing_teachers
+      existing_trns = Teacher.pluck(:trn)
+      rows.reject { |row| row.trn.in?(existing_trns) }
     end
 
   private

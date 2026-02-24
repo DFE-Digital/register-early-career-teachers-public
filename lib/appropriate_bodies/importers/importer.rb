@@ -2,10 +2,12 @@ module AppropriateBodies::Importers
   class Importer
     def initialize(appropriate_body_csv:, teachers_csv:, induction_period_csv:, dfe_sign_in_mapping_csv:, dqt_csv:)
       @induction_periods_grouped_by_trn = InductionPeriodImporter.new(induction_period_csv, dqt_csv).periods_by_trn
+
       @trns_with_induction_periods = @induction_periods_grouped_by_trn.keys
       @teacher_importer_rows = TeacherImporter.new(teachers_csv, @trns_with_induction_periods).rows_with_wanted_statuses
-      @active_abs = @induction_periods_grouped_by_trn.flat_map { |_trn, ips| ips.map(&:legacy_appropriate_body_id) }.uniq
-      @ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, @active_abs, dfe_sign_in_mapping_csv).rows
+
+      @legacy_appropriate_body_ids = @induction_periods_grouped_by_trn.flat_map { |_trn, ips| ips.map(&:legacy_appropriate_body_id) }.uniq
+      @ab_importer_rows = AppropriateBodyImporter.new(appropriate_body_csv, @legacy_appropriate_body_ids, dfe_sign_in_mapping_csv).rows
     end
 
     def import!
@@ -21,30 +23,33 @@ module AppropriateBodies::Importers
   private
 
     def teacher_trn_to_id
-      @teacher_trn_to_id ||= Teacher.all.select(:id, :trn).each_with_object({}) do |t, h|
-        h[t[:trn]] = t[:id]
-      end
+      @teacher_trn_to_id ||=
+        Teacher.all.select(:id, :trn).each_with_object({}) do |t, h|
+          h[t[:trn]] = t[:id]
+        end
     end
 
     def teacher_trn_to_status
-      @teacher_trn_to_status ||= Teacher.all.select(:trn, :trs_induction_status).each_with_object({}) do |t, h|
-        h[t[:trn]] = t[:trs_induction_status]
-      end
+      @teacher_trn_to_status ||=
+        Teacher.all.select(:trn, :trs_induction_status).each_with_object({}) do |t, h|
+          h[t[:trn]] = t[:trs_induction_status]
+        end
     end
 
     def ab_legacy_id_to_id
-      @ab_legacy_id_to_id ||= AppropriateBodyPeriod.all.select(:id, :dqt_id).each_with_object({}) do |ab, h|
-        h[ab[:dqt_id]] = ab[:id]
-      end
+      @ab_legacy_id_to_id ||=
+        AppropriateBodyPeriod.all.select(:id, :dqt_id).each_with_object({}) do |ab, h|
+          h[ab[:dqt_id]] = ab[:id]
+        end
     end
 
-    # Now these will be inactive ABs
+    # Onshore appropriate bodies with finished induction periods
     def import_ab_rows
-      Rails.logger.info("Active appropriate body periods: #{@active_abs.count}")
+      Rails.logger.info("Legacy appropriate body periods: #{@legacy_appropriate_body_ids.count}")
 
       pre_import_count = AppropriateBodyPeriod.count
 
-      @ab_importer_rows.select { |r| r.dqt_id.in?(@active_abs) }.each do |abp|
+      @ab_importer_rows.select { |r| r.dqt_id.in?(@legacy_appropriate_body_ids) }.each do |abp|
         AppropriateBodyPeriod.create_with(abp.to_h).find_or_create_by(dqt_id: abp.to_h[:dqt_id])
       end
 

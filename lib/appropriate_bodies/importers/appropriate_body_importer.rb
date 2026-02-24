@@ -12,9 +12,9 @@ module AppropriateBodies::Importers
 
     attr_accessor :logger
 
-    def initialize(filename, wanted_legacy_ids, dfe_sign_in_mapping_filename, csv: nil, dfe_sign_in_mapping_csv: nil, logger: nil)
+    def initialize(filename, legacy_ids, dfe_sign_in_mapping_filename, csv: nil, dfe_sign_in_mapping_csv: nil, logger: nil)
       @csv = csv || CSV.read(filename, headers: true)
-      @wanted_legacy_ids = wanted_legacy_ids
+      @legacy_ids = legacy_ids
 
       @mapping_csv = dfe_sign_in_mapping_csv || CSV.read(dfe_sign_in_mapping_filename, headers: true)
 
@@ -22,9 +22,10 @@ module AppropriateBodies::Importers
       @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
     end
 
+    # Reject ABs without induction periods to import
     def rows
       @csv.map { |row|
-        next unless row["id"].in?(@wanted_legacy_ids)
+        next unless row["id"].in?(@legacy_ids)
 
         Row.new(**build(row))
       }.compact
