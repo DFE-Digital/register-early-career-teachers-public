@@ -30,27 +30,27 @@
     
     ## What's changed
     
-    Both ECTs and mentors in the cohort 2024 or earlier, when at schools eligible for uplifts, will show on GET participants:
+    ECTs and mentors in the 2024 or earlier cohorts, who are at schools eligible for uplifts, will show the following on `GET participants`:
     
-    * sparsity_uplift: true
-    * pupil_premium_uplift: true
+    - `sparsity_uplift: true`
+    - `pupil_premium_uplift: true`
   
     Previously, we had said we would always show mentors as false, but this was incorrect.
 
-    Started declarations for these participants will also show as uplift_paid: true when their declaration been paid. It will stay true if later the declaration is clawed back.
+    Started declarations for these participants will also show as `uplift_paid: true` when their declaration has been paid. It will stay true if the declaration is later clawed back.
 
-    Other declaration types, like retained-1 or completed, will show as uplift_paid: false, as uplifts are only paid for started declarations.
+    Other declaration types, like `retained-1` or `completed`, will show as `uplift_paid: false`, as uplifts are only paid for started declarations.
 
     Participants in the 2025 cohort or later will always be shown as:
 
-    * sparsity_uplift: false
-    * pupil_premium_uplift: false
+    - `sparsity_uplift: false`
+    - `pupil_premium_uplift: false`
 
     This is because uplift fees are no longer paid from the 2025 cohort onwards.
     
     ## Why we've made this change    
     
-    This aims to make clearer when participants actually have the uplift fees applied and when they are paid out for declarations.
+    This aims to make it clearer when participants actually have the uplift fees applied, and when they are paid out for declarations.
 
     It also fixes an error we made in the register early career teachers API specification stating that mentors would always show as false for uplift fees.
     
