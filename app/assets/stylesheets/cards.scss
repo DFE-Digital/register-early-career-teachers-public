@@ -1,40 +1,41 @@
+@use "govuk-frontend/dist/govuk" as *;
 @use "sass:map";
 
 $colour-variants: (
   red: (
     background: govuk-tint(govuk-colour('red'), 85),
     heading: govuk-shade(govuk-colour('red'), 40),
-    caption: govuk-shade(govuk-colour('red'), 40),    
+    caption: govuk-shade(govuk-colour('red'), 40),
     border: govuk-colour('red'),
   ),
   yellow: (
     background: govuk-tint(govuk-colour('yellow'), 85),
     heading: govuk-shade(govuk-colour('yellow'), 70),
-    caption: govuk-shade(govuk-colour('yellow'), 70),  
+    caption: govuk-shade(govuk-colour('yellow'), 70),
     border: govuk-colour('yellow'),
   ),
   green: (
     background: govuk-tint(govuk-colour('green'), 85),
     heading: govuk-shade(govuk-colour('green'), 50),
-    caption: govuk-shade(govuk-colour('green'), 50),    
+    caption: govuk-shade(govuk-colour('green'), 50),
     border: govuk-colour('green'),
   ),
   grey-and-blue: (
     background: govuk-colour('light-grey'),
     heading: govuk-colour('blue'),
-    caption: govuk-colour('black'),    
+    caption: govuk-colour('black'),
     border: govuk-colour('mid-grey'),
-  ),  
+  ),
   grey: (
     background: govuk-colour('light-grey'),
     heading: govuk-colour('black'),
-    caption: govuk-colour('black'),    
+    caption: govuk-colour('black'),
     border: govuk-colour('mid-grey'),
   ),
   blue: (
     background: govuk-tint(govuk-colour('blue'), 85),
     heading: govuk-colour('black'),
-    caption: govuk-colour('black'),    
+    caption: govuk-colour('black'),
     border: govuk-colour('blue'),
   ),
 );
@@ -45,17 +46,17 @@ $colour-variants: (
   .app-card--#{"" + $name} {
     background: map.get($colours, background);
     padding: 20px;
-    border: 1px solid map.get($colours, border);    
+    border: 1px solid map.get($colours, border);
 
     .govuk-heading-l {
       color: map.get($colours, heading);
-      margin-bottom: 0;       
+      margin-bottom: 0;
     }
 
     .govuk-caption-l {
       color: map.get($colours, caption);
       @include govuk-font($size: 19);
-      margin-top: govuk-spacing(3);      
+      margin-top: govuk-spacing(3);
     }
   }
 }

@@ -1,3 +1,5 @@
+@use "govuk-frontend/dist/govuk" as *;
+
 .govuk-header__logo {
   margin: 0;
 }
@@ -12,8 +14,11 @@
       display: flex;
       align-items: center;
 
-      .govuk-header__logo { flex-grow: 1; }
+      .govuk-header__logo {
+        flex-grow: 1;
+      }
     }
+
     &__item {
       padding: .3em .8em;
       border-left: 1px govuk-colour('white') solid;

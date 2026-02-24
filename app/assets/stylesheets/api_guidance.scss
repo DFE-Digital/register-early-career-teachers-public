@@ -1,3 +1,5 @@
+@use "govuk-frontend/dist/govuk" as *;
+
 $x-govuk-masthead-background-colour: $govuk-brand-colour;
 $x-govuk-masthead-border-colour: govuk-tint($govuk-brand-colour, 25%);
 $x-govuk-masthead-text-colour: govuk-colour("white");
@@ -91,8 +93,8 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
   }
 
   .release-notes-panel {
-    background-color: $_govuk-rebrand-template-background-colour;
-    border-bottom-color: $_govuk-rebrand-border-colour-on-blue-tint-95;
+    background-color: $govuk-brand-colour;
+    border-bottom-color: govuk-colour("blue", $variant: "tint-80");
     border-bottom-width: 1px;
     border-bottom-style: solid;
   }
