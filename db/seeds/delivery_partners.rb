@@ -9,8 +9,7 @@ end
   "Artisan Education Group",
   "Rising Minds Network",
   "Proving Potential Teaching School Hub",
-  "Harvest Academy",
-  "Capita Delivery Partner"
+  "Harvest Academy"
 ].each do |name|
   delivery_partner = DeliveryPartner.find_or_create_by!(name:)
   describe_delivery_partner(delivery_partner)

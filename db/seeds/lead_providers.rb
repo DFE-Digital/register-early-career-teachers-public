@@ -9,13 +9,13 @@ def describe_lead_provider(lead_provider, years)
 end
 
 lead_providers_data = [
-  { name: "Ambition Institute", years: [2021, 2022, 2023, 2024, 2025, 2026], vat_registered: true },
-  { name: "Best Practice Network", years: [2022, 2023, 2024, 2025], vat_registered: true },
-  { name: "Capita", years: [2021, 2022, 2023], vat_registered: true },
-  { name: "Education Development Trust", years: [2021, 2022, 2023, 2024, 2025], vat_registered: true },
-  { name: "National Institute of Teaching", years: [2021], vat_registered: false },
-  { name: "Teach First", years: [2021, 2022, 2023, 2024, 2025], vat_registered: false },
-  { name: "UCL Institute of Education", years: [2021, 2022, 2023, 2024, 2025], vat_registered: true },
+  { name: "Grove Institute", years: [2021, 2022, 2023, 2024, 2025, 2026], vat_registered: true },
+  { name: "Evergreen Network", years: [2022, 2023, 2024, 2025], vat_registered: true },
+  { name: "National Meadows Institute", years: [2021, 2022, 2023], vat_registered: true },
+  { name: "Woodland Education Trust", years: [2021, 2022, 2023, 2024, 2025], vat_registered: true },
+  { name: "Highland College University", years: [2021], vat_registered: false },
+  { name: "Wildflower Trust", years: [2021, 2022, 2023, 2024, 2025], vat_registered: false },
+  { name: "Pine Institute", years: [2021, 2022, 2023, 2024, 2025], vat_registered: true },
 ]
 
 lead_providers_data.each do |data|
