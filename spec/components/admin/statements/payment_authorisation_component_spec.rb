@@ -18,7 +18,7 @@ RSpec.describe Admin::Statements::PaymentAuthorisationComponent, type: :componen
       before { allow(statement).to receive(:can_authorise_payment?).and_return(true) }
 
       it "renders correctly" do
-        expect(subject).to have_button("Authorise for payment")
+        expect(subject).to have_link("Authorise for payment")
       end
     end
 
