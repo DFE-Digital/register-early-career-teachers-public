@@ -201,4 +201,22 @@ RSpec.describe PaymentCalculator::Banded do
       end
     end
   end
+
+  describe "#vat_amount" do
+    subject { banded.vat_amount }
+
+    let(:outputs_double) { double(total_net_amount: 200) }
+    let(:uplifts_double) { double(total_net_amount: 50) }
+
+    before do
+      allow(PaymentCalculator::Banded::Outputs)
+        .to receive(:new)
+        .and_return(outputs_double)
+      allow(PaymentCalculator::Banded::Uplifts)
+        .to receive(:new)
+        .and_return(uplifts_double)
+    end
+
+    it { is_expected.to eq(350) }
+  end
 end
