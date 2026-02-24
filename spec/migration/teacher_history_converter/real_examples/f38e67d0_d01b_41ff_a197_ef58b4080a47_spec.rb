@@ -128,7 +128,7 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
                   finished_on: nil,
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 2"),
-                  contract_period_year: 2021
+                  contract_period_year: 2024
                 )
               )
             )

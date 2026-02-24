@@ -524,6 +524,7 @@ describe "Latest induction records mode conversion" do
           end_date: Time.zone.parse("2022-8-5"),
           school: school_a,
           training_programme:,
+          cohort_year: 2021,
           training_provider_info: {
             lead_provider: lead_provider_a,
             delivery_partner: delivery_partner_a,
@@ -536,6 +537,7 @@ describe "Latest induction records mode conversion" do
           end_date: Time.zone.parse("2025-6-6"),
           school: school_b,
           training_programme:,
+          cohort_year: 2024,
           training_provider_info: {
             lead_provider: lead_provider_b,
             delivery_partner: delivery_partner_b,
