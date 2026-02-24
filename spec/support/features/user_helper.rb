@@ -118,7 +118,7 @@ module UserHelper
   end
 
   def sign_out
-    page.goto(otp_sign_out_path)
+    page.goto(sign_out_path)
   end
 end
 
