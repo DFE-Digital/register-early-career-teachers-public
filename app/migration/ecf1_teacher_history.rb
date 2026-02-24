@@ -45,6 +45,9 @@ class ECF1TeacherHistory
   def self.build_ect_data(participant_profile:)
     induction_records = build_induction_records(participant_profile:)
 
+    user_updated_at = participant_profile.teacher_profile.user.updated_at
+    transfers = BuildParticipantTransfers.new(induction_records:, user_updated_at:).transfers
+
     ECT.new(
       participant_profile_id: participant_profile.id,
       created_at: participant_profile.created_at,
@@ -56,7 +59,8 @@ class ECF1TeacherHistory
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
       induction_records:,
-      mentor_at_school_periods: SchoolMentorsForECT.new(induction_records:).mentor_at_school_periods
+      mentor_at_school_periods: SchoolMentorsForECT.new(induction_records:).mentor_at_school_periods,
+      transfers:
     )
   end
 
@@ -85,7 +89,8 @@ class ECF1TeacherHistory
       training_provider_info: build_training_provider_info(induction_record:),
       appropriate_body: build_appropriate_body(induction_record:),
       start_timestamp: induction_record.start_date,
-      end_timestamp: induction_record.end_date
+      end_timestamp: induction_record.end_date,
+      school_transfer: induction_record.school_transfer
     )
   end
 
@@ -103,6 +108,9 @@ class ECF1TeacherHistory
 
   def self.build_mentor_data(participant_profile:)
     ero_check = EROMentorChecker.new(participant_profile:)
+    induction_records = build_induction_records(participant_profile:)
+    user_updated_at = participant_profile.teacher_profile.user.updated_at
+    transfers = BuildParticipantTransfers.new(induction_records:, user_updated_at:).transfers
 
     Mentor.new(
       participant_profile_id: participant_profile.id,
@@ -112,9 +120,10 @@ class ECF1TeacherHistory
       mentor_completion_reason: participant_profile.mentor_completion_reason,
       payments_frozen_cohort_start_year: participant_profile.previous_payments_frozen_cohort_start_year,
       states: build_profile_states(participant_profile:),
-      induction_records: build_induction_records(participant_profile:),
+      induction_records:,
       ero_mentor: ero_check.ero_mentor?,
-      ero_declarations: ero_check.ero_mentor_with_declarations?
+      ero_declarations: ero_check.ero_mentor_with_declarations?,
+      transfers:
     )
   end
 
