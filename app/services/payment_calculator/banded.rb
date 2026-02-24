@@ -40,6 +40,8 @@ module PaymentCalculator
       end
     end
 
+    def vat_amount = subtotal * vat_rate
+
   private
 
     def subtotal
@@ -48,10 +50,6 @@ module PaymentCalculator
         monthly_service_fee +
         setup_fee +
         total_manual_adjustments_amount
-    end
-
-    def vat_amount
-      subtotal * vat_rate
     end
 
     def declarations

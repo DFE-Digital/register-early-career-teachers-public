@@ -10,11 +10,14 @@
   </div>
 </div>
 <%= render AppropriateBodies::CardContainerComponent.new do %>
-  <%= render AppropriateBodies::ActionCardComponent.new(
+  <div class="govuk-grid-column-one-third">
+  <%= render Shared::ActionCountCardComponent.new(
     url: ab_unclaimed_claimable_index_path,
-    heading: number_of_claimable_ect_records,
-    body: "Check and claim ECT"
+    count: number_of_claimable_ect_records,
+    description: "Check and claim ECT",
+    colour: "grey-and-blue"
   ) %>
+  </div>
 <% end %>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -29,16 +32,21 @@
 </div>
 <div class="govuk-!-margin-bottom-8">
 <%= render AppropriateBodies::CardContainerComponent.new do %>
-  <%= render AppropriateBodies::ActionCardComponent.new(
+  <div class="govuk-grid-column-one-third">
+  <%= render Shared::ActionCountCardComponent.new(
     url: ab_unclaimed_no_qts_path,
-    heading: number_of_missing_qts_records,
-    body: "No QTS<br/>&nbsp;".html_safe
+    count: number_of_missing_qts_records,
+    description: "No QTS<br/>&nbsp;".html_safe,
+    colour: "grey-and-blue"    
   ) %>
-
-  <%= render AppropriateBodies::ActionCardComponent.new(
+  </div>
+  <div class="govuk-grid-column-one-third">
+  <%= render Shared::ActionCountCardComponent.new(
     url: ab_unclaimed_claimed_by_another_index_path,
-    heading: number_of_records_claimed_by_another_appropriate_body,
-    body: "Currently claimed by another AB"
+    count: number_of_records_claimed_by_another_appropriate_body,
+    description: "Currently claimed by another AB",
+    colour: "grey-and-blue"    
   ) %>
+  </div>
 <% end %>
 </div>
