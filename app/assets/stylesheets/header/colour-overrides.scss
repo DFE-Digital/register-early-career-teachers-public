@@ -1,4 +1,4 @@
-$colours: ("pink", "orange", "red", "purple", "yellow");
+$colours: ("magenta", "orange", "red", "purple", "yellow");
 
 @each $colour in $colours {
   .govuk-header {
