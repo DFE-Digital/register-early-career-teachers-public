@@ -76,6 +76,12 @@ RSpec.describe "Sessions", type: :request do
         expect(Sessions::Users::AppropriateBodyUser).to have_received(:new).with(**params).once
         expect(response).to redirect_to(ab_teachers_path)
       end
+
+      it "does not record a school_user_signs_in event" do
+        allow(Events::Record).to receive(:record_school_user_signs_in_event!)
+        post("/auth/dfe/callback")
+        expect(Events::Record).not_to have_received(:record_school_user_signs_in_event!)
+      end
     end
 
     context "when using a school user", :enable_schools_interface do
@@ -110,6 +116,15 @@ RSpec.describe "Sessions", type: :request do
         post("/auth/dfe/callback")
         expect(Sessions::Users::SchoolUser).to have_received(:new).with(**params).once
         expect(response).to redirect_to(schools_ects_home_path)
+      end
+
+      it "records a school_user_signs_in event" do
+        allow(Events::Record).to receive(:record_school_user_signs_in_event!)
+        post("/auth/dfe/callback")
+        expect(Events::Record).to have_received(:record_school_user_signs_in_event!).with(
+          author: an_instance_of(Sessions::Users::SchoolUser),
+          school: School.find_by(urn: school_urn)
+        )
       end
     end
 

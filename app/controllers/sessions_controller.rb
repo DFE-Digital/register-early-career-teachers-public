@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
     session_manager.begin_session!(session_user, id_token:)
 
     if authenticated?
+      record_school_user_signs_in_event
       redirect_to post_login_redirect_path
     else
       session_manager.end_session!
@@ -39,7 +40,21 @@ class SessionsController < ApplicationController
 
 private
 
-  delegate :session_user, :id_token, to: :user_builder
+  delegate :id_token, to: :user_builder
+
+  def record_school_user_signs_in_event
+    return unless session_user.is_a?(Sessions::Users::SchoolUser)
+    return unless session_user.school
+
+    Events::Record.record_school_user_signs_in_event!(
+      author: session_user,
+      school: session_user.school
+    )
+  end
+
+  def session_user
+    @session_user ||= user_builder.session_user
+  end
 
   # @return [Sessions::Users::Builder]
   def user_builder
