@@ -30,6 +30,29 @@
   end
 end %>
 
+<h2 class="govuk-heading-m">Migration strategy (by teacher)</h2>
+
+<%=
+  govuk_summary_list do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Economy")
+      row.with_value(text: number_and_percentage(@teachers_via_latest_induction_records, @all_teachers))
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Premium")
+      row.with_value(text: number_and_percentage(@teachers_via_all_induction_records, @all_teachers))
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Not migrated")
+      row.with_value(text: number_and_percentage(@not_migrated_teachers, @all_teachers))
+    end
+    sl.with_row do |row|
+      row.with_key(text: "Total")
+      row.with_value(text: tag.strong(number_with_delimiter(@all_teachers)))
+    end
+  end
+%>
+
 <%= render Migration::CombinationsSummaryComponent.new(@combinations) %>
 <%= render Migration::MentorshipSummaryComponent.new(@mentorships) %>
 

@@ -116,4 +116,8 @@ module MigrationHelper
     combined[:caches_loaded] = combined[:caches_loaded].to_a.sort
     combined
   end
+
+  def number_and_percentage(number, total)
+    "#{number_with_delimiter(number)} (#{((number / total.to_f) * 100).round(2)}%)"
+  end
 end

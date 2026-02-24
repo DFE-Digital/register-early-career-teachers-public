@@ -90,6 +90,18 @@ RSpec.describe PaymentCalculator::FlatRate do
     end
   end
 
+  describe "#vat_amount" do
+    subject { flat_rate.vat_amount }
+
+    before do
+      allow(PaymentCalculator::FlatRate::Outputs)
+        .to receive(:new)
+        .and_return(double(total_net_amount: 200))
+    end
+
+    it { is_expected.to eq(40) }
+  end
+
   describe "#outputs" do
     it "calls the `FlatRate::Outputs` service with filtered declarations" do
       expect(PaymentCalculator::FlatRate::Outputs)
