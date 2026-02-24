@@ -1,8 +1,9 @@
 class BuildParticipantTransfers
-  attr_reader :participant_profile
+  attr_reader :induction_records, :user_updated_at
 
-  def initialize(participant_profile:)
-    @participant_profile = participant_profile
+  def initialize(induction_records:, user_updated_at:)
+    @induction_records = induction_records
+    @user_updated_at = user_updated_at
   end
 
   # returns a hash keyed on ecf1 lead_provider_id with either the:
@@ -21,7 +22,7 @@ private
     transfer_list = {}
 
     sorted_induction_records.each do |induction_record|
-      participating_providers << induction_record.induction_programme.partnership&.lead_provider_id
+      participating_providers << induction_record.training_provider_info&.lead_provider_info&.ecf1_id
       next unless induction_record.induction_status == "leaving"
 
       ## set leaving induction record and mark as traversed
@@ -37,8 +38,6 @@ private
       calc_most_recent_value(joining_induction_record, transfer_list)
     end
 
-    user_updated_at = participant_profile.teacher_profile.user.updated_at
-
     # if there are no leaving/joining records use the default user.updated_at timestamp
     (participating_providers.compact.uniq - transfer_list.keys).each do |lead_provider_id|
       transfer_list[lead_provider_id] = user_updated_at
@@ -50,7 +49,7 @@ private
   def calc_most_recent_value(induction_record, transfer_list)
     return if induction_record.blank?
 
-    lead_provider_id = induction_record.induction_programme.partnership&.lead_provider_id
+    lead_provider_id = induction_record.training_provider_info&.lead_provider_info&.ecf1_id
     return unless lead_provider_id
 
     last_updated_at = [transfer_list[lead_provider_id], induction_record.updated_at].compact.max
@@ -73,10 +72,10 @@ private
   end
 
   def sorted_induction_records
-    @sorted_induction_records ||= participant_profile.induction_records.order(:created_at)
+    @sorted_induction_records ||= induction_records.sort_by(&:created_at)
   end
 
   def different_school?(leaving_induction_record:, candidate_induction_record:)
-    candidate_induction_record.induction_programme.school_cohort.school_id != leaving_induction_record.induction_programme.school_cohort.school_id
+    candidate_induction_record.school.urn != leaving_induction_record.school.urn
   end
 end
