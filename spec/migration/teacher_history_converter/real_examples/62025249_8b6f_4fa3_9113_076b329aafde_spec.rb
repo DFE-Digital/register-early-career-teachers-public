@@ -585,7 +585,7 @@ describe "Real data check for user 62025249-8b6f-4fa3-9113-076b329aafde (mentor 
             hash_including(
               started_on: Date.new(2023, 11, 6),
               finished_on: Date.new(2023, 11, 7),
-              training_periods: [],
+              training_periods: []
             ),
             hash_including(
               started_on: Date.new(2023, 11, 8),

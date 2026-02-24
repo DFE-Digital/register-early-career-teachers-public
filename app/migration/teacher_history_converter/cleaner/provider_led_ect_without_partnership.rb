@@ -6,6 +6,7 @@ class TeacherHistoryConverter::Cleaner::ProviderLedECTWithoutPartnership
 
   def induction_records
     return @raw_induction_records unless ect?
+
     remove_provider_led_without_a_partnership!
   end
 
