@@ -43,7 +43,7 @@ describe TeacherHistoryConverter::Cleaner::ProviderLedECTWithoutPartnership do
     let(:raw_induction_records) { [induction_record_1, induction_record_2, induction_record_3] }
 
     it "removes provider_led induction records without a provider" do
-      expect(cleaner.induction_records).to match_array [induction_record_2, induction_record_3]
+      expect(cleaner.induction_records).to contain_exactly(induction_record_2, induction_record_3)
     end
 
     context "when the participant_type is a Mentor" do
