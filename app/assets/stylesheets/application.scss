@@ -3,31 +3,31 @@ $govuk-global-styles: true;
 $govuk-new-link-styles: true;
 $govuk-assets-path: "/";
 
-@import "govuk-frontend/dist/govuk/all";
+@use "govuk-frontend/dist/govuk";
 
-// app styles
-@import "header/colour-overrides";
-@import "header/navigation";
-@import "schools/ects";
-@import "timeline";
-@import "bulk_upload";
-@import "cards";
-@import "search";
-@import "admin/filter";
-@import "admin/button-group";
-@import "admin/teachers";
+// App styles
+@forward "header/colour-overrides";
+@forward "header/navigation";
+@forward "schools/ects";
+@forward "timeline";
+@forward "bulk_upload";
+@forward "cards";
+@forward "search";
+@forward "admin/filter";
+@forward "admin/button-group";
+@forward "admin/teachers";
 
-// library styles
-@import "accessible-autocomplete/src/autocomplete";
-@import "autocomplete";
+// Library styles
+@forward "accessible-autocomplete/src/autocomplete";
+@forward "autocomplete";
 
 // X-Govuk Prototype
-@import "admin";
-@import "api_guidance";
+@forward "admin";
+@forward "api_guidance";
 
 // Migration classes
-@import "migration/migration";
-@import "migration/parity_check";
+@forward "migration/migration";
+@forward "migration/parity_check";
 
 // Test guidance styles
-@import "personas";
+@forward "personas";
