@@ -18,10 +18,8 @@ module ECTAtSchoolPeriods
 
       @training_period = ect_at_school_period.current_or_next_training_period
 
-      raise NoTrainingPeriodError unless @training_period
-
       @school = @ect_at_school_period.school
-      @lead_provider = lead_provider.presence || @training_period.lead_provider
+      @lead_provider = lead_provider.presence || @training_period&.lead_provider
       @author = author
     end
 
@@ -30,10 +28,12 @@ module ECTAtSchoolPeriods
         @ect_at_school_period.school_led_training_programme?
 
       ActiveRecord::Base.transaction do
-        if @training_period.started_on.today? || date_of_transition.future? || @training_period.school_partnership.blank?
-          @training_period.destroy!
-        else
-          finish_training_period!
+        if @training_period.present?
+          if @training_period.started_on.today? || date_of_transition.future? || @training_period.school_partnership.blank?
+            @training_period.destroy!
+          else
+            finish_training_period!
+          end
         end
 
         create_school_led_training_period!
@@ -44,11 +44,15 @@ module ECTAtSchoolPeriods
       raise IncorrectTrainingProgrammeError if
         @ect_at_school_period.provider_led_training_programme?
 
+      raise NoTrainingPeriodError if @lead_provider.blank?
+
       ActiveRecord::Base.transaction do
-        if @training_period.started_on.today? || date_of_transition.future?
-          @training_period.destroy!
-        else
-          finish_training_period!
+        if @training_period.present?
+          if @training_period.started_on.today? || date_of_transition.future?
+            @training_period.destroy!
+          else
+            finish_training_period!
+          end
         end
 
         create_provider_led_training_period_for_ect_at_school_period!
@@ -126,6 +130,8 @@ module ECTAtSchoolPeriods
     end
 
     def previous_provider_led_training_periods_for_mentor?
+      return false unless @mentor_at_school_period
+
       @mentor_at_school_period.training_periods.any?(&:provider_led_training_programme?)
     end
 

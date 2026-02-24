@@ -13,11 +13,7 @@ module Schools
         def next_step = :confirmation
 
         def current_training_programme
-          if new_training_programme == "provider_led"
-            "school_led"
-          else
-            "provider_led"
-          end
+          effective_training_period&.training_programme
         end
 
         def new_training_programme = store.training_programme
@@ -29,13 +25,15 @@ module Schools
         end
 
         def save!
+          old_training_programme = current_training_programme || latest_training_programme
+
           if new_training_programme == "provider_led"
             switch_training_programme_to_provider_led!
           else
             switch_training_programme_to_school_led!
           end
 
-          record_training_programme_updated_event!
+          record_training_programme_updated_event!(old_training_programme:)
           true
         end
 
@@ -56,8 +54,7 @@ module Schools
           )
         end
 
-        def record_training_programme_updated_event!
-          old_training_programme = current_training_programme
+        def record_training_programme_updated_event!(old_training_programme:)
           Events::Record.record_teacher_training_programme_updated_event!(
             old_training_programme:,
             new_training_programme:,
@@ -67,6 +64,15 @@ module Schools
             teacher: ect_at_school_period.teacher,
             happened_at: Time.current
           )
+        end
+
+        def effective_training_period
+          ect_at_school_period.current_or_next_training_period ||
+            ect_at_school_period.latest_training_period
+        end
+
+        def latest_training_programme
+          ect_at_school_period.latest_training_period&.training_programme
         end
 
         def lead_provider
