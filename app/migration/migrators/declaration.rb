@@ -1,5 +1,11 @@
 module Migrators
   class Declaration < Migrators::Base
+    VOIDED_BY_USERS_ECF1_ECF2_MAPPING = {
+      "7e3604f9-9777-4014-b948-16ee1cd5d946" => 189, # Lara Hughes
+      "c1b7624b-6a41-4cdf-b37f-8972e934b018" => 29,  # Colin Morris
+      "f5770b20-ed06-421b-a2c9-9d10ce9ad52a" => 34   # Anna Knights
+    }.freeze
+
     def self.record_count
       participant_declarations.count
     end
@@ -50,7 +56,8 @@ module Migrators
                                     sparsity_uplift: participant_declaration.migrated_sparsity_uplift,
                                     training_period_id: training_period&.id,
                                     updated_at: participant_declaration.updated_at,
-                                    voided_by_user_at: participant_declaration.voided_at)
+                                    voided_by_user_at: participant_declaration.voided_at,
+                                    voided_by_user_id: VOIDED_BY_USERS_ECF1_ECF2_MAPPING[participant_declaration.voided_by_user_id])
 
       declaration.save!(context: :being_migrated)
     end
