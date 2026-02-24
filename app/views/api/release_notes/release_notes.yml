@@ -37,7 +37,7 @@
   
     Previously, we had said we would always show mentors as false, but this was incorrect.
 
-    Started declarations for these participants will also show as uplift_paid: true when their declaration been paid or clawed back.
+    Started declarations for these participants will also show as uplift_paid: true when their declaration been paid. It will stay true if later the declaration is clawed back.
 
     Other declaration types, like retained-1 or completed, will show as uplift_paid: false, as uplifts are only paid for started declarations.
 
