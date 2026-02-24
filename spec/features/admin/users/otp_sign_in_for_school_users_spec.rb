@@ -17,7 +17,7 @@ private
 
   def and_a_matching_school_exists
     @otp_school_urn = 123_456
-    FactoryBot.create(:gias_school, :open, :state_school_type, urn: @otp_school_urn)
+    FactoryBot.create(:gias_school, :open, :state_school_type, :with_school, urn: @otp_school_urn)
   end
 
   def and_i_am_logged_in_as_a_user_manager
