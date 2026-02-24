@@ -188,6 +188,10 @@ $_current-link-border-width: govuk-spacing(1);
   }
 }
 
+.govuk-panel__title {
+  word-wrap: break-word;
+}
+
 .app-mono {
   padding: 2px 5px;
   font-family: monospace;
