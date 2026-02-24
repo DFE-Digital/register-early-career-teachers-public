@@ -87,6 +87,7 @@ FactoryBot.define do
     training_programme { "full_induction_programme" }
     training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:) }
     sequence(:appropriate_body) { |n| Types::AppropriateBodyData.new(ecf1_id: SecureRandom.uuid, name: "History Appropriate body #{n}") }
+    school_transfer { false }
 
     initialize_with do
       new(induction_record_id:,
@@ -103,7 +104,8 @@ FactoryBot.define do
           induction_status:,
           training_programme:,
           training_provider_info:,
-          appropriate_body:)
+          appropriate_body:,
+          school_transfer:)
     end
 
     trait :created_at_later_than_start_date do
