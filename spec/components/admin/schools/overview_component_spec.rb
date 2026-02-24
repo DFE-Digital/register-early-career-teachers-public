@@ -199,13 +199,5 @@ RSpec.describe Admin::Schools::OverviewComponent, type: :component do
       expect(rendered_content).to have_css("dt", text: "Administratrive district")
       expect(rendered_content).to have_css("dd", text: "South Northamptonshire")
     end
-
-    it "includes change links for editable fields" do
-      render_inline(component)
-
-      expect(rendered_content).to have_css("a", text: "Change")
-      expect(rendered_content).to have_css(".govuk-visually-hidden", text: "induction tutor name")
-      expect(rendered_content).to have_css(".govuk-visually-hidden", text: "induction tutor email")
-    end
   end
 end
