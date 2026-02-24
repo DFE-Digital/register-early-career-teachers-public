@@ -106,6 +106,10 @@ module UserHelper
       raise ArgumentError, "sign_in_as_dfe_user requires an internal DfE email, got: #{user.email}"
     end
 
+    sign_in_with_otp(user:)
+  end
+
+  def sign_in_with_otp(user:)
     page.goto(otp_sign_in_path)
     page.get_by_label("Email address").type(user.email)
     page.get_by_role("button", name: "Request code to sign in").click
