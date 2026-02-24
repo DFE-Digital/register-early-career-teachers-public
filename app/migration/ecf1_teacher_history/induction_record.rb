@@ -16,6 +16,7 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
   :appropriate_body,
   :start_timestamp,
   :end_timestamp,
+  :school_transfer,
   keyword_init: true
 ) do
   using Migration::CompactWithIgnore

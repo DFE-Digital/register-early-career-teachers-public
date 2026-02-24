@@ -5,13 +5,14 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :states, :exclude_training_periods
+  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods
 
-  def initialize(trn:, profile_id:, induction_records:, states:, exclude_training_periods: false)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @states = states
+    @transfers = transfers
     @exclude_training_periods = exclude_training_periods
   end
 
@@ -76,6 +77,7 @@ private
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
+      api_transfer_updated_at: transfers[training_provider_info.lead_provider_info.ecf1_id],
       combination: build_combination(induction_record:, training_programme:),
       **withdrawal_data(
         training_status: induction_record.training_status,
