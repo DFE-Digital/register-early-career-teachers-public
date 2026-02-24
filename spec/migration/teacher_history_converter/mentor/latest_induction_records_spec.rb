@@ -319,6 +319,7 @@ describe "Latest induction records mode conversion" do
             start_date: Date.parse(induction_record[:start_date]),
             end_date: (induction_record[:end_date] == :ignore ? :ignore : Date.parse(induction_record[:end_date])),
             school: schools.find { |school| school[:urn] == induction_record[:urn] },
+            cohort_year: cohort_year - 1,
             training_provider_info: {
               lead_provider: lead_provider_a,
               delivery_partner: delivery_partner_a,
@@ -330,6 +331,11 @@ describe "Latest induction records mode conversion" do
 
       it "creates the right expected number of mentor at school periods" do
         expect(subject.mentor_at_school_periods.size).to eq(data[:at_school_periods].size)
+      end
+
+      it "sets the cohort to the one from the training provider info" do
+        expect(subject.mentor_at_school_periods[0].training_periods[0].contract_period_year).to eql(cohort_year)
+        expect(subject.mentor_at_school_periods[1].training_periods[0].contract_period_year).to eql(cohort_year)
       end
 
       it "produces the expected mentor at school periods" do
