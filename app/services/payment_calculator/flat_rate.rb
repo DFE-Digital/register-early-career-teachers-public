@@ -16,13 +16,14 @@ module PaymentCalculator
       end
     end
 
+    def vat_amount = outputs.total_net_amount * vat_rate
+
     def outputs
       @outputs ||= Outputs.new(declarations: filtered_declarations, fee_per_declaration:, fee_proportions:)
     end
 
   private
 
-    def vat_amount = outputs.total_net_amount * vat_rate
     def fee_per_declaration = flat_rate_fee_structure.fee_per_declaration
     def vat_rate = flat_rate_fee_structure.contract.vat_rate
 
