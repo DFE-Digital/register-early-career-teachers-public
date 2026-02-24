@@ -78,7 +78,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
 
       before do
         allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)
-        allow(ect_at_school_period).to receive_messages(current_or_next_training_period: nil, latest_training_period: latest_training_period)
+        allow(ect_at_school_period).to receive_messages(current_or_next_training_period: nil, latest_training_period:)
       end
 
       it "falls back to the latest training period's programme" do
