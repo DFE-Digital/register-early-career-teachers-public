@@ -1,0 +1,52 @@
+<% page_data(
+  title: "Check and authorise statement for payment",
+  backlink_href: admin_finance_statement_path(@statement),
+  error: @form.errors.any?
+) %>
+
+<span class="govuk-caption-l"><%= @statement.lead_provider_name %></span>
+<h2 class="govuk-heading-m"><%= @statement.period %></h2>
+
+<div class="finance-panel">
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <div class="govuk-grid-column-one-third">
+      <strong class="govuk-body-s govuk-!-margin-bottom-0">Milestone cut off date</strong>
+      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @statement.formatted_deadline_date %></p>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <strong class="govuk-body-s govuk-!-margin-bottom-0">Payment date</strong>
+      <p class="govuk-heading-m govuk-!-padding-top-0"><%= @statement.formatted_payment_date %></p>
+    </div>
+  </div>
+
+  <%= govuk_table classes: %w[govuk-!-margin-bottom-2] do |table|
+    table.with_caption(text: "Total #{number_to_pounds(0)}", size: "l")
+    table.with_body do |body|
+      [
+        ["Output payment", 0],
+        ["Service fee", 0],
+        ["Uplift fees", 0],
+        ["Clawbacks", 0],
+        ["Additional adjustments", @statement.adjustments.sum(:amount)],
+        ["VAT", 0],
+      ].each do |label, amount|
+        body.with_row do |row|
+          row.with_cell(text: label)
+          row.with_cell(text: number_to_pounds(amount), numeric: true)
+        end
+      end
+    end
+  end %>
+</div>
+
+<%= form_with(model: @form, url: admin_finance_statement_authorisations_path(@statement), method: :post, class: "govuk-!-margin-top-6") do |f| %>
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_check_boxes_fieldset(:confirmed, multiple: false, legend: { text: "Confirm authorisation", hidden: true }) do %>
+    <%= f.govuk_check_box(:confirmed, "1", multiple: false, label: {
+      text: "I confirm I've completed all assurance checks and I authorise payment"
+    }) %>
+  <% end %>
+
+  <%= f.govuk_submit "Authorise for payment" %>
+<% end %>
