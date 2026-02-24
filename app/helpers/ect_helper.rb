@@ -61,7 +61,7 @@ module ECTHelper
     when "Passed"
       govuk_tag(text: "Completed induction", colour: "blue")
     when "Failed"
-      govuk_tag(text: "Failed induction", colour: "pink")
+      govuk_tag(text: "Failed induction", colour: "magenta")
     when "Exempt"
       govuk_tag(text: "Exempt", colour: "grey")
     else

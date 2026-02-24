@@ -43,9 +43,9 @@
 }
 
 .da-pink-button {
-  background-color: govuk-colour("light-pink");
+  background-color: govuk-colour("magenta", $variant: "tint-25");
 
   &:hover {
-    background-color: govuk-colour("pink");
+    background-color: govuk-colour("magenta");
   }
 }

@@ -66,8 +66,8 @@ $govuk-assets-path: "/";
 }
 
 code {
-  background: govuk-tint(govuk-colour('light-pink'), 80%);
-  color: govuk-shade(govuk-colour('pink'), 25%);
+  background: govuk-colour('pink', $variant: 'tint-50');
+  color: govuk-colour('pink', $variant: 'shade-25');
   font-size: .9em;
   padding: .05em .2em;
   margin-top: 0px;
@@ -75,12 +75,12 @@ code {
 
 pre {
   padding: 1em;
-  border: 1px solid govuk-tint(govuk-colour('light-pink'), 80%);
-  background: govuk-tint(govuk-colour('light-pink'), 95%);
+  border: 1px solid govuk-colour('pink', $variant'tint-50');
+  background: govuk-colour('pink', $variant: 'tint-25');
   white-space: pre-wrap;
 
   &>code {
     font-size: 1rem;
-    background: govuk-tint(govuk-colour('light-pink'), 95%);
+    background: govuk-colour('pink', $variant: 'tint-85');
   }
 }
