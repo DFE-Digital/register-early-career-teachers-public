@@ -106,7 +106,7 @@ private
       training_programme:,
       lead_provider_info: training_provider_info&.lead_provider_info,
       delivery_partner_info: training_provider_info&.delivery_partner_info,
-      contract_period_year: induction_record.cohort_year,
+      contract_period_year: training_provider_info&.cohort_year || induction_record.cohort_year,
       is_ect: true,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
