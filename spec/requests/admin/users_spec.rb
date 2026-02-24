@@ -59,9 +59,11 @@ RSpec.describe "Admin::Users" do
 
   context "when signed in as a user manager" do
     let(:user) { FactoryBot.create(:user, :user_manager) }
+    let(:otp_school_sign_in_enabled) { false }
 
     before do
       sign_in_as(:dfe_user, user:)
+      allow(Rails.application.config).to receive(:enable_otp_school_sign_in).and_return(otp_school_sign_in_enabled)
       allow(Events::Record).to receive(:record_dfe_user_created_event!).with(any_args).and_call_original
       allow(Events::Record).to receive(:record_dfe_user_updated_event!).with(any_args).and_call_original
     end
@@ -115,6 +117,28 @@ RSpec.describe "Admin::Users" do
           post admin_users_path, params: { user: user_params.except(:email) }
           expect(response).to be_bad_request
           expect(Events::Record).not_to have_received(:record_dfe_user_created_event!)
+        end
+      end
+
+      context "when otp school sign-in flag is enabled" do
+        let(:otp_school_sign_in_enabled) { true }
+        let(:user_params) { FactoryBot.attributes_for(:user, otp_school_urn: 123_456) }
+
+        it "permits and persists otp_school_urn" do
+          post admin_users_path, params: { user: user_params }
+
+          expect(User.find_by(email: user_params.fetch(:email)).otp_school_urn).to eq(123_456)
+        end
+      end
+
+      context "when otp school sign-in flag is disabled" do
+        let(:otp_school_sign_in_enabled) { false }
+        let(:user_params) { FactoryBot.attributes_for(:user, otp_school_urn: 123_456) }
+
+        it "does not permit otp_school_urn" do
+          post admin_users_path, params: { user: user_params }
+
+          expect(User.find_by(email: user_params.fetch(:email)).otp_school_urn).to be_nil
         end
       end
     end
@@ -180,6 +204,29 @@ RSpec.describe "Admin::Users" do
             expect(response).to be_bad_request
             expect(Events::Record).not_to have_received(:record_dfe_user_updated_event!)
           end
+        end
+      end
+
+      context "when otp school sign-in is enabled" do
+        let(:otp_school_sign_in_enabled) { true }
+        let(:update_user_params) { { otp_school_urn: 123_456 } }
+
+        it "permits and updates otp_school_urn" do
+          patch admin_user_path(user_record), params: { user: update_user_params }
+
+          expect(user_record.reload.otp_school_urn).to eq(123_456)
+        end
+      end
+
+      context "when otp school sign-in is disabled" do
+        let(:otp_school_sign_in_enabled) { false }
+        let(:user_record) { FactoryBot.create(:user, otp_school_urn: 123_456) }
+        let(:update_user_params) { { otp_school_urn: 654_321 } }
+
+        it "does not permit otp_school_urn updates" do
+          patch admin_user_path(user_record), params: { user: update_user_params }
+
+          expect(user_record.reload.otp_school_urn).to eq(123_456)
         end
       end
     end
