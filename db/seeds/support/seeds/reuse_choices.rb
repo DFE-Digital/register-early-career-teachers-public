@@ -7,7 +7,7 @@ module Seeds
     LEAD_PROVIDER_NOT_AVAILABLE_IN_TARGET_YEAR_NAME = "Reuse – Lead Provider X (not available in target year)"
     DELIVERY_PARTNER_REUSABLE_NAME = "Reuse – Delivery Partner One"
     DELIVERY_PARTNER_NOT_REUSABLE_NAME = "Reuse – Delivery Partner Two"
-    PREFERRED_APPROPRIATE_BODY_NAME = "Golden Leaf Teaching School Hub"
+    PREFERRED_APPROPRIATE_BODY_NAME = "Reuse scenario – Golden Leaf Teaching School Hub"
 
     def initialize(contract_period_year:)
       @contract_period_year = contract_period_year
@@ -98,22 +98,15 @@ module Seeds
       matrix_appropriate_body_period
     end
 
-    def clear_attr!(record, attr_name)
-      record[attr_name] = nil if record.has_attribute?(attr_name)
-    end
-
     def matrix_appropriate_body_period
       @matrix_appropriate_body_period ||= begin
         abp = AppropriateBodyPeriod.find_or_create_by!(name: PREFERRED_APPROPRIATE_BODY_NAME)
 
         if abp.has_attribute?(:body_type) && abp.body_type != "teaching_school_hub"
           abp.body_type = "teaching_school_hub"
+          abp.save!
         end
 
-        clear_attr!(abp, :dfe_sign_in_organisation_id)
-        clear_attr!(abp, :appropriate_body_id)
-
-        abp.save! if abp.changed?
         abp
       end
     end
@@ -259,7 +252,12 @@ module Seeds
       previous_schedule = Schedule.find_by!(contract_period_year: previous_year, identifier: SCHEDULE_IDENTIFIER)
       abp = matrix_appropriate_body_period
 
-      teacher = FactoryBot.create(:teacher)
+      trn = sprintf("%07d", school.urn)
+      teacher = Teacher.find_or_initialize_by(trn:)
+      teacher.trs_first_name ||= "Reuse"
+      teacher.trs_last_name  ||= "Scenario"
+      teacher.trs_qts_awarded_on ||= Date.new(2021, 1, 1)
+      teacher.save!
 
       ect_period =
         FactoryBot.create(
