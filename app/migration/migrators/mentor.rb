@@ -31,9 +31,17 @@ module Migrators
       ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
       return true if ecf1_teacher_history.mentor.blank?
 
-      ecf2_teacher_history = TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2!
-      ecf2_teacher_history.save_all_mentor_data!
-      ecf2_teacher_history.success?
+      history_converter = TeacherHistoryConverter.new(ecf1_teacher_history:)
+      migration_mode = history_converter.migration_mode
+
+      begin
+        ecf2_teacher_history = history_converter.new(ecf1_teacher_history:).convert_to_ecf2!
+        ecf2_teacher_history.save_all_mentor_data!
+        ecf2_teacher_history.success?
+      rescue StandardError => e
+        failure_manager.record_failure(teacher_profile, e.message, migration_mode)
+        false
+      end
     end
 
   private
