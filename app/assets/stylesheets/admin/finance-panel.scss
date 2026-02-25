@@ -1,0 +1,83 @@
+.finance-panel {
+  padding: 20px 20px 10px 20px;
+  background-color: #f8f8f8;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.finance-panel.finance-panel__summary {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40.625em) {
+  .finance-panel.finance-panel__summary {
+    grid-template-columns: auto 1fr;
+  }
+}
+.finance-panel .finance-panel__summary__total-payment-breakdown p {
+  display: flex;
+  justify-content: space-between;
+  min-width: 240px;
+}
+
+.finance-panel .finance-panel__dates {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 40.625em) {
+  .finance-panel .finance-panel__dates {
+    grid-template-columns: auto 1fr;
+  }
+}
+.finance-panel .finance-panel__summary_and_counts {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+.finance-panel .finance-panel__summary_and_counts .govuk-table__body .govuk-table__cell, .finance-panel .finance-panel__summary_and_counts .govuk-table__body .govuk-table__header {
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+@media (min-width: 40.625em) {
+  .finance-panel .finance-panel__summary_and_counts {
+    grid-template-columns: auto 1fr;
+  }
+}
+.finance-panel .finance-panel__summary__meta {
+  flex-grow: 1;
+}
+
+.finance-panel .finance-panel__summary__meta__dates {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40.625em) {
+  .finance-panel .finance-panel__summary__meta__dates {
+    grid-template-columns: auto 1fr;
+  }
+}
+.finance-panel .finance-panel__summary__meta__counts {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40.625em) {
+  .finance-panel .finance-panel__summary__meta__counts {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.finance-panel .output-payments tbody tr:nth-of-type(2n - 1) th,
+.finance-panel .output-payments tbody tr:nth-of-type(2n - 1) td {
+  border-bottom: 0;
+}
