@@ -67,8 +67,11 @@ RSpec.describe Declarations::Create do
           expect(declaration).not_to be_payment_status_eligible
         end
 
-        context "when pupil premium and sparsity uplifts are set on the teacher" do
-          before { teacher.update!(pupil_premium_uplift: true, sparsity_uplift: true) }
+        context "when pupil premium and sparsity uplifts are set on the school" do
+          before do
+            school = at_school_period.school
+            FactoryBot.create(:pupil_premium, contract_period:, school:, pupil_premium_uplift: true, sparsity_uplift: true)
+          end
 
           it "sets pupil premium and sparsity uplifts on the declaration" do
             declaration = create_declaration

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_24_142242) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -735,6 +735,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
+  create_table "pupil_premiums", force: :cascade do |t|
+    t.bigint "school_urn", null: false
+    t.integer "contract_period_year", null: false
+    t.boolean "pupil_premium_uplift", default: false, null: false
+    t.boolean "sparsity_uplift", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_year"], name: "index_pupil_premiums_on_contract_period_year"
+    t.index ["school_urn"], name: "index_pupil_premiums_on_school_urn"
+  end
+
   create_table "regions", force: :cascade do |t|
     t.string "code", null: false
     t.string "districts", null: false, array: true
@@ -1127,6 +1138,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
   add_foreign_key "pending_induction_submission_batches", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "appropriate_body_periods"
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
+  add_foreign_key "pupil_premiums", "contract_periods", column: "contract_period_year", primary_key: "year"
+  add_foreign_key "pupil_premiums", "schools", column: "school_urn", primary_key: "urn"
   add_foreign_key "regions", "appropriate_bodies"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
   add_foreign_key "school_partnerships", "schools"

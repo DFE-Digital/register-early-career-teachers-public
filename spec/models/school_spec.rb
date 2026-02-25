@@ -82,6 +82,7 @@ RSpec.describe School do
     it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod") }
     it { is_expected.to have_many(:lead_provider_contract_period_metadata).class_name("Metadata::SchoolLeadProviderContractPeriod") }
     it { is_expected.to have_many(:training_periods).through(:school_partnerships) }
+    it { is_expected.to have_many(:pupil_premiums).with_foreign_key(:school_urn).inverse_of(:school).with_primary_key(:urn) }
   end
 
   describe "delegation" do

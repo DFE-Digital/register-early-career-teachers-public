@@ -45,18 +45,22 @@ class API::TeacherSerializer < Blueprinter::Base
           teacher.mentor_first_became_eligible_for_training_at.present?
         end
       end
-      field(:pupil_premium_uplift) do |(training_period, teacher, metadata)|
+      field(:pupil_premium_uplift) do |(training_period, _, metadata)|
         if training_period.for_ect?
-          metadata.latest_ect_contract_period.uplift_fees_enabled? && teacher.pupil_premium_uplift
+          year = metadata.latest_ect_contract_period_year
+          metadata.latest_ect_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.pupil_premiums.find { |pp| pp.contract_period_year == year }&.pupil_premium_uplift || false)
         else
-          metadata.latest_mentor_contract_period.uplift_fees_enabled? && teacher.pupil_premium_uplift
+          year = metadata.latest_mentor_contract_period_year
+          metadata.latest_mentor_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.pupil_premiums.find { |pp| pp.contract_period_year == year }&.pupil_premium_uplift || false)
         end
       end
-      field(:sparsity_uplift) do |(training_period, teacher, metadata)|
+      field(:sparsity_uplift) do |(training_period, _, metadata)|
         if training_period.for_ect?
-          metadata.latest_ect_contract_period.uplift_fees_enabled? && teacher.sparsity_uplift
+          year = metadata.latest_ect_contract_period_year
+          metadata.latest_ect_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.pupil_premiums.find { |pp| pp.contract_period_year == year }&.sparsity_uplift || false)
         else
-          metadata.latest_mentor_contract_period.uplift_fees_enabled? && teacher.sparsity_uplift
+          year = metadata.latest_mentor_contract_period_year
+          metadata.latest_mentor_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.pupil_premiums.find { |pp| pp.contract_period_year == year }&.sparsity_uplift || false)
         end
       end
       field(:schedule_identifier) do |(training_period, _, _)|

@@ -149,6 +149,17 @@ erDiagram
     integer appropriate_body_id
   }
   Region }o--|| AppropriateBody : belongs_to
+  PupilPremium {
+    integer id
+    integer school_urn
+    integer contract_period_year
+    boolean pupil_premium_uplift
+    boolean sparsity_uplift
+    datetime created_at
+    datetime updated_at
+  }
+  PupilPremium }o--|| School : belongs_to
+  PupilPremium }o--|| ContractPeriod : belongs_to
   PendingInductionSubmissionBatch {
     integer id
     integer appropriate_body_period_id

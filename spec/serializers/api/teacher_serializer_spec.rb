@@ -112,6 +112,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
           FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:)
         end
         let(:school) { school_partnership.school }
+        let!(:pupil_premium) { FactoryBot.create(:pupil_premium, school:, contract_period: school_partnership.contract_period) }
 
         let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 2.months.ago, finished_on: nil) }
         let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, started_on: 1.month.ago, ect_at_school_period:, school_partnership:) }
@@ -186,6 +187,15 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           context "when `uplift_fees_enabled` is `false` for the contract period" do
             before { ect_training_period.school_partnership.contract_period.update!(uplift_fees_enabled: false) }
+
+            it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
+              expect(ect_enrolment["pupil_premium_uplift"]).to be(false)
+              expect(ect_enrolment["sparsity_uplift"]).to be(false)
+            end
+          end
+
+          context "when there are no pupil premiums for the school and contract period" do
+            let!(:pupil_premium) { nil }
 
             it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
               expect(ect_enrolment["pupil_premium_uplift"]).to be(false)
@@ -324,6 +334,15 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
           context "when `uplift_fees_enabled` is `false` for the contract period" do
             before { mentor_training_period.school_partnership.contract_period.update!(uplift_fees_enabled: false) }
+
+            it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
+              expect(mentor_enrolment["pupil_premium_uplift"]).to be(false)
+              expect(mentor_enrolment["sparsity_uplift"]).to be(false)
+            end
+          end
+
+          context "when there are no pupil premiums for the school and contract period" do
+            let!(:pupil_premium) { nil }
 
             it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
               expect(mentor_enrolment["pupil_premium_uplift"]).to be(false)
