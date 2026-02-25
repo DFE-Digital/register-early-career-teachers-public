@@ -175,6 +175,8 @@ class TrainingPeriod < ApplicationRecord
   end
 
   def status
+    return :active if school_led_training_programme?
+
     return :active if withdrawn_at.blank? && deferred_at.blank?
     return :withdrawn if deferred_at.blank?
     return :deferred if withdrawn_at.blank?

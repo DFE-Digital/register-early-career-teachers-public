@@ -81,20 +81,12 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         end
       end
 
-      context "when the ECT is school-led but the latest training period is withdrawn" do
-        let!(:training_period) do
-          tp = FactoryBot.create(
-            :training_period,
-            :ongoing,
-            :school_led,
-            ect_at_school_period:,
-            started_on: ect_at_school_period.started_on
-          )
-          tp.update!(
+      context "when the ECT is provider-led and the latest training period is withdrawn" do
+        before do
+          training_period.update!(
             withdrawn_at: Time.zone.today,
             withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
           )
-          tp
         end
 
         it "returns ok" do
