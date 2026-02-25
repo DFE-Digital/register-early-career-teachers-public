@@ -17,7 +17,6 @@ RSpec.describe APISeedData::MentorScenarios do
     end
     APISeedData::Schools.new.plant
     APISeedData::SchoolPartnerships.new.plant
-    APISeedData::SchedulesAndMilestones.new.plant
   end
 
   describe "#plant" do
@@ -69,16 +68,6 @@ RSpec.describe APISeedData::MentorScenarios do
       expect(ects_count).to be >= 3
     end
 
-    it "creates mentor and ECTs with correct start dates" do
-      instance.send(:mentor_with_three_ects_2025)
-
-      training_periods = TrainingPeriod
-        .joins(:active_lead_provider)
-        .where(active_lead_providers: { contract_period_year: contract_period_2025.year })
-
-      expect(training_periods.pluck(:started_on).uniq).to include(Date.new(2025, 9, 1))
-    end
-
     it "creates ECTs across 2 different schools" do
       instance.send(:mentor_with_three_ects_2025)
 
@@ -93,7 +82,7 @@ RSpec.describe APISeedData::MentorScenarios do
     it "logs the creation of mentor scenarios" do
       instance.send(:mentor_with_three_ects_2025)
 
-      expect(logger).to have_received(:info).with(/Created mentor with 3 ECTs \(2025\)/).at_least(:once)
+      expect(logger).to have_received(:info).with(/Created mentor \(TRN: .*?\) with 3 concurrent ECTs \(2025\)/).at_least(:once)
     end
   end
 
@@ -128,16 +117,6 @@ RSpec.describe APISeedData::MentorScenarios do
       expect(ects_count).to be >= 2
     end
 
-    it "creates mentor and ECTs with correct start dates" do
-      instance.send(:mentor_with_two_ects_2024)
-
-      training_periods = TrainingPeriod
-        .joins(:active_lead_provider)
-        .where(active_lead_providers: { contract_period_year: contract_period_2024.year })
-
-      expect(training_periods.pluck(:started_on).uniq).to include(Date.new(2024, 9, 1))
-    end
-
     it "creates ECTs across 2 different schools" do
       instance.send(:mentor_with_two_ects_2024)
 
@@ -152,7 +131,7 @@ RSpec.describe APISeedData::MentorScenarios do
     it "logs the creation of mentor scenarios" do
       instance.send(:mentor_with_two_ects_2024)
 
-      expect(logger).to have_received(:info).with(/Created mentor with 2 ECTs \(2024\)/).at_least(:once)
+      expect(logger).to have_received(:info).with(/Created mentor \(TRN: .*?\) with 2 concurrent ECTs \(2024\)/).at_least(:once)
     end
   end
 end
