@@ -1071,5 +1071,37 @@ describe TrainingPeriod do
         it { is_expected.to eq(:deferred) }
       end
     end
+
+    context "when school-led" do
+      let(:training_period) { FactoryBot.build(:training_period, :school_led, withdrawn_at:, deferred_at:) }
+
+      context "when neither withdrawn nor deferred" do
+        let(:withdrawn_at) { nil }
+        let(:deferred_at) { nil }
+
+        it { is_expected.to eq(:active) }
+      end
+
+      context "when withdrawn_at is present" do
+        let(:withdrawn_at) { Time.zone.parse("2025-01-01") }
+        let(:deferred_at) { nil }
+
+        it { is_expected.to eq(:active) }
+      end
+
+      context "when deferred_at is present" do
+        let(:withdrawn_at) { nil }
+        let(:deferred_at) { Time.zone.parse("2025-01-01") }
+
+        it { is_expected.to eq(:active) }
+      end
+
+      context "when both withdrawn_at and deferred_at are present" do
+        let(:withdrawn_at) { Time.zone.parse("2025-01-01") }
+        let(:deferred_at) { Time.zone.parse("2025-02-01") }
+
+        it { is_expected.to eq(:active) }
+      end
+    end
   end
 end

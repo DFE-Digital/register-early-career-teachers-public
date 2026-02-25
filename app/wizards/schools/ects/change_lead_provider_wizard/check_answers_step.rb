@@ -41,24 +41,24 @@ module Schools
         def new_lead_provider = LeadProvider.find(store.lead_provider_id)
 
         def withdrawn_lead_provider
-          tp = ect_at_school_period.latest_training_period
-          return unless tp&.status == :withdrawn
+          training_period = ect_at_school_period.latest_training_period
+          return unless training_period&.provider_led_training_programme? && training_period.status == :withdrawn
 
-          if tp.only_expression_of_interest?
-            tp.expression_of_interest&.lead_provider
+          if training_period.only_expression_of_interest?
+            training_period.expression_of_interest&.lead_provider
           else
-            tp.lead_provider
+            training_period.lead_provider
           end
         end
 
         def withdrawn_lead_provider_name
-          tp = ect_at_school_period.latest_training_period
-          return unless tp&.status == :withdrawn
+          training_period = ect_at_school_period.latest_training_period
+          return unless training_period&.provider_led_training_programme? && training_period.status == :withdrawn
 
-          if tp.only_expression_of_interest?
-            tp.expression_of_interest&.lead_provider&.name
+          if training_period.only_expression_of_interest?
+            training_period.expression_of_interest&.lead_provider&.name
           else
-            tp.lead_provider_name
+            training_period.lead_provider_name
           end
         end
       end

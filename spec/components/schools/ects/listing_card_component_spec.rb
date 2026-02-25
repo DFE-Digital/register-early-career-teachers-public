@@ -68,13 +68,43 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   end
 
   context "when school led chosen" do
-    let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led) }
+    let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:, started_on:) }
 
     it "doesn't render providers" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
       expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Delivery partner")
       expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Lead provider")
+    end
+  end
+
+  context "when school-led training period has withdrawn/deferred timestamps (bad data)" do
+    let(:training_period) do
+      FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:, started_on:)
+    end
+
+    before do
+      FactoryBot.create(:mentorship_period, :ongoing, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
+
+      training_period.update!(
+        withdrawn_at: Time.zone.today,
+        withdrawal_reason: valid_withdrawal_reason,
+        deferred_at: Time.zone.today,
+        deferral_reason: valid_deferral_reason
+      )
+
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
+    end
+
+    it "does not show withdrawn/deferred UI" do
+      expect(rendered_content).to have_text("Registered")
+
+      expect(rendered_content).not_to match(/no longer training with them/i)
+      expect(rendered_content).not_to match(/training is paused/i)
+      expect(rendered_content).not_to have_link(
+        "continuing their training or if they have left your school.",
+        href: "/school/ects/#{ect_at_school_period.id}#training-details"
+      )
     end
   end
 
