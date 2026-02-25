@@ -18,5 +18,9 @@ FactoryBot.define do
       association :banded_fee_structure, :with_bands, factory: :contract_banded_fee_structure
       association :flat_rate_fee_structure, factory: :contract_flat_rate_fee_structure
     end
+
+    trait(:with_bands) do
+      association :banded_fee_structure, factory: %i[contract_banded_fee_structure with_bands]
+    end
   end
 end
