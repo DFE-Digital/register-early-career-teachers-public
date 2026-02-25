@@ -20,6 +20,13 @@
       row.with_value(text: @user.email)
     end
 
+    if Rails.application.config.enable_otp_school_sign_in
+      component.with_row do |row|
+        row.with_key(text: 'School URN for OTP sign-in')
+        row.with_value(text: @user.otp_school_urn.presence || 'Not set')
+      end
+    end
+
     component.with_row do |row|
       row.with_key(text: 'Created on')
       row.with_value { @user.created_at.to_date.to_fs(:govuk) }
