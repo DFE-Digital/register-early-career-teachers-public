@@ -1,52 +1,85 @@
 module Admin
   module Statements
     class PaymentOverviewComponent < ApplicationComponent
+      delegate :number_to_pounds, to: :helpers
+
+      attr_reader :statement
+
       def initialize(statement:)
         @statement = statement
       end
 
-      
-
       def rows
-        # TODO
-        # needs to switch between pre-post 2025 layout
+        [
+          ["Output payment", { text: number_to_pounds(outputs), numeric: true }],
+          ["Service fee", { text: number_to_pounds(monthly_service_fee), numeric: true }],
+          ["Uplift fees", { text: number_to_pounds(uplifts), numeric: true }],
+          ["Clawbacks", { text: number_to_pounds(clawbacks), numeric: true }],
+          ["Additional adjustments", { text: number_to_pounds(total_manual_adjustments_amount), numeric: true }],
+          ["VAT", { text: number_to_pounds(vat_amount), numeric: true }],
+        ]
       end
 
       # Common Elements
       def total_payment_text
-        "Total £#{3000.56}"
+        number_to_pounds(total_amount)
       end
 
-      private
-
-      def pre_or_post_2025?
+      def formatted_deadline_date
+        statement.deadline_date.to_fs(:govuk)
       end
 
-      def total_payment
+      def formatted_payment_date
+        statement.payment_date.to_fs(:govuk)
       end
 
-      def vat
+      # private
+
+      delegate :contract, to: :statement
+
+      def calculator
+        @calculator ||= pre_2025? ? calculators.first : calculators.second
       end
 
-      def adjustments
-        # TODO: this is a summed amount so could come from the adjustments component
+      def calculators
+        PaymentCalculator::Resolver.new(statement:, contract:).calculators
       end
 
-      def service_fee
+      def pre_2025?
+        contract.contract_type == "ecf"
+      end
+
+      def total_amount
+        @total_amount ||= calculator.total_amount(with_vat: true)
+      end
+
+      def vat_amount
+        @vat_amount ||= calculator.vat_amount
+      end
+
+      def total_manual_adjustments_amount
+        @total_manual_adjustments_amount ||= calculator.total_manual_adjustments_amount
+      end
+
+      def monthly_service_fee
+        @monthly_service_fee ||= calculator&.monthly_service_fee
       end
 
       # PRE 2025
-      def output_payment
+      def outputs
+        @outputs ||= calculator.outputs.total_net_amount
       end
 
       def clawbacks
+        0.0
       end
 
-      def uplift_fees
+      def uplifts
+        @uplifts ||= calculator.uplifts.total_net_amount
       end
 
       # POST 2025
-      def ects_output_payment 
+      def ects_output_payment
       end
 
       def mentors_output_payment
@@ -57,7 +90,6 @@ module Admin
 
       def mentors_clawbacks
       end
-
     end
   end
 end
