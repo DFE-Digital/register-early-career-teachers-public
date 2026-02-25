@@ -1,7 +1,7 @@
 require Rails.root.join("db/seeds/support/school_transfer_helpers")
 
 module APISeedData
-  class MentorScenarios < Base
+  class ECTAsMentorScenarios < Base
     include SchoolTransferHelpers
 
     def plant
@@ -63,7 +63,7 @@ module APISeedData
 
     def create_completed_ect(teacher:, lead_provider:, ect_year:)
       started_on = Date.new(ect_year, 9, 1)
-      finished_on = Date.new(ect_year + 1, 6, 30)
+      finished_on = Date.new(ect_year + 2, 6, 30)
 
       ect_school_period = FactoryBot.create(
         :ect_at_school_period,
