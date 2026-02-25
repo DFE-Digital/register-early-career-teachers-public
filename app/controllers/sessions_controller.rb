@@ -50,6 +50,8 @@ private
       author: session_user,
       school: session_user.school
     )
+  rescue StandardError => e # events should never block sign in
+    Sentry.capture_exception(e)
   end
 
   def session_user
