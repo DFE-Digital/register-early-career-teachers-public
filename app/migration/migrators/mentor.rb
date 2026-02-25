@@ -35,7 +35,7 @@ module Migrators
       migration_mode = history_converter.migration_mode
 
       begin
-        ecf2_teacher_history = history_converter.new(ecf1_teacher_history:).convert_to_ecf2!
+        ecf2_teacher_history = history_converter.convert_to_ecf2!
         ecf2_teacher_history.save_all_mentor_data!
         ecf2_teacher_history.success?
       rescue StandardError => e
