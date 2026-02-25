@@ -1,6 +1,12 @@
-<% page_data(title: @statement.page_title, backlink_href: backlink_with_fallback(fallback: admin_finance_statements_path)) %>
+<% page_data( title: 'Early career teacher programme: financial statements', 
+              backlink_href: backlink_with_fallback(fallback: admin_finance_statements_path)) %>
+
+<span class="govuk-caption-l"><%= @statement.lead_provider_name %></span>
+<h2 class="govuk-heading-m"><%= @statement.period %></h2>
 
 <%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
+
+<%= render Admin::Statements::PaymentOverviewComponent.new(statement: @statement) %>
 
 <%=
   govuk_summary_list do |sl|
