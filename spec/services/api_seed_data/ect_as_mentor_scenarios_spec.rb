@@ -1,4 +1,4 @@
-RSpec.describe APISeedData::MentorScenarios do
+RSpec.describe APISeedData::ECTAsMentorScenarios do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
