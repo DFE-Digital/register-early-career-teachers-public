@@ -19,7 +19,7 @@ RSpec.describe DeclarationHelper, type: :helper do
       let(:overall_status) { "eligible" }
 
       it { is_expected.to include("Eligible") }
-      it { is_expected.to include("govuk-tag--turquoise") }
+      it { is_expected.to include("govuk-tag--teal") }
     end
 
     context "when the overall status is 'payable'" do
