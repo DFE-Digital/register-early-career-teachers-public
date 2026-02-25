@@ -14,16 +14,6 @@ RSpec.describe TeacherHelper, type: :helper do
     it { expect(teacher_trn(teacher)).to eq("TRN: 1234567") }
   end
 
-  describe "#teacher_date_of_birth_hint_text" do
-    it { expect(teacher_date_of_birth_hint_text).to eql("For example, 20 4 2001") }
-  end
-
-  describe "#teacher_induction_date_hint_text" do
-    last_year = Date.current.year.pred
-
-    it { expect(teacher_induction_date_hint_text).to eql("For example, 20 4 #{last_year}") }
-  end
-
   describe "#teacher_induction_start_date" do
     context "when training" do
       before { FactoryBot.create(:induction_period, teacher:) }
