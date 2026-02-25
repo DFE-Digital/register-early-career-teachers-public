@@ -8,7 +8,7 @@ module API
           "breaking-change" => "red",
           "new-feature" => "green",
           "bug-fix" => "yellow",
-          "new-field" => "turquoise",
+          "new-field" => "teal",
           "data-update" => "blue",
           "contract-closure" => "orange",
           "removed-field" => "magenta",

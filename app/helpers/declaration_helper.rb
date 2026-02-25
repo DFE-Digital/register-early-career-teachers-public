@@ -1,7 +1,7 @@
 module DeclarationHelper
   DECLARATION_STATE_TAG_COLOURS = {
     "no_payment" => "light-blue",
-    "eligible" => "turquoise",
+    "eligible" => "teal",
     "payable" => "orange",
     "paid" => "green",
     "voided" => "red",
