@@ -10,18 +10,23 @@ module Admin
       end
 
       def rows
-        [
-          ["Output payment", { text: number_to_pounds(outputs), numeric: true }],
-          ["Service fee", { text: number_to_pounds(monthly_service_fee), numeric: true }],
-          ["Uplift fees", { text: number_to_pounds(uplifts), numeric: true }],
-          ["Clawbacks", { text: number_to_pounds(clawbacks), numeric: true }],
-          ["Additional adjustments", { text: number_to_pounds(total_manual_adjustments_amount), numeric: true }],
-          ["VAT", { text: number_to_pounds(vat_amount), numeric: true }],
+        rows = [
+          [output_payment_text, { text: number_to_pounds(outputs), numeric: true }],
+
         ]
+
+        rows << ["Mentors output payment", { text: number_to_pounds(mentors_outputs), numeric: true }] unless pre_2025?
+        rows << ["Service fee", { text: number_to_pounds(monthly_service_fee), numeric: true }]
+        rows << ["Uplift fees", { text: number_to_pounds(uplifts), numeric: true }] if pre_2025?
+        rows << [clawback_payment_text, { text: number_to_pounds(clawbacks), numeric: true }]
+        rows << ["Mentors clawbacks", { text: number_to_pounds(mentors_clawbacks), numeric: true }] unless pre_2025?
+        rows << ["Additional adjustments", { text: number_to_pounds(total_manual_adjustments_amount), numeric: true }]
+        rows << ["VAT", { text: number_to_pounds(vat_amount), numeric: true }]
+
+        rows
       end
 
-      # Common Elements
-      def total_payment_text
+      def caption
         number_to_pounds(total_amount)
       end
 
@@ -33,12 +38,16 @@ module Admin
         statement.payment_date.to_fs(:govuk)
       end
 
-      # private
+    private
 
       delegate :contract, to: :statement
 
-      def calculator
-        @calculator ||= pre_2025? ? calculators.first : calculators.second
+      def banded
+        @banded ||= calculators.last
+      end
+
+      def flat_rate
+        @flat_rate ||= calculators.first
       end
 
       def calculators
@@ -50,45 +59,47 @@ module Admin
       end
 
       def total_amount
-        @total_amount ||= calculator.total_amount(with_vat: true)
+        @total_amount ||= banded.total_amount(with_vat: true)
       end
 
       def vat_amount
-        @vat_amount ||= calculator.vat_amount
+        @vat_amount ||= banded.vat_amount
       end
 
       def total_manual_adjustments_amount
-        @total_manual_adjustments_amount ||= calculator.total_manual_adjustments_amount
+        @total_manual_adjustments_amount ||= banded.total_manual_adjustments_amount
       end
 
       def monthly_service_fee
-        @monthly_service_fee ||= calculator&.monthly_service_fee
+        @monthly_service_fee ||= banded.monthly_service_fee
       end
 
-      # PRE 2025
       def outputs
-        @outputs ||= calculator.outputs.total_net_amount
+        @outputs ||= banded.outputs.total_net_amount
+      end
+
+      def mentors_outputs
+        @mentors_outputs ||= flat_rate.outputs.total_net_amount
       end
 
       def clawbacks
-        0.0
-      end
-
-      def uplifts
-        @uplifts ||= calculator.uplifts.total_net_amount
-      end
-
-      # POST 2025
-      def ects_output_payment
-      end
-
-      def mentors_output_payment
-      end
-
-      def ects_clawbacks
+        @clawbacks ||= banded.outputs.total_refundable_amount
       end
 
       def mentors_clawbacks
+        @mentors_clawbacks ||= flat_rate.outputs.total_refundable_amount
+      end
+
+      def uplifts
+        @uplifts ||= banded.uplifts.total_net_amount
+      end
+
+      def output_payment_text
+        pre_2025? ? "Output payment" : "ECTs output payment"
+      end
+
+      def clawback_payment_text
+        pre_2025? ? "Clawbacks" : "ECTs clawbacks"
       end
     end
   end

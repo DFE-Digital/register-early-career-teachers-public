@@ -39,7 +39,7 @@ RSpec.describe Admin::Statements::PaymentOverviewComponent, type: :component do
 
     let(:declaration_selector) { ->(declarations) { declarations } }
 
-    let(:outputs_double) { double(total_net_amount: 200) }
+    let(:outputs_double) { double(total_net_amount: 200, total_refundable_amount: -150) }
     let(:uplifts_double) { double(total_net_amount: 50) }
 
     before do
@@ -49,6 +49,9 @@ RSpec.describe Admin::Statements::PaymentOverviewComponent, type: :component do
       allow(PaymentCalculator::Banded::Uplifts)
         .to receive(:new)
         .and_return(uplifts_double)
+      allow(PaymentCalculator::FlatRate::Outputs)
+        .to receive(:new)
+        .and_return(outputs_double)
     end
 
     it "displays the milestone cutoff and payment dates" do
@@ -60,24 +63,9 @@ RSpec.describe Admin::Statements::PaymentOverviewComponent, type: :component do
       expect(subject).to have_selector(".govuk-table__caption--m", text: "£2,100.00")
     end
 
-    it "has an output payment row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "Output payment")
+    it "has a VAT row" do
+      expect(subject).to have_selector(".govuk-table__cell", text: "VAT")
       expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
-    end
-
-    it "has a service fee row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "Service fee")
-      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£1,000.00")
-    end
-
-    it "has an uplift fee row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "Uplift fees")
-      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£50.00")
-    end
-
-    it "has a clawbacks row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "Clawbacks")
-      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£0.00")
     end
 
     it "has an additional adjustments row" do
@@ -85,9 +73,56 @@ RSpec.describe Admin::Statements::PaymentOverviewComponent, type: :component do
       expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£0.00")
     end
 
-    it "has a VAT row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "VAT")
-      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
+    it "has a service fee row" do
+      expect(subject).to have_selector(".govuk-table__cell", text: "Service fee")
+      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£1,000.00")
+    end
+
+    context "when the contract type is ecf" do
+      let(:contract) do
+        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
+      end
+
+      it "has an output payment row" do
+        expect(subject).to have_selector(".govuk-table__cell", text: "Output payment")
+        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
+      end
+
+      it "has an uplift fee row" do
+        expect(subject).to have_selector(".govuk-table__cell", text: "Uplift fees")
+        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£50.00")
+      end
+
+      it "has a clawbacks row" do
+        expect(subject).to have_selector(".govuk-table__cell", text: "Clawbacks")
+        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£0.00")
+      end
+    end
+
+    context "when the contract type is ittecf_ectp" do
+      let(:contract) do
+        FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
+      end
+
+      it "has an ECT output payment row" do
+        expect(subject).to have_selector(".govuk-table__cell", text: "ECTs output payment")
+        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
+      end
+
+      it "has a Mentors output payment row" do
+        expect(subject).to have_selector(".govuk-table__cell", text: "Mentors output payment")
+        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
+      end
+
+      it "has an ECT clawbacks row" do
+        expect(subject).to have_selector(".govuk-table__cell", text: "ECTs clawbacks")
+        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£0.00")
+      end
+
+      it "has a Mentors clawbacks row" do
+        expect(subject).to have_selector(".govuk-table__cell", text: "Mentors clawbacks")
+        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "-£150.00")
+      end
     end
   end
 end
