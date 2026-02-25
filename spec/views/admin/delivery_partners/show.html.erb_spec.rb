@@ -30,10 +30,10 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
     expect(rendered).to have_link("Change delivery partner name", href: edit_admin_delivery_partner_path(delivery_partner))
   end
 
-  it %(shows the delivery partner API ID) do
+  it "shows the delivery partner API ID" do
     render
 
-    expect(rendered).to have_css("span", text: delivery_partner.api_id)
+    expect(rendered).to have_css("span.app-mono", text: delivery_partner.api_id)
   end
 
   it "includes backlink with preserved page and query parameters" do
