@@ -11,13 +11,12 @@
           <div class="govuk-heading-m govuk-!-padding-top-0"><%= @statement.formatted_payment_date %></div>
         </div>
       </div>
-
       <div class="finance-panel__summary__total-payment-breakdown">
         <%= govuk_table(
             first_cell_is_header: false,
-            caption: total_payment,
+            caption:,
             head: [],
-            rows: []
+            rows: 
           )
         %>
       </div>
