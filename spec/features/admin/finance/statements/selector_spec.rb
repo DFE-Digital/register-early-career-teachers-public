@@ -36,26 +36,26 @@ RSpec.describe "Admin finance statement selector" do
   def then_i_should_see_statement_with_selected_options
     data = selector_options
 
-    lead_provider_selected = data["Lead provider"].detect { |op| op[:selected] }[:value]
+    lead_provider_selected = data["View a different provider"].detect { |op| op[:selected] }[:value]
     expect(lead_provider_selected.to_i).to eq(@lead_provider1.id)
 
-    contract_period_selected = data["Contract year"].detect { |op| op[:selected] }[:value]
+    contract_period_selected = data["View a different contract year"].detect { |op| op[:selected] }[:value]
     expect(contract_period_selected.to_i).to eq(@contract_period1.id)
 
-    statement_date_selected = data["Statement date"].detect { |op| op[:selected] }[:value]
+    statement_date_selected = data["View a different statement"].detect { |op| op[:selected] }[:value]
     expect(statement_date_selected).to eq([@statement1.year, @statement1.month].join("-"))
   end
 
   def when_i_select_a_different_statement
     selector = page.locator(".app-admin-filter")
 
-    elem = selector.get_by_label("Lead provider", exact: true)
+    elem = selector.get_by_label("View a different provider", exact: true)
     elem.select_option(label: @lead_provider2.name)
 
-    elem = selector.get_by_label("Contract year", exact: true)
+    elem = selector.get_by_label("View a different contract year", exact: true)
     elem.select_option(label: @contract_period2.year.to_s)
 
-    elem = selector.get_by_label("Statement date", exact: true)
+    elem = selector.get_by_label("View a different statement", exact: true)
     elem.select_option(label: "May 2025")
 
     selector.get_by_role("button", name: "View").click
@@ -64,13 +64,13 @@ RSpec.describe "Admin finance statement selector" do
   def when_i_select_a_statement_that_does_not_exist
     selector = page.locator(".app-admin-filter")
 
-    elem = selector.get_by_label("Lead provider", exact: true)
+    elem = selector.get_by_label("View a different provider", exact: true)
     elem.select_option(label: @lead_provider2.name)
 
-    elem = selector.get_by_label("Contract year", exact: true)
+    elem = selector.get_by_label("View a different contract year", exact: true)
     elem.select_option(label: @contract_period1.year.to_s)
 
-    elem = selector.get_by_label("Statement date", exact: true)
+    elem = selector.get_by_label("View a different statement", exact: true)
     elem.select_option(label: "July 2024")
 
     selector.get_by_role("button", name: "View").click

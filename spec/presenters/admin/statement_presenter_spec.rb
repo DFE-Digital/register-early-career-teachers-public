@@ -61,17 +61,6 @@ describe Admin::StatementPresenter do
     end
   end
 
-  describe "#page_title" do
-    let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
-    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-    let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
-    let(:statement) { FactoryBot.build(:statement, contract:, month: 5, year: 2023) }
-
-    it "returns the lead provider, month and year in a string" do
-      expect(subject.page_title).to eql("Some LP - May 2023")
-    end
-  end
-
   describe "#lead_provider_name" do
     let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
