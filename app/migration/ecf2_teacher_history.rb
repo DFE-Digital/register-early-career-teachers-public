@@ -140,7 +140,8 @@ private
       model: model_identifier,
       message: message.presence || "FIXME: no message was set for this failure!",
       migration_item_id:,
-      migration_item_type: MIGRATION_ITEM_TYPE
+      migration_item_type: MIGRATION_ITEM_TYPE,
+      migration_mode: teacher.migration_mode
     )
   end
 
