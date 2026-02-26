@@ -1,7 +1,7 @@
 require Rails.root.join("db/seeds/support/school_transfer_helpers")
 
 module APISeedData
-  class ECTAsMentorScenarios < Base
+  class ECTBecomeMentorScenarios < Base
     include SchoolTransferHelpers
 
     def plant
@@ -54,7 +54,7 @@ module APISeedData
           )
 
           log_seed_info(
-            "Created #{teacher.trs_first_name} #{teacher.trs_last_name} - completed #{ect_year} ECT, now #{mentor_year} mentor with #{lead_provider.name}",
+            "Created #{teacher.trs_first_name} #{teacher.trs_last_name} (#{teacher.trn}) - completed #{ect_year} ECT, now #{mentor_year} mentor with #{lead_provider.name}",
             colour: Colourize::COLOURS.keys.sample
           )
         end
