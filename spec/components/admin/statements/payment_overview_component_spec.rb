@@ -1,128 +1,170 @@
 RSpec.describe Admin::Statements::PaymentOverviewComponent, type: :component do
-  subject { render_inline(component) }
+  let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year) }
+  let(:active_lead_provider) { school_partnership.active_lead_provider }
 
+  let(:deadline_date) { Date.new(2025, 9, 30) }
+  let(:payment_date) { Date.new(2025, 10, 15) }
+
+  let(:statement_rec) { FactoryBot.create(:statement, year: 2025, month: 9, deadline_date:, payment_date:, contract:) }
   let(:statement) { Admin::StatementPresenter.new(statement_rec) }
+
   let(:component) { described_class.new statement: }
 
-  context "pre 2025" do
-    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+  let(:banded_fee_structure) do
+    FactoryBot.create(
+      :contract_banded_fee_structure,
+      :with_bands,
+      monthly_service_fee:,
+      setup_fee:,
+      uplift_fee_per_declaration: 50,
+      recruitment_target: 100,
+      declaration_boundaries: [{ min: 1, max: 200 }]
+    )
+  end
 
-    let(:school_partnership) do
-      FactoryBot.create(:school_partnership, :for_year, year: Date.current.year)
-    end
+  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:) }
+  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: -300) }
+  let(:uplifts_double) { double(total_net_amount: total_uplifts_amount) }
 
-    let(:active_lead_provider) { school_partnership.active_lead_provider }
+  let(:total_net_amount) { 400 }
+  let(:total_refundable_amount) { -150 }
+  let(:total_manual_adjustments_amount) { 375 }
+  let(:monthly_service_fee) { 1_000 }
+  let(:setup_fee) { 200 }
+  let(:total_uplifts_amount) { 50 }
 
-    let(:statement_rec) { FactoryBot.create(:statement, year: 2025, month: 9, deadline_date:, payment_date:, contract:) }
-    let(:deadline_date) { Date.new(2025, 9, 30) }
-    let(:payment_date) { Date.new(2025, 10, 15) }
-
+  context "when the contract type is ecf" do
     let(:contract) do
-      FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
+      FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
     end
-
-    let(:banded_fee_structure) do
-      FactoryBot.create(
-        :contract_banded_fee_structure,
-        :with_bands,
-        monthly_service_fee: 1_000,
-        setup_fee: 500,
-        uplift_fee_per_declaration: 50,
-        recruitment_target: 100,
-        declaration_boundaries: [{ min: 1, max: 200 }]
-      )
-    end
-
-    let(:training_period) do
-      FactoryBot.create(:training_period, :for_ect, school_partnership:)
-    end
-
-    let(:declaration_selector) { ->(declarations) { declarations } }
-
-    let(:outputs_double) { double(total_net_amount: 200, total_refundable_amount: -150) }
-    let(:uplifts_double) { double(total_net_amount: 50) }
 
     before do
-      allow(PaymentCalculator::Banded::Outputs)
-        .to receive(:new)
-        .and_return(outputs_double)
+      FactoryBot.create(:statement_adjustment, statement: statement_rec, amount: total_manual_adjustments_amount)
+
       allow(PaymentCalculator::Banded::Uplifts)
         .to receive(:new)
         .and_return(uplifts_double)
-      allow(PaymentCalculator::FlatRate::Outputs)
+      allow(PaymentCalculator::Banded::Outputs)
         .to receive(:new)
-        .and_return(outputs_double)
+        .and_return(banded_outputs_double)
+
+      render_inline(component)
     end
 
     it "displays the milestone cutoff and payment dates" do
-      expect(subject).to have_content("30 September 2025")
-      expect(subject).to have_content("15 October 2025")
+      expect(page).to have_content("30 September 2025")
+      expect(page).to have_content("15 October 2025")
     end
 
-    it "has a total payment" do
-      expect(subject).to have_selector(".govuk-table__caption--m", text: "£2,100.00")
+    it "has a total payment which comes from the Banded calculator" do
+      # total_net_amount(400) + uplifts_amount(50) + monthly_service_fee(1000) +
+      # setup_fee(200) + total_manual_adjustments_amount(375) + vat(405)
+
+      expect(page).to have_css(".govuk-table__caption--m", text: "£2,430.00")
     end
 
     it "has a VAT row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "VAT")
-      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
+      row = page.find(".govuk-table__row", text: "VAT")
+      expect(row).to have_text("£405.00")
     end
 
-    it "has an additional adjustments row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "Additional adjustments")
-      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£0.00")
+    it "has an additional adjustments row, taken from the banded output only" do
+      row = page.find(".govuk-table__row", text: "Additional adjustments")
+      expect(row).to have_text("£375.00")
     end
 
     it "has a service fee row" do
-      expect(subject).to have_selector(".govuk-table__cell", text: "Service fee")
-      expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£1,000.00")
+      row = page.find(".govuk-table__row", text: "Service fee")
+      expect(row).to have_text("£1,000.00")
     end
 
-    context "when the contract type is ecf" do
-      let(:contract) do
-        FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
-      end
-
-      it "has an output payment row" do
-        expect(subject).to have_selector(".govuk-table__cell", text: "Output payment")
-        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
-      end
-
-      it "has an uplift fee row" do
-        expect(subject).to have_selector(".govuk-table__cell", text: "Uplift fees")
-        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£50.00")
-      end
-
-      it "has a clawbacks row" do
-        expect(subject).to have_selector(".govuk-table__cell", text: "Clawbacks")
-        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£0.00")
-      end
+    it "has an output payment row" do
+      row = page.find(".govuk-table__row", text: "Output payment")
+      expect(row).to have_text("£400.00")
     end
 
-    context "when the contract type is ittecf_ectp" do
-      let(:contract) do
-        FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
-      end
+    it "has an uplift fee row" do
+      row = page.find(".govuk-table__row", text: "Uplift fee")
+      expect(row).to have_text("£50.00")
+    end
 
-      it "has an ECT output payment row" do
-        expect(subject).to have_selector(".govuk-table__cell", text: "ECTs output payment")
-        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
-      end
+    it "has a clawbacks row" do
+      row = page.find(".govuk-table__row", text: "Clawbacks")
+      expect(row).to have_text("-£150.00")
+    end
+  end
 
-      it "has a Mentors output payment row" do
-        expect(subject).to have_selector(".govuk-table__cell", text: "Mentors output payment")
-        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£200.00")
-      end
+  context "when the contract type is ittecf_ectp" do
+    let(:contract) do
+      FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:, flat_rate_fee_structure:)
+    end
 
-      it "has an ECT clawbacks row" do
-        expect(subject).to have_selector(".govuk-table__cell", text: "ECTs clawbacks")
-        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "£0.00")
-      end
+    let(:flat_rate_fee_structure) do
+      FactoryBot.create(
+        :contract_flat_rate_fee_structure,
+        fee_per_declaration: 100.00
+      )
+    end
 
-      it "has a Mentors clawbacks row" do
-        expect(subject).to have_selector(".govuk-table__cell", text: "Mentors clawbacks")
-        expect(subject).to have_selector(".govuk-table__cell--numeric", text: "-£150.00")
-      end
+    before do
+      FactoryBot.create(:statement_adjustment, statement: statement_rec, amount: total_manual_adjustments_amount)
+
+      allow(PaymentCalculator::FlatRate::Outputs)
+      .to receive(:new)
+      .and_return(flat_rate_outputs_double)
+      allow(PaymentCalculator::Banded::Outputs)
+      .to receive(:new)
+      .and_return(banded_outputs_double)
+
+      render_inline(component)
+    end
+
+    it "displays the milestone cutoff and payment dates" do
+      expect(page).to have_content("30 September 2025")
+      expect(page).to have_content("15 October 2025")
+    end
+
+    it "has a total payment which is the sum of net total for banded and flatrate" do
+      # ect_output(400) + mentors_output(200) + monthly_service_fee(1000) +
+      # setup_fee(200) + total_manual_adjustments_amount(375) + vat(435)
+
+      expect(page).to have_css(".govuk-table__caption--m", text: "£2,610.00")
+    end
+
+    it "has a VAT row, which sums both banded and flatrate vat" do
+      row = page.find(".govuk-table__row", text: "VAT")
+      expect(row).to have_text("£435.00")
+    end
+
+    it "has an additional adjustments row, taken from the banded output only" do
+      row = page.find(".govuk-table__row", text: "Additional adjustments")
+      expect(row).to have_text("£375.00")
+    end
+
+    it "has a service fee row, taken from the banded output only" do
+      row = page.find(".govuk-table__row", text: "Service fee")
+      expect(row).to have_text("£1,000.00")
+    end
+
+    it "has an ECT output payment row" do
+      row = page.find(".govuk-table__row", text: "ECTs output payment")
+      expect(row).to have_text("£400.00")
+    end
+
+    it "has a Mentors output payment row" do
+      row = page.find(".govuk-table__row", text: "Mentors output payment")
+      expect(row).to have_text("£200.00")
+    end
+
+    it "has an ECT clawbacks row" do
+      row = page.find(".govuk-table__row", text: "ECTs clawbacks")
+      expect(row).to have_text("-£150.00")
+    end
+
+    it "has a Mentors clawbacks row" do
+      row = page.find(".govuk-table__row", text: "Mentors clawbacks")
+      expect(row).to have_text("-£300.00")
     end
   end
 end

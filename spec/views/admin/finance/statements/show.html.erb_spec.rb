@@ -1,16 +1,13 @@
 RSpec.describe "admin/finance/statements/show.html.erb" do
-  let!(:contract_period) { FactoryBot.create(:contract_period) }
-  let!(:active_lead_provider) do
-    FactoryBot.create(
-      :active_lead_provider,
-      lead_provider: FactoryBot.create(:lead_provider, name: "Some LP"),
-      contract_period:
-    )
-  end
+  let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+
+  let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
 
   let(:banded_fee_structure) do
     FactoryBot.create(:contract_banded_fee_structure, :with_bands)
   end
+  
   let(:contract) do
     FactoryBot.create(
       :contract,
@@ -36,8 +33,6 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     )
   end
   let!(:feb_statement) do
-    deadline_date = Date.new(contract_period.year, 2, 1).prev_day
-    payment_date = Date.new(contract_period.year, 2, 28)
     FactoryBot.create(
       :statement,
       contract:,
@@ -68,6 +63,12 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   end
 
   let(:statement) { Admin::StatementPresenter.new(feb_statement) }
+
+  # let(:statement_rec) { FactoryBot.create(:statement, active_lead_provider:, year: 2025, month: 9, deadline_date:, payment_date:) }
+  let(:deadline_date) { Date.new(contract_period.year, 2, 1).prev_day }
+  let(:payment_date) { Date.new(contract_period.year, 2, 28) }
+
+  # let(:statement) { Admin::StatementPresenter.new(statement_rec) }
 
   before do
     create_clawback(
@@ -101,14 +102,15 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   it "has title with lead provider name and statement month and year" do
     render
 
-    expect(view.content_for(:page_title))
-      .to eq("Some LP - February #{contract_period.year}")
+    expect(rendered).to have_css(".govuk-caption-l", text: "Some LP")
+    expect(rendered).to have_css(".govuk-heading-m", text: "February 2025")
   end
 
-  it "displays the statement information in a summary list" do
+  it "displays the statement dates and summary information in a table" do
     render
-
-    expect(rendered).to have_css(".govuk-summary-list")
+    expect(rendered).to have_css(".govuk-heading-m", text: "28 February 2025")
+    expect(rendered).to have_css(".govuk-heading-m", text: "31 January 2025")
+    expect(rendered).to have_css(".govuk-table", text: "VAT")
   end
 
   context "for `ecf` contracts" do
