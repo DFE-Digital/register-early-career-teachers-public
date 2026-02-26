@@ -26,10 +26,6 @@ data_sources:
       induction_period_id: "/admin/teachers/N/induction-periods/{value}/edit"
       zendesk_ticket_id: "https://becomingateacher.zendesk.com/agent/tickets/{value}"
 
-  # http://localhost:3000/admin/blazer/queries/docs?data_source=ecf
-  ecf:
-    url: <%= ENV.fetch("ECF_DATABASE_URL", "postgres://localhost:5432") %>
-
 
 # statement timeout, in seconds
 # none by default
