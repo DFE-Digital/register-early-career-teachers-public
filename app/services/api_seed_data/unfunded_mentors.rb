@@ -25,21 +25,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      lead_providers = ActiveLeadProvider.all.map(&:lead_provider).uniq
-      existing_unfunded_mentors = lead_providers.any? do
-        API::Teachers::UnfundedMentors::Query.new(
-          lead_provider_id: it.id
-        )
-        .unfunded_mentors
-        .exists?
-      end
-
-      super && !existing_unfunded_mentors
-    end
-
   private
 
     # Interleaves partnerships from different contract years.
