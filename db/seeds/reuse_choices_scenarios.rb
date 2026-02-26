@@ -1,4 +1,4 @@
-if Rails.env.staging? || Rails.env.review? || Rails.env.development?
+if Rails.env.review? || Rails.env.staging?
   require Rails.root.join("db/seeds/support/seeds/reuse_choices")
 
   print_seed_info(
