@@ -157,7 +157,7 @@ describe Teacher do
       end
 
       context "when there is a current period and a future period" do
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 2.weeks.from_now, teacher:) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.week.from_now, teacher:) }
         let!(:future_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.weeks.from_now, finished_on: nil, teacher:) }
 
         it "returns the current ect_at_school_period" do
