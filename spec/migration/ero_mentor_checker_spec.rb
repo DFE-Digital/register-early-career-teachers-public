@@ -48,10 +48,18 @@ RSpec.describe EROMentorChecker do
       end
     end
 
-    context "when they had a declaration that wasn't paid or clawed_back" do
+    context "when they had an awaiting_clawback declaration" do
+      let!(:declaration) { FactoryBot.create(:migration_participant_declaration, participant_profile: profile, state: :awaiting_clawback) }
+
+      it "returns the declaration" do
+        expect(checker.relevant_declarations).to eq [declaration]
+      end
+    end
+
+    context "when they had a declaration that wasn't paid, awaiting_clawback or clawed_back" do
       let!(:declaration) { FactoryBot.create(:migration_participant_declaration, participant_profile: profile, state: :clawed_back) }
 
-      %i[submitted eligible payable voided ineligible awaiting_clawback].each do |state|
+      %i[submitted eligible payable voided ineligible].each do |state|
         it "does not return those declarations" do
           FactoryBot.create(:migration_participant_declaration, participant_profile: profile, state:)
           expect(checker.relevant_declarations).to eq [declaration]
