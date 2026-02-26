@@ -1,6 +1,6 @@
 module Migrators
   class GIASChildrensCentres < Migrators::Base
-    class_attribute :gias_importer, instance_writer: false, default: GIAS::Importer.new(file_source: :local)
+    class_attribute :gias_importer, instance_writer: false, default: GIAS::Importer.new(file_source: :local, auto_create_school: true)
 
     def self.dependencies = %i[gias_import]
 
@@ -11,7 +11,7 @@ module Migrators
     def self.records_per_worker = record_count
 
     def self.reset!
-      self.gias_importer = GIAS::Importer.new(file_source: :local)
+      self.gias_importer = GIAS::Importer.new(file_source: :local, auto_create_school: true)
 
       if Rails.application.config.enable_migration_testing
         ::GIAS::School.connection.execute("TRUNCATE #{::GIAS::School.table_name} RESTART IDENTITY CASCADE")
