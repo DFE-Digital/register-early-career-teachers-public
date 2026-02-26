@@ -458,6 +458,7 @@
   - failure_message
   - created_at
   - updated_at
+  - migration_mode
   :data_migration_failed_mentorships:
   - id
   - ect_participant_profile_id
@@ -469,6 +470,7 @@
   - failure_message
   - created_at
   - updated_at
+  - migration_mode
   :contract_flat_rate_fee_structures:
   - id
   - recruitment_target

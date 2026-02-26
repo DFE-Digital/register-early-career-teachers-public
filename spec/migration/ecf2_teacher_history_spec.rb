@@ -391,6 +391,7 @@ describe ECF2TeacherHistory do
 
               expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
               expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message, failure_message)
+              expect(failed_combinations.map(&:migration_mode)).to contain_exactly(migration_mode, migration_mode)
             end
           end
 
@@ -413,6 +414,7 @@ describe ECF2TeacherHistory do
 
               expect(failed_combination.induction_record_id).to eq(first_training_period.combination.induction_record_id)
               expect(failed_combination.failure_message).to eq(failure_message)
+              expect(failed_combination.migration_mode).to eq(migration_mode)
             end
 
             it "saves a TeacherMigrationFailure record" do
@@ -742,6 +744,7 @@ describe ECF2TeacherHistory do
 
               expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
               expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message)
+              expect(failed_combinations.map(&:migration_mode)).to contain_exactly(migration_mode)
             end
           end
 
@@ -764,6 +767,7 @@ describe ECF2TeacherHistory do
 
               expect(failed_combination.induction_record_id).to eq(first_training_period.combination.induction_record_id)
               expect(failed_combination.failure_message).to eq(failure_message)
+              expect(failed_combination.migration_mode).to eq(migration_mode)
             end
 
             it "saves a TeacherMigrationFailure record" do
