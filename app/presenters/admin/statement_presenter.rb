@@ -20,8 +20,6 @@ module Admin
       { text:, colour: }
     end
 
-    def lead_provider_name = statement.active_lead_provider.lead_provider.name
-
     def contract_period_year
       statement.active_lead_provider.contract_period.year.to_s
     end
