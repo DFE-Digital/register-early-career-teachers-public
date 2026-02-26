@@ -23,6 +23,7 @@ module Migration
       :schedule_name,
       :schedule_cohort_year,
       :failure_message,
+      :migration_mode,
       keyword_init: true
     )
 
@@ -66,6 +67,7 @@ module Migration
         schedule_name
         schedule_cohort_year
         failure_message
+        migration_mode
       ].freeze
     end
 
@@ -88,7 +90,8 @@ module Migration
         mentor_participant_profile_id: failed_combination.mentor_profile_id,
         schedule_name: failed_combination.schedule_name,
         schedule_cohort_year: failed_combination.schedule_cohort_year,
-        failure_message: failed_combination.failure_message
+        failure_message: failed_combination.failure_message,
+        migration_mode: failed_combination.migration_mode
       )
     end
   end
