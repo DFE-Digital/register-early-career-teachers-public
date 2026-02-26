@@ -36,13 +36,17 @@ module Migration
 
     def submitted? = state == "submitted"
 
+    def voided? = state == "voided"
+
     # status
     def clawback_status = refundable_line_item&.state || "no_clawback"
 
     def payment_status
       return billable_line_item.state if billable_line_item
+      return "voided" if voided?
+      return "no_payment" if submitted?
 
-      submitted? ? "no_payment" : state
+      raise "ECF1 declaration state doesn't match its statement line items states"
     end
 
     # statements
