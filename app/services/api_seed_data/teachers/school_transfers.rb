@@ -82,8 +82,8 @@ module APISeedData
       teacher = select_random_teacher(excluding_teachers: @transferred_teachers[type])
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago, type:)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
-      add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: from_lead_provider)
-      add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: to_lead_provider)
+      add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: from_lead_provider, transfer: true)
+      add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :provider_led, with: to_lead_provider, transfer: true)
 
       log_seed_info("1. Provider Led -> Unknown (incomplete): #{::Teachers::Name.new(teacher).full_name} (#{type})", indent: 4)
     end
@@ -93,9 +93,9 @@ module APISeedData
       teacher = select_random_teacher(excluding_teachers: @transferred_teachers[type])
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago, type:)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
-      school_period2 = create_school_period(teacher, from: 2.years.ago, type:)
-      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: from_lead_provider)
-      add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: to_lead_provider)
+      school_period2 = create_school_period(teacher, from: 2.years.ago, type:, transfer: true)
+      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: from_lead_provider, transfer: true)
+      add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: to_lead_provider, transfer: true)
 
       log_seed_info("2. Provider Led -> Provider Led (same LP): #{::Teachers::Name.new(teacher).full_name} (#{type})", indent: 4)
     end
@@ -105,8 +105,8 @@ module APISeedData
       teacher = select_random_teacher(excluding_teachers: @transferred_teachers[type])
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago, type:)
       @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
-      school_period2 = create_school_period(teacher, from: 2.years.ago, type:)
-      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: to_lead_provider)
+      school_period2 = create_school_period(teacher, from: 2.years.ago, type:, transfer: true)
+      @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: to_lead_provider, transfer: true)
       different_lead_provider = select_different_lead_provider(excluding_lead_providers: [from_lead_provider, to_lead_provider])
       add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: different_lead_provider)
 
@@ -118,8 +118,8 @@ module APISeedData
       teacher = select_random_teacher(excluding_teachers: @transferred_teachers[:ect])
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
-      school_period2 = create_school_period(teacher, from: 2.years.ago)
-      add_training_period(school_period2, from: 2.years.ago, programme_type: :school_led)
+      school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
+      add_training_period(school_period2, from: 2.years.ago, programme_type: :school_led, transfer: true)
 
       log_seed_info("4. Provider Led -> School Led: #{::Teachers::Name.new(teacher).full_name} (ect)", indent: 4)
     end
@@ -129,8 +129,8 @@ module APISeedData
       teacher = select_random_teacher(excluding_teachers: @transferred_teachers[:ect])
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :school_led)
-      school_period2 = create_school_period(teacher, from: 2.years.ago)
-      add_training_period(school_period2, from: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
+      school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
+      add_training_period(school_period2, from: 2.years.ago, programme_type: :provider_led, with: from_lead_provider, transfer: true)
 
       log_seed_info("5. School Led -> Provider Led: #{::Teachers::Name.new(teacher).full_name} (ect)", indent: 4)
     end

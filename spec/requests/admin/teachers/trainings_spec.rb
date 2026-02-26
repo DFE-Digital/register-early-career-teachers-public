@@ -129,7 +129,7 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
         let(:older_started_on) { 2.years.ago.to_date }
         let(:newer_started_on) { 1.year.ago.to_date }
         let!(:older_training_period) do
-          ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: older_started_on + 1.year)
+          ect_period = FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: older_started_on + 11.months)
           FactoryBot.create(:training_period, ect_at_school_period: ect_period, started_on: older_started_on, finished_on: older_started_on + 6.months)
         end
         let!(:newer_training_period) do

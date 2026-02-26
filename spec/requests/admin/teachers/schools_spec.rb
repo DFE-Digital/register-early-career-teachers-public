@@ -80,7 +80,7 @@ RSpec.describe "Admin::Teachers::Schools", type: :request do
       context "with multiple ECT school periods" do
         let(:teacher) { FactoryBot.create(:teacher) }
         let(:older_started_on) { 2.years.ago.to_date }
-        let(:newer_started_on) { 1.year.ago.to_date }
+        let(:newer_started_on) { 1.year.ago.to_date + 1.day }
         let!(:older_period) do
           FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: older_started_on + 1.year)
         end
