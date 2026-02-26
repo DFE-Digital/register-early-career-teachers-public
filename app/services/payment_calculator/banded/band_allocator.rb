@@ -21,9 +21,11 @@ module PaymentCalculator
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attribute :bands                  # ordered bands by min/max count
-    attribute :previous_declarations  # previous statements declarations
-    attribute :declarations           # current statements declarations
+    attribute :bands                            # ordered bands by min/max count
+    attribute :billable_declarations            # current statement billable
+    attribute :refundable_declarations          # current statement refundable
+    attribute :previous_billable_declarations   # previous statements billable
+    attribute :previous_refundable_declarations # previous statements refundable
 
     def band_allocations_by_declaration_type
       @band_allocations_by_declaration_type ||= build_band_allocations_by_declaration_type
@@ -32,7 +34,12 @@ module PaymentCalculator
   private
 
     def declaration_types
-      (previous_declarations.pluck(:declaration_type) + declarations.pluck(:declaration_type)).uniq
+      [
+        previous_billable_declarations,
+        previous_refundable_declarations,
+        billable_declarations,
+        refundable_declarations,
+      ].flat_map { |set| set.pluck(:declaration_type) }.uniq
     end
 
     def build_band_allocations_by_declaration_type
@@ -104,19 +111,19 @@ module PaymentCalculator
     end
 
     def previous_billable_count(declaration_type)
-      previous_declarations.billable.where(declaration_type:).count
+      previous_billable_declarations.where(declaration_type:).count
     end
 
     def previous_refundable_count(declaration_type)
-      previous_declarations.refundable.where(declaration_type:).count
+      previous_refundable_declarations.where(declaration_type:).count
     end
 
     def current_billable_count(declaration_type)
-      declarations.billable.where(declaration_type:).count
+      billable_declarations.where(declaration_type:).count
     end
 
     def current_refundable_count(declaration_type)
-      declarations.refundable.where(declaration_type:).count
+      refundable_declarations.where(declaration_type:).count
     end
   end
 end
