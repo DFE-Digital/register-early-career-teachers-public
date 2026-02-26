@@ -39,7 +39,11 @@ module Migration
     # status
     def clawback_status = refundable_line_item&.state || "no_clawback"
 
-    def payment_status = billable_line_item&.state || "no_payment"
+    def payment_status
+      return billable_line_item.state if billable_line_item
+
+      submitted? ? "no_payment" : state
+    end
 
     # statements
     def clawback_statement = refundable_line_item&.statement
