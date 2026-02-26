@@ -393,7 +393,6 @@ describe Declaration do
       describe ".billable" do
         it "returns declarations with billable statuses" do
           expect(described_class.billable.pluck(:payment_status)).to all(be_in(described_class::BILLABLE_PAYMENT_STATUSES))
-          expect(described_class.billable.pluck(:clawback_status)).to all(eq("no_clawback"))
         end
       end
 

@@ -1,23 +1,33 @@
 RSpec.describe PaymentCalculator::ServiceFees do
-  subject(:service_fees) { described_class.new(banded_fee_structure:) }
+  subject(:service_fees) { described_class.new(banded_fee_structure: banded_fee_structure.reload) }
 
   describe "#monthly_amount" do
     context "with a single band" do
       let(:banded_fee_structure) do
         FactoryBot.create(
           :contract_banded_fee_structure,
-          :with_bands,
           recruitment_target: 100,
-          declaration_boundaries: [{ min: 1, max: 200 }]
+          setup_fee: 500
+        )
+      end
+      let!(:band) do
+        FactoryBot.create(
+          :contract_banded_fee_structure_band,
+          banded_fee_structure:,
+          min_declarations: 1,
+          max_declarations: 100,
+          fee_per_declaration: 800,
+          service_fee_ratio: 0.40,
+          output_fee_ratio: 0.60
         )
       end
 
-      it "calculates monthly service fee from the band" do
-        band = banded_fee_structure.bands.first
-        filled = [100, band.capacity].min
-        expected = (filled * band.fee_per_declaration * band.service_fee_ratio) / 29
-
-        expect(service_fees.monthly_amount).to eq(expected)
+      it "returns (band_totals - setup_fee_deduction) / 29" do
+        # band_totals:         100 * 800 * 0.40 = 32,000
+        # setup_fee_deduction: 100 * 500 / 100  = 500
+        # total:               32,000 - 500 = 31,500
+        # monthly:             31,500 / 29
+        expect(service_fees.monthly_amount).to eq(31_500.to_d / 29)
       end
     end
 
@@ -25,24 +35,40 @@ RSpec.describe PaymentCalculator::ServiceFees do
       let(:banded_fee_structure) do
         FactoryBot.create(
           :contract_banded_fee_structure,
-          :with_bands,
           recruitment_target: 150,
-          declaration_boundaries: [{ min: 1, max: 100 }, { min: 101, max: 200 }]
+          setup_fee: 500
+        )
+      end
+      let!(:band_a) do
+        FactoryBot.create(
+          :contract_banded_fee_structure_band,
+          banded_fee_structure:,
+          min_declarations: 1,
+          max_declarations: 100,
+          fee_per_declaration: 800,
+          service_fee_ratio: 0.40,
+          output_fee_ratio: 0.60
+        )
+      end
+      let!(:band_b) do
+        banded_fee_structure.bands.reset
+        FactoryBot.create(
+          :contract_banded_fee_structure_band,
+          banded_fee_structure:,
+          min_declarations: 101,
+          max_declarations: 200,
+          fee_per_declaration: 600,
+          service_fee_ratio: 0.40,
+          output_fee_ratio: 0.60
         )
       end
 
-      it "fills bands in order up to the recruitment target" do
-        bands = banded_fee_structure.bands.order(:min_declarations)
-        band1 = bands.first
-        band2 = bands.second
-
-        filled1 = [150, band1.capacity].min
-        filled2 = [150 - filled1, band2.capacity].min
-
-        expected_total = (filled1 * band1.fee_per_declaration * band1.service_fee_ratio) +
-          (filled2 * band2.fee_per_declaration * band2.service_fee_ratio)
-
-        expect(service_fees.monthly_amount).to eq(expected_total / 29)
+      it "deducts setup fee from first band only" do
+        # band_totals:         (100 * 800 * 0.40) + (50 * 600 * 0.40) = 32,000 + 12,000 = 44,000
+        # setup_fee_deduction: 100 * 500 / 100 = 500
+        # total:               44,000 - 500 = 43,500
+        # monthly:             43,500 / 29
+        expect(service_fees.monthly_amount).to eq(43_500.to_d / 29)
       end
     end
 
@@ -50,17 +76,28 @@ RSpec.describe PaymentCalculator::ServiceFees do
       let(:banded_fee_structure) do
         FactoryBot.create(
           :contract_banded_fee_structure,
-          :with_bands,
           recruitment_target: 50,
-          declaration_boundaries: [{ min: 1, max: 200 }]
+          setup_fee: 500
+        )
+      end
+      let!(:band) do
+        FactoryBot.create(
+          :contract_banded_fee_structure_band,
+          banded_fee_structure:,
+          min_declarations: 1,
+          max_declarations: 100,
+          fee_per_declaration: 800,
+          service_fee_ratio: 0.40,
+          output_fee_ratio: 0.60
         )
       end
 
-      it "only fills up to the recruitment target" do
-        band = banded_fee_structure.bands.first
-        expected = (50 * band.fee_per_declaration * band.service_fee_ratio) / 29
-
-        expect(service_fees.monthly_amount).to eq(expected)
+      it "deducts setup fee proportionally to filled slots" do
+        # band_totals:         50 * 800 * 0.40 = 16,000
+        # setup_fee_deduction: 50 * 500 / 100  = 250 (not full 500)
+        # total:               16,000 - 250 = 15,750
+        # monthly:             15,750 / 29
+        expect(service_fees.monthly_amount).to eq(15_750.to_d / 29)
       end
     end
   end

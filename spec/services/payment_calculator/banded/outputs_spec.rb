@@ -1,14 +1,18 @@
 RSpec.describe PaymentCalculator::Banded::Outputs do
   subject(:outputs) do
     described_class.new(
-      declarations:,
-      previous_declarations:,
+      billable_declarations:,
+      refundable_declarations:,
+      previous_billable_declarations:,
+      previous_refundable_declarations:,
       banded_fee_structure:
     )
   end
 
-  let(:previous_declarations) { Declaration.payment_status_eligible.limit(1) }
-  let(:declarations) { Declaration.where.not(id: previous_declarations.pluck(:id)) }
+  let(:previous_billable_declarations) { Declaration.payment_status_eligible.limit(1) }
+  let(:previous_refundable_declarations) { Declaration.none }
+  let(:billable_declarations) { Declaration.billable.where.not(id: previous_billable_declarations.pluck(:id)) }
+  let(:refundable_declarations) { Declaration.refundable }
   let(:banded_fee_structure) { FactoryBot.create(:contract_banded_fee_structure) }
   let!(:band_a) { FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, min_declarations: 1, max_declarations: 2, fee_per_declaration: 100.0) }
   let!(:band_b) { FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, min_declarations: 3, max_declarations: 4, fee_per_declaration: 100.0) }
@@ -20,8 +24,8 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
   end
 
   describe "#declaration_type_outputs" do
-    it "returns outputs for each valid declaration type" do
-      expect(outputs.declaration_type_outputs.map(&:declaration_type).uniq).to match_array(declarations.map(&:declaration_type).uniq)
+    it "returns outputs for declaration types present in the data" do
+      expect(outputs.declaration_type_outputs.map(&:declaration_type).uniq).to match_array(%w[started])
     end
   end
 
@@ -58,8 +62,12 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
       expect(outputs.total_net_amount).to eq(0.0)
     end
 
-    it "returns empty declaration type outputs" do
-      expect(outputs.declaration_type_outputs).to be_empty
+    it "returns declaration type outputs with zero amounts" do
+      expect(outputs.declaration_type_outputs).to all(have_attributes(
+                                                        total_billable_amount: 0.0,
+                                                        total_refundable_amount: 0.0,
+                                                        total_net_amount: 0.0
+                                                      ))
     end
   end
 end

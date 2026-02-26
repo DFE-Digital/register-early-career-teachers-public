@@ -89,11 +89,13 @@ class Declaration < ApplicationRecord
   scope :billable_or_changeable_for_declaration_type, ->(declaration_type) {
     billable_or_changeable.where(declaration_type:)
   }
-  scope :billable, -> { where(payment_status: BILLABLE_PAYMENT_STATUSES, clawback_status: :no_clawback) }
-  scope :refundable, -> { where(clawback_status: REFUNDABLE_PAYMENT_STATUSES) }
   scope :ects, -> { joins(:training_period).where.not(training_periods: { ect_at_school_period_id: nil }) }
   scope :mentors, -> { joins(:training_period).where.not(training_periods: { mentor_at_school_period_id: nil }) }
   scope :with_declaration_types, ->(types) { where(declaration_type: types) }
+
+  # Declaration can be both billable and refundable, paid in one month and clawed_back in another
+  scope :billable, -> { where(payment_status: BILLABLE_PAYMENT_STATUSES) }
+  scope :refundable, -> { where(clawback_status: REFUNDABLE_PAYMENT_STATUSES) }
 
   touch -> { self },
         timestamp_attribute: :api_updated_at,

@@ -3,8 +3,10 @@ module PaymentCalculator
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attribute :declarations
-    attribute :previous_declarations
+    attribute :billable_declarations
+    attribute :refundable_declarations
+    attribute :previous_billable_declarations
+    attribute :previous_refundable_declarations
     attribute :banded_fee_structure
 
     def declaration_type_outputs
@@ -28,7 +30,13 @@ module PaymentCalculator
   private
 
     def band_allocator
-      Banded::BandAllocator.new(bands:, previous_declarations:, declarations:)
+      Banded::BandAllocator.new(
+        bands:,
+        billable_declarations:,
+        refundable_declarations:,
+        previous_billable_declarations:,
+        previous_refundable_declarations:
+      )
     end
 
     def band_allocations_by_declaration_type
