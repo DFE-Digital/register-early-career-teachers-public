@@ -2,6 +2,7 @@ module Admin
   module Statements
     class PaymentOverviewComponent < ApplicationComponent
       delegate :number_to_pounds, to: :helpers
+      delegate :contract, to: :statement
 
       attr_reader :statement
 
@@ -15,11 +16,11 @@ module Admin
 
         ]
 
-        rows << ["Mentors output payment", { text: number_to_pounds(mentors_outputs), numeric: true }] unless pre_2025?
+        rows << ["Mentors output payment", { text: number_to_pounds(mentors_outputs), numeric: true }] unless ecf_contract?
         rows << ["Service fee", { text: number_to_pounds(monthly_service_fee), numeric: true }]
-        rows << ["Uplift fees", { text: number_to_pounds(uplifts), numeric: true }] if pre_2025?
+        rows << ["Uplift fees", { text: number_to_pounds(uplifts), numeric: true }] if ecf_contract?
         rows << [clawback_payment_text, { text: number_to_pounds(clawbacks), numeric: true }]
-        rows << ["Mentors clawbacks", { text: number_to_pounds(mentors_clawbacks), numeric: true }] unless pre_2025?
+        rows << ["Mentors clawbacks", { text: number_to_pounds(mentors_clawbacks), numeric: true }] unless ecf_contract?
         rows << ["Additional adjustments", { text: number_to_pounds(total_manual_adjustments_amount), numeric: true }]
         rows << ["VAT", { text: number_to_pounds(vat_amount), numeric: true }]
 
@@ -40,7 +41,9 @@ module Admin
 
     private
 
-      delegate :contract, to: :statement
+      def calculators
+        PaymentCalculator::Resolver.new(statement:, contract:).calculators
+      end
 
       def banded
         @banded ||= calculators.last
@@ -50,20 +53,32 @@ module Admin
         @flat_rate ||= calculators.first
       end
 
-      def calculators
-        PaymentCalculator::Resolver.new(statement:, contract:).calculators
-      end
-
-      def pre_2025?
+      def ecf_contract?
         contract.contract_type == "ecf"
       end
 
       def total_amount
-        @total_amount ||= banded.total_amount(with_vat: true)
+        ecf_contract? ? banded_total : banded_total + flat_rate_total
+      end
+
+      def banded_total
+        @banded_total ||= banded.total_amount(with_vat: true)
+      end
+
+      def flat_rate_total
+        @flat_rate_total ||= flat_rate.total_amount(with_vat: true)
       end
 
       def vat_amount
-        @vat_amount ||= banded.vat_amount
+        ecf_contract? ? banded_vat : banded_vat + flat_rate_vat
+      end
+
+      def banded_vat
+        @banded_vat_amount ||= banded.vat_amount
+      end
+
+      def flat_rate_vat
+        @flat_rate_vat_amount ||= flat_rate.vat_amount
       end
 
       def total_manual_adjustments_amount
@@ -95,11 +110,11 @@ module Admin
       end
 
       def output_payment_text
-        pre_2025? ? "Output payment" : "ECTs output payment"
+        ecf_contract? ? "Output payment" : "ECTs output payment"
       end
 
       def clawback_payment_text
-        pre_2025? ? "Clawbacks" : "ECTs clawbacks"
+        ecf_contract? ? "Clawbacks" : "ECTs clawbacks"
       end
     end
   end
