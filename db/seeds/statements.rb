@@ -36,7 +36,68 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
   end
 end
 
+contract_period_2025 = ContractPeriod.find_by(year: 2025)
+test_lead_provider = LeadProvider.find(1)
+test_active_lead_provider = ActiveLeadProvider.find_by(lead_provider: test_lead_provider, contract_period: contract_period_2025)
+contract = test_active_lead_provider.contracts.first
+
+# --- PAID (early 2025 output months)
+
+[6, 12].each do |month|
+  fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
+
+  FactoryBot.create(
+    :statement,
+    contract:,
+    active_lead_provider: test_active_lead_provider,
+    month:,
+    year: 2025,
+    deadline_date: Date.new(2025, month, 1),
+    payment_date: Date.new(2025, month, 25),
+    fee_type:,
+    marked_as_paid_at: Date.new(2025, month, 26),
+    status: :paid
+  )
+end
+
+# --- PAYABLE (deadline passed, not paid)
+[1, 2, 3].each do |month|
+  fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
+
+  FactoryBot.create(
+    :statement,
+    contract:,
+    active_lead_provider: test_active_lead_provider,
+    month:,
+    year: 2025,
+    deadline_date: Date.new(2026, month, 1),
+    payment_date: Date.new(2026, month, 25),
+    fee_type:,
+    status: :payable
+  )
+end
+
+# --- OPEN (future deadlines)
+[4, 5, 6].each do |month|
+  fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
+
+  FactoryBot.create(
+    :statement,
+    contract:,
+    active_lead_provider: test_active_lead_provider,
+    month:,
+    year: 2025,
+    deadline_date: Date.new(2026, month, 1),
+    payment_date: Date.new(2026, month, 25),
+    fee_type:,
+    status: :open
+  )
+end
+
+Statement.where(active_lead_provider: test_active_lead_provider)
+
 grouped_active_lead_providers = ActiveLeadProvider
+  .where.not(lead_provider_id: test_lead_provider.id)
   .joins(:contract_period)
   .group_by(&:lead_provider)
 

@@ -11,5 +11,7 @@
 <%= render Admin::Statements::PaymentAuthorisationComponent.new(statement: @statement) %>
 <%= render Admin::Statements::UpliftFeesComponent.new(statement: @statement) %>
 <%= render Admin::Statements::ClawbacksComponent.new(statement: @statement) %>
+
+<br />
 <%= render Admin::Statements::AdjustmentsComponent.new(statement: @statement) %>
 <%= render Admin::Statements::GuidanceComponent.new %>

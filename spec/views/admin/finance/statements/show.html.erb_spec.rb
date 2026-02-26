@@ -64,11 +64,9 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
 
   let(:statement) { Admin::StatementPresenter.new(feb_statement) }
 
-  # let(:statement_rec) { FactoryBot.create(:statement, active_lead_provider:, year: 2025, month: 9, deadline_date:, payment_date:) }
   let(:deadline_date) { Date.new(contract_period.year, 2, 1).prev_day }
   let(:payment_date) { Date.new(contract_period.year, 2, 28) }
 
-  # let(:statement) { Admin::StatementPresenter.new(statement_rec) }
 
   before do
     create_clawback(
@@ -131,6 +129,22 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
 
       expect(rendered).to have_css("table caption", text: "ECT clawbacks")
       expect(rendered).to have_css("table caption", text: "Mentor clawbacks")
+    end
+  end
+  
+  context "when the statement can be authorised for payment" do
+    let(:statement_rec) { FactoryBot.create(:statement, :payable, active_lead_provider:, year: 2025, month: 9, deadline_date:, payment_date:) }
+
+    around do |example|
+      travel_to(Date.new(2025, 10, 16)) do
+        example.run
+      end
+    end
+
+    it "displays the Authorise for payment button" do
+      render
+
+      expect(rendered).to have_button("Authorise for payment")
     end
   end
 end
