@@ -35,7 +35,7 @@
     - `sparsity_uplift: true`
     - `pupil_premium_uplift: true`
   
-    Previously, we had said we would always show mentors as false, but this was incorrect.
+    Previously, we had said we would always show mentors as false in the Register ECTs API, but this was incorrect.
 
     Started declarations for these participants will also show as `uplift_paid: true` when their declaration has been paid. It will stay true if the declaration is later clawed back.
 
