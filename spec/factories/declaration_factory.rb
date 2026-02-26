@@ -79,5 +79,9 @@ FactoryBot.define do
       clawback_status { :clawed_back }
       clawback_statement { FactoryBot.create(:statement, :paid, active_lead_provider: training_period.active_lead_provider) }
     end
+
+    trait :billable_or_changeable do
+      Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.sample
+    end
   end
 end
