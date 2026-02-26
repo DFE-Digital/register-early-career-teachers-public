@@ -6,7 +6,7 @@ module Schools
         def next_step = :confirmation
 
         def old_lead_provider_name
-          old_lead_provider&.name.presence || withdrawn_lead_provider_name
+          old_lead_provider&.name
         end
 
         delegate :name, to: :new_lead_provider, prefix: true
@@ -27,7 +27,7 @@ module Schools
       private
 
         def old_lead_provider
-          @old_lead_provider ||= (current_training_lead_provider || withdrawn_lead_provider)
+          @old_lead_provider ||= (current_training_lead_provider || withdrawn_or_deferred_lead_provider)
         end
 
         def current_training_lead_provider
@@ -40,25 +40,15 @@ module Schools
 
         def new_lead_provider = LeadProvider.find(store.lead_provider_id)
 
-        def withdrawn_lead_provider
+        def withdrawn_or_deferred_lead_provider
           training_period = ect_at_school_period.latest_training_period
-          return unless training_period&.provider_led_training_programme? && training_period.status == :withdrawn
+          return unless training_period&.provider_led_training_programme?
+          return unless training_period.status.in?(%i[withdrawn deferred])
 
           if training_period.only_expression_of_interest?
             training_period.expression_of_interest&.lead_provider
           else
             training_period.lead_provider
-          end
-        end
-
-        def withdrawn_lead_provider_name
-          training_period = ect_at_school_period.latest_training_period
-          return unless training_period&.provider_led_training_programme? && training_period.status == :withdrawn
-
-          if training_period.only_expression_of_interest?
-            training_period.expression_of_interest&.lead_provider&.name
-          else
-            training_period.lead_provider_name
           end
         end
       end

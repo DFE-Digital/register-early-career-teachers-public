@@ -10,14 +10,10 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       ect_at_school_period:
     )
   end
-  let(:store) do
-    FactoryBot.build(:session_repository, lead_provider_id: lead_provider.id)
-  end
+  let(:store) { FactoryBot.build(:session_repository, lead_provider_id: lead_provider.id) }
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }
   let(:school) { FactoryBot.create(:school) }
-  let(:contract_period) do
-    FactoryBot.create(:contract_period, :with_schedules, :current)
-  end
+  let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
@@ -69,12 +65,12 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
 
   describe "#old_lead_provider_name" do
     it "returns the current lead provider's name" do
-      expect(current_step.old_lead_provider_name)
-        .to eq(old_lead_provider.name)
+      expect(current_step.old_lead_provider_name).to eq(old_lead_provider.name)
     end
 
     context "when current training lead provider cannot be resolved" do
       let(:withdrawn_lead_provider) { FactoryBot.create(:lead_provider) }
+
       let(:withdrawn_active_lead_provider) do
         FactoryBot.create(
           :active_lead_provider,
@@ -84,7 +80,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
       end
 
       let!(:training_period) do
-        tp = FactoryBot.create(
+        training_period = FactoryBot.create(
           :training_period,
           :ongoing,
           :provider_led,
@@ -93,11 +89,58 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
           started_on: ect_at_school_period.started_on,
           expression_of_interest: withdrawn_active_lead_provider
         )
-        tp.update!(
+
+        training_period.update!(
           withdrawn_at: Time.zone.today,
           withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
         )
-        tp
+
+        training_period
+      end
+
+      before do
+        current_training = instance_double(ECTAtSchoolPeriods::CurrentTraining)
+
+        allow(ECTAtSchoolPeriods::CurrentTraining).to receive(:new)
+          .with(ect_at_school_period)
+          .and_return(current_training)
+        allow(current_training).to receive(:lead_provider_via_school_partnership_or_eoi)
+          .and_return(nil)
+      end
+
+      it "falls back to the withdrawn lead provider" do
+        expect(current_step.old_lead_provider_name).to eq(withdrawn_lead_provider.name)
+      end
+    end
+
+    context "when current training lead provider cannot be resolved and latest TP is deferred" do
+      let(:deferred_lead_provider) { FactoryBot.create(:lead_provider) }
+
+      let(:deferred_active_lead_provider) do
+        FactoryBot.create(
+          :active_lead_provider,
+          lead_provider: deferred_lead_provider,
+          contract_period:
+        )
+      end
+
+      let!(:training_period) do
+        training_period = FactoryBot.create(
+          :training_period,
+          :ongoing,
+          :provider_led,
+          :with_only_expression_of_interest,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on,
+          expression_of_interest: deferred_active_lead_provider
+        )
+
+        training_period.update!(
+          deferred_at: Time.zone.today,
+          deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+        )
+
+        training_period
       end
 
       before do
@@ -108,11 +151,47 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
           .and_return(current_training)
 
         allow(current_training).to receive(:lead_provider_via_school_partnership_or_eoi)
-          .and_raise(ECTAtSchoolPeriods::NoTrainingPeriodError)
+          .and_return(nil)
       end
 
-      it "falls back to the withdrawn lead provider" do
-        expect(current_step.old_lead_provider_name).to eq(withdrawn_lead_provider.name)
+      it "falls back to the deferred lead provider" do
+        expect(current_step.old_lead_provider_name).to eq(deferred_lead_provider.name)
+      end
+    end
+
+    context "when latest TP is school-led with withdrawn/deferred timestamps (bad data)" do
+      let!(:training_period) do
+        training_period = FactoryBot.create(
+          :training_period,
+          :ongoing,
+          :school_led,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on
+        )
+
+        training_period.update!(
+          withdrawn_at: Time.zone.today,
+          withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
+          deferred_at: Time.zone.today,
+          deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+        )
+
+        training_period
+      end
+
+      before do
+        current_training = instance_double(ECTAtSchoolPeriods::CurrentTraining)
+
+        allow(ECTAtSchoolPeriods::CurrentTraining).to receive(:new)
+          .with(ect_at_school_period)
+          .and_return(current_training)
+
+        allow(current_training).to receive(:lead_provider_via_school_partnership_or_eoi)
+          .and_return(nil)
+      end
+
+      it "does not fall back to a lead provider" do
+        expect(current_step.old_lead_provider_name).to be_nil
       end
     end
   end
@@ -147,9 +226,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
 private
 
   def lead_provider_for(ect_at_school_period)
-    ect_at_school_period.reload
-      .current_or_next_training_period
-      .expression_of_interest
-      .lead_provider
+    training_period = ect_at_school_period.reload.current_or_next_training_period
+    training_period.expression_of_interest&.lead_provider || training_period.school_partnership&.lead_provider
   end
 end
