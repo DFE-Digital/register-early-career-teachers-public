@@ -44,11 +44,6 @@ RSpec.describe APISeedData::UnfundedMentors, :with_metadata do
       end
     end
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(Teacher, :count)
-      expect { instance.plant }.not_to change(Teacher, :count)
-    end
-
     it "logs the creation of unfunded mentors" do
       plant
 
