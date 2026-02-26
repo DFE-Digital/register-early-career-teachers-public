@@ -196,6 +196,7 @@
   - message
   - migration_item_id
   - migration_item_type
+  - migration_mode
   - created_at
   - updated_at
   :teachers:
@@ -274,6 +275,7 @@
   - updated_at
   - parent_id
   - parent_type
+  - migration_mode
   :events:
   - id
   - heading
