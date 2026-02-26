@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_25_101909) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_25_161614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -225,6 +225,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_25_101909) do
     t.text "failure_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "migration_mode"
   end
 
   create_table "data_migration_failed_mentorships", force: :cascade do |t|
@@ -237,6 +238,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_25_101909) do
     t.text "failure_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "migration_mode"
   end
 
   create_table "data_migration_teacher_combinations", force: :cascade do |t|
