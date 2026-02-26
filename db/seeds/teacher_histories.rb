@@ -464,12 +464,21 @@ end
 alan_rickman_lp_author = { author_name: alan_rickman_training_period.lead_provider.name, author_type: "lead_provider_api" }
 
 alan_rickman_started_date = alan_rickman_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
+
+teach_first_ecf_statement = Statement
+  .joins(:contract)
+  .where(contracts: { active_lead_provider: teach_first_grain_2022, contract_type: :ecf })
+  .where(fee_type: "output", status: :paid)
+  .first!
+
 FactoryBot.create(:declaration,
-                  :paid,
                   declaration_type: :started,
                   declaration_date: alan_rickman_started_date,
                   evidence_type: "training-event-attended",
-                  training_period: alan_rickman_training_period).tap do |decl|
+                  training_period: alan_rickman_training_period,
+                  payment_status: :paid,
+                  payment_statement: teach_first_ecf_statement,
+                  pupil_premium_uplift: true).tap do |decl|
   FactoryBot.create(:event,
                     event_type: "teacher_declaration_created",
                     declaration: decl,
@@ -881,11 +890,13 @@ harriet_walter_lp_author = { author_name: harriet_walter_ect_training_period.lea
 
 harriet_walter_ect_started_date = harriet_walter_ect_training_period.schedule.milestones.find_by(declaration_type: :started).start_date
 FactoryBot.create(:declaration,
-                  :paid,
                   declaration_type: :started,
                   declaration_date: harriet_walter_ect_started_date,
                   evidence_type: "training-event-attended",
-                  training_period: harriet_walter_ect_training_period).tap do |decl|
+                  training_period: harriet_walter_ect_training_period,
+                  payment_status: :paid,
+                  payment_statement: teach_first_ecf_statement,
+                  sparsity_uplift: true).tap do |decl|
   FactoryBot.create(:event,
                     event_type: "teacher_declaration_created",
                     declaration: decl,
