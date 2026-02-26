@@ -143,13 +143,27 @@ describe Migration::ParticipantDeclaration, type: :model do
       end
     end
 
-    %w[ineligible voided submmited awaiting_clawback clawed_back].each do |checking_state|
-      context "when there is a statement line item with state #{checking_state} instead" do
+    %w[submitted].each do |checking_state|
+      context "when there is no billable statement line item but the declaration state is #{checking_state}" do
         let!(:statement_line_item) do
-          FactoryBot.create(:migration_statement_line_item, participant_declaration:, state: checking_state)
+          FactoryBot.create(:migration_statement_line_item, participant_declaration:, state: "voided")
         end
 
+        before { participant_declaration.state = checking_state }
+
         it { is_expected.to eq("no_payment") }
+      end
+    end
+
+    %w[ineligible voided awaiting_clawback clawed_back].each do |checking_state|
+      context "when there is a no statement line item but the declaration state is #{checking_state} instead" do
+        let!(:statement_line_item) do
+          FactoryBot.create(:migration_statement_line_item, participant_declaration:, state: "voided")
+        end
+
+        before { participant_declaration.state = checking_state }
+
+        it { is_expected.to eq(participant_declaration.state) }
       end
     end
   end
