@@ -74,11 +74,11 @@ module Admin
       end
 
       def banded_vat
-        @banded_vat_amount ||= banded.vat_amount
+        @banded_vat ||= banded.vat_amount
       end
 
       def flat_rate_vat
-        @flat_rate_vat_amount ||= flat_rate.vat_amount
+        @flat_rate_vat ||= flat_rate.vat_amount
       end
 
       def total_manual_adjustments_amount
