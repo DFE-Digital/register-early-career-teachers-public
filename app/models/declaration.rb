@@ -65,13 +65,7 @@ class Declaration < ApplicationRecord
   delegate :for_ect?, :for_mentor?, to: :training_period, allow_nil: true
 
   # Validations
-  validates :training_period,
-            presence: { message: "Choose a training period" },
-            uniqueness: {
-              scope: %i[declaration_type payment_status],
-              conditions: -> { billable_or_changeable },
-              message: "A billable declaration with the same type already exists for this training period"
-            }
+  validates :training_period, presence: { message: "Choose a training period" }
   validates :voided_by_user, presence: { message: "Voided by user must be set as well as the voided date" }, if: :voided_by_user_at
   validates :voided_by_user_at, presence: { message: "Voided by user at must be set as well as the voided by user" }, if: :voided_by_user
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another declaration" }
@@ -84,7 +78,7 @@ class Declaration < ApplicationRecord
   validates :delivery_partner_when_created, presence: { message: "Delivery partner when the declaration was created must be specified" }
   validate :mentorship_period_belongs_to_teacher
   validate :contract_period_consistent_across_associations
-  validate :declaration_does_not_already_exist
+  validate :does_not_result_in_duplicate_billable_or_changeable_with_same_type
   validate :declaration_type_started_or_completed_for_mentor_funding_contract_period
   validate :uplifts_are_allowed, if: :uplifts_present?
 
@@ -174,27 +168,27 @@ class Declaration < ApplicationRecord
     training_period&.teacher
   end
 
-  def duplicate_declaration_exists?
-    return unless billable_or_changeable?
+  def milestone
+    training_period&.schedule&.milestones&.find_by(declaration_type:)
+  end
 
-    existing_declarations = if training_period.for_ect?
-                              teacher.ect_declarations
-                            else
-                              teacher.mentor_declarations
-                            end
+private
 
+  def existing_declarations
+    @existing_declarations ||= if training_period.for_ect?
+                                 teacher.ect_declarations
+                               else
+                                 teacher.mentor_declarations
+                               end
+  end
+
+  def billable_or_changeable_of_same_type_exists?
     existing_declarations
       .billable_or_changeable
       .where(declaration_type:)
       .excluding(self)
       .exists?
   end
-
-  def milestone
-    training_period&.schedule&.milestones&.find_by(declaration_type:)
-  end
-
-private
 
   def uplifts_are_allowed
     return unless uplifts_present?
@@ -224,10 +218,11 @@ private
     errors.add(:training_period, "Contract period mismatch: training period, payment_statement and clawback_statement must have the same contract period.")
   end
 
-  def declaration_does_not_already_exist
+  def does_not_result_in_duplicate_billable_or_changeable_with_same_type
     return unless training_period && declaration_type
+    return unless billable_or_changeable? && billable_or_changeable_of_same_type_exists?
 
-    errors.add(:base, "A matching declaration already exists.") if duplicate_declaration_exists?
+    errors.add(:base, "A billable/changeable declaration with the same type and training period already exists.")
   end
 
   def declaration_type_started_or_completed_for_mentor_funding_contract_period
