@@ -340,13 +340,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
     t.date "finished_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.enum "working_pattern", enum_type: "working_pattern"
     t.citext "email"
     t.bigint "school_reported_appropriate_body_id"
     t.bigint "reported_leaving_by_school_id"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["reported_leaving_by_school_id"], name: "index_ect_at_school_periods_on_reported_leaving_by_school_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
