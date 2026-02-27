@@ -88,7 +88,6 @@ Appropriate bodies will not be able to submit inductions until after the ECT has
 
 Once an `induction_start_date` appears over the API, they will be eligible for funding and any submitted declarations that are valid should move to `eligible`.
 
-Providers can test they're able to submit declarations using [X-With-Server-Date](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
 ## Declaration states
 
