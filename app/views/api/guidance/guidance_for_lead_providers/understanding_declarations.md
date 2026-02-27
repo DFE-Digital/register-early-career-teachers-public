@@ -84,7 +84,7 @@ Declarations cannot be submitted or voided after a cohort has closed. Duplicate 
 
 If an ECT hasn't had their eligibility for funding confirmed, because their induction hasn't been recorded as starting by an appropriate body yet, you will be unable to receive payment for the associated declarations. They will be stuck in the submitted state.
 
-They will be stuck in `submitted`. Appropriate bodies will not be able to submit inductions till after they have started, so expect them to stay in `submitted` until after the ECT should've officially started induction.
+Appropriate bodies will not be able to submit inductions until after the ECT has started training, so expect them to stay in submitted until after the ECT should have officially started induction.
 
 Once an `induction_start_date` appears over the API, they will be eligible for funding and any submitted declarations that are valid should move to `eligible`.
 
