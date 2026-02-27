@@ -22,13 +22,13 @@ The possible declaration types are:
 - `extended-1` / `extended-2` / `extended-3` – when an ECT's training continues beyond the standard schedule (not to be used for mentors)
 
 Declaration types should ideally be submitted in the correct sequence for each participant, as outlined in the register early career teachers API specification. This also enables DfE to pay lead providers promptly.
-
+For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to post-2024 cohorts.
 Successful requests will return a response body including updates to the declaration, which will become:
 
 - `voided` if it had been `submitted`, `ineligible`, `eligible`, or `payable`
 - `awaiting_clawback` if it had been `paid`
 
-### For ECTs across all cohorts:
+### The ordering of declarations across all cohorts for ECTs:
 
 - `started`
 - `retained-1`
@@ -40,12 +40,12 @@ Successful requests will return a response body including updates to the declara
 - `extended-2`
 - `extended-3`
 
-### For mentors in the 2025 cohort onwards, the declaration types are:
+### For mentors in the 2025 cohort onwards, the declaration types in order are:
 
 - `started`
 - `completed`
 
-### For 2023 and 2024 mentors, the declaration types are:
+### For 2023 and 2024 mentors, the declaration types in order are:
 
 - `started`
 - `retained-1`
@@ -63,8 +63,12 @@ Each declaration includes:
 - participant ID
 - declaration type
 - declaration date (aligned with what's outlined in the payment guidance)
-- type of evidence a lead provider holds to verify that a participant has engaged in training
-- lead provider and programme type details
+- course identifier (indicates whether the declaration is for ECT or mentor training)
+- evidence held (the type of evidence a lead provider holds to verify that a participant has engaged in training)
+
+Declarations cannot be submitted or voided after a cohort has closed. Duplicate declarations cannot be submitted. If a duplicate is attempted, the API will return an error.
+
+Providers can test they're able to submit declarations using [X-With-Server-Date](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
 See the [Swagger documentation](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3#/Declarations) for full details of the declaration endpoints.
 
@@ -78,11 +82,11 @@ See the [Swagger documentation](https://sandbox.register-early-career-teachers.e
 
 Declarations cannot be submitted or voided after a cohort has closed. Duplicate declarations cannot be submitted. If a duplicate is attempted, the API will return an error.
 
-If an ECT hasn't had their eligibility for ECT training funding confirmed, because their induction hasn't been recorded as starting by an appropriate body yet, you will not be able to be paid for declarations.
+If an ECT hasn't had their eligibility for funding confirmed, because their induction hasn't been recorded as starting by an appropriate body yet, you will be unable to receive payment for the associated declarations. They will be stuck in the submitted state.
 
 They will be stuck in `submitted`. Appropriate bodies will not be able to submit inductions till after they have started, so expect them to stay in `submitted` until after the ECT should've officially started induction.
 
-Once an `induction_start_date` appears over the API, they will be eligible for funding and any submitted declarations that are valid should move to `payable`.
+Once an `induction_start_date` appears over the API, they will be eligible for funding and any submitted declarations that are valid should move to `eligible`.
 
 Providers can test they're able to submit declarations using [X-With-Server-Date](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
@@ -90,7 +94,7 @@ Providers can test they're able to submit declarations using [X-With-Server-Date
 
 Declaration states are defined by the `state` attribute.
 
-Providers must submit declarations to confirm a participant has engaged in training within a given milestone period. A declaration's state value will reflect if and when DfE will pay providers for the training delivered.
+A declaration's state value will reflect if and when DfE will pay providers for the training delivered.
 
 | state | Definition | Action |
 |-------|------------|--------|
@@ -102,6 +106,10 @@ Providers must submit declarations to confirm a participant has engaged in train
 | `awaiting_clawback` | A paid declaration that has since been voided by a provider | Providers can only view awaiting_clawback declarations |
 | `clawed_back` | An awaiting_clawback declaration that has since had its value deducted from payment by DfE to a provider | Providers can only view clawed_back declarations |
 
+When a declaration is voided, it will become:
+
+- `voided` if it had been `submitted`, `ineligible`, `eligible`, or `payable`
+- `awaiting_clawback` if it had been `paid`
 ## Evidence types
 
 To see which evidence types are valid for each declaration type, check the [Swagger documentation](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3/) and refer to the relevant schema.
