@@ -4,13 +4,28 @@ RSpec.describe Admin::Statements::UpliftFeesComponent, type: :component do
   let(:component) { described_class.new(statement:) }
   let(:contract) { FactoryBot.create(:contract, contract_type) }
   let(:statement) { FactoryBot.create(:statement, statement_type, contract:) }
-  let(:fee_amount) { statement.contract.banded_fee_structure.uplift_fee_per_declaration }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, active_lead_provider: contract.active_lead_provider) }
+
+  let(:net_count) { 0 }
+  let(:uplift_fee_per_declaration) { 100 }
+  let(:total_net_amount) { net_count * uplift_fee_per_declaration }
+
+  let(:uplifts) do
+    instance_double(
+      PaymentCalculator::Banded::Uplifts,
+      net_count:,
+      uplift_fee_per_declaration:,
+      total_net_amount:
+    )
+  end
 
   before do
-    non_uplift_training_period = FactoryBot.create(:training_period, school_partnership:)
-    FactoryBot.create(:declaration, declaration_type: "started", payment_statement: statement,
-                                    payment_status: :payable, training_period: non_uplift_training_period)
+    resolver = instance_double(PaymentCalculator::Resolver)
+    banded = instance_double(PaymentCalculator::Banded)
+
+    allow(PaymentCalculator::Resolver).to receive(:new).and_return(resolver)
+    allow(resolver).to receive(:calculators).and_return([banded])
+    allow(banded).to receive(:is_a?).with(PaymentCalculator::Banded).and_return(true)
+    allow(banded).to receive(:uplifts).and_return(uplifts)
   end
 
   shared_examples "does not render" do
@@ -42,8 +57,8 @@ RSpec.describe Admin::Statements::UpliftFeesComponent, type: :component do
         include_examples "renders the table"
 
         it do
-          is_expected.to have_table rows: [
-            ["0", pounds(fee_amount), "£0.00"],
+          expect(subject).to have_table rows: [
+            ["0", "£100.00", "£0.00"],
           ]
         end
 
@@ -54,25 +69,19 @@ RSpec.describe Admin::Statements::UpliftFeesComponent, type: :component do
       end
 
       context "and declarations with uplift fees" do
-        before do
-          2.times do
-            training_period = FactoryBot.create(:training_period, school_partnership:)
-            FactoryBot.create(:declaration, declaration_type: "started", payment_statement: statement,
-                                            payment_status: :payable, training_period:, pupil_premium_uplift: true)
-          end
-        end
+        let(:net_count) { 2 }
 
         include_examples "renders the table"
 
         it do
-          is_expected.to have_table rows: [
-            ["2", pounds(fee_amount), pounds(2 * fee_amount)],
+          expect(subject).to have_table rows: [
+            ["2", "£100.00", "£200.00"],
           ]
         end
 
         describe "total" do
           it { is_expected.to have_css(".govuk-heading-s", text: "Total") }
-          it { is_expected.to have_css(".govuk-heading-s", text: pounds(2 * fee_amount)) }
+          it { is_expected.to have_css(".govuk-heading-s", text: "£200.00") }
         end
       end
     end
@@ -92,9 +101,5 @@ RSpec.describe Admin::Statements::UpliftFeesComponent, type: :component do
 
       include_examples "does not render"
     end
-  end
-
-  def pounds(amount)
-    ActionController::Base.helpers.number_to_currency(amount, precision: 2, unit: "£")
   end
 end
