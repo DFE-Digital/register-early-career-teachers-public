@@ -27,30 +27,12 @@ module Schools
       private
 
         def old_lead_provider
-          @old_lead_provider ||= (current_training_lead_provider || withdrawn_or_deferred_lead_provider)
-        end
-
-        def current_training_lead_provider
-          ECTAtSchoolPeriods::CurrentTraining
+          @old_lead_provider ||= ECTAtSchoolPeriods::LeadProviderResolver
             .new(ect_at_school_period)
-            .lead_provider_via_school_partnership_or_eoi
-        rescue ECTAtSchoolPeriods::NoTrainingPeriodError
-          nil
+            .call
         end
 
         def new_lead_provider = LeadProvider.find(store.lead_provider_id)
-
-        def withdrawn_or_deferred_lead_provider
-          training_period = ect_at_school_period.latest_training_period
-          return unless training_period&.provider_led_training_programme?
-          return unless training_period.status.in?(%i[withdrawn deferred])
-
-          if training_period.only_expression_of_interest?
-            training_period.expression_of_interest&.lead_provider
-          else
-            training_period.lead_provider
-          end
-        end
       end
     end
   end
