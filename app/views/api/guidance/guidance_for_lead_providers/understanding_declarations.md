@@ -22,11 +22,8 @@ The possible declaration types are:
 - `extended-1` / `extended-2` / `extended-3` – when an ECT's training continues beyond the standard schedule (not to be used for mentors)
 
 Declaration types should ideally be submitted in the correct sequence for each participant, as outlined in the register early career teachers API specification. This also enables DfE to pay lead providers promptly.
-For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to post-2024 cohorts.
-Successful requests will return a response body including updates to the declaration, which will become:
 
-- `voided` if it had been `submitted`, `ineligible`, `eligible`, or `payable`
-- `awaiting_clawback` if it had been `paid`
+For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to post-2024 cohorts.
 
 ### The ordering of declarations across all cohorts for ECTs:
 
