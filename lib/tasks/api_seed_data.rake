@@ -23,8 +23,6 @@ namespace :api_seed_data do
       APISeedData::SchoolScenarios,
       APISeedData::ParticipantScenarios,
       APISeedData::ECTScenarios,
-      APISeedData::MentorScenarios,
-      APISeedData::ECTAsMentorScenarios,
       APISeedData::ECTBecomeMentorScenarios,
     ]
 
