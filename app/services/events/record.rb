@@ -738,6 +738,15 @@ module Events
       ).record_event!
     end
 
+    # School User Sign-in Events
+
+    def self.record_school_user_signs_in_event!(author:, school:, happened_at: Time.zone.now)
+      event_type = :school_user_signs_in
+      heading = "#{author.name} has signed into #{school.name}"
+
+      new(event_type:, author:, heading:, school:, happened_at:).record_event!
+    end
+
     # Statement Events
 
     def self.record_statement_authorised_for_payment_event!(author:, statement:, happened_at: Time.zone.now)
