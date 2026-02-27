@@ -118,9 +118,22 @@ private
       )
     }.merge(overrides)
 
+    # if the period is ongoing but has been withdrawn by the provider we should close the period
+    if training_attrs[:finished_on].blank? && training_attrs[:withdrawn_at].present?
+      training_attrs[:finished_on] = determine_finished_on(training_attrs[:started_on], training_attrs[:withdrawn_at])
+    end
+
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
+  end
+
+  def determine_finished_on(started_on, withdrawn_at)
+    if withdrawn_at.to_date <= started_on
+      started_on + 1.day
+    else
+      withdrawn_at.to_date
+    end
   end
 
   def build_combination(induction_record:, **overrides)
