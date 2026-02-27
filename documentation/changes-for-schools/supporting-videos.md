@@ -52,12 +52,12 @@ All data in these videos including names, schools and providers are not real. Th
 
 ---
 
-## Update an early career teachers details
+## Update an early career teacher's details
 
 <video src="/changes-for-schools/videos/update-ect-details.mp4" type="video/mp4" height="360" controls></video>
 
 ---
 
-## Update a mentors details
+## Update a mentor's details
 
 <video src="/changes-for-schools/videos/update-mentor-details.mp4" type="video/mp4" height="360" controls></video>
