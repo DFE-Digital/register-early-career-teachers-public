@@ -2,6 +2,8 @@
 title: "Register early career teachers service: supporting videos"
 ---
 
+All data in these videos including names, schools and providers are not real. They're for demonstration purposes only.  
+
 ## Register a school's first early career teacher
 
 <video src="/changes-for-schools/videos/regsiter-first-ever-ect.mp4" type="video/mp4" height="360" controls></video>
@@ -14,7 +16,7 @@ title: "Register early career teachers service: supporting videos"
 
 ---
 
-## Register early career teacher for a school-led programme
+## Register an early career teacher for a school-led programme
 
 <video src="/changes-for-schools/videos/register-school-led-ect.mp4" type="video/mp4" height="360" controls></video>
 
@@ -26,13 +28,13 @@ title: "Register early career teachers service: supporting videos"
 
 ---
 
-## Register early career teacher where a partnership is already in place
+## Register an early career teacher where a partnership is already in place
 
 <video src="/changes-for-schools/videos/register-ect-partnership-in-place.mp4" type="video/mp4" height="360" controls></video>
 
 ---
 
-## Register early career teacher who's moved from another school
+## Register an early career teacher who's moved from another school
 
 <video src="/changes-for-schools/videos/register-ect-moved-from-another-school.mp4" type="video/mp4" height="360" controls></video>
 
@@ -44,18 +46,18 @@ title: "Register early career teachers service: supporting videos"
 
 ---
 
-## Tell DfE about an early career teacher or mentor who's leaving the school permanently
+## Tell DfE about an early career teacher or a mentor who's leaving the school permanently
 
 <video src="/changes-for-schools/videos/ect-mentor-leaving-permanently.mp4" type="video/mp4" height="360" controls></video>
 
 ---
 
-## Update early career teacher details
+## Update an early career teachers details
 
 <video src="/changes-for-schools/videos/update-ect-details.mp4" type="video/mp4" height="360" controls></video>
 
 ---
 
-## Update mentor details
+## Update a mentors details
 
 <video src="/changes-for-schools/videos/update-mentor-details.mp4" type="video/mp4" height="360" controls></video>
