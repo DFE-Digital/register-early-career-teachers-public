@@ -80,8 +80,6 @@ See the [Swagger documentation](https://sandbox.register-early-career-teachers.e
 4. API validates and links to relevant financial statement.
 5. Declaration triggers payment (if valid).
 
-Declarations cannot be submitted or voided after a cohort has closed. Duplicate declarations cannot be submitted. If a duplicate is attempted, the API will return an error.
-
 If an ECT hasn't had their eligibility for funding confirmed, because their induction hasn't been recorded as starting by an appropriate body yet, you will be unable to receive payment for the associated declarations. They will be stuck in the submitted state.
 
 Appropriate bodies will not be able to submit inductions until after the ECT has started training, so expect them to stay in submitted until after the ECT should have officially started induction.
