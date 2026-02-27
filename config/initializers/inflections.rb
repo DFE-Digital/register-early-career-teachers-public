@@ -26,6 +26,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "OpenID"
   inflect.acronym "OTP" # One-time Password
   inflect.acronym "RIAB" # Record Inductions as an Appropriate Body
+  inflect.acronym "SIT" # School Induction Tutor
   inflect.acronym "TRN" # Teacher Reference Number
   inflect.acronym "TRS" # Teaching Record System
   inflect.acronym "URN" # Unique Reference Number
