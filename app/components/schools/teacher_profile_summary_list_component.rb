@@ -49,11 +49,11 @@ module Schools
     end
 
     def withdrawn?
-      training_status == :withdrawn
+      training_period&.provider_led_training_programme? && training_status == :withdrawn
     end
 
     def deferred?
-      training_status == :deferred
+      training_period&.provider_led_training_programme? && training_status == :deferred
     end
 
     def leaving_school?
