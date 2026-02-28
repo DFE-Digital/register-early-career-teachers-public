@@ -8,7 +8,11 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
 
   // phase banner
   .x-govuk-phase-banner--inverse {
-    border-bottom-color: $x-govuk-masthead-border-colour;
+    // use the govuk-surface-border-colour here rather than
+    // $x-govuk-masthead-border-colour so the border matches the
+    // inverted bottom border of the service nav, otherwise they're
+    // close but not quite the same.
+    border-bottom-color: var(--govuk-surface-border-colour);
   }
 
   .x-govuk-phase-banner--inverse .govuk-phase-banner__content {
@@ -93,7 +97,7 @@ $x-govuk-masthead-text-colour: govuk-colour("white");
   }
 
   .release-notes-panel {
-    background-color: $govuk-brand-colour;
+    background-color: govuk-colour("blue", $variant: "tint-95");
     border-bottom-color: govuk-colour("blue", $variant: "tint-80");
     border-bottom-width: 1px;
     border-bottom-style: solid;
