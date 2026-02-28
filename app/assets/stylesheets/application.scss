@@ -1,9 +1,8 @@
 // GOV.UK frontend
-$govuk-global-styles: true;
-$govuk-new-link-styles: true;
-$govuk-assets-path: "/";
 
-@use "govuk-frontend/dist/govuk";
+@use "govuk-frontend/dist/govuk" with(
+  $govuk-global-styles: true,
+);
 
 // App styles
 @forward "header/colour-overrides";
