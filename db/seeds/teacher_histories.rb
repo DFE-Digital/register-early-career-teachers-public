@@ -1558,6 +1558,7 @@ FactoryBot.create(:declaration,
   declaration_date: barbara_winsor_mentor_started_date,
   evidence_type: "training-event-attended",
   payment_statement: teach_first_ecf_statement2,
+  sparsity_uplift: true,
   training_period: barbara_winsor_mentor_training_period).tap do |decl|
    FactoryBot.create(:event,
     event_type: "teacher_declaration_created",
