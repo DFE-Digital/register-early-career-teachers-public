@@ -36,7 +36,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     it "displays the Authorise for payment button" do
       render
 
-      expect(rendered).to have_button("Authorise for payment")
+      expect(rendered).to have_link("Authorise for payment", href: new_admin_finance_statement_authorisation_path(statement))
     end
   end
 end
