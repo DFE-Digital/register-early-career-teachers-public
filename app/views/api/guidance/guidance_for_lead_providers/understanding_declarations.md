@@ -21,11 +21,26 @@ The possible declaration types are:
 - `completed` – full programme finished
 - `extended-1` / `extended-2` / `extended-3` – when an ECT's training continues beyond the standard schedule (not to be used for mentors)
 
-Declaration types should ideally be submitted in the correct sequence for each participant, as outlined in the register early career teachers API specification. This also enables DfE to pay lead providers promptly.
+Declaration types should be submitted in order for each participant. For example, submit a `started` declaration before a `retained-1` declaration. This enables DfE to pay lead providers promptly.
+
+For participants in the 2025 cohort or later, declaration dates must also be submitted in sequence.
+
+For example, if you have already submitted a `started` declaration, the `declaration_date` of any subsequent declaration must be later.
+
+If you submit a `retained-2` declaration before a `retained-1`, the `retained-1` declaration date must be earlier than the `retained-2` date.
+
+Submitting a declaration with an out-of-sequence `declaration_date` will return a validation error.
+
+Submitting declarations in order:
+
+- makes our data more accurate and reliable
+- reduces the need for clawbacks, voiding, and manual adjustments
 
 For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to post-2024 cohorts.
 
-### The ordering of declarations across all cohorts for ECTs:
+## How declarations should be ordered
+
+### For ECTs across all cohorts, the declaration types in order are:
 
 - `started`
 - `retained-1`
@@ -104,6 +119,7 @@ When a declaration is voided, it will become:
 
 - `voided` if it had been `submitted`, `ineligible`, `eligible`, or `payable`
 - `awaiting_clawback` if it had been `paid`
+
 ## Evidence types
 
 To see which evidence types are valid for each declaration type, check the [Swagger documentation](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3/) and refer to the relevant schema.
