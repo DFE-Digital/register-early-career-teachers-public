@@ -1,4 +1,6 @@
-$colours: ("pink", "orange", "red", "purple", "yellow");
+@use "govuk-frontend/dist/govuk" as *;
+
+$colours: ("magenta", "orange", "red", "purple", "yellow");
 
 @each $colour in $colours {
   .govuk-header {

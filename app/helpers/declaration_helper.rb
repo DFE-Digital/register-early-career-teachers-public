@@ -1,11 +1,11 @@
 module DeclarationHelper
   DECLARATION_STATE_TAG_COLOURS = {
     "no_payment" => "light-blue",
-    "eligible" => "turquoise",
+    "eligible" => "teal",
     "payable" => "orange",
     "paid" => "green",
     "voided" => "red",
-    "awaiting_clawback" => "pink",
+    "awaiting_clawback" => "magenta",
     "clawed_back" => "purple",
   }.freeze
 

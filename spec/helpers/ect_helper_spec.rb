@@ -42,7 +42,7 @@ RSpec.describe ECTHelper, type: :helper do
       context "when the status is Passed" do
         let(:trs_induction_status) { "Passed" }
 
-        it "returns a green 'Registered' tag" do
+        it "returns a blue 'Completed' tag" do
           expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--blue", text: "Completed induction")
         end
       end
@@ -50,15 +50,15 @@ RSpec.describe ECTHelper, type: :helper do
       context "when the status is Failed" do
         let(:trs_induction_status) { "Failed" }
 
-        it "returns a green 'Registered' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--pink", text: "Failed induction")
+        it "returns a magenta 'Failed' tag" do
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--magenta", text: "Failed induction")
         end
       end
 
       context "when the status is Exempt" do
         let(:trs_induction_status) { "Exempt" }
 
-        it "returns a green 'Registered' tag" do
+        it "returns a grey 'Exempt' tag" do
           expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--grey", text: "Exempt")
         end
       end

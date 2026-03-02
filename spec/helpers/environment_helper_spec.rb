@@ -15,10 +15,10 @@ RSpec.describe EnvironmentHelper, type: :helper do
       expect(environment_specific_header_colour_class).to be_nil
     end
 
-    context "when ENVIRONMENT_COLOUR is set to 'pink'" do
-      it "returns a pink modifier class" do
-        stub_const("ENVIRONMENT_COLOUR", "pink")
-        expect(environment_specific_header_colour_class).to eql("app-header--pink")
+    context "when ENVIRONMENT_COLOUR is set to 'magenta'" do
+      it "returns a magenta modifier class" do
+        stub_const("ENVIRONMENT_COLOUR", "magenta")
+        expect(environment_specific_header_colour_class).to eql("app-header--magenta")
       end
     end
   end
