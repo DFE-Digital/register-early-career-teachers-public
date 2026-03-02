@@ -1,5 +1,5 @@
 @use "../../../node_modules/govuk-frontend/dist/govuk" as * with(
-  $govuk-font-family: 'Sans-serif',
+  $govuk-font-family: Sans-serif,
   $govuk-global-styles: true
 );
 
