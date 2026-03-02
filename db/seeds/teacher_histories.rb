@@ -1338,15 +1338,10 @@ FactoryBot.create(:declaration,
                   clawback_statement: teach_first_ittecf_statement2,
                   payment_statement: teach_first_ittecf_statement1).tap { |decl| describe_declaration(decl) }
 
-
-
-
-
-
 print_seed_info("George Cole (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
 george_cole_started_date = Date.new(2025, 6, 15)
-george_cole_date2 = Date.new(2025, 9, 1)
+Date.new(2025, 9, 1)
 george_cole_at_mallory_towers = FactoryBot.create(:mentor_at_school_period,
                                                   teacher: george_cole,
                                                   school: mallory_towers,
@@ -1355,13 +1350,13 @@ george_cole_at_mallory_towers = FactoryBot.create(:mentor_at_school_period,
                                                   finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
 
 george_cole_training_period = FactoryBot.create(:training_period,
-                                                   :for_mentor,
-                                                   :with_schedule,
-                                                   mentor_at_school_period: george_cole_at_mallory_towers,
-                                                   started_on: george_cole_started_date,
-                                                   finished_on: nil,
-                                                   school_partnership: teach_first_grain_mallory_towers_2025,
-                                                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+                                                :for_mentor,
+                                                :with_schedule,
+                                                mentor_at_school_period: george_cole_at_mallory_towers,
+                                                started_on: george_cole_started_date,
+                                                finished_on: nil,
+                                                school_partnership: teach_first_grain_mallory_towers_2025,
+                                                training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 george_cole_lp_author = { author_name: george_cole_training_period.lead_provider.name, author_type: "lead_provider_api" }
 
@@ -1382,8 +1377,6 @@ FactoryBot.create(:declaration,
   describe_declaration(decl)
 end
 
-
-
 print_seed_info("Frankie Howard (ECT)", indent: 2, colour: ECT_COLOUR)
 
 frankie_howard_started_date = Date.new(2024, 7, 1)
@@ -1394,16 +1387,14 @@ frankie_howard_at_abbey_grove = FactoryBot.create(:ect_at_school_period,
                                                   started_on: frankie_howard_started_date,
                                                   finished_on: nil).tap { |sp| describe_ect_at_school_period(sp) }
 
-
 frankie_howard_training_period = FactoryBot.create(:training_period,
-                                                  :for_ect,
-                                                  :with_schedule,
-                                                  ect_at_school_period: frankie_howard_at_abbey_grove,
-                                                  started_on: frankie_howard_started_date,
-                                                  finished_on: nil,
-                                                  school_partnership: teach_first_grain_abbey_grove_2024,
-                                                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
-
+                                                   :for_ect,
+                                                   :with_schedule,
+                                                   ect_at_school_period: frankie_howard_at_abbey_grove,
+                                                   started_on: frankie_howard_started_date,
+                                                   finished_on: nil,
+                                                   school_partnership: teach_first_grain_abbey_grove_2024,
+                                                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 frankie_howard_lp_author = { author_name: frankie_howard_training_period.lead_provider.name, author_type: "lead_provider_api" }
 
@@ -1534,42 +1525,40 @@ print_seed_info("Barbara Winsor (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
 barbara_winsor_mentor_started_date = Date.new(2024, 9, 1)
 barbara_winsor_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
-                  teacher: barbara_winsor,
-                  school: abbey_grove_school,
-                  email: "barbara.winsor@st-trinians.org.uk",
-                  started_on: Date.new(2023, 9, 1),
-                  finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+                                                            teacher: barbara_winsor,
+                                                            school: abbey_grove_school,
+                                                            email: "barbara.winsor@st-trinians.org.uk",
+                                                            started_on: Date.new(2023, 9, 1),
+                                                            finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
 
 barbara_winsor_mentor_training_period = FactoryBot.create(:training_period,
-                :for_mentor,
-                :with_schedule,
-                mentor_at_school_period: barbara_winsor_mentoring_at_abbey_grove,
-                started_on: barbara_winsor_mentor_started_date,
-                finished_on: nil,
-                school_partnership: teach_first_grain_abbey_grove_2024,
-                training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+                                                          :for_mentor,
+                                                          :with_schedule,
+                                                          mentor_at_school_period: barbara_winsor_mentoring_at_abbey_grove,
+                                                          started_on: barbara_winsor_mentor_started_date,
+                                                          finished_on: nil,
+                                                          school_partnership: teach_first_grain_abbey_grove_2024,
+                                                          training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 barbara_winsor_mentor_lp_author = { author_name: barbara_winsor_mentor_training_period.lead_provider.name, author_type: "lead_provider_api" }
 
-
 FactoryBot.create(:declaration,
-  :eligible,
-  declaration_type: :started,
-  declaration_date: barbara_winsor_mentor_started_date,
-  evidence_type: "training-event-attended",
-  payment_statement: teach_first_ecf_statement2,
-  sparsity_uplift: true,
-  training_period: barbara_winsor_mentor_training_period).tap do |decl|
-   FactoryBot.create(:event,
-    event_type: "teacher_declaration_created",
-    declaration: decl,
-    teacher: barbara_winsor,
-    heading: "Declaration submitted",
-    happened_at: barbara_winsor_mentor_started_date.at_midday,
-    **barbara_winsor_mentor_lp_author)
-    describe_declaration(decl)
- end
-
+                  :eligible,
+                  declaration_type: :started,
+                  declaration_date: barbara_winsor_mentor_started_date,
+                  evidence_type: "training-event-attended",
+                  payment_statement: teach_first_ecf_statement2,
+                  sparsity_uplift: true,
+                  training_period: barbara_winsor_mentor_training_period).tap do |decl|
+  FactoryBot.create(:event,
+                    event_type: "teacher_declaration_created",
+                    declaration: decl,
+                    teacher: barbara_winsor,
+                    heading: "Declaration submitted",
+                    happened_at: barbara_winsor_mentor_started_date.at_midday,
+                    **barbara_winsor_mentor_lp_author)
+  describe_declaration(decl)
+end
 
 print_seed_info("Adding mentorships:")
 
