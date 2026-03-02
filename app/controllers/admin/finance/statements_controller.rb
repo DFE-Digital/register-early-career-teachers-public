@@ -2,6 +2,8 @@ module Admin::Finance
   class StatementsController < Admin::Finance::BaseController
     layout "full"
 
+    before_action :set_statement, only: %i[show declarations]
+
     def index
       @pagy, statements = pagy(
         statements_query.statements.eager_load(active_lead_provider: %i[
@@ -14,9 +16,12 @@ module Admin::Finance
     end
 
     def show
-      statement = Statement.eager_load(active_lead_provider: :lead_provider).find(params[:id])
+    end
 
-      @statement = Admin::StatementPresenter.new(statement)
+    def declarations
+      export = Admin::Finance::Statements::DeclarationsCSV.new(statement: @statement)
+
+      send_data export.to_csv, filename: export.filename, type: export.type
     end
 
     def choose
@@ -29,6 +34,11 @@ module Admin::Finance
 
   private
 
+    def set_statement
+      @statement = Statement.eager_load(active_lead_provider: :lead_provider).find(params[:id])
+      @statement_presenter = Admin::StatementPresenter.new(@statement)
+    end
+
     def statements_query
       opts = {
         lead_provider_id: lead_provider&.id,
@@ -37,7 +47,7 @@ module Admin::Finance
         fee_type:,
         order: :statement_date,
       }
-      Statements::Search.new(**opts.compact)
+      ::Statements::Search.new(**opts.compact)
     end
 
     def lead_provider
