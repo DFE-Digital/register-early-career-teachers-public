@@ -16,7 +16,7 @@ module RegisterEarlyCareerTeachers
   class Application < Rails::Application
     config.load_defaults 8.0
     config.autoload_lib(ignore: %w[assets tasks])
-    config.assets.paths << Rails.root.join("node_modules/govuk-frontend/dist/govuk/assets")
+    config.assets.paths << Rails.root.join("node_modules/govuk-frontend/dist/govuk")
     config.exceptions_app = routes
     config.active_record.belongs_to_required_by_default = false
     config.generators.system_tests = nil
