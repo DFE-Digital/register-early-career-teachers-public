@@ -42,8 +42,8 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
 
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
-      # (2 * 5 * 100.0 * 0.5) - (2 * 2 * 100.0 * 0.5) = 500.0 - 200.0
-      expect(outputs.total_net_amount).to eq(300.0)
+      # 2x declaration types (started, completed), 5x billable - 2x refundable, 100.0 fee per declaration and fee proportion of 0.5
+      expect(outputs.total_net_amount).to eq((2 * 5 * 100.0 * 0.5) - (2 * 2 * 100.0 * 0.5))
     end
   end
 
