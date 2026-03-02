@@ -21,7 +21,7 @@ The possible declaration types are:
 - `completed` – full programme finished
 - `extended-1` / `extended-2` / `extended-3` – when an ECT's training continues beyond the standard schedule (not to be used for mentors)
 
-Declaration types should be submitted in order for each participant. For example, submit a `started` declaration before a `retained-1` declaration. This enables DfE to pay lead providers promptly.
+Declaration types should ideally be submitted in order for each participant. For example, submit a `started` declaration before a `retained-1` declaration. This enables DfE to pay lead providers promptly.
 
 For participants in the 2025 cohort or later, declaration dates must also be submitted in sequence.
 
