@@ -152,6 +152,7 @@ shared:
   :lead_providers:
     - id
     - ecf_id
+    - ecf_cpd_lead_provider_id
     - name
     - vat_registered
     - created_at
