@@ -266,7 +266,20 @@ FactoryBot.create(:contract_banded_fee_structure, :with_bands)
 teach_first_contract_2024 = Contract.where(active_lead_provider: teach_first_grain_2024, contract_type: :ecf).first
 teach_first_contract_2025 = Contract.where(active_lead_provider: teach_first_grain_2025, contract_type: :ittecf_ectp).first
 
-teach_first_ittecf_statement = FactoryBot.create(
+teach_first_ittecf_statement1 = FactoryBot.create(
+  :statement,
+  contract: teach_first_contract_2025,
+  active_lead_provider: teach_first_grain_2025,
+  month: 8,
+  year: 2025,
+  deadline_date: Date.new(2025, 8, 1),
+  payment_date: Date.new(2025, 8, 25),
+  fee_type: :output,
+  marked_as_paid_at: Date.new(2025, 9, 26),
+  status: :paid
+)
+
+teach_first_ittecf_statement2 = FactoryBot.create(
   :statement,
   contract: teach_first_contract_2025,
   active_lead_provider: teach_first_grain_2025,
@@ -279,7 +292,20 @@ teach_first_ittecf_statement = FactoryBot.create(
   status: :paid
 )
 
-teach_first_ecf_statement = FactoryBot.create(
+teach_first_ecf_statement1 = FactoryBot.create(
+  :statement,
+  contract: teach_first_contract_2024,
+  active_lead_provider: teach_first_grain_2024,
+  month: 8,
+  year: 2024,
+  deadline_date: Date.new(2024, 8, 1),
+  payment_date: Date.new(2024, 8, 25),
+  fee_type: :output,
+  marked_as_paid_at: Date.new(2024, 9, 26),
+  status: :paid
+)
+
+teach_first_ecf_statement2 = FactoryBot.create(
   :statement,
   contract: teach_first_contract_2024,
   active_lead_provider: teach_first_grain_2024,
@@ -292,9 +318,9 @@ teach_first_ecf_statement = FactoryBot.create(
   status: :paid
 )
 
-FactoryBot.create :statement_adjustment, statement: teach_first_ecf_statement, payment_type: "Big amount", amount: 999.99
-FactoryBot.create :statement_adjustment, statement: teach_first_ittecf_statement, payment_type: "Negative amount", amount: -500.0
-FactoryBot.create :statement_adjustment, statement: teach_first_ittecf_statement, payment_type: "Another amount", amount: 300.0
+FactoryBot.create :statement_adjustment, statement: teach_first_ecf_statement2, payment_type: "Big amount", amount: 999.99
+FactoryBot.create :statement_adjustment, statement: teach_first_ittecf_statement2, payment_type: "Negative amount", amount: -500.0
+FactoryBot.create :statement_adjustment, statement: teach_first_ittecf_statement2, payment_type: "Another amount", amount: 300.0
 
 # NB: define teachers in ./db/seeds/teachers.rb
 alan_rickman = Teacher.find_by!(trn: "0000006")
@@ -1168,7 +1194,7 @@ FactoryBot.create(:declaration,
                   declaration_date: terry_thomas_started_date,
                   evidence_type: "training-event-attended",
                   training_period: terry_thomas_training_period,
-                  payment_statement: teach_first_ittecf_statement).tap do |decl|
+                  payment_statement: teach_first_ittecf_statement2).tap do |decl|
   FactoryBot.create(:event,
                     event_type: "teacher_declaration_created",
                     declaration: decl,
@@ -1217,7 +1243,7 @@ FactoryBot.create(:declaration,
                   declaration_date: sid_james_started_date,
                   evidence_type: "training-event-attended",
                   training_period: sid_james_training_period,
-                  payment_statement: teach_first_ittecf_statement).tap do |decl|
+                  payment_statement: teach_first_ittecf_statement2).tap do |decl|
   FactoryBot.create(:event,
                     event_type: "teacher_declaration_created",
                     declaration: decl,
@@ -1232,7 +1258,7 @@ FactoryBot.create(:declaration,
                   :clawed_back,
                   declaration_type: "retained-2",
                   declaration_date: sid_james_date2,
-                  clawback_statement: teach_first_ittecf_statement,
+                  clawback_statement: teach_first_ittecf_statement2,
                   training_period: sid_james_training_period2).tap { |decl| describe_declaration(decl) }
 
 print_seed_info("Joyce Grenfell (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -1272,7 +1298,7 @@ FactoryBot.create(:declaration,
                   declaration_date: joyce_grenfell_started_date,
                   evidence_type: "training-event-attended",
                   training_period: joyce_grenfell_training_period,
-                  payment_statement: teach_first_ittecf_statement).tap do |decl|
+                  payment_statement: teach_first_ittecf_statement2).tap do |decl|
   FactoryBot.create(:event,
                     event_type: "teacher_declaration_created",
                     declaration: decl,
@@ -1287,7 +1313,7 @@ FactoryBot.create(:declaration,
                   :clawed_back,
                   declaration_type: :completed,
                   declaration_date: joyce_grenfell_date2,
-                  clawback_statement: teach_first_ittecf_statement,
+                  clawback_statement: teach_first_ittecf_statement2,
                   training_period: joyce_grenfell_training_period2).tap { |decl| describe_declaration(decl) }
 
 print_seed_info("George Cole (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -1395,7 +1421,7 @@ FactoryBot.create(:declaration,
                   declaration_date: jane_smith_started_date,
                   evidence_type: "training-event-attended",
                   training_period: jane_smith_training_period,
-                  payment_statement: teach_first_ecf_statement).tap do |decl|
+                  payment_statement: teach_first_ecf_statement1).tap do |decl|
   FactoryBot.create(:event,
                     event_type: "teacher_declaration_created",
                     declaration: decl,
@@ -1407,10 +1433,11 @@ FactoryBot.create(:declaration,
 end
 
 FactoryBot.create(:declaration,
-                  :clawed_back,
-                  declaration_type: "retained-1",
+                  :awaiting_clawback,
+                  declaration_type: :completed,
                   declaration_date: Date.new(2025, 1, 15),
-                  clawback_statement: teach_first_ecf_statement,
+                  payment_statement: teach_first_ecf_statement2,
+                  clawback_statement: teach_first_ecf_statement1,
                   training_period: jane_smith_training_period2).tap { |decl| describe_declaration(decl) }
 
 print_seed_info("Adding mentorships:")
