@@ -115,6 +115,13 @@ describe "Two mentor induction records (with the second being a withdrawal)" do
         expect(withdrawal_training_period.withdrawal_reason).to eql(ecf1_participant_profile_state.reason.underscore)
       end
     end
+
+    it "closes the withdrawn training_period" do
+      withdrawal_training_period = teacher.mentor_at_school_periods[1].training_periods[0]
+      expected_closing_date = [withdrawal_training_period.started_on + 1.day, withdrawal_training_period.withdrawn_at.to_date].max
+
+      expect(withdrawal_training_period.finished_on).to eq(expected_closing_date)
+    end
   end
 
   context "when in all_induction_records mode (premium)" do
