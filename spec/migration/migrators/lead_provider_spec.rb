@@ -24,6 +24,7 @@ RSpec.describe Migrators::LeadProvider do
 
         ::LeadProvider.find_each do |lead_provider|
           source_record = Migration::LeadProvider.find(lead_provider.ecf_id)
+          expect(lead_provider.ecf_cpd_lead_provider_id).to eq source_record.cpd_lead_provider_id
           expect(lead_provider.name).to eq source_record.name
           expect(lead_provider.created_at).to eq source_record.created_at
           expect(lead_provider.updated_at).to eq source_record.updated_at
