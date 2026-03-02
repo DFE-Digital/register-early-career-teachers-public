@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_25_161614) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_02_151258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -498,6 +498,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_25_161614) do
     t.datetime "updated_at", null: false
     t.uuid "ecf_id"
     t.boolean "vat_registered", default: true, null: false
+    t.uuid "ecf_cpd_lead_provider_id"
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
   end
