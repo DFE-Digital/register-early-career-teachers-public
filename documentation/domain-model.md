@@ -74,6 +74,7 @@ erDiagram
     datetime created_at
     datetime updated_at
     string model
+    string migration_mode
   }
   TeacherMigrationFailure }o--|| Teacher : belongs_to
   TeacherIdChange {
@@ -431,6 +432,7 @@ erDiagram
     text failure_message
     datetime created_at
     datetime updated_at
+    string migration_mode
   }
   DataMigrationFailedCombination {
     integer id
@@ -456,6 +458,7 @@ erDiagram
     text failure_message
     datetime created_at
     datetime updated_at
+    string migration_mode
   }
   ContractPeriod {
     integer year
