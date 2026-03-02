@@ -19,7 +19,7 @@ module PaymentCalculator
       (previous_billable_count + billable_count) - (previous_refundable_count + refundable_count)
     end
 
-    def current_net_count
+    def total_net_count
       billable_count - refundable_count
     end
 

@@ -43,25 +43,18 @@ RSpec.describe PaymentCalculator::Banded::BandAllocation do
     end
   end
 
-  describe "#current_net_count" do
+  describe "#total_net_count" do
     it "returns zero when all counts are zero" do
-      expect(allocation.current_net_count).to eq(0)
+      expect(allocation.total_net_count).to eq(0)
     end
 
-    it "returns current billable minus refundable only" do
+    it "returns current billable minus current refundable" do
       allocation.add_previous_billable(40)
       allocation.add_billable(20)
       allocation.remove_previous_refundable(5)
       allocation.remove_refundable(10)
 
-      expect(allocation.current_net_count).to eq(10)
-    end
-
-    it "excludes previous counts" do
-      allocation.add_previous_billable(40)
-      allocation.remove_previous_refundable(5)
-
-      expect(allocation.current_net_count).to eq(0)
+      expect(allocation.total_net_count).to eq(10)
     end
   end
 
