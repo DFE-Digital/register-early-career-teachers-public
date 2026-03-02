@@ -119,7 +119,7 @@ RSpec.describe "Moving School - backdated start spec", :enable_schools_interface
 
   def and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_of_which_the_earliest_is_backdated
     @school_one_start_date = Date.new(2025, 4, 1)
-    @school_two_start_date = Date.new(2025, 6, 2)
+    @school_two_start_date = Date.new(2025, 6, 3)
   end
 
   def and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_of_which_are_both_backdated
