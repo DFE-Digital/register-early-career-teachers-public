@@ -16,12 +16,14 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:feb_statement_fee_type) { :output_fee }
 
   let!(:jan_statement) do
     deadline_date = Date.new(contract_period.year, 1, 1).prev_day
     payment_date = Date.new(contract_period.year, 1, 31)
     FactoryBot.create(
       :statement,
+      :output_fee,
       contract:,
       contract_period:,
       active_lead_provider:,
@@ -35,6 +37,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   let!(:feb_statement) do
     FactoryBot.create(
       :statement,
+      feb_statement_fee_type,
       contract:,
       contract_period:,
       active_lead_provider:,
@@ -139,6 +142,25 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     render
 
     expect(rendered).to have_css("details", text: "Provider targets (per academic year)")
+  end
+
+  it "shows the CSV download link for output fee statements" do
+    render
+
+    expect(rendered).to have_link(
+      "Download declarations (CSV)",
+      href: declarations_export_admin_finance_statement_path(feb_statement, format: :csv)
+    )
+  end
+
+  context "when the statement is for service fees" do
+    let(:feb_statement_fee_type) { :service_fee }
+
+    it "does not show the CSV download link" do
+      render
+
+      expect(rendered).not_to have_link("Download declarations (CSV)")
+    end
   end
 
   context "when the statement is for an ECF contract" do
