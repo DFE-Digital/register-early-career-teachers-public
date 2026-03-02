@@ -359,6 +359,7 @@ stephen_fry = Teacher.find_by!(trn: "0000013")
 stephen_griddle = Teacher.find_by!(trn: "0000001")
 terry_thomas = Teacher.find_by!(trn: "0000026")
 barbara_winsor = Teacher.find_by!(trn: "0000039")
+kenneth_williams = Teacher.find_by!(trn: "0000040")
 
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
@@ -1436,22 +1437,42 @@ FactoryBot.create(:training_period,
 
 print_seed_info("Hattie Jacques (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
 
+hattie_jacques_started_date = Date.new(2025, 9, 5)
 hattie_jacques_ect_at_abbey_grove_school = FactoryBot.create(:ect_at_school_period,
                                                              teacher: hattie_jacques,
                                                              school: abbey_grove_school,
                                                              email: "hattie.jacques@st-trinians.org.uk",
-                                                             started_on: Date.new(2025, 9, 5),
+                                                             started_on: hattie_jacques_started_date,
                                                              finished_on: nil,
                                                              school_reported_appropriate_body: south_yorkshire_studio_hub).tap { |sp| describe_ect_at_school_period(sp) }
 
-FactoryBot.create(:training_period,
-                  :for_ect,
-                  :with_schedule,
-                  ect_at_school_period: hattie_jacques_ect_at_abbey_grove_school,
-                  started_on: Date.new(2025, 9, 5),
-                  finished_on: nil,
-                  school_partnership: ambition_artisan_abbey_grove_2025,
-                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+hattie_jacques_training_period = FactoryBot.create(:training_period,
+                                                   :for_ect,
+                                                   :with_schedule,
+                                                   ect_at_school_period: hattie_jacques_ect_at_abbey_grove_school,
+                                                   started_on: hattie_jacques_started_date,
+                                                   finished_on: nil,
+                                                   school_partnership: teach_first_grain_abbey_grove_2025,
+                                                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+hattie_jacques_lp_author = { author_name: hattie_jacques_training_period.lead_provider.name, author_type: "lead_provider_api" }
+
+FactoryBot.create(:declaration,
+                  :paid,
+                  declaration_type: :started,
+                  declaration_date: hattie_jacques_started_date,
+                  evidence_type: "training-event-attended",
+                  training_period: hattie_jacques_training_period,
+                  payment_statement: teach_first_ittecf_statement2).tap do |decl|
+  FactoryBot.create(:event,
+                    event_type: "teacher_declaration_created",
+                    declaration: decl,
+                    teacher: hattie_jacques,
+                    heading: "Declaration submitted",
+                    happened_at: hattie_jacques_started_date.at_midday,
+                    **hattie_jacques_lp_author)
+  describe_declaration(decl)
+end
 
 print_seed_info("Jane Smith (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
 
@@ -1557,6 +1578,45 @@ FactoryBot.create(:declaration,
                     heading: "Declaration submitted",
                     happened_at: barbara_winsor_mentor_started_date.at_midday,
                     **barbara_winsor_mentor_lp_author)
+  describe_declaration(decl)
+end
+
+print_seed_info("Kenneth Williams (mentor)", indent: 2, colour: MENTOR_COLOUR)
+
+kenneth_williams_mentor_started_date = Date.new(2025, 9, 1)
+kenneth_williams_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
+                                                              teacher: kenneth_williams,
+                                                              school: abbey_grove_school,
+                                                              email: "barbara.winsor@st-trinians.org.uk",
+                                                              started_on: Date.new(2024, 9, 1),
+                                                              finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+
+kenneth_williams_mentor_training_period = FactoryBot.create(:training_period,
+                                                            :for_mentor,
+                                                            :with_schedule,
+                                                            mentor_at_school_period: kenneth_williams_mentoring_at_abbey_grove,
+                                                            started_on: kenneth_williams_mentor_started_date,
+                                                            finished_on: nil,
+                                                            school_partnership: teach_first_grain_abbey_grove_2025,
+                                                            training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+kenneth_williams_mentor_lp_author = { author_name: kenneth_williams_mentor_training_period.lead_provider.name, author_type: "lead_provider_api" }
+
+FactoryBot.create(:declaration,
+                  :eligible,
+                  declaration_type: :started,
+                  declaration_date: kenneth_williams_mentor_started_date,
+                  evidence_type: "training-event-attended",
+                  payment_statement: teach_first_ittecf_statement2,
+                  pupil_premium_uplift: true,
+                  training_period: kenneth_williams_mentor_training_period).tap do |decl|
+  FactoryBot.create(:event,
+                    event_type: "teacher_declaration_created",
+                    declaration: decl,
+                    teacher: kenneth_williams,
+                    heading: "Declaration submitted",
+                    happened_at: kenneth_williams_mentor_started_date.at_midday,
+                    **kenneth_williams_mentor_lp_author)
   describe_declaration(decl)
 end
 
