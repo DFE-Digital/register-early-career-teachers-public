@@ -25,17 +25,13 @@ module PaymentCalculator
       @refundable_count ||= declarations_of_matching_type.refundable.count
     end
 
-    def total_billable_amount
-      billable_count * type_adjusted_fee_per_declaration
+    def type_adjusted_fee_per_declaration
+      fee_proportion * fee_per_declaration
     end
 
-    def total_refundable_amount
-      refundable_count * type_adjusted_fee_per_declaration
-    end
-
-    def total_net_amount
-      total_billable_amount - total_refundable_amount
-    end
+    def total_billable_amount = billable_count * type_adjusted_fee_per_declaration
+    def total_refundable_amount = refundable_count * type_adjusted_fee_per_declaration
+    def total_net_amount = total_billable_amount - total_refundable_amount
 
   private
 
@@ -43,11 +39,11 @@ module PaymentCalculator
       declarations.where(declaration_type:)
     end
 
-    def type_adjusted_fee_per_declaration
-      output_ratio = fee_proportions.fetch(declaration_type.to_sym) do
-        raise DeclarationTypeNotSupportedError, "No fee proportion defined for declaration type: #{declaration_type}"
+    def fee_proportion
+      fee_proportions.fetch(declaration_type.to_sym) do
+        raise DeclarationTypeNotSupportedError,
+              "No fee proportion defined for declaration type: #{declaration_type}"
       end
-      output_ratio * fee_per_declaration
     end
   end
 end

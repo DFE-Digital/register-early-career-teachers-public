@@ -15,8 +15,8 @@ RSpec.describe PaymentCalculator::Banded::DeclarationTypeOutput do
 
   it { is_expected.to delegate_method(:declaration_type).to(:band_allocation) }
 
-  describe "#output_fee_per_declaration" do
-    subject(:output_fee_per_declaration) { instance.output_fee_per_declaration }
+  describe "#type_adjusted_fee_per_declaration" do
+    subject(:type_adjusted_fee_per_declaration) { instance.type_adjusted_fee_per_declaration }
 
     it { is_expected.to eq(15) }
 
@@ -24,7 +24,7 @@ RSpec.describe PaymentCalculator::Banded::DeclarationTypeOutput do
       let(:declaration_type) { "unsupported" }
 
       it "raises an error" do
-        expect { output_fee_per_declaration }
+        expect { type_adjusted_fee_per_declaration }
           .to raise_error(PaymentCalculator::Banded::DeclarationTypeOutput::DeclarationTypeNotSupportedError)
           .with_message("No fee proportion defined for declaration type: unsupported")
       end
