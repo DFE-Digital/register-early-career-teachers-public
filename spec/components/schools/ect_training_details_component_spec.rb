@@ -142,6 +142,30 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       expect(page).not_to have_text("Lead provider")
       expect(page).not_to have_text("Delivery partner")
     end
+
+    context "when the ECT is leaving the school" do
+      before do
+        allow(component).to receive(:leaving_school?).and_return(true)
+        render_inline(component)
+      end
+
+      it "does not show the withdrawn guidance links" do
+        expect(page).not_to have_link("select a lead provider")
+        expect(page).not_to have_link("changing their programme type to school-led")
+      end
+    end
+
+    context "when the ECT is exempt" do
+      before do
+        allow(component).to receive(:exempt?).and_return(true)
+        render_inline(component)
+      end
+
+      it "does not show the withdrawn guidance links" do
+        expect(page).not_to have_link("select a lead provider")
+        expect(page).not_to have_link("changing their programme type to school-led")
+      end
+    end
   end
 
   context "when training is deferred" do
