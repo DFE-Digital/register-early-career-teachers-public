@@ -11,6 +11,7 @@ module Migration
       :cohort_year,
       :lead_provider_name,
       :induction_record_id,
+      :migration_mode,
       keyword_init: true
     )
 
@@ -37,7 +38,8 @@ module Migration
       teacher_combination.ecf2_ect_combinations.map do |ecf2_ect_combination|
         row(combination: ecf2_ect_combination,
             participant_profile_type: "ect",
-            ecf1_participant_profile_id: teacher_combination.ecf1_ect_profile_id)
+            ecf1_participant_profile_id: teacher_combination.ecf1_ect_profile_id,
+            migration_mode: teacher_combination.migration_mode)
       end
     end
 
@@ -45,7 +47,8 @@ module Migration
       teacher_combination.ecf2_mentor_combinations.map do |ecf2_mentor_combination|
         row(combination: ecf2_mentor_combination,
             participant_profile_type: "mentor",
-            ecf1_participant_profile_id: teacher_combination.ecf1_mentor_profile_id)
+            ecf1_participant_profile_id: teacher_combination.ecf1_mentor_profile_id,
+            migration_mode: teacher_combination.migration_mode)
       end
     end
 
@@ -59,17 +62,19 @@ module Migration
         cohort_year
         lead_provider_name
         induction_record_id
+        migration_mode
       ].freeze
     end
 
-    def row(combination:, ecf1_participant_profile_id:, participant_profile_type:)
+    def row(combination:, ecf1_participant_profile_id:, participant_profile_type:, migration_mode:)
       ECF1CombinationRow.new(
         participant_profile_type:,
         ecf1_participant_profile_id:,
         school_urn: combination[39..44],
         cohort_year: combination[47..50],
         lead_provider_name: combination[53..-2],
-        induction_record_id: combination[1..36]
+        induction_record_id: combination[1..36],
+        migration_mode:
       )
     end
   end

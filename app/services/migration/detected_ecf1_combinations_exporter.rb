@@ -12,6 +12,7 @@ module Migration
       :lead_provider_name,
       :induction_record_id,
       :migrated,
+      :migration_mode,
       keyword_init: true
     )
 
@@ -20,7 +21,7 @@ module Migration
     end
 
     def generate_and_cache_csv
-      Rails.cache.fetch(CACHE_KEY, expires_in: 1.minute) do
+      Rails.cache.fetch(CACHE_KEY, expires_in: 6.hours) do
         generate_csv
       end
     end
@@ -41,7 +42,8 @@ module Migration
         row(combination: ecf1_ect_combination,
             participant_profile_type: "ect",
             participant_profile_id: teacher_combination.ecf1_ect_profile_id,
-            migrated: ecf2_ect_combination.present?)
+            migrated: ecf2_ect_combination.present?,
+            migration_mode: teacher_combination.migration_mode)
       end
     end
 
@@ -52,7 +54,8 @@ module Migration
         row(combination: ecf1_mentor_combination,
             participant_profile_type: "mentor",
             participant_profile_id: teacher_combination.ecf1_mentor_profile_id,
-            migrated: ecf2_mentor_combination.present?)
+            migrated: ecf2_mentor_combination.present?,
+            migration_mode: teacher_combination.migration_mode)
       end
     end
 
@@ -67,10 +70,11 @@ module Migration
         lead_provider_name
         induction_record_id
         migrated
+        migration_mode
       ].freeze
     end
 
-    def row(combination:, participant_profile_id:, participant_profile_type:, migrated:)
+    def row(combination:, participant_profile_id:, participant_profile_type:, migrated:, migration_mode:)
       ECF1CombinationRow.new(
         participant_profile_type:,
         participant_profile_id:,
@@ -78,7 +82,8 @@ module Migration
         cohort_year: combination[47..50],
         lead_provider_name: combination[53..-2],
         induction_record_id: combination[1..36],
-        migrated:
+        migrated:,
+        migration_mode:
       )
     end
   end
