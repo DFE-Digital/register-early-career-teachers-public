@@ -47,5 +47,23 @@ FactoryBot.define do
     trait :service_fee do
       fee_type { "service" }
     end
+
+    trait :paid_in_month do
+      transient do
+        paid_in_month { 9 }
+      end
+    
+      paid
+    
+      month { paid_in_month }
+    
+      deadline_date { Date.new(year, month, 1) }
+      payment_date  { Date.new(year, month, 25) }
+    
+      marked_as_paid_at do
+        next_month = Date.new(year, month, 1).next_month
+        Date.new(next_month.year, next_month.month, 26)
+      end
+    end
   end
 end
