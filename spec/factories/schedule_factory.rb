@@ -25,7 +25,12 @@ FactoryBot.define do
         ]
 
         milestone_data.each do |attrs|
-          build(:milestone, attrs.merge(schedule: schedule))
+          declaration_type = attrs[:declaration_type]
+          milestone = create(:milestone, schedule:, declaration_type:)
+          milestone.update!(
+            start_date: attrs[:start_date],
+            milestone_date: attrs[:milestone_date]
+          )
         end
       end
     end
