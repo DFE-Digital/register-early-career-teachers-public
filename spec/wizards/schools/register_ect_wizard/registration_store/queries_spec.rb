@@ -64,7 +64,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
 
     context "when the start_date is present" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:start_date) { (contract_period.finished_on).to_s }
 
       it "returns the current contract period" do
         expect(queries.registration_contract_period).to eq(contract_period)
