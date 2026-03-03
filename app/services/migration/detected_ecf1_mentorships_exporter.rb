@@ -12,6 +12,7 @@ module Migration
       :ecf_start_induction_record_id,
       :ecf_end_induction_record_id,
       :migrated,
+      :migration_mode,
       keyword_init: true
     )
 
@@ -39,7 +40,8 @@ module Migration
 
         row(mentorship: ecf1_mentorship,
             ect_participant_profile_id: teacher_combination.ecf1_ect_profile_id,
-            migrated: ecf2_mentorship.present?)
+            migrated: ecf2_mentorship.present?,
+            migration_mode: teacher_combination.migration_mode)
       end
     end
 
@@ -54,10 +56,11 @@ module Migration
         ecf_start_induction_record_id
         ecf_end_induction_record_id
         migrated
+        migration_mode
       ].freeze
     end
 
-    def row(mentorship:, ect_participant_profile_id:, migrated:)
+    def row(mentorship:, ect_participant_profile_id:, migrated:, migration_mode:)
       ECF1MentorshipRow.new(
         ect_participant_profile_id:,
         mentor_participant_profile_id: mentorship[77..112],
@@ -65,7 +68,8 @@ module Migration
         finished_on: mentorship[127..-2].presence,
         ecf_start_induction_record_id: mentorship[1..36],
         ecf_end_induction_record_id: mentorship[39..74],
-        migrated:
+        migrated:,
+        migration_mode:
       )
     end
   end
