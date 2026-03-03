@@ -19,6 +19,10 @@ module PaymentCalculator
       (previous_billable_count + billable_count) - (previous_refundable_count + refundable_count)
     end
 
+    def total_net_count
+      billable_count - refundable_count
+    end
+
     def available_capacity
       [capacity - net_billable_count, 0].max
     end

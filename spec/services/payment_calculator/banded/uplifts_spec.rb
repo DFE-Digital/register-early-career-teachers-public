@@ -1,6 +1,6 @@
 RSpec.describe PaymentCalculator::Banded::Uplifts do
   let(:instance) do
-    described_class.new(declarations:, uplift_fee_per_declaration:)
+    described_class.new(billable_declarations:, refundable_declarations:, uplift_fee_per_declaration:)
   end
 
   # Billable declarations
@@ -42,13 +42,15 @@ RSpec.describe PaymentCalculator::Banded::Uplifts do
     FactoryBot.create(:declaration, :no_payment, :started, sparsity_uplift: true)
   end
 
-  let(:declarations) { Declaration.all }
+  let(:billable_declarations) { Declaration.billable }
+  let(:refundable_declarations) { Declaration.refundable }
   let(:uplift_fee_per_declaration) { 125 }
 
   describe "#billable_count" do
     subject(:billable_count) { instance.billable_count }
 
-    it { is_expected.to eq(3) }
+    # 3 explicitly billable + 1 awaiting_clawback (payment_status: :paid is billable)
+    it { is_expected.to eq(4) }
   end
 
   describe "#refundable_count" do
@@ -60,13 +62,13 @@ RSpec.describe PaymentCalculator::Banded::Uplifts do
   describe "#net_count" do
     subject(:net_count) { instance.net_count }
 
-    it { is_expected.to eq(2) }
+    it { is_expected.to eq(3) }
   end
 
   describe "#total_billable_amount" do
     subject(:total_billable_amount) { instance.total_billable_amount }
 
-    it { is_expected.to eq(375) }
+    it { is_expected.to eq(500) }
   end
 
   describe "#total_refundable_amount" do
@@ -78,6 +80,6 @@ RSpec.describe PaymentCalculator::Banded::Uplifts do
   describe "total_net_amount" do
     subject(:total_net_amount) { instance.total_net_amount }
 
-    it { is_expected.to eq(250) }
+    it { is_expected.to eq(375) }
   end
 end

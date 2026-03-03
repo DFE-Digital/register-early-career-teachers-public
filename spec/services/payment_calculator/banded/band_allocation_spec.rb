@@ -43,6 +43,21 @@ RSpec.describe PaymentCalculator::Banded::BandAllocation do
     end
   end
 
+  describe "#total_net_count" do
+    it "returns zero when all counts are zero" do
+      expect(allocation.total_net_count).to eq(0)
+    end
+
+    it "returns current billable minus current refundable" do
+      allocation.add_previous_billable(40)
+      allocation.add_billable(20)
+      allocation.remove_previous_refundable(5)
+      allocation.remove_refundable(10)
+
+      expect(allocation.total_net_count).to eq(10)
+    end
+  end
+
   describe "#available_capacity" do
     it "returns full capacity when no declarations allocated" do
       expect(allocation.available_capacity).to eq(100)
