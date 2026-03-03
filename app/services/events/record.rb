@@ -256,7 +256,8 @@ module Events
     def self.record_induction_extension_created_event!(author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_created
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms"
+      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.name}" : ""
+      heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms#{actioner_suffix}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
@@ -264,7 +265,8 @@ module Events
     def self.record_induction_extension_updated_event!(author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, happened_at: Time.zone.now)
       event_type = :induction_extension_updated
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms"
+      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.name}" : ""
+      heading = "#{teacher_name}’s induction extended by #{induction_extension.number_of_terms} terms#{actioner_suffix}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, induction_extension:, modifications:, heading:, happened_at:).record_event!
     end
@@ -272,7 +274,8 @@ module Events
     def self.record_induction_extension_deleted_event!(author:, appropriate_body_period:, teacher:, number_of_terms:, happened_at: Time.zone.now)
       event_type = :induction_extension_deleted
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}’s induction extension of #{number_of_terms} terms was deleted"
+      actioner_suffix = appropriate_body_period ? " by #{appropriate_body_period.name}" : ""
+      heading = "#{teacher_name}’s induction extension of #{number_of_terms} terms was deleted#{actioner_suffix}"
 
       new(event_type:, author:, appropriate_body_period:, teacher:, heading:, happened_at:).record_event!
     end
