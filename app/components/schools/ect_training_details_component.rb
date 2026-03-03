@@ -37,7 +37,17 @@ module Schools
     end
 
     def withdrawn?
+      return false if leaving_school? || exempt?
+
       training_period&.provider_led_training_programme? && training_period&.status == :withdrawn
+    end
+
+    def leaving_school?
+      ect_at_school_period.leaving_reported_for_school?(ect_at_school_period.school)
+    end
+
+    def exempt?
+      ect_at_school_period.teacher.trs_induction_status == "Exempt"
     end
 
     def withdrawn_training_details
