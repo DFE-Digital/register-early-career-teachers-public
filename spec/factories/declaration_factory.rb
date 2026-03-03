@@ -87,5 +87,88 @@ FactoryBot.define do
     trait :billable_or_changeable do
       Declaration::BILLABLE_OR_CHANGEABLE_PAYMENT_STATUSES.sample
     end
+
+    trait :with_ect do
+      transient do
+        school_partnership { nil }
+        teacher { build(:teacher) }
+        started_on { declaration_date }
+        declaration_type { "started" }
+      end
+
+      after(:build) do |declaration, evaluator|
+        school_partnership = evaluator.school_partnership || build(:school_partnership)
+        declaration.declaration_type = evaluator.declaration_type
+
+        school        = school_partnership.school
+        lead_provider = school_partnership.lead_provider
+
+        ect_at_school_period =
+          build(
+            :ect_at_school_period,
+            teacher: evaluator.teacher,
+            school: school,
+            started_on: evaluator.started_on,
+            finished_on: nil
+          )
+
+        training_period =
+          build(
+            :training_period,
+            :for_ect,
+            :with_schedule_and_milestones,
+            ect_at_school_period:,
+            started_on: evaluator.started_on,
+            finished_on: nil,
+            school_partnership: school_partnership,
+            training_programme: "provider_led"
+          )
+
+        declaration.training_period = training_period
+        milestone =  training_period.schedule.milestones.find { |m| m.declaration_type == declaration.declaration_type }
+        declaration.declaration_date = milestone.start_date + 1.day
+      end
+    end
+
+    trait :with_mentor do
+      transient do
+        school_partnership { nil }
+        teacher { build(:teacher) }
+        started_on { declaration_date }
+        declaration_type { "started" }
+      end
+
+      after(:build) do |declaration, evaluator|
+        school_partnership = evaluator.school_partnership || build(:school_partnership)
+        declaration.declaration_type = evaluator.declaration_type
+
+        school        = school_partnership.school
+        lead_provider = school_partnership.lead_provider
+
+        mentor_at_school_period = build(
+          :mentor_at_school_period,
+          teacher: evaluator.teacher,
+          school: school,
+          started_on: evaluator.started_on,
+          finished_on: nil
+        )
+
+        training_period =
+          build(
+            :training_period,
+            :for_mentor,
+            :with_schedule_and_milestones,
+            mentor_at_school_period:,
+            started_on: evaluator.started_on,
+            finished_on: nil,
+            school_partnership: school_partnership,
+            training_programme: "provider_led"
+          )
+
+        declaration.training_period = training_period
+        milestone =  training_period.schedule.milestones.find { |m| m.declaration_type == declaration.declaration_type }
+        declaration.declaration_date = milestone.start_date + 1.day
+      end
+    end
   end
 end
