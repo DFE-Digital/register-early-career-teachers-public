@@ -34,7 +34,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
         context "when `declaration_type` is `started`" do
           let(:declaration_type) { "started" }
 
-          context "when `evidence_type` is nil" do
+          context "when `evidence_type` is not present" do
             let(:evidence_type) { nil }
 
             it "does not show validation error" do
@@ -64,7 +64,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
         context "when `declaration_type` is other than started" do
           let(:declaration_type) { "retained-1" }
 
-          context "when `evidence_type` is nil" do
+          context "when `evidence_type` is not present" do
             let(:evidence_type) { nil }
 
             it "has a meaningful error", :aggregate_failures do
@@ -102,11 +102,13 @@ RSpec.describe EvidenceTypeValidator, type: :model do
         context "when `declaration_type` is `started`" do
           let(:declaration_type) { "started" }
 
-          context "when `evidence_type` is nil" do
+          context "when `evidence_type` is not present" do
             let(:evidence_type) { nil }
 
-            it "does not show validation error" do
-              expect(subject).to be_valid
+            it "has a meaningful error", :aggregate_failures do
+              expect(subject).to be_invalid
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
 
@@ -172,7 +174,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
         context "when `declaration_type` is `started`" do
           let(:declaration_type) { "started" }
 
-          context "when `evidence_type` is nil" do
+          context "when `evidence_type` is not present" do
             let(:evidence_type) { nil }
 
             it "does not show validation error" do
@@ -202,7 +204,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
         context "when `declaration_type` is other than started" do
           let(:declaration_type) { "retained-1" }
 
-          context "when `evidence_type` is nil" do
+          context "when `evidence_type` is not present" do
             let(:evidence_type) { nil }
 
             it "has a meaningful error", :aggregate_failures do
@@ -240,11 +242,13 @@ RSpec.describe EvidenceTypeValidator, type: :model do
         context "when `declaration_type` is `started`" do
           let(:declaration_type) { "started" }
 
-          context "when `evidence_type` is nil" do
+          context "when `evidence_type` is not present" do
             let(:evidence_type) { nil }
 
-            it "does not show validation error" do
-              expect(subject).to be_valid
+            it "has a meaningful error", :aggregate_failures do
+              expect(subject).to be_invalid
+              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
 
@@ -305,30 +309,36 @@ RSpec.describe EvidenceTypeValidator, type: :model do
   describe ".evidence_type_required?" do
     subject { described_class.evidence_type_required?(record) }
 
-    let(:record) { Struct.new(:declaration_type).new(declaration_type) }
+    let(:detailed_evidence_types_enabled) { false }
+    let(:record) { Struct.new(:declaration_type, :training_period).new(declaration_type, training_period) }
+    let(:training_period) { Struct.new(:contract_period).new(contract_period) }
 
-    context "when `declaration_type` is nil" do
+    context "when `declaration_type` is not present" do
       let(:declaration_type) { nil }
 
-      it "evidence_type is not required" do
-        expect(subject).to be(false)
-      end
+      it { is_expected.to be(false) }
     end
 
     context "when `declaration_type` is `started`" do
       let(:declaration_type) { "started" }
 
-      it "evidence_type is not required" do
-        expect(subject).to be(false)
+      context "when detailed evidence types are not enabled" do
+        let(:detailed_evidence_types_enabled) { false }
+
+        it { is_expected.to be(false) }
+      end
+
+      context "when detailed evidence types are enabled" do
+        let(:detailed_evidence_types_enabled) { true }
+
+        it { is_expected.to be(true) }
       end
     end
 
     context "when `declaration_type` is other than started" do
       let(:declaration_type) { "retained-1" }
 
-      it "evidence_type is required" do
-        expect(subject).to be(true)
-      end
+      it { is_expected.to be(true) }
     end
   end
 
@@ -341,56 +351,44 @@ RSpec.describe EvidenceTypeValidator, type: :model do
     context "when contract period has simple evidence types" do
       let(:detailed_evidence_types_enabled) { false }
 
-      context "when `declaration_type` is nil" do
+      context "when `declaration_type` is not present" do
         let(:declaration_type) { nil }
 
-        it "evidence_type is not allowed" do
-          expect(subject).to be(false)
-        end
+        it { is_expected.to be(false) }
       end
 
       context "when `declaration_type` is `started`" do
         let(:declaration_type) { "started" }
 
-        it "evidence_type is not allowed" do
-          expect(subject).to be(false)
-        end
+        it { is_expected.to be(false) }
       end
 
       context "when `declaration_type` is other than started" do
         let(:declaration_type) { "retained-1" }
 
-        it "evidence_type is allowed" do
-          expect(subject).to be(true)
-        end
+        it { is_expected.to be(true) }
       end
     end
 
     context "when contract period has detailed evidence types" do
       let(:detailed_evidence_types_enabled) { true }
 
-      context "when `declaration_type` is nil" do
+      context "when `declaration_type` is not present" do
         let(:declaration_type) { nil }
 
-        it "evidence_type is allowed" do
-          expect(subject).to be(true)
-        end
+        it { is_expected.to be(true) }
       end
 
       context "when `declaration_type` is `started`" do
         let(:declaration_type) { "started" }
 
-        it "evidence_type is allowed" do
-          expect(subject).to be(true)
-        end
+        it { is_expected.to be(true) }
       end
 
       context "when `declaration_type` is other than started" do
         let(:declaration_type) { "retained-1" }
 
-        it "evidence_type is allowed" do
-          expect(subject).to be(true)
-        end
+        it { is_expected.to be(true) }
       end
     end
   end

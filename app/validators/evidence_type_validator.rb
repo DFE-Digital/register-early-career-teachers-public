@@ -11,7 +11,7 @@ class EvidenceTypeValidator < ActiveModel::Validator
 
     evidence_type_is_present(record) if self.class.evidence_type_required?(record)
 
-    if validate_detailed_evidence_types?(record)
+    if self.class.validate_detailed_evidence_types?(record)
       evidence_type_is_valid_detailed_evidence_type(record)
     elsif validate_simple_evidence_types?(record)
       evidence_type_is_valid_simple_evidence_type(record)
@@ -19,18 +19,21 @@ class EvidenceTypeValidator < ActiveModel::Validator
   end
 
   def self.evidence_type_required?(record)
-    record.declaration_type.present? && record.declaration_type != "started"
+    record.declaration_type.present? && (
+      record.declaration_type != "started" ||
+      validate_detailed_evidence_types?(record)
+    )
   end
 
   def self.evidence_type_allowed?(record)
-    record.training_period.contract_period.detailed_evidence_types_enabled || evidence_type_required?(record)
+    validate_detailed_evidence_types?(record) || evidence_type_required?(record)
+  end
+
+  def self.validate_detailed_evidence_types?(record)
+    record.training_period.contract_period.detailed_evidence_types_enabled
   end
 
 private
-
-  def validate_detailed_evidence_types?(record)
-    record.training_period.contract_period.detailed_evidence_types_enabled
-  end
 
   def validate_simple_evidence_types?(record)
     record.declaration_type.present?
