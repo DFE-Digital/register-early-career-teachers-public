@@ -5,7 +5,8 @@ describe ECF2TeacherHistory do
   let(:trs_first_name) { "Colin" }
   let(:trs_last_name) { "Jeavons" }
   let(:corrected_name) { "Colin Abel Jeavons" }
-  let(:teacher_data) { ECF2TeacherHistory::Teacher.new(trn:, trs_first_name:, trs_last_name:, corrected_name:) }
+  let(:migration_mode) { "latest_induction_records" }
+  let(:teacher_data) { ECF2TeacherHistory::Teacher.new(trn:, trs_first_name:, trs_last_name:, corrected_name:, migration_mode:) }
 
   let!(:school_a) { FactoryBot.create(:school, urn: 111_111) }
   let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
@@ -390,6 +391,7 @@ describe ECF2TeacherHistory do
 
               expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
               expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message, failure_message)
+              expect(failed_combinations.map(&:migration_mode)).to contain_exactly(migration_mode, migration_mode)
             end
           end
 
@@ -412,6 +414,19 @@ describe ECF2TeacherHistory do
 
               expect(failed_combination.induction_record_id).to eq(first_training_period.combination.induction_record_id)
               expect(failed_combination.failure_message).to eq(failure_message)
+              expect(failed_combination.migration_mode).to eq(migration_mode)
+            end
+
+            it "saves a TeacherMigrationFailure record" do
+              expect {
+                teacher
+              }.to change(TeacherMigrationFailure, :count).by(1)
+            end
+
+            it "saves the migration_mode on the TeacherMigrationFailure" do
+              teacher
+
+              expect(TeacherMigrationFailure.last.migration_mode).to eq teacher.migration_mode
             end
           end
         end
@@ -729,6 +744,7 @@ describe ECF2TeacherHistory do
 
               expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
               expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message)
+              expect(failed_combinations.map(&:migration_mode)).to contain_exactly(migration_mode)
             end
           end
 
@@ -751,6 +767,19 @@ describe ECF2TeacherHistory do
 
               expect(failed_combination.induction_record_id).to eq(first_training_period.combination.induction_record_id)
               expect(failed_combination.failure_message).to eq(failure_message)
+              expect(failed_combination.migration_mode).to eq(migration_mode)
+            end
+
+            it "saves a TeacherMigrationFailure record" do
+              expect {
+                teacher
+              }.to change(TeacherMigrationFailure, :count).by(1)
+            end
+
+            it "saves the migration_mode on the TeacherMigrationFailure" do
+              teacher
+
+              expect(TeacherMigrationFailure.last.migration_mode).to eq teacher.migration_mode
             end
           end
         end
@@ -826,6 +855,13 @@ describe ECF2TeacherHistory do
         expect(failure.migration_item_type).to eq("Migration::InductionRecord")
       end
 
+      it "records the migration_mode" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_mode).to eq(teacher_data.migration_mode)
+      end
+
       it "sets success? to false" do
         subject.save_all_ect_data!
 
@@ -876,6 +912,13 @@ describe ECF2TeacherHistory do
         failure = TeacherMigrationFailure.last
 
         expect(failure.message).to include("Couldn't find GIAS::School")
+      end
+
+      it "records the migration_mode" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_mode).to eq(teacher_data.migration_mode)
       end
 
       it "sets success? to false" do
@@ -937,6 +980,13 @@ describe ECF2TeacherHistory do
         expect(failure.message).to include("Couldn't find LeadProvider")
       end
 
+      it "records the migration_mode" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_mode).to eq(teacher_data.migration_mode)
+      end
+
       it "sets success? to false" do
         subject.save_all_ect_data!
 
@@ -991,6 +1041,13 @@ describe ECF2TeacherHistory do
         expect(failure.message).to include("No ActiveLeadProvider found")
         expect(failure.message).to include(lead_provider.id.to_s)
         expect(failure.message).to include(contract_period.year.to_s)
+      end
+
+      it "records the migration_mode" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_mode).to eq(teacher_data.migration_mode)
       end
 
       it "sets success? to false" do
@@ -1048,6 +1105,13 @@ describe ECF2TeacherHistory do
         expect(failure.message).to include("No LeadProviderDeliveryPartnership found")
         expect(failure.message).to include(active_lead_provider.id.to_s)
         expect(failure.message).to include(delivery_partner.id.to_s)
+      end
+
+      it "records the migration_mode" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_mode).to eq(teacher_data.migration_mode)
       end
 
       it "sets success? to false" do
@@ -1108,6 +1172,13 @@ describe ECF2TeacherHistory do
         failure = TeacherMigrationFailure.last
 
         expect(failure.message).to include("Couldn't find DeliveryPartner")
+      end
+
+      it "records the migration_mode" do
+        subject.save_all_ect_data!
+        failure = TeacherMigrationFailure.last
+
+        expect(failure.migration_mode).to eq(teacher_data.migration_mode)
       end
 
       it "sets success? to false" do

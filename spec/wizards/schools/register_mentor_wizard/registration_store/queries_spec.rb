@@ -56,8 +56,8 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
   end
 
   describe "#previous_training_period" do
-    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
-    let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 3, 1)) }
+    let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: 1.year.ago, teacher:) }
+    let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 9.months.ago) }
 
     it "returns the latest training period for the mentor" do
       expect(queries.previous_training_period).to eq(training_period)

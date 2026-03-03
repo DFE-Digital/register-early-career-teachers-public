@@ -188,6 +188,7 @@
   - created_at
   - updated_at
   - role
+  - otp_school_urn
   :teacher_migration_failures:
   - id
   - teacher_id
@@ -195,6 +196,7 @@
   - message
   - migration_item_id
   - migration_item_type
+  - migration_mode
   - created_at
   - updated_at
   :teachers:
@@ -273,6 +275,7 @@
   - updated_at
   - parent_id
   - parent_type
+  - migration_mode
   :events:
   - id
   - heading
@@ -455,6 +458,7 @@
   - failure_message
   - created_at
   - updated_at
+  - migration_mode
   :data_migration_failed_mentorships:
   - id
   - ect_participant_profile_id
@@ -466,6 +470,7 @@
   - failure_message
   - created_at
   - updated_at
+  - migration_mode
   :contract_flat_rate_fee_structures:
   - id
   - recruitment_target

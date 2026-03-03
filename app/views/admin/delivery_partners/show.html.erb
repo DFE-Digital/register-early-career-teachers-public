@@ -4,6 +4,10 @@
   <%= govuk_link_to('Change delivery partner name', edit_admin_delivery_partner_path(@delivery_partner)) %>
 </p>
 
+<p class='govuk-body'>
+  API ID: <span class="govuk-body app-mono"><%= @delivery_partner.api_id %></span>
+</p>
+
 <%= render(Admin::LeadProviderPartnershipsTableComponent.new(
   contract_period_partnerships: @contract_period_partnerships,
   delivery_partner: @delivery_partner,

@@ -12,6 +12,7 @@ module Migration
       :ecf_start_induction_record_id,
       :ecf_end_induction_record_id,
       :failure_message,
+      :migration_mode,
       keyword_init: true
     )
 
@@ -44,6 +45,7 @@ module Migration
         ecf_start_induction_record_id
         ecf_end_induction_record_id
         failure_message
+        migration_mode
       ].freeze
     end
 
@@ -55,7 +57,8 @@ module Migration
         finished_on: failed_mentorship.finished_on.presence,
         ecf_start_induction_record_id: failed_mentorship.ecf_start_induction_record_id,
         ecf_end_induction_record_id: failed_mentorship.ecf_end_induction_record_id,
-        failure_message: failed_mentorship.failure_message
+        failure_message: failed_mentorship.failure_message,
+        migration_mode: failed_mentorship.migration_mode
       )
     end
   end

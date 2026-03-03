@@ -143,13 +143,37 @@ describe Migration::ParticipantDeclaration, type: :model do
       end
     end
 
-    %w[ineligible voided submmited awaiting_clawback clawed_back].each do |checking_state|
-      context "when there is a statement line item with state #{checking_state} instead" do
+    context "when there is no billable statement line item but the declaration state is 'submitted'" do
+      let!(:statement_line_item) do
+        FactoryBot.create(:migration_statement_line_item, participant_declaration:, state: "voided")
+      end
+
+      before { participant_declaration.state = "submitted" }
+
+      it { is_expected.to eq("no_payment") }
+    end
+
+    context "when there is no billable statement line item but the declaration state is 'voided'" do
+      let!(:statement_line_item) do
+        FactoryBot.create(:migration_statement_line_item, participant_declaration:, state: "ineligible")
+      end
+
+      before { participant_declaration.state = "voided" }
+
+      it { is_expected.to eq("voided") }
+    end
+
+    %w[ineligible awaiting_clawback clawed_back].each do |checking_state|
+      context "when there is a no billable statement line item but the declaration state is #{checking_state}" do
         let!(:statement_line_item) do
-          FactoryBot.create(:migration_statement_line_item, participant_declaration:, state: checking_state)
+          FactoryBot.create(:migration_statement_line_item, participant_declaration:, state: "voided")
         end
 
-        it { is_expected.to eq("no_payment") }
+        before { participant_declaration.state = checking_state }
+
+        it "raises an error" do
+          expect { subject }.to raise_error("ECF1 declaration state doesn't match its statement line items states")
+        end
       end
     end
   end

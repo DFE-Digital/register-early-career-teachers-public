@@ -15,7 +15,7 @@ module ApplicationHelper
 
   def page_data(title:, header: :use_title, header_size: "l", error: false, backlink_href: nil, breadcrumbs: nil, caption: nil, caption_size: "m", header_classes: [], test_guidance: false)
     page_title = title_with_error_prefix(title, error:)
-    content_for(:page_title) { page_title }
+    content_for(:page_title, page_title.to_s.html_safe)
 
     backlink_or_breadcrumb = if breadcrumbs
                                govuk_breadcrumbs(breadcrumbs:)

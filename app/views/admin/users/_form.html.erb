@@ -1,3 +1,8 @@
 <%= f.govuk_text_field :name, label: { text: 'Name' } %>
 <%= f.govuk_text_field :email, label: { text: 'Email address' } %>
+<% if Rails.application.config.enable_otp_school_sign_in %>
+  <%= f.govuk_number_field :otp_school_urn,
+                           width: 10,
+                           label: { text: "School URN for OTP sign-in" } %>
+<% end %>
 <%= f.govuk_collection_radio_buttons :role, role_options, :identifier, :name %>

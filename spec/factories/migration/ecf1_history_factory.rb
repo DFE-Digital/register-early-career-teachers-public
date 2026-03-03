@@ -87,6 +87,7 @@ FactoryBot.define do
     training_programme { "full_induction_programme" }
     training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:) }
     sequence(:appropriate_body) { |n| Types::AppropriateBodyData.new(ecf1_id: SecureRandom.uuid, name: "History Appropriate body #{n}") }
+    school_transfer { false }
 
     initialize_with do
       new(induction_record_id:,
@@ -103,7 +104,8 @@ FactoryBot.define do
           induction_status:,
           training_programme:,
           training_provider_info:,
-          appropriate_body:)
+          appropriate_body:,
+          school_transfer:)
     end
 
     trait :created_at_later_than_start_date do
@@ -171,6 +173,7 @@ FactoryBot.define do
     pupil_premium_uplift { false }
     sparsity_uplift { false }
     payments_frozen_cohort_start_year { nil }
+    transfers { {} }
 
     initialize_with do
       new(participant_profile_id:,
@@ -183,7 +186,8 @@ FactoryBot.define do
           mentor_at_school_periods:,
           pupil_premium_uplift:,
           sparsity_uplift:,
-          payments_frozen_cohort_start_year:)
+          payments_frozen_cohort_start_year:,
+          transfers:)
     end
 
     trait :one_induction_record do
@@ -231,6 +235,7 @@ FactoryBot.define do
     induction_records { [] }
     ero_mentor { false }
     ero_declarations { false }
+    transfers { {} }
 
     payments_frozen_cohort_start_year { nil }
 
@@ -244,7 +249,8 @@ FactoryBot.define do
           induction_records:,
           ero_mentor:,
           ero_declarations:,
-          payments_frozen_cohort_start_year:)
+          payments_frozen_cohort_start_year:,
+          transfers:)
     end
   end
 end

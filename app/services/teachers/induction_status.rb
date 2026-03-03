@@ -55,7 +55,7 @@ private
   def in_progress = Status.new(name: "In progress", colour: "blue")
   def none = Status.new(name: "None", colour: "grey")
   def passed = Status.new(name: "Passed", colour: "green")
-  def paused = Status.new(name: "Induction paused", colour: "pink")
+  def paused = Status.new(name: "Induction paused", colour: "magenta")
   def required_to_complete = Status.new(name: "Required to complete", colour: "yellow")
   def unknown = Status.new(name: "Unknown", colour: "grey")
 end

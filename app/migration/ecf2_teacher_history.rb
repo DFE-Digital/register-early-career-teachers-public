@@ -13,7 +13,8 @@ class ECF2TeacherHistory
               :ecf2_mentor_combination_summaries,
               :ecf2_mentorship_summaries,
               :training_periods,
-              :mentorship_periods
+              :mentorship_periods,
+              :migration_mode
 
   def initialize(teacher:, ect_at_school_periods: [], mentor_at_school_periods: [])
     @teacher = teacher
@@ -22,6 +23,7 @@ class ECF2TeacherHistory
     @ecf2_ect_combination_summaries = []
     @ecf2_mentor_combination_summaries = []
     @ecf2_mentorship_summaries = []
+    @migration_mode = teacher.migration_mode
   end
 
   def save_all_ect_data!
@@ -79,11 +81,11 @@ class ECF2TeacherHistory
   end
 
   def economy?
-    teacher.migration_mode == :latest_induction_records
+    migration_mode.to_s == "latest_induction_records"
   end
 
   def premium?
-    teacher.migration_mode == :all_induction_records
+    migration_mode.to_s == "all_induction_records"
   end
 
 private
@@ -140,7 +142,8 @@ private
       model: model_identifier,
       message: message.presence || "FIXME: no message was set for this failure!",
       migration_item_id:,
-      migration_item_type: MIGRATION_ITEM_TYPE
+      migration_item_type: MIGRATION_ITEM_TYPE,
+      migration_mode:
     )
   end
 
@@ -151,7 +154,7 @@ private
   end
 
   def record_failed_combination(combination:, message:)
-    DataMigrationFailedCombination.create!(**combination.to_h, failure_message: message)
+    DataMigrationFailedCombination.create!(**combination.to_h, failure_message: message, migration_mode:)
   end
 
   def record_failed_mentorship(mentorship:, message:)
@@ -162,7 +165,8 @@ private
       finished_on: mentorship.finished_on,
       ecf_start_induction_record_id: mentorship.ecf_start_induction_record_id,
       ecf_end_induction_record_id: mentorship.ecf_end_induction_record_id,
-      failure_message: message
+      failure_message: message,
+      migration_mode:
     )
   end
 

@@ -20,6 +20,44 @@
 #     [links](https://www.gov.uk)
 #
 #     **bold** and _italic_ text
+
+- title: Uplift fees for early career teachers (ECTs) and mentors are now fixed
+  date: 2026-02-23
+  tags:
+    - sandbox-release
+  body: |
+    We've now fixed how uplift fees are shown for early career teachers and mentors.
+    
+    ## What's changed
+    
+    ECTs and mentors in the 2024 or earlier cohorts, who are at schools eligible for uplifts, will show the following on `GET participants`:
+    
+    - `sparsity_uplift: true`
+    - `pupil_premium_uplift: true`
+  
+    Previously, we had said we would always show mentors as false in the Register ECTs API, but this was incorrect.
+
+    Started declarations for these participants will also show as `uplift_paid: true` when their declaration has been paid. It will stay true if the declaration is later clawed back.
+
+    Other declaration types, like `retained-1` or `completed`, will show as `uplift_paid: false`, as uplifts are only paid for started declarations.
+
+    Participants in the 2025 cohort or later will always be shown as:
+
+    - `sparsity_uplift: false`
+    - `pupil_premium_uplift: false`
+
+    This is because uplift fees are no longer paid from the 2025 cohort onwards.
+    
+    ## Why we've made this change    
+    
+    This aims to make it clearer when participants actually have the uplift fees applied, and when they are paid out for declarations.
+
+    It also fixes an error we made in the register early career teachers API specification stating that mentors would always show as false for uplift fees.
+    
+    ## Impact on lead providers
+    
+    This should have a minimal impact. In the existing API for the manage training for ECTs service, uplifts were still only paid for started declarations for 2024 and earlier cohort participants.
+    
 - title: Delivery partner now recorded on declaration submission
   date: 2026-02-16
   tags:
