@@ -1,5 +1,5 @@
 RSpec.describe GIAS::Importer, type: :service do
-  let(:importer) { described_class.new }
+  let(:importer) { described_class.new(auto_create_school: true) }
 
   let(:schools_csv_path) { Rails.root.join("spec/fixtures", "gias_schools_#{GIAS::Importer::SCHOOLS_FILENAME}") }
   let(:school_links_csv_path) { Rails.root.join("spec/fixtures", "gias_schools_#{GIAS::Importer::SCHOOL_LINKS_FILENAME}") }
@@ -68,6 +68,21 @@ RSpec.describe GIAS::Importer, type: :service do
       expect(school.name).to eq("Example Recently Closed School")
       expect(school.address_line1).to eq("Sample House")
       expect(school.type_name).to eq("Local authority nursery school")
+    end
+
+    context "when auto_create_school is false" do
+      let(:importer) { described_class.new(auto_create_school: false) }
+
+      it "imports eligible GIAS schools without creating School rows on first import" do
+        expect { importer.send(:import_schools) }.to change(GIAS::School, :count).by(3)
+        expect(School.count).to eq(0)
+      end
+
+      it "does not create School rows in update mode" do
+        FactoryBot.create(:gias_school, urn: 99_999)
+
+        expect { importer.send(:import_schools) }.not_to change(School, :count)
+      end
     end
   end
 

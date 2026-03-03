@@ -2207,4 +2207,33 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_school_user_signs_in_event!" do
+    let(:school) { FactoryBot.create(:school) }
+    let(:school_user) do
+      Sessions::Users::SchoolUser.new(
+        email: user.email,
+        name: user.name,
+        school_urn: school.urn,
+        dfe_sign_in_organisation_id: SecureRandom.uuid,
+        dfe_sign_in_user_id: SecureRandom.uuid,
+        dfe_sign_in_roles: %w[SchoolUser]
+      )
+    end
+    let(:school_author_params) { { author_email: school_user.email, author_name: school_user.name, author_type: :school_user } }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_school_user_signs_in_event!(author: school_user, school:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          school:,
+          heading: "#{school_user.name} has signed into #{school.name}",
+          event_type: :school_user_signs_in,
+          happened_at: Time.zone.now,
+          **school_author_params
+        )
+      end
+    end
+  end
 end

@@ -1,6 +1,6 @@
 ---
 ALLOW_INDEXING: false
-ENVIRONMENT_COLOUR: pink
+ENVIRONMENT_COLOUR: magenta
 ENVIRONMENT_PHASE_BANNER_TAG: Review 🔍
 ENVIRONMENT_PHASE_BANNER_CONTENT: This is a review application, not a real service
 ENABLE_FAKE_TRS_API: false

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_02_151258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -225,6 +225,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
     t.text "failure_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "migration_mode"
   end
 
   create_table "data_migration_failed_mentorships", force: :cascade do |t|
@@ -237,6 +238,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
     t.text "failure_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "migration_mode"
   end
 
   create_table "data_migration_teacher_combinations", force: :cascade do |t|
@@ -496,6 +498,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
     t.datetime "updated_at", null: false
     t.uuid "ecf_id"
     t.boolean "vat_registered", default: true, null: false
+    t.uuid "ecf_cpd_lead_provider_id"
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
   end
@@ -613,6 +616,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
     t.datetime "updated_at", null: false
     t.integer "parent_id"
     t.string "parent_type"
+    t.string "migration_mode"
     t.index ["data_migration_id"], name: "index_migration_failures_on_data_migration_id"
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
@@ -967,6 +971,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_23_131036) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "model", default: "teacher", null: false
+    t.string "migration_mode"
     t.index ["model"], name: "index_teacher_migration_failures_on_model"
     t.index ["teacher_id"], name: "index_teacher_migration_failures_on_teacher_id"
   end

@@ -1,11 +1,10 @@
-$govuk-global-styles: true;
-$govuk-new-link-styles: true;
-$govuk-assets-path: "/";
+@use "../../../node_modules/govuk-frontend/dist/govuk" as * with(
+  $govuk-font-family: Sans-serif,
+  $govuk-global-styles: true
+);
 
-@import "../../../node_modules/govuk-frontend/dist/govuk/all";
-
-.govuk-header__container {
-  border-bottom: 10px solid govuk-colour('orange');
+.govuk-header__product-name {
+  font-weight: bold;
 }
 
 .policy-document {
@@ -66,8 +65,8 @@ $govuk-assets-path: "/";
 }
 
 code {
-  background: govuk-tint(govuk-colour('light-pink'), 80%);
-  color: govuk-shade(govuk-colour('pink'), 25%);
+  background: govuk-colour('magenta', $variant: 'tint-95');
+  color: govuk-colour('magenta', $variant: 'shade-25');
   font-size: .9em;
   padding: .05em .2em;
   margin-top: 0px;
@@ -75,12 +74,12 @@ code {
 
 pre {
   padding: 1em;
-  border: 1px solid govuk-tint(govuk-colour('light-pink'), 80%);
-  background: govuk-tint(govuk-colour('light-pink'), 95%);
+  border: 1px solid govuk-colour('magenta', $variant: 'tint-50');
+  background: govuk-colour('magenta', $variant: 'tint-25');
   white-space: pre-wrap;
 
   &>code {
     font-size: 1rem;
-    background: govuk-tint(govuk-colour('light-pink'), 95%);
+    background: govuk-colour('magenta', $variant: 'tint-80');
   }
 }

@@ -2,4 +2,8 @@ ECF1TeacherHistory::ProfileState = Struct.new(:state, :reason, :created_at, :cpd
   def self.from_hash(hash)
     FactoryBot.build(:ecf1_teacher_history_profile_state_row, **hash.compact)
   end
+
+  def created_on
+    created_at&.to_date
+  end
 end

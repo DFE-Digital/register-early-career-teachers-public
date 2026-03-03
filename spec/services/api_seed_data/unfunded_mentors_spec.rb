@@ -2,27 +2,24 @@ RSpec.describe APISeedData::UnfundedMentors, :with_metadata do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
-  let!(:school) { FactoryBot.create(:school) }
-  let!(:active_lead_providers) { FactoryBot.create_list(:active_lead_provider, 2) }
 
-  let!(:school_partnerships) do
-    active_lead_providers.flat_map do |active_lead_provider|
-      lead_provider_delivery_partnership =
-        FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-
-      FactoryBot.create_list(
-        :school_partnership,
-        2,
-        lead_provider_delivery_partnership:
-      )
-    end
-  end
+  let(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
+  let(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
     allow(Rails).to receive(:env) { environment.inquiry }
 
     stub_const("#{described_class}::MIN_UNFUNDED_MENTORS_PER_LP", 2)
+
+    # Create support data
+    FactoryBot.create_list(:lead_provider, 2).each do |lead_provider|
+      FactoryBot.create_list(:lead_provider_delivery_partnership, 2, :for_year, lead_provider:, year: contract_period_2024.year)
+      FactoryBot.create_list(:lead_provider_delivery_partnership, 2, :for_year, lead_provider:, year: contract_period_2025.year)
+    end
+    APISeedData::Schools.new.plant
+    APISeedData::SchoolPartnerships.new.plant
+    APISeedData::SchedulesAndMilestones.new.plant
   end
 
   describe "#plant" do
@@ -36,16 +33,22 @@ RSpec.describe APISeedData::UnfundedMentors, :with_metadata do
       end
     end
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(Teacher, :count)
-      expect { instance.plant }.not_to change(Teacher, :count)
+    it "creates unfunded mentors accross the contract periods" do
+      plant
+
+      LeadProvider.find_each do |lead_provider|
+        expect(API::Teachers::UnfundedMentors::Query.new(lead_provider_id: lead_provider.id).unfunded_mentors.map { |unfunded_mentor|
+          unfunded_mentor = Teacher.find(unfunded_mentor.id)
+          unfunded_mentor.latest_mentor_at_school_period.latest_training_period.contract_period.year
+        }.uniq.size).to be > 1
+      end
     end
 
     it "logs the creation of unfunded mentors" do
       plant
 
-      expect(logger).to have_received("level=").with(Logger::INFO)
-      expect(logger).to have_received("formatter=").with(Rails.logger.formatter)
+      expect(logger).to have_received("level=").with(Logger::INFO).at_least(:once)
+      expect(logger).to have_received("formatter=").with(Rails.logger.formatter).at_least(:once)
 
       expect(logger).to have_received(:info).with(/Planting unfunded mentors/).once
 
