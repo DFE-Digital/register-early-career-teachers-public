@@ -1,6 +1,10 @@
 FactoryBot.define do
   factory(:declaration) do
-    training_period { FactoryBot.create(:training_period) }
+    transient do
+      active_lead_provider { FactoryBot.create(:active_lead_provider) }
+    end
+
+    training_period { FactoryBot.create(:training_period, :with_active_lead_provider, active_lead_provider:) }
     payment_status { :no_payment }
     clawback_status { :no_clawback }
     api_id { SecureRandom.uuid }

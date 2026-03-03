@@ -1,0 +1,35 @@
+<% calculators.each do |calculator| %>
+  <div class="finance-panel govuk-!-margin-top-5 govuk-!-margin-bottom-5">
+    <%=
+      govuk_table do |table|
+        table.with_caption(text: caption_text(calculator), size: "m")
+        table.with_head do |head|
+          head.with_row do |row|
+            row.with_cell(header: true) { "Payment type" }
+            row.with_cell(header: true) { "Number of participants" }
+            row.with_cell(header: true, numeric: true) { "Fee per participant" }
+            row.with_cell(header: true, numeric: true) { "Payments" }
+          end
+        end
+
+        table.with_body do |body|
+          calculator.outputs.declaration_type_outputs.each do |declaration_type_output|
+            body.with_row do |row|
+              row.with_cell { payment_type(calculator, declaration_type_output) }
+              row.with_cell { declaration_type_output.refundable_count.to_s }
+              row.with_cell(numeric: true) { number_to_pounds(-declaration_type_output.type_adjusted_fee_per_declaration) }
+              row.with_cell(numeric: true) { number_to_pounds(-declaration_type_output.total_refundable_amount) }
+            end
+          end
+        end
+      end
+    %>
+
+    <div class="govuk-!-text-align-right govuk-heading-s govuk-!-margin-bottom-0">
+      Total
+    </div>
+    <div class="govuk-!-text-align-right govuk-heading-s">
+      <%= number_to_pounds(-calculator.outputs.total_refundable_amount) %>
+    </div>
+  </div>
+<% end %>

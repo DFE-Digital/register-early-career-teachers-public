@@ -61,6 +61,19 @@ FactoryBot.define do
       school_partnership { association :school_partnership, school: teacher_period&.school || FactoryBot.create(:school) }
     end
 
+    trait :with_active_lead_provider do
+      transient do
+        active_lead_provider { association :active_lead_provider }
+      end
+
+      school_partnership do
+        association :school_partnership,
+                    :with_active_lead_provider,
+                    active_lead_provider:,
+                    school: teacher_period&.school || FactoryBot.create(:school)
+      end
+    end
+
     trait :with_schedule do
       transient do
         schedule do

@@ -19,14 +19,14 @@ module PaymentCalculator
 
     attribute :band_allocation
 
-    delegate :declaration_type, to: :band_allocation
+    delegate :declaration_type, :band, :billable_count, :refundable_count, to: :band_allocation
 
-    def output_fee_per_declaration
+    def type_adjusted_fee_per_declaration
       fee_proportion * band.output_fee_ratio * band.fee_per_declaration
     end
 
-    def total_billable_amount = billable_count * output_fee_per_declaration
-    def total_refundable_amount = refundable_count * output_fee_per_declaration
+    def total_billable_amount = billable_count * type_adjusted_fee_per_declaration
+    def total_refundable_amount = refundable_count * type_adjusted_fee_per_declaration
     def total_net_amount = total_billable_amount - total_refundable_amount
 
   private
@@ -37,9 +37,5 @@ module PaymentCalculator
               "No fee proportion defined for declaration type: #{declaration_type}"
       end
     end
-
-    delegate :billable_count, :refundable_count, :band,
-             to: :band_allocation,
-             private: true
   end
 end
