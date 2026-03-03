@@ -165,9 +165,12 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
         expect(page).not_to have_text("is no longer training with them")
       end
 
-      it "renders the normal training details summary list instead" do
-        expect(page).to have_css(".govuk-summary-list")
-        expect(page).to have_summary_list_row("Training programme")
+      it "renders the withdrawn content and links" do
+        expect(page).to have_text("is no longer training with them")
+        expect(page).to have_link("select a lead provider")
+        expect(page).to have_link("changing their programme type to school-led")
+
+        expect(page).to have_no_css(".govuk-summary-list")
       end
     end
 
