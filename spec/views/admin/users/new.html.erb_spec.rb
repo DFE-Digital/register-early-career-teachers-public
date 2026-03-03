@@ -1,8 +1,10 @@
 describe "admin/users/new.html.erb" do
   let(:role) { :admin }
   let(:user) { User.new }
+  let(:otp_school_sign_in_enabled) { false }
 
   before do
+    allow(Rails.application.config).to receive(:enable_otp_school_sign_in).and_return(otp_school_sign_in_enabled)
     assign(:user, user)
     render
   end
@@ -25,6 +27,10 @@ describe "admin/users/new.html.erb" do
     expect(rendered).to have_css("legend", text: "Role")
   end
 
+  it "does not display an otp_school_urn field when otp school sign-in flag is disabled" do
+    expect(rendered).not_to have_css("label", text: "School URN for OTP sign-in")
+  end
+
   it "lists the roles as options" do
     expect(rendered).to have_css("label.govuk-radios__label", text: "Admin")
     expect(rendered).to have_css("label.govuk-radios__label", text: "User manager")
@@ -40,6 +46,14 @@ describe "admin/users/new.html.erb" do
 
     it "prefixes the page title with error" do
       expect(view.content_for(:page_title)).to start_with("Error:")
+    end
+  end
+
+  context "when otp school sign-in flag is enabled" do
+    let(:otp_school_sign_in_enabled) { true }
+
+    it "displays the otp_school_urn field" do
+      expect(rendered).to have_css("label", text: "School URN for OTP sign-in")
     end
   end
 end

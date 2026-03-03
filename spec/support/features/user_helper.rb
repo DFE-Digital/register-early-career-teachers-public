@@ -98,7 +98,18 @@ module UserHelper
     stop_mocking_dfe_sign_in_provider!
   end
 
-  def sign_in_as_dfe_user(role:, user: FactoryBot.create(:user, role, email: Faker::Internet.email, name: Faker::Name.name))
+  def sign_in_as_dfe_user(role:, user: nil)
+    user ||= FactoryBot.create(:user, role, name: Faker::Name.name)
+
+    domain = user.email.to_s.split("@", 2).last&.downcase
+    unless Sessions::OTPAccessPolicy::INTERNAL_ADMIN_EMAIL_DOMAINS.include?(domain)
+      raise ArgumentError, "sign_in_as_dfe_user requires an internal DfE email, got: #{user.email}"
+    end
+
+    sign_in_with_otp(user:)
+  end
+
+  def sign_in_with_otp(user:)
     page.goto(otp_sign_in_path)
     page.get_by_label("Email address").type(user.email)
     page.get_by_role("button", name: "Request code to sign in").click
@@ -107,7 +118,7 @@ module UserHelper
   end
 
   def sign_out
-    page.goto(otp_sign_out_path)
+    page.goto(sign_out_path)
   end
 end
 

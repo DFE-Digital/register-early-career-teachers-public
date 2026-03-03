@@ -22,8 +22,8 @@ gem "rack-attack"
 gem "redis"
 gem "tzinfo-data", platforms: %i[windows jruby]
 
-gem "govuk-components"
-gem "govuk_design_system_formbuilder"
+gem "govuk-components", "6.0.0"
+gem "govuk_design_system_formbuilder", "6.0.0"
 gem "govuk_markdown"
 
 gem "mail-notify"

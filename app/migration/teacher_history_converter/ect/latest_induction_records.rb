@@ -5,14 +5,15 @@
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states
+  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states, :transfers
 
-  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @mentor_at_school_periods = mentor_at_school_periods
     @states = states
+    @transfers = transfers
   end
 
   # Returns [ECF2TeacherHistory::ECTAtSchoolPeriod[], String[]]
@@ -91,25 +92,36 @@ private
     training_programme = convert_training_programme_name(induction_record.training_programme)
 
     training_provider_info = induction_record.training_provider_info
+    school = induction_record.school
+
+    if training_provider_info&.lead_provider_info.present?
+      api_transfer_updated_at = transfers[training_provider_info.lead_provider_info.ecf1_id]
+    end
 
     training_attrs = {
       started_on: induction_record.start_date,
       finished_on: induction_record.end_date,
       created_at: induction_record.created_at,
-      school: induction_record.school,
+      school:,
       training_programme:,
       lead_provider_info: training_provider_info&.lead_provider_info,
       delivery_partner_info: training_provider_info&.delivery_partner_info,
-      contract_period_year: induction_record.cohort_year,
+      contract_period_year: training_provider_info&.cohort_year || induction_record.cohort_year,
       is_ect: true,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
+      api_transfer_updated_at:,
       combination: build_combination(induction_record:, training_programme:),
       **withdrawal_data(
         training_status: induction_record.training_status,
         lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       )
     }.merge(overrides)
+
+    # if the period is ongoing but has been withdrawn by the provider we should close the period
+    if training_attrs[:finished_on].blank? && training_attrs[:withdrawn_at].present?
+      training_attrs[:finished_on] = [training_attrs[:started_on] + 1.day, training_attrs[:withdrawn_at].to_date].max
+    end
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
 

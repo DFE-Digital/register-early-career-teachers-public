@@ -1,10 +1,12 @@
+@use "govuk-frontend/dist/govuk" as *;
+
 // primary navigation
 //
 // borrowed from x-govuk/govuk-prototype-components
 // https://github.com/x-govuk/govuk-prototype-components/blob/main/x-govuk/components/primary-navigation/_primary-navigation.scss
 .x-govuk-primary-navigation {
   @include govuk-font(19, $weight: bold);
-  background-color: govuk-colour("light-grey");
+  background-color: govuk-colour("black", $variant: "tint-95");
   border-bottom: 1px solid transparent;
   margin-bottom: -1px;
   padding-inline: .5em;
@@ -107,14 +109,14 @@
 }
 
 .x-govuk-sub-navigation__section--nested .x-govuk-sub-navigation__section-item::before {
-  color: govuk-colour("dark-grey");
+  color: govuk-colour("black", $variant: "tint-25");
   content: "—";
   margin-left: -(govuk-spacing(4));
 }
 
 .x-govuk-sub-navigation__theme {
   @include govuk-font(19);
-  color: govuk-colour("dark-grey");
+  color: govuk-colour("black", $variant: "tint-25");
   margin: 0;
   padding: govuk-spacing(2) govuk-spacing(3) govuk-spacing(2) 0;
 }
@@ -188,9 +190,18 @@ $_current-link-border-width: govuk-spacing(1);
   }
 }
 
+.govuk-panel__title {
+  word-wrap: break-word;
+}
+
 .app-mono {
   padding: 2px 5px;
   font-family: monospace;
   background-color: $govuk-template-background-colour;
   white-space: pre-wrap;
+}
+
+.finance-panel {
+  background-color: govuk-colour("black", $variant: "tint-95");
+  padding: 20px;
 }

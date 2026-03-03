@@ -1,6 +1,6 @@
 RSpec.describe PaymentCalculator::Banded do
   subject(:banded) do
-    described_class.new(statement:, banded_fee_structure:, declaration_selector:)
+    described_class.new(statement: statement_july, banded_fee_structure:, declaration_selector:)
   end
 
   let(:school_partnership) do
@@ -12,8 +12,44 @@ RSpec.describe PaymentCalculator::Banded do
     FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
   end
 
-  let(:statement) do
-    FactoryBot.create(:statement, active_lead_provider:, contract:, year: 2025, month: 6, payment_date: Date.new(2025, 7, 1))
+  let!(:statement_may) do
+    deadline_date = Date.new(2025, 5, 1).prev_day
+    payment_date = Date.new(2025, 5, 25)
+    FactoryBot.create(
+      :statement,
+      :paid,
+      contract:,
+      deadline_date:,
+      payment_date:,
+      year: payment_date.year,
+      month: payment_date.month
+    )
+  end
+  let!(:statement_june) do
+    deadline_date = Date.new(2025, 6, 1).prev_day
+    payment_date = Date.new(2025, 6, 25)
+    FactoryBot.create(
+      :statement,
+      :paid,
+      contract:,
+      deadline_date:,
+      payment_date:,
+      year: payment_date.year,
+      month: payment_date.month
+    )
+  end
+  let!(:statement_july) do
+    deadline_date = Date.new(2025, 7, 1).prev_day
+    payment_date = Date.new(2025, 7, 25)
+    FactoryBot.create(
+      :statement,
+      :open,
+      contract:,
+      deadline_date:,
+      payment_date:,
+      year: payment_date.year,
+      month: payment_date.month
+    )
   end
 
   let(:banded_fee_structure) do
@@ -37,7 +73,7 @@ RSpec.describe PaymentCalculator::Banded do
       :payable,
       declaration_type: :started,
       training_period:,
-      payment_statement: statement
+      payment_statement: statement_july
     )
   end
   let!(:refundable_declaration) do
@@ -46,7 +82,8 @@ RSpec.describe PaymentCalculator::Banded do
       :awaiting_clawback,
       declaration_type: :completed,
       training_period:,
-      clawback_statement: statement
+      payment_statement: statement_may,
+      clawback_statement: statement_july
     )
   end
   let!(:non_billable_declaration) do
@@ -55,17 +92,13 @@ RSpec.describe PaymentCalculator::Banded do
       :no_payment,
       declaration_type: :completed,
       training_period:,
-      payment_statement: statement
+      payment_statement: statement_july
     )
   end
 
   let(:declaration_selector) { ->(declarations) { declarations } }
 
   describe "#outputs" do
-    let(:previous_statement) do
-      FactoryBot.create(:statement, active_lead_provider:, contract:, year: 2025, month: 5, payment_date: Date.new(2025, 6, 1))
-    end
-
     let(:previous_training_period) do
       FactoryBot.create(:training_period, :for_ect, school_partnership:)
     end
@@ -76,7 +109,7 @@ RSpec.describe PaymentCalculator::Banded do
         :payable,
         declaration_type: :started,
         training_period: previous_training_period,
-        payment_statement: previous_statement
+        payment_statement: statement_june
       )
     end
 
@@ -86,7 +119,8 @@ RSpec.describe PaymentCalculator::Banded do
         :awaiting_clawback,
         declaration_type: :completed,
         training_period: previous_training_period,
-        clawback_statement: previous_statement
+        payment_statement: statement_may,
+        clawback_statement: statement_june
       )
     end
 
@@ -96,7 +130,7 @@ RSpec.describe PaymentCalculator::Banded do
         :no_payment,
         declaration_type: "retained-1",
         training_period: previous_training_period,
-        payment_statement: previous_statement
+        payment_statement: statement_june
       )
     end
 
@@ -164,8 +198,8 @@ RSpec.describe PaymentCalculator::Banded do
 
     context "with adjustments" do
       before do
-        FactoryBot.create(:statement_adjustment, statement:, amount: 150)
-        FactoryBot.create(:statement_adjustment, statement:, amount: -50)
+        FactoryBot.create(:statement_adjustment, statement: statement_july, amount: 150)
+        FactoryBot.create(:statement_adjustment, statement: statement_july, amount: -50)
       end
 
       it "returns the sum of adjustment amounts" do

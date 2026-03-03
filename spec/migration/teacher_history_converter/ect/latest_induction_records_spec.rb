@@ -524,10 +524,11 @@ describe "Latest induction records mode conversion" do
           end_date: Time.zone.parse("2022-8-5"),
           school: school_a,
           training_programme:,
+          cohort_year: 2021,
           training_provider_info: {
             lead_provider: lead_provider_a,
             delivery_partner: delivery_partner_a,
-            cohort_year: 2021
+            cohort_year: 2022
           },
           schedule_info: schedule_a
         },
@@ -536,6 +537,7 @@ describe "Latest induction records mode conversion" do
           end_date: Time.zone.parse("2025-6-6"),
           school: school_b,
           training_programme:,
+          cohort_year: 2023,
           training_provider_info: {
             lead_provider: lead_provider_b,
             delivery_partner: delivery_partner_b,
@@ -550,6 +552,11 @@ describe "Latest induction records mode conversion" do
 
     context "provider_led training" do
       let(:training_programme) { "full_induction_programme" }
+
+      it "sets the cohort to the one from the training_provider_info" do
+        expect(subject.ect_at_school_periods.first.training_periods.first.contract_period_year).to eq 2022
+        expect(subject.ect_at_school_periods.second.training_periods.first.contract_period_year).to eq 2024
+      end
 
       it "adds the correct providers to the training period" do
         expect(subject.ect_at_school_periods.first.training_periods.first.lead_provider_info.name).to eq lead_provider_a[:name]

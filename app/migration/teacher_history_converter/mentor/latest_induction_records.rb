@@ -5,13 +5,14 @@
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :states, :exclude_training_periods
+  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods
 
-  def initialize(trn:, profile_id:, induction_records:, states:, exclude_training_periods: false)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @states = states
+    @transfers = transfers
     @exclude_training_periods = exclude_training_periods
   end
 
@@ -62,7 +63,7 @@ private
 
     training_provider_info = induction_record.training_provider_info
 
-    raise(StandardError, "No training provider info for #{induction_record.induction_record_id}") if training_provider_info.nil?
+    return if training_provider_info.nil?
 
     training_attrs = {
       started_on: induction_record.start_date,
@@ -72,16 +73,22 @@ private
       training_programme:,
       lead_provider_info: training_provider_info&.lead_provider_info,
       delivery_partner_info: training_provider_info&.delivery_partner_info,
-      contract_period_year: induction_record.cohort_year,
+      contract_period_year: training_provider_info&.cohort_year || induction_record.cohort_year,
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
+      api_transfer_updated_at: transfers[training_provider_info.lead_provider_info.ecf1_id],
       combination: build_combination(induction_record:, training_programme:),
       **withdrawal_data(
         training_status: induction_record.training_status,
         lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       )
     }.merge(overrides)
+
+    # if the period is ongoing but has been withdrawn by the provider we should close the period
+    if training_attrs[:finished_on].blank? && training_attrs[:withdrawn_at].present?
+      training_attrs[:finished_on] = [training_attrs[:started_on] + 1.day, training_attrs[:withdrawn_at].to_date].max
+    end
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
   end

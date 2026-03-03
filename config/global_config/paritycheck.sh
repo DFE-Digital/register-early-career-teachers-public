@@ -4,4 +4,4 @@ CONFIG=paritycheck
 CONFIG_SHORT=pc
 ENVIRONMENT=paritycheck
 KV_PURGE_PROTECTION=false
-TERRAFORM_MODULES_TAG=testing
+TERRAFORM_MODULES_TAG=testing-azurerm-v4

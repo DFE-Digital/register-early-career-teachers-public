@@ -19,7 +19,7 @@ RSpec.describe DeclarationHelper, type: :helper do
       let(:overall_status) { "eligible" }
 
       it { is_expected.to include("Eligible") }
-      it { is_expected.to include("govuk-tag--turquoise") }
+      it { is_expected.to include("govuk-tag--teal") }
     end
 
     context "when the overall status is 'payable'" do
@@ -47,7 +47,7 @@ RSpec.describe DeclarationHelper, type: :helper do
       let(:overall_status) { "awaiting_clawback" }
 
       it { is_expected.to include("Awaiting clawback") }
-      it { is_expected.to include("govuk-tag--pink") }
+      it { is_expected.to include("govuk-tag--magenta") }
     end
 
     context "when the overall status is 'clawed_back'" do

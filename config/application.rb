@@ -16,7 +16,7 @@ module RegisterEarlyCareerTeachers
   class Application < Rails::Application
     config.load_defaults 8.0
     config.autoload_lib(ignore: %w[assets tasks])
-    config.assets.paths << Rails.root.join("node_modules/govuk-frontend/dist/govuk/assets")
+    config.assets.paths << Rails.root.join("node_modules/govuk-frontend/dist/govuk")
     config.exceptions_app = routes
     config.active_record.belongs_to_required_by_default = false
     config.generators.system_tests = nil
@@ -52,6 +52,7 @@ module RegisterEarlyCareerTeachers
     config.enable_persona_avatars = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONA_AVATARS", true))
     config.enable_migration_testing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_MIGRATION_TESTING", false))
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SCHOOLS_INTERFACE", false))
+    config.enable_otp_school_sign_in = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_OTP_SCHOOL_SIGN_IN", false))
     config.enable_teaching_school_hubs = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_HUBS", false))
     config.enable_incident_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INCIDENT_BANNER", false))
     config.enable_appropriate_body_records_to_review = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_APPROPRIATE_BODY_RECORDS_TO_REVIEW", false))

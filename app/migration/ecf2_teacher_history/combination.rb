@@ -32,7 +32,7 @@ ECF2TeacherHistory::Combination = Struct.new(
       induction_record_id: induction_record.induction_record_id,
       training_programme: induction_record.training_programme,
       school_urn: induction_record.school.urn,
-      cohort_year: induction_record.cohort_year,
+      cohort_year: induction_record.training_provider_info&.cohort_year || induction_record.cohort_year,
       lead_provider_name: induction_record.training_provider_info&.lead_provider_info&.name,
       delivery_partner_name: induction_record.training_provider_info&.delivery_partner_info&.name,
       start_date: induction_record.start_date,
