@@ -9,15 +9,18 @@ module PaymentCalculator
 
     def outputs
       @outputs ||= Banded::Outputs.new(
-        declarations: filtered_declarations,
-        previous_declarations: filtered_previous_declarations,
+        billable_declarations: filtered_billable_declarations,
+        refundable_declarations: filtered_refundable_declarations,
+        previous_billable_declarations: filtered_previous_billable_declarations,
+        previous_refundable_declarations: filtered_previous_refundable_declarations,
         banded_fee_structure:
       )
     end
 
     def uplifts
       @uplifts ||= Banded::Uplifts.new(
-        declarations: filtered_declarations,
+        billable_declarations: filtered_billable_declarations,
+        refundable_declarations: filtered_refundable_declarations,
         uplift_fee_per_declaration:
       )
     end
@@ -48,25 +51,39 @@ module PaymentCalculator
       @subtotal ||= outputs.total_net_amount +
         uplifts.total_net_amount +
         monthly_service_fee +
-        setup_fee +
         total_manual_adjustments_amount
     end
 
-    def declarations
-      statement.payment_declarations.billable.or(statement.clawback_declarations.refundable)
+    def billable_declarations
+      Declaration.where(payment_statement: statement).billable
     end
 
-    def previous_declarations
+    def refundable_declarations
+      Declaration.where(clawback_statement: statement).refundable
+    end
+
+    def previous_billable_declarations
       Declaration.where(payment_statement: previous_statements).billable
-        .or(Declaration.where(clawback_statement: previous_statements).refundable)
     end
 
-    def filtered_declarations
-      @filtered_declarations ||= declaration_selector.call(declarations)
+    def previous_refundable_declarations
+      Declaration.where(clawback_statement: previous_statements).refundable
     end
 
-    def filtered_previous_declarations
-      @filtered_previous_declarations ||= declaration_selector.call(previous_declarations)
+    def filtered_billable_declarations
+      @filtered_billable_declarations ||= declaration_selector.call(billable_declarations)
+    end
+
+    def filtered_refundable_declarations
+      @filtered_refundable_declarations ||= declaration_selector.call(refundable_declarations)
+    end
+
+    def filtered_previous_billable_declarations
+      @filtered_previous_billable_declarations ||= declaration_selector.call(previous_billable_declarations)
+    end
+
+    def filtered_previous_refundable_declarations
+      @filtered_previous_refundable_declarations ||= declaration_selector.call(previous_refundable_declarations)
     end
 
     def previous_statements

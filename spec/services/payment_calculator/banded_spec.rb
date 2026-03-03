@@ -12,6 +12,7 @@ RSpec.describe PaymentCalculator::Banded do
     FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
   end
 
+  # Previous statements
   let!(:statement_may) do
     deadline_date = Date.new(2025, 5, 1).prev_day
     payment_date = Date.new(2025, 5, 25)
@@ -38,6 +39,7 @@ RSpec.describe PaymentCalculator::Banded do
       month: payment_date.month
     )
   end
+  # Current statement
   let!(:statement_july) do
     deadline_date = Date.new(2025, 7, 1).prev_day
     payment_date = Date.new(2025, 7, 25)
@@ -79,7 +81,8 @@ RSpec.describe PaymentCalculator::Banded do
   let!(:refundable_declaration) do
     FactoryBot.create(
       :declaration,
-      :awaiting_clawback,
+      payment_status: :paid,
+      clawback_status: :awaiting_clawback,
       declaration_type: :completed,
       training_period:,
       payment_statement: statement_may,
@@ -116,7 +119,8 @@ RSpec.describe PaymentCalculator::Banded do
     let!(:previous_refundable_declaration) do
       FactoryBot.create(
         :declaration,
-        :awaiting_clawback,
+        payment_status: :paid,
+        clawback_status: :awaiting_clawback,
         declaration_type: :completed,
         training_period: previous_training_period,
         payment_statement: statement_may,
@@ -134,12 +138,24 @@ RSpec.describe PaymentCalculator::Banded do
       )
     end
 
-    it "initializes with the current statement declarations" do
-      expect(banded.outputs.declarations).to contain_exactly(billable_declaration, refundable_declaration)
+    it "initializes with the current statement billable declarations" do
+      expect(banded.outputs.billable_declarations).to contain_exactly(billable_declaration)
     end
 
-    it "initializes with previous billable and refundable declarations" do
-      expect(banded.outputs.previous_declarations).to contain_exactly(previous_billable_declaration, previous_refundable_declaration)
+    it "initializes with the current statement refundable declarations" do
+      expect(banded.outputs.refundable_declarations).to contain_exactly(refundable_declaration)
+    end
+
+    it "initializes with previous billable declarations" do
+      # previous_billable_declaration: payment_statement=statement_june, payment_status=payable
+      # previous_refundable_declaration: payment_statement=statement_may, payment_status=paid
+      # refundable_declaration: payment_statement=statement_may, payment_status=paid
+      #   (also refundable on the current statement, but still counts as previously billed)
+      expect(banded.outputs.previous_billable_declarations).to contain_exactly(previous_billable_declaration, previous_refundable_declaration, refundable_declaration)
+    end
+
+    it "initializes with previous refundable declarations" do
+      expect(banded.outputs.previous_refundable_declarations).to contain_exactly(previous_refundable_declaration)
     end
 
     it "initializes with the banded fee structure" do
@@ -148,8 +164,12 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   describe "#uplifts" do
-    it "initializes with the current statement declarations" do
-      expect(banded.uplifts.declarations).to contain_exactly(billable_declaration, refundable_declaration)
+    it "initializes with the current statement billable declarations" do
+      expect(banded.uplifts.billable_declarations).to contain_exactly(billable_declaration)
+    end
+
+    it "initializes with the current statement refundable declarations" do
+      expect(banded.uplifts.refundable_declarations).to contain_exactly(refundable_declaration)
     end
 
     it "initializes with the uplift fee per declaration" do
@@ -223,15 +243,15 @@ RSpec.describe PaymentCalculator::Banded do
 
     context "when with_vat is false" do
       it "returns the subtotal" do
-        # subtotal = outputs(200) + uplifts(50) + monthly_service_fee(1000) + setup_fee(500) + adjustments(0)
-        expect(banded.total_amount(with_vat: false)).to eq(1_750)
+        # subtotal = outputs(200) + uplifts(50) + monthly_service_fee(1000) + adjustments(0)
+        expect(banded.total_amount(with_vat: false)).to eq(1_250)
       end
     end
 
     context "when with_vat is true" do
       it "returns the subtotal plus VAT" do
-        # subtotal = 1750, VAT = 1750 * 0.20 = 350
-        expect(banded.total_amount(with_vat: true)).to eq(2_100)
+        # subtotal = 1250, VAT = 1250 * 0.20 = 250
+        expect(banded.total_amount(with_vat: true)).to eq(1_500)
       end
     end
   end
@@ -251,6 +271,6 @@ RSpec.describe PaymentCalculator::Banded do
         .and_return(uplifts_double)
     end
 
-    it { is_expected.to eq(350) }
+    it { is_expected.to eq(250) }
   end
 end

@@ -24,7 +24,8 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
 
   describe "#billable_count" do
     it "counts declarations with billable statuses" do
-      expect(output.billable_count).to eq(3)
+      # eligible(1) + payable(1) + paid(1) + awaiting_clawback(1, payment_status: paid) + clawed_back(1, payment_status: paid)
+      expect(output.billable_count).to eq(5)
     end
   end
 
@@ -36,7 +37,7 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
 
   describe "#total_billable_amount" do
     it "returns billable_count multiplied by fee_per_declaration and fee proportion" do
-      expect(output.total_billable_amount).to eq(3 * 100.0 * 0.25)
+      expect(output.total_billable_amount).to eq(5 * 100.0 * 0.25)
     end
   end
 
@@ -48,7 +49,7 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
 
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
-      expect(output.total_net_amount).to eq(25.0)
+      expect(output.total_net_amount).to eq(75.0)
     end
   end
 
