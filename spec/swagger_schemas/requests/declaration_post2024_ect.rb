@@ -1,7 +1,7 @@
 DECLARATION_POST2024_ECT_STARTED_ATTRIBUTES = {
   description: "An ECT started declaration",
   type: :object,
-  required: %i[participant_id declaration_type declaration_date course_identifier],
+  required: %i[participant_id declaration_type declaration_date course_identifier evidence_held],
   additionalProperties: false,
   properties: {
     participant_id: {
