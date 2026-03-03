@@ -17,7 +17,7 @@ class Migration::MigrationsController < ::AdminController
 
     @teachers_via_latest_induction_records = Teacher.where(migration_mode: "latest_induction_records").count
     @teachers_via_all_induction_records = Teacher.where(migration_mode: "all_induction_records").count
-    @all_migrated_teachers = Teacher.count.where.not(migration_mode: "not_migrated")
+    @all_migrated_teachers = Teacher.where.not(migration_mode: "not_migrated").count
   end
 
   def create
