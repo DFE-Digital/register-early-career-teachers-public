@@ -2,7 +2,7 @@
 title: "Register early career teachers service: supporting videos"
 ---
 
-All data in these videos including names, schools and providers are not real. They're for demonstration purposes only.  
+Scenarios and data used in these videos are for demonstration purposes only. They do not indicate real-life actions.  
 
 ## Register a school's first early career teacher
 
