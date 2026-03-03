@@ -3,4 +3,4 @@ AZURE_SUBSCRIPTION=s189-teacher-services-cloud-test
 CONFIG=review
 CONFIG_SHORT=rv
 KV_PURGE_PROTECTION=false
-TERRAFORM_MODULES_TAG=main
+TERRAFORM_MODULES_TAG=main-azurerm-v4

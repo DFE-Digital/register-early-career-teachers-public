@@ -55,9 +55,9 @@ RSpec.describe Teachers::InductionStatus do
     let(:trs_induction_status) { "InProgress" }
 
     context "without a teacher" do
-      it "has a pink 'Induction paused' status" do
+      it "has a magenta 'Induction paused' status" do
         expect(service.induction_status).to eql("Induction paused")
-        expect(service.induction_status_colour).to eql("pink")
+        expect(service.induction_status_colour).to eql("magenta")
       end
     end
 
@@ -86,9 +86,9 @@ RSpec.describe Teachers::InductionStatus do
                             finished_on: 1.year.ago)
         end
 
-        it "overrides with a pink 'Induction paused' status" do
+        it "overrides with a magenta 'Induction paused' status" do
           expect(service.induction_status).to eql("Induction paused")
-          expect(service.induction_status_colour).to eql("pink")
+          expect(service.induction_status_colour).to eql("magenta")
         end
       end
     end

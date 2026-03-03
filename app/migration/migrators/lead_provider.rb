@@ -28,6 +28,7 @@ module Migrators
       lp = ::LeadProvider.find_or_initialize_by(name: lead_provider.name)
 
       lp.ecf_id = lead_provider.id
+      lp.ecf_cpd_lead_provider_id = lead_provider.cpd_lead_provider_id
       lp.created_at = lead_provider.created_at
       lp.updated_at = lead_provider.updated_at
       lp.save!

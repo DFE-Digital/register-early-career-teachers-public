@@ -10,7 +10,7 @@ class EROMentorChecker
   end
 
   def relevant_declarations
-    @relevant_declarations ||= participant_profile.participant_declarations.where(state: %w[paid clawed_back])
+    @relevant_declarations ||= participant_profile.participant_declarations.where(state: %w[paid awaiting_clawback clawed_back])
   end
 
   def ero_mentor_with_declarations?

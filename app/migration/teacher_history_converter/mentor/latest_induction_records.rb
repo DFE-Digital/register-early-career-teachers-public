@@ -85,6 +85,11 @@ private
       )
     }.merge(overrides)
 
+    # if the period is ongoing but has been withdrawn by the provider we should close the period
+    if training_attrs[:finished_on].blank? && training_attrs[:withdrawn_at].present?
+      training_attrs[:finished_on] = [training_attrs[:started_on] + 1.day, training_attrs[:withdrawn_at].to_date].max
+    end
+
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
   end
 

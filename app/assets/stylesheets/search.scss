@@ -1,3 +1,5 @@
+@use "govuk-frontend/dist/govuk" as *;
+
 .app-search-form {
   // Inline the input and button on tablet and up
   align-items: flex-end;

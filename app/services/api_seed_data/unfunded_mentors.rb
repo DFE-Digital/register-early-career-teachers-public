@@ -25,31 +25,40 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      lead_providers = ActiveLeadProvider.all.map(&:lead_provider).uniq
-      existing_unfunded_mentors = lead_providers.any? do
-        API::Teachers::UnfundedMentors::Query.new(
-          lead_provider_id: it.id
-        )
-        .unfunded_mentors
-        .exists?
-      end
-
-      super && !existing_unfunded_mentors
-    end
-
   private
 
-    def setup_data
-      active_lead_providers = ActiveLeadProvider.includes(:lead_provider).all
-      lead_providers = active_lead_providers.map(&:lead_provider).uniq
-      school_partnerships_by_lp = SchoolPartnership
-        .joins(lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
-        .group_by { |sp| sp.lead_provider_delivery_partnership.active_lead_provider.lead_provider }
+    # Interleaves partnerships from different contract years.
+    #
+    # Example:
+    #   {2021:[A,B,C], 2022:[D,E], 2023:[F]}
+    #   => [A,D,F,B,E,C]
+    #
+    # Ensures partnerships are evenly distributed across years.
+    def alternate_by_year(partnerships)
+      grouped_partnerships = partnerships
+                               .group_by { |sp| sp.lead_provider_delivery_partnership.contract_period.year }
+                               .sort
+                               .map(&:last)
 
-      [lead_providers, school_partnerships_by_lp]
+      max_size = grouped_partnerships.map(&:size).max || 0
+
+      (0...max_size).flat_map { |i| grouped_partnerships.filter_map { it[i] } }
+    end
+
+    def setup_data
+      lead_providers = ActiveLeadProvider.includes(:lead_provider).map(&:lead_provider).uniq
+
+      partnerships = SchoolPartnership.includes(
+        lead_provider_delivery_partnership: {
+          active_lead_provider: %i[lead_provider contract_period]
+        }
+      )
+
+      school_partnerships_by_lead_provider = partnerships
+        .group_by { |sp| sp.lead_provider_delivery_partnership.lead_provider }
+        .transform_values { |ps| alternate_by_year(ps) }
+
+      [lead_providers, school_partnerships_by_lead_provider]
     end
 
     def select_mentor_lp(lead_providers, mentee_lp)
@@ -58,12 +67,14 @@ module APISeedData
     end
 
     def create_unfunded_mentors(mentee_lp, mentor_lp, mentee_partnerships, mentor_partnerships)
-      mentee_partnerships_cycle = mentee_partnerships.cycle
+      return unless mentee_partnerships && mentor_partnerships
+
+      mentee_school_partnership_cycle = mentee_partnerships.cycle
+      mentor_school_partnership_cycle = mentor_partnerships.cycle
 
       MIN_UNFUNDED_MENTORS_PER_LP.times do |i|
-        mentee_school_partnership = mentee_partnerships_cycle.next
-
-        mentor_lpdp = mentor_partnerships.first.lead_provider_delivery_partnership
+        mentee_school_partnership = mentee_school_partnership_cycle.next
+        mentor_lpdp = mentor_school_partnership_cycle.next.lead_provider_delivery_partnership
 
         mentor_school_partnership = SchoolPartnership.find_or_create_by!(
           school: mentee_school_partnership.school,
@@ -101,7 +112,7 @@ module APISeedData
       mentor_name = ::Teachers::Name.new(mentorship_period.mentor.teacher).full_name
 
       log_seed_info(
-        "Unfunded mentor ##{index + 1}: #{mentor_name} (trained by #{mentor_lp.name}) mentoring #{mentee_name} (trained by #{mentee_lp.name})"
+        "Unfunded mentor ##{index + 1}: (TRN: #{mentorship_period.mentor.teacher.trn}) - #{mentor_name} - #{mentorship_period.mentor.latest_training_period.contract_period.year} - (trained by #{mentor_lp.name}) mentoring #{mentee_name} #{mentorship_period.mentee.latest_training_period.contract_period.year} (trained by #{mentee_lp.name})"
       )
     end
   end
