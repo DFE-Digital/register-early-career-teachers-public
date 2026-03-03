@@ -18,9 +18,9 @@ RSpec.describe Migration::DetectedECF1MentorshipsExporter do
     let!(:csv_output) { exporter.generate_csv }
     let(:csv_data) do
       <<~CSV
-        ect_participant_profile_id,mentor_participant_profile_id,started_on,finished_on,ecf_start_induction_record_id,ecf_end_induction_record_id,migrated
-        7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,ab3d41f5-c42a-4396-80e6-7456f2856253,2023-02-09,2023-12-09,e491dde6-90c5-473d-b6e2-3b4c63ce90e7,e491dde6-90c5-473d-b6e2-3b4c63ce90e7,false
-        7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,9246931b-bd85-445f-aea6-8802c124d9d9,2023-13-09,,f6f40352-9141-4b00-bcb7-c5250b9ecfc8,f6f40352-9141-4b00-bcb7-c5250b9ecfc8,true
+        ect_participant_profile_id,mentor_participant_profile_id,started_on,finished_on,ecf_start_induction_record_id,ecf_end_induction_record_id,migrated,migration_mode
+        7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,ab3d41f5-c42a-4396-80e6-7456f2856253,2023-02-09,2023-12-09,e491dde6-90c5-473d-b6e2-3b4c63ce90e7,e491dde6-90c5-473d-b6e2-3b4c63ce90e7,false,latest_induction_records
+        7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,9246931b-bd85-445f-aea6-8802c124d9d9,2023-13-09,,f6f40352-9141-4b00-bcb7-c5250b9ecfc8,f6f40352-9141-4b00-bcb7-c5250b9ecfc8,true,latest_induction_records
       CSV
     end
 

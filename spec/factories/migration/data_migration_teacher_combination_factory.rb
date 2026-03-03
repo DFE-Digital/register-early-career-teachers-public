@@ -3,6 +3,7 @@ FactoryBot.define do
     api_id { SecureRandom.uuid }
     ecf1_ect_profile_id { SecureRandom.uuid }
     ecf1_mentor_profile_id { SecureRandom.uuid }
+    migration_mode { "latest_induction_records" }
 
     ecf1_ect_combinations do
       ["<8aa33fa7-6a9f-4291-9da5-5f9170355871: 222222: 2049: Lead provider A>",

@@ -434,6 +434,7 @@
   - ecf2_mentorships
   - ecf1_mentorships_count
   - ecf2_mentorships_count
+  - migration_mode
   :data_migration_failed_combinations:
   - id
   - trn
