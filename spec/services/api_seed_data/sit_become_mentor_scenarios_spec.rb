@@ -129,5 +129,25 @@ RSpec.describe APISeedData::SITBecomeMentorScenarios do
         expect(mentor_teacher.trs_last_name).to eq("Smith")
       end
     end
+
+    context "mentors who became SITs" do
+      let(:sit_year) { 2024 }
+      let(:mentor_year) { 2022 }
+
+      it "updates mentor teacher name to match the SIT" do
+        instance.plant
+
+        mentor_teacher.reload
+        expect(mentor_teacher.trs_first_name).to eq("Jane")
+        expect(mentor_teacher.trs_last_name).to eq("Smith")
+      end
+
+      it "updates mentor period email to match the SIT" do
+        instance.plant
+
+        mentor_period.reload
+        expect(mentor_period.email).to eq("jane.smith@example.com")
+      end
+    end
   end
 end
