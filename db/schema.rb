@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_02_151258) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -223,9 +223,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_151258) do
     t.integer "schedule_cohort_year"
     t.string "preferred_identity_email"
     t.text "failure_message"
+    t.string "migration_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "migration_mode"
   end
 
   create_table "data_migration_failed_mentorships", force: :cascade do |t|
@@ -236,9 +236,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_151258) do
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.text "failure_message"
+    t.string "migration_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "migration_mode"
   end
 
   create_table "data_migration_teacher_combinations", force: :cascade do |t|
@@ -259,6 +259,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_151258) do
     t.virtual "ecf1_mentorships_count", type: :integer, as: "jsonb_array_length(ecf1_mentorships)", stored: true
     t.virtual "ecf2_mentorships_count", type: :integer, as: "jsonb_array_length(ecf2_mentorships)", stored: true
     t.uuid "api_id"
+    t.string "migration_mode"
   end
 
   create_table "data_migrations", force: :cascade do |t|
