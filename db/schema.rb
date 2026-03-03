@@ -223,6 +223,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
     t.integer "schedule_cohort_year"
     t.string "preferred_identity_email"
     t.text "failure_message"
+    t.string "migration_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -235,6 +236,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
     t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
     t.text "failure_message"
+    t.string "migration_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
