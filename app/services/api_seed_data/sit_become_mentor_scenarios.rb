@@ -3,21 +3,32 @@ module APISeedData
     def plant
       return unless plantable?
 
-      log_plant_info("api mentor seed scenarios (SITs who became mentors)")
+      log_plant_info("api mentor seed scenarios (SITs who became mentors and mentors who became SITs)")
 
+      # SITs who became mentors
       # 2x mentors at 2022 partnership schools who were previously the SIT, now 2024 mentors
-      sits_who_became_mentors(sit_year: 2022, mentor_year: 2024, count: 2)
+      update_mentors_to_match_sit(sit_year: 2022, mentor_year: 2024, count: 2)
 
       # 2x mentors at 2023 partnership schools who were previously the SIT, now 2025 mentors
-      sits_who_became_mentors(sit_year: 2023, mentor_year: 2025, count: 2)
+      update_mentors_to_match_sit(sit_year: 2023, mentor_year: 2025, count: 2)
 
       # 2x mentors at 2025 partnership schools who were previously the SIT, now 2025 mentors
-      sits_who_became_mentors(sit_year: 2025, mentor_year: 2025, count: 2)
+      update_mentors_to_match_sit(sit_year: 2025, mentor_year: 2025, count: 2)
+
+      # Mentors who became SITs
+      # 2x 2022 mentors who became 2024 SITs
+      update_mentors_to_match_sit(mentor_year: 2022, sit_year: 2024, count: 2)
+
+      # 2x 2023 mentors who became 2025 SITs
+      update_mentors_to_match_sit(mentor_year: 2023, sit_year: 2025, count: 2)
+
+      # 2x 2025 mentors who became 2025 SITs
+      update_mentors_to_match_sit(mentor_year: 2025, sit_year: 2025, count: 2)
     end
 
   private
 
-    def sits_who_became_mentors(sit_year:, mentor_year:, count:)
+    def update_mentors_to_match_sit(sit_year:, mentor_year:, count:)
       count.times do
         LeadProvider.find_each do |lead_provider|
           school_partnership = SchoolPartnership
