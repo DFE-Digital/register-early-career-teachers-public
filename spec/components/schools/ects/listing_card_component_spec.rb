@@ -184,18 +184,25 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
         reported_leaving_by_school_id: school.id
       )
 
-      render_inline(described_class.new(
-                      teacher:,
-                      ect_at_school_period:,
-                      training_period:,
-                      current_school: school
-                    ))
+      render_inline(
+        described_class.new(
+          teacher:,
+          ect_at_school_period:,
+          training_period:,
+          current_school: school
+        )
+      )
     end
 
     it "does not show the withdrawn warning link" do
       expect(rendered_content).not_to have_link(
         "continuing their training or if they have left your school."
       )
+    end
+
+    it "does not render lead provider or delivery partner rows" do
+      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).not_to have_selector(".govuk-summary-list__row", text: "Delivery partner")
     end
   end
 
@@ -279,6 +286,29 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
       expect(rendered_content).to have_text(training_period.delivery_partner_name)
+    end
+  end
+
+  context "when training is deferred and the ECT is reported as leaving by the current school" do
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+
+    before do
+      training_period.update!(
+        deferred_at: Time.zone.today,
+        deferral_reason: valid_deferral_reason
+      )
+
+      ect_at_school_period.update!(
+        finished_on: Time.zone.today + 1.day,
+        reported_leaving_by_school_id: school.id
+      )
+
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
+    end
+
+    it "still renders lead provider and delivery partner rows" do
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Lead provider")
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Delivery partner")
     end
   end
 
