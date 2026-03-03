@@ -170,6 +170,35 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
   end
 
+  context "when training is withdrawn and the ECT is leaving" do
+    let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
+
+    before do
+      training_period.update!(
+        withdrawn_at: Time.zone.today,
+        withdrawal_reason: valid_withdrawal_reason
+      )
+
+      ect_at_school_period.update!(
+        finished_on: Time.zone.today + 1.day,
+        reported_leaving_by_school_id: school.id
+      )
+
+      render_inline(described_class.new(
+                      teacher:,
+                      ect_at_school_period:,
+                      training_period:,
+                      current_school: school
+                    ))
+    end
+
+    it "does not show the withdrawn warning link" do
+      expect(rendered_content).not_to have_link(
+        "continuing their training or if they have left your school."
+      )
+    end
+  end
+
   context "when training is withdrawn and the ECT has no mentor assigned" do
     let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
 

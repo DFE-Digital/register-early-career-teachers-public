@@ -113,6 +113,12 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
       )
     end
 
+    before do
+      allow(component).to receive(:leaving_school?).and_return(false)
+      allow(component).to receive_messages(leaving_school?: false, exempt?: false)
+      render_inline(component)
+    end
+
     it "shows the action required tag and withdrawn message" do
       expect(page).to have_text("is no longer training with them")
     end
@@ -133,7 +139,10 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     end
 
     it "links 'changing their programme type to school-led' to the change training programme journey start" do
-      expect(page).to have_link("changing their programme type to school-led", href: schools_ects_change_training_programme_wizard_edit_path(ect_id: ect_at_school_period.id))
+      expect(page).to have_link(
+        "changing their programme type to school-led",
+        href: schools_ects_change_training_programme_wizard_edit_path(ect_id: ect_at_school_period.id)
+      )
     end
 
     it "does not render the normal summary list" do
@@ -146,24 +155,38 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
     context "when the ECT is leaving the school" do
       before do
         allow(component).to receive(:leaving_school?).and_return(true)
+        allow(component).to receive_messages(leaving_school?: true, exempt?: false)
         render_inline(component)
       end
 
-      it "does not show the withdrawn guidance links" do
+      it "does not render withdrawn guidance links" do
         expect(page).not_to have_link("select a lead provider")
         expect(page).not_to have_link("changing their programme type to school-led")
+        expect(page).not_to have_text("is no longer training with them")
+      end
+
+      it "renders the normal training details summary list instead" do
+        expect(page).to have_css(".govuk-summary-list")
+        expect(page).to have_summary_list_row("Training programme")
       end
     end
 
     context "when the ECT is exempt" do
       before do
-        allow(component).to receive(:exempt?).and_return(true)
+        allow(component).to receive(:leaving_school?).and_return(false)
+        allow(component).to receive_messages(leaving_school?: false, exempt?: true)
         render_inline(component)
       end
 
-      it "does not show the withdrawn guidance links" do
+      it "does not render withdrawn guidance links" do
         expect(page).not_to have_link("select a lead provider")
         expect(page).not_to have_link("changing their programme type to school-led")
+        expect(page).not_to have_text("is no longer training with them")
+      end
+
+      it "renders the normal training details summary list instead" do
+        expect(page).to have_css(".govuk-summary-list")
+        expect(page).to have_summary_list_row("Training programme")
       end
     end
   end
@@ -226,7 +249,16 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
 
   describe "#lead_provider_display_text" do
     context "with confirmed partnership" do
-      let(:training_period) { FactoryBot.create(:training_period, :provider_led, :with_school_partnership, ect_at_school_period:, started_on: ect_at_school_period.started_on, finished_on: ect_at_school_period.finished_on) }
+      let(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :with_school_partnership,
+          ect_at_school_period:,
+          started_on: ect_at_school_period.started_on,
+          finished_on: ect_at_school_period.finished_on
+        )
+      end
 
       it "shows confirmed status" do
         expect(component.send(:lead_provider_display_text)).to include("Confirmed by")

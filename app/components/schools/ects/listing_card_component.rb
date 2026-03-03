@@ -27,6 +27,8 @@ module Schools
       end
 
       def withdrawn?
+        return false if leaving_school? || exempt?
+
         training_period&.provider_led_training_programme? && training_period.status == :withdrawn
       end
 
