@@ -92,7 +92,8 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
 
         training_period.update!(
           withdrawn_at: Time.zone.today,
-          withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
+          withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
+          finished_on: Time.zone.today
         )
 
         training_period
@@ -137,7 +138,8 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
 
         training_period.update!(
           deferred_at: Time.zone.today,
-          deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+          deferral_reason: TrainingPeriod.deferral_reasons.keys.first,
+          finished_on: Time.zone.today
         )
 
         training_period
@@ -173,7 +175,8 @@ describe Schools::ECTs::ChangeLeadProviderWizard::CheckAnswersStep do
           withdrawn_at: Time.zone.today,
           withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
           deferred_at: Time.zone.today,
-          deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+          deferral_reason: TrainingPeriod.deferral_reasons.keys.first,
+          finished_on: Time.zone.today
         )
 
         training_period
