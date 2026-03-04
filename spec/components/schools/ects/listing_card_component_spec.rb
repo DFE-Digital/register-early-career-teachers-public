@@ -90,7 +90,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
         withdrawn_at: Time.zone.today,
         withdrawal_reason: valid_withdrawal_reason,
         deferred_at: Time.zone.today,
-        deferral_reason: valid_deferral_reason
+        deferral_reason: valid_deferral_reason,
+        finished_on: Time.zone.today
       )
 
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
@@ -177,7 +178,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before do
       training_period.update!(
         withdrawn_at: Time.zone.today,
-        withdrawal_reason: valid_withdrawal_reason
+        withdrawal_reason: valid_withdrawal_reason,
+        finished_on: Time.zone.today
       )
 
       ect_at_school_period.update!(
@@ -234,7 +236,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
 
     before do
       FactoryBot.create(:mentorship_period, :ongoing, started_on: ect_at_school_period.started_on, mentee: ect_at_school_period, mentor:)
-      training_period.update!(withdrawn_at: Time.zone.today, withdrawal_reason: valid_withdrawal_reason)
+      training_period.update!(withdrawn_at: Time.zone.today, withdrawal_reason: valid_withdrawal_reason, finished_on: Time.zone.today)
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
     end
 
