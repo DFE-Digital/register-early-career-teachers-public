@@ -45,8 +45,8 @@ RSpec.describe Teachers::SchoolTransfers::History do
       before do
         school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago)
         add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
-        add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :school_led)
+        add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1, transfer: true)
+        add_training_period(school_period1, from: 1.year.ago, to: 1.week.ago, programme_type: :school_led, transfer: true)
       end
 
       it "returns no transfers for lead provider #1" do
@@ -144,8 +144,8 @@ RSpec.describe Teachers::SchoolTransfers::History do
       before do
         school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        school_period2 = create_school_period(teacher, from: 2.years.ago)
-        @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
+        school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
+        @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider1, transfer: true)
         add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider2)
       end
 
@@ -188,8 +188,8 @@ RSpec.describe Teachers::SchoolTransfers::History do
       before do
         school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        school_period2 = create_school_period(teacher, from: 2.years.ago)
-        @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider2)
+        school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
+        @training_period2 = add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: lead_provider2, transfer: true)
         add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider3)
       end
 
@@ -247,8 +247,8 @@ RSpec.describe Teachers::SchoolTransfers::History do
       before do
         school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
-        school_period2 = create_school_period(teacher, from: 2.years.ago)
-        @training_period2 = add_training_period(school_period2, from: 2.years.ago, programme_type: :school_led)
+        school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
+        @training_period2 = add_training_period(school_period2, from: 2.years.ago, programme_type: :school_led, transfer: true)
       end
 
       it "returns a new_provider transfer for lead provider #1" do
@@ -277,8 +277,8 @@ RSpec.describe Teachers::SchoolTransfers::History do
       before do
         school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :school_led)
-        school_period2 = create_school_period(teacher, from: 2.years.ago)
-        @training_period2 = add_training_period(school_period2, from: 2.years.ago, programme_type: :provider_led, with: lead_provider1)
+        school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
+        @training_period2 = add_training_period(school_period2, from: 2.years.ago, programme_type: :provider_led, with: lead_provider1, transfer: true)
       end
 
       it "returns a new_provider transfer for lead provider #1" do
@@ -307,9 +307,9 @@ RSpec.describe Teachers::SchoolTransfers::History do
       before do
         school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
         add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :school_led)
-        school_period2 = create_school_period(teacher, from: 2.years.ago)
-        add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :school_led)
-        add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider1)
+        school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
+        add_training_period(school_period2, from: 2.years.ago, to: 1.year.ago, programme_type: :school_led, transfer: true)
+        add_training_period(school_period2, from: 1.year.ago, programme_type: :provider_led, with: lead_provider1, transfer: true)
       end
 
       it "returns no transfers for lead provider #1" do

@@ -24,7 +24,7 @@ describe MentorAtSchoolPeriod do
     let(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
     let(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
 
-    let(:finished)  { FactoryBot.create(:ect_at_school_period, school:, finished_on: Time.zone.today) }
+    let(:finished)  { FactoryBot.create(:ect_at_school_period, school:, finished_on: Time.zone.yesterday) }
     let(:finishing) { FactoryBot.create(:ect_at_school_period, school:, finished_on: 1.week.from_now) }
     let(:current)   { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
     let(:upcoming)  { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.week.from_now) }

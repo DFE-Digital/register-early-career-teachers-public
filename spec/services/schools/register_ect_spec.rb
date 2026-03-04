@@ -128,7 +128,7 @@ RSpec.describe Schools::RegisterECT do
 
             # The ongoing period at the other school should be closed
             ongoing_period = teacher.ect_at_school_periods.find_by(school: other_school)
-            expect(ongoing_period.finished_on).to eq(started_on)
+            expect(ongoing_period.finished_on).to eq(started_on - 1.day)
 
             # New period at current school should be created
             new_period = teacher.ect_at_school_periods.find_by(school:, finished_on: nil)
@@ -301,6 +301,7 @@ RSpec.describe Schools::RegisterECT do
       let(:lead_provider) { nil }
       let(:other_school) { FactoryBot.create(:school) }
       let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:expected_finished_on) { started_on.yesterday }
 
       let!(:existing_period) do
         FactoryBot.create(
@@ -315,14 +316,14 @@ RSpec.describe Schools::RegisterECT do
       it "closes the ongoing ECT period at the previous school" do
         expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
           ect_at_school_period: existing_period,
-          finished_on: started_on,
+          finished_on: expected_finished_on,
           author:
         ).and_call_original
 
         service.register!
 
         existing_period.reload
-        expect(existing_period.finished_on).to eq(started_on)
+        expect(existing_period.finished_on).to eq(expected_finished_on)
       end
 
       it "allows registration at the new school" do
@@ -338,14 +339,14 @@ RSpec.describe Schools::RegisterECT do
         it "closes ongoing periods that started on or before today" do
           expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
             ect_at_school_period: existing_period,
-            finished_on: started_on,
+            finished_on: expected_finished_on,
             author:
           ).and_call_original
 
           service.register!
 
           existing_period.reload
-          expect(existing_period.finished_on).to eq(started_on)
+          expect(existing_period.finished_on).to eq(expected_finished_on)
         end
       end
 
@@ -364,14 +365,14 @@ RSpec.describe Schools::RegisterECT do
         it "closes the existing period that started before today when new period starts today" do
           expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
             ect_at_school_period: existing_period,
-            finished_on: started_on,
+            finished_on: expected_finished_on,
             author:
           ).and_call_original
 
           service.register!
 
           existing_period.reload
-          expect(existing_period.finished_on).to eq(started_on)
+          expect(existing_period.finished_on).to eq(expected_finished_on)
 
           new_period = teacher.ect_at_school_periods.find_by(school:)
           expect(new_period.started_on).to eq(started_on)
