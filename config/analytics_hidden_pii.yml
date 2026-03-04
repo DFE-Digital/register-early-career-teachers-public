@@ -22,8 +22,6 @@ shared:
   :pending_induction_submission_batches:
     - data
     - file_name
-  :declarations:
-    - voided_by_user_id
   :schools:
     - induction_tutor_name
     - induction_tutor_email
