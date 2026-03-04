@@ -24,12 +24,6 @@ module APISeedData
       Milestone.insert_all(milestones.flatten)
     end
 
-  protected
-
-    def plantable?
-      super && Schedule.none?
-    end
-
   private
 
     def describe_schedule_and_milestones(schedule:, year:, milestones:)

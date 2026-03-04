@@ -38,11 +38,6 @@ RSpec.describe APISeedData::Contracts do
       expect(logger).to have_received(:info).with(/Contracts for #{mentor_funding_active_lead_provider.contract_period.year}: \d+ ITTECF ECTP/).once
     end
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(Contract, :count)
-      expect { instance.plant }.not_to change(Contract, :count)
-    end
-
     context "when in the production environment" do
       let(:environment) { "production" }
 

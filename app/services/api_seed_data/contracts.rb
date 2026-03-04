@@ -25,12 +25,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && Contract.none?
-    end
-
   private
 
     def describe_contracts(active_lead_provider, contracts)

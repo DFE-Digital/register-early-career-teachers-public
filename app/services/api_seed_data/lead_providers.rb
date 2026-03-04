@@ -48,12 +48,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && LeadProvider.none?
-    end
-
   private
 
     def colour(index)

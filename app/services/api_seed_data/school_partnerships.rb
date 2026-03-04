@@ -20,12 +20,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && SchoolPartnership.none?
-    end
-
   private
 
     def create_school_partnership(active_lead_provider, school: nil)

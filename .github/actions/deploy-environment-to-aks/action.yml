@@ -103,26 +103,6 @@ runs:
 
         echo "api_author=$api_author" >> $GITHUB_OUTPUT
 
-    - name: Run API seed task
-      if: (steps.check_label.outputs.has_label == 'true' || steps.check_author.outputs.api_author == 'true') && inputs.pull-request-number != '' && inputs.environment != 'production'
-      shell: bash
-      run: |
-          echo "Running API seeds..."
-          make ci review get-cluster-credentials
-          kubectl exec -n cpd-development \
-            deployment/cpd-ec2-review-${{ inputs.pull-request-number }}-web \
-            -- sh -c '
-              cd /app &&
-              DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
-              RAILS_ENV=${{ inputs.environment }} \
-              /usr/local/bin/bundle exec rails db:truncate_all &&
-              DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
-              RAILS_ENV=${{ inputs.environment }} \
-              /usr/local/bin/bundle exec rake api_seed_data:generate
-            '
-      env:
-        PULL_REQUEST_NUMBER: ${{ inputs.pull-request-number }}
-
     - name: Run default seed task
       if: inputs.pull-request-number != '' && inputs.environment != 'production'
       shell: bash
@@ -130,12 +110,23 @@ runs:
         echo "Running default seeds..."
         make ci review get-cluster-credentials
 
-        if [[ "${{ steps.check_label.outputs.has_label }}" == "true" || "${{ steps.check_author.outputs.api_author }}" == "true" ]]; then
-          COMMAND="rails db:seed"
-        else
-          COMMAND="rails db:seed:replant"
-        fi
+        kubectl exec -n cpd-development deployment/cpd-ec2-review-${{ inputs.pull-request-number }}-web -- sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=${{ inputs.environment }} /usr/local/bin/bundle exec rails db:seed:replant"
+      env:
+        PULL_REQUEST_NUMBER: ${{ inputs.pull-request-number }}
 
-        kubectl exec -n cpd-development deployment/cpd-ec2-review-${{ inputs.pull-request-number }}-web -- sh -c "cd /app && DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=${{ inputs.environment }} /usr/local/bin/bundle exec $COMMAND"
+    - name: Run API seeds background job
+      if: (steps.check_label.outputs.has_label == 'true' || steps.check_author.outputs.api_author == 'true') && inputs.pull-request-number != '' && inputs.environment != 'production'
+      shell: bash
+      run: |
+          echo "Running API seeds background job..."
+          make ci review get-cluster-credentials
+          kubectl exec -n cpd-development \
+            deployment/cpd-ec2-review-${{ inputs.pull-request-number }}-web \
+            -- sh -c '
+              cd /app &&
+              DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
+              RAILS_ENV=${{ inputs.environment }} \
+              /usr/local/bin/bundle exec rails runner "RunAPISeedsJob.perform_later"
+            '
       env:
         PULL_REQUEST_NUMBER: ${{ inputs.pull-request-number }}
