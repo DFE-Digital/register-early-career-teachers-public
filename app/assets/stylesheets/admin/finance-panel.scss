@@ -1,3 +1,5 @@
+@use "govuk-frontend/dist/govuk" as *;
+
 .finance-panel {
   background-color: govuk-colour("black", $variant: "tint-95");
   padding: 20px;
