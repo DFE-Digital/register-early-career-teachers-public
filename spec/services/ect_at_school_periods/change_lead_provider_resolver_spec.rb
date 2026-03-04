@@ -1,4 +1,4 @@
-RSpec.describe ECTAtSchoolPeriods::LeadProviderResolver do
+RSpec.describe ECTAtSchoolPeriods::ChangeLeadProviderResolver do
   describe "#call" do
     subject(:resolver) { described_class.new(ect_at_school_period) }
 

@@ -56,7 +56,6 @@ module ECTHelper
   # @param training_period [TrainingPeriod, nil]
   def training_period_withdrawn_message_text(teacher_name:, training_period:)
     return nil if training_period.blank?
-    return nil unless training_period.provider_led_training_programme?
     return nil unless training_period.status == :withdrawn
 
     lp_name = training_period_lead_provider_name(training_period)
@@ -70,7 +69,6 @@ module ECTHelper
   # @param training_period [TrainingPeriod, nil]
   def training_period_deferred_message_text(teacher_name:, training_period:)
     return nil if training_period.blank?
-    return nil unless training_period.provider_led_training_programme?
     return nil unless training_period.status == :deferred
 
     lp_name = training_period_lead_provider_name(training_period)

@@ -33,11 +33,11 @@ module Schools
       end
 
       def withdrawn_training_period?
-        training_period&.provider_led_training_programme? && training_period.status == :withdrawn
+        training_period&.status == :withdrawn
       end
 
       def deferred?
-        training_period&.provider_led_training_programme? && training_period.status == :deferred
+        training_period&.status == :deferred
       end
 
       def leaving_school?
@@ -53,9 +53,7 @@ module Schools
       end
 
       def show_lead_provider_delivery_partner_rows?
-        return false if withdrawn_training_period?
-
-        true
+        !withdrawn_training_period?
       end
 
       def withdrawn_message_text
