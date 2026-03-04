@@ -8,7 +8,7 @@ This data helps providers monitor eligibility, progress, and training milestones
  
 For detailed technical specifications, see the [Swagger API documentation for participants endpoints](/api/docs/v3#/Participants).  
 
-Read our guidance on [how we assign participant schedules](/api/guidance/guidance-for-lead-providers/how-we-assign-participant-schedules).  
+Read our guidance on [schedules and milestones](/api/guidance/guidance-for-lead-providers/schedules-and-milestones-guidance).  
 
 ## Which ECTs or mentors are surfaced in the `GET /participants` endpoints 
 
