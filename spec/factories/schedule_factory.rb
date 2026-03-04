@@ -21,7 +21,10 @@ FactoryBot.define do
           { declaration_type: "retained-2", start_date: Date.new(year + 1, 4, 1), milestone_date: Date.new(year + 1, 7, 31) },
           { declaration_type: "retained-3", start_date: Date.new(year + 1, 8, 1), milestone_date: Date.new(year + 1, 12, 31) },
           { declaration_type: "retained-4", start_date: Date.new(year + 2, 1, 1), milestone_date: Date.new(year + 2, 3, 31) },
-          { declaration_type: "completed",  start_date: Date.new(year + 2, 4, 1), milestone_date: Date.new(year + 2, 7, 31) }
+          { declaration_type: "completed",  start_date: Date.new(year + 2, 4, 1), milestone_date: Date.new(year + 2, 7, 31) },
+          { declaration_type: "extended-1", start_date: Date.new(year + 2, 8, 1), milestone_date: Date.new(year + 2, 12, 31) },
+          { declaration_type: "extended-2", start_date: Date.new(year + 3, 1, 1), milestone_date: Date.new(year + 3, 3, 31) },
+          { declaration_type: "extended-3", start_date: Date.new(year + 3, 4, 1), milestone_date: Date.new(year + 3, 7, 31) },
         ]
 
         milestone_data.each do |attrs|
