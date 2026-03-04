@@ -39,4 +39,28 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       expect(rendered).to have_link("Authorise for payment", href: new_admin_finance_statement_authorisation_path(statement))
     end
   end
+
+  context "when the statement is for an ECF contract" do
+    let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20) }
+
+    let(:statement_rec) { FactoryBot.create(:statement, :payable, active_lead_provider:, year: 2024, month: 9, deadline_date:, payment_date:, contract:) }
+
+    it "displays the ECF payment overview component" do
+      render
+
+      expect(rendered).to have_text("Uplift fees")
+    end
+  end
+
+  context "when the statement is for an ITTECF ECTP contract" do
+    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20) }
+
+    let(:statement_rec) { FactoryBot.create(:statement, :payable, active_lead_provider:, year: 2025, month: 9, deadline_date:, payment_date:, contract:) }
+
+    it "displays the ITTECF ECTP payment overview component" do
+      render
+
+      expect(rendered).to have_text("Mentors output payment")
+    end
+  end
 end
