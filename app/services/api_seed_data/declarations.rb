@@ -24,10 +24,6 @@ module APISeedData
 
   protected
 
-    def plantable?
-      super && Declaration.none?
-    end
-
     def teacher_types
       %i[ect mentor]
     end

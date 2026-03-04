@@ -56,12 +56,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && Statement.none?
-    end
-
   private
 
     def active_lead_providers_by_lead_provider

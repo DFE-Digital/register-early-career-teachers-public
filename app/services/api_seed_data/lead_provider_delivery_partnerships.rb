@@ -26,12 +26,6 @@ module APISeedData
       log_shared_delivery_partner_info
     end
 
-  protected
-
-    def plantable?
-      super && LeadProviderDeliveryPartnership.none?
-    end
-
   private
 
     def log_shared_delivery_partner_info

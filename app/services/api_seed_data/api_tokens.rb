@@ -20,12 +20,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && API::Token.none?
-    end
-
   private
 
     def describe_api_token(lead_provider_name, token)
