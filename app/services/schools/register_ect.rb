@@ -131,7 +131,7 @@ module Schools
 
       ECTAtSchoolPeriods::Finish.new(
         ect_at_school_period: ongoing_period,
-        finished_on: started_on,
+        finished_on: started_on.yesterday,
         author:
       ).finish!
     end

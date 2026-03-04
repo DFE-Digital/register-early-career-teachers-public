@@ -233,7 +233,7 @@ describe ECF2TeacherHistory do
           let(:first_training_period) do
             ECF2TeacherHistory::TrainingPeriod.new(
               started_on: 1.year.ago.to_date,
-              finished_on: 1.month.ago.to_date,
+              finished_on: 30.days.ago.to_date,
               created_at:,
               training_programme: :provider_led,
               lead_provider_info:,
@@ -258,7 +258,7 @@ describe ECF2TeacherHistory do
           let(:first_ect_at_school_period) do
             ECF2TeacherHistory::ECTAtSchoolPeriod.new(
               started_on: 1.year.ago.to_date,
-              finished_on: 1.month.ago.to_date,
+              finished_on: 30.days.ago.to_date,
               school: school_a_data,
               email: "a@example.org",
               appropriate_body: appropriate_body_a_data,
@@ -269,7 +269,7 @@ describe ECF2TeacherHistory do
 
           let(:second_training_period) do
             ECF2TeacherHistory::TrainingPeriod.new(
-              started_on: 1.month.ago.to_date,
+              started_on: 29.days.ago.to_date,
               finished_on: 1.week.ago.to_date,
               created_at:,
               school: school_b_data,
@@ -284,7 +284,7 @@ describe ECF2TeacherHistory do
 
           let(:second_ect_at_school_period) do
             ECF2TeacherHistory::ECTAtSchoolPeriod.new(
-              started_on: 1.month.ago.to_date,
+              started_on: 29.days.ago.to_date,
               finished_on: 1.week.ago.to_date,
               school: school_b_data,
               email: "b@example.org",
@@ -313,14 +313,14 @@ describe ECF2TeacherHistory do
             aggregate_failures do
               teacher.ect_at_school_periods.first.tap do |p1|
                 expect(p1.started_on).to eql(1.year.ago.to_date)
-                expect(p1.finished_on).to eql(1.month.ago.to_date)
+                expect(p1.finished_on).to eql(30.days.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
                 # expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
 
                 p1.training_periods.first!.tap do |p1_tp|
                   expect(p1_tp.started_on).to eql(1.year.ago.to_date)
-                  expect(p1_tp.finished_on).to eql(1.month.ago.to_date)
+                  expect(p1_tp.finished_on).to eql(30.days.ago.to_date)
                   expect(p1_tp.training_programme).to eql("provider_led")
                   expect(p1_tp.contract_period).to eql(contract_period)
                   expect(p1_tp.lead_provider_delivery_partnership).to eql(lead_provider_delivery_partnership)
@@ -342,14 +342,14 @@ describe ECF2TeacherHistory do
           it "saves school led training periods with the right data" do
             aggregate_failures do
               teacher.ect_at_school_periods.second.tap do |p2|
-                expect(p2.started_on).to eql(1.month.ago.to_date)
+                expect(p2.started_on).to eql(29.days.ago.to_date)
                 expect(p2.finished_on).to eql(1.week.ago.to_date)
                 expect(p2.school.urn).to eql(school_b_data.urn)
                 expect(p2.email).to eql("b@example.org")
                 # expect(p2.school_reported_appropriate_body.id).to eql(appropriate_body_b_data.id)
 
                 p2.training_periods.first!.tap do |p2_tp|
-                  expect(p2_tp.started_on).to eql(1.month.ago.to_date)
+                  expect(p2_tp.started_on).to eql(29.days.ago.to_date)
                   expect(p2_tp.finished_on).to eql(1.week.ago.to_date)
                   expect(p2_tp.created_at).to eql(created_at)
                   expect(p2_tp.training_programme).to eql("school_led")

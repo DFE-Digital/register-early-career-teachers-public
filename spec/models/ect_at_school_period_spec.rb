@@ -361,8 +361,8 @@ describe ECTAtSchoolPeriod do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
     let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-01-01", finished_on: "2023-06-01") }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2023-12-11") }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-06-02", finished_on: "2023-12-11") }
+    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2023-12-12", finished_on: nil) }
 
     describe ".for_school" do
       let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
@@ -531,8 +531,8 @@ describe ECTAtSchoolPeriod do
     let!(:teacher) { FactoryBot.create(:teacher) }
     let!(:school) { period_1.school }
     let!(:period_1) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2022-12-01", finished_on: "2023-06-01") }
-    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: period_1.finished_on, finished_on: "2024-01-01") }
-    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: period_2.finished_on, finished_on: nil) }
+    let!(:period_2) { FactoryBot.create(:ect_at_school_period, :state_funded_school, teacher:, started_on: "2023-06-02", finished_on: "2024-01-01") }
+    let!(:period_3) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2024-01-02", finished_on: nil) }
     let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, teacher:, school:, started_on: "2022-01-01", finished_on: period_1.started_on) }
 

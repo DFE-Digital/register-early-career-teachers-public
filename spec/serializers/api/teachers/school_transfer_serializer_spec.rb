@@ -136,7 +136,7 @@ RSpec.describe API::Teachers::SchoolTransferSerializer, type: :serializer do
         expect(joining["school_urn"]).to be_present
         expect(joining["school_urn"]).to eq(joining_school.urn.to_s)
         expect(joining["provider"]).to be_nil
-        expect(leaving["date"]).to eq(joining_training_period.started_on.to_fs(:api))
+        expect(joining["date"]).to eq(joining_training_period.started_on.to_fs(:api))
       end
     end
 
