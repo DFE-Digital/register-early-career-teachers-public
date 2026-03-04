@@ -23,7 +23,6 @@ shared:
     - induction_programme
     - training_programme
     - number_of_terms
-    - range
     - teacher_id
     - outcome
     - fail_confirmation_sent_on
@@ -92,9 +91,6 @@ shared:
     - updated_at
     - ect_at_school_period_id
     - mentor_at_school_period_id
-    - range
-    - ecf_start_induction_record_id
-    - ecf_end_induction_record_id
     - expression_of_interest_id
     - training_programme
     - deferred_at
@@ -133,9 +129,6 @@ shared:
     - finished_on
     - created_at
     - updated_at
-    - range
-    - ecf_start_induction_record_id
-    - ecf_end_induction_record_id
   :mentor_at_school_periods:
     - id
     - school_id
@@ -144,14 +137,10 @@ shared:
     - finished_on
     - created_at
     - updated_at
-    - range
-    - ecf_start_induction_record_id
-    - ecf_end_induction_record_id
     - email
     - reported_leaving_by_school_id
   :lead_providers:
     - id
-    - ecf_id
     - ecf_cpd_lead_provider_id
     - name
     - vat_registered
@@ -165,9 +154,6 @@ shared:
     - finished_on
     - created_at
     - updated_at
-    - range
-    - ecf_start_induction_record_id
-    - ecf_end_induction_record_id
     - working_pattern
     - email
     - school_reported_appropriate_body_id
@@ -206,7 +192,6 @@ shared:
     - started_on
     - finished_on
     - enabled
-    - range
     - payments_frozen_at
     - mentor_funding_enabled
     - detailed_evidence_types_enabled
@@ -220,7 +205,6 @@ shared:
   :statement_adjustments:
     - id
     - statement_id
-    - ecf_id
     - payment_type
     - amount
     - created_at
@@ -245,7 +229,6 @@ shared:
     - delivery_partner_id
     - created_at
     - updated_at
-    - ecf_id
   :schedules:
     - id
     - contract_period_year
