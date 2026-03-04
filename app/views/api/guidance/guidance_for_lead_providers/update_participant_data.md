@@ -64,7 +64,7 @@ If the new school confirms the participant is starting with the same lead provid
 
 We assign new ECTs and mentors to default standard schedules in September, January or April. 
 
-View guidance on [how we assign participant schedules](/api/guidance/guidance-for-lead-providers/how-we-assign-participant-schedules) 
+View guidance on [schedules and milestones](/api/guidance/guidance-for-lead-providers/schedules-and-milestones-guidance) 
 
 Providers must notify us of any other schedule via the `PUT /participants/{id}/change-schedule` endpoint. 
 
