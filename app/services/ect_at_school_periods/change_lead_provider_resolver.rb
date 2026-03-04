@@ -1,5 +1,5 @@
 module ECTAtSchoolPeriods
-  class LeadProviderResolver
+  class ChangeLeadProviderResolver
     def initialize(ect_at_school_period)
       @ect_at_school_period = ect_at_school_period
     end
