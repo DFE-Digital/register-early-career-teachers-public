@@ -80,9 +80,9 @@ Each declaration includes:
 
 Declarations cannot be submitted or voided after a cohort has closed. Duplicate declarations cannot be submitted. If a duplicate is attempted, the API will return an error.
 
-Providers can test they're able to submit declarations using [X-With-Server-Date](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
+Providers can test they're able to submit declarations using [X-With-Server-Date](/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
-See the [Swagger documentation](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3#/Declarations) for full details of the declaration endpoints.
+See the [Swagger documentation](/api/docs/v3#/Declarations) for full details of the declaration endpoints.
 
 ### How lead providers get paid for training participants
 
@@ -122,7 +122,7 @@ When a declaration is voided, it will become:
 
 ## Evidence types
 
-To see which evidence types are valid for each declaration type, check the [Swagger documentation](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3/) and refer to the relevant schema.
+To see which evidence types are valid for each declaration type, check the [Swagger documentation](/api/docs/v3/) and refer to the relevant schema.
 
 For pre-2025 cohorts, evidence is optional. If you do provide it, valid evidence types are:
 
