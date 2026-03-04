@@ -27,17 +27,6 @@ module APISeedData
 
   private
 
-    def plantable?
-      existing_school_transfers = lead_providers.any? do
-        API::Teachers::SchoolTransfers::Query
-          .new(lead_provider_id: it.id)
-          .school_transfers
-          .exists?
-      end
-
-      super && !existing_school_transfers
-    end
-
     def lead_providers
       @lead_providers ||= ActiveLeadProvider
         .includes(:lead_provider)

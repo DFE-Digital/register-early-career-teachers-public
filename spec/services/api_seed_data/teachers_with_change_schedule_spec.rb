@@ -46,11 +46,6 @@ RSpec.describe APISeedData::TeachersWithChangeSchedule do
       data
     end
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(TrainingPeriod, :count)
-      expect { instance.plant }.not_to change(TrainingPeriod, :count)
-    end
-
     it "creates teachers for every lead provider" do
       plant
 

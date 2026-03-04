@@ -29,11 +29,6 @@ RSpec.describe APISeedData::Declarations do
   describe "#plant" do
     subject(:plant) { instance.plant }
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(Declaration, :count)
-      expect { instance.plant }.not_to change(Declaration, :count)
-    end
-
     it "creates declarations for both ECT and mentor teachers" do
       plant
 

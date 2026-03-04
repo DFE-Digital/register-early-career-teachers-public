@@ -40,12 +40,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && TrainingPeriod.none?
-    end
-
   private
 
     def create_teacher(started_on:)
