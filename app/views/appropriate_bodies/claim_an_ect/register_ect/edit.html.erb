@@ -10,7 +10,7 @@
   <%=
     f.govuk_date_field :started_on,
       legend: { text: "When did #{pending_induction_submission_full_name(@pending_induction_submission)} start their induction with you?" },
-      hint: { text: teacher_induction_date_hint_text }
+      hint: { text: "For example, 20 4 #{1.year.ago.year}" }
   %>
 
 

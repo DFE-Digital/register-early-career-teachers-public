@@ -18,8 +18,8 @@ RSpec.describe Migration::ECF2MigratedMentorshipsExporter do
     let!(:csv_output) { exporter.generate_csv }
     let(:csv_data) do
       <<~CSV
-        ect_participant_profile_id,mentor_participant_profile_id,started_on,finished_on,ecf_start_induction_record_id,ecf_end_induction_record_id
-        7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,9246931b-bd85-445f-aea6-8802c124d9d9,2023-13-09,,f6f40352-9141-4b00-bcb7-c5250b9ecfc8,f6f40352-9141-4b00-bcb7-c5250b9ecfc8
+        ect_participant_profile_id,mentor_participant_profile_id,started_on,finished_on,ecf_start_induction_record_id,ecf_end_induction_record_id,migration_mode
+        7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,9246931b-bd85-445f-aea6-8802c124d9d9,2023-13-09,,f6f40352-9141-4b00-bcb7-c5250b9ecfc8,f6f40352-9141-4b00-bcb7-c5250b9ecfc8,latest_induction_records
       CSV
     end
 

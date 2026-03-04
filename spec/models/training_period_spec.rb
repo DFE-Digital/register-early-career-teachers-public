@@ -15,8 +15,10 @@ describe TrainingPeriod do
         FactoryBot.create(:active_lead_provider, contract_period: instance.schedule.contract_period, id: new_value)
       when :withdrawn_at
         instance.withdrawal_reason = :other
+        instance.finished_on = new_value
       when :deferred_at
         instance.deferral_reason = :other
+        instance.finished_on = new_value
       end
     end
 
@@ -157,6 +159,7 @@ describe TrainingPeriod do
       subject { FactoryBot.build(:training_period, withdrawn_at: Time.zone.now) }
 
       it { is_expected.to validate_presence_of(:withdrawal_reason) }
+      it { is_expected.to validate_presence_of(:finished_on) }
     end
 
     context "when withdrawal_reason is present" do
@@ -169,6 +172,7 @@ describe TrainingPeriod do
       subject { FactoryBot.build(:training_period, deferred_at: Time.zone.now) }
 
       it { is_expected.to validate_presence_of(:deferral_reason) }
+      it { is_expected.to validate_presence_of(:finished_on) }
     end
 
     context "when deferral_reason is present" do

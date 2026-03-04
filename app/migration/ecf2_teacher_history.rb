@@ -182,7 +182,8 @@ private
       ecf1_ect_combinations: ecf1_ect_combination_summaries,
       ecf2_ect_combinations: ecf2_ect_combination_summaries,
       ecf1_mentorships: ecf1_mentorship_summaries,
-      ecf2_mentorships: ecf2_mentorship_summaries
+      ecf2_mentorships: ecf2_mentorship_summaries,
+      migration_mode:
     )
   end
 
@@ -190,7 +191,8 @@ private
     data_migration_teacher_combinations.update!(
       ecf1_mentor_profile_id: teacher.api_mentor_training_record_id,
       ecf1_mentor_combinations: ecf1_mentor_combination_summaries,
-      ecf2_mentor_combinations: ecf2_mentor_combination_summaries
+      ecf2_mentor_combinations: ecf2_mentor_combination_summaries,
+      migration_mode:
     )
   end
 

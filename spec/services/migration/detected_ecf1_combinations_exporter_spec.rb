@@ -16,18 +16,19 @@ RSpec.describe Migration::DetectedECF1CombinationsExporter do
                         "<8a234fa7-6a9f-4291-9da5-5f9170355871: 222222: 2049: Lead provider A>",
                         "<23232323-6a9f-4291-1111-5f9170355871: 222222: 2023: Lead provider B>"
                       ],
-                      ecf2_mentor_combinations: [])
+                      ecf2_mentor_combinations: [],
+                      migration_mode: "latest_induction_records")
   end
 
   describe "#generate" do
     let!(:csv_output) { exporter.generate_csv }
     let(:csv_data) do
       <<~CSV
-        participant_profile_type,participant_profile_id,school_urn,cohort_year,lead_provider_name,induction_record_id,migrated
-        ect,7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,222222,2049,Lead provider A,8aa33fa7-6a9f-4291-9da5-5f9170355871,true
-        ect,7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,222222,2023,Lead provider B,44433fa7-6a9f-4291-1111-5f9170355871,false
-        mentor,ea7fa384-eb7a-4833-b3bc-6e71410dd082,222222,2049,Lead provider A,8a234fa7-6a9f-4291-9da5-5f9170355871,false
-        mentor,ea7fa384-eb7a-4833-b3bc-6e71410dd082,222222,2023,Lead provider B,23232323-6a9f-4291-1111-5f9170355871,false
+        participant_profile_type,participant_profile_id,school_urn,cohort_year,lead_provider_name,induction_record_id,migrated,migration_mode
+        ect,7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,222222,2049,Lead provider A,8aa33fa7-6a9f-4291-9da5-5f9170355871,true,latest_induction_records
+        ect,7bca2c60-8d8f-49df-9f24-e17d2ff96a0a,222222,2023,Lead provider B,44433fa7-6a9f-4291-1111-5f9170355871,false,latest_induction_records
+        mentor,ea7fa384-eb7a-4833-b3bc-6e71410dd082,222222,2049,Lead provider A,8a234fa7-6a9f-4291-9da5-5f9170355871,false,latest_induction_records
+        mentor,ea7fa384-eb7a-4833-b3bc-6e71410dd082,222222,2023,Lead provider B,23232323-6a9f-4291-1111-5f9170355871,false,latest_induction_records
       CSV
     end
 
