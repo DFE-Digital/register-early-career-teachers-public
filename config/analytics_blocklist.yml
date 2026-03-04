@@ -171,14 +171,6 @@
   - concurrency_key
   - expires_at
   - created_at
-  :gias_school_links:
-  - id
-  - urn
-  - link_urn
-  - link_type
-  - link_date
-  - created_at
-  - updated_at
   :users:
   - id
   - name
