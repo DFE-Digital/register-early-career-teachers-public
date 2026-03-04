@@ -16,11 +16,11 @@ def find_or_create_school_partnership!(school:, delivery_partner:, lead_provider
 end
 
 def describe_declaration(declaration, period_type)
-  print_seed_info("#{declaration.declaration_type} - #{declaration.payment_status} for #{period_type}", indent: 4)
+  print_seed_info("* #{declaration.declaration_type} - #{declaration.payment_status} for #{period_type}", indent: 8)
 end
 
 def describe_statement_declaration(statement)
-  print_seed_info("📜 Declarations for: #{statement.month} #{statement.year}", indent: 2)
+  print_seed_info("📜 Declarations for: #{statement.month} #{statement.year}", indent: 4)
 end
 
 def describe_statement(statement)
@@ -34,11 +34,11 @@ def describe_school_partnership(school_partnership)
   school_partnership.lead_provider_delivery_partnership.active_lead_provider.contract_period.year
   school_name = school_partnership.school.gias_school.name
 
-  print_seed_info("Partnership #{school_name} #{lead_provider_name}", indent: 4)
+  print_seed_info("Partnership #{school_name} #{lead_provider_name}", indent: 6)
 end
 
 def milestones
-  %w[started retained-1 retained-2 retained-3 retained-4 completed]
+  %w[started retained-1 retained-2 retained-3 retained-4 extended-1 extended-2 extended-3 completed]
 end
 
 teach_first = LeadProvider.find_by!(name: "Teach First")
@@ -80,12 +80,14 @@ september_statement_2025 = FactoryBot.create(:statement, :paid_in_month, month: 
 end
 
 school_partnerships = [teach_first_grain_abbey_grove_2024, teach_first_grain_abbey_grove_2025]
-statements = [august_statement_2024, september_statement_2024, august_statement_2025, september_statement_2025]
+statements = [september_statement_2024, september_statement_2025]
 
 statements.each do |payment_statement|
   describe_statement_declaration(payment_statement)
   school_partnerships.each do |school_partnership|
-    next unless payment_statement.contract.active_lead_provider == school_partnership.lead_provider_delivery_partnership.active_lead_provider
+    alp = payment_statement.contract.active_lead_provider
+    school_alp = school_partnership.lead_provider_delivery_partnership.active_lead_provider
+    next unless alp == school_alp
 
     describe_school_partnership(school_partnership)
 
@@ -96,10 +98,48 @@ statements.each do |payment_statement|
                         payment_statement:).tap do |declaration|
         describe_declaration(declaration, "ECT")
       end
+
+      FactoryBot.create(:declaration, :with_ect, :voided,
+                        declaration_type:,
+                        school_partnership:,
+                        payment_statement:).tap do |declaration|
+        describe_declaration(declaration, "ECT")
+      end
+
       FactoryBot.create(:declaration, :with_mentor, :paid,
                         declaration_type:,
                         school_partnership:,
                         payment_statement:).tap do |declaration|
+        describe_declaration(declaration, "Mentor")
+      end
+    end
+  end
+end
+
+statement_pairs = [[august_statement_2024, september_statement_2024], [august_statement_2025, september_statement_2025]]
+
+statement_pairs.each do |payment_statement, clawback_statement|
+  describe_statement_declaration(clawback_statement)
+  school_partnerships.each do |school_partnership|
+    alp = payment_statement.contract.active_lead_provider
+    school_alp = school_partnership.lead_provider_delivery_partnership.active_lead_provider
+    next unless alp == school_alp
+
+    describe_school_partnership(school_partnership)
+
+    milestones.each do |declaration_type|
+      FactoryBot.create(:declaration, :with_ect, :awaiting_clawback,
+                        declaration_type:,
+                        school_partnership:,
+                        payment_statement:,
+                        clawback_statement:).tap do |declaration|
+        describe_declaration(declaration, "ECT")
+      end
+      FactoryBot.create(:declaration, :with_mentor, :awaiting_clawback,
+                        declaration_type:,
+                        school_partnership:,
+                        payment_statement:,
+                        clawback_statement:).tap do |declaration|
         describe_declaration(declaration, "Mentor")
       end
     end
