@@ -117,10 +117,10 @@ def describe_declaration(declaration)
   print_seed_info("* has a #{declaration.payment_status} #{declaration.declaration_type} declaration", indent: 4)
 end
 
-ambition_institute = LeadProvider.find_by!(name: "Ambition Institute")
-teach_first = LeadProvider.find_by!(name: "Teach First")
-best_practice_network = LeadProvider.find_by!(name: "Best Practice Network")
-capita = LeadProvider.find_by!(name: "Capita")
+grove_institute = LeadProvider.find_by!(name: "Grove Institute")
+wildflower_trust = LeadProvider.find_by!(name: "Wildflower Trust")
+evergreen_network = LeadProvider.find_by!(name: "Evergreen Network")
+national_meadows_institute = LeadProvider.find_by!(name: "National Meadows Institute")
 
 abbey_grove_school = School.find_by!(urn: 1_759_427)
 ackley_bridge = School.find_by!(urn: 3_375_958)
@@ -130,7 +130,7 @@ ashford_independent_school = School.find_by!(urn: 9_123_458)
 
 artisan_education_group = DeliveryPartner.find_by!(name: "Artisan Education Group")
 grain_teaching_school_hub = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
-capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partner")
+harvest = DeliveryPartner.find_by!(name: "Harvest Academy")
 
 south_yorkshire_studio_hub = AppropriateBodyPeriod.find_by!(name: "South Yorkshire Studio Hub")
 golden_leaf_teaching_school_hub = AppropriateBodyPeriod.find_by!(name: "Golden Leaf Teaching School Hub")
@@ -160,103 +160,103 @@ cp_2023 = ContractPeriod.find_by!(year: 2023)
 cp_2024 = ContractPeriod.find_by!(year: 2024)
 cp_2025 = ContractPeriod.find_by!(year: 2025)
 
-ambition_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: ambition_institute)
-ambition_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: ambition_institute)
-teach_first_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: teach_first)
-teach_first_grain_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: teach_first)
+grove_institute_artisan_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: grove_institute)
+grove_institute_artisan_2023 = ActiveLeadProvider.find_by!(contract_period: cp_2023, lead_provider: grove_institute)
+wildflower_trust_grain_2022 = ActiveLeadProvider.find_by!(contract_period: cp_2022, lead_provider: wildflower_trust)
+wildflower_trust_grain_2025 = ActiveLeadProvider.find_by!(contract_period: cp_2025, lead_provider: wildflower_trust)
 
-# Abbey Grove — Ambition / Artisan
-ambition_artisan_abbey_grove_2022 = find_or_create_school_partnership!(
+# Abbey Grove — Grove / Artisan
+grove_artisan_abbey_grove_2022 = find_or_create_school_partnership!(
   school: abbey_grove_school,
-  lead_provider: ambition_institute,
+  lead_provider: grove_institute,
   delivery_partner: artisan_education_group,
   contract_period: cp_2022
 )
 
-teach_first_artisan_abbey_grove_2022 = find_or_create_school_partnership!(
+wildflower_trust_artisan_abbey_grove_2022 = find_or_create_school_partnership!(
   school: abbey_grove_school,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: artisan_education_group,
   contract_period: cp_2022
 )
 
-ambition_artisan_abbey_grove_2025 = find_or_create_school_partnership!(
+grove_artisan_abbey_grove_2025 = find_or_create_school_partnership!(
   school: abbey_grove_school,
-  lead_provider: ambition_institute,
+  lead_provider: grove_institute,
   delivery_partner: artisan_education_group,
   contract_period: cp_2025
 )
 
 # Abbey Grove — Teach First / Grain
 
-teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
+wildflower_trust_grain_abbey_grove_2025 = find_or_create_school_partnership!(
   school: abbey_grove_school,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: grain_teaching_school_hub,
   contract_period: cp_2025
 )
 
-teach_first_grain_abbey_grove_2024 = find_or_create_school_partnership!(
+wildflower_trust_grain_abbey_grove_2024 = find_or_create_school_partnership!(
   school: abbey_grove_school,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: grain_teaching_school_hub,
   contract_period: cp_2024
 )
 
-# Ackley Bridge — Ambition / Artisan
+# Ackley Bridge — Grove / Artisan
 
-ambition_artisan_brookfield_2023 = find_or_create_school_partnership!(
+grove_artisan_brookfield_2023 = find_or_create_school_partnership!(
   school: brookfield_school,
-  lead_provider: ambition_institute,
+  lead_provider: grove_institute,
   delivery_partner: artisan_education_group,
   contract_period: cp_2023
 )
 
-# Ackley Bridge — Teach First / Grain
-teach_first_grain_ackley_bridge_2022 = find_or_create_school_partnership!(
+# Ackley Bridge — Wildflower / Grain
+wildflower_trust_grain_ackley_bridge_2022 = find_or_create_school_partnership!(
   school: ackley_bridge,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: grain_teaching_school_hub,
   contract_period: cp_2022
 )
 
-# Ackley Bridge — Teach First / Grain
-teach_first_grain_ackley_bridge_2025 = find_or_create_school_partnership!(
+# Ackley Bridge — Wildflower / Grain
+wildflower_trust_grain_ackley_bridge_2025 = find_or_create_school_partnership!(
   school: ackley_bridge,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: grain_teaching_school_hub,
   contract_period: cp_2025
 )
 
-# Mallory Towers — Teach First / Grain
+# Mallory Towers — Wildflower / Grain
 
-teach_first_grain_mallory_towers_2024 = find_or_create_school_partnership!(
+wildflower_trust_grain_mallory_towers_2024 = find_or_create_school_partnership!(
   school: mallory_towers,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: grain_teaching_school_hub,
   contract_period: cp_2024
 )
 
-# Brookfield — Teach First / Grain
-teach_first_grain_brookfield_2021 = find_or_create_school_partnership!(
+# Brookfield — Wildflower / Grain
+wildflower_trust_grain_brookfield_2021 = find_or_create_school_partnership!(
   school: brookfield_school,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: grain_teaching_school_hub,
   contract_period: cp_2021
 )
 
-teach_first_grain_brookfield_2022 = find_or_create_school_partnership!(
+wildflower_trust_grain_brookfield_2022 = find_or_create_school_partnership!(
   school: brookfield_school,
-  lead_provider: teach_first,
+  lead_provider: wildflower_trust,
   delivery_partner: grain_teaching_school_hub,
   contract_period: cp_2022
 )
 
-# Brookfield — Capita
-capita_brookfield_2022 = find_or_create_school_partnership!(
+# Brookfield — National Meadows
+national_meadows_brookfield_2022 = find_or_create_school_partnership!(
   school: brookfield_school,
-  lead_provider: capita,
-  delivery_partner: capita_delivery_partner,
+  lead_provider: national_meadows_institute,
+  delivery_partner: harvest,
   contract_period: cp_2022
 )
 
@@ -305,8 +305,8 @@ FactoryBot.create(:training_period,
                   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
                   started_on: Date.new(2022, 9, 1),
                   finished_on: Date.new(2023, 2, 20),
-                  expression_of_interest: ambition_artisan_2022,
-                  school_partnership: ambition_artisan_abbey_grove_2022,
+                  expression_of_interest: grove_institute_artisan_2022,
+                  school_partnership: grove_artisan_abbey_grove_2022,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 # 10 week break
@@ -317,7 +317,7 @@ emma_thompson_training_period = FactoryBot.create(:training_period,
                                                   mentor_at_school_period: emma_thompson_mentoring_at_abbey_grove,
                                                   started_on: Date.new(2023, 5, 1),
                                                   finished_on: nil,
-                                                  school_partnership: ambition_artisan_abbey_grove_2022,
+                                                  school_partnership: grove_artisan_abbey_grove_2022,
                                                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 emma_thompson_lp_author = { author_name: emma_thompson_training_period.lead_provider.name, author_type: "lead_provider_api" }
@@ -409,8 +409,8 @@ FactoryBot.create(:training_period,
                   mentor_at_school_period: hugh_laurie_mentoring_at_abbey_grove,
                   started_on: Date.new(2022, 9, 1),
                   finished_on: nil,
-                  expression_of_interest: teach_first_grain_2022,
-                  school_partnership: teach_first_artisan_abbey_grove_2022,
+                  expression_of_interest: wildflower_trust_grain_2022,
+                  school_partnership: wildflower_trust_artisan_abbey_grove_2022,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Alan Rickman (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -424,7 +424,7 @@ alan_rickman_ect_at_ackley_bridge = FactoryBot.create(:ect_at_school_period,
                                                       school_reported_appropriate_body: golden_leaf_teaching_school_hub,
                                                       working_pattern: "part_time").tap { |sp| describe_ect_at_school_period(sp) }
 
-ackley_bridge.update!(last_chosen_lead_provider: best_practice_network,
+ackley_bridge.update!(last_chosen_lead_provider: evergreen_network,
                       last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                       last_chosen_training_programme: "provider_led")
 
@@ -434,7 +434,7 @@ alan_rickman_training_period = FactoryBot.create(:training_period,
                                                  ect_at_school_period: alan_rickman_ect_at_ackley_bridge,
                                                  started_on: Date.new(2022, 10, 1),
                                                  finished_on: nil,
-                                                 school_partnership: teach_first_grain_ackley_bridge_2022,
+                                                 school_partnership: wildflower_trust_grain_ackley_bridge_2022,
                                                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_period,
@@ -653,7 +653,7 @@ colin_firth_training_period = FactoryBot.create(:training_period,
                                                 ect_at_school_period: colin_firth_ect_at_abbey_grove,
                                                 started_on: Date.new(2022, 9, 1),
                                                 finished_on: nil,
-                                                school_partnership: ambition_artisan_abbey_grove_2022,
+                                                school_partnership: grove_artisan_abbey_grove_2022,
                                                 training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_period,
@@ -750,7 +750,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: imogen_stubbs_at_mallory_towers,
                   started_on: Date.new(2024, 12, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_mallory_towers_2024,
+                  school_partnership: wildflower_trust_grain_mallory_towers_2024,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_extension,
@@ -777,7 +777,7 @@ gemma_jones_at_mallory_towers = FactoryBot.create(:ect_at_school_period,
                                                   school_reported_appropriate_body: golden_leaf_teaching_school_hub,
                                                   working_pattern: "part_time").tap { |sp| describe_ect_at_school_period(sp) }
 
-mallory_towers.update!(last_chosen_lead_provider: best_practice_network,
+mallory_towers.update!(last_chosen_lead_provider: evergreen_network,
                        last_chosen_appropriate_body: golden_leaf_teaching_school_hub,
                        last_chosen_training_programme: "provider_led")
 
@@ -787,7 +787,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: gemma_jones_at_mallory_towers,
                   started_on: Date.new(2024, 9, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_mallory_towers_2024,
+                  school_partnership: wildflower_trust_grain_mallory_towers_2024,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:induction_extension,
@@ -810,7 +810,7 @@ FactoryBot.create(:training_period,
                   mentor_at_school_period: andre_roussimoff_mentoring_at_ackley_bridge,
                   started_on: Date.new(2022, 9, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_ackley_bridge_2022,
+                  school_partnership: wildflower_trust_grain_ackley_bridge_2022,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Anthony Hopkins (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -830,7 +830,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: anthony_hopkins_ect_at_brookfield_school,
                   started_on: Date.new(2022, 9, 1),
                   finished_on: nil,
-                  school_partnership: capita_brookfield_2022,
+                  school_partnership: national_meadows_brookfield_2022,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Stephen Fry (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -844,7 +844,7 @@ stephen_fry_ect_at_brookfield_school = FactoryBot.create(:ect_at_school_period,
                                                          school_reported_appropriate_body: south_yorkshire_studio_hub,
                                                          working_pattern: "part_time").tap { |sp| describe_ect_at_school_period(sp) }
 
-brookfield_school.update!(last_chosen_lead_provider: teach_first,
+brookfield_school.update!(last_chosen_lead_provider: wildflower_trust,
                           last_chosen_appropriate_body: south_yorkshire_studio_hub,
                           last_chosen_training_programme: "provider_led")
 
@@ -854,7 +854,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: stephen_fry_ect_at_brookfield_school,
                   started_on: Date.new(2021, 9, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_brookfield_2021,
+                  school_partnership: wildflower_trust_grain_brookfield_2021,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Harriet Walter (ECT then mentor) with both ECT and mentor declarations", indent: 2, colour: ECT_COLOUR)
@@ -874,7 +874,7 @@ harriet_walter_ect_training_period = FactoryBot.create(:training_period,
                                                        ect_at_school_period: harriet_walter_ect_at_brookfield_school,
                                                        started_on: Date.new(2022, 9, 1),
                                                        finished_on: Date.new(2024, 9, 1),
-                                                       school_partnership: teach_first_grain_brookfield_2022,
+                                                       school_partnership: wildflower_trust_grain_brookfield_2022,
                                                        training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 harriet_walter_lp_author = { author_name: harriet_walter_ect_training_period.lead_provider.name, author_type: "lead_provider_api" }
@@ -927,7 +927,7 @@ harriet_walter_mentor_training_period = FactoryBot.create(:training_period,
                                                           mentor_at_school_period: harriet_walter_mentoring_at_abbey_grove,
                                                           started_on: Date.new(2025, 9, 1),
                                                           finished_on: nil,
-                                                          school_partnership: teach_first_grain_abbey_grove_2025,
+                                                          school_partnership: wildflower_trust_grain_abbey_grove_2025,
                                                           training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 harriet_walter_mentor_lp_author = { author_name: harriet_walter_mentor_training_period.lead_provider.name, author_type: "lead_provider_api" }
@@ -963,7 +963,7 @@ FactoryBot.create(:training_period,
                   mentor_at_school_period: helen_mirren_mentoring_at_brookfield_school,
                   started_on: Date.new(2021, 9, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_brookfield_2021,
+                  school_partnership: wildflower_trust_grain_brookfield_2021,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Stephen Griddle (ECT) at Ashford Independent School", indent: 2, colour: ECT_COLOUR)
@@ -999,7 +999,7 @@ FactoryBot.create(:training_period,
                   mentor_at_school_period: john_withers_mentoring_at_abbey_grove,
                   started_on: Date.new(2022, 9, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_artisan_abbey_grove_2022,
+                  school_partnership: wildflower_trust_artisan_abbey_grove_2022,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Dominic West (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -1018,8 +1018,8 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: dominic_west_ect_at_brookfield_school,
                   started_on: Date.new(2023, 9, 1),
                   finished_on: nil,
-                  school_partnership: ambition_artisan_brookfield_2023,
-                  expression_of_interest: ambition_artisan_2023,
+                  school_partnership: grove_artisan_brookfield_2023,
+                  expression_of_interest: grove_institute_artisan_2023,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Peter Davison (ECT)", indent: 2, colour: ECT_COLOUR)
@@ -1038,9 +1038,9 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: peter_davison_at_abbey_grove_school,
                   started_on: 2.weeks.from_now,
                   finished_on: nil,
-                  school_partnership: teach_first_grain_abbey_grove_2025,
+                  school_partnership: wildflower_trust_grain_abbey_grove_2025,
                   training_programme: "provider_led",
-                  expression_of_interest: teach_first_grain_2025).tap { |tp| describe_training_period(tp) }
+                  expression_of_interest: wildflower_trust_grain_2025).tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Naruto Uzumaki (ECT, invalid LP)", indent: 2, colour: ECT_COLOUR)
 
@@ -1061,7 +1061,7 @@ FactoryBot.create(
   ect_at_school_period: naruto_ect_at_brookfield,
   started_on: Date.new(2023, 9, 1),
   finished_on: nil,
-  school_partnership: capita_brookfield_2022,
+  school_partnership: national_meadows_brookfield_2022,
   training_programme: "provider_led"
 ).tap { |tp| describe_training_period(tp) }
 
@@ -1119,7 +1119,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: terry_thomas_ect_at_abbey_grove_school,
                   started_on: Date.new(2025, 8, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_abbey_grove_2025,
+                  school_partnership: wildflower_trust_grain_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Sid James (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
@@ -1138,7 +1138,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: sid_james_ect_at_abbey_grove_school,
                   started_on: Date.new(2025, 6, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_abbey_grove_2025,
+                  school_partnership: wildflower_trust_grain_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Joyce Grenfell (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -1156,7 +1156,7 @@ FactoryBot.create(:training_period,
                   mentor_at_school_period: joyce_grenfell_mentoring_at_ackley_bridge,
                   started_on: Date.new(2025, 7, 1),
                   finished_on: nil,
-                  school_partnership: teach_first_grain_ackley_bridge_2025,
+                  school_partnership: wildflower_trust_grain_ackley_bridge_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("George Cole (mentor)", indent: 2, colour: MENTOR_COLOUR)
@@ -1193,7 +1193,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: joan_sims_ect_at_abbey_grove_school,
                   started_on: Date.new(2025, 9, 1),
                   finished_on: nil,
-                  school_partnership: ambition_artisan_abbey_grove_2025,
+                  school_partnership: grove_artisan_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Hattie Jacques (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
@@ -1212,7 +1212,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: hattie_jacques_ect_at_abbey_grove_school,
                   started_on: Date.new(2025, 9, 5),
                   finished_on: nil,
-                  school_partnership: ambition_artisan_abbey_grove_2025,
+                  school_partnership: grove_artisan_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Jane Smith (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
@@ -1231,7 +1231,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: jane_smith_ect_at_abbey_grove_school,
                   started_on: Date.new(2024, 9, 5),
                   finished_on: Date.new(2025, 9, 5),
-                  school_partnership: teach_first_grain_abbey_grove_2024,
+                  school_partnership: wildflower_trust_grain_abbey_grove_2024,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 FactoryBot.create(:training_period,
@@ -1240,7 +1240,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: jane_smith_ect_at_abbey_grove_school,
                   started_on: Date.new(2025, 9, 5),
                   finished_on: nil,
-                  school_partnership: ambition_artisan_abbey_grove_2025,
+                  school_partnership: grove_artisan_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")
@@ -1305,7 +1305,7 @@ create_same_school_mentorship!(
 contract_period = ContractPeriod.current
 raise "ContractPeriod.current not set" if contract_period.blank?
 
-lead_provider = LeadProvider.find_by!(name: "Ambition Institute")
+lead_provider = LeadProvider.find_by!(name: "Grove Institute")
 active_lead_provider = ActiveLeadProvider.find_or_create_by!(
   lead_provider:,
   contract_period_year: contract_period.year

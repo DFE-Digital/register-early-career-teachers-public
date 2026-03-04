@@ -33,97 +33,97 @@ rp2023 = ContractPeriod.find_by!(year: 2023)
 rp2024 = ContractPeriod.find_by!(year: 2024)
 rp2025 = ContractPeriod.find_by!(year: 2025)
 
-ambition_institute = LeadProvider.find_by!(name: "Ambition Institute")
-teach_first = LeadProvider.find_by!(name: "Teach First")
-capita = LeadProvider.find_by!(name: "Capita")
+grove_institute = LeadProvider.find_by!(name: "Grove Institute")
+wildflower_trust = LeadProvider.find_by!(name: "Wildflower Trust")
+national_meadows_institute = LeadProvider.find_by!(name: "National Meadows Institute")
 
 artisan = DeliveryPartner.find_by!(name: "Artisan Education Group")
 grain = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
-capita_delivery_partner = DeliveryPartner.find_by!(name: "Capita Delivery Partner")
+harvest = DeliveryPartner.find_by!(name: "Harvest Academy")
 
-ambition_institute__artisan__2021 =
+grove_institute__artisan__2021 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: artisan,
-    lead_provider: ambition_institute,
+    lead_provider: grove_institute,
     contract_period: rp2021
   )
 
-ambition_institute__artisan__2022 =
+grove_institute__artisan__2022 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: artisan,
-    lead_provider: ambition_institute,
+    lead_provider: grove_institute,
     contract_period: rp2022
   )
 
-ambition_institute__artisan__2023 =
+grove_institute__artisan__2023 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: artisan,
-    lead_provider: ambition_institute,
+    lead_provider: grove_institute,
     contract_period: rp2023
   )
 
-ambition_institute__artisan__2025 =
+grove_institute__artisan__2025 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: artisan,
-    lead_provider: ambition_institute,
+    lead_provider: grove_institute,
     contract_period: rp2025
   )
 
-teach_first__grain__2021 =
+wildflower_trust__grain__2021 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: grain,
-    lead_provider: teach_first,
+    lead_provider: wildflower_trust,
     contract_period: rp2021
   )
 
-teach_first__grain__2022 =
+wildflower_trust__grain__2022 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: grain,
-    lead_provider: teach_first,
+    lead_provider: wildflower_trust,
     contract_period: rp2022
   )
 
-teach_first__grain__2023 =
+wildflower_trust__grain__2023 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: grain,
-    lead_provider: teach_first,
+    lead_provider: wildflower_trust,
     contract_period: rp2023
   )
 
-teach_first__grain__2024 =
+wildflower_trust__grain__2024 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: grain,
-    lead_provider: teach_first,
+    lead_provider: wildflower_trust,
     contract_period: rp2024
   )
 
-teach_first__grain__2025 =
+wildflower_trust__grain__2025 =
   find_or_create_lead_provider_delivery_partnership(
     delivery_partner: grain,
-    lead_provider: teach_first,
+    lead_provider: wildflower_trust,
     contract_period: rp2025
   )
 
-capita__delivery_partner__2022 =
+national_meadows_institute__harvest__2022 =
   find_or_create_lead_provider_delivery_partnership(
-    delivery_partner: capita_delivery_partner,
-    lead_provider: capita,
+    delivery_partner: harvest,
+    lead_provider: national_meadows_institute,
     contract_period: rp2022
   )
 
 [
-  { school: abbey_grove_school, lead_provider_delivery_partnership: ambition_institute__artisan__2022 },
-  { school: abbey_grove_school, lead_provider_delivery_partnership: ambition_institute__artisan__2023 },
-  { school: abbey_grove_school, lead_provider_delivery_partnership: ambition_institute__artisan__2025 },
-  { school: abbey_grove_school, lead_provider_delivery_partnership: teach_first__grain__2023 },
-  { school: abbey_grove_school, lead_provider_delivery_partnership: teach_first__grain__2024 },
-  { school: abbey_grove_school, lead_provider_delivery_partnership: teach_first__grain__2025 },
-  { school: ackley_bridge, lead_provider_delivery_partnership: ambition_institute__artisan__2021 },
-  { school: ackley_bridge, lead_provider_delivery_partnership: ambition_institute__artisan__2023 },
-  { school: mallory_towers, lead_provider_delivery_partnership: teach_first__grain__2021 },
-  { school: mallory_towers, lead_provider_delivery_partnership: teach_first__grain__2022 },
-  { school: brookfield_school, lead_provider_delivery_partnership: teach_first__grain__2022 },
-  { school: brookfield_school, lead_provider_delivery_partnership: capita__delivery_partner__2022 },
+  { school: abbey_grove_school, lead_provider_delivery_partnership: grove_institute__artisan__2022 },
+  { school: abbey_grove_school, lead_provider_delivery_partnership: grove_institute__artisan__2023 },
+  { school: abbey_grove_school, lead_provider_delivery_partnership: grove_institute__artisan__2025 },
+  { school: abbey_grove_school, lead_provider_delivery_partnership: wildflower_trust__grain__2023 },
+  { school: abbey_grove_school, lead_provider_delivery_partnership: wildflower_trust__grain__2024 },
+  { school: abbey_grove_school, lead_provider_delivery_partnership: wildflower_trust__grain__2025 },
+  { school: ackley_bridge, lead_provider_delivery_partnership: grove_institute__artisan__2021 },
+  { school: ackley_bridge, lead_provider_delivery_partnership: grove_institute__artisan__2023 },
+  { school: mallory_towers, lead_provider_delivery_partnership: wildflower_trust__grain__2021 },
+  { school: mallory_towers, lead_provider_delivery_partnership: wildflower_trust__grain__2022 },
+  { school: brookfield_school, lead_provider_delivery_partnership: wildflower_trust__grain__2022 },
+  { school: brookfield_school, lead_provider_delivery_partnership: national_meadows_institute__harvest__2022 },
 ].each do |kwargs|
   SchoolPartnership.find_or_create_by!(**kwargs).tap do |sp|
     describe_school_partnership(sp)

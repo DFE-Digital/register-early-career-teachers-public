@@ -90,7 +90,7 @@ runs:
         AUTHOR="${{ github.event.pull_request.user.login }}"
         echo "Author: $AUTHOR"
 
-        API_AUTHORS=("ethax-ross" "cpjmcquillan" "leandroalemao" "mooktakim")
+        API_AUTHORS=("ethax-ross" "leandroalemao" "mooktakim")
 
         api_author="false"
 
