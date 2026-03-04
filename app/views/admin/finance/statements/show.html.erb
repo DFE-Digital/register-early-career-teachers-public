@@ -6,7 +6,11 @@
 
 <%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
 
-<%= render Admin::Statements::PaymentOverviewComponent.new(statement: @statement) %>
+<% if @statement.contract.contract_type == "ecf" %>
+  <%= render Admin::Statements::PaymentOverview::ECFComponent.new(statement: @statement) %>
+<% else %>
+  <%= render Admin::Statements::PaymentOverview::IttecfComponent.new(statement: @statement) %>
+<% end %>
 
 <%= render Admin::Statements::PaymentAuthorisationComponent.new(statement: @statement) %>
 <%= render Admin::Statements::UpliftFeesComponent.new(statement: @statement) %>
