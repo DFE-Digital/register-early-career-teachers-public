@@ -106,8 +106,8 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
         :training_period,
         :provider_led,
         ect_at_school_period:,
-        started_on: 1.year.ago.to_date,
-        finished_on: nil,
+        started_on: ect_at_school_period.started_on,
+        finished_on: ect_at_school_period.finished_on,
         withdrawn_at: Time.zone.today,
         withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
       )
@@ -204,7 +204,7 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
         :provider_led,
         ect_at_school_period:,
         started_on: ect_at_school_period.started_on,
-        finished_on: nil,
+        finished_on: ect_at_school_period.finished_on,
         deferred_at: Time.zone.today,
         deferral_reason: TrainingPeriod.deferral_reasons.keys.first
       )
@@ -230,7 +230,7 @@ RSpec.describe Schools::ECTTrainingDetailsComponent, type: :component do
           :provider_led,
           ect_at_school_period:,
           started_on: ect_at_school_period.started_on,
-          finished_on: nil,
+          finished_on: ect_at_school_period.finished_on,
           deferred_at: Time.zone.today,
           deferral_reason: TrainingPeriod.deferral_reasons.keys.first
         ) do |tp|

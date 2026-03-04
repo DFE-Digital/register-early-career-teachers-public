@@ -85,7 +85,8 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
         before do
           training_period.update!(
             withdrawn_at: Time.zone.today,
-            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
+            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
+            finished_on: Time.zone.today
           )
         end
 
