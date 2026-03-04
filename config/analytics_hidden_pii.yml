@@ -25,6 +25,9 @@ shared:
   :schools:
     - induction_tutor_name
     - induction_tutor_email
+  :users:
+    - name
+    - email
   :mentor_at_school_periods:
     - email
   :ect_at_school_periods:

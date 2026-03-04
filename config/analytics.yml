@@ -42,6 +42,12 @@ shared:
     - trs_not_found
     - trs_induction_start_date
     - trs_induction_completed_date
+  :users:
+    - id
+    - name
+    - email
+    - created_at
+    - updated_at
   :pending_induction_submission_batches:
     - id
     - appropriate_body_period_id
