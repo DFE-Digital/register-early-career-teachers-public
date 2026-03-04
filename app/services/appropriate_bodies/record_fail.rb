@@ -25,6 +25,7 @@ module AppropriateBodies
         delete_submission
         sync_with_trs
         update_event_history
+        send_tra_failed_notification_email
       end
     end
 
@@ -57,6 +58,10 @@ module AppropriateBodies
         start_date: first_induction_period.started_on,
         completed_date: last_induction_period.finished_on
       )
+    end
+
+    def send_tra_failed_notification_email
+      FailedInductionMailer.tra_notification(induction_period: ongoing_induction_period).deliver_later
     end
   end
 end
