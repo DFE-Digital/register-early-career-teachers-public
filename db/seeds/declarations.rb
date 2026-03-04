@@ -25,7 +25,7 @@ end
 
 def describe_statement(statement)
   lp_name = statement.contract.active_lead_provider.lead_provider.name
-  print_seed_info("📜 Statement for #{lp_name} #{statement.month} #{statement.year}", indent: 2)
+  print_seed_info("📜 Statement #{statement.id} for #{lp_name} #{statement.month} #{statement.year}", indent: 2)
 end
 
 def describe_school_partnership(school_partnership)
@@ -106,11 +106,13 @@ statements.each do |payment_statement|
         describe_declaration(declaration, "ECT")
       end
 
-      FactoryBot.create(:declaration, :with_mentor, :paid,
-                        declaration_type:,
-                        school_partnership:,
-                        payment_statement:).tap do |declaration|
-        describe_declaration(declaration, "Mentor")
+      if declaration_type == "started" || declaration_type == "completed"
+        FactoryBot.create(:declaration, :with_mentor, :paid,
+                          declaration_type:,
+                          school_partnership:,
+                          payment_statement:).tap do |declaration|
+          describe_declaration(declaration, "Mentor")
+        end
       end
     end
   end
@@ -118,30 +120,30 @@ end
 
 statement_pairs = [[august_statement_2024, september_statement_2024], [august_statement_2025, september_statement_2025]]
 
-statement_pairs.each do |payment_statement, clawback_statement|
-  describe_statement_declaration(clawback_statement)
-  school_partnerships.each do |school_partnership|
-    alp = payment_statement.contract.active_lead_provider
-    school_alp = school_partnership.lead_provider_delivery_partnership.active_lead_provider
-    next unless alp == school_alp
+# statement_pairs.each do |payment_statement, clawback_statement|
+#   describe_statement_declaration(clawback_statement)
+#   school_partnerships.each do |school_partnership|
+#     alp = payment_statement.contract.active_lead_provider
+#     school_alp = school_partnership.lead_provider_delivery_partnership.active_lead_provider
+#     next unless alp == school_alp
 
-    describe_school_partnership(school_partnership)
+#     describe_school_partnership(school_partnership)
 
-    milestones.each do |declaration_type|
-      FactoryBot.create(:declaration, :with_ect, :awaiting_clawback,
-                        declaration_type:,
-                        school_partnership:,
-                        payment_statement:,
-                        clawback_statement:).tap do |declaration|
-        describe_declaration(declaration, "ECT")
-      end
-      FactoryBot.create(:declaration, :with_mentor, :awaiting_clawback,
-                        declaration_type:,
-                        school_partnership:,
-                        payment_statement:,
-                        clawback_statement:).tap do |declaration|
-        describe_declaration(declaration, "Mentor")
-      end
-    end
-  end
-end
+#     milestones.each do |declaration_type|
+#       FactoryBot.create(:declaration, :with_ect, :awaiting_clawback,
+#                         declaration_type:,
+#                         school_partnership:,
+#                         payment_statement:,
+#                         clawback_statement:).tap do |declaration|
+#         describe_declaration(declaration, "ECT")
+#       end
+#       FactoryBot.create(:declaration, :with_mentor, :awaiting_clawback,
+#                         declaration_type:,
+#                         school_partnership:,
+#                         payment_statement:,
+#                         clawback_statement:).tap do |declaration|
+#         describe_declaration(declaration, "Mentor")
+#       end
+#     end
+#   end
+# end
