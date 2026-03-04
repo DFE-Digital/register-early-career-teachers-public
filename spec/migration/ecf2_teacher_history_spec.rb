@@ -371,6 +371,7 @@ describe ECF2TeacherHistory do
             expect(data_migration_teacher_combination.ecf1_ect_profile_id).to eq(teacher.api_ect_training_record_id)
             expect(data_migration_teacher_combination.ecf1_ect_combinations.map { it[39..-2] }).to match_array(expected_combinations)
             expect(data_migration_teacher_combination.ecf2_ect_combinations.map { it[39..-2] }).to match_array(expected_combinations)
+            expect(data_migration_teacher_combination.migration_mode).to eq migration_mode
           end
 
           context "when an ect_at_school_period can't be persisted" do
@@ -724,6 +725,7 @@ describe ECF2TeacherHistory do
             expect(data_migration_teacher_combination.ecf1_mentor_profile_id).to eq(teacher.api_mentor_training_record_id)
             expect(data_migration_teacher_combination.ecf1_mentor_combinations.map { it[39..-2] }).to match_array(combinations)
             expect(data_migration_teacher_combination.ecf2_mentor_combinations.map { it[39..-2] }).to match_array(combinations)
+            expect(data_migration_teacher_combination.migration_mode).to eq migration_mode
           end
 
           context "when a mentor_at_school_period can't be persisted" do

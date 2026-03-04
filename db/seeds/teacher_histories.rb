@@ -801,7 +801,7 @@ andre_roussimoff_mentoring_at_ackley_bridge = FactoryBot.create(:mentor_at_schoo
                                                                 school: ackley_bridge,
                                                                 email: "andre.giant@wwf.com",
                                                                 started_on: Date.new(2022, 9, 1),
-                                                                finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+                                                                finished_on: Date.new(2023, 4, 3)).tap { |sp| describe_mentor_at_school_period(sp) }
 
 FactoryBot.create(:training_period,
                   :for_mentor,
@@ -809,7 +809,7 @@ FactoryBot.create(:training_period,
                   :deferred,
                   mentor_at_school_period: andre_roussimoff_mentoring_at_ackley_bridge,
                   started_on: Date.new(2022, 9, 1),
-                  finished_on: nil,
+                  finished_on: Date.new(2023, 4, 3),
                   school_partnership: teach_first_grain_ackley_bridge_2022,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
@@ -1148,14 +1148,14 @@ joyce_grenfell_mentoring_at_ackley_bridge = FactoryBot.create(:mentor_at_school_
                                                               school: ackley_bridge,
                                                               email: "joyce.grenfell@st-trinians.co.uk",
                                                               started_on: Date.new(2025, 7, 1),
-                                                              finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
+                                                              finished_on: Date.new(2026, 3, 1)).tap { |sp| describe_mentor_at_school_period(sp) }
 
 FactoryBot.create(:training_period,
                   :for_mentor, :withdrawn,
                   :with_schedule,
                   mentor_at_school_period: joyce_grenfell_mentoring_at_ackley_bridge,
                   started_on: Date.new(2025, 7, 1),
-                  finished_on: nil,
+                  finished_on: Date.new(2026, 3, 1),
                   school_partnership: teach_first_grain_ackley_bridge_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
@@ -1263,7 +1263,7 @@ create_same_school_mentorship!(
   mentor: andre_roussimoff_mentoring_at_ackley_bridge,
   mentee: kate_winslet_ect_at_ackley_bridge,
   started_on: Date.new(2022, 9, 1),
-  finished_on: nil
+  finished_on: Date.new(2023, 4, 3)
 )
 
 create_same_school_mentorship!(

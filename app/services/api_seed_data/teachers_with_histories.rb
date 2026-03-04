@@ -83,10 +83,10 @@ module APISeedData
       teacher = create_teacher(started_on: school_period[:started_on])
 
       training_period_data = random_period_within(**school_period)
-      training_period_traits = if training_period_data[:started_on].future?
+      training_status_traits = if training_period_data[:started_on].future? || training_period_data[:finished_on].nil?
                                  []
                                else
-                                 generate_training_period_traits
+                                 generate_training_status_traits
                                end
       ect_mentor_traits = generate_ect_mentor_school_period_traits
       ect_specific_traits = generate_ect_specific_traits
@@ -100,7 +100,7 @@ module APISeedData
           schedule,
           school_partnership,
           training_period_data,
-          training_period_traits,
+          training_status_traits,
           ect_mentor_traits,
           ect_specific_traits
         )
@@ -114,7 +114,7 @@ module APISeedData
           schedule,
           school_partnership,
           training_period_data,
-          training_period_traits,
+          training_status_traits,
           ect_mentor_traits,
           ect_specific_traits
         )
@@ -144,7 +144,7 @@ module APISeedData
         .first
     end
 
-    def generate_training_period_traits
+    def generate_training_status_traits
       [].tap do |traits|
         if rand_boolean(WITHDRAWN_RATIO)
           traits << :withdrawn
