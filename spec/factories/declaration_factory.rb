@@ -99,11 +99,11 @@ FactoryBot.define do
         school_partnership = evaluator.school_partnership
         declaration.declaration_type = evaluator.declaration_type
 
-        teacher = build(:teacher)
+        teacher = create(:teacher)
         school = school_partnership.school
 
         ect_at_school_period =
-          build(
+          create(
             :ect_at_school_period,
             teacher:,
             school:,
@@ -112,7 +112,7 @@ FactoryBot.define do
           )
 
         training_period =
-          build(
+          create(
             :training_period,
             :for_ect,
             :with_schedule_and_milestones,
@@ -140,10 +140,10 @@ FactoryBot.define do
         school_partnership = evaluator.school_partnership
         declaration.declaration_type = evaluator.declaration_type
 
-        teacher = build(:teacher)
+        teacher = create(:teacher)
         school = school_partnership.school
 
-        mentor_at_school_period = build(
+        mentor_at_school_period = create(
           :mentor_at_school_period,
           teacher:,
           school:,
@@ -152,7 +152,7 @@ FactoryBot.define do
         )
 
         training_period =
-          build(
+          create(
             :training_period,
             :for_mentor,
             :with_schedule_and_milestones,
