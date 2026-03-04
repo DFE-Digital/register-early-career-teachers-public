@@ -36,12 +36,4 @@ module TeacherHelper
   def teacher_induction_ab_name(teacher)
     Teachers::InductionPeriod.new(teacher).appropriate_body_name
   end
-
-  def teacher_date_of_birth_hint_text
-    "For example, 20 4 2001"
-  end
-
-  def teacher_induction_date_hint_text
-    "For example, 20 4 #{Date.current.year.pred}"
-  end
 end
