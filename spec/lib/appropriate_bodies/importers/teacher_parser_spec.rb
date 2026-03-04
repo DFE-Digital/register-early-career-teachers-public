@@ -32,15 +32,15 @@ describe AppropriateBodies::Importers::TeacherParser do
   let(:filtered_trns) { parser.rows.map(&:trn) }
 
   it "selects only TRNs with induction periods if their status is not ongoing" do
-    expect(filtered_trns).to include(%w[7890123 9012345 5678901 7777777])
+    expect(filtered_trns).to include(*%w[7890123 9012345 5678901 7777777])
   end
 
   it "rejects TRNs with induction periods if their status is ongoing" do
-    expect(filtered_trns).not_to include(%w[1234567 2345678])
+    expect(filtered_trns).not_to include(*%w[1234567 2345678])
   end
 
   it "rejects TRNs without induction periods" do
-    expect(filtered_trns).not_to include(%w[4567890])
+    expect(filtered_trns).not_to include("4567890")
   end
 
   describe "extension lengths" do

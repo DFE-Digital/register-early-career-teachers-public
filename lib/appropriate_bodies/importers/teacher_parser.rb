@@ -44,30 +44,22 @@ module AppropriateBodies::Importers
       @trns_already_persisted = Teacher.all.pluck(:trn)
 
       sorted_trns_with_induction_periods = trns_with_induction_periods.compact.sort
-
-      file = data_csv.to_s.ends_with?("teachers.csv") ? File.readlines(data_csv) : data_csv.split("\n")
-
+      file = data_csv.to_s.ends_with?("teachers.csv") ? File.readlines(data_csv) : data_csv.scan(/.*\n/)
       file.delete_at(0)
-
       sorted_lines = file.sort
-
       wanted_lines = []
-
       seek = sorted_trns_with_induction_periods.shift
 
       sorted_lines.each do |line|
         next unless line.start_with?(seek)
 
         wanted_lines << line
-
         break if sorted_trns_with_induction_periods.empty?
 
         seek = sorted_trns_with_induction_periods.shift
       end
 
       @csv = CSV.parse(wanted_lines.join, headers: HEADERS)
-
-      @trns_already_persisted = trns_already_persisted
 
       File.open(PARSER_ERROR_LOG, "w") { |f| f.truncate(0) }
       @logger = logger || Logger.new(PARSER_ERROR_LOG, File::CREAT)
