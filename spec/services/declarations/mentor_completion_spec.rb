@@ -46,9 +46,12 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
         end
 
         context "when the training period is already finished" do
-          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.months.ago, finished_on: 1.week.ago) }
-          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 2.months.ago, finished_on: 1.week.ago) }
-          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date: 2.weeks.ago) }
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.months.ago, finished_on:) }
+          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 2.months.ago, finished_on:) }
+          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date:) }
+
+          let(:declaration_date) { 2.weeks.ago }
+          let(:finished_on) { 1.week.ago }
 
           it "does not change the training period finished_on" do
             expect { service.perform }.not_to(change { training_period.reload.finished_on })
@@ -61,19 +64,33 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
             expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.declaration_date.to_date)
             expect(teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_declaration_received")
           end
-        end
 
-        context "when the training period is already finished and the declaration date is outside the school period" do
-          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.months.ago, finished_on: 3.weeks.ago) }
-          let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: 2.months.ago, finished_on: 3.weeks.ago) }
-          let(:declaration) { FactoryBot.create(:declaration, :eligible, declaration_type: "completed", training_period:, declaration_date: 2.weeks.ago) }
+          context "when the declaration date is outside the school period" do
+            let(:declaration_date) { mentor_at_school_period.finished_on + 2.days }
 
-          it "does not raise an error" do
-            expect { service.perform }.not_to raise_error
+            it "does not raise an error" do
+              expect { service.perform }.not_to raise_error
+            end
+
+            it "does not change the training period finished_on" do
+              expect { service.perform }.not_to(change { training_period.reload.finished_on })
+            end
           end
 
-          it "does not change the training period finished_on" do
-            expect { service.perform }.not_to(change { training_period.reload.finished_on })
+          context "when the training period has a future finished_on" do
+            let(:finished_on) { 2.months.from_now }
+
+            it "brings forward the training period finished_on to the declaration date" do
+              expect { service.perform }.to change { training_period.reload.finished_on }.from(finished_on.to_date).to(declaration.declaration_date.to_date)
+            end
+
+            it "marks the teacher as ineligible for funding" do
+              service.perform
+
+              teacher.reload
+              expect(teacher.mentor_became_ineligible_for_funding_on).to eq(declaration.declaration_date.to_date)
+              expect(teacher.mentor_became_ineligible_for_funding_reason).to eq("completed_declaration_received")
+            end
           end
         end
 
