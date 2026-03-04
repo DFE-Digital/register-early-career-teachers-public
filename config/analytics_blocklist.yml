@@ -172,13 +172,8 @@
   - expires_at
   - created_at
   :users:
-  - id
-  - name
-  - email
   - otp_secret
   - otp_verified_at
-  - created_at
-  - updated_at
   - role
   - otp_school_urn
   :teacher_migration_failures:
