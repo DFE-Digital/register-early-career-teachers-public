@@ -311,6 +311,43 @@ def schedule_and_milestone_data
     build(identifier: "ecf-standard-january", contract_period_year: 2025, start_date: "2026-01-01"),
     build(identifier: "ecf-standard-april", contract_period_year: 2025, start_date: "2026-04-01"),
 
+    {
+      identifier: "ecf-standard-september",
+      contract_period_year: 2025,
+      milestones: [
+        { declaration_type: "started", start_date: "2025-06-01", milestone_date: "2025-12-31" },
+        { declaration_type: "retained-1", start_date: "2026-01-01", milestone_date: "2026-03-31" },
+        { declaration_type: "retained-2", start_date: "2026-04-01", milestone_date: "2026-07-31" },
+        { declaration_type: "retained-3", start_date: "2026-08-01", milestone_date: "2026-12-31" },
+        { declaration_type: "retained-4", start_date: "2027-01-01", milestone_date: "2027-03-31" },
+        { declaration_type: "completed", start_date: "2027-04-01", milestone_date: "2027-07-31" }
+      ]
+    },
+    {
+      identifier: "ecf-standard-january",
+      contract_period_year: 2025,
+      milestones: [
+        { declaration_type: "started", start_date: "2026-01-01", milestone_date: "2026-03-31" },
+        { declaration_type: "retained-1", start_date: "2026-04-01", milestone_date: "2026-07-31" },
+        { declaration_type: "retained-2", start_date: "2026-08-01", milestone_date: "2026-12-31" },
+        { declaration_type: "retained-3", start_date: "2027-01-01", milestone_date: "2027-03-31" },
+        { declaration_type: "retained-4", start_date: "2027-04-01", milestone_date: "2027-07-31" },
+        { declaration_type: "completed", start_date: "2027-08-01", milestone_date: "2027-12-31" }
+      ]
+    },
+    {
+      identifier: "ecf-standard-april",
+      contract_period_year: 2025,
+      milestones: [
+        { declaration_type: "started", start_date: "2026-04-01", milestone_date: "2026-07-31" },
+        { declaration_type: "retained-1", start_date: "2026-08-01", milestone_date: "2026-12-31" },
+        { declaration_type: "retained-2", start_date: "2027-01-01", milestone_date: "2027-03-31" },
+        { declaration_type: "retained-3", start_date: "2027-04-01", milestone_date: "2027-07-31" },
+        { declaration_type: "retained-4", start_date: "2027-08-01", milestone_date: "2027-12-31" },
+        { declaration_type: "completed", start_date: "2028-01-01", milestone_date: "2028-03-31" }
+      ]
+    },
+
     # 2026
 
     ## Extended

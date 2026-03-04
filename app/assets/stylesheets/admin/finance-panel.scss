@@ -1,0 +1,64 @@
+@use "govuk-frontend/dist/govuk" as *;
+
+.finance-panel {
+  background-color: govuk-colour("black", $variant: "tint-95");
+  padding: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+
+  @mixin two-col-grid {
+    display: grid;
+    gap: govuk-spacing(6);
+    grid-template-columns: 1fr;
+
+    @include govuk-media-query($from: tablet) {
+      grid-template-columns: auto 1fr;
+    }
+  }
+
+  &__summary,
+  &__dates,
+  &__summary_and_counts,
+  &__summary__meta__dates {
+    @include two-col-grid;
+  }
+
+  &__dates {
+    margin-bottom: govuk-spacing(3);
+  }
+
+  &__summary__total-payment-breakdown p {
+    display: flex;
+    justify-content: space-between;
+    min-width: 240px;
+  }
+
+  &__summary__meta {
+    flex-grow: 1;
+  }
+
+  &__summary__meta__counts {
+    display: grid;
+    gap: govuk-spacing(6);
+    grid-template-columns: 1fr;
+
+    @include govuk-media-query($from: tablet) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  &__summary_and_counts .govuk-table__body {
+    .govuk-table__cell,
+    .govuk-table__header {
+      padding-block: govuk-spacing(6);
+    }
+  }
+
+  .output-payments tbody tr:nth-of-type(2n - 1) {
+    th,
+    td {
+      border-bottom: 0;
+    }
+  }
+}
