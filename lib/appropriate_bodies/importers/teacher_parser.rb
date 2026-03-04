@@ -1,8 +1,17 @@
 require "csv"
 
 module AppropriateBodies::Importers
-  class TeacherImporter
-    IMPORT_ERROR_LOG = "tmp/teacher_import.log"
+  #
+  # Process CSV data or a CSV filename
+  # - exclude persisted teacher record
+  # - exclude active TRS induction statuses
+  #
+  class TeacherParser
+    PARSER_ERROR_LOG = "tmp/dqt_teacher_parser.log"
+    UNWANTED_STATUSES = %w[RequiredToComplete InProgress].freeze
+    HEADERS = %w[trn first_name last_name extension_length extension_length_unit induction_status].freeze
+
+    # UNWANTED_TEACHER_IDS = [76_075, 93_314].freeze # move to induction parser
 
     Row = Struct.new(:trn, :first_name, :last_name, :induction_status, :extension_terms, keyword_init: true) do
       def to_h
@@ -27,13 +36,19 @@ module AppropriateBodies::Importers
       end
     end
 
-    attr_accessor :logger
+    attr_accessor :logger,
+                  :csv,
+                  :trns_already_persisted
 
-    def initialize(filename, trns_with_induction_periods, csv: nil, logger: nil)
-      sorted_trns_with_induction_periods = trns_with_induction_periods.reject(&:blank?).sort
+    def initialize(data_csv:, trns_with_induction_periods:, logger: nil)
+      @trns_already_persisted = Teacher.all.pluck(:trn)
 
-      file = csv || File.readlines(filename)
+      sorted_trns_with_induction_periods = trns_with_induction_periods.compact.sort
+
+      file = data_csv.to_s.ends_with?("teachers.csv") ? File.readlines(data_csv) : data_csv.split("\n")
+
       file.delete_at(0)
+
       sorted_lines = file.sort
 
       wanted_lines = []
@@ -50,32 +65,37 @@ module AppropriateBodies::Importers
         seek = sorted_trns_with_induction_periods.shift
       end
 
-      @csv = CSV.parse(wanted_lines.join, headers: %w[trn first_name last_name extension_length extension_length_unit induction_status]) # TODO: remove headers if we update the file before using it
+      @csv = CSV.parse(wanted_lines.join, headers: HEADERS)
 
-      File.open(IMPORT_ERROR_LOG, "w") { |f| f.truncate(0) }
-      @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
+      @trns_already_persisted = trns_already_persisted
+
+      File.open(PARSER_ERROR_LOG, "w") { |f| f.truncate(0) }
+      @logger = logger || Logger.new(PARSER_ERROR_LOG, File::CREAT)
     end
 
     # @return [Array<Struct>]
     def rows
-      @rows ||= @csv.reject { |row| row["trn"].nil? }.map { |row| Row.new(**build(row)) }
-    end
-
-    # TODO: combine methods and rename to :filtered_rows
-    # ignore statuses from the first import
-    def rows_with_wanted_statuses
-      unwanted_statuses = %w[RequiredToComplete InProgress]
-      rows.reject { |row| row.induction_status.in?(unwanted_statuses) }
-      # rows_with_missing_teachers.reject { |row| row.induction_status.in?(unwanted_statuses) }
-    end
-
-    # ignore TRNs already in the service
-    def rows_with_missing_teachers
-      existing_trns = Teacher.pluck(:trn)
-      rows.reject { |row| row.trn.in?(existing_trns) }
+      @rows ||= filtered_rows.map { |row| Row.new(**build(row)) }
     end
 
   private
+
+    # @return [Array<CSV::Row>]
+    def filtered_rows
+      csv.reject do |row|
+        case
+        when row["induction_status"].in?(UNWANTED_STATUSES)
+          true
+        when row["trn"].nil?
+          true
+        when row["trn"].in?(trns_already_persisted)
+          logger.error "#{row['trn']} teacher already in the database"
+          true
+        else
+          false
+        end
+      end
+    end
 
     def build(row)
       {
@@ -87,8 +107,6 @@ module AppropriateBodies::Importers
       }
     end
 
-    # TODO: beware there are plenty of big assumptions in this method,
-    #       these need to be discussed with the team
     def convert_extension(row)
       unit = row["extension_length_unit"]
       value = row["extension_length"].to_i

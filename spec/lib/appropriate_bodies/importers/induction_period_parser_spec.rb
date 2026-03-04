@@ -1,7 +1,12 @@
-describe AppropriateBodies::Importers::InductionPeriodImporter do
-  subject do
-    described_class.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv, logger: fake_logger)
+describe AppropriateBodies::Importers::InductionPeriodParser do
+  subject(:parser) do
+    described_class.new(
+      data_csv: sample_csv_data,
+      logger: fake_logger
+    )
   end
+
+  let(:row_class) { described_class::Row }
 
   let(:fake_logger) { double(Logger, error: true) }
 
@@ -26,32 +31,22 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     CSV
   end
 
-  let(:cutoff_csv_data) do
-    <<~CSV
-      dqt_id
-      f4837bce-28ae-46d0-aae7-d49f1d8f62e3
-    CSV
-  end
-
-  let(:sample_csv) { CSV.parse(sample_csv_data, headers: true) }
-  let(:sample_cutoff_csv) { CSV.parse(cutoff_csv_data, headers: true) }
-
-  it "converts csv rows to Row objects when initialized" do
-    expect(subject.rows).to all(be_a(AppropriateBodies::Importers::InductionPeriodImporter::Row))
+  it "converts CSV::Rows to InductionPeriodParser::Rows" do
+    expect(parser.rows).to all(be_a(row_class))
   end
 
   it "converts all rows" do
-    expect(subject.rows.size).to be(5)
+    expect(parser.rows.size).to be(5)
   end
 
   describe "mapping induction programmes" do
     it "converts names to codes properly" do
       mappings = {
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_1.dqt_id } => "pre_september_2021",
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_2.dqt_id } => "cip",
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_3.dqt_id } => "diy",
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_4.dqt_id } => "fip",
-        subject.rows.find { |r| r.legacy_appropriate_body_id == ab_5.dqt_id } => "unknown"
+        parser.rows.find { |r| r.legacy_appropriate_body_id == ab_1.dqt_id } => "pre_september_2021",
+        parser.rows.find { |r| r.legacy_appropriate_body_id == ab_2.dqt_id } => "cip",
+        parser.rows.find { |r| r.legacy_appropriate_body_id == ab_3.dqt_id } => "diy",
+        parser.rows.find { |r| r.legacy_appropriate_body_id == ab_4.dqt_id } => "fip",
+        parser.rows.find { |r| r.legacy_appropriate_body_id == ab_5.dqt_id } => "unknown"
       }
       mappings.each do |row, expected_induction_programme|
         expect(row.to_hash.fetch(:induction_programme)).to eql(expected_induction_programme)
@@ -69,7 +64,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       it "sets the number_of_terms to nil" do
-        row_data = subject.periods_as_hashes_by_trn["2600071"].first
+        row_data = parser.periods_as_hashes_by_trn["2600071"].first
         expect(row_data.fetch(:started_on)).to eql(Date.new(2012, 1, 1))
         expect(row_data.fetch(:number_of_terms)).to be_nil
       end
@@ -87,7 +82,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       it "bumps the finish date by one day" do
-        row_data = subject.periods_as_hashes_by_trn["2600071"].first
+        row_data = parser.periods_as_hashes_by_trn["2600071"].first
         expect(row_data.fetch(:started_on)).to eql(Date.new(2012, 1, 1))
         expect(row_data.fetch(:finished_on)).to eql(Date.new(2012, 1, 2))
       end
@@ -96,13 +91,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
 
   describe "cutoff dates for old appropriate bodies" do
     context "when the appropriate body ID appears in the cutoff list" do
-      let(:cutoff_csv_data) do
-        <<~CSV
-          dqt_id
-          #{ab_1.dqt_id}
-        CSV
-      end
-
       let(:sample_csv_data) do
         <<~CSV
           appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -115,21 +103,21 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
 
       context "when the finish date is later than the cutoff date" do
         it "cuts off the induction period that appears in the cutoff list on 2024-08-31" do
-          row_data = subject.periods_as_hashes_by_trn["2600071"].first
+          row_data = parser.periods_as_hashes_by_trn["2600071"].first
           expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 8, 31))
         end
       end
 
       context "when the finish date is null" do
         it "cuts off the induction period that appears in the cutoff list on 2024-08-31" do
-          row_data = subject.periods_as_hashes_by_trn["2600072"].first
+          row_data = parser.periods_as_hashes_by_trn["2600072"].first
           expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 8, 31))
         end
       end
 
       context "when the start date is later than the cutoff date" do
         it "sets the finish date to one day later than the start date" do
-          row_data = subject.periods_as_hashes_by_trn["2600073"].first
+          row_data = parser.periods_as_hashes_by_trn["2600073"].first
           expect(row_data.fetch(:started_on)).to eql(Date.new(2024, 9, 5))
           expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 9, 6))
         end
@@ -137,7 +125,7 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
 
       context "when the id is not in the cutoff list" do
         it "leaves the dates untouched" do
-          row_data = subject.periods_as_hashes_by_trn["2600074"].first
+          row_data = parser.periods_as_hashes_by_trn["2600074"].first
           expect(row_data.fetch(:started_on)).to eql(Date.new(2019, 1, 1))
           expect(row_data.fetch(:finished_on)).to eql(Date.new(2024, 10, 31))
         end
@@ -155,11 +143,11 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       it "does not import the row" do
-        expect(subject.periods_as_hashes_by_trn).to be_empty
+        expect(parser.periods_as_hashes_by_trn).to be_empty
       end
 
       it "logs an error" do
-        subject.periods_as_hashes_by_trn
+        parser.periods_as_hashes_by_trn
         expect(fake_logger).to have_received(:error).once.with(/started_on is nil/)
       end
     end
@@ -173,11 +161,11 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       it "does not import the row" do
-        expect(subject.periods_as_hashes_by_trn).to be_empty
+        expect(parser.periods_as_hashes_by_trn).to be_empty
       end
 
       it "logs an error" do
-        subject.periods_as_hashes_by_trn
+        parser.periods_as_hashes_by_trn
         expect(fake_logger).to have_received(:error).once.with(/started_on is 0001-01-01/)
       end
     end
@@ -191,11 +179,11 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       it "does not import the row" do
-        expect(subject.periods_as_hashes_by_trn).to be_empty
+        expect(parser.periods_as_hashes_by_trn).to be_empty
       end
 
       it "logs an error" do
-        subject.periods_as_hashes_by_trn
+        parser.periods_as_hashes_by_trn
         expect(fake_logger).to have_received(:error).once.with(/started_on is greater than finished_on/)
       end
     end
@@ -203,8 +191,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
 
   describe "rebuilding periods" do
     context "when an ECT has one induction period with one AB" do
-      subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv) }
-
       let(:sample_csv_data) do
         <<~CSV
           appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -213,10 +199,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       it "contains the original row untouched" do
-        expect(subject.periods_as_hashes_by_trn).to eql(
+        expect(parser.periods_as_hashes_by_trn).to eql(
           {
             "2600071" => [
-              AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+              row_class.new(
                 started_on: Date.new(2012, 1, 1),
                 finished_on: nil,
                 induction_programme: nil,
@@ -233,8 +219,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
 
     context "when an ECT has two induction periods that have the same programme type with one AB" do
       context "and the first period ends after the second period has started" do
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv) }
-
         let(:sample_csv_data) do
           <<~CSV
             appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -245,10 +229,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "combines the two periods so the new period has the earliest start date and the latest finish date" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "2600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: "Full Induction Programme",
@@ -257,8 +241,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 3,
                   notes: []
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2021, 2, 2),
                   finished_on: nil,
                   induction_programme: "Full Induction Programme",
@@ -274,8 +259,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       context "and the first period has an end date and terms but the second does not" do
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv) }
-
         let(:sample_csv_data) do
           <<~CSV
             appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -285,10 +268,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "keeps the finished (first) period" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "2600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: "Full Induction Programme",
@@ -304,8 +287,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       context "and the second period has an end date and terms but the first does not" do
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv) }
-
         let(:sample_csv_data) do
           <<~CSV
             appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -315,10 +296,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "keeps the finished (second) period" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "2600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: "Full Induction Programme",
@@ -334,8 +315,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       context "and the second period ends after the first period has started" do
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv) }
-
         let(:sample_csv_data) do
           <<~CSV
             appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -346,10 +325,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "combines the two periods so the new period has the earliest start date and the latest finish date" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "2600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: "Full Induction Programme",
@@ -357,8 +336,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   trn: "2600071",
                   number_of_terms: 4
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2021, 1, 1),
                   finished_on: nil,
                   induction_programme: "Full Induction Programme",
@@ -372,15 +352,13 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "keeps the higher number of terms" do
-          number_of_terms = subject.periods_as_hashes_by_trn.dig("2600071", 0, :number_of_terms)
+          number_of_terms = parser.periods_as_hashes_by_trn.dig("2600071", 0, :number_of_terms)
 
           expect(number_of_terms).to be(4)
         end
       end
 
       context "and the first period contains the second" do
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv) }
-
         let(:sample_csv_data) do
           <<~CSV
             appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -391,10 +369,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "keeps the dates from the first" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "2600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: "Full Induction Programme",
@@ -403,8 +381,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 3,
                   notes: []
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2021, 2, 2),
                   finished_on: nil,
                   induction_programme: "Full Induction Programme",
@@ -420,8 +399,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
       end
 
       context "and the second period contains the first" do
-        subject { AppropriateBodies::Importers::InductionPeriodImporter.new(nil, nil, csv: sample_csv, dqt_csv: sample_cutoff_csv) }
-
         let(:sample_csv_data) do
           <<~CSV
             appropriate_body_id,started_on,finished_on,induction_programme_choice,number_of_terms,trn
@@ -432,10 +409,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "only the second is kept" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "2600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: "Full Induction Programme",
@@ -444,8 +421,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 4,
                   notes: []
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2021, 1, 1),
                   finished_on: nil,
                   induction_programme: "Full Induction Programme",
@@ -462,8 +440,6 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
     end
 
     context "when an ECT has two induction periods that have different programme types with one AB" do
-      xspecify "when one contains the other"
-
       context "when the periods do not overlap" do
         let(:sample_csv_data) do
           <<~CSV
@@ -475,10 +451,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "both are kept" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "3600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: "Full Induction Programme",
@@ -487,7 +463,8 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 4,
                   notes: []
                 ).to_hash,
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+
+                row_class.new(
                   started_on: Date.new(2012, 3, 3),
                   finished_on: Date.new(2012, 5, 5),
                   induction_programme: "Core Induction Programme",
@@ -496,8 +473,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 2,
                   notes: []
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                described_class.new(
                   started_on: Date.new(2021, 3, 3),
                   finished_on: nil,
                   induction_programme: "Full Induction Programme",
@@ -523,10 +501,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "the earlier one is curtailed so it does not clash with the later one" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "3600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 4, 4),
                   induction_programme: "Full Induction Programme",
@@ -535,7 +513,8 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 4,
                   notes: []
                 ).to_hash,
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+
+                row_class.new(
                   started_on: Date.new(2012, 4, 4),
                   finished_on: Date.new(2012, 6, 6),
                   induction_programme: "Core Induction Programme",
@@ -544,8 +523,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 2,
                   notes: []
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2021, 3, 3),
                   finished_on: nil,
                   induction_programme: "Full Induction Programme",
@@ -573,16 +553,16 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "both are discarded" do
-          expect(subject.periods_as_hashes_by_trn.values.length).to be(1)
+          expect(parser.periods_as_hashes_by_trn.values.length).to be(1)
         end
 
         it "logs the error message" do
-          subject.periods_as_hashes_by_trn
+          parser.periods_as_hashes_by_trn
           expect(fake_logger).to have_received(:error).once.with(/two induction periods with different appropriate bodies where one contains the other/)
         end
 
         it "logs the affected IDs" do
-          subject.periods_as_hashes_by_trn
+          parser.periods_as_hashes_by_trn
           expect(fake_logger).to have_received(:error).once.with(/trn: 3600071 appropriate_body_period_id: \["1ddf3e82-c1ae-e311-b8ed-005056822391", "025e61e7-ec32-eb11-a813-000d3a228dfc"\]/)
         end
       end
@@ -598,16 +578,16 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "both are discarded" do
-          expect(subject.periods_as_hashes_by_trn.values.length).to be(1)
+          expect(parser.periods_as_hashes_by_trn.values.length).to be(1)
         end
 
         it "logs the error message" do
-          subject.periods_as_hashes_by_trn.values.length
+          parser.periods_as_hashes_by_trn.values.length
           expect(fake_logger).to have_received(:error).once.with(/two induction periods with different appropriate bodies that start on the same day found/)
         end
 
         it "logs the affected IDs" do
-          subject.periods_as_hashes_by_trn.values.length
+          parser.periods_as_hashes_by_trn.values.length
           expect(fake_logger).to have_received(:error).once.with(/trn: 3600071 appropriate_body_period_id: \["025e61e7-ec32-eb11-a813-000d3a228dfc", "1ddf3e82-c1ae-e311-b8ed-005056822391"\]/)
         end
       end
@@ -623,10 +603,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "both are kept" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "3600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 3, 3),
                   induction_programme: "Full Induction Programme",
@@ -635,7 +615,8 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 4,
                   notes: []
                 ).to_hash,
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+
+                row_class.new(
                   started_on: Date.new(2012, 3, 3),
                   finished_on: Date.new(2012, 5, 5),
                   induction_programme: "Full Induction Programme",
@@ -644,8 +625,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   number_of_terms: 2,
                   notes: []
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2021, 3, 3),
                   finished_on: nil,
                   induction_programme: "Full Induction Prorgramme",
@@ -671,10 +653,10 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
         end
 
         it "both are kept but the earlier one is shortened to prevent overlap with the second" do
-          expect(subject.periods_as_hashes_by_trn).to eql(
+          expect(parser.periods_as_hashes_by_trn).to eql(
             {
               "3600071" => [
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2012, 1, 1),
                   finished_on: Date.new(2012, 2, 2),
                   induction_programme: "Full Induction Programme",
@@ -682,7 +664,8 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   trn: "2600071",
                   number_of_terms: 1
                 ).to_hash,
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+
+                row_class.new(
                   started_on: Date.new(2012, 2, 2),
                   finished_on: Date.new(2012, 5, 5),
                   induction_programme: "Full Induction Programme",
@@ -690,8 +673,9 @@ describe AppropriateBodies::Importers::InductionPeriodImporter do
                   trn: "2600071",
                   number_of_terms: 4
                 ).to_hash,
+
                 # unrelated ongoing record so induction periods are included by the import
-                AppropriateBodies::Importers::InductionPeriodImporter::Row.new(
+                row_class.new(
                   started_on: Date.new(2021, 2, 2),
                   finished_on: nil,
                   induction_programme: "Full Induction Programme",

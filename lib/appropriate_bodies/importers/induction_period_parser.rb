@@ -1,11 +1,14 @@
 require "csv"
 
 module AppropriateBodies::Importers
-  class InductionPeriodImporter
-    IMPORT_ERROR_LOG = "log/induction_period_error.log"
-    ECF_CUTOFF = Date.new(2021, 9, 1).freeze
+  class InductionPeriodParser
+    PARSER_ERROR_LOG = "log/dqt_induction_period_parser.log"
 
-    attr_accessor :csv, :data, :logger
+    UNWANTED_TEACHER_IDS = [76_075, 93_314].freeze
+
+    # TODO: describe dates
+    ECF_CUTOFF = Date.new(2021, 9, 1).freeze # induction programme type pre-Sept
+    CUTOFF_DATE = Date.new(2024, 8, 31).freeze
 
     ClaimEvent = Struct.new(:appropriate_body_period_id, :induction_period_id, :teacher_id, :happened_at, :metadata, keyword_init: true) do
       def to_h
@@ -187,57 +190,37 @@ module AppropriateBodies::Importers
       end
     end
 
-    def initialize(filename, dqt_csv_filename, csv: nil, dqt_csv: nil, logger: nil)
-      @csv = csv || CSV.read(filename, headers: true)
-      @dqt_csv = dqt_csv || CSV.read(dqt_csv_filename, headers: true)
+    attr_accessor :csv,
+                  :data_csv,
+                  :logger,
+                  :dqt_uuids,
+                  :trns_already_persisted_with_inductions
 
-      File.open(IMPORT_ERROR_LOG, "w") { |f| f.truncate(0) }
-      @logger = logger || Logger.new(IMPORT_ERROR_LOG, File::CREAT)
+    def initialize(data_csv:, logger: nil)
+      @data_csv = data_csv
+      @dqt_uuids = AppropriateBodyPeriod.pluck(:dqt_id)
+      @trns_already_persisted_with_inductions = Teacher.where(id: UNWANTED_TEACHER_IDS).pluck(:trn)
+
+      File.open(PARSER_ERROR_LOG, "w") { |f| f.truncate(0) }
+      @logger = logger || Logger.new(PARSER_ERROR_LOG, File::CREAT)
     end
 
     def rows
-      @rows ||= @csv.map { |row| Row.new(**build(row)) }
-    end
-
-    def dqt_uuids
-      @dqt_uuids ||= @dqt_csv.map { |r| r["dqt_id"].downcase }
-    end
-
-    def build(row)
-      {
-        legacy_appropriate_body_id: row["appropriate_body_id"]&.downcase,
-        started_on: extract_date(row["started_on"]),
-        finished_on: extract_date(row["finished_on"]),
-        induction_programme: row["induction_programme_choice"],
-        number_of_terms: row["number_of_terms"].to_i,
-        trn: row["trn"],
-        notes: [],
-        appropriate_body_period_id: nil,
-        teacher_id: nil,
-        induction_status: nil,
-      }
-    end
-
-    # Offshore ABs to exclude from import
-    def offshore_ids
-      [
-        "7cdd3e82-c1ae-e311-b8ed-005056822391", # Isle of Man Offshore Establishments
-        "82dd3e82-c1ae-e311-b8ed-005056822391", # Guernsey Offshore Establishments
-        "86dd3e82-c1ae-e311-b8ed-005056822391", # Jersey Offshore Establishments
-        "8add3e82-c1ae-e311-b8ed-005056822391", # Gibraltar Overseas Establishments
-        "74c83b8a-b0c4-e311-8a4f-005056822390", # Ministry of Defence (MoD) Schools
-      ]
-    end
-
-    def cutoff_date
-      @cutoff_date ||= Date.new(2024, 8, 31)
+      @rows ||= csv_rows.map { |row| Row.new(**build(row)) }
     end
 
     def periods_by_trn
       rows
         .reject { |ip|
-          if ip.legacy_appropriate_body_id.in?(offshore_ids)
+          if ip.legacy_appropriate_body_id.in?(OFFSHORE_DQT_UUIDS)
             log_error("cannot be imported because appropriate_body is offshore", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
+          else
+            false
+          end
+        }
+        .reject { |ip|
+          if ip.trn.in?(trns_already_persisted_with_inductions)
+            log_error("cannot be imported because teacher exists with inductions already", trn: ip.trn, legacy_appropriate_body_id: ip.legacy_appropriate_body_id)
           else
             false
           end
@@ -268,18 +251,20 @@ module AppropriateBodies::Importers
         .each_with_object({}) do |(trn, rows), h|
           keep = []
           rows.each do |current|
-            if current.legacy_appropriate_body_id.in?(dqt_uuids) && (current.finished_on.nil? || current.finished_on > cutoff_date)
+            if current.legacy_appropriate_body_id.in?(dqt_uuids) && (current.finished_on.nil? || current.finished_on > CUTOFF_DATE)
               current.notes << {
                 heading: "Amended while importing from DQT",
                 body: "Induction period curtailed because it finished after appropriate body status lost",
                 data: { originals: [current.dup] }
               }
 
-              current.finished_on = if current.started_on >= cutoff_date
-                                      current.started_on + 1
-                                    else
-                                      cutoff_date
-                                    end
+              # current.finished_on = if current.started_on >= CUTOFF_DATE
+              #                         current.started_on + 1
+              #                       else
+              #                         CUTOFF_DATE
+              #                       end
+
+              current.finished_on = current.started_on >= CUTOFF_DATE ? current.started_on + 1 : CUTOFF_DATE
 
               keep << current
               next
@@ -452,6 +437,29 @@ module AppropriateBodies::Importers
     end
 
   private
+
+    def build(row)
+      {
+        legacy_appropriate_body_id: row["appropriate_body_id"]&.downcase,
+        started_on: extract_date(row["started_on"]),
+        finished_on: extract_date(row["finished_on"]),
+        induction_programme: row["induction_programme_choice"],
+        number_of_terms: row["number_of_terms"].to_i,
+        trn: row["trn"],
+        notes: [],
+        appropriate_body_period_id: nil,
+        teacher_id: nil,
+        induction_status: nil,
+      }
+    end
+
+    def csv_rows
+      genuine_data? ? CSV.read(data_csv, headers: true) : CSV.parse(data_csv, headers: true)
+    end
+
+    def genuine_data?
+      data_csv.to_s.ends_with?("inductionperiods.csv")
+    end
 
     def log_error(message, trn:, legacy_appropriate_body_id:)
       logger.error(

@@ -1,16 +1,33 @@
-appropriate_body_csv = Rails.root.join("tmp/import/appropriatebody.csv")            # 537
-teachers_csv = Rails.root.join("tmp/import/teachers.csv")                           # 1_799_170
-induction_period_csv = Rails.root.join("tmp/import/inductionperiods.csv")           # 829_189
-dfe_sign_in_mapping_csv = Rails.root.join("tmp/import/dfe-sign-in-mappings.csv")    # 86
-dqt_csv = Rails.root.join("tmp/import/old-abs.csv") # 433
+unless Rails.env.production?
+  dfe_sign_in_mapping_csv = Rails.root.join("tmp/import/dfe-sign-in-mappings.csv")
+  appropriate_body_csv = Rails.root.join("tmp/import/appropriatebody.csv")
 
-AppropriateBodies::Importers::Importer.new(
-  appropriate_body_csv:,
+  AppropriateBodies::Importers::AppropriateBodyImporter.new(
+    data_csv: appropriate_body_csv,
+    dfe_sign_in_mapping_csv:
+  ).import!
+end
+
+teachers_csv = Rails.root.join("tmp/import/teachers.csv")
+induction_period_csv = Rails.root.join("tmp/import/inductionperiods.csv")
+
+# 1309 teachers with inductions to be imported are already in the prod database (2 with inductions)
+AppropriateBodies::Importers::TeacherInductionImporter.new(
   teachers_csv:,
-  induction_period_csv:,
-  dfe_sign_in_mapping_csv:,
-  dqt_csv:
+  induction_period_csv:
 ).import!
+
+# │
+# │register-early-career-teachers(dev)> Teacher.count
+# │=> 101381
+# │register-early-career-teachers(dev)> AppropriateBodyPeriod.count
+# │=> 534
+# │register-early-career-teachers(dev)> InductionPeriod.count
+# │=> 117056
+# │register-early-career-teachers(dev)> InductionExtension.count
+# │=> 1391
+# │register-early-career-teachers(dev)> Event.count
+# │=> 492082
 
 # https://teacher-cpd.design-history.education.gov.uk/ecf-v2/fixing-dqt-data/
 #
@@ -25,6 +42,16 @@ AppropriateBodies::Importers::Importer.new(
 # trn,first_name,last_name,extension_length,extension_length_unit,induction_status
 #
 #
+# ➜ xan headers tmp/import/teachers.csv
+# 0   trn
+# 1   first_name
+# 2   last_name
+# 3   extension_length
+# 4   extension_length_unit
+# 5   induction_status
+#
+# xan filter 'len(trim(trn)) == 7' tmp/import/teachers.csv | xan count
+# 1_799_171
 #
 # Export TRNs of Exempt teachers
 # $ xan search Exempt tmp/import/teachers.csv | xan select trn > tmp/import/exempt_trns.csv
