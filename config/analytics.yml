@@ -82,6 +82,14 @@ shared:
     - website
     - in_england
     - eligible
+  :gias_school_links:
+    - id
+    - urn
+    - link_urn
+    - link_type
+    - link_date
+    - created_at
+    - updated_at
   :training_periods:
     - id
     - school_partnership_id
