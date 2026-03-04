@@ -69,7 +69,7 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
 
       context "when the latest training period is withdrawn" do
         let!(:training_period) do
-          tp = FactoryBot.create(
+          training_period = FactoryBot.create(
             :training_period,
             :ongoing,
             :provider_led,
@@ -77,11 +77,12 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on
           )
-          tp.update!(
+          training_period.update!(
             withdrawn_at: Time.zone.today,
-            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
+            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
+            finished_on: Time.zone.today
           )
-          tp
+          training_period
         end
 
         it "renders the provider-led branch for a withdrawn ECT" do

@@ -39,14 +39,16 @@ RSpec.describe ECTAtSchoolPeriods::LeadProviderResolver do
     def withdrawn_attributes
       {
         withdrawn_at: Time.zone.today,
-        withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first
+        withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
+        finished_on: Time.zone.today
       }
     end
 
     def deferred_attributes
       {
         deferred_at: Time.zone.today,
-        deferral_reason: TrainingPeriod.deferral_reasons.keys.first
+        deferral_reason: TrainingPeriod.deferral_reasons.keys.first,
+        finished_on: Time.zone.today
       }
     end
 

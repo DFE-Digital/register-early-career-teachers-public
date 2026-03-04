@@ -143,7 +143,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before do
       training_period.update!(
         withdrawn_at: Time.zone.today,
-        withdrawal_reason: valid_withdrawal_reason
+        withdrawal_reason: valid_withdrawal_reason,
+        finished_on: Time.zone.today
       )
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
     end
@@ -212,7 +213,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before do
       training_period.update!(
         withdrawn_at: Time.zone.today,
-        withdrawal_reason: valid_withdrawal_reason
+        withdrawal_reason: valid_withdrawal_reason,
+        finished_on: Time.zone.today
       )
 
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
@@ -249,7 +251,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before do
       training_period.update!(
         deferred_at: Time.zone.today,
-        deferral_reason: valid_deferral_reason
+        deferral_reason: valid_deferral_reason,
+        finished_on: Time.zone.today
       )
 
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:, current_school: school))
@@ -270,7 +273,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before do
       training_period.update!(
         deferred_at: Time.zone.today,
-        deferral_reason: valid_deferral_reason
+        deferral_reason: valid_deferral_reason,
+        finished_on: Time.zone.today + 1.day
       )
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
     end
@@ -295,7 +299,8 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     before do
       training_period.update!(
         deferred_at: Time.zone.today,
-        deferral_reason: valid_deferral_reason
+        deferral_reason: valid_deferral_reason,
+        finished_on: Time.zone.today + 1.day
       )
 
       ect_at_school_period.update!(
