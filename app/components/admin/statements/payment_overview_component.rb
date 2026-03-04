@@ -25,7 +25,11 @@ module Admin
     private
 
       def total_amount
-        raise NotImplementedError, "#{self.class} must set #exporter_class"
+        raise NotImplementedError
+      end
+
+      def vat_amount
+        raise NotImplementedError
       end
 
       def calculators

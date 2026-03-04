@@ -16,7 +16,6 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
       :contract_banded_fee_structure,
       :with_bands,
       monthly_service_fee:,
-      setup_fee:,
       uplift_fee_per_declaration: 50,
       recruitment_target: 100,
       declaration_boundaries: [{ min: 1, max: 200 }]
@@ -31,7 +30,6 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
   let(:total_refundable_amount) { -150 }
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }
-  let(:setup_fee) { 200 }
   let(:total_uplifts_amount) { 50 }
 
   let(:contract) do
@@ -65,14 +63,15 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
 
   it "has a total payment which is the sum of net total for banded and flatrate" do
     # ect_output(400) + mentors_output(200) + monthly_service_fee(1000) +
-    # setup_fee(200) + total_manual_adjustments_amount(375) + vat(435)
+    # total_manual_adjustments_amount(375) + vat(395)
+    # setup fee is no longer included
 
-    expect(page).to have_css(".govuk-table__caption--m", text: "£2,610.00")
+    expect(page).to have_css(".govuk-table__caption--m", text: "£2,370.00")
   end
 
   it "has a VAT row, which sums both banded and flatrate vat" do
     row = page.find(".govuk-table__row", text: "VAT")
-    expect(row).to have_text("£435.00")
+    expect(row).to have_text("£395.00")
   end
 
   it "has an additional adjustments row, taken from the banded output only" do
