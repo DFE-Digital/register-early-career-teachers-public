@@ -14,9 +14,12 @@ module Admin
       end
 
       def rows
-        d = mapped_declarations || []
-        d << ["Voided", voided.to_s]
-        d
+        rows = mapped_declarations || []
+        rows << ["Voided", voided]
+
+        rows
+        .group_by(&:first)
+        .map { |type, group| [type, group.sum(&:last).to_s] }
       end
 
     private
@@ -25,8 +28,17 @@ module Admin
         PaymentCalculator::Resolver.new(statement:, contract:).calculators
       end
 
-      def declaration_type_outputs
-        @declaration_type_outputs ||= calculators.first.outputs.declaration_type_outputs
+      def mapped_declarations
+        mappings = []
+        calculators.each do |calculator|
+          declaration_type_output = calculator.outputs.declaration_type_outputs
+          mappings.concat(mapped(declaration_type_output))
+        end
+        mappings
+      end
+
+      def mapped(declaration_type_outputs)
+        declaration_type_outputs.map { |dto| [payment_type(dto), payments_count(dto)] }
       end
 
       def payments_count(declaration_type_output)
@@ -35,10 +47,6 @@ module Admin
 
       def payment_type(declaration_type_output)
         declaration_type_output.declaration_type.humanize
-      end
-
-      def mapped_declarations
-        @mapped_declarations ||= declaration_type_outputs.map { |dto| [payment_type(dto), payments_count(dto).to_s] }
       end
 
       def voided
