@@ -26,6 +26,7 @@ namespace :api_seed_data do
       APISeedData::ECTBecomeMentorScenarios,
       APISeedData::MentorScenarios,
       APISeedData::SITBecomeMentorScenarios,
+      APISeedData::ECTParticipantActionScenarios,
     ]
 
     if Rails.env.development? || Rails.env.review? || Rails.env.staging?
