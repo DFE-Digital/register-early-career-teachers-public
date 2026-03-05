@@ -2,7 +2,7 @@ module Admin
   module Finance
     class SearchDeclarationsController < Admin::Finance::BaseController
       def show
-        declaration_api_id = params[:declaration_api_id]
+        declaration_api_id = params[:declaration_api_id].to_s
 
         return if declaration_api_id.blank?
 
@@ -14,7 +14,7 @@ module Admin
         end
 
         teacher = declaration.ect_teacher || declaration.mentor_teacher
-        raise "Declaration #{declaration.id} has no associated teacher" if teacher.blank?
+        raise ActiveRecord::RecordNotFound, "Declaration #{declaration.id} has no associated teacher" unless teacher
 
         redirect_to admin_teacher_declarations_path(teacher, anchor: "declarations")
       end
