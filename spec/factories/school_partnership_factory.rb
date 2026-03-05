@@ -22,5 +22,16 @@ FactoryBot.define do
                     delivery_partner:
       end
     end
+
+    trait :with_active_lead_provider do
+      transient do
+        active_lead_provider { association :active_lead_provider }
+      end
+
+      lead_provider_delivery_partnership do
+        association :lead_provider_delivery_partnership,
+                    active_lead_provider:
+      end
+    end
   end
 end
