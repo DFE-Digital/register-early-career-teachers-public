@@ -19,7 +19,7 @@ module Admin::Finance
     end
 
     def declarations
-      export = Admin::Finance::Statements::DeclarationsCSV.new(statement: @statement)
+      export = ::Statements::DeclarationsCSV.new(statement: @statement)
 
       send_data export.to_csv, filename: export.filename, type: export.type
     end
