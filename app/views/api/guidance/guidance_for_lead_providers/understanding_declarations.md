@@ -124,7 +124,7 @@ When a declaration is voided, it will become:
 
 To see which evidence types are valid for each declaration type, check the [Swagger documentation](/api/docs/v3/) and refer to the relevant schema.
 
-For pre-2025 cohorts, evidence is optional for started declarations. If you do provide it, valid evidence types are:
+For pre-2025 cohorts, evidence is optional for `started` declarations. If you do provide it, valid evidence types are:
 
 - `training-event-attended`
 - `self-study-material-completed`
