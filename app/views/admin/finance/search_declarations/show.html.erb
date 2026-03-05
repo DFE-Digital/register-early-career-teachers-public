@@ -4,6 +4,7 @@
   <div class="govuk-grid-column-full">
 
     <%= render Shared::TopSearchComponent.new(
+      query_param: :declaration_api_id,
       label_text: "Search for a declaration",
       hint_text: "Enter a declaration ID",
       submit_text: "Search",

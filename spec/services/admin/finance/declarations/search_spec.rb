@@ -1,4 +1,4 @@
-RSpec.describe Admin::Finance::SearchDeclarations::ByAPIId do
+RSpec.describe Admin::Finance::Declarations::Search do
   describe "#call" do
     let(:api_id) { "9787130d-137d-4ec6-b752-4a30ac241149" }
 
@@ -31,6 +31,20 @@ RSpec.describe Admin::Finance::SearchDeclarations::ByAPIId do
       result = described_class.new(raw_query: "##{api_id}##").call
 
       expect(result).to eq(declaration)
+    end
+
+    context "when the uuid is wrapped in quotes" do
+      it "strips quotes and finds the declaration" do
+        result = described_class.new(raw_query: "\"#{api_id}\"").call
+        expect(result).to eq(declaration)
+      end
+    end
+
+    context "when the uuid is wrapped in brackets" do
+      it "strips brackets and finds the declaration" do
+        result = described_class.new(raw_query: "(#{api_id})").call
+        expect(result).to eq(declaration)
+      end
     end
 
     it "returns nil when no matching declaration exists" do

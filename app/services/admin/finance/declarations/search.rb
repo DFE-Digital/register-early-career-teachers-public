@@ -1,7 +1,9 @@
 module Admin
   module Finance
-    module SearchDeclarations
-      class ByAPIId
+    module Declarations
+      class Search
+        def self.from_api_id(...) = new(...).call
+
         def initialize(raw_query:)
           @raw_query = raw_query
         end
