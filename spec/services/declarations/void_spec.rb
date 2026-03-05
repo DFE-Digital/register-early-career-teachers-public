@@ -72,5 +72,38 @@ RSpec.describe Declarations::Void do
         expect { void }.not_to(change(declaration, :voided_by_user_at))
       end
     end
+
+    context "when declaration is `voided`" do
+      let(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+      it "raises an error" do
+        expect {
+          void
+        }.to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    context "when declaration is `paid`" do
+      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+      it "raises an error" do
+        expect {
+          void
+        }.to raise_error(StateMachines::InvalidTransition)
+      end
+    end
+
+    Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
+      context "when declaration is `#{status}`" do
+        let(:declaration) { FactoryBot.create(:declaration, :"#{status}") }
+
+        it "voids the declaration" do
+          expect { void }
+            .to change(declaration, :payment_status)
+            .from(status)
+            .to("voided")
+        end
+      end
+    end
   end
 end
