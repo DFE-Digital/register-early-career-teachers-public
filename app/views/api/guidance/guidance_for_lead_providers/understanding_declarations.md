@@ -130,6 +130,6 @@ For pre-2025 cohorts, evidence is optional for started declarations. If you do p
 - `self-study-material-completed`
 - `other`
 
-For post-2025 cohorts, evidence is now mandatory for started declarations, as shown in the documentation above.
+For post-2024 cohorts, evidence is now mandatory for started declarations, as shown in the documentation above.
 
 Evidence types for post-2024 cohorts are not compatible with pre-2025 cohorts. If a provider submits a declaration for a pre-2025 cohort using a post-2024 evidence type, the API will return a 422 error.
