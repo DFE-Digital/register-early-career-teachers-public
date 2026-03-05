@@ -10,6 +10,7 @@ module API
         { title: "How to test the API effectively", path: "how-to-test-the-api-effectively" },
         { title: "Schedules and milestones guidance", path: "schedules-and-milestones-guidance" },
         { title: "Update participant data", path: "update-participant-data" },
+        { title: "Understanding declarations", path: "understanding-declarations" },
         { title: "View participant data", path: "view-participant-data" },
         { title: "Glossary", path: "glossary" },
       ].freeze
