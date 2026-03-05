@@ -5,7 +5,7 @@ FactoryBot.define do
 
     local_authority_code { Faker::Number.within(range: 1..999) }
     name { Faker::Educator.primary_school + " (#{urn})" }
-    establishment_number { Faker::Number.unique.within(range: 1..9_999) }
+    sequence(:establishment_number, &:itself)
     phase_name { "Phase one" }
     urn { Faker::Number.unique.within(range: 10_000..9_999_999) }
     ukprn { Faker::Number.unique.within(range: 1_000_000..99_999_999).to_s }
