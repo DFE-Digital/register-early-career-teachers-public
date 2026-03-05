@@ -125,7 +125,19 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
     end
     let(:params) { {} }
 
-    context "when the declaration has been paid" do
+    Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
+      context "when the declaration is in a `voidable` status: #{status}" do
+        let(:resource) do
+          create_resource(active_lead_provider:, declaration_trait: status.to_sym)
+        end
+        let(:service) { API::Declarations::Void }
+
+        it_behaves_like "a token authenticated endpoint", :put
+        it_behaves_like "an API update endpoint", accepts_request_body: false
+      end
+    end
+
+    context "when the declaration is in `paid` status" do
       let(:resource) do
         create_resource(active_lead_provider:, declaration_trait: :paid)
       end
@@ -135,14 +147,18 @@ RSpec.describe "Declarations API", :with_metadata, type: :request do
       it_behaves_like "an API update endpoint", accepts_request_body: false
     end
 
-    context "when the declaration has not been paid" do
+    context "when the declaration is in `voided` status" do
       let(:resource) do
-        create_resource(active_lead_provider:, declaration_trait: :payable)
+        create_resource(active_lead_provider:, declaration_trait: :voided)
       end
-      let(:service) { API::Declarations::Void }
 
-      it_behaves_like "a token authenticated endpoint", :put
-      it_behaves_like "an API update endpoint", accepts_request_body: false
+      it "returns a 422 response" do
+        authenticated_api_put(path, params:)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.content_type).to eql("application/json; charset=utf-8")
+        expect(response.body).to eq({ errors: [{ title: "participant_declaration_id", detail: "The declaration has already been voided." }] }.to_json)
+      end
     end
 
     context "when the declaration is a previous declaration for a different lead provider" do

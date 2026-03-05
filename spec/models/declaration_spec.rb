@@ -522,66 +522,158 @@ describe Declaration do
   end
 
   describe "payment_status transitions" do
-    context "when transitioning from no_payment to eligible" do
-      let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period) } }
+    describe "valid transitions" do
+      context "when transitioning from no_payment to eligible" do
+        let(:declaration) { FactoryBot.create(:declaration).tap { it.payment_statement = FactoryBot.create(:statement, :open, contract_period: it.training_period.contract_period) } }
 
-      it { expect { declaration.mark_as_eligible! }.to change(declaration, :payment_status).from("no_payment").to("eligible") }
+        it { expect { declaration.mark_as_eligible! }.to change(declaration, :payment_status).from("no_payment").to("eligible") }
+      end
+
+      context "when transitioning from eligible to payable" do
+        let(:declaration) { FactoryBot.create(:declaration, :eligible) }
+
+        it { expect { declaration.mark_as_payable! }.to change(declaration, :payment_status).from("eligible").to("payable") }
+      end
+
+      context "when transitioning from payable to paid" do
+        let(:declaration) { FactoryBot.create(:declaration, :payable) }
+
+        it { expect { declaration.mark_as_paid! }.to change(declaration, :payment_status).from("payable").to("paid") }
+      end
+
+      context "when transitioning from eligible to voided" do
+        let(:declaration) { FactoryBot.create(:declaration, :eligible) }
+
+        it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("eligible").to("voided") }
+      end
+
+      context "when transitioning from payable to voided" do
+        let(:declaration) { FactoryBot.create(:declaration, :payable) }
+
+        it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("payable").to("voided") }
+      end
+
+      context "when transitioning from no_payment to voided" do
+        let(:declaration) { FactoryBot.create(:declaration, :no_payment) }
+
+        it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("no_payment").to("voided") }
+      end
     end
 
-    context "when transitioning from eligible to payable" do
-      let(:declaration) { FactoryBot.create(:declaration, :eligible) }
+    describe "invalid transitions" do
+      context "when transitioning from paid to voided" do
+        let(:declaration) { FactoryBot.create(:declaration, :paid) }
 
-      it { expect { declaration.mark_as_payable! }.to change(declaration, :payment_status).from("eligible").to("payable") }
-    end
+        it { expect { declaration.mark_as_voided! }.to raise_error(StateMachines::InvalidTransition) }
+      end
 
-    context "when transitioning from payable to paid" do
-      let(:declaration) { FactoryBot.create(:declaration, :payable) }
+      context "when transitioning from no_payment to payable (skipping eligible)" do
+        let(:declaration) { FactoryBot.create(:declaration, :no_payment) }
 
-      it { expect { declaration.mark_as_paid! }.to change(declaration, :payment_status).from("payable").to("paid") }
-    end
+        it { expect { declaration.mark_as_payable! }.to raise_error(StateMachines::InvalidTransition) }
+      end
 
-    context "when transitioning from eligible to voided" do
-      let(:declaration) { FactoryBot.create(:declaration, :eligible) }
+      context "when transitioning from no_payment to paid (skipping eligible and payable)" do
+        let(:declaration) { FactoryBot.create(:declaration, :no_payment) }
 
-      it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("eligible").to("voided") }
-    end
+        it { expect { declaration.mark_as_paid! }.to raise_error(StateMachines::InvalidTransition) }
+      end
 
-    context "when transitioning from payable to voided" do
-      let(:declaration) { FactoryBot.create(:declaration, :payable) }
+      context "when transitioning from eligible to paid (skipping payable)" do
+        let(:declaration) { FactoryBot.create(:declaration, :eligible) }
 
-      it { expect { declaration.mark_as_voided! }.to change(declaration, :payment_status).from("payable").to("voided") }
-    end
+        it { expect { declaration.mark_as_paid! }.to raise_error(StateMachines::InvalidTransition) }
+      end
 
-    context "when transitioning to an invalid state" do
-      let(:declaration) { FactoryBot.create(:declaration, :paid) }
+      context "when transitioning from payable to eligible (backwards)" do
+        let(:declaration) { FactoryBot.create(:declaration, :payable) }
 
-      it { expect { declaration.mark_as_paid! }.to raise_error(StateMachines::InvalidTransition) }
+        it { expect { declaration.mark_as_eligible! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when transitioning from paid to eligible (backwards)" do
+        let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+        it { expect { declaration.mark_as_eligible! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when transitioning from paid to payable (backwards)" do
+        let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+        it { expect { declaration.mark_as_payable! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when attempting to mark paid as paid again" do
+        let(:declaration) { FactoryBot.create(:declaration, :paid) }
+
+        it { expect { declaration.mark_as_paid! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when attempting to mark eligible as eligible again" do
+        let(:declaration) { FactoryBot.create(:declaration, :eligible) }
+
+        it { expect { declaration.mark_as_eligible! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when attempting to mark payable as payable again" do
+        let(:declaration) { FactoryBot.create(:declaration, :payable) }
+
+        it { expect { declaration.mark_as_payable! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when attempting to mark voided as voided again" do
+        let(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+        it { expect { declaration.mark_as_voided! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when transitioning from voided to eligible" do
+        let(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+        it { expect { declaration.mark_as_eligible! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when transitioning from voided to payable" do
+        let(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+        it { expect { declaration.mark_as_payable! }.to raise_error(StateMachines::InvalidTransition) }
+      end
+
+      context "when transitioning from voided to paid" do
+        let(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+        it { expect { declaration.mark_as_paid! }.to raise_error(StateMachines::InvalidTransition) }
+      end
     end
   end
 
   describe "clawback_status transitions" do
-    context "when transitioning from no_clawback to awaiting_clawback" do
-      let(:declaration) { FactoryBot.create(:declaration, :paid).tap { it.clawback_statement = FactoryBot.create(:statement, :payable, contract_period: it.training_period.contract_period) } }
+    describe "valid transitions" do
+      context "when transitioning from no_clawback to awaiting_clawback" do
+        let(:declaration) { FactoryBot.create(:declaration, :paid).tap { it.clawback_statement = FactoryBot.create(:statement, :payable, contract_period: it.training_period.contract_period) } }
 
-      it { expect { declaration.mark_as_awaiting_clawback! }.to change(declaration, :clawback_status).from("no_clawback").to("awaiting_clawback") }
+        it { expect { declaration.mark_as_awaiting_clawback! }.to change(declaration, :clawback_status).from("no_clawback").to("awaiting_clawback") }
+      end
+
+      context "when transitioning from awaiting_clawback to clawed_back" do
+        let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
+
+        it { expect { declaration.mark_as_clawed_back! }.to change(declaration, :clawback_status).from("awaiting_clawback").to("clawed_back") }
+      end
     end
 
-    context "when transitioning from no_clawback to awaiting_clawback, when the declaration is not paid" do
-      let(:declaration) { FactoryBot.create(:declaration, :payable).tap { it.clawback_statement = FactoryBot.create(:statement, :payable, contract_period: it.training_period.contract_period) } }
+    describe "invalid transitions" do
+      context "when transitioning from no_clawback to awaiting_clawback, when the declaration is not paid" do
+        let(:declaration) { FactoryBot.create(:declaration, :payable).tap { it.clawback_statement = FactoryBot.create(:statement, :payable, contract_period: it.training_period.contract_period) } }
 
-      it { expect { declaration.mark_as_awaiting_clawback! }.to raise_error(StateMachines::InvalidTransition) }
-    end
+        it { expect { declaration.mark_as_awaiting_clawback! }.to raise_error(StateMachines::InvalidTransition) }
+      end
 
-    context "when transitioning from awaiting_clawback to clawed_back" do
-      let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
+      context "when transitioning to an invalid state" do
+        let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
 
-      it { expect { declaration.mark_as_clawed_back! }.to change(declaration, :clawback_status).from("awaiting_clawback").to("clawed_back") }
-    end
-
-    context "when transitioning to an invalid state" do
-      let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
-
-      it { expect { declaration.mark_as_clawed_back! }.to raise_error(StateMachines::InvalidTransition) }
+        it { expect { declaration.mark_as_clawed_back! }.to raise_error(StateMachines::InvalidTransition) }
+      end
     end
   end
 
