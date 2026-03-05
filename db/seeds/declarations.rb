@@ -106,19 +106,19 @@ statements.each do |payment_statement|
         describe_declaration(declaration, "ECT")
       end
 
-      if declaration_type == "started" || declaration_type == "completed"
-        FactoryBot.create(:declaration, :with_mentor, :paid,
-                          declaration_type:,
-                          school_partnership:,
-                          payment_statement:).tap do |declaration|
-          describe_declaration(declaration, "Mentor")
-        end
+      next unless %w[started completed].include?(declaration_type)
+
+      FactoryBot.create(:declaration, :with_mentor, :paid,
+                        declaration_type:,
+                        school_partnership:,
+                        payment_statement:).tap do |declaration|
+        describe_declaration(declaration, "Mentor")
       end
     end
   end
 end
 
-statement_pairs = [[august_statement_2024, september_statement_2024], [august_statement_2025, september_statement_2025]]
+[[august_statement_2024, september_statement_2024], [august_statement_2025, september_statement_2025]]
 
 # statement_pairs.each do |payment_statement, clawback_statement|
 #   describe_statement_declaration(clawback_statement)
