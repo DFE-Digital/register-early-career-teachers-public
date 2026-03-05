@@ -19,6 +19,7 @@ priority_seeds = %w[
   schedules_and_milestones
   teachers
   contracts
+  statements
   bulk_uploads
 ]
 
