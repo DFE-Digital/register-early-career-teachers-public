@@ -10,7 +10,7 @@ module ECTHelper
 
   # @param ect [ECTAtSchoolPeriod]
   def latest_delivery_partner_name(ect)
-    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || EOI_DELIVERY_PARTNER_TEXT
+    ECTAtSchoolPeriods::CurrentTraining.new(ect).delivery_partner_name || self.class::EOI_DELIVERY_PARTNER_TEXT
   end
 
   # @param ect [ECTAtSchoolPeriod]
@@ -41,15 +41,15 @@ module ECTHelper
 
   # @param training_period [TrainingPeriod, nil]
   def training_period_lead_provider_display_text(training_period)
-    training_period_lead_provider_name(training_period).presence || NOT_AVAILABLE
+    training_period_lead_provider_name(training_period).presence || self.class::NOT_AVAILABLE
   end
 
   # @param training_period [TrainingPeriod, nil]
   def training_period_delivery_partner_display_text(training_period)
-    return YET_TO_BE_REPORTED if training_period.blank?
-    return EOI_DELIVERY_PARTNER_TEXT if training_period.only_expression_of_interest?
+    return self.class::YET_TO_BE_REPORTED if training_period.blank?
+    return self.class::EOI_DELIVERY_PARTNER_TEXT if training_period.only_expression_of_interest?
 
-    training_period.delivery_partner_name.presence || YET_TO_BE_REPORTED
+    training_period.delivery_partner_name.presence || self.class::YET_TO_BE_REPORTED
   end
 
   # @param teacher_name [String]
