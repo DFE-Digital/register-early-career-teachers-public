@@ -332,16 +332,6 @@ module ECTAtSchoolPeriods
         end
 
         context "when the switch happens before the ECT has started" do
-          before do
-            skip <<-MSG
-              Temporarily skipping this test as its causing a persistent failure due to
-              the schedule selection logic not lining up with the logic around selecting an
-              expression of interest for the provider-led training period. They end up with
-              different contract periods, which is not a valid training period state. There is
-              a bug ticket open to look into this and find a resolution.
-            MSG
-          end
-
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period, :not_started_yet)
           end
@@ -370,6 +360,37 @@ module ECTAtSchoolPeriods
             expect(ect_at_school_period.reload).to be_provider_led_training_programme
             new_training_period = TrainingPeriod.last
             expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
+          end
+
+          context "when the ect starts in the next contract period" do
+            around do |example|
+              travel_to(Date.new(2026, 5, 31)) do
+                example.run
+              end
+            end
+
+            let(:ect_at_school_period) do
+              FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.from_now)
+            end
+
+            let(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2026) }
+
+            let!(:future_active_lead_provider) do
+              FactoryBot.create(
+                :active_lead_provider,
+                lead_provider:,
+                contract_period: future_contract_period
+              )
+            end
+
+            it "creates a new provider-led training period that starts on the ECT start date" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              expect(ect_at_school_period.reload).to be_provider_led_training_programme
+              new_training_period = TrainingPeriod.last
+              expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
+              expect(new_training_period.expression_of_interest).to eq(future_active_lead_provider)
+            end
           end
         end
       end
