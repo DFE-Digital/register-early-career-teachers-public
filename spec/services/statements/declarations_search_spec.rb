@@ -29,6 +29,12 @@ RSpec.describe Statements::DeclarationsSearch do
   end
 
   let(:base_declaration_date) { Time.zone.local(2025, 11, 10, 10) }
+  let(:selected_declaration_ids) { [] }
+
+  before do
+    selection = instance_double(Statements::DeclarationSelection, selected_declaration_ids:)
+    allow(Statements::DeclarationSelection).to receive(:new).with(statement:).and_return(selection)
+  end
 
   context "when selecting declarations linked to a statement" do
     let(:statement) { FactoryBot.create(:statement, contract:, active_lead_provider:, month: 11, year: 2024) }
@@ -53,6 +59,7 @@ RSpec.describe Statements::DeclarationsSearch do
       )
     end
     let!(:unrelated_declaration) { FactoryBot.create(:declaration) }
+    let(:selected_declaration_ids) { [payment_declaration.id, clawback_declaration.id] }
 
     it "returns declarations linked through payment or clawback statement" do
       expect(statement_declarations).to contain_exactly(payment_declaration, clawback_declaration)
@@ -97,6 +104,7 @@ RSpec.describe Statements::DeclarationsSearch do
         created_at: base_declaration_date + 4.days
       )
     end
+    let(:selected_declaration_ids) { [later_declaration.id, earlier_declaration.id] }
 
     it "orders declarations chronologically" do
       expect(statement_declarations.to_a).to eq([earlier_declaration, later_declaration])
