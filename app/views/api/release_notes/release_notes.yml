@@ -47,6 +47,8 @@
     - `pupil_premium_uplift: false`
 
     This is because uplift fees are no longer paid from the 2025 cohort onwards.
+
+    If mentors are on a replacement mentor schedule in the 2024 or earlier cohorts, they are also not eligible for uplift payments on their started declarations. However, this is handled manually by DfE through adjustments to financial statements, and they will still appear over the API like other mentors eligible for uplift payments.
     
     ## Why we've made this change    
     
