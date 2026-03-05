@@ -22,7 +22,6 @@ module ECTAtSchoolPeriods
 
     def withdrawn_or_deferred_lead_provider
       training_period = ect_at_school_period.latest_training_period
-      return unless training_period&.provider_led_training_programme?
       return unless training_period.status.in?(%i[withdrawn deferred])
 
       if training_period.only_expression_of_interest?
