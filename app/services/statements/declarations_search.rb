@@ -7,7 +7,7 @@ module Statements
     end
 
     def declarations
-      statement_linked_declarations
+      Declaration.where(id: declaration_selection.selected_declaration_ids)
         .preload(
           :delivery_partner_when_created,
           mentorship_period: { mentor: :teacher },
@@ -24,9 +24,8 @@ module Statements
 
   private
 
-    def statement_linked_declarations
-      Declaration.where(payment_statement: statement)
-        .or(Declaration.where(clawback_statement: statement))
+    def declaration_selection
+      @declaration_selection ||= DeclarationSelection.new(statement:)
     end
   end
 end
