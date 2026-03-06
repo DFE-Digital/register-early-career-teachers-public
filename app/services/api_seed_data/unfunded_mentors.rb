@@ -46,7 +46,7 @@ module APISeedData
     end
 
     def setup_data
-      lead_providers = ActiveLeadProvider.includes(:lead_provider).map(&:lead_provider).uniq
+      lead_providers = active_lead_providers.map(&:lead_provider).uniq
 
       partnerships = SchoolPartnership.includes(
         lead_provider_delivery_partnership: {

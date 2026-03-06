@@ -42,7 +42,7 @@ module APISeedData
     end
 
     def log_delivery_partnerships_info
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         log_header_info(lead_provider)
         log_row_info(lead_provider)
       end
@@ -106,7 +106,7 @@ module APISeedData
     end
 
     def active_lead_providers
-      ActiveLeadProvider.where(contract_period: relevant_contract_periods)
+      super.where(contract_period: relevant_contract_periods)
     end
 
     def relevant_contract_periods

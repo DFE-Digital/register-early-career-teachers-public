@@ -63,7 +63,7 @@ module APISeedData
     end
 
     def groups_of_active_lead_providers
-      ActiveLeadProvider.all.group_by(&:lead_provider_id)
+      active_lead_providers.group_by(&:lead_provider_id)
     end
 
     def create_api_teachers_records_for(active_lead_provider)

@@ -27,13 +27,6 @@ module APISeedData
 
   private
 
-    def lead_providers
-      @lead_providers ||= ActiveLeadProvider
-        .includes(:lead_provider)
-        .map(&:lead_provider)
-        .uniq
-    end
-
     def ect_teachers
       @ect_teachers ||= Teacher.where.missing(:ect_at_school_periods).order("RANDOM()")
     end

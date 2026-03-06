@@ -28,8 +28,8 @@ module APISeedData
       contract_period_mentor = find_contract_period(mentor_year)
       return unless contract_period_2025 && contract_period_mentor
 
-      ActiveLeadProvider.for_contract_period(contract_period_2025.year).each do |ect_active_lead_provider|
-        mentor_active_lead_provider = ActiveLeadProvider.for_contract_period(contract_period_mentor.year).for_lead_provider(ect_active_lead_provider.lead_provider_id).first
+      active_lead_providers.for_contract_period(contract_period_2025.year).each do |ect_active_lead_provider|
+        mentor_active_lead_provider = active_lead_providers.for_contract_period(contract_period_mentor.year).for_lead_provider(ect_active_lead_provider.lead_provider_id).first
         school = find_school_with_partnerships_in_both_periods(mentor_active_lead_provider, ect_active_lead_provider)
         next unless school
 

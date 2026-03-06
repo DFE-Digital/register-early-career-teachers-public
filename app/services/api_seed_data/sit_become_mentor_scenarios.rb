@@ -30,7 +30,7 @@ module APISeedData
 
     def update_mentors_to_match_sit(sit_year:, mentor_year:, count:)
       count.times do
-        LeadProvider.find_each do |lead_provider|
+        lead_providers.find_each do |lead_provider|
           school_partnership = SchoolPartnership
             .joins(:school, lead_provider_delivery_partnership: :active_lead_provider)
             .where(active_lead_providers: { lead_provider_id: lead_provider.id, contract_period_year: sit_year })
