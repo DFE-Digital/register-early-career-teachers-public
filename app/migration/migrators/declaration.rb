@@ -19,6 +19,15 @@ module Migrators
         .includes(:participant_profile, :statement_line_items, :cohort, cpd_lead_provider: :lead_provider)
         .not_superseded
         .not_ineligible
+        .where.not(id: ero_mentor_declarations_to_exclude)
+    end
+
+    def self.ero_mentor_declarations_to_exclude
+      ::Migration::ParticipantDeclaration
+        .joins(participant_profile: :teacher_profile)
+        .joins("inner join ecf_ineligible_participants eip on eip.trn = teacher_profiles.trn")
+        .where(state: %w[voided submitted])
+        .where(participant_profile: { type: "ParticipantProfile::Mentor" })
     end
 
     def self.dependencies

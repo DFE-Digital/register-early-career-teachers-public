@@ -21,6 +21,7 @@ FactoryBot.define do
     trait :mentor do
       type { "ParticipantDeclaration::Mentor" }
       participant_profile { FactoryBot.create(:migration_participant_profile, :mentor, cohort:) }
+      course_identifier { "ecf-mentor" }
     end
 
     trait :billable do
