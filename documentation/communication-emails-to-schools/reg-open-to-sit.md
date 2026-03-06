@@ -29,6 +29,7 @@ We’re sending you this email as our records show that you’re the induction t
 You can now register early career teachers (ECTs) and mentors for the 2026-2027 academic year with [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/).
 
 To use the service you’ll need:
+
 - a DfE Sign-in account
 - approved access to the service 
 
