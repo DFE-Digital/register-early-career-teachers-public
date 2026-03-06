@@ -35,10 +35,13 @@ Schools need to use our [register early career teachers](https://staging.registe
 
 ## What these changes mean for your school
 
-### Access and sign in is different from the current service
-Users of the new service will need to have an account with [DfE Sign-in](https://services.signin.education.gov.uk).
+### Signing into the service is different
+
+You’ll need a DfE Sign-in account to use the service.
 
 DfE Sign-in is a single sign-on service that provides access to DfE services. Your school might already use it for other DfE services and you might already have a DfE Sign-in account.
+
+If you do not have a DfE Sign-in account, [you can create one](https://services.signin.education.gov.uk/).
 
 ### How DfE Sign-in works
 
