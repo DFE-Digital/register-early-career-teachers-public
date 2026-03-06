@@ -29,7 +29,7 @@ module APISeedData
     end
 
     def active_lead_providers
-      ActiveLeadProvider.all.to_a
+      super.to_a
     end
 
     def create_declarations!(active_lead_provider, training_periods)

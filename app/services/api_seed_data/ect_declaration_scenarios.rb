@@ -56,7 +56,7 @@ module APISeedData
     end
 
     def active_lead_providers
-      @active_lead_providers ||= ActiveLeadProvider.where(contract_period:)
+      @active_lead_providers ||= super.where(contract_period:)
     end
 
     def schedule

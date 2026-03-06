@@ -5,8 +5,7 @@ module APISeedData
 
       log_plant_info("contracts")
 
-      ActiveLeadProvider
-        .includes(:lead_provider, :contract_period)
+      active_lead_providers
         .order("lead_providers.name ASC", contract_period_year: :asc)
         .group_by(&:lead_provider)
         .each do |lead_provider, active_lead_providers|
