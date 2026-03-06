@@ -2,18 +2,8 @@ module API
   module Guidance
     class SidebarComponent < ApplicationComponent
       GUIDANCE_PREFIX = "guidance-for-lead-providers"
-      GUIDANCE_PAGES = [
-        { title: "API IDs explained", path: "api-ids-explained" },
-        { title: "API data states", path: "api-data-states" },
-        { title: "Create, view and update partnerships", path: "create-view-and-update-partnerships" },
-        { title: "Keeping data in sync", path: "keeping-data-in-sync" },
-        { title: "How to test the API effectively", path: "how-to-test-the-api-effectively" },
-        { title: "Schedules and milestones guidance", path: "schedules-and-milestones-guidance" },
-        { title: "Update participant data", path: "update-participant-data" },
-        { title: "Understanding declarations", path: "understanding-declarations" },
-        { title: "View participant data", path: "view-participant-data" },
-        { title: "Glossary", path: "glossary" },
-      ].freeze
+      GUIDANCE_DIR = Rails.root.join("app/views/api/guidance/guidance_for_lead_providers/*.md")
+      FRONT_MATTER_REGEX = /^\s*---(?<front_matter>.*?)---\s/m
 
       attr_reader :current_path, :page
 
@@ -29,10 +19,31 @@ module API
       def structure
         node = Struct.new(:name, :href, :prefix, :nodes)
 
-        GUIDANCE_PAGES.map do |p|
+        self.class.guidance_pages.map do |p|
           path = api_guidance_page_path("#{GUIDANCE_PREFIX}/#{p[:path]}")
           node.new(p[:title], path, path, [])
         end
+      end
+
+      def self.guidance_pages
+        Dir.glob(GUIDANCE_DIR).filter_map { |file|
+          frontmatter = extract_frontmatter(file)
+          next unless frontmatter
+
+          {
+            title: frontmatter["sidebar_title"] || frontmatter["title"],
+            path: File.basename(file, ".md").tr("_", "-"),
+            sidebar_position: frontmatter["sidebar_position"] || Float::INFINITY
+          }
+        }.sort_by { |p| p[:sidebar_position] }
+      end
+
+      def self.extract_frontmatter(file)
+        content = File.read(file)
+        match = content.match(FRONT_MATTER_REGEX)
+        return unless match
+
+        YAML.safe_load(match[:front_matter])
       end
     end
   end
