@@ -37,7 +37,7 @@ module APISeedData
     end
 
     def active_lead_providers
-      ActiveLeadProvider.where(contract_period:)
+      super.where(contract_period:)
     end
 
     def create_teacher_with_change_schedule(active_lead_provider:, trainee_type:, variation:)

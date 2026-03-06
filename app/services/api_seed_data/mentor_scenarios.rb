@@ -15,7 +15,7 @@ module APISeedData
       contract_period = find_contract_period(2025)
       return unless contract_period
 
-      ActiveLeadProvider.for_contract_period(contract_period.year).each do |active_lead_provider|
+      active_lead_providers.for_contract_period(contract_period.year).each do |active_lead_provider|
         school_partnerships = find_school_partnerships(active_lead_provider)
         next if school_partnerships.count < 2
 
@@ -47,7 +47,7 @@ module APISeedData
       contract_period = find_contract_period(2024)
       return unless contract_period
 
-      ActiveLeadProvider.for_contract_period(contract_period.year).each do |active_lead_provider|
+      active_lead_providers.for_contract_period(contract_period.year).each do |active_lead_provider|
         school_partnerships = find_school_partnerships(active_lead_provider)
         next if school_partnerships.count < 2
 

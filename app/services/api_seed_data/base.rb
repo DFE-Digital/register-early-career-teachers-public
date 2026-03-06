@@ -28,5 +28,16 @@ module APISeedData
         stdout_logger.formatter = Rails.logger.formatter
       end
     end
+
+    def active_lead_providers
+      ActiveLeadProvider
+        .includes(:lead_provider, :contract_period)
+        .joins(:lead_provider, :contract_period)
+        .merge(lead_providers)
+    end
+
+    def lead_providers
+      LeadProvider.where.not("name ILIKE ?", "%Reuse%")
+    end
   end
 end
