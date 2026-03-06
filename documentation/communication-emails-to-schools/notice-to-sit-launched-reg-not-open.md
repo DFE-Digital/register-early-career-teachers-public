@@ -14,14 +14,16 @@ To tell schools about:
 
 - a service to register ECTs and mentors for training that replaces the current service  
 - the different way to sign in and the need for a DfE sign-in account
+- what they need to do now
 - new features
 - when schools can expect registration to open    
 
 ---
 
-### Subject: Registering early career teachers and mentors with the Department for Education (DfE)
+### Subject: Changes to the way schools register and manage early career teachers and mentors
 
 ---
+## Changes to the way schools register and manage early career teachers and mentors
 
 Hello ((sit_name)),
 
@@ -29,13 +31,15 @@ We’re sending you this email as our records show that you're the induction tut
 
 We’re making changes to the way schools register and manage ECTs and mentors online with the DfE.
 
-Schools need to use our [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/) service. We’ve closed the manage training for early career teachers service.
-
 ## What these changes mean for your school
 
-### Access and sign in is different from the current service
-Users of the new service will need to have an account with [DfE Sign-in](https://services.signin.education.gov.uk).
-DfE Sign-in is a single sign-on service that provides access to DfE services. Your school might already use it for other DfE services.
+### Signing into the service is different
+
+You’ll need a DfE Sign-in account to use the service.
+
+DfE Sign-in is a single sign-on service that provides access to DfE services. Your school might already use it for other DfE services and you might already have a DfE Sign-in account.
+
+If you do not have a DfE Sign-in account, [you can create one](https://services.signin.education.gov.uk/).
 
 ### How DfE Sign-in works
 
@@ -43,6 +47,12 @@ DfE Sign-in is a single sign-on service that provides access to DfE services. Yo
 2. Users who want access to DfE services need to create a DfE Sign-in account. They use their account to select their school and request access to services.
 
 You can get help with [DfE Sign-in](https://edd-help.signin.education.gov.uk/contact).
+
+## What you need to do now
+
+You do not need to do anything now, although you can use the service to [manage your existing ECTs and mentors](https://staging.register-early-career-teachers.education.gov.uk/).
+
+Registration for the 2026-2027 academic year is not open yet. We'll send you an email when it opens. We expect this to be in June 2026.
 
 ## Changes to the service
 
@@ -54,19 +64,6 @@ Lead providers can be selected for individual ECTs and mentors (if your school u
 
 ### Manage ECTs and mentors leaving schools
 You can now tell us when an ECT or mentor has left your school and is not expected to return.
-
-### Notification of induction tutor
-You can tell us about, and change, your main induction tutor.  
-
-## What happens next
-
-You can use the new service to manage your existing ECTs and mentors. 
-
-We’ll email you when registration for the 2026-2027 academic year opens.
-
-## Sign in
-
-Sign in to [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/). 
 
 Regards,
 
