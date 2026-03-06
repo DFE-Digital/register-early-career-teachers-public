@@ -3,6 +3,15 @@ module Admin
     class DeclarationComponent < ApplicationComponent
       attr_accessor :statement
 
+      COLUMNS = [
+        "Started",
+        "Retained",
+        "Completed",
+        "Extended",
+        "Clawed back",
+        "Voided"
+      ].freeze
+
       delegate :contract, to: :statement
 
       def initialize(statement:)
@@ -10,38 +19,51 @@ module Admin
       end
 
       def head
-        ["", "Total"]
+        if ecf_contract?
+          ["", "Total"]
+        else 
+          ["", "ECTs", "Mentors"]
+        end
       end
 
-
-      def old_rows
-        rows = mapped_declarations || []
-        rows << ["Clawed back", refunded] if refunded.positive?
-        rows << ["Voided", voided] if voided.positive?
-
-        rows
-        .group_by(&:first)
-        .map { |type, group| [type, group.sum(&:last).to_s] }
+      def rows
+        COLUMNS.map do |type|
+          values = pivot_table[type]
+          [type, *values.map(&:to_s)]
+        end
       end
 
     private
 
       def calculators
-        PaymentCalculator::Resolver.new(statement:, contract:).calculators
+        PaymentCalculator::Resolver.new(statement:, contract:).calculators.reverse
       end
 
-      def mapped_declarations
-        mappings = []
-        calculators.each do |calculator|
-          declaration_type_output = calculator.outputs.declaration_type_outputs
-          mappings.concat(mapped(declaration_type_output))
+      def ecf_contract?
+        statement.contract.ecf?
+      end
+
+      def pivot_table
+        matrix = Hash.new { |h, k| h[k] = Array.new(calculators.size, 0) }
+
+        calculators.each_with_index do |calculator, index|
+          calculator.outputs.declaration_type_outputs.each do |dto|
+            type = payment_type(dto)
+            matrix[type][index] += payments_count(dto)
+          end
+          matrix["Clawed back"][index] = refunded(calculator)
+          matrix["Voided"][index] = voided(calculator)
         end
-        mappings
+
+        matrix
       end
 
+      def refunded(calculator)
+        calculator.outputs.total_refundable_amount.to_i
+      end
 
-      def mapped(declaration_type_outputs)
-        declaration_type_outputs.map { |dto| [payment_type(dto), payments_count(dto)] }
+      def voided(calculator)
+        calculator.voided_declarations_count.to_i
       end
 
       def payments_count(declaration_type_output)
@@ -50,14 +72,6 @@ module Admin
 
       def payment_type(declaration_type_output)
         declaration_type_output.declaration_type.split("-").first.humanize
-      end
-
-      def refunded
-        calculators.sum{ |calculator| calculator.outputs.total_refundable_amount }
-      end
-
-      def voided
-        @voided ||= statement.payment_declarations.where(payment_status: "voided").count
       end
     end
   end
