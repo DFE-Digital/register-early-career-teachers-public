@@ -22,6 +22,8 @@ class SessionRepository
   end
   alias_method :update!, :update
 
+  def data = store.dup
+
 private
 
   def method_missing(name, *args)
