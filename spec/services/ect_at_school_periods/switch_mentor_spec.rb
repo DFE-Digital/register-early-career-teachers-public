@@ -223,6 +223,14 @@ module ECTAtSchoolPeriods
               .to have_received(:record_teacher_starts_training_period_event!)
           end
         end
+
+        context "on the last day of the contract period" do
+          let(:travel_date) { Date.new(2026, 5, 31) }
+
+          it "assigns a mentor" do
+            expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
+          end
+        end
       end
     end
   end
