@@ -44,6 +44,7 @@ class Teacher < ApplicationRecord
   has_one :current_or_next_ect_at_school_period, -> { current_or_future.earliest_first }, class_name: "ECTAtSchoolPeriod"
   has_one :current_or_next_induction_period, -> { current_or_future.earliest_first }, class_name: "InductionPeriod"
   has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
+  has_one :latest_ect_at_school_period, -> { latest_first }, class_name: "ECTAtSchoolPeriod"
 
   # TODO: remove after migration complete
   has_many :teacher_migration_failures

@@ -5,7 +5,10 @@ module Schools
         def previous_step = :edit
         def next_step = :confirmation
 
-        def old_lead_provider_name = old_lead_provider&.name
+        def old_lead_provider_name
+          old_lead_provider&.name
+        end
+
         delegate :name, to: :new_lead_provider, prefix: true
 
         def save!
@@ -24,9 +27,9 @@ module Schools
       private
 
         def old_lead_provider
-          @old_lead_provider ||= ECTAtSchoolPeriods::CurrentTraining
+          @old_lead_provider ||= ECTAtSchoolPeriods::ChangeLeadProviderResolver
             .new(ect_at_school_period)
-            .lead_provider_via_school_partnership_or_eoi
+            .call
         end
 
         def new_lead_provider = LeadProvider.find(store.lead_provider_id)
