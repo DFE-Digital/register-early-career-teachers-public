@@ -23,7 +23,7 @@ To tell schools about:
 ### Subject: Changes to the way schools register and manage early career teachers and mentors
 
 ---
-# Changes to the way schools register and manage early career teachers and mentors
+## Changes to the way schools register and manage early career teachers and mentors
 
 Hello ((sit_name)),
 

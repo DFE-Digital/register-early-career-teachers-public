@@ -23,7 +23,7 @@ To tell schools about:
 ### Subject: Changes to the way schools register and manage early career teachers and mentors
 
 ---
-# Changes to the way schools register and manage early career teachers and mentors
+## Changes to the way schools register and manage early career teachers and mentors
 
 Hello ((sit_name)),
 
@@ -37,6 +37,7 @@ Schools need to use our [register early career teachers](https://staging.registe
 
 ### Access and sign in is different from the current service
 Users of the new service will need to have an account with [DfE Sign-in](https://services.signin.education.gov.uk).
+
 DfE Sign-in is a single sign-on service that provides access to DfE services. Your school might already use it for other DfE services and you might already have a DfE Sign-in account.
 
 ### How DfE Sign-in works
