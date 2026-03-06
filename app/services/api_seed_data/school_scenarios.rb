@@ -60,10 +60,9 @@ module APISeedData
   private
 
     def schools_with_participants_with_lead_provider_as_expression_of_interest(count:)
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         # Find a contract period that is not frozen and has an active lead provider (randomly chosen)
-        active_lead_provider = ActiveLeadProvider
-          .joins(:contract_period)
+        active_lead_provider = active_lead_providers
           .where(lead_provider:)
           .where(contract_periods: { payments_frozen_at: nil })
           .order("RANDOM()")
@@ -115,7 +114,7 @@ module APISeedData
       contract_period_2024 = find_or_create_contract_period(2024)
       contract_period_2025 = find_or_create_contract_period(2025)
 
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         # Get or create active lead providers for both contract periods
         active_lead_provider_2024 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2024)
         active_lead_provider_2025 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2025)
@@ -185,9 +184,7 @@ module APISeedData
     end
 
     def schools_with_participants_with_lead_provider_where_all_transferred_to_another_lead_provider(count:)
-      lead_providers = LeadProvider.all.to_a
-
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         other_lead_providers = lead_providers - [lead_provider]
         other_lead_provider_ids = other_lead_providers.map(&:id)
 
@@ -244,7 +241,7 @@ module APISeedData
     end
 
     def schools_without_participants_and_with_partnership(count:)
-      ActiveLeadProvider.find_each do |active_lead_provider|
+      active_lead_providers.find_each do |active_lead_provider|
         existing_count = School
           .joins(school_partnerships: { lead_provider_delivery_partnership: :active_lead_provider })
           .where(active_lead_providers: { id: active_lead_provider.id })
@@ -277,7 +274,7 @@ module APISeedData
     def schools_with_participants_with_lead_provider_with_eoi_and_partnership_in_2024(count:)
       contract_period_2024 = find_or_create_contract_period(2024)
 
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         active_lead_provider_2024 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2024)
 
         # Count schools with ECTs that have school_partnership
@@ -376,9 +373,8 @@ module APISeedData
 
     def schools_with_participants_trained_2025_and_finished_with_lead_provider_where_all_transferred_to_another_lead_provider(count:)
       contract_period_2025 = find_or_create_contract_period(2025)
-      lead_providers = LeadProvider.all.to_a
 
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         active_lead_provider_2025 = find_or_create_active_lead_provider(lead_provider:, contract_period: contract_period_2025)
         other_lead_providers = lead_providers - [lead_provider]
 
@@ -471,9 +467,9 @@ module APISeedData
     end
 
     def schools_with_ects_and_mentors_training_with_lead_provider(count:)
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         # Randomly choose an available ActiveLeadProvider
-        active_lead_provider = ActiveLeadProvider
+        active_lead_provider = active_lead_providers
           .where(lead_provider:)
           .order("RANDOM()")
           .first
@@ -508,9 +504,9 @@ module APISeedData
     end
 
     def schools_with_multiple_partnerships_with_lead_provider(count:)
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         # Randomly choose an available ActiveLeadProvider
-        active_lead_provider = ActiveLeadProvider
+        active_lead_provider = active_lead_providers
           .where(lead_provider:)
           .order("RANDOM()")
           .first
@@ -551,11 +547,9 @@ module APISeedData
     end
 
     def schools_with_multiple_partnerships_with_lead_provider_and_with_another_lead_provider(count:)
-      lead_providers = LeadProvider.all.to_a
-
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         # Randomly choose an available ActiveLeadProvider
-        active_lead_provider = ActiveLeadProvider
+        active_lead_provider = active_lead_providers
           .where(lead_provider:)
           .order("RANDOM()")
           .first
@@ -659,7 +653,7 @@ module APISeedData
     end
 
     def find_or_create_active_lead_provider(lead_provider:, contract_period:)
-      ActiveLeadProvider.find_by(lead_provider:, contract_period:) ||
+      active_lead_providers.find_by(lead_provider:, contract_period:) ||
         FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
     end
 

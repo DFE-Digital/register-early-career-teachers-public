@@ -30,16 +30,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      teachers_with_schedule_changes = Teacher.joins(ect_at_school_periods: :training_periods)
-       .group("teachers.id")
-       .having("COUNT(DISTINCT training_periods.schedule_id) > 1")
-
-      super && teachers_with_schedule_changes.none?
-    end
-
   private
 
     def contract_period
@@ -47,7 +37,7 @@ module APISeedData
     end
 
     def active_lead_providers
-      ActiveLeadProvider.where(contract_period:)
+      super.where(contract_period:)
     end
 
     def create_teacher_with_change_schedule(active_lead_provider:, trainee_type:, variation:)
