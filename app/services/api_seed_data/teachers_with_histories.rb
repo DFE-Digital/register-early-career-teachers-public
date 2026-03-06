@@ -1,6 +1,6 @@
 module APISeedData
   class TeachersWithHistories < Base
-    NUMBER_OF_RECORDS = 250
+    NUMBER_OF_RECORDS = 50
 
     TRAINING_STATUS_COLOURS = {
       active: :green,
