@@ -87,4 +87,7 @@ runs:
 
     - name: Restore to ${{ inputs.target_environment }} DB
       shell: bash
-      run: bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-${{ env.DB_INSTANCE }}-pg -k s189p01-cpdec2-${{ env.DB_INSTANCE }}-app-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-${{ inputs.target_environment }}-web -- psql
+      run: |
+        bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-${{ env.DB_INSTANCE }}-pg -k s189p01-cpdec2-${{ env.DB_INSTANCE }}-app-kv -t 60 cpd-ec2-${{ inputs.target_environment }}-web -- psql -c "drop schema public cascade; create schema public;"
+
+        bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-${{ env.DB_INSTANCE }}-pg -k s189p01-cpdec2-${{ env.DB_INSTANCE }}-app-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-${{ inputs.target_environment }}-web -- psql
