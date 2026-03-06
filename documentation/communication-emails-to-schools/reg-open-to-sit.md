@@ -1,50 +1,66 @@
 ---
-title: Registration open for academic year 2026-2027
+title: Notice of new service (service launched, registration 2026-2027 not yet open)
 ---
 
 ---
 
 ## When
 
-June 2026
+April 28 (service launch)
 
 ## Why
 
-To give notification that registration is open. This email will follow the notice of new service email. It highlights:
+To tell schools about:
 
-- a different way to sign in to the service and the need for a DfE sign-in account 
-- the need to confirm the induction tutor for the academic year
+- a service to register ECTs and mentors for training that replaces the current service  
+- the different way to sign in and the need for a DfE sign-in account
+- what they need to do now
+- new features
+- when schools can expect registration to open    
 
 ---
 
-###  Subject: Registration for early career teachers and mentors open for academic year 2026-2027
+### Subject: Changes to the way schools register and manage early career teachers and mentors
 
 ---
+# Changes to the way schools register and manage early career teachers and mentors
 
 Hello ((sit_name)),
 
-We’re sending you this email as our records show that you’re the induction tutor for ((school_name)).
+We’re sending you this email as our records show that you're the induction tutor for ((school_name)).
 
-You can now register early career teachers (ECTs) and mentors for the 2026-2027 academic year with [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk). 
+We’re making changes to the way schools register and manage ECTs and mentors online with the DfE.
 
-<p>To use the service you’ll need:</p>
+Schools need to use our [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/) service. We’ve closed the manage training for early career teachers service.
 
-- a DfE Sign-in account    
-- approved access to the service
+## What these changes mean for your school
 
-## DfE Sign-in account and service access
+### Access and sign in is different from the current service
+Users of the new service will need to have an account with [DfE Sign-in](https://services.signin.education.gov.uk).
 
-If you do not have a DfE Sign-in account, [you can create one](https://services.signin.education.gov.uk).
+DfE Sign-in is a single sign-on service that provides access to DfE services. Your school might already use it for other DfE services and you might already have a DfE Sign-in account.
 
-If you do not have access to the service, you can request it from your school or organisation’s approver using your DfE Sign-in account.
+### How DfE Sign-in works
 
-## Confirm your school’s induction tutor for the 2026-2027 academic year
+1. Schools need to appoint a DfE Sign-in approver. This person verifies the identity of users before giving access to services. The approver is often the headteacher or administrator.   
+2. Users who want access to DfE services need to create a DfE Sign-in account. They use their account to select their school and request access to services.
 
-When you first register ECTs and mentors for this academic year, we’ll ask you to confirm if you’ll be the induction tutor, or if it will be someone else.
+You can get help with [DfE Sign-in](https://edd-help.signin.education.gov.uk/contact).
 
-## Sign in
+## What you need to do now
 
-Sign in to [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/). 
+You do not need to do anything now, although you can use the service to [manage your existing ECTs and mentors](https://staging.register-early-career-teachers.education.gov.uk/).
+
+## Changes to the service
+
+### More than one school user can use the register service
+Your school’s DfE Sign-in approver can give access to the register early career teachers service to multiple users.
+
+### Lead provider training for ECTs and mentors
+Lead providers can be selected for individual ECTs and mentors (if your school uses a provider-led training programme). 
+
+### Manage ECTs and mentors leaving schools
+You can now tell us when an ECT or mentor has left your school and is not expected to return.
 
 Regards,
 
