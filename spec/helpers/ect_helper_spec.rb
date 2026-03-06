@@ -74,8 +74,8 @@ RSpec.describe ECTHelper, type: :helper do
       end
 
       context "when the ECT does not have a current mentor" do
-        it "returns a red 'Mentor required' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--red", text: "Mentor required")
+        it "returns a red 'Action required' tag" do
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--red", text: "Action required")
         end
       end
     end

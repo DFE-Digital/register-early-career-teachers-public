@@ -16,12 +16,10 @@ module ECTAtSchoolPeriods
 
       @mentor_at_school_period = mentor_at_school_period
 
-      @training_period = ect_at_school_period.current_or_next_training_period
-
-      raise NoTrainingPeriodError unless @training_period
+      @training_period = training_period_for_switch
 
       @school = @ect_at_school_period.school
-      @lead_provider = lead_provider.presence || @training_period.lead_provider
+      @lead_provider = lead_provider.presence || @training_period&.lead_provider
       @author = author
     end
 
@@ -30,11 +28,7 @@ module ECTAtSchoolPeriods
         @ect_at_school_period.school_led_training_programme?
 
       ActiveRecord::Base.transaction do
-        if @training_period.started_on.today? || date_of_transition.future? || @training_period.school_partnership.blank?
-          @training_period.destroy!
-        else
-          finish_training_period!
-        end
+        handle_training_period_for_school_led_switch!
 
         create_school_led_training_period!
       end
@@ -44,12 +38,10 @@ module ECTAtSchoolPeriods
       raise IncorrectTrainingProgrammeError if
         @ect_at_school_period.provider_led_training_programme?
 
+      raise NoTrainingPeriodError if @lead_provider.blank?
+
       ActiveRecord::Base.transaction do
-        if @training_period.started_on.today? || date_of_transition.future?
-          @training_period.destroy!
-        else
-          finish_training_period!
-        end
+        handle_training_period_for_provider_led_switch!
 
         create_provider_led_training_period_for_ect_at_school_period!
         @new_training_period_for_mentor = create_provider_led_training_period_for_mentor_at_school_period!
@@ -60,6 +52,30 @@ module ECTAtSchoolPeriods
   private
 
     attr_reader :school, :lead_provider
+
+    def training_period_for_switch
+      @ect_at_school_period.current_or_next_training_period || @ect_at_school_period.latest_training_period
+    end
+
+    def handle_training_period_for_school_led_switch!
+      return if @training_period.blank?
+
+      if @training_period.started_on.today? || date_of_transition.future? || @training_period.school_partnership.blank?
+        @training_period.destroy!
+      else
+        finish_training_period!
+      end
+    end
+
+    def handle_training_period_for_provider_led_switch!
+      return if @training_period.blank?
+
+      if @training_period.started_on.today? || date_of_transition.future?
+        @training_period.destroy!
+      else
+        finish_training_period!
+      end
+    end
 
     def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
 
@@ -126,6 +142,8 @@ module ECTAtSchoolPeriods
     end
 
     def previous_provider_led_training_periods_for_mentor?
+      return false unless @mentor_at_school_period
+
       @mentor_at_school_period.training_periods.any?(&:provider_led_training_programme?)
     end
 

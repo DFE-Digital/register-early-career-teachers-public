@@ -124,6 +124,21 @@ class ECTAtSchoolPeriod < ApplicationRecord
     teacher.ect_at_school_periods.excluding(self)
   end
 
+  def latest_training_status
+    latest_training_period&.status
+  end
+
+  def latest_lead_provider_name
+    training_period = latest_training_period
+    return if training_period.blank?
+
+    if training_period.only_expression_of_interest?
+      training_period.expression_of_interest_lead_provider&.name
+    else
+      training_period.lead_provider_name
+    end
+  end
+
   delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher
   delegate :name, to: :school, prefix: true
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
