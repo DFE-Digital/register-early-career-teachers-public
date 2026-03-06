@@ -54,6 +54,8 @@ You can get help with [DfE Sign-in](https://edd-help.signin.education.gov.uk/con
 
 You do not need to do anything now, although you can use the service to [manage your existing ECTs and mentors](https://staging.register-early-career-teachers.education.gov.uk/).
 
+Registration for the 2026-2027 academic year is not open yet. We'll send you an email when it opens. We expect this to be in June 2026.
+
 ## Changes to the service
 
 ### More than one school user can use the register service
