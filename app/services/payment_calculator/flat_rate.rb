@@ -38,7 +38,9 @@ module PaymentCalculator
     end
 
     def filtered_voided_declarations
-      statement.payment_declarations.voided.declaration_selector.call(declarations)
+      declarations = statement.payment_declarations.voided
+
+      declaration_selector.call(declarations)
     end
   end
 end
