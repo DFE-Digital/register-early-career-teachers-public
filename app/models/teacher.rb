@@ -126,6 +126,10 @@ class Teacher < ApplicationRecord
   scope :not_failed, -> { where.not(trs_induction_status: "Failed").or(where(trs_induction_status: nil)) }
   scope :not_passed, -> { where.not(trs_induction_status: "Passed").or(where(trs_induction_status: nil)) }
   scope :without_qts_award, -> { where(trs_qts_awarded_on: nil) }
+  scope :passed, -> { where(trs_induction_status: "Passed") }
+  scope :failed, -> { where(trs_induction_status: "Failed") }
+  scope :failed_in_wales, -> { where(trs_induction_status: "FailedInWales") }
+  scope :exempt, -> { where(trs_induction_status: "Exempt") }
 
   normalizes :corrected_name, with: -> { it.squish }
 

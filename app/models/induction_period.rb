@@ -56,6 +56,9 @@ class InductionPeriod < ApplicationRecord
   scope :ongoing, -> { where(finished_on: nil) }
   scope :with_outcome, -> { where.not(outcome: nil) }
   scope :without_outcome, -> { where(outcome: nil) }
+  scope :released, -> { finished.without_outcome }
+  scope :passed, -> { finished.where(outcome: :pass) }
+  scope :failed, -> { finished.where(outcome: :fail) }
 
   delegate :name, to: :appropriate_body_period, prefix: :appropriate_body
 
