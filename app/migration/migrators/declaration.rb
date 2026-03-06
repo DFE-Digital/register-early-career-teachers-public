@@ -2,9 +2,12 @@ module Migrators
   class Declaration < Migrators::Base
     VOIDED_BY_USERS_ECF1_ECF2_MAPPING = {
       "7e3604f9-9777-4014-b948-16ee1cd5d946" => 189, # Lara Hughes
-      "c1b7624b-6a41-4cdf-b37f-8972e934b018" => 29,  # Colin Morris
-      "f5770b20-ed06-421b-a2c9-9d10ce9ad52a" => 34   # Anna Knights
+      "c1b7624b-6a41-4cdf-b37f-8972e934b018" => 29, # Colin Morris
+      "f5770b20-ed06-421b-a2c9-9d10ce9ad52a" => 34 # Anna Knights
     }.freeze
+
+    SPECIAL_DECLARATIONS_PATH = "special_declarations.csv".freeze
+    SPECIAL_DECLARATIONS = CSV.table(SPECIAL_DECLARATIONS_PATH).freeze
 
     def self.record_count
       participant_declarations.count
@@ -38,7 +41,8 @@ module Migrators
     end
 
     def migrate_one!(participant_declaration:)
-      training_period = training_period(participant_declaration:)
+      special_declaration = special_declaration(participant_declaration:)
+      training_period = training_period(participant_declaration:, special_declaration:)
       declaration = ::Declaration
                       .find_or_initialize_by(api_id: participant_declaration.id,
                                              delivery_partner_when_created_id: training_period&.delivery_partner&.id)
@@ -64,10 +68,51 @@ module Migrators
 
   private
 
+    def build_training_period(teacher:, participant_declaration:, special_declaration:)
+      raise "Can't build a training period for declaration id #{participant_declaration.id}" unless special_declaration
+
+      contract_period = find_contract_period_by_year!(participant_declaration.cohort.year)
+      delivery_partner = find_delivery_partner_by_api_id!(special_declaration[:delivery_partner_id])
+      school = find_school_by_urn!(special_declaration[:urn])
+      at_school_period = create_at_school_period(teacher:, school:, contract_period:, for_ect: participant_declaration.ect?)
+      school_partnership = find_or_create_school_partnership(school:, lead_provider:, delivery_partner:, contract_period:)
+      create_training_period(at_school_period:, school_partnership:)
+    end
+
+    def create_at_school_period(teacher:, school:, contract_period:, for_ect: true)
+      started_on = Date.new(contract_period.year, 9, 1)
+      finished_on = start_date + 1.day
+      existing_at_school_periods = for_ect ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods
+      existing_at_school_periods.where(started_on: ..finished_on).order(started_on: :desc).each do |at_school_period|
+        break unless at_school_period.range.overlaps?(started_on..finished_on)
+
+        started_on = at_school_period.started_on - 2.days
+        finished_on = start_date + 1.day
+      end
+
+      teacher.create_ect_at_school_period!(school, started_on:, finished_on:)
+    end
+
     def clawback_statement(participant_declaration:)
       if (ecf_clawback_statement_id = participant_declaration.clawback_statement&.id)
         statement_from_ecf_id(ecf_clawback_statement_id)
       end
+    end
+
+    def closest_training_period(teacher:, participant_declaration:)
+      training_periods = participant_declaration.ect? ? teacher.ect_training_periods : teacher.mentor_training_periods
+
+      training_periods
+        .joins(school_partnership: {
+          lead_provider_delivery_partnership: [
+            :delivery_partner,
+            { active_lead_provider: %i[lead_provider contract_period] }
+          ]
+        })
+        .where(lead_provider: { ecf_id: participant_declaration.cpd_lead_provider.lead_provider.id },
+               contract_period: { year: participant_declaration.cohort.start_year })
+        .closest_to(participant_declaration.declaration_date)
+        .first
     end
 
     def delivery_partner_when_created(participant_declaration:)
@@ -91,6 +136,8 @@ module Migrators
 
     def preload_caches
       cache_manager.cache_delivery_partners
+      cache_manager.cache_lead_providers
+      cache_manager.cache_schools
       cache_manager.cache_statements
       cache_manager.cache_teachers
     end
@@ -107,21 +154,15 @@ module Migrators
       end
     end
 
-    def training_period(participant_declaration:)
+    def training_period(participant_declaration:, special_declaration:)
       teacher = teacher(participant_declaration:)
-      training_periods = participant_declaration.ect? ? teacher.ect_training_periods : teacher.mentor_training_periods
 
-      training_periods
-        .joins(school_partnership: {
-          lead_provider_delivery_partnership: [
-            :delivery_partner,
-            { active_lead_provider: %i[lead_provider contract_period] }
-          ]
-        })
-        .where(lead_provider: { ecf_id: participant_declaration.cpd_lead_provider.lead_provider.id },
-               contract_period: { year: participant_declaration.cohort.start_year })
-        .closest_to(participant_declaration.declaration_date)
-        .first
+      closest_training_period(teacher:, participant_declaration:) ||
+        build_training_period(teacher:, participant_declaration:, special_declaration:)
+    end
+
+    def special_declaration(participant_declaration:)
+      SPECIAL_DECLARATIONS.find { it[:declaration_id] == participant_declaration.id }
     end
   end
 end
