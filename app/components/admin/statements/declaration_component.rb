@@ -18,18 +18,16 @@ module Admin
         @statement = statement
       end
 
-      def head
+      def headers
         if ecf_contract?
-          ["", "Total"]
+          %w[Total]
         else
-          ["", "ECTs", "Mentors"]
+          %w[ECTs Mentors]
         end
       end
 
-      def rows
-        ORDERED_ROW_NAMES.map do |declaration_type|
-          format_row(declaration_type)
-        end
+      def columns
+        @columns ||= build_columns
       end
 
     private
@@ -38,49 +36,39 @@ module Admin
         PaymentCalculator::Resolver.new(statement:, contract:).calculators.reverse
       end
 
-      def format_row(declaration_type)
-        values = table[declaration_type]
-
-        [declaration_type, *values.map(&:to_s)]
-      end
-
-      def table
-        @table ||= build_table
-      end
-
       def ecf_contract?
         contract.contract_type == "ecf"
       end
 
-      def initialise_table
-        table = {}
+      def initialise_columns
+        columns = {}
         ORDERED_ROW_NAMES.each do |declaration_type|
-          table[declaration_type] = Array.new(calculators.size, 0)
+          columns[declaration_type] = Array.new(calculators.size, 0)
         end
-        table
+        columns
       end
 
-      def build_table
-        table = initialise_table
-        sum_declarations(table)
-        voided_and_refunded_declarations(table)
+      def build_columns
+        columns = initialise_columns
+        sum_declarations(columns)
+        voided_and_refunded_declarations(columns)
 
-        table
+        columns
       end
 
-      def sum_declarations(table)
+      def sum_declarations(columns)
         calculators.each_with_index do |calculator, index|
           calculator.outputs.declaration_type_outputs.each do |dto|
             type = payment_type(dto)
-            table[type][index] += payments_count(dto)
+            columns[type][index] += payments_count(dto)
           end
         end
       end
 
-      def voided_and_refunded_declarations(table)
+      def voided_and_refunded_declarations(columns)
         calculators.each_with_index do |calculator, index|
-          table["Clawed back"][index] = refunded(calculator)
-          table["Voided"][index] = voided(calculator)
+          columns["Clawed back"][index] = refunded(calculator)
+          columns["Voided"][index] = voided(calculator)
         end
       end
 
