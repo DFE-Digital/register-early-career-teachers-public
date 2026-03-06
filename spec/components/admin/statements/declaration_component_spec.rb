@@ -85,7 +85,6 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   before do
     allow(PaymentCalculator::Resolver)
     .to receive(:new)
-    .with(statement:, contract:)
     .and_return(resolver)
 
     allow(banded_outputs).to receive(:total_refundable_amount).and_return(6)
@@ -149,12 +148,12 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     end
   end
 
-  describe "#head" do
+  describe "#headers" do
     context "when the contract is for ECF" do
       let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, contract_period:) }
 
       it "returns the expected header" do
-        expect(component.head).to eq ["", "Total"]
+        expect(component.headers).to eq %w[Total]
       end
     end
 
@@ -162,7 +161,7 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
 
       it "returns the expected header" do
-        expect(component.head).to eq ["", "ECTs", "Mentors"]
+        expect(component.headers).to eq %w[ECTs Mentors]
       end
     end
   end
