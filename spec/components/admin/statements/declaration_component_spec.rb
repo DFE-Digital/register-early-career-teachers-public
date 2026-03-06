@@ -71,7 +71,7 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     instance_double(
       PaymentCalculator::FlatRate::DeclarationTypeOutput,
       declaration_type: "completed",
-      billable_count: 7,
+      billable_count: 2,
       refundable_count: 1
     )
   end
@@ -92,6 +92,9 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
 
     allow(banded_outputs).to receive(:total_refundable_amount).and_return(6)
     allow(flat_rate_outputs).to receive(:total_refundable_amount).and_return(4)
+
+    allow(banded_calculator).to receive(:voided_declarations_count).and_return(9)
+    allow(flat_rate_calculator).to receive(:voided_declarations_count).and_return(3)
   end
 
   context "when one calculator is returned (eg for an ECF contract)" do
@@ -106,13 +109,14 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       .and_return([started_banded, retained1_banded, completed_banded, extended_banded])
     end
 
-    it "renders the declaration types and counts" do
+    it "renders the declaration types in the correct order, and summed" do
       expect(subject).to have_table rows: [
-        %w[Started 8],
-        %w[Retained 5],
-        %w[Completed 6],
-        %w[Extended 3],
-        # %w[Clawed back 6]
+        ["Started", "8"],
+        ["Retained", "5"],
+        ["Completed", "6"],
+        ["Extended", "3"],
+        ["Clawed back", "6"],
+        ["Voided", "9"],
       ]
     end
   end
@@ -135,55 +139,33 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       .and_return([started_banded, retained1_banded, completed_banded, extended_banded])
     end
 
-    it "it sums the counts from all calculators" do
+    it "displays each calculator in a separate column with banded first" do
       expect(subject).to have_table rows: [
-        %w[Started 14],
-        %w[Retained 5],
-        %w[Completed 12],
-        %w[Extended 3],
-        # %w[Clawed back 10]
+        ["Started", "8", "6"],
+        ["Retained", "5", "0"],
+        ["Completed", "6", "1"],
+        ["Extended", "3", "0"],
+        ["Clawed back", "6", "4"],
+        ["Voided", "9", "3"],
       ]
     end
   end
 
-  context "where declarations of several retained types are returned" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, contract_period:) }
+  describe "#head" do
+    context "when the contract is for ECF" do
+      let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, contract_period:) }
 
-    before do
-      allow(resolver).to receive(:calculators)
-      .and_return([banded_calculator])
-
-      allow(banded_outputs)
-      .to receive(:declaration_type_outputs)
-      .and_return([retained1_banded, retained2_banded])
+      it "returns the expected header" do
+        expect(component.head).to eq ["", "Total"]
+      end
     end
 
-    it "groups them together and humanises their names" do
-      expect(subject).to have_table rows: [
-        %w[Retained 17],
-      ]
-    end
-  end
+    context "when the contract is ittecf_ectp" do
+      let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
 
-  context "when there are voided declarations" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, contract_period:) }
-
-    before do
-      FactoryBot.create_list(:declaration, 3, :voided, :with_ect, school_partnership:, payment_statement: statement)
-
-      allow(resolver).to receive(:calculators)
-      .and_return([banded_calculator])
-
-      allow(banded_outputs)
-      .to receive(:declaration_type_outputs)
-      .and_return([started_banded])
-    end
-
-    it "adds a voided row" do
-      expect(subject).to have_table rows: [
-        %w[Started 8],
-        %w[Voided 3],
-      ]
+      it "returns the expected header" do
+        expect(component.head).to eq ["", "ECTs", "Mentors"]
+      end
     end
   end
 end
