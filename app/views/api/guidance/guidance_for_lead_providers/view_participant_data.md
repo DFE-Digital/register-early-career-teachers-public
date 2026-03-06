@@ -1,5 +1,6 @@
 ---
 title: View participant data
+sidebar_position: 9
 ---
 
 Lead providers can use the `GET /participants` endpoints to view early career teachers (ECTs) and mentors currently or previously linked to their partnerships. 

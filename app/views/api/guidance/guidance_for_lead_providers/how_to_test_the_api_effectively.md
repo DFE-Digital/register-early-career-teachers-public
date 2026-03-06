@@ -1,5 +1,6 @@
 ---
 title: How to test the API effectively
+sidebar_position: 5
 ---
 
 ## Before starting 
