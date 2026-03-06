@@ -48,7 +48,8 @@ module ApplicationHelper
 
     return unless parsed_yaml
 
-    page_data(**parsed_yaml)
+    page_data_keys = %i[title header header_size error backlink_href breadcrumbs caption caption_size header_classes test_guidance]
+    page_data(**parsed_yaml.slice(*page_data_keys))
   end
 
   def support_mailto_link(text = Rails.application.config.support_email_address)
