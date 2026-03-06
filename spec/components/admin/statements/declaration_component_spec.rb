@@ -88,12 +88,10 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     .with(statement:, contract:)
     .and_return(resolver)
 
-    allow(banded_calculator).to receive(:outputs).and_return(banded_outputs)
-
     allow(banded_outputs).to receive(:total_refundable_amount).and_return(6)
     allow(flat_rate_outputs).to receive(:total_refundable_amount).and_return(4)
 
-    allow(banded_calculator).to receive(:voided_declarations_count).and_return(9)
+    allow(banded_calculator).to receive_messages(outputs: banded_outputs, voided_declarations_count: 9)
     allow(flat_rate_calculator).to receive(:voided_declarations_count).and_return(3)
   end
 
