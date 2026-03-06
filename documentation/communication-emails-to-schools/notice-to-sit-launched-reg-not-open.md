@@ -31,8 +31,6 @@ We’re sending you this email as our records show that you're the induction tut
 
 We’re making changes to the way schools register and manage ECTs and mentors online with the DfE.
 
-Schools need to use our [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/) service. We’ve closed the manage training for early career teachers service.
-
 ## What these changes mean for your school
 
 ### Signing into the service is different
