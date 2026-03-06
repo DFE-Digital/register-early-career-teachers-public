@@ -21,7 +21,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
-  refresh_metadata -> { teacher }, on_event: %i[create destroy]
+  refresh_metadata -> { teacher }, on_event: %i[create destroy update]
 
   # Validations
   validate :appropriate_body_for_independent_school,

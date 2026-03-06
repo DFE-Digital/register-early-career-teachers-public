@@ -35,7 +35,7 @@ class MentorshipPeriod < ApplicationRecord
   scope :for_mentee, ->(id) { where(ect_at_school_period_id: id) }
   scope :for_mentor, ->(id) { where(mentor_at_school_period_id: id) }
 
-  refresh_metadata -> { mentee.teacher }, on_event: %i[create destroy]
+  refresh_metadata -> { mentee.teacher }, on_event: %i[create destroy update]
 
   # Instance methods
   def siblings
