@@ -35,7 +35,7 @@ To use the service you’ll need:
 
 ## DfE Sign-in account and service access
 
-DfE Sign-in is a single sign-on service that provides access to DfE services. Your school might already use it for other DfE services.
+DfE Sign-in is a single sign-on service that provides access to DfE services. Your school might already use it for other DfE services and you might already have a DfE Sign-in account.
 
 If you do not have a DfE Sign-in account, [you can create one](https://services.signin.education.gov.uk/).
 
