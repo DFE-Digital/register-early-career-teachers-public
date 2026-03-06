@@ -7,6 +7,7 @@ module API
         { title: "API data states", path: "api-data-states" },
         { title: "Create, view and update partnerships", path: "create-view-and-update-partnerships" },
         { title: "Keeping data in sync", path: "keeping-data-in-sync" },
+        { title: "How cohort closures and changes work", path: "how-cohort-closures-and-changes-work" },
         { title: "How to test the API effectively", path: "how-to-test-the-api-effectively" },
         { title: "Schedules and milestones guidance", path: "schedules-and-milestones-guidance" },
         { title: "Update participant data", path: "update-participant-data" },
