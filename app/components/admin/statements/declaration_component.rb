@@ -13,9 +13,11 @@ module Admin
         ["", "Total"]
       end
 
-      def rows
+
+      def old_rows
         rows = mapped_declarations || []
-        rows << ["Voided", voided]
+        rows << ["Clawed back", refunded] if refunded.positive?
+        rows << ["Voided", voided] if voided.positive?
 
         rows
         .group_by(&:first)
@@ -37,6 +39,7 @@ module Admin
         mappings
       end
 
+
       def mapped(declaration_type_outputs)
         declaration_type_outputs.map { |dto| [payment_type(dto), payments_count(dto)] }
       end
@@ -46,7 +49,11 @@ module Admin
       end
 
       def payment_type(declaration_type_output)
-        declaration_type_output.declaration_type.humanize
+        declaration_type_output.declaration_type.split("-").first.humanize
+      end
+
+      def refunded
+        calculators.sum{ |calculator| calculator.outputs.total_refundable_amount }
       end
 
       def voided
