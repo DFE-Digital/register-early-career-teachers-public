@@ -22,6 +22,10 @@ module PaymentCalculator
       @outputs ||= FlatRate::Outputs.new(declarations: filtered_declarations, fee_per_declaration:, fee_proportions:)
     end
 
+    def voided_declarations_count
+      filtered_voided_declarations.count
+    end
+
   private
 
     def fee_per_declaration = flat_rate_fee_structure.fee_per_declaration
@@ -31,6 +35,10 @@ module PaymentCalculator
       declarations = statement.payment_declarations.billable
         .or(statement.clawback_declarations.refundable)
       declaration_selector.call(declarations)
+    end
+
+    def filtered_voided_declarations
+      statement.payment_declarations.voided.declaration_selector.call(declarations)
     end
   end
 end
