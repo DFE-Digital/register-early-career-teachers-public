@@ -77,13 +77,23 @@ module Declarations
       )
     end
 
+    def contract_period
+      @contract_period ||= training_period.contract_period
+    end
+
+    def school
+      @school ||= training_period.school
+    end
+
     def update_uplifts!(declaration)
       return unless declaration.declaration_type_started?
-      return unless training_period.contract_period.uplift_fees_enabled?
+      return unless contract_period.uplift_fees_enabled?
+
+      school_funding_eligibility = school.school_funding_eligibilities.find_by(contract_period:)
 
       declaration.update!(
-        pupil_premium_uplift: teacher.pupil_premium_uplift,
-        sparsity_uplift: teacher.sparsity_uplift
+        pupil_premium_uplift: school_funding_eligibility&.pupil_premium_uplift || false,
+        sparsity_uplift: school_funding_eligibility&.sparsity_uplift || false
       )
     end
 
