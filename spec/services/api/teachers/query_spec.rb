@@ -27,9 +27,8 @@ RSpec.describe API::Teachers::Query, :with_metadata do
           expect(training_period.association(:school_partnership)).to be_loaded
           expect(training_period.school_partnership.association(:school)).to be_loaded
           expect(training_period.school_partnership.association(:lead_provider_delivery_partnership)).to be_loaded
-
           expect(training_period.school_partnership.lead_provider_delivery_partnership.association(:delivery_partner)).to be_loaded
-
+          expect(training_period.school_partnership.school.association(:school_funding_eligibilities)).to be_loaded
           if training_period.for_ect?
             expect(training_period.association(:ect_at_school_period)).to be_loaded
           elsif training_period.for_mentor?
