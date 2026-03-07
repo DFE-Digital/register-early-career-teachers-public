@@ -53,7 +53,7 @@ module API::Teachers
           lead_provider_metadata: {
             latest_ect_training_period: {
               school_partnership: [
-                :school,
+                { school: :school_funding_eligibilities },
                 { lead_provider_delivery_partnership: :delivery_partner }
               ],
               ect_at_school_period: [],
@@ -62,7 +62,7 @@ module API::Teachers
             latest_ect_contract_period: [],
             latest_mentor_training_period: {
               school_partnership: [
-                :school,
+                { school: :school_funding_eligibilities },
                 { lead_provider_delivery_partnership: :delivery_partner }
               ],
               mentor_at_school_period: [],
