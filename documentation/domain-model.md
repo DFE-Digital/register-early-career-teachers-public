@@ -306,6 +306,7 @@ erDiagram
     datetime updated_at
     uuid ecf_id
     boolean vat_registered
+    uuid ecf_cpd_lead_provider_id
   }
   InductionPeriod {
     integer id
@@ -340,13 +341,13 @@ erDiagram
     date finished_on
     datetime created_at
     datetime updated_at
-    daterange range
     uuid ecf_start_induction_record_id
     uuid ecf_end_induction_record_id
     enum working_pattern
     citext email
     integer school_reported_appropriate_body_id
     integer reported_leaving_by_school_id
+    daterange range
   }
   ECTAtSchoolPeriod }o--|| School : belongs_to
   ECTAtSchoolPeriod }o--|| Teacher : belongs_to
@@ -420,6 +421,7 @@ erDiagram
     integer ecf1_mentorships_count
     integer ecf2_mentorships_count
     uuid api_id
+    string migration_mode
   }
   DataMigrationFailedMentorship {
     integer id
@@ -430,9 +432,9 @@ erDiagram
     uuid ecf_start_induction_record_id
     uuid ecf_end_induction_record_id
     text failure_message
+    string migration_mode
     datetime created_at
     datetime updated_at
-    string migration_mode
   }
   DataMigrationFailedCombination {
     integer id
@@ -456,9 +458,9 @@ erDiagram
     integer schedule_cohort_year
     string preferred_identity_email
     text failure_message
+    string migration_mode
     datetime created_at
     datetime updated_at
-    string migration_mode
   }
   ContractPeriod {
     integer year
