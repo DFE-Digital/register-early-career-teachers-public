@@ -17,6 +17,10 @@ class TeacherHistoryConverter
     )
   end
 
+  def set_migration_mode_to_latest_induction_records!
+    @migration_mode = :latest_induction_records
+  end
+
 private
 
   def select_migration_mode

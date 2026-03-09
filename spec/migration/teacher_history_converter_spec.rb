@@ -75,4 +75,16 @@ describe TeacherHistoryConverter do
       expect(ecf2_teacher_history.mentor_at_school_periods[1].created_at).not_to eql(created_at)
     end
   end
+
+  describe "#set_migration_mode_to_latest_induction_records!" do
+    subject(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode: :all_induction_records) }
+
+    let(:ecf1_teacher_history) { FactoryBot.build(:ecf1_teacher_history) }
+
+    it "changes the migration_mode to latest_induction_records" do
+      expect(subject.migration_mode).to be(:all_induction_records)
+      subject.set_migration_mode_to_latest_induction_records!
+      expect(subject.migration_mode).to be(:latest_induction_records)
+    end
+  end
 end
