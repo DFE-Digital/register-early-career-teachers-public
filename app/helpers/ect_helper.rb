@@ -145,7 +145,7 @@ module ECTHelper
   end
 
   def register_mentor_back_link(ect, new_mentor_requested)
-    return schools_ects_change_mentor_wizard_edit_path(ect, new_mentor_requested: true) if new_mentor_requested
+    return schools_ect_path(ect) if new_mentor_requested
 
     if eligible_mentors_for_ect?(ect)
       new_schools_ect_mentorship_path(ect)
