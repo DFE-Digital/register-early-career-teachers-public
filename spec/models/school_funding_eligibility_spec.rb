@@ -12,4 +12,13 @@ RSpec.describe SchoolFundingEligibility do
     it { is_expected.to allow_values(true, false).for(:sparsity_uplift) }
     it { is_expected.not_to allow_values(nil, "").for(:sparsity_uplift) }
   end
+
+  describe "declarative touch" do
+    describe "school target" do
+      let(:instance) { FactoryBot.create(:school_funding_eligibility, school: target) }
+      let!(:target) { FactoryBot.create(:school) }
+
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
+    end
+  end
 end
