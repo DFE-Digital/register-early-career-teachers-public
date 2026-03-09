@@ -1,4 +1,6 @@
 class ECTAtSchoolPeriod < ApplicationRecord
+  ACCURATE_TEACHER_HISTORIES_AFTER = Date.new(2025, 4, 28).freeze
+
   include Interval
   include DeclarativeUpdates
 
@@ -137,6 +139,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
     else
       training_period.lead_provider_name
     end
+  end
+
+  def migrated_data_accurate?
+    teacher.not_migrated_migration_mode? || created_at.after?(ACCURATE_TEACHER_HISTORIES_AFTER)
   end
 
   delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher
