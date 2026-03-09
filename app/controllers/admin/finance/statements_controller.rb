@@ -3,6 +3,7 @@ module Admin::Finance
     layout "full"
 
     before_action :set_statement, only: %i[show declarations]
+    before_action :ensure_output_fee_statement!, only: :declarations
 
     def index
       @pagy, statements = pagy(
@@ -37,6 +38,10 @@ module Admin::Finance
     def set_statement
       @statement = Statement.eager_load(active_lead_provider: :lead_provider).find(params[:id])
       @statement_presenter = Admin::StatementPresenter.new(@statement)
+    end
+
+    def ensure_output_fee_statement!
+      raise ActiveRecord::RecordNotFound unless @statement.output_fee?
     end
 
     def statements_query

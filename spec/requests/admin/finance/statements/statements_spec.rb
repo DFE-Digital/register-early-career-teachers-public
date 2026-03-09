@@ -193,6 +193,26 @@ RSpec.describe "Admin finance statements index", type: :request do
         expect(response.body).to include(declaration.api_id)
         expect(response.body).not_to include(unrelated_declaration.api_id)
       end
+
+      context "when the statement is for service fees" do
+        let!(:statement) do
+          FactoryBot.create(
+            :statement,
+            :paid,
+            :service_fee,
+            contract:,
+            active_lead_provider:,
+            month: 11,
+            year: 2024
+          )
+        end
+
+        it "returns not found" do
+          get "/admin/finance/statements/#{statement.id}/declarations.csv"
+
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
   end
 end
