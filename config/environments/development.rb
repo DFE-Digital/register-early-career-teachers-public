@@ -41,14 +41,18 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # GOVUK Notify
-  config.action_mailer.delivery_method = :notify
-
   if ENV.key?("GOVUK_NOTIFY_API_KEY")
+    config.action_mailer.delivery_method = :notify
     config.action_mailer.notify_settings = {
       api_key: ENV.fetch("GOVUK_NOTIFY_API_KEY"),
     }
   else
-    Logger.new($stdout).warn("GOVUK_NOTIFY_API_KEY is not set")
+    config.action_mailer.delivery_method = :test
+    Logger.new($stdout).warn("GOVUK_NOTIFY_API_KEY is not set, using test delivery method")
+
+    config.after_initialize do
+      ActionMailer::Base.preview_interceptors.delete(MailNotifyPreviewInterceptor)
+    end
   end
   config.action_mailer.default_url_options = { host: "localhost", port: "3000" }
 
