@@ -26,20 +26,7 @@ private
   def dates_are_in_the_right_order_for?(induction_records)
     return true if induction_records.blank?
 
-    previous_induction_record = nil
-    induction_records.sort_by(&:created_at).all? do |induction_record|
-      result = if induction_record.dates_in_order?
-                 if previous_induction_record.present?
-                   previous_induction_record.end_date.present? && previous_induction_record.end_date < induction_record.start_date
-                 else
-                   true
-                 end
-               else
-                 false
-               end
-      previous_induction_record = induction_record
-      result
-    end
+    induction_records.all?(&:dates_in_order?)
   end
 
   def is_not_induction_completed?
