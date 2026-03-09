@@ -11,7 +11,7 @@ describe MentorAtSchoolPeriod do
       let(:instance) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: target) }
       let!(:target) { FactoryBot.create(:teacher) }
 
-      it_behaves_like "a declarative metadata model", on_event: %i[create destroy]
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
     end
   end
 
