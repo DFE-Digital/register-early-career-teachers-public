@@ -59,6 +59,10 @@ RSpec.describe Admin::RecordFail do
       service_call
     end
 
+    it "sends tra failed notification email" do
+      expect { service_call }.to have_enqueued_mail(FailedInductionMailer, :tra_notification)
+    end
+
     context "when the ect at school period has already finished" do
       let(:finished_on) { 2.days.ago }
 
