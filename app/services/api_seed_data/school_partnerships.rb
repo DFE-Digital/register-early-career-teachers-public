@@ -8,7 +8,7 @@ module APISeedData
 
       log_plant_info("school partnerships")
 
-      ActiveLeadProvider.find_each do |active_lead_provider|
+      active_lead_providers.find_each do |active_lead_provider|
         SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER.times do
           create_school_partnership(active_lead_provider)
         end
@@ -18,12 +18,6 @@ module APISeedData
           create_school_partnership(active_lead_provider, school:)
         end
       end
-    end
-
-  protected
-
-    def plantable?
-      super && SchoolPartnership.none?
     end
 
   private

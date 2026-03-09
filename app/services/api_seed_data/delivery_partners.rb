@@ -10,12 +10,6 @@ module APISeedData
       NUMBER_OF_RECORDS.times { create_delivery_partner }
     end
 
-  protected
-
-    def plantable?
-      super && DeliveryPartner.none?
-    end
-
   private
 
     def create_delivery_partner
