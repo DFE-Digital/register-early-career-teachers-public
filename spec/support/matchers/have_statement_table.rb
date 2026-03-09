@@ -1,6 +1,6 @@
 module HaveStatementTable
   class Matcher
-    def initialize(caption:, headings:, rows:, total:)
+    def initialize(caption:, headings:, rows:, total: nil)
       @caption = caption
       @headings = headings
       @rows = rows
@@ -29,8 +29,10 @@ module HaveStatementTable
       end
 
       # Assert the expected total is displayed as a heading
-      total = table.sibling(".govuk-heading-s", text: "Total")
-      return false unless total.sibling(".govuk-heading-s").has_text?(@total)
+      if @total
+        total = table.sibling(".govuk-heading-s", text: "Total")
+        return false unless total.sibling(".govuk-heading-s").has_text?(@total)
+      end
 
       true
     end
