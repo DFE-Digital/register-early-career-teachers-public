@@ -36,7 +36,7 @@ Submitting declarations in order:
 - makes our data more accurate and reliable
 - reduces the need for clawbacks, voiding, and manual adjustments
 
-For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to post-2024 cohorts.
+For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to the 2025 cohort or later.
 
 ## How declarations should be ordered
 
@@ -130,6 +130,6 @@ For pre-2025 cohorts, evidence is optional for `started` declarations. If you do
 - `self-study-material-completed`
 - `other`
 
-For post-2024 cohorts, evidence is now mandatory for started declarations, as shown in the documentation above. This means evidence is now required for all declaration types for cohorts 2025 and later.
+For the 2025 cohort and later, evidence is now mandatory for started declarations, as shown in the documentation above. This means evidence is now required for all declaration types for cohorts 2025 and later.
 
-Evidence types for post-2024 cohorts are not compatible with pre-2025 cohorts. If a provider submits a declaration for a pre-2025 cohort using a post-2024 evidence type, the API will return a 422 error.
+Evidence types for the 2025 cohort and later are not compatible with pre-2025 cohorts. If a provider submits a declaration for a pre-2025 cohort using a evidence type that is only valid for the 2025 cohort and later, the API will return a 422 error.
