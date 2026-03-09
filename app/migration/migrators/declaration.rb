@@ -7,7 +7,6 @@ module Migrators
     }.freeze
 
     SPECIAL_DECLARATIONS_PATH = "special_declarations.csv"
-    SPECIAL_DECLARATIONS = CSV.table(SPECIAL_DECLARATIONS_PATH)
 
     def self.record_count
       participant_declarations.count
@@ -80,10 +79,10 @@ module Migrators
     def build_training_period(teacher:, participant_declaration:, special_declaration:)
       raise "Can't build a training period for declaration id #{participant_declaration.id}" unless special_declaration
 
-      contract_period_year = find_contract_period_by_year!(participant_declaration.cohort.year).year
-      delivery_partner_id = find_delivery_partner_by_api_id!(special_declaration['delivery_partner_id']).id
+      contract_period_year = find_contract_period_by_year!(participant_declaration.cohort.start_year).year
+      delivery_partner_id = special_declaration[:delivery_partner_id]
       lead_provider = find_lead_provider_by_ecf_id!(participant_declaration.cpd_lead_provider.lead_provider.id)
-      school = find_school_by_urn!(special_declaration['urn'])
+      school = find_school_by_urn!(special_declaration[:urn])
       started_on = Date.new(contract_period_year, 9, 1)
       finished_on = started_on + 1.day
       at_school_periods = (participant_declaration.ect? ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods)
@@ -126,13 +125,17 @@ module Migrators
         finished_on = start_date + 1.day
       end
 
-      teacher.create_ect_at_school_period!(school, started_on:, finished_on:)
+      teacher.ect_at_school_periods.create!(school:, started_on:, finished_on:)
     end
 
     def create_training_period(at_school_period:, school_partnership:)
-      ect_at_school_period.create_training_period!(school_partnership:,
-                                                   started_on: at_school_period.started_on,
-                                                   finished_on: at_school_period.finished_on)
+      at_school_period.training_periods
+                      .provider_led_training_programme
+                      .create!(school_partnership:,
+                               started_on: at_school_period.started_on,
+                               finished_on: at_school_period.finished_on,
+                               schedule: ::Schedule.find_by(contract_period_year: school_partnership.contract_period.year,
+                                                            identifier: "ecf-standard-september"))
     end
 
     def delivery_partner_when_created(participant_declaration:)
@@ -156,7 +159,7 @@ module Migrators
       lpdp_id ||= ::LeadProviderDeliveryPartnership.create!(active_lead_provider_id:, delivery_partner_id:).id
 
       cache_manager.find_school_partnership(lead_provider_delivery_partnership_id: lpdp_id, school_id: school.id) ||
-        school.create_school_partnership!(lead_provider_delivery_partnership:)
+        school.school_partnerships.create!(lead_provider_delivery_partnership_id: lpdp_id)
     end
 
     def payment_statement(participant_declaration:)
@@ -177,7 +180,11 @@ module Migrators
     end
 
     def special_declaration(participant_declaration:)
-      SPECIAL_DECLARATIONS.find { it['declaration_id'] == participant_declaration.id }
+      special_declarations.find { it[:declaration_id] == participant_declaration.id }
+    end
+
+    def special_declarations
+      @special_declarations ||= CSV.table(SPECIAL_DECLARATIONS_PATH)
     end
 
     def statement_from_ecf_id(id)

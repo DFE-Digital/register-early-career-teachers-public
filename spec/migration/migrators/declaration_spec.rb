@@ -39,6 +39,10 @@ describe Migrators::Declaration do
     end
   end
 
+  before do
+    stub_const("Migrators::Declaration::SPECIAL_DECLARATIONS_PATH", "spec/fixtures/special_declarations.csv")
+  end
+
   it_behaves_like "a migrator", :declaration, %i[statement mentor ect] do
     def create_migration_resource = create_participant_declaration
 
@@ -59,25 +63,80 @@ describe Migrators::Declaration do
       let(:clawback_statement) { Statement.find_by_api_id(participant_declaration.clawback_statement.id) }
       let(:payment_statement) { Statement.find_by_api_id(participant_declaration.payment_statement.id) }
       let(:ecf_lead_provider_id) { participant_declaration.cpd_lead_provider.lead_provider.id }
-      let!(:participant_declaration) { create_participant_declaration }
-      let!(:training_period) { create_training_period_and_statements_for(participant_declaration)[:training_period] }
 
-      it "sets the created declaration attributes correctly" do
-        instance.migrate!
+      context "when the declaration is not a special one" do
+        let!(:participant_declaration) { create_participant_declaration }
+        let!(:training_period) { create_training_period_and_statements_for(participant_declaration)[:training_period] }
 
-        Declaration.find_by(api_id: participant_declaration.id) do |declaration|
+        it "sets the created declaration attributes correctly" do
+          instance.migrate!
+
+          Declaration.find_by(api_id: participant_declaration.id) do |declaration|
+            aggregate_failures do
+              expect(declaration).to have_attributes(participant_declaration.attributes.slice("created_at", "declaration_date", "declaration_type", "evidence_type", "pupil_premium_uplift", "sparsity_uplift", "updated_at"))
+              expect(declaration.clawback_statement_id).to eq(clawback_statement.id)
+              expect(declaration.clawback_status).to eq(participant_declaration.clawback_status)
+              expect(declaration.delivery_partner_when_created.id).to eq(training_period.delivery_partner.id)
+              expect(declaration.lead_provider.ecf_id).to eq(ecf_lead_provider_id)
+              expect(declaration.payment_statement_id).to eq(payment_statement.id)
+              expect(declaration.payment_status).to eq(participant_declaration.payment_status)
+              expect(declaration.training_period_id).to eq(training_period.id)
+              expect(declaration.voided_by_user_at).to eq(participant_declaration.voided_at)
+            end
+          end
+        end
+      end
+
+      context "when the declaration is a special one and it can't be associated with any existing training_period" do
+        let!(:participant_declaration) { FactoryBot.create(:migration_participant_declaration, :billable, declaration_type: :completed, id: "05e09502-f3ef-4f89-aa1a-e17a120df7dc") }
+        let!(:ecf_lead_provider) { participant_declaration.cpd_lead_provider.lead_provider }
+        let!(:teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: participant_declaration.participant_profile_id) }
+        let!(:lead_provider) { FactoryBot.create(:lead_provider, ecf_id: ecf_lead_provider.id, name: ecf_lead_provider.name) }
+        let!(:contract_period) { FactoryBot.create(:contract_period, year: participant_declaration.cohort.start_year) }
+        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+        let!(:delivery_partner) { FactoryBot.create(:delivery_partner, id: 173, name: "DP173") }
+        let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+        let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+        let!(:school) { FactoryBot.create(:school, urn: "149712") }
+        let!(:payment_statement) { FactoryBot.create(:statement, :payable, api_id: participant_declaration.payment_statement.id, contract_period:) }
+
+        it "sets the created declaration attributes correctly" do
+          instance.migrate!
+
+          declaration = Declaration.find_by(api_id: participant_declaration.id)
+          training_period = declaration.training_period
+          at_school_period = training_period.ect_at_school_period
+          school_partnership = training_period.school_partnership
+
           aggregate_failures do
-            expect(declaration).to have_attributes(participant_declaration.attributes.slice("created_at", "declaration_date", "declaration_type", "evidence_type", "pupil_premium_uplift", "sparsity_uplift", "updated_at"))
-            expect(declaration.clawback_statement_id).to eq(clawback_statement.id)
+            expect(declaration).to have_attributes(participant_declaration.attributes.slice("created_at", "declaration_date", "declaration_type", "evidence_type", "updated_at"))
             expect(declaration.clawback_status).to eq(participant_declaration.clawback_status)
-            expect(declaration.delivery_partner_when_created.id).to eq(training_period.delivery_partner.id)
+            expect(declaration.delivery_partner_when_created.id).to eq(delivery_partner.id)
             expect(declaration.lead_provider.ecf_id).to eq(ecf_lead_provider_id)
             expect(declaration.payment_statement_id).to eq(payment_statement.id)
             expect(declaration.payment_status).to eq(participant_declaration.payment_status)
-            expect(declaration.training_period_id).to eq(training_period.id)
+            expect(declaration.training_period_id).to be_present
             expect(declaration.voided_by_user_at).to eq(participant_declaration.voided_at)
+
+            expect(at_school_period.started_on).to eq(Date.new(contract_period.year, 9, 1))
+            expect(at_school_period.finished_on).to eq(Date.new(contract_period.year, 9, 2))
+            expect(at_school_period.school).to eq(school)
+
+            expect(training_period.started_on).to eq(Date.new(contract_period.year, 9, 1))
+            expect(training_period.finished_on).to eq(Date.new(contract_period.year, 9, 2))
+            expect(training_period.schedule.contract_period_year).to eq(contract_period.year)
+            expect(training_period.schedule.identifier).to eq("ecf-standard-september")
+
+            expect(school_partnership.school).to eq(school)
+            expect(school_partnership.lead_provider).to eq(lead_provider)
+            expect(school_partnership.delivery_partner).to eq(delivery_partner)
+            expect(school_partnership.contract_period).to eq(contract_period)
           end
         end
+
+        # let(:csv_file) do
+        #   fixture_file_upload("spec/fixtures/valid_complete_claim.csv", "text/csv")
+        # end
       end
     end
 
