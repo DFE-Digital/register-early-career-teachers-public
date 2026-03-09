@@ -12,11 +12,11 @@ RSpec.describe Teachers::ScheduleTRSSyncJob, type: :job do
     it "schedules sync jobs for teachers ordered by trs_data_last_refreshed_at" do
       [
         [teacher0, 0],
-        [teacher1, 3],
-        [teacher2, 6],
-        [teacher3, 9],
-        [teacher4, 12],
-        [teacher5, 15],
+        [teacher1, 1],
+        [teacher2, 2],
+        [teacher3, 3],
+        [teacher4, 4],
+        [teacher5, 5],
       ].each do |teacher, wait_time|
         allow(Teachers::SyncTeacherWithTRSJob).to receive(:set).with(wait: wait_time.seconds).and_return(Teachers::SyncTeacherWithTRSJob)
 
