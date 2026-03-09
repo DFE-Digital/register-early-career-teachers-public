@@ -126,8 +126,6 @@ private
       api_mentor_training_record_id: ecf1_teacher_history.mentor&.participant_profile_id,
       api_updated_at: participant_api_updated_at(ecf1_teacher_history:),
       migration_mode:,
-      pupil_premium_uplift: ecf1_teacher_history.ect&.pupil_premium_uplift,
-      sparsity_uplift: ecf1_teacher_history.ect&.sparsity_uplift,
       ect_payments_frozen_year: ecf1_teacher_history.ect&.payments_frozen_cohort_start_year,
       mentor_payments_frozen_year: ecf1_teacher_history.mentor&.payments_frozen_cohort_start_year,
       mentor_became_ineligible_for_funding_on: ecf1_teacher_history.mentor&.mentor_completion_date,
