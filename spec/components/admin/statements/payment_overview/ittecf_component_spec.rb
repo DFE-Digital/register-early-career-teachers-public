@@ -24,13 +24,11 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
 
   let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:) }
   let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: -300) }
-  let(:uplifts_double) { double(total_net_amount: total_uplifts_amount) }
 
   let(:total_net_amount) { 400 }
   let(:total_refundable_amount) { -150 }
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }
-  let(:total_uplifts_amount) { 50 }
 
   let(:contract) do
     FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:, flat_rate_fee_structure:)
@@ -43,9 +41,9 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
     )
   end
 
-  before do
-    FactoryBot.create(:statement_adjustment, statement: statement_rec, amount: total_manual_adjustments_amount)
+  let!(:adjustment) { FactoryBot.create(:statement_adjustment, statement: statement_rec, amount: total_manual_adjustments_amount) }
 
+  before do
     allow(PaymentCalculator::FlatRate::Outputs)
     .to receive(:new)
     .and_return(flat_rate_outputs_double)
@@ -54,6 +52,12 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
     .and_return(banded_outputs_double)
 
     render_inline(component)
+  end
+
+  it "does not show rows for ECF contracts" do
+    expect(page).not_to have_text("Uplift fees")
+    expect(page).not_to have_text("Output payment")
+    expect(page).not_to have_text("Clawbacks")
   end
 
   it "displays the milestone cutoff and payment dates" do

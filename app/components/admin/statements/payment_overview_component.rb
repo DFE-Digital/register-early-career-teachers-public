@@ -33,7 +33,7 @@ module Admin
       end
 
       def calculators
-        PaymentCalculator::Resolver.new(statement:, contract:).calculators
+        @calculators ||= PaymentCalculator::Resolver.new(statement:, contract:).calculators
       end
 
       def banded
@@ -62,10 +62,6 @@ module Admin
 
       def clawbacks
         @clawbacks ||= banded.outputs.total_refundable_amount
-      end
-
-      def uplifts
-        @uplifts ||= banded.uplifts.total_net_amount
       end
     end
   end

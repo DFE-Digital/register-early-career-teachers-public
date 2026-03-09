@@ -157,6 +157,13 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       render
 
       expect(rendered).to have_text("Uplift fees")
+      expect(rendered).to have_text("Output payment")
+      expect(rendered).to have_text("Clawbacks")
+
+      expect(rendered).not_to have_text("ECTs output payment")
+      expect(rendered).not_to have_text("Mentors output payment")
+      expect(rendered).not_to have_text("ECTs clawbacks")
+      expect(rendered).not_to have_text("Mentors clawbacks")
     end
   end
 
@@ -168,7 +175,14 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     it "displays the ITTECF ECTP payment overview component" do
       render
 
+      expect(rendered).to have_text("ECTs output payment")
       expect(rendered).to have_text("Mentors output payment")
+      expect(rendered).to have_text("ECTs clawbacks")
+      expect(rendered).to have_text("Mentors clawbacks")
+
+      expect(rendered).not_to have_text("Uplift fees")
+      expect(rendered).not_to have_text("Output payment")
+      expect(rendered).not_to have_text("Clawbacks")
     end
   end
 end

@@ -22,6 +22,10 @@ module Admin
         def vat_amount
           banded_vat
         end
+
+        def uplifts
+          @uplifts ||= banded.uplifts.total_net_amount
+        end
       end
     end
   end
