@@ -111,6 +111,12 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     expect(rendered).to have_css(".govuk-summary-list")
   end
 
+  it "displays provider targets" do
+    render
+
+    expect(rendered).to have_css("details", text: "Provider targets (per academic year)")
+  end
+
   context "for `ecf` contracts" do
     let(:contract_trait) { :for_ecf }
 
