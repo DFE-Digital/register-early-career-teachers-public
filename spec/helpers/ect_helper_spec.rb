@@ -23,6 +23,15 @@ RSpec.describe ECTHelper, type: :helper do
     end
   end
 
+  describe "#register_mentor_back_link" do
+    context "when a new mentor has been requested" do
+      it "returns the ECT details page" do
+        expect(helper.register_mentor_back_link(ect_at_school_period, true))
+          .to eq(schools_ect_path(ect_at_school_period))
+      end
+    end
+  end
+
   describe "#ect_status" do
     context "when the ECT is leaving" do
       before do
