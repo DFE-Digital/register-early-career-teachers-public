@@ -43,6 +43,8 @@ describe Migrators::Statement do
           expect(statement.status).to eq("open")
           expect(statement.fee_type).to eq("output")
           expect(statement.contract).to eq(contract)
+          expect(statement.updated_at).to eq(migration_resource1.updated_at)
+          expect(statement.api_updated_at).to eq(statement.updated_at)
         end
       end
 
