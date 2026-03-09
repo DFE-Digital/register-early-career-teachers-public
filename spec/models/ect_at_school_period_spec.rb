@@ -11,7 +11,7 @@ describe ECTAtSchoolPeriod do
       let(:instance) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: target) }
       let!(:target) { FactoryBot.create(:teacher) }
 
-      it_behaves_like "a declarative metadata model", on_event: %i[create destroy]
+      it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
     end
   end
 
