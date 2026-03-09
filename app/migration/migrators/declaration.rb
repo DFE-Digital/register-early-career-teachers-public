@@ -6,7 +6,7 @@ module Migrators
       "f5770b20-ed06-421b-a2c9-9d10ce9ad52a" => 34 # Anna Knights
     }.freeze
 
-    SPECIAL_DECLARATIONS_PATH = "special_declarations.csv"
+    SPECIAL_DECLARATIONS_PATH = "app/migration/migrators/special_declarations.csv"
 
     def self.record_count
       participant_declarations.count
@@ -83,13 +83,7 @@ module Migrators
       delivery_partner_id = special_declaration[:delivery_partner_id]
       lead_provider = find_lead_provider_by_ecf_id!(participant_declaration.cpd_lead_provider.lead_provider.id)
       school = find_school_by_urn!(special_declaration[:urn])
-      started_on = Date.new(contract_period_year, 9, 1)
-      finished_on = started_on + 1.day
-      at_school_periods = (participant_declaration.ect? ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods)
-                            .where(started_on: ..finished_on)
-                            .order(started_on: :desc)
-
-      at_school_period = create_at_school_period(teacher:, school:, started_on:, finished_on:, at_school_periods:)
+      at_school_period = create_at_school_period(teacher:, participant_declaration:, school:, contract_period_year:)
       school_partnership = find_or_create_school_partnership(school:, lead_provider:, delivery_partner_id:, contract_period_year:)
 
       create_training_period(at_school_period:, school_partnership:)
@@ -117,7 +111,20 @@ module Migrators
         .first
     end
 
-    def create_at_school_period(teacher:, school:, started_on:, finished_on:, at_school_periods:)
+    def create_at_school_period(teacher:, participant_declaration:, school:, contract_period_year:)
+      started_on, finished_on = dates_for_new_at_school_period(teacher:,
+                                                               participant_declaration:,
+                                                               started_on: Date.new(contract_period_year, 9, 1),
+                                                               finished_on: Date.new(contract_period_year, 9, 2))
+
+      teacher.ect_at_school_periods.create!(school:, started_on:, finished_on:)
+    end
+
+    def dates_for_new_at_school_period(teacher:, participant_declaration:, started_on:, finished_on:)
+      at_school_periods = (participant_declaration.ect? ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods)
+                            .where(started_on: ..finished_on)
+                            .order(started_on: :desc)
+
       at_school_periods.each do |at_school_period|
         break unless at_school_period.range.overlaps?(started_on..finished_on)
 
@@ -125,7 +132,7 @@ module Migrators
         finished_on = start_date + 1.day
       end
 
-      teacher.ect_at_school_periods.create!(school:, started_on:, finished_on:)
+      [started_on, finished_on]
     end
 
     def create_training_period(at_school_period:, school_partnership:)
@@ -180,7 +187,7 @@ module Migrators
     end
 
     def special_declaration(participant_declaration:)
-      special_declarations.find { it[:declaration_id] == participant_declaration.id }
+      special_declarations.find { it[:participant_declaration_id] == participant_declaration.id }
     end
 
     def special_declarations

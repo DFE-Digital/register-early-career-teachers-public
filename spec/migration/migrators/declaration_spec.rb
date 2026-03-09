@@ -71,18 +71,20 @@ describe Migrators::Declaration do
         it "sets the created declaration attributes correctly" do
           instance.migrate!
 
-          Declaration.find_by(api_id: participant_declaration.id) do |declaration|
-            aggregate_failures do
-              expect(declaration).to have_attributes(participant_declaration.attributes.slice("created_at", "declaration_date", "declaration_type", "evidence_type", "pupil_premium_uplift", "sparsity_uplift", "updated_at"))
-              expect(declaration.clawback_statement_id).to eq(clawback_statement.id)
-              expect(declaration.clawback_status).to eq(participant_declaration.clawback_status)
-              expect(declaration.delivery_partner_when_created.id).to eq(training_period.delivery_partner.id)
-              expect(declaration.lead_provider.ecf_id).to eq(ecf_lead_provider_id)
-              expect(declaration.payment_statement_id).to eq(payment_statement.id)
-              expect(declaration.payment_status).to eq(participant_declaration.payment_status)
-              expect(declaration.training_period_id).to eq(training_period.id)
-              expect(declaration.voided_by_user_at).to eq(participant_declaration.voided_at)
-            end
+          declaration = Declaration.find_by(api_id: participant_declaration.id)
+
+          aggregate_failures do
+            expect(declaration).to have_attributes(participant_declaration.attributes.slice("created_at", "declaration_date", "declaration_type", "evidence_type", "updated_at"))
+            expect(declaration.pupil_premium_uplift).to be_falsey
+            expect(declaration.sparsity_uplift).to be_falsey
+            expect(declaration.clawback_statement_id).to eq(clawback_statement.id)
+            expect(declaration.clawback_status).to eq(participant_declaration.clawback_status)
+            expect(declaration.delivery_partner_when_created.id).to eq(training_period.delivery_partner.id)
+            expect(declaration.lead_provider.ecf_id).to eq(ecf_lead_provider_id)
+            expect(declaration.payment_statement_id).to eq(payment_statement.id)
+            expect(declaration.payment_status).to eq(participant_declaration.payment_status)
+            expect(declaration.training_period_id).to eq(training_period.id)
+            expect(declaration.voided_by_user_at).to eq(participant_declaration.voided_at)
           end
         end
       end
@@ -150,8 +152,8 @@ describe Migrators::Declaration do
 
         let!(:statement) do
           FactoryBot.create(:statement, status: "payable", contract_period: training_period.contract_period,
-                                        active_lead_provider: training_period.school_partnership.active_lead_provider,
-                                        api_id: mentor_declaration.payment_statement.id)
+                            active_lead_provider: training_period.school_partnership.active_lead_provider,
+                            api_id: mentor_declaration.payment_statement.id)
         end
 
         it "migrates the declaration" do
