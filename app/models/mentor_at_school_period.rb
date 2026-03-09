@@ -21,7 +21,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_unfunded_mentor_updated_at, if: :latest_mentor_at_school_period?
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
-  refresh_metadata -> { teacher }, on_event: %i[create destroy]
+  refresh_metadata -> { teacher }, on_event: %i[create destroy update]
 
   # Validations
   validates :email,
