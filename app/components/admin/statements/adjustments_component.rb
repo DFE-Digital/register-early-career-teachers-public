@@ -19,6 +19,21 @@ module Admin
       def adjustments
         statement.adjustments.order(created_at: :asc)
       end
+
+      def change_or_remove_links(adjustment)
+        return unless adjustment_editable?
+
+        change_link(adjustment)  + " | " + remove_link(adjustment)
+      end
+
+
+      def change_link(adjustment)
+        govuk_link_to("Change", edit_admin_finance_statement_adjustment_path(statement, adjustment))
+      end
+
+      def remove_link(adjustment)
+        govuk_link_to("Remove", delete_admin_finance_statement_adjustment_path(statement, adjustment))
+      end
     end
   end
 end
