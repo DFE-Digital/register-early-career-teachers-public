@@ -24,7 +24,7 @@ module APISeedData
 
       return unless ect_contract_period && mentor_contract_period
 
-      LeadProvider.find_each do |lead_provider|
+      lead_providers.find_each do |lead_provider|
         existing_count = teachers_with_ect_and_mentor_training(
           lead_provider:,
           ect_year:,

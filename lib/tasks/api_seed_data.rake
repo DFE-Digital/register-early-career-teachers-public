@@ -1,6 +1,8 @@
 namespace :api_seed_data do
   desc "Generate seed data for the sandbox environment"
   task generate: :environment do
+    abort("Only available for non-production environments") if Rails.env.production?
+
     seeds = [
       APISeedData::ContractPeriods,
       APISeedData::LeadProviders,

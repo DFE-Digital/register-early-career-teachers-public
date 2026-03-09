@@ -13,12 +13,6 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && School.none?
-    end
-
   private
 
     def create_school(urn:)

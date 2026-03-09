@@ -56,16 +56,10 @@ module APISeedData
       end
     end
 
-  protected
-
-    def plantable?
-      super && Statement.none?
-    end
-
   private
 
     def active_lead_providers_by_lead_provider
-      ActiveLeadProvider.includes(:lead_provider).group_by(&:lead_provider)
+      active_lead_providers.group_by(&:lead_provider)
     end
 
     def years(registration_year)

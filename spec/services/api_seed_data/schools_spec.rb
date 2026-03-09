@@ -18,11 +18,6 @@ RSpec.describe APISeedData::Schools do
       expect(School.count).to eq(described_class::NUMBER_OF_RECORDS)
     end
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(School, :count)
-      expect { instance.plant }.not_to change(School, :count)
-    end
-
     it "logs the creation of schools" do
       instance.plant
 
