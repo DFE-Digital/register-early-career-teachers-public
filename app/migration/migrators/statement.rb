@@ -45,7 +45,8 @@ module Migrators
         fee_type: fee_type(ecf_statement),
         status: status(ecf_statement),
         created_at: ecf_statement.created_at,
-        updated_at: ecf_statement.updated_at
+        updated_at: ecf_statement.updated_at,
+        api_updated_at: ecf_statement.updated_at
       )
 
       statement
