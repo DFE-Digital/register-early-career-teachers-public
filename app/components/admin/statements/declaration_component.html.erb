@@ -14,7 +14,7 @@
 
     <%= table.with_body do |body| %>
       <% ORDERED_ROW_NAMES.each do |type| %>
-        <%= body.with_row do |row| %>%
+        <%= body.with_row do |row| %>
           <%= row.with_cell { type } %>
           <% columns[type].each do |value| %>
             <%= row.with_cell(numeric: true) { value.to_s } %>
