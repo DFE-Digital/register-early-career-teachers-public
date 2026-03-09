@@ -114,6 +114,17 @@ erDiagram
   }
   SchoolPartnership }o--|| LeadProviderDeliveryPartnership : belongs_to
   SchoolPartnership }o--|| School : belongs_to
+  SchoolFundingEligibility {
+    integer id
+    integer school_urn
+    integer contract_period_year
+    boolean pupil_premium_uplift
+    boolean sparsity_uplift
+    datetime created_at
+    datetime updated_at
+  }
+  SchoolFundingEligibility }o--|| School : belongs_to
+  SchoolFundingEligibility }o--|| ContractPeriod : belongs_to
   School {
     integer id
     integer urn
@@ -192,8 +203,6 @@ erDiagram
     uuid api_mentor_training_record_id
     integer ect_payments_frozen_year
     integer mentor_payments_frozen_year
-    boolean pupil_premium_uplift
-    boolean sparsity_uplift
     date trs_induction_start_date
     date trs_induction_completed_date
     datetime ect_first_became_eligible_for_training_at
