@@ -89,7 +89,7 @@ describe Migrators::Declaration do
         end
       end
 
-      context "when the declaration is a special one and it can't be associated with any existing training_period" do
+      context "when the declaration is a special one that can't be associated with any existing training_period" do
         let!(:participant_declaration) { FactoryBot.create(:migration_participant_declaration, :billable, declaration_type: :completed, id: "05e09502-f3ef-4f89-aa1a-e17a120df7dc") }
         let!(:ecf_lead_provider) { participant_declaration.cpd_lead_provider.lead_provider }
         let!(:teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: participant_declaration.participant_profile_id) }
@@ -101,6 +101,8 @@ describe Migrators::Declaration do
         let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
         let!(:school) { FactoryBot.create(:school, urn: "149712") }
         let!(:payment_statement) { FactoryBot.create(:statement, :payable, api_id: participant_declaration.payment_statement.id, contract_period:) }
+        let(:started_on) { Date.new(contract_period.year, 9, 1) }
+        let(:finished_on) { Date.new(contract_period.year, 9, 2) }
 
         it "sets the created declaration attributes correctly" do
           instance.migrate!
@@ -120,12 +122,12 @@ describe Migrators::Declaration do
             expect(declaration.training_period_id).to be_present
             expect(declaration.voided_by_user_at).to eq(participant_declaration.voided_at)
 
-            expect(at_school_period.started_on).to eq(Date.new(contract_period.year, 9, 1))
-            expect(at_school_period.finished_on).to eq(Date.new(contract_period.year, 9, 2))
+            expect(at_school_period.started_on).to eq(started_on)
+            expect(at_school_period.finished_on).to eq(finished_on)
             expect(at_school_period.school).to eq(school)
 
-            expect(training_period.started_on).to eq(Date.new(contract_period.year, 9, 1))
-            expect(training_period.finished_on).to eq(Date.new(contract_period.year, 9, 2))
+            expect(training_period.started_on).to eq(started_on)
+            expect(training_period.finished_on).to eq(finished_on)
             expect(training_period.schedule.contract_period_year).to eq(contract_period.year)
             expect(training_period.schedule.identifier).to eq("ecf-standard-september")
 
@@ -136,9 +138,30 @@ describe Migrators::Declaration do
           end
         end
 
-        # let(:csv_file) do
-        #   fixture_file_upload("spec/fixtures/valid_complete_claim.csv", "text/csv")
-        # end
+        context "when an existing teacher at school period overlaps with the new one to be created" do
+          let(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+
+          before do
+            FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on:, finished_on:)
+          end
+
+          it "creates the ect_at_school_period and training_period immediately before the clashing period" do
+            instance.migrate!
+
+            declaration = Declaration.find_by(api_id: participant_declaration.id)
+            training_period = declaration.training_period
+            at_school_period = training_period.ect_at_school_period
+
+            aggregate_failures do
+              expect(at_school_period.started_on).to eq(started_on - 2.days)
+              expect(at_school_period.finished_on).to eq(finished_on - 2.days)
+              expect(at_school_period.school).to eq(school)
+
+              expect(training_period.started_on).to eq(started_on - 2.days)
+              expect(training_period.finished_on).to eq(finished_on - 2.days)
+            end
+          end
+        end
       end
     end
 
@@ -152,8 +175,8 @@ describe Migrators::Declaration do
 
         let!(:statement) do
           FactoryBot.create(:statement, status: "payable", contract_period: training_period.contract_period,
-                            active_lead_provider: training_period.school_partnership.active_lead_provider,
-                            api_id: mentor_declaration.payment_statement.id)
+                                        active_lead_provider: training_period.school_partnership.active_lead_provider,
+                                        api_id: mentor_declaration.payment_statement.id)
         end
 
         it "migrates the declaration" do
