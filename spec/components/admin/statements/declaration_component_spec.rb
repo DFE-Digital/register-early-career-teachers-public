@@ -103,18 +103,22 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
 
       allow(banded_outputs)
       .to receive(:declaration_type_outputs)
-      .and_return([started_banded, retained1_banded, completed_banded, extended_banded])
+      .and_return([started_banded, retained1_banded, retained2_banded, completed_banded, extended_banded])
     end
 
     it "renders the declaration types in the correct order, and summed" do
       expect(subject).to have_table rows: [
         ["Started", "8"],
-        ["Retained", "5"],
+        ["Retained", "17"], # 5 + 15 - 3 = 17
         ["Completed", "6"],
         ["Extended", "3"],
         ["Clawed back", "6"],
         ["Voided", "9"],
       ]
+    end
+
+    it "returns the expected header" do
+      expect(component.headers).to eq %w[Total]
     end
   end
 
@@ -133,36 +137,22 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
 
       allow(banded_outputs)
       .to receive(:declaration_type_outputs)
-      .and_return([started_banded, retained1_banded, completed_banded, extended_banded])
+      .and_return([started_banded, retained1_banded, retained2_banded, completed_banded, extended_banded])
     end
 
     it "displays each calculator in a separate column with banded first" do
       expect(subject).to have_table rows: [
         ["Started", "8", "6"],
-        ["Retained", "5", "0"],
+        ["Retained", "17", "0"],
         ["Completed", "6", "1"],
         ["Extended", "3", "0"],
         ["Clawed back", "6", "4"],
         ["Voided", "9", "3"],
       ]
     end
-  end
 
-  describe "#headers" do
-    context "when the contract is for ECF" do
-      let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, contract_period:) }
-
-      it "returns the expected header" do
-        expect(component.headers).to eq %w[Total]
-      end
-    end
-
-    context "when the contract is ittecf_ectp" do
-      let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
-
-      it "returns the expected header" do
-        expect(component.headers).to eq %w[ECTs Mentors]
-      end
+    it "returns the expected header" do
+      expect(component.headers).to eq %w[ECTs Mentors]
     end
   end
 end
