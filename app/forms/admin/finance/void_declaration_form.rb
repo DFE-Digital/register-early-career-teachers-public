@@ -42,11 +42,11 @@ module Admin
       end
 
       def clawback_service
-        @clawback_service ||= Declarations::Clawback.new(**service_attributes)
+        @clawback_service ||= ::Declarations::Clawback.new(**service_attributes)
       end
 
       def void_service
-        @void_service ||= Declarations::Void.new(**service_attributes)
+        @void_service ||= ::Declarations::Void.new(**service_attributes)
       end
 
       def service_attributes
