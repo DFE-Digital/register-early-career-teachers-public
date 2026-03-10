@@ -19,7 +19,7 @@ module Admin
       end
 
       def headers
-        if ecf_contract?
+        if contract.ecf_contract_type?
           %w[Total]
         else
           %w[ECTs Mentors]
@@ -34,10 +34,6 @@ module Admin
 
       def calculators
         PaymentCalculator::Resolver.new(statement:, contract:).calculators.reverse
-      end
-
-      def ecf_contract?
-        contract.contract_type == "ecf"
       end
 
       def initialise_columns
