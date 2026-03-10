@@ -103,6 +103,8 @@ namespace :admin do
         resources :declarations, only: [] do
           resources :voids, only: %i[new create]
         end
+
+        resource :search_declarations, only: :show, path: "search-declarations"
       end
     end
   end
