@@ -79,6 +79,10 @@ module ECTAtSchoolPeriods
 
     def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
 
+    def contract_period
+      @contract_period ||= ContractPeriod.containing_date(date_of_transition)
+    end
+
     def finish_training_period!
       TrainingPeriods::Finish.ect_training(
         training_period: @training_period,
