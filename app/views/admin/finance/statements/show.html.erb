@@ -5,13 +5,7 @@
 <h2 class="govuk-heading-m"><%= @statement.period %></h2>
 
 <%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
-
-<% if @statement.contract.ecf_contract_type? %>
-  <%= render Admin::Statements::PaymentOverview::ECFComponent.new(statement: @statement) %>
-<% else %>
-  <%= render Admin::Statements::PaymentOverview::IttecfComponent.new(statement: @statement) %>
-<% end %>
-
+<%= render Admin::Statements::PaymentOverviewComponent.for(statement: @statement) %>
 <%= render Admin::Statements::PaymentAuthorisationComponent.new(statement: @statement) %>
 <%= render Admin::Statements::UpliftFeesComponent.new(statement: @statement) %>
 <%= render Admin::Statements::ClawbacksComponent.new(statement: @statement) %>

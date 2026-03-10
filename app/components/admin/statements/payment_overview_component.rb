@@ -10,6 +10,19 @@ module Admin
         @statement = statement
       end
 
+      def self.for(statement:)
+        raise ArgumentError, "Statement not present" unless statement
+
+        klass =
+          if statement.contract.ecf_contract_type?
+            PaymentOverview::ECFComponent
+          elsif statement.contract.ittecf_ectp_contract_type?
+            PaymentOverview::IttecfComponent
+          end
+
+        klass.new(statement:)
+      end
+
       def caption
         number_to_pounds(total_amount)
       end
@@ -25,11 +38,11 @@ module Admin
     private
 
       def total_amount
-        raise NotImplementedError
+        calculators.sum { |calculator| calculator.total_amount(with_vat: true) }
       end
 
       def vat_amount
-        raise NotImplementedError
+        calculators.sum(&:vat_amount)
       end
 
       def calculators
@@ -37,15 +50,7 @@ module Admin
       end
 
       def banded
-        @banded ||= calculators.last
-      end
-
-      def banded_total
-        @banded_total ||= banded.total_amount(with_vat: true)
-      end
-
-      def banded_vat
-        @banded_vat ||= banded.vat_amount
+        @banded ||= calculators.find { |c| c.is_a? PaymentCalculator::Banded }
       end
 
       def total_manual_adjustments_amount

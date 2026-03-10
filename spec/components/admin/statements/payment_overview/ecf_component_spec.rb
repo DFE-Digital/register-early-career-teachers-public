@@ -68,33 +68,14 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     expect(page).to have_css(".govuk-table__caption--m", text: "£2,190.00")
   end
 
-  it "has a VAT row" do
-    row = page.find(".govuk-table__row", text: "VAT")
-    expect(row).to have_text("£365.00")
-  end
-
-  it "has an additional adjustments row, taken from the banded output only" do
-    row = page.find(".govuk-table__row", text: "Additional adjustments")
-    expect(row).to have_text("£375.00")
-  end
-
-  it "has a service fee row" do
-    row = page.find(".govuk-table__row", text: "Service fee")
-    expect(row).to have_text("£1,000.00")
-  end
-
-  it "has an output payment row" do
-    row = page.find(".govuk-table__row", text: "Output payment")
-    expect(row).to have_text("£400.00")
-  end
-
-  it "has an uplift fee row" do
-    row = page.find(".govuk-table__row", text: "Uplift fee")
-    expect(row).to have_text("£50.00")
-  end
-
-  it "has a clawbacks row" do
-    row = page.find(".govuk-table__row", text: "Clawbacks")
-    expect(row).to have_text("-£150.00")
+  it "sum the figures into the correct rows" do
+    expect(page).to have_table with_rows: [
+      ["Output payment", "£400.00"],
+      ["Service fee", "£1,000.00"],
+      ["Uplift fees", "£50.00"],
+      ["Clawbacks", "-£150.00"],
+      ["Additional adjustments", "£375.00"],
+      ["VAT", "£365.00"],
+    ]
   end
 end

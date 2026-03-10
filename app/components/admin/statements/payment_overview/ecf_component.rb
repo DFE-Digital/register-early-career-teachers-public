@@ -15,15 +15,9 @@ module Admin
 
       private
 
-        def total_amount
-          banded_total
-        end
-
-        def vat_amount
-          banded_vat
-        end
-
         def uplifts
+          raise ArgumentError unless calculators.one?
+
           @uplifts ||= banded.uplifts.total_net_amount
         end
       end

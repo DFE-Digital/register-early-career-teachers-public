@@ -73,38 +73,15 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
     expect(page).to have_css(".govuk-table__caption--m", text: "£2,370.00")
   end
 
-  it "has a VAT row, which sums both banded and flatrate vat" do
-    row = page.find(".govuk-table__row", text: "VAT")
-    expect(row).to have_text("£395.00")
-  end
-
-  it "has an additional adjustments row, taken from the banded output only" do
-    row = page.find(".govuk-table__row", text: "Additional adjustments")
-    expect(row).to have_text("£375.00")
-  end
-
-  it "has a service fee row, taken from the banded output only" do
-    row = page.find(".govuk-table__row", text: "Service fee")
-    expect(row).to have_text("£1,000.00")
-  end
-
-  it "has an ECT output payment row" do
-    row = page.find(".govuk-table__row", text: "ECTs output payment")
-    expect(row).to have_text("£400.00")
-  end
-
-  it "has a Mentors output payment row" do
-    row = page.find(".govuk-table__row", text: "Mentors output payment")
-    expect(row).to have_text("£200.00")
-  end
-
-  it "has an ECT clawbacks row" do
-    row = page.find(".govuk-table__row", text: "ECTs clawbacks")
-    expect(row).to have_text("-£150.00")
-  end
-
-  it "has a Mentors clawbacks row" do
-    row = page.find(".govuk-table__row", text: "Mentors clawbacks")
-    expect(row).to have_text("-£300.00")
+  it "sum the figures into the correct rows" do
+    expect(page).to have_table with_rows: [
+      ["ECTs output payment", "£400.00"],
+      ["Mentors output payment", "£200.00"],
+      ["Service fee", "£1,000.00"],
+      ["ECTs clawbacks", "-£150.00"],
+      ["Mentors clawbacks", "-£300.00"],
+      ["Additional adjustments", "£375.00"],
+      ["VAT", "£395.00"],
+    ]
   end
 end

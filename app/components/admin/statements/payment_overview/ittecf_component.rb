@@ -17,15 +17,9 @@ module Admin
       private
 
         def flat_rate
-          @flat_rate ||= calculators.first
-        end
+          raise ArgumentError unless calculators.count == 2
 
-        def flat_rate_total
-          @flat_rate_total ||= flat_rate.total_amount(with_vat: true)
-        end
-
-        def flat_rate_vat
-          @flat_rate_vat ||= flat_rate.vat_amount
+          @flat_rate ||= calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
         end
 
         def mentors_outputs
@@ -34,14 +28,6 @@ module Admin
 
         def mentors_clawbacks
           @mentors_clawbacks ||= flat_rate.outputs.total_refundable_amount
-        end
-
-        def total_amount
-          banded_total + flat_rate_total
-        end
-
-        def vat_amount
-          banded_vat + flat_rate_vat
         end
       end
     end
