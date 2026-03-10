@@ -209,4 +209,10 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       expect(rendered).to have_css("table caption", text: "Mentor clawbacks")
     end
   end
+
+  it "displays the adjustments in a table" do
+    render
+
+    expect(rendered).to have_css("table caption", text: "Additional adjustments")
+  end
 end
