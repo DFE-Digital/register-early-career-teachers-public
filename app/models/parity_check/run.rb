@@ -63,11 +63,13 @@ module ParityCheck
     end
 
     def match_rate
-      rates = requests.map(&:match_rate).compact
+      @match_rate ||= begin
+        rates = Response.where(request: requests).where.not(match_rate: nil).pluck(:match_rate)
 
-      return if rates.empty?
+        return if rates.empty?
 
-      rates.sum.fdiv(rates.size).round
+        rates.sum.fdiv(rates.size).round
+      end
     end
 
     def progress
