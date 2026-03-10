@@ -10,10 +10,11 @@ RSpec.shared_examples "a started on step" do |current_step:|
   let(:started_on) { { "day" => "1", "month" => "6", "year" => "2025" } }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
   let(:currently_mentor_at_another_school) { false }
+  let(:today) { Date.new(2025, 6, 3) }
 
   describe "validations" do
     around do |example|
-      travel_to(Date.new(2025, 6, 3)) { example.run }
+      travel_to(today) { example.run }
     end
 
     context "when the start_date is invalid" do
@@ -117,6 +118,14 @@ RSpec.shared_examples "a started on step" do |current_step:|
 
       context "when there is no matching contract period" do
         it { expect(step.next_step).to eq(:cannot_register_mentor_yet) }
+      end
+
+      context "when the start date is the last day of the current contract period" do
+        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
+        let(:started_on) { contract_period.finished_on }
+        let(:today) { contract_period.finished_on - 1.day }
+
+        it { expect(step.next_step).to eq(:check_answers) }
       end
     end
 
