@@ -50,7 +50,7 @@ private
   end
 
   def load_completed_runs
-    completed_runs = ParityCheck::Run.includes(requests: %i[endpoint responses]).completed
+    completed_runs = ParityCheck::Run.completed
     @pagy, @completed_runs = pagy(completed_runs)
   end
 
