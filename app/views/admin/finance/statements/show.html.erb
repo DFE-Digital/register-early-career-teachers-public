@@ -6,7 +6,7 @@
 
 <%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
 
-<% if @statement.contract.contract_type == "ecf" %>
+<% if @statement.contract.ecf_contract_type? %>
   <%= render Admin::Statements::PaymentOverview::ECFComponent.new(statement: @statement) %>
 <% else %>
   <%= render Admin::Statements::PaymentOverview::IttecfComponent.new(statement: @statement) %>
