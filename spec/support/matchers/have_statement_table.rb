@@ -42,6 +42,10 @@ module HaveStatementTable
       TXT
     end
 
+    def description
+      "have statement table with caption \"#{@caption}\", headings \"#{@headings.join(', ')}\", rows \"#{@rows.join(', ')}\", and total \"#{@total}\""
+    end
+
   private
 
     def td_selector(row:, cell:) = "tbody tr:nth-child(#{row}) td:nth-child(#{cell})"
