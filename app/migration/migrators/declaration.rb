@@ -129,7 +129,7 @@ module Migrators
         break unless at_school_period.range.overlaps?(started_on..finished_on)
 
         started_on = at_school_period.started_on - 2.days
-        finished_on = start_date + 1.day
+        finished_on = started_on + 1.day
       end
 
       [started_on, finished_on]
