@@ -11,13 +11,11 @@
     end
 
     table.with_body do |body|
-      if adjustments.any?
-        adjustments.each do |adjustment|
-          body.with_row do |row|
-            row.with_cell { adjustment.payment_type }
-            row.with_cell { change_or_remove_links(adjustment) }
-            row.with_cell(numeric: true) { number_to_pounds(adjustment.amount) }
-          end
+      adjustments.each do |adjustment|
+        body.with_row do |row|
+          row.with_cell { adjustment.payment_type }
+          row.with_cell { change_or_remove_link(adjustment) }
+          row.with_cell(numeric: true) { number_to_pounds(adjustment.amount) }
         end
       end
     end
@@ -26,23 +24,14 @@
   <% if adjustment_editable? %>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-half">
-          <p>
-            <%= govuk_link_to("Add", new_admin_finance_statement_adjustment_path(statement), visually_hidden_suffix: "adjustment") %>
-          </p>
+        <%= add_adjustment_link %>
       </div>
         
-      <div class="govuk-!-text-align-right govuk-heading-s govuk-grid-column-one-half">
-        Total
-        <br />
-        <%= number_to_pounds(total_amount) %>
+      <div class="govuk-grid-column-one-half">
+        <%= total %>
       </div>
     </div>
   <% else %>
-    <div class="govuk-!-text-align-right govuk-heading-s govuk-!-margin-bottom-0">
-      Total
-    </div>
-    <div class="govuk-!-text-align-right govuk-heading-s">
-      <%= number_to_pounds(total_amount) %>
-    </div>
+    <%= total %>
   <% end %>
 </div>
