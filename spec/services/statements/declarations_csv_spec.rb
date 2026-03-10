@@ -107,11 +107,12 @@ RSpec.describe Statements::DeclarationsCSV do
   describe "#to_csv" do
     subject(:csv) { CSV.parse(export.to_csv, headers: true) }
 
-    let(:search_declarations) { Declaration.where(id: declaration.id) }
+    let(:exported_declaration_ids) { csv.map { |row| row["Declaration ID"] } }
+    let(:selected_declaration_ids) { [declaration.id] }
 
     before do
-      search = instance_double(Statements::DeclarationsSearch, declarations: search_declarations)
-      allow(Statements::DeclarationsSearch).to receive(:new).with(statement:).and_return(search)
+      selection = instance_double(Statements::DeclarationSelection, selected_declaration_ids:)
+      allow(Statements::DeclarationSelection).to receive(:new).with(statement:).and_return(selection)
     end
 
     it "exports the expected headers" do
@@ -149,8 +150,66 @@ RSpec.describe Statements::DeclarationsCSV do
       expect(row["Uplift Payable"]).to eq("true")
     end
 
+    it "only exports declarations returned by the selection" do
+      unselected_declaration = FactoryBot.create(:declaration, :paid)
+
+      expect(exported_declaration_ids).to contain_exactly(declaration.api_id)
+      expect(exported_declaration_ids).not_to include(unselected_declaration.api_id)
+    end
+
+    context "when selected declarations are returned out of order" do
+      let(:earlier_ect) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          school:,
+          started_on: ect_started_on,
+          finished_on: nil,
+          teacher: FactoryBot.create(
+            :teacher,
+            :with_realistic_name,
+            trn: "7654321",
+            api_id: "1dfe9a6c-cddb-4655-a583-e25308598405",
+            ect_first_became_eligible_for_training_at: Time.zone.local(2024, 9, 1, 0, 0, 0)
+          )
+        )
+      end
+
+      let(:earlier_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period: earlier_ect,
+          school_partnership:,
+          started_on: ect_started_on,
+          finished_on: nil,
+          withdrawn_at: nil,
+          deferred_at: nil
+        )
+      end
+
+      let!(:earlier_declaration) do
+        FactoryBot.create(
+          :declaration,
+          :paid,
+          training_period: earlier_training_period,
+          payment_statement: statement,
+          declaration_type: "started",
+          declaration_date: declaration_timestamp - 1.day,
+          created_at: created_timestamp - 1.day,
+          api_id: "1fba95c0-a63f-4d6f-a373-cf2efa7b7188",
+          delivery_partner_when_created: delivery_partner
+        )
+      end
+
+      let(:selected_declaration_ids) { [declaration.id, earlier_declaration.id] }
+
+      it "exports them in chronological order" do
+        expect(exported_declaration_ids).to eq([earlier_declaration.api_id, declaration.api_id])
+      end
+    end
+
     context "when no declarations are returned" do
-      let(:search_declarations) { Declaration.none }
+      let(:selected_declaration_ids) { [] }
 
       it "returns headers with no data rows" do
         expect(csv.headers).to eq(described_class::HEADERS)
