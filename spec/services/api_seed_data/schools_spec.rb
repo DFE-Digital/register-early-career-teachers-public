@@ -18,6 +18,14 @@ RSpec.describe APISeedData::Schools do
       expect(School.count).to eq(described_class::NUMBER_OF_RECORDS)
     end
 
+    it "sets school funding eligibility for some schools" do
+      allow(Faker::Boolean).to receive(:boolean).and_return(true)
+
+      instance.plant
+
+      expect(SchoolFundingEligibility.count).to be > 0
+    end
+
     it "logs the creation of schools" do
       instance.plant
 
