@@ -42,25 +42,6 @@ We will not transfer mentors to the 2024 cohort because they're not eligible for
 
 These participants were archived in closed cohorts. Providers should retire their records. If they're re-registered in the later academic years, they'll have new IDs.
 
-## Moving ECTs to the 2024 cohort
-
-We'll move ECTs to the 2024 cohort when there's evidence they require training.
-
-This move will happen automatically when:
-
-- a partially trained 2021 or 2022 ECT is registered at a new school
-- a school changes the lead provider for a 2021 or 2022 ECT
-
-Once the participant is in the 2024 cohort and the correct partnership is in place, providers will be able to continue getting their details over the API and declare for them in line with the 2024 milestones.
-
-If there's been a mistake and the ECT shouldn't have been moved to the 2024 cohort and is not continuing with training, you can move them back to their original closed cohort.
-
-### If the ECT isn't moved automatically
-
-If an ECT doesn't meet one of the above criteria for an automatic move, they'll stay visible in `GET participants` for their original 2021 or 2022 cohort. You will not be able to submit declarations for them.
-
-If they had no declarations submitted against them, they'll be archived. Schools can re-register them at any point to start training.
-
 ## Identifying ECTs who we've moved to the 2024 cohort
 
 To help providers identify these ECTs in the API, there's a field in the `GET participants` API endpoints named `cohort_changed_after_payments_frozen`.
