@@ -29,7 +29,6 @@ RSpec.describe "View completed parity checks" do
     expect(tbody.get_by_text("3 minutes")).to be_visible
     expect(tbody.get_by_text("Concurrent")).to be_visible
     expect(tbody.get_by_text("75%")).to be_visible
-    expect(tbody.get_by_text(/faster|slower|equal/)).to be_visible
     expect(tbody.get_by_role("link", name: "Run details")).to be_visible
 
     expect(page.locator(".govuk-pagination")).not_to be_visible

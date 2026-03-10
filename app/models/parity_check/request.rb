@@ -76,11 +76,13 @@ module ParityCheck
     end
 
     def match_rate
-      rates = responses.map(&:match_rate).compact
+      @match_rate ||= begin
+        rates = responses.where.not(match_rate: nil).pluck(:match_rate)
 
-      return if rates.empty?
+        return if rates.empty?
 
-      rates.sum.fdiv(rates.size).round
+        rates.sum.fdiv(rates.size).round
+      end
     end
 
     def ecf_response_bodies_array
