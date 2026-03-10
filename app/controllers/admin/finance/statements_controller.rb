@@ -2,7 +2,7 @@ module Admin::Finance
   class StatementsController < Admin::Finance::BaseController
     layout "full"
 
-    before_action :set_statement, only: %i[show declarations]
+    before_action :set_statement, only: :declarations
     before_action :ensure_output_fee_statement!, only: :declarations
 
     def index
@@ -17,6 +17,9 @@ module Admin::Finance
     end
 
     def show
+      statement = Statement.eager_load(active_lead_provider: :lead_provider).find(params[:id])
+
+      @statement = Admin::StatementPresenter.new(statement)
     end
 
     def declarations
@@ -37,7 +40,6 @@ module Admin::Finance
 
     def set_statement
       @statement = Statement.eager_load(active_lead_provider: :lead_provider).find(params[:id])
-      @statement_presenter = Admin::StatementPresenter.new(@statement)
     end
 
     def ensure_output_fee_statement!
