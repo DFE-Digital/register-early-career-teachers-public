@@ -40,7 +40,7 @@ module Statements
 
     def selected_ids_for_flat_rate(calculator)
       filtered_declarations = calculator.declaration_selector.call(current_billable_declarations.or(current_refundable_declarations))
-      ordered(filtered_declarations).pluck(:id)
+      ordered(filtered_declarations).ids
     end
 
     def selected_ids_for_banded(calculator)
@@ -68,7 +68,7 @@ module Statements
       selection_limits_by_declaration_type.flat_map do |declaration_type, selection_limit|
         next [] if selection_limit.zero?
 
-        declarations.where(declaration_type:).reorder(ORDER_BY).limit(selection_limit).pluck(:id)
+        declarations.where(declaration_type:).reorder(ORDER_BY).limit(selection_limit).ids
       end
     end
 
