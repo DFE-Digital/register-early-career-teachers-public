@@ -17,11 +17,26 @@ When a cohort is closed, it means:
 
 ### Partially trained ECTs
 
-We'll move these ECTs to the 2024 cohort if there's evidence they require training during the 2025/26 academic year.
+We'll move ECTs to the 2024 cohort when there's evidence they require training.
+
+This move will happen automatically when:
+
+- a partially trained 2021 or 2022 ECT is registered at a new school
+- a school changes the lead provider for a 2021 or 2022 ECT
+
+In these cases, we’ll assign an extended September schedule (`extended-september`). This follows the same approach used in the manage training for ECTs service.
+
+Once the participant is in the 2024 cohort and the correct partnership is in place, providers will be able to continue getting their details over the API and declare for them in line with the 2024 milestones.
+
+If there's been a mistake and the ECT shouldn't have been moved to the 2024 cohort and is not continuing with training, you can move them back to their original closed cohort.
+
+If an ECT doesn't meet one of the above criteria for an automatic move, they'll stay visible in `GET participants` for their original 2021 or 2022 cohort. You will not be able to submit declarations for them.
+
+ECTs with no declarations submitted against them have been archived. Schools can re-register them at any point to start training.
 
 ### Partially trained mentors
 
-We will not transfer mentors to the 2024 cohort because they're not eligible for further training. We'll mark them as completed and update their `mentor_funding_end_date` – AWAITING CONFIRMATION
+We will not transfer mentors to the 2024 cohort because they're not eligible for further training. We'll mark them as completed and update their `mentor_funding_end_date`.
 
 ### ECTs and mentors with no eligible, payable, paid, awaiting_clawback or clawed_back declarations
 
