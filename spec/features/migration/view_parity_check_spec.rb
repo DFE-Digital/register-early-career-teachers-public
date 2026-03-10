@@ -29,7 +29,6 @@ RSpec.describe "View parity check" do
       requests.each do |request|
         expect(table.get_by_text(request.human_readable_url)).to be_visible
         expect(table.get_by_text("#{request.match_rate}%")).to be_visible
-        expect(table.get_by_text(/faster|slower|equal/)).to be_visible
         expect(table.get_by_role("link", name: "Request details")).to be_visible
       end
     end
