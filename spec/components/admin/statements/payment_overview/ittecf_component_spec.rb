@@ -43,45 +43,92 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
 
   let!(:adjustment) { FactoryBot.create(:statement_adjustment, statement: statement_rec, amount: total_manual_adjustments_amount) }
 
-  before do
-    allow(PaymentCalculator::FlatRate::Outputs)
-    .to receive(:new)
-    .and_return(flat_rate_outputs_double)
-    allow(PaymentCalculator::Banded::Outputs)
-    .to receive(:new)
-    .and_return(banded_outputs_double)
+  describe "calculations" do
+    before do
+      allow(PaymentCalculator::FlatRate::Outputs)
+      .to receive(:new)
+      .and_return(flat_rate_outputs_double)
+      allow(PaymentCalculator::Banded::Outputs)
+      .to receive(:new)
+      .and_return(banded_outputs_double)
 
-    render_inline(component)
+      render_inline(component)
+    end
+
+    it "does not show rows for ECF contracts" do
+      expect(page).not_to have_text("Uplift fees")
+      expect(page).not_to have_text("Output payment")
+      expect(page).not_to have_text("Clawbacks")
+    end
+
+    it "displays the milestone cutoff and payment dates" do
+      expect(page).to have_content("30 September 2025")
+      expect(page).to have_content("15 October 2025")
+    end
+
+    it "has a total payment which is the sum of net total for banded and flatrate" do
+      # ect_output(400) + mentors_output(200) + monthly_service_fee(1000) +
+      # total_manual_adjustments_amount(375) + vat(395)
+      # setup fee is no longer included
+
+      expect(page).to have_css(".govuk-table__caption--m", text: "£2,370.00")
+    end
+
+    it "sum the figures into the correct rows" do
+      expect(page).to have_table with_rows: [
+        ["ECTs output payment", "£400.00"],
+        ["Mentors output payment", "£200.00"],
+        ["Service fee", "£1,000.00"],
+        ["ECTs clawbacks", "-£150.00"],
+        ["Mentors clawbacks", "-£300.00"],
+        ["Additional adjustments", "£375.00"],
+        ["VAT", "£395.00"],
+      ]
+    end
   end
 
-  it "does not show rows for ECF contracts" do
-    expect(page).not_to have_text("Uplift fees")
-    expect(page).not_to have_text("Output payment")
-    expect(page).not_to have_text("Clawbacks")
+  context "when no calculators are returned" do
+    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: []) }
+
+    before do
+      allow(PaymentCalculator::Resolver)
+        .to receive(:new)
+        .and_return(resolver)
+    end
+
+    it "raises an error when trying to access flat_rate calculator" do
+      expect { component.send(:flat_rate) }.to raise_error(ArgumentError)
+    end
   end
 
-  it "displays the milestone cutoff and payment dates" do
-    expect(page).to have_content("30 September 2025")
-    expect(page).to have_content("15 October 2025")
+  context "when more than two calculators are returned" do
+    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: [flat_rate_calculator, banded_calculator, banded_calculator]) }
+    let(:banded_calculator) { instance_double(PaymentCalculator::Banded) }
+    let(:flat_rate_calculator) { instance_double(PaymentCalculator::FlatRate) }
+
+    before do
+      allow(PaymentCalculator::Resolver)
+        .to receive(:new)
+        .and_return(resolver)
+    end
+
+    it "raises an error when trying to access flat_rate calculator" do
+      expect { component.send(:flat_rate) }.to raise_error(ArgumentError)
+    end
   end
 
-  it "has a total payment which is the sum of net total for banded and flatrate" do
-    # ect_output(400) + mentors_output(200) + monthly_service_fee(1000) +
-    # total_manual_adjustments_amount(375) + vat(395)
-    # setup fee is no longer included
+  context "when no flatrate calculators are returned" do
+    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: [banded_calculator, banded_calculator]) }
+    let(:banded_calculator) { instance_double(PaymentCalculator::Banded) }
 
-    expect(page).to have_css(".govuk-table__caption--m", text: "£2,370.00")
-  end
+    before do
+      allow(PaymentCalculator::Resolver)
+        .to receive(:new)
+        .and_return(resolver)
+    end
 
-  it "sum the figures into the correct rows" do
-    expect(page).to have_table with_rows: [
-      ["ECTs output payment", "£400.00"],
-      ["Mentors output payment", "£200.00"],
-      ["Service fee", "£1,000.00"],
-      ["ECTs clawbacks", "-£150.00"],
-      ["Mentors clawbacks", "-£300.00"],
-      ["Additional adjustments", "£375.00"],
-      ["VAT", "£395.00"],
-    ]
+    it "raises an error when trying to access flat_rate calculator" do
+      expect { component.send(:flat_rate) }.to raise_error(ArgumentError)
+    end
   end
 end

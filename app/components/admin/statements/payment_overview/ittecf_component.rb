@@ -17,9 +17,17 @@ module Admin
       private
 
         def flat_rate
+          @flat_rate ||= flat_rate_calculator
+        end
+
+        def flat_rate_calculator
           raise ArgumentError unless calculators.count == 2
 
-          @flat_rate ||= calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
+          flat_rate_calculator = calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
+
+          raise ArgumentError unless flat_rate_calculator
+
+          flat_rate_calculator
         end
 
         def mentors_outputs

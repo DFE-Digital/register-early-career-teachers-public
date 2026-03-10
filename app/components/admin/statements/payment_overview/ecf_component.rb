@@ -17,6 +17,7 @@ module Admin
 
         def uplifts
           raise ArgumentError unless calculators.one?
+          raise ArgumentError unless banded
 
           @uplifts ||= banded.uplifts.total_net_amount
         end
