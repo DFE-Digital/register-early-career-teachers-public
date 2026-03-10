@@ -112,8 +112,8 @@ end
   if data.key?(:sparsity_uplift) && data.key?(:pupil_premium_uplift)
     ContractPeriod.find_each do |contract_period|
       school.school_funding_eligibilities << FactoryBot.create(:school_funding_eligibility,
-                                                               sparsity_uplift: data[:sparsity_uplift],
-                                                               pupil_premium_uplift: data[:pupil_premium_uplift],
+                                                               sparsity_uplift: contract_period.uplift_fees_enabled? ? data[:sparsity_uplift] : false,
+                                                               pupil_premium_uplift: contract_period.uplift_fees_enabled? ? data[:pupil_premium_uplift] : false,
                                                                contract_period:)
     end
   end
