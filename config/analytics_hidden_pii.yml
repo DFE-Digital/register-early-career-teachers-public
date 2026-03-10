@@ -22,11 +22,12 @@ shared:
   :pending_induction_submission_batches:
     - data
     - file_name
-  :declarations:
-    - voided_by_user_id
   :schools:
     - induction_tutor_name
     - induction_tutor_email
+  :users:
+    - name
+    - email
   :mentor_at_school_periods:
     - email
   :ect_at_school_periods:
