@@ -40,7 +40,7 @@ module Migrators
 
       begin
         ecf2_teacher_history = history_converter.convert_to_ecf2!
-        ecf2_teacher_history.save_all_ect_data!
+        Teacher.transaction { ecf2_teacher_history.save_all_ect_data! }
         success = ecf2_teacher_history.success?
       rescue StandardError => e
         failure_manager.record_failure(teacher_profile, e.message, migration_mode)
@@ -54,7 +54,7 @@ module Migrators
           history_converter.set_migration_mode_to_latest_induction_records!
 
           ecf2_teacher_history = history_converter.convert_to_ecf2!
-          ecf2_teacher_history.save_all_ect_data!
+          Teacher.transaction { ecf2_teacher_history.save_all_ect_data! }
           success = ecf2_teacher_history.success?
         rescue StandardError => e
           failure_manager.record_failure(teacher_profile, e.message, migration_mode)
