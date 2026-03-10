@@ -46,22 +46,10 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:pupil_premium_uplift) do |(training_period, _, metadata)|
-        if training_period.for_ect?
-          year = metadata.latest_ect_contract_period_year
-          metadata.latest_ect_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.school_funding_eligibilities.find { |pp| pp.contract_period_year == year }&.pupil_premium_uplift || false)
-        else
-          year = metadata.latest_mentor_contract_period_year
-          metadata.latest_mentor_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.school_funding_eligibilities.find { |pp| pp.contract_period_year == year }&.pupil_premium_uplift || false)
-        end
+        uplift_value(training_period, metadata, :pupil_premium_uplift)
       end
       field(:sparsity_uplift) do |(training_period, _, metadata)|
-        if training_period.for_ect?
-          year = metadata.latest_ect_contract_period_year
-          metadata.latest_ect_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.school_funding_eligibilities.find { |pp| pp.contract_period_year == year }&.sparsity_uplift || false)
-        else
-          year = metadata.latest_mentor_contract_period_year
-          metadata.latest_mentor_contract_period.uplift_fees_enabled? && (training_period.school_partnership.school.school_funding_eligibilities.find { |pp| pp.contract_period_year == year }&.sparsity_uplift || false)
-        end
+        uplift_value(training_period, metadata, :sparsity_uplift)
       end
       field(:schedule_identifier) do |(training_period, _, _)|
         training_period.schedule.identifier
@@ -117,6 +105,24 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:mentor_ineligible_for_funding_reason) { |(training_period, teacher, _)| teacher.mentor_became_ineligible_for_funding_reason if training_period.for_mentor? }
+
+      class << self
+        def uplift_value(training_period, metadata, uplift_type)
+          contract_period = if training_period.for_ect?
+                              metadata.latest_ect_contract_period
+                            else
+                              metadata.latest_mentor_contract_period
+                            end
+
+          return false unless contract_period.uplift_fees_enabled?
+
+          eligibility = training_period.school_partnership.school.school_funding_eligibilities.find do |sfe|
+            sfe.contract_period_year == contract_period.year
+          end
+
+          eligibility&.public_send(uplift_type) || false
+        end
+      end
     end
 
     exclude :id

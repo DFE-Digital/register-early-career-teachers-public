@@ -2,8 +2,6 @@ module APISeedData
   class SchoolPartnerships < Base
     SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER = 30
     SAME_SCHOOL_DIFFERENT_DELIVERY_PARTNER_PER_ACTIVE_LEAD_PROVIDER = 5
-    PUPIL_PREMIUM_UPLIFT_RATIO = 0.15
-    SPARSITY_UPLIFT_RATIO = 0.20
 
     def plant
       return unless plantable?
@@ -12,8 +10,7 @@ module APISeedData
 
       active_lead_providers.find_each do |active_lead_provider|
         SCHOOL_PARTNERSHIPS_PER_ACTIVE_LEAD_PROVIDER.times do
-          school = create_school_partnership(active_lead_provider)
-          set_school_funding_eligibility_for(school, active_lead_provider)
+          create_school_partnership(active_lead_provider)
         end
 
         schools = select_existing_schools(active_lead_provider)
@@ -68,16 +65,6 @@ module APISeedData
       existing_delivery_partner_ids = active_lead_provider.lead_provider_delivery_partnerships.pluck(:delivery_partner_id)
 
       DeliveryPartner.where.not(id: existing_delivery_partner_ids).order("RANDOM()").first
-    end
-
-    def set_school_funding_eligibility_for(school, active_lead_provider)
-      return unless school
-
-      FactoryBot.create(:school_funding_eligibility,
-                        sparsity_uplift: Faker::Boolean.boolean(true_ratio: SPARSITY_UPLIFT_RATIO),
-                        pupil_premium_uplift: Faker::Boolean.boolean(true_ratio: PUPIL_PREMIUM_UPLIFT_RATIO),
-                        contract_period: active_lead_provider.contract_period,
-                        school:)
     end
   end
 end

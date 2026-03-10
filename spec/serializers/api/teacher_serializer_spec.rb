@@ -192,7 +192,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          context "when there are no pupil premiums for the school and contract period" do
+          context "when there is no funding eligibility for the school and contract period" do
             let!(:school_funding_eligibility) { nil }
 
             it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
@@ -339,7 +339,7 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          context "when there are no pupil premiums for the school and contract period" do
+          context "when there is no funding eligibility for the school and contract period" do
             let!(:school_funding_eligibility) { nil }
 
             it "serializes `pupil_premium_uplift` and `sparsity_uplift` as false" do
