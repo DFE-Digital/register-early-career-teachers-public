@@ -41,13 +41,13 @@ RSpec.describe "Delete adjustment from statement" do
 
   def and_i_see_adjustment_values
     expect(adjustments_table_values[0][0]).to eq("Amount 1")
-    expect(adjustments_table_values[0][3]).to eq("£100.00")
+    expect(adjustments_table_values[0][2]).to eq("£100.00")
 
     expect(adjustments_table_values[1][0]).to eq("Amount 2")
-    expect(adjustments_table_values[1][3]).to eq("-£150.00")
+    expect(adjustments_table_values[1][2]).to eq("-£150.00")
 
     expect(adjustments_table_values[2][0]).to eq("Amount 3")
-    expect(adjustments_table_values[2][3]).to eq("£500.00")
+    expect(adjustments_table_values[2][2]).to eq("£500.00")
   end
 
   def and_i_see_adjustment_total
@@ -63,10 +63,10 @@ RSpec.describe "Delete adjustment from statement" do
     @adjustments_table_values = nil # clear memoized values
 
     expect(adjustments_table_values[0][0]).to eq("Amount 1")
-    expect(adjustments_table_values[0][3]).to eq("£100.00")
+    expect(adjustments_table_values[0][2]).to eq("£100.00")
 
     expect(adjustments_table_values[1][0]).to eq("Amount 3")
-    expect(adjustments_table_values[1][3]).to eq("£500.00")
+    expect(adjustments_table_values[1][2]).to eq("£500.00")
   end
 
   def and_i_see_new_adjustment_total

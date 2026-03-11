@@ -18,7 +18,6 @@ RSpec.describe "Create adjustment for statement" do
 
     then_i_see_adjustments_section
     and_i_see_adjustment_values
-    and_i_see_buttons_to_change_or_remove_the_adjustment
     and_i_see_adjustment_total
     and_an_adjustment_is_created
     and_an_adjustment_added_event_is_recorded
@@ -58,12 +57,7 @@ RSpec.describe "Create adjustment for statement" do
 
   def and_i_see_adjustment_values
     expect(adjustments_table_values[0][0]).to eq("Test Payment")
-    expect(adjustments_table_values[0][3]).to eq("£999.99")
-  end
-
-  def and_i_see_buttons_to_change_or_remove_the_adjustment
-    expect(adjustments_table_values[0][1]).to eq("Change")
-    expect(adjustments_table_values[0][2]).to eq("Remove")
+    expect(adjustments_table_values[0][2]).to eq("£999.99")
   end
 
   def and_i_see_adjustment_total
