@@ -18,6 +18,7 @@ RSpec.describe "Delete adjustment from statement" do
     and_i_click_button("Remove adjustment")
 
     then_i_see_adjustments_section
+    and_i_see_a_sucess_banner
     and_i_see_new_adjustment_values
     and_i_see_new_adjustment_total
     and_deleted_adjustment_should_not_exist
@@ -39,45 +40,50 @@ RSpec.describe "Delete adjustment from statement" do
   end
 
   def and_i_see_adjustment_values
-    values = summary_list_values
-    expect(values[0][0]).to eq("Amount 1")
-    expect(values[0][1]).to eq("£100.00")
+    expect(adjustments_table_values[0][0]).to eq("Amount 1")
+    expect(adjustments_table_values[0][3]).to eq("£100.00")
 
-    expect(values[1][0]).to eq("Amount 2")
-    expect(values[1][1]).to eq("-£150.00")
+    expect(adjustments_table_values[1][0]).to eq("Amount 2")
+    expect(adjustments_table_values[1][3]).to eq("-£150.00")
 
-    expect(values[2][0]).to eq("Amount 3")
-    expect(values[2][1]).to eq("£500.00")
+    expect(adjustments_table_values[2][0]).to eq("Amount 3")
+    expect(adjustments_table_values[2][3]).to eq("£500.00")
   end
 
   def and_i_see_adjustment_total
-    values = summary_list_values
-    expect(values.last[0]).to eq("Total")
-    expect(values.last[1]).to eq("£450.00")
+    panel = adjustments_table.locator("xpath=ancestor::div[contains(@class,'finance-panel')]")
+
+    adjustments_total = panel.locator(".govuk-heading-s").all.map { |e| e.text_content.strip }
+
+    expect(adjustments_total).to eq(["Total", "£450.00"])
   end
 
   def and_i_see_new_adjustment_values
-    values = summary_list_values
-    expect(values[0][0]).to eq("Amount 1")
-    expect(values[0][1]).to eq("£100.00")
+    @adjustments_table_values = nil # clear memoized values
 
-    expect(values[1][0]).to eq("Amount 3")
-    expect(values[1][1]).to eq("£500.00")
+    expect(adjustments_table_values[0][0]).to eq("Amount 1")
+    expect(adjustments_table_values[0][3]).to eq("£100.00")
+
+    expect(adjustments_table_values[1][0]).to eq("Amount 3")
+    expect(adjustments_table_values[1][3]).to eq("£500.00")
   end
 
   def and_i_see_new_adjustment_total
-    values = summary_list_values
-    expect(values.last[0]).to eq("Total")
-    expect(values.last[1]).to eq("£600.00")
+    panel = adjustments_table.locator("xpath=ancestor::div[contains(@class,'finance-panel')]")
+
+    adjustments_total = panel.locator(".govuk-heading-s").all.map { |e| e.text_content.strip }
+
+    expect(adjustments_total).to eq(["Total", "£600.00"])
   end
 
   def then_i_see_adjustments_section
-    expect(page.locator("#adjustments.govuk-summary-card h2").text_content).to eq("Additional adjustments")
+    expect(adjustments_table).to be_visible
   end
 
   def when_i_click_delete_adjustment_link
-    # second adjustment
-    page.locator("#adjustments.govuk-summary-card .govuk-summary-list .govuk-summary-list__row:nth-child(2)").get_by_role("link", name: "Remove adjustment").click
+    row = adjustments_table.locator("tbody tr").nth(1)
+    expect(row).to have_text(/Amount 2/)
+    row.get_by_role("link", name: "Remove").click
   end
 
   def and_deleted_adjustment_should_not_exist
@@ -86,10 +92,9 @@ RSpec.describe "Delete adjustment from statement" do
     expect(Statement::Adjustment.where(id: @deleted_adjustment.id).count).to be(0)
   end
 
-  def summary_list_values
-    page.query_selector_all("#adjustments.govuk-summary-card .govuk-summary-list .govuk-summary-list__row").map do |row|
-      row.query_selector_all(".govuk-summary-list__key, .govuk-summary-list__value").map { |v| v.text_content.strip }
-    end
+  def and_i_see_a_sucess_banner
+    expect(page.locator(".govuk-notification-banner"))
+      .to have_text("Adjustment removed")
   end
 
   def then_i_see(string)
@@ -105,5 +110,16 @@ RSpec.describe "Delete adjustment from statement" do
   def and_an_adjustment_deleted_event_is_recorded
     event = Event.find_by(event_type: "statement_adjustment_deleted")
     expect(event.statement).to eq(@statement)
+  end
+
+  def adjustments_table_values
+    @adjustments_table_values ||=
+      adjustments_table.locator("tbody tr").all.map do |row|
+        row.locator("td").all.map { |cell| cell.text_content.strip }
+      end
+  end
+
+  def adjustments_table
+    page.get_by_role("table", name: "Additional adjustments")
   end
 end
