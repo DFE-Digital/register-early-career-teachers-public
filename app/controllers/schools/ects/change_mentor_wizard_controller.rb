@@ -45,14 +45,7 @@ module Schools
       end
 
       def mentors_registered?
-        current_mentor = @wizard.ect_at_school_period.current_or_next_mentorship_period&.mentor
-
-        mentors = Schools::EligibleMentors
-          .new(@wizard.ect_at_school_period.school)
-          .for_ect(@wizard.ect_at_school_period)
-
-        mentors = mentors.excluding(current_mentor) if current_mentor.present?
-        mentors.exists?
+        @wizard.ect_at_school_period.alternative_mentors_available?
       end
     end
   end
