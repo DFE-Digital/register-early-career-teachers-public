@@ -3,7 +3,7 @@ RSpec.describe "View pending and in-progress parity checks" do
 
   before do
     sign_in_as_dfe_user(role: :admin)
-    allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
+    allow(Rails.application.config).to receive_messages(parity_check: { enabled: true }, enable_migration_interface: true)
   end
 
   scenario "Viewing the in-progress parity check" do
