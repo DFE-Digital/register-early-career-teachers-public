@@ -57,23 +57,26 @@ RSpec.describe "List adjustments for statement" do
   end
 
   def then_i_see_adjustments_section
-    expect(page.locator("#adjustments.govuk-summary-card h2").text_content).to eq("Additional adjustments")
+    expect(adjustments_table).to be_visible
   end
 
   def and_i_see_adjustment_values
-    expect(summary_list_values[0][0]).to eq("Amount 1")
-    expect(summary_list_values[0][1]).to eq("£100.00")
+    expect(adjustments_table_values[0][0]).to eq("Amount 1")
+    expect(adjustments_table_values[0][3]).to eq("£100.00")
 
-    expect(summary_list_values[1][0]).to eq("Amount 2")
-    expect(summary_list_values[1][1]).to eq("-£150.00")
+    expect(adjustments_table_values[1][0]).to eq("Amount 2")
+    expect(adjustments_table_values[1][3]).to eq("-£150.00")
 
-    expect(summary_list_values[2][0]).to eq("Amount 3")
-    expect(summary_list_values[2][1]).to eq("£500.00")
+    expect(adjustments_table_values[2][0]).to eq("Amount 3")
+    expect(adjustments_table_values[2][3]).to eq("£500.00")
   end
 
   def and_i_see_adjustment_total
-    expect(summary_list_values.last[0]).to eq("Total")
-    expect(summary_list_values.last[1]).to eq("£450.00")
+    panel = adjustments_table.locator("xpath=ancestor::div[contains(@class,'finance-panel')]")
+
+    adjustments_total = panel.locator(".govuk-heading-s").all.map { |e| e.text_content.strip }
+
+    expect(adjustments_total).to eq(["Total", "£450.00"])
   end
 
   def and_i_should_not_see_add_adjustment_link
@@ -88,10 +91,14 @@ RSpec.describe "List adjustments for statement" do
     expect(page).to have_path(admin_finance_statement_path(@statement))
   end
 
-  def summary_list_values
-    @summary_list_values ||=
-      page.query_selector_all("#adjustments.govuk-summary-card .govuk-summary-list .govuk-summary-list__row").map do |row|
-        row.query_selector_all(".govuk-summary-list__key, .govuk-summary-list__value").map { |v| v.text_content.strip }
+  def adjustments_table_values
+    @adjustments_table_values ||=
+      adjustments_table.locator("tbody tr").all.map do |row|
+        row.locator("td").all.map { |cell| cell.text_content.strip }
       end
+  end
+
+  def adjustments_table
+    page.get_by_role("table", name: "Additional adjustments")
   end
 end
