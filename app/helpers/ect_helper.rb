@@ -145,13 +145,11 @@ module ECTHelper
   end
 
   def register_mentor_back_link(ect, new_mentor_requested)
-    if new_mentor_requested
-      return schools_ects_change_mentor_wizard_edit_path(ect, new_mentor_requested: true) if alternative_mentors_for_ect?(ect)
-
-      return schools_ect_path(ect)
-    end
-
-    if eligible_mentors_for_ect?(ect)
+    if new_mentor_requested && alternative_mentors_for_ect?(ect)
+      schools_ects_change_mentor_wizard_edit_path(ect, new_mentor_requested: true)
+    elsif new_mentor_requested
+      schools_ect_path(ect)
+    elsif eligible_mentors_for_ect?(ect)
       new_schools_ect_mentorship_path(ect)
     else
       schools_ects_home_path
@@ -175,11 +173,6 @@ private
   end
 
   def alternative_mentors_for_ect?(ect)
-    current_mentor = ect.current_or_next_mentorship_period&.mentor
-
-    mentors = Schools::EligibleMentors.new(ect.school).for_ect(ect)
-    mentors = mentors.excluding(current_mentor) if current_mentor.present?
-
-    mentors.exists?
+    ect.alternative_mentors_available?
   end
 end
