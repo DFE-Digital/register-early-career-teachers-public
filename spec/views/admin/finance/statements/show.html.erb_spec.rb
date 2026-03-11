@@ -1,13 +1,6 @@
 RSpec.describe "admin/finance/statements/show.html.erb" do
+  let(:contract_trait) { :for_ecf }
   let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-
-  let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-
-  let(:banded_fee_structure) do
-    FactoryBot.create(:contract_banded_fee_structure, :with_bands)
-  end
-  
   let(:contract) do
     FactoryBot.create(
       :contract,
@@ -16,7 +9,13 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       banded_fee_structure:
     )
   end
-  let(:contract_trait) { :for_ecf }
+
+  let(:banded_fee_structure) do
+    FactoryBot.create(:contract_banded_fee_structure, :with_bands)
+  end
+
+  let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
 
   let!(:jan_statement) do
     deadline_date = Date.new(contract_period.year, 1, 1).prev_day
@@ -32,6 +31,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       month: payment_date.month
     )
   end
+
   let!(:feb_statement) do
     FactoryBot.create(
       :statement,
@@ -53,6 +53,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       active_lead_provider:
     )
   end
+
   let(:mentor_training_period) do
     FactoryBot.create(
       :training_period,
@@ -63,10 +64,8 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   end
 
   let(:statement) { Admin::StatementPresenter.new(feb_statement) }
-
   let(:deadline_date) { Date.new(contract_period.year, 2, 1).prev_day }
   let(:payment_date) { Date.new(contract_period.year, 2, 28) }
-
 
   before do
     create_clawback(
@@ -97,46 +96,34 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     )
   end
 
-  it "has title with lead provider name and statement month and year" do
+  it "has title with lead provider name and statement details" do
     render
 
     expect(rendered).to have_css(".govuk-caption-l", text: "Some LP")
     expect(rendered).to have_css(".govuk-heading-m", text: "February 2025")
-  end
 
-  it "displays the statement dates and summary information in a table" do
-    render
     expect(rendered).to have_css(".govuk-heading-m", text: "28 February 2025")
     expect(rendered).to have_css(".govuk-heading-m", text: "31 January 2025")
     expect(rendered).to have_css(".govuk-table", text: "VAT")
   end
 
-  context "for `ecf` contracts" do
-    let(:contract_trait) { :for_ecf }
-
-    it "displays clawbacks in a single table" do
-      render
-
-      expect(rendered).to have_css("table caption", text: "Clawbacks")
+  context "when the statement is payable" do
+    let!(:feb_statement) do
+      FactoryBot.create(
+        :statement,
+        :payable,
+        contract:,
+        contract_period:,
+        active_lead_provider:,
+        deadline_date:,
+        payment_date:,
+        year: payment_date.year,
+        month: payment_date.month
+      )
     end
-  end
-
-  context "for `ittecf_ectp` contracts" do
-    let(:contract_trait) { :for_ittecf_ectp }
-
-    it "displays clawbacks in separate tables" do
-      render
-
-      expect(rendered).to have_css("table caption", text: "ECT clawbacks")
-      expect(rendered).to have_css("table caption", text: "Mentor clawbacks")
-    end
-  end
-  
-  context "when the statement can be authorised for payment" do
-    let(:statement_rec) { FactoryBot.create(:statement, :payable, active_lead_provider:, year: 2025, month: 9, deadline_date:, payment_date:) }
 
     around do |example|
-      travel_to(Date.new(2025, 10, 16)) do
+      travel_to(payment_date) do
         example.run
       end
     end
@@ -149,9 +136,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   end
 
   context "when the statement is for an ECF contract" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20) }
-
-    let(:statement_rec) { FactoryBot.create(:statement, :payable, active_lead_provider:, year: 2024, month: 9, deadline_date:, payment_date:, contract:) }
+    let(:contract_trait) { :for_ecf }
 
     it "displays the ECF payment overview component" do
       render
@@ -165,12 +150,16 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       expect(rendered).not_to have_text("ECTs clawbacks")
       expect(rendered).not_to have_text("Mentors clawbacks")
     end
+
+    it "displays clawbacks in a single table" do
+      render
+
+      expect(rendered).to have_css("table caption", text: "Clawbacks")
+    end
   end
 
   context "when the statement is for an ITTECF ECTP contract" do
-    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20) }
-
-    let(:statement_rec) { FactoryBot.create(:statement, :payable, active_lead_provider:, year: 2025, month: 9, deadline_date:, payment_date:, contract:) }
+    let(:contract_trait) { :for_ittecf_ectp }
 
     it "displays the ITTECF ECTP payment overview component" do
       render
@@ -183,6 +172,13 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       expect(rendered).not_to have_text("Uplift fees")
       expect(rendered).not_to have_text("Output payment")
       expect(rendered).not_to have_text("Clawbacks")
+    end
+
+    it "displays clawbacks in separate tables" do
+      render
+
+      expect(rendered).to have_css("table caption", text: "ECT clawbacks")
+      expect(rendered).to have_css("table caption", text: "Mentor clawbacks")
     end
   end
 end
