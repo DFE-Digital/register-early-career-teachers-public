@@ -4,7 +4,7 @@ module Migration
       legacy_induction_records = legacy_induction_records(profile_id)
       legacy_declarations = legacy_declarations(profile_id)
 
-      send_data(Migration::PreMigrationGantt.new(legacy_induction_records, legacy_declarations).to_png, type: "image/png")
+      send_data(Migration::PreMigrationGantt.new(legacy_induction_records, legacy_declarations, legacy_participant_profile).to_png, type: "image/png")
     end
 
   private
@@ -25,6 +25,10 @@ module Migration
 
     def legacy_declarations(participant_profile_id)
       Migration::ParticipantDeclaration.where(participant_profile_id:).order(created_at: :asc)
+    end
+
+    def legacy_participant_profile
+      Migration::ParticipantProfile.find(profile_id)
     end
   end
 end
