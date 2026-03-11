@@ -23,7 +23,7 @@ module Admin
         klass.new(statement:)
       end
 
-      def caption
+      def total
         number_to_pounds(total_amount)
       end
 

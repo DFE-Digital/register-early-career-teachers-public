@@ -26,6 +26,7 @@
 
   &__dates {
     margin-bottom: govuk-spacing(3);
+    display: flex;
   }
 
   &__summary__total-payment-breakdown p {
