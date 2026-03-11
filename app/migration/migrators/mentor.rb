@@ -37,28 +37,11 @@ module Migrators
       begin
         ecf2_teacher_history = history_converter.convert_to_ecf2!
         ecf2_teacher_history.save_all_mentor_data!
-        success = ecf2_teacher_history.success?
+        ecf2_teacher_history.success?
       rescue StandardError => e
         failure_manager.record_failure(teacher_profile, e.message, migration_mode)
-        success = false
+        false
       end
-
-      # if we have tried premium (all_induction_records) and it wasn't a
-      # success, fall back to economy (latest_induction_records)
-      if !success && migration_mode == :all_induction_records
-        begin
-          history_converter.set_migration_mode_to_latest_induction_records!
-
-          ecf2_teacher_history = history_converter.convert_to_ecf2!
-          ecf2_teacher_history.save_all_mentor_data!
-          success = ecf2_teacher_history.success?
-        rescue StandardError => e
-          failure_manager.record_failure(teacher_profile, e.message, migration_mode)
-          success = false
-        end
-      end
-
-      success
     end
 
   private
