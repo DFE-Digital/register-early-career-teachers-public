@@ -1286,6 +1286,7 @@ print_seed_info("Joyce Grenfell (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
 joyce_grenfell_started_date = Date.new(2025, 7, 1)
 joyce_grenfell_date2 = Date.new(2025, 9, 1)
+
 joyce_grenfell_mentoring_at_ackley_bridge = FactoryBot.create(:mentor_at_school_period,
                                                               teacher: joyce_grenfell,
                                                               school: ackley_bridge,
@@ -1303,7 +1304,7 @@ joyce_grenfell_training_period = FactoryBot.create(:training_period,
                                                    training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 joyce_grenfell_training_period2 = FactoryBot.create(:training_period,
-                                                    :for_mentor, :withdrawn,
+                                                    :for_mentor,
                                                     :with_schedule,
                                                     mentor_at_school_period: joyce_grenfell_mentoring_at_ackley_bridge,
                                                     started_on: joyce_grenfell_date2,
