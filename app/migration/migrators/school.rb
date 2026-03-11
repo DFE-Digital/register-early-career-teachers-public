@@ -23,7 +23,7 @@ module Migrators
 
     def self.reset!
       if Rails.application.config.enable_migration_testing
-        ::GIAS::School.connection.execute("TRUNCATE #{::School.table_name} RESTART IDENTITY CASCADE")
+        ::School.connection.execute("TRUNCATE #{::School.table_name} RESTART IDENTITY CASCADE")
       end
     end
 
