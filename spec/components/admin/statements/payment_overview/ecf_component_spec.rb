@@ -66,18 +66,28 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
       # + total_manual_adjustments_amount(375) + vat(365)
       # NB setup fee is no longer included
 
-      expect(page).to have_css(".govuk-table__caption--m", text: "£2,190.00")
+      expect(page).to have_css("h2.govuk-heading-l", text: "£2,190.00")
     end
 
-    it "sum the figures into the correct rows" do
-      expect(page).to have_table with_rows: [
-        ["Output payment", "£400.00"],
-        ["Service fee", "£1,000.00"],
-        ["Uplift fees", "£50.00"],
-        ["Clawbacks", "-£150.00"],
-        ["Additional adjustments", "£375.00"],
-        ["VAT", "£365.00"],
-      ]
+    it "renders the overview table" do
+      within(".finance-panel__summary__total-payment-breakdown") do
+        expect(page).to have_statement_table(
+          caption: "",
+          headings: [
+            "Payment type",
+            "Payments"
+          ],
+          rows: [
+            ["Output payment", "£400.00"],
+            ["Service fee", "£1,000.00"],
+            ["Uplift fees", "£50.00"],
+            ["Clawbacks", "-£150.00"],
+            ["Additional adjustments", "£375.00"],
+            ["VAT", "£365.00"],
+          ],
+          total: :not_present
+        )
+      end
     end
   end
 
@@ -91,7 +101,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     end
 
     it "raises an error when trying to access uplifts" do
-      expect { component.send(:uplifts) }.to raise_error(ArgumentError)
+      expect { component.send(:uplifts) }.to raise_error(ArgumentError, "Expected exactly 1 calculator for ECF contract type")
     end
   end
 
@@ -107,7 +117,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     end
 
     it "raises an error when trying to access uplifts" do
-      expect { component.send(:uplifts) }.to raise_error(ArgumentError)
+      expect { component.send(:uplifts) }.to raise_error(ArgumentError, "Expected exactly 1 calculator for ECF contract type")
     end
   end
 
@@ -122,7 +132,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     end
 
     it "raises an error when trying to access uplifts" do
-      expect { component.send(:uplifts) }.to raise_error(ArgumentError)
+      expect { component.send(:uplifts) }.to raise_error(ArgumentError, "Expected Banded calculator for ECF contract type")
     end
   end
 end

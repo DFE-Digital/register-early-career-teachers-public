@@ -71,19 +71,29 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
       # total_manual_adjustments_amount(375) + vat(395)
       # setup fee is no longer included
 
-      expect(page).to have_css(".govuk-table__caption--m", text: "£2,370.00")
+      expect(page).to have_css("h2.govuk-heading-l", text: "£2,370.00")
     end
 
-    it "sum the figures into the correct rows" do
-      expect(page).to have_table with_rows: [
-        ["ECTs output payment", "£400.00"],
-        ["Mentors output payment", "£200.00"],
-        ["Service fee", "£1,000.00"],
-        ["ECTs clawbacks", "-£150.00"],
-        ["Mentors clawbacks", "-£300.00"],
-        ["Additional adjustments", "£375.00"],
-        ["VAT", "£395.00"],
-      ]
+    it "renders the overview table" do
+      within(".finance-panel__summary__total-payment-breakdown") do
+        expect(page).to have_statement_table(
+          caption: "",
+          headings: [
+            "Payment type",
+            "Payments"
+          ],
+          rows: [
+            ["ECTs output payment", "£400.00"],
+            ["Mentors output payment", "£200.00"],
+            ["Service fee", "£1,000.00"],
+            ["ECTs clawbacks", "-£150.00"],
+            ["Mentors clawbacks", "-£300.00"],
+            ["Additional adjustments", "£375.00"],
+            ["VAT", "£395.00"],
+          ],
+          total: :not_present
+        )
+      end
     end
   end
 
@@ -113,7 +123,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
     end
 
     it "raises an error when trying to access flat_rate calculator" do
-      expect { component.send(:flat_rate) }.to raise_error(ArgumentError)
+      expect { component.send(:flat_rate) }.to raise_error(ArgumentError, "Expected exactly 2 calculators for ECF contract type")
     end
   end
 
@@ -128,7 +138,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
     end
 
     it "raises an error when trying to access flat_rate calculator" do
-      expect { component.send(:flat_rate) }.to raise_error(ArgumentError)
+      expect { component.send(:flat_rate) }.to raise_error(ArgumentError, "Expected flat rate calculator for IITECF ECTP contract type")
     end
   end
 end
