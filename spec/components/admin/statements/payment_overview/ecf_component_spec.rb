@@ -32,7 +32,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
   let(:total_uplifts_amount) { 50 }
 
   let(:contract) do
-    FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
+    FactoryBot.create(:contract, :for_ecf, :with_bands, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
   end
 
   describe "calculations" do
