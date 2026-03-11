@@ -67,11 +67,12 @@ RSpec.describe "Create adjustment for statement" do
   end
 
   def and_i_see_adjustment_total
-    panel = adjustments_table.locator("xpath=ancestor::div[contains(@class,'finance-panel')]")
+    panel = page.locator(".finance-panel")
 
-    adjustments_total = panel.locator(".govuk-heading-s").all.map { |e| e.text_content.strip }
+    total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(adjustments_total).to eq(["Total", "£999.99"])
+    expect(total).to have_text("Total")
+    expect(total).to have_text("£999.99")
   end
 
   def and_an_adjustment_is_created

@@ -72,11 +72,12 @@ RSpec.describe "List adjustments for statement" do
   end
 
   def and_i_see_adjustment_total
-    panel = adjustments_table.locator("xpath=ancestor::div[contains(@class,'finance-panel')]")
+    panel = page.locator(".finance-panel")
 
-    adjustments_total = panel.locator(".govuk-heading-s").all.map { |e| e.text_content.strip }
+    total = panel.locator("table + .govuk-grid-row .govuk-grid-column-one-half").last
 
-    expect(adjustments_total).to eq(["Total", "£450.00"])
+    expect(total).to have_text("Total")
+    expect(total).to have_text("£450.00")
   end
 
   def and_i_should_not_see_add_adjustment_link

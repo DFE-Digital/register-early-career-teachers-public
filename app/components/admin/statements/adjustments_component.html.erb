@@ -15,8 +15,8 @@
       adjustments.each do |adjustment|
         body.with_row do |row|
           row.with_cell { adjustment.payment_type }
-          row.with_cell(numeric: true) { change_link(adjustment) }
-          row.with_cell(numeric: true) { remove_link(adjustment) }
+          row.with_cell { change_link(adjustment) }
+          row.with_cell { remove_link(adjustment) }
           row.with_cell(numeric: true) { number_to_pounds(adjustment.amount) }
         end
       end

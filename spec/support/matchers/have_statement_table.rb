@@ -18,10 +18,10 @@ module HaveStatementTable
         table.has_css?(th_selector(index: index + 1), text: heading)
       end
 
-      # # Assert table has the expected number of rows
+      # Assert table has the expected number of rows
       return false unless table.has_css?("tbody tr", count: @rows.count)
 
-      # # Assert table has the expected cells
+      # Assert table has the expected cells
       return false unless @rows.each_with_index.all? do |row, index|
         row.each_with_index.all? do |cell, cell_index|
           table.has_css?(td_selector(row: index + 1, cell: cell_index + 1), text: cell)
