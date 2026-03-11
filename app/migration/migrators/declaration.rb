@@ -80,7 +80,7 @@ module Migrators
       raise "Can't build a training period for declaration id #{participant_declaration.id}" unless special_declaration
 
       contract_period_year = find_contract_period_by_year!(participant_declaration.cohort.start_year).year
-      delivery_partner_id = special_declaration[:delivery_partner_id]
+      delivery_partner_id = find_delivery_partner_by_api_id!(special_declaration[:delivery_partner_id])
       lead_provider = find_lead_provider_by_ecf_id!(participant_declaration.cpd_lead_provider.lead_provider.id)
       school = find_school_by_urn!(special_declaration[:urn])
       at_school_period = create_at_school_period(teacher:, participant_declaration:, school:, contract_period_year:)
