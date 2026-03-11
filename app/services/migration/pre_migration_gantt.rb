@@ -2,11 +2,12 @@ module Migration
   class PreMigrationGantt
     include Gantt
 
-    attr_reader :id, :induction_records, :declarations
+    attr_reader :id, :induction_records, :declarations, :participant_profile
 
-    def initialize(induction_records, declarations)
+    def initialize(induction_records, declarations, participant_profile)
       @induction_records = induction_records
       @declarations = declarations
+      @participant_profile = participant_profile
     end
 
     def build
@@ -20,6 +21,7 @@ module Migration
         #{academic_year_boundaries.join("\n")}
         #{induction_record_descriptions.join("\n")}
         #{declaration_descriptions.join("\n")}
+        #{completions.join("\n")}
         #{legend(present_lead_provider_names)}
 
         @endgantt
@@ -69,7 +71,25 @@ module Migration
     end
 
     def declaration_descriptions
-      declarations.map { |d| %([#{d.declaration_type}] happens at #{d.declaration_date.to_date}) }
+      declarations.map { |d| %([#{d.declaration_type} (#{d.cpd_lead_provider.name})] happens at #{d.declaration_date.to_date}) }
+    end
+
+    def completions
+      markers = []
+
+      return markers unless participant_profile
+
+      if participant_profile.induction_completion_date
+        markers << %([Induction completed] happens at #{participant_profile.induction_completion_date})
+        markers << %([Induction completed] is deleted)
+      end
+
+      if participant_profile.mentor_completion_date
+        markers << %([Mentor training completed] happens at #{participant_profile.mentor_completion_date})
+        markers << %([Mentor training completed] is deleted)
+      end
+
+      markers
     end
   end
 end
