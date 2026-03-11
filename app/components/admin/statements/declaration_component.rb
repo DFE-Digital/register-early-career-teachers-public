@@ -19,7 +19,7 @@ module Admin
       end
 
       def headers
-        if contract.ecf_contract_type?
+        if ecf_contract?
           %w[Total]
         else
           %w[ECTs Mentors]
@@ -32,14 +32,41 @@ module Admin
 
     private
 
+      def ecf_contract?
+        contract.ecf_contract_type?
+      end
+
       def calculators
-        PaymentCalculator::Resolver.new(statement:, contract:).calculators.reverse
+        PaymentCalculator::Resolver.new(statement:, contract:).calculators
+      end
+
+      def ordered_calculators
+        case contract.contract_type
+        when "ecf"
+          raise ArgumentError, "Expected one banded calculator for ECF contract type" unless calculators.one? && banded_calculator
+
+          [banded_calculator]
+        when "ittecf_ectp"
+          raise ArgumentError, "Expected banded and flat rate calculator for ITTECF ECTP contract type" unless flat_rate_calculator && banded_calculator
+
+          [banded_calculator, flat_rate_calculator]
+        else
+          raise ArgumentError
+        end
+      end
+
+      def banded_calculator
+        calculators.find { |c| c.is_a? PaymentCalculator::Banded }
+      end
+
+      def flat_rate_calculator
+        calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
       end
 
       def initialise_columns
         columns = {}
         ORDERED_ROW_NAMES.each do |declaration_type|
-          columns[declaration_type] = Array.new(calculators.size, 0)
+          columns[declaration_type] = Array.new(ordered_calculators.size, 0)
         end
         columns
       end
@@ -53,7 +80,7 @@ module Admin
       end
 
       def sum_declarations(columns)
-        calculators.each_with_index do |calculator, index|
+        ordered_calculators.each_with_index do |calculator, index|
           calculator.outputs.declaration_type_outputs.each do |dto|
             type = payment_type(dto)
             columns[type][index] += payments_count(dto)
@@ -62,7 +89,7 @@ module Admin
       end
 
       def voided_and_refunded_declarations(columns)
-        calculators.each_with_index do |calculator, index|
+        ordered_calculators.each_with_index do |calculator, index|
           columns["Clawed back"][index] = refunded(calculator)
           columns["Voided"][index] = voided(calculator)
         end
