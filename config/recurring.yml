@@ -23,6 +23,11 @@ production:
     queue: metadata
     schedule: every day at 1am
 
+  mark_statements_as_payable:
+    class: Statements::MarkAsPayableJob
+    queue: default
+    schedule: every day at 2am
+
   gias_import:
     class: GIASImportJob
     queue: default
