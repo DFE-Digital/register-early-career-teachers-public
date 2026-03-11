@@ -103,7 +103,7 @@ describe Migrators::Declaration do
         let!(:lead_provider) { FactoryBot.create(:lead_provider, ecf_id: ecf_lead_provider.id, name: ecf_lead_provider.name) }
         let!(:contract_period) { FactoryBot.create(:contract_period, year: participant_declaration.cohort.start_year) }
         let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-        let!(:delivery_partner) { FactoryBot.create(:delivery_partner, id: 173, name: "DP173") }
+        let!(:delivery_partner) { FactoryBot.create(:delivery_partner, api_id: "cdb6cef0-5128-4f53-877c-37d70634e82a", name: "DP173") }
         let!(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
         let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
         let!(:payment_statement) { FactoryBot.create(:statement, :payable, api_id: participant_declaration.payment_statement.id, contract_period:) }
