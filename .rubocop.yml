@@ -128,7 +128,13 @@ Rails/Output:
     - db/seeds*
     # Excluded because this file intentionally writes a dev-only message to stdout after migrations, which does not
     # impact application behavior and is not intended for production environments.
+    - config/initializers/confirm_production_console.rb
+
+Rails/Exit:
+  Enabled: true
+  Exclude:
     - config/initializers/post_migration_erd_prompt.rb
+    - config/initializers/confirm_production_console.rb
 
 Rails/SaveBang:
   Exclude:
