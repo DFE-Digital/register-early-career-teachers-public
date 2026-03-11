@@ -30,7 +30,7 @@ module Admin
 
       def remove_link(adjustment)
         return unless adjustment_editable?
-        
+
         govuk_link_to("Remove", delete_admin_finance_statement_adjustment_path(statement, adjustment))
       end
 
@@ -56,8 +56,6 @@ module Admin
       def total_amount
         adjustments.sum(&:amount)
       end
-
-      
     end
   end
 end
