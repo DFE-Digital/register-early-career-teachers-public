@@ -50,6 +50,7 @@ module RegisterEarlyCareerTeachers
     config.enable_fake_trs_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_FAKE_TRS_API", false))
     config.enable_personas = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONAS", false))
     config.enable_persona_avatars = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_PERSONA_AVATARS", true))
+    config.enable_migration_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_MIGRATION_INTERFACE", false))
     config.enable_migration_testing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_MIGRATION_TESTING", false))
     config.enable_schools_interface = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SCHOOLS_INTERFACE", false))
     config.enable_otp_school_sign_in = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_OTP_SCHOOL_SIGN_IN", false))
