@@ -93,7 +93,7 @@ namespace :admin do
       collection do
         resources :statements, as: "finance_statements", only: %i[index show] do
           collection { post :choose }
-          member { get :declarations, defaults: { format: :csv } }
+          member { get :declarations_export, defaults: { format: :csv } }
           resources :authorisations, only: %i[new create]
 
           resources :adjustments, only: %i[new create edit update destroy] do

@@ -2,8 +2,8 @@ module Admin::Finance
   class StatementsController < Admin::Finance::BaseController
     layout "full"
 
-    before_action :set_statement, only: :declarations
-    before_action :ensure_output_fee_statement!, only: :declarations
+    before_action :set_statement, only: :declarations_export
+    before_action :ensure_output_fee_statement!, only: :declarations_export
 
     def index
       @pagy, statements = pagy(
@@ -22,7 +22,7 @@ module Admin::Finance
       @statement = Admin::StatementPresenter.new(statement)
     end
 
-    def declarations
+    def declarations_export
       export = ::Statements::DeclarationsCSV.new(statement: @statement)
 
       send_data export.to_csv, filename: export.filename, type: export.type

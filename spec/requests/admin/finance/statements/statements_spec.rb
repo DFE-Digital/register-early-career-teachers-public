@@ -97,11 +97,11 @@ RSpec.describe "Admin finance statements index", type: :request do
     end
   end
 
-  describe "GET /admin/finance/statements/:statement_id/declarations.csv" do
+  describe "GET /admin/finance/statements/:statement_id/declarations_export.csv" do
     let!(:statement) { FactoryBot.create(:statement) }
 
     it "redirects to sign in path" do
-      get "/admin/finance/statements/#{statement.id}/declarations.csv"
+      get "/admin/finance/statements/#{statement.id}/declarations_export.csv"
       expect(response).to redirect_to(sign_in_path)
     end
 
@@ -109,7 +109,7 @@ RSpec.describe "Admin finance statements index", type: :request do
       include_context "sign in as non-DfE user"
 
       it "requires authorisation" do
-        get "/admin/finance/statements/#{statement.id}/declarations.csv"
+        get "/admin/finance/statements/#{statement.id}/declarations_export.csv"
         expect(response.status).to eq(401)
       end
     end
@@ -118,7 +118,7 @@ RSpec.describe "Admin finance statements index", type: :request do
       include_context "sign in as DfE user"
 
       it "requires authorisation with the finance access error message" do
-        get "/admin/finance/statements/#{statement.id}/declarations.csv"
+        get "/admin/finance/statements/#{statement.id}/declarations_export.csv"
 
         expect(response.status).to eq(401)
         expect(response.body).to include(
@@ -185,7 +185,7 @@ RSpec.describe "Admin finance statements index", type: :request do
       let!(:unrelated_declaration) { FactoryBot.create(:declaration, :paid) }
 
       it "downloads the statement declarations as CSV" do
-        get "/admin/finance/statements/#{statement.id}/declarations.csv"
+        get "/admin/finance/statements/#{statement.id}/declarations_export.csv"
 
         expect(response.status).to eq(200)
         expect(response.media_type).to eq("text/csv")
@@ -208,7 +208,7 @@ RSpec.describe "Admin finance statements index", type: :request do
         end
 
         it "returns not found" do
-          get "/admin/finance/statements/#{statement.id}/declarations.csv"
+          get "/admin/finance/statements/#{statement.id}/declarations_export.csv"
 
           expect(response).to have_http_status(:not_found)
         end

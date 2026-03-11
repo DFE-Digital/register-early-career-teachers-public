@@ -9,7 +9,7 @@
 
 <% if @statement.output_fee? %>
   <p class="govuk-body">
-    <%# Move this link into the declarations summary section once that section is built. %>
+    <%# TODO: Move this link into the declarations summary section once that section is built. %>
     <%= govuk_link_to "Download declarations (CSV)", declarations_export_admin_finance_statement_path(@statement, format: :csv) %>
   </p>
 <% end %>
