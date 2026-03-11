@@ -88,9 +88,9 @@ module Migrators
 
   protected
 
-    def migrate(collection, &block)
+    def migrate(collection, sort_field: :id, &block)
       DeclarativeUpdates.skip do
-        items = collection.order(:id).offset(offset).limit(limit)
+        items = collection.order(sort_field).offset(offset).limit(limit)
 
         start_migration!(items.count)
 
