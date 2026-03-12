@@ -1,0 +1,31 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="finance-panel govuk-!-padding-bottom-0">
+      <div class="finance-panel__dates">
+        <div>
+          <div><strong class="govuk-body-s govuk-!-margin-bottom-0">Milestone cut off date</strong></div>
+          <div class="govuk-heading-m govuk-!-padding-top-0"><%= @statement.formatted_deadline_date %></div>
+        </div>
+        <div>
+          <div><strong class="govuk-body-s govuk-!-margin-bottom-0">Payment date</strong></div>
+          <div class="govuk-heading-m govuk-!-padding-top-0"><%= @statement.formatted_payment_date %></div>
+        </div>
+      </div>
+      <div class = "finance-panel__summary__total-payment-breakdown">
+        <div>
+          <h2 class="govuk-heading-l"><%= total %></h2>
+        </div>
+        <%= govuk_table(
+            first_cell_is_header: false,
+            caption: "",
+            head: [
+              { text: "Payment type" },
+              { text: "Payment", numeric: true }
+            ],
+            rows: 
+          )
+        %>
+      </div>
+    </div>
+  </div>
+</div>
