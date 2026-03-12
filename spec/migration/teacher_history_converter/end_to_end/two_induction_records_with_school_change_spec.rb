@@ -90,6 +90,7 @@ describe "Two ECT induction records (with the second being at a different school
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "latest_induction_records"
     end
 
     it "creates two ect_at_school_periods" do
@@ -110,6 +111,23 @@ describe "Two ECT induction records (with the second being at a different school
   context "when in all_induction_records mode (premium)" do
     let(:migration_mode) { :all_induction_records }
 
-    it "creates the teacher record"
+    it "creates the teacher record" do
+      expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "all_induction_records"
+    end
+
+    it "creates two ect_at_school_periods" do
+      expect(teacher.ect_at_school_periods.count).to be(2)
+    end
+
+    it "creates one training_period on each ect_at_school_periods" do
+      expect(teacher.ect_at_school_periods[0].training_periods.count).to be(1)
+      expect(teacher.ect_at_school_periods[1].training_periods.count).to be(1)
+    end
+
+    it "sets the api_transfer_updated_at correctly" do
+      expect(teacher.ect_at_school_periods[0].training_periods.first.api_transfer_updated_at).to eq(ecf1_induction_record_1.updated_at)
+      expect(teacher.ect_at_school_periods[1].training_periods.first.api_transfer_updated_at).to eq(ecf1_induction_record_2.updated_at)
+    end
   end
 end
