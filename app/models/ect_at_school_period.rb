@@ -139,6 +139,14 @@ class ECTAtSchoolPeriod < ApplicationRecord
     end
   end
 
+  def alternative_mentors_available?
+    current_mentor = current_or_next_mentorship_period&.mentor
+
+    mentors = Schools::EligibleMentors.new(school).for_ect(self)
+
+    mentors.excluding(current_mentor).exists?
+  end
+
   delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher
   delegate :name, to: :school, prefix: true
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
