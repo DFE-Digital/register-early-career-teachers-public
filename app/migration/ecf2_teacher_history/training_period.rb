@@ -81,7 +81,9 @@ class ECF2TeacherHistory::TrainingPeriod
       contract_period_year:,
       api_transfer_updated_at:,
       withdrawal_reason:,
-      withdrawn_at:
+      withdrawn_at:,
+      deferral_reason:,
+      deferred_at:
     }
   end
 
