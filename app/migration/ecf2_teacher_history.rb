@@ -257,6 +257,7 @@ private
     if raise_errors?
       raise(StandardError, message: e.message, cause: Error.new(teacher:, model:, message: e.message, migration_item_id:))
     end
+
     record_failure!(teacher:, model:, message: e.message, migration_item_id:)
   end
 end
