@@ -37,6 +37,8 @@ get:
           cohort: 2021
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -45,6 +47,8 @@ get:
           cohort: 2022
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -53,6 +57,8 @@ get:
           cohort: 2023
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -61,6 +67,8 @@ get:
           cohort: 2024
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -69,6 +77,8 @@ get:
           cohort: 2025
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -78,6 +88,8 @@ get:
           cohort: 2023
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -87,6 +99,8 @@ get:
           updated_since: "2025-04-13T11:21:55Z"
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -96,6 +110,8 @@ get:
           sort: "-updated_at"
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools":
       ecf_path: "/api/v3/schools/ecf"
       paginate: true
@@ -106,6 +122,8 @@ get:
           updated_since: "2025-04-13T11:21:55Z"
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
   - "/api/v3/schools/:id":
       query:
         filter:
@@ -114,6 +132,8 @@ get:
       id: ":school_id"
       exclude:
         - expression_of_interest
+        - induction_tutor_name
+        - induction_tutor_email
 
   - "/api/v3/delivery-partners":
       paginate: true
