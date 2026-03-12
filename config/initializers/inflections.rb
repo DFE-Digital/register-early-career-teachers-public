@@ -13,6 +13,7 @@
 # These inflection rules are supported but not enabled by default:
 ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "API" # Application Programming Interface
+  inflect.acronym "CSV" # Comma-Separated Values
   inflect.acronym "DfE" # Department for Education
   inflect.acronym "ECF" # Early Career Framework
   inflect.acronym "ECF1" # Early Career Framework 1 (the old service, Manage ECTs)
