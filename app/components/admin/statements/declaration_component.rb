@@ -3,15 +3,6 @@ module Admin
     class DeclarationComponent < ApplicationComponent
       attr_accessor :statement
 
-      ORDERED_ROW_NAMES = [
-        "Started",
-        "Retained",
-        "Completed",
-        "Extended",
-        "Clawed back",
-        "Voided"
-      ].freeze
-
       delegate :contract, to: :statement
 
       def initialize(statement:)
@@ -63,40 +54,14 @@ module Admin
         calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
       end
 
-      def initialise_columns
-        columns = {}
-        ORDERED_ROW_NAMES.each do |declaration_type|
-          columns[declaration_type] = Array.new(ordered_calculators.size, 0)
-        end
-        columns
-      end
-
-      def build_columns
-        columns = initialise_columns
-        sum_declarations(columns)
-        voided_and_refunded_declarations(columns)
-
-        columns
-      end
-
-      def sum_declarations(columns)
-        ordered_calculators.each_with_index do |calculator, index|
-          calculator.outputs.declaration_type_outputs.each do |dto|
-            type = payment_type(dto)
-            columns[type][index] += payments_count(dto)
-          end
-        end
-      end
-
-      def voided_and_refunded_declarations(columns)
-        ordered_calculators.each_with_index do |calculator, index|
-          columns["Clawed back"][index] = refunded(calculator)
-          columns["Voided"][index] = voided(calculator)
-        end
+      def declarations_count(calculator, type)
+        calculator.outputs.declaration_type_outputs
+          .select { |dto| dto.declaration_type.start_with?(type) }
+          .sum { |dto| payments_count(dto) }
       end
 
       def refunded(calculator)
-        calculator.outputs.total_refundable_amount.to_i
+        calculator.outputs.total_refundable_count.to_i
       end
 
       def voided(calculator)
@@ -105,10 +70,6 @@ module Admin
 
       def payments_count(declaration_type_output)
         declaration_type_output.billable_count - declaration_type_output.refundable_count
-      end
-
-      def payment_type(declaration_type_output)
-        declaration_type_output.declaration_type.split("-").first.humanize
       end
     end
   end

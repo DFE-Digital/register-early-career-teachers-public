@@ -87,11 +87,18 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     .to receive(:new)
     .and_return(resolver)
 
-    allow(banded_outputs).to receive(:total_refundable_amount).and_return(6)
-    allow(flat_rate_outputs).to receive(:total_refundable_amount).and_return(4)
+    allow(banded_outputs).to receive(:total_refundable_count).and_return(6)
+    allow(flat_rate_outputs).to receive(:total_refundable_count).and_return(4)
 
-    allow(banded_calculator).to receive_messages(outputs: banded_outputs, voided_declarations_count: 9)
-    allow(flat_rate_calculator).to receive_messages(is_a?: false, voided_declarations_count: 3)
+    allow(banded_calculator).to receive_messages(
+      outputs: banded_outputs,
+      voided_declarations_count: 9
+    )
+
+    allow(flat_rate_calculator).to receive_messages(
+      outputs: flat_rate_outputs,
+      voided_declarations_count: 3
+    )
   end
 
   context "when no calculators are returned" do
@@ -119,6 +126,8 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
         allow(banded_outputs)
         .to receive(:declaration_type_outputs)
         .and_return([started_banded, retained1_banded, retained2_banded, completed_banded, extended_banded])
+
+        render_inline(component)
       end
 
       it "renders the declaration types in the correct order, and summed" do
@@ -133,7 +142,7 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
       end
 
       it "returns the expected header" do
-        expect(component.headers).to eq %w[Total]
+        expect(subject).to have_table text: "Total"
       end
     end
 
@@ -181,8 +190,9 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
         ]
       end
 
-      it "returns the expected header" do
-        expect(component.headers).to eq %w[ECTs Mentors]
+      it "returns the expected headers" do
+        expect(subject).to have_table text: "ECTs"
+        expect(subject).to have_table text: "Mentors"
       end
     end
 
