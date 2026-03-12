@@ -3,18 +3,15 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
 
   let(:component) { described_class.new statement: }
 
-  let(:contract_period) { FactoryBot.create(:contract_period, :current) }
-  let(:statement) { FactoryBot.create(:statement, :payable, :output_fee, contract:) }
-  let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+  let!(:contract_period) { active_lead_provider.contract_period }
+  let(:contract) { FactoryBot.create(:contract, contract_trait, active_lead_provider:, contract_period:) }
+  let(:contract_trait) { :for_ecf }
+  let(:statement) { FactoryBot.create(:statement, :payable, :output_fee, active_lead_provider:, contract:) }
 
-  let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
-  let(:school) { school_partnership.school }
-
-  let(:ect_raining_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :with_school_partnership, school_partnership:) }
-  let!(:ect_declaration) { FactoryBot.create(:declaration, :voided, training_period: ect_raining_period, payment_statement: statement) }
-  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_school_partnership, school_partnership:) }
+  let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :with_active_lead_provider, active_lead_provider:) }
+  let!(:ect_declaration) { FactoryBot.create(:declaration, :voided, training_period: ect_training_period, payment_statement: statement) }
+  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_active_lead_provider, active_lead_provider:) }
   let!(:mentor_declaration) { FactoryBot.create(:declaration, :voided, training_period: mentor_training_period, payment_statement: statement) }
 
   let(:started_flatrate) do
@@ -131,13 +128,13 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   end
 
   context "when one calculator is returned (ECF contract)" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, contract_period:) }
+    let(:contract_trait) { :for_ecf }
 
     it "renders the declaration types correctly" do
       expect(subject).to have_table rows: [
-        ["Started", "8"],
-        ["Retained", "17"],
-        ["Completed", "6"],
+        ["Started", "10"],
+        ["Retained", "20"],
+        ["Completed", "7"],
         ["Extended", "3"],
         ["Clawed back", "6"],
         ["Voided", "2"],
@@ -150,13 +147,13 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   end
 
   context "when several calculators are returned (ITTECF contract)" do
-    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
+    let(:contract_trait) { :for_ittecf_ectp }
 
     it "displays banded first and flat rate second" do
       expect(subject).to have_table rows: [
-        ["Started", "8", "6"],
-        ["Retained", "17", "0"],
-        ["Completed", "6", "1"],
+        ["Started", "10", "9"],
+        ["Retained", "20", "0"],
+        ["Completed", "7", "2"],
         ["Extended", "3", "0"],
         ["Clawed back", "6", "4"],
         ["Voided", "1", "1"],
