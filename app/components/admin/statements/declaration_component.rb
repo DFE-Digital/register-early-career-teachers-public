@@ -46,17 +46,17 @@ module Admin
       end
 
       def banded_calculator
-        calculators.find { |c| c.is_a? PaymentCalculator::Banded }
+        calculators.find { it.is_a? PaymentCalculator::Banded }
       end
 
       def flat_rate_calculator
-        calculators.find { |c| c.is_a? PaymentCalculator::FlatRate }
+        calculators.find { it.is_a? PaymentCalculator::FlatRate }
       end
 
       def declarations_count(calculator, type)
         calculator.outputs.declaration_type_outputs
-          .select { |dto| dto.declaration_type.start_with?(type) }
-          .sum { |dto| payments_count(dto) }
+          .select { it.declaration_type.start_with?(type) }
+          .sum(&:billable_count)
       end
 
       def refunded(calculator)
