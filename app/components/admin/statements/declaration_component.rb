@@ -9,16 +9,15 @@ module Admin
         @statement = statement
       end
 
-      def headers
-        if ecf_contract?
-          ["", "Total"]
-        else
-          ["", "ECTs", "Mentors"]
-        end
-      end
+      def count_header_text(calculator)
+        return "Total" if ecf_contract?
 
-      def columns
-        @columns ||= build_columns
+        case calculator
+        when PaymentCalculator::Banded
+          "ECTs"
+        when PaymentCalculator::FlatRate
+          "Mentors"
+        end
       end
 
     private

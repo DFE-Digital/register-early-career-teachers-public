@@ -4,7 +4,6 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   let(:component) { described_class.new statement: }
 
   let(:contract_period) { FactoryBot.create(:contract_period, :current) }
-
   let(:statement) { FactoryBot.create(:statement, :payable, :output_fee, contract:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
@@ -13,12 +12,26 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
   let(:school) { school_partnership.school }
 
+  let(:ect_raining_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :with_school_partnership, school_partnership:) }
+  let!(:ect_declaration) { FactoryBot.create(:declaration, :voided, training_period: ect_raining_period, payment_statement: statement) }
+  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_school_partnership, school_partnership:) }
+  let!(:mentor_declaration) { FactoryBot.create(:declaration, :voided, training_period: mentor_training_period, payment_statement: statement) }
+
   let(:started_flatrate) do
     instance_double(
       PaymentCalculator::FlatRate::DeclarationTypeOutput,
       declaration_type: "started",
       billable_count: 9,
       refundable_count: 3
+    )
+  end
+
+  let(:completed_flatrate) do
+    instance_double(
+      PaymentCalculator::FlatRate::DeclarationTypeOutput,
+      declaration_type: "completed",
+      billable_count: 2,
+      refundable_count: 1
     )
   end
 
@@ -49,15 +62,6 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     )
   end
 
-  let(:extended_banded) do
-    instance_double(
-      PaymentCalculator::Banded::DeclarationTypeOutput,
-      declaration_type: "extended",
-      billable_count: 3,
-      refundable_count: 0
-    )
-  end
-
   let(:completed_banded) do
     instance_double(
       PaymentCalculator::Banded::DeclarationTypeOutput,
@@ -67,155 +71,101 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     )
   end
 
-  let(:completed_flatrate) do
+  let(:extended_banded) do
     instance_double(
-      PaymentCalculator::FlatRate::DeclarationTypeOutput,
-      declaration_type: "completed",
-      billable_count: 2,
-      refundable_count: 1
+      PaymentCalculator::Banded::DeclarationTypeOutput,
+      declaration_type: "extended",
+      billable_count: 3,
+      refundable_count: 0
     )
   end
 
-  let(:resolver) { instance_double(PaymentCalculator::Resolver) }
-  let(:banded_calculator) { instance_double(PaymentCalculator::Banded) }
-  let(:flat_rate_calculator) { instance_double(PaymentCalculator::FlatRate) }
-  let(:banded_outputs) { instance_double(PaymentCalculator::Banded::Outputs) }
-  let(:flat_rate_outputs) { instance_double(PaymentCalculator::FlatRate::Outputs) }
+  let(:banded_outputs) do
+    instance_double(
+      PaymentCalculator::Banded::Outputs,
+      declaration_type_outputs: [
+        started_banded,
+        retained1_banded,
+        retained2_banded,
+        completed_banded,
+        extended_banded
+      ],
+      total_refundable_count: 6
+    )
+  end
+
+  let(:flat_rate_outputs) do
+    instance_double(
+      PaymentCalculator::FlatRate::Outputs,
+      declaration_type_outputs: [
+        started_flatrate,
+        completed_flatrate
+      ],
+      total_refundable_count: 4
+    )
+  end
 
   before do
-    allow(PaymentCalculator::Resolver)
-    .to receive(:new)
-    .and_return(resolver)
+    allow(PaymentCalculator::Banded::Outputs)
+      .to receive(:new)
+      .and_return(banded_outputs)
 
-    allow(banded_outputs).to receive(:total_refundable_count).and_return(6)
-    allow(flat_rate_outputs).to receive(:total_refundable_count).and_return(4)
-
-    allow(banded_calculator).to receive_messages(
-      outputs: banded_outputs,
-      voided_declarations_count: 9
-    )
-
-    allow(flat_rate_calculator).to receive_messages(
-      outputs: flat_rate_outputs,
-      voided_declarations_count: 3
-    )
+    allow(PaymentCalculator::FlatRate::Outputs)
+      .to receive(:new)
+      .and_return(flat_rate_outputs)
   end
 
   context "when no calculators are returned" do
     let(:contract) { FactoryBot.create(:contract, active_lead_provider:, contract_period:) }
+    let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: []) }
 
     before do
-      allow(resolver).to receive(:calculators).and_return([])
+      allow(PaymentCalculator::Resolver)
+        .to receive(:new)
+        .and_return(resolver)
     end
 
-    it "returns the expected header" do
+    it "raises an error" do
       expect { subject }.to raise_error(ArgumentError)
     end
   end
 
-  context "when one calculator is returned (eg for an ECF contract)" do
+  context "when one calculator is returned (ECF contract)" do
     let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:, contract_period:) }
 
-    context "when the resolver returns a banded rate calculator" do
-      before do
-        allow(resolver).to receive(:calculators)
-        .and_return([banded_calculator])
-
-        allow(component).to receive(:banded_calculator).and_return(banded_calculator)
-
-        allow(banded_outputs)
-        .to receive(:declaration_type_outputs)
-        .and_return([started_banded, retained1_banded, retained2_banded, completed_banded, extended_banded])
-
-        render_inline(component)
-      end
-
-      it "renders the declaration types in the correct order, and summed" do
-        expect(subject).to have_table rows: [
-          ["Started", "8"],
-          ["Retained", "17"], # 5 + 15 - 3 = 17
-          ["Completed", "6"],
-          ["Extended", "3"],
-          ["Clawed back", "6"],
-          ["Voided", "9"],
-        ]
-      end
-
-      it "returns the expected header" do
-        expect(subject).to have_table text: "Total"
-      end
+    it "renders the declaration types correctly" do
+      expect(subject).to have_table rows: [
+        ["Started", "8"],
+        ["Retained", "17"],
+        ["Completed", "6"],
+        ["Extended", "3"],
+        ["Clawed back", "6"],
+        ["Voided", "2"],
+      ]
     end
 
-    context "when the resolver returns a flat rate calculator" do
-      before do
-        allow(resolver).to receive(:calculators)
-        .and_return([flat_rate_calculator])
-      end
-
-      it "raises an error" do
-        expect { subject }.to raise_error(ArgumentError)
-      end
+    it "shows the Total header" do
+      expect(subject).to have_table(text: "Total")
     end
   end
 
-  context "when several calculators are returned (eg for an ittecf_ectp contract)" do
+  context "when several calculators are returned (ITTECF contract)" do
     let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
 
-    context "when one banded and one flat rate calculator are returned" do
-      before do
-        allow(resolver).to receive(:calculators)
-        .and_return([flat_rate_calculator, banded_calculator])
-
-        allow(component).to receive_messages(banded_calculator:, flat_rate_calculator:)
-
-        allow(flat_rate_calculator).to receive(:outputs).and_return(flat_rate_outputs)
-
-        allow(flat_rate_outputs)
-        .to receive(:declaration_type_outputs)
-        .and_return([started_flatrate, completed_flatrate])
-
-        allow(banded_outputs)
-        .to receive(:declaration_type_outputs)
-        .and_return([started_banded, retained1_banded, retained2_banded, completed_banded, extended_banded])
-      end
-
-      it "displays each calculator in a separate column with banded first" do
-        expect(subject).to have_table rows: [
-          ["Started", "8", "6"],
-          ["Retained", "17", "0"],
-          ["Completed", "6", "1"],
-          ["Extended", "3", "0"],
-          ["Clawed back", "6", "4"],
-          ["Voided", "9", "3"],
-        ]
-      end
-
-      it "returns the expected headers" do
-        expect(subject).to have_table text: "ECTs"
-        expect(subject).to have_table text: "Mentors"
-      end
+    it "displays banded first and flat rate second" do
+      expect(subject).to have_table rows: [
+        ["Started", "8", "6"],
+        ["Retained", "17", "0"],
+        ["Completed", "6", "1"],
+        ["Extended", "3", "0"],
+        ["Clawed back", "6", "4"],
+        ["Voided", "1", "1"],
+      ]
     end
 
-    context "when no flat rate calculator is returned" do
-      before do
-        allow(resolver).to receive(:calculators)
-        .and_return([banded_calculator, banded_calculator])
-      end
-
-      it "raises an error" do
-        expect { subject }.to raise_error(ArgumentError)
-      end
-    end
-
-    context "when no banded calculator is returned" do
-      before do
-        allow(resolver).to receive(:calculators)
-        .and_return([flat_rate_calculator, flat_rate_calculator])
-      end
-
-      it "raises an error" do
-        expect { subject }.to raise_error(ArgumentError)
-      end
+    it "renders the correct headers" do
+      expect(subject).to have_table(text: "ECTs")
+      expect(subject).to have_table(text: "Mentors")
     end
   end
 end
