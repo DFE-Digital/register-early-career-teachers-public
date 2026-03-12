@@ -60,11 +60,11 @@ module Admin
       end
 
       def refunded(calculator)
-        calculator.outputs.total_refundable_count.to_i
+        calculator.outputs.total_refundable_count
       end
 
       def voided(calculator)
-        calculator.voided_declarations_count.to_i
+        calculator.voided_declarations_count
       end
 
       def payments_count(declaration_type_output)
