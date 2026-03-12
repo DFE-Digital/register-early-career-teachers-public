@@ -1,6 +1,6 @@
 module HaveStatementTable
   class Matcher
-    def initialize(caption:, headings:, rows:, total:)
+    def initialize(caption:, headings:, rows:, total: nil)
       @caption = caption
       @headings = headings
       @rows = rows
@@ -29,8 +29,10 @@ module HaveStatementTable
       end
 
       # Assert the expected total is displayed as a heading
-      total = table.sibling(".govuk-heading-s", text: "Total")
-      return false unless total.sibling(".govuk-heading-s").has_text?(@total)
+      if @total
+        total = table.sibling(".govuk-heading-s", text: "Total")
+        return false unless total.sibling(".govuk-heading-s").has_text?(@total)
+      end
 
       true
     end
@@ -40,6 +42,10 @@ module HaveStatementTable
         Expected "#{@caption}" table with rows: #{@rows} and total: #{@total}, but
         it could not be found: #{@page.native.inner_html}
       TXT
+    end
+
+    def description
+      "have statement table with caption \"#{@caption}\", headings \"#{@headings.join(', ')}\", rows \"#{@rows.join(', ')}\", and total \"#{@total}\""
     end
 
   private

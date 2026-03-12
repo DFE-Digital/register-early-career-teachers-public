@@ -51,7 +51,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants (ECTs and mentors) in this contract period with this lead provider
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
@@ -105,7 +105,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants (ECTs and mentors) with EOI but no partnership in this contract period
           active_lead_provider_ids = active_lead_provider.lead_provider.active_lead_providers.where(contract_period:).pluck(:id)
 
@@ -162,7 +162,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           existing_count = Teacher
             .joins(:induction_periods, ect_at_school_periods: { training_periods: :active_lead_provider })
             .where.not(induction_periods: { started_on: nil })
@@ -215,7 +215,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           existing_count = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
             .where.missing(:induction_periods)
@@ -279,7 +279,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: %i[declarations active_lead_provider] })
             .where(declarations: { payment_status: billable_statuses })
@@ -362,7 +362,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
@@ -424,7 +424,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants with "joining" training periods (to be started in the future)
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
@@ -492,7 +492,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
@@ -560,7 +560,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })
@@ -630,7 +630,7 @@ module APISeedData
 
         next unless contract_period
 
-        ActiveLeadProvider.for_contract_period(contract_period.year).find_each do |active_lead_provider|
+        active_lead_providers.for_contract_period(contract_period.year).find_each do |active_lead_provider|
           # Count existing participants with "leaving" training periods (to be finished in the future)
           existing_ects = Teacher
             .joins(ect_at_school_periods: { training_periods: :active_lead_provider })

@@ -80,6 +80,21 @@ describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_in
           expect(response).to have_http_status(:ok)
         end
       end
+
+      context "when the ECT is provider-led and the latest training period is withdrawn" do
+        before do
+          training_period.update!(
+            withdrawn_at: Time.zone.today,
+            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
+            finished_on: Time.zone.today
+          )
+        end
+
+        it "returns ok" do
+          subject
+          expect(response).to have_http_status(:ok)
+        end
+      end
     end
   end
 

@@ -133,6 +133,20 @@ RSpec.describe Schools::RegisterMentor do
           expect(training_period.schedule.identifier).to eql("ecf-standard-september")
           expect(training_period.schedule.contract_period_year).to be(Date.current.year)
         end
+
+        context "on the last day of the contract period" do
+          let(:travel_date) { Date.new(2026, 5, 31) }
+          let(:started_on) { travel_date }
+
+          it "finds the correct contract period and schedule" do
+            expect { service.register! }.to change(Teacher, :count).from(0).to(1)
+
+            training_period = TrainingPeriod.find_by!(started_on:)
+
+            expect(training_period.schedule.identifier).to eql("ecf-standard-april")
+            expect(training_period.schedule.contract_period_year).to be(2025)
+          end
+        end
       end
 
       context "when a SchoolPartnership exists" do
@@ -156,6 +170,20 @@ RSpec.describe Schools::RegisterMentor do
 
           expect(training_period.schedule.identifier).to eql("ecf-standard-september")
           expect(training_period.schedule.contract_period_year).to be(Date.current.year)
+        end
+
+        context "on the last day of the contract period" do
+          let(:travel_date) { Date.new(2026, 5, 31) }
+          let(:started_on) { travel_date }
+
+          it "finds the correct contract period and schedule" do
+            expect { service.register! }.to change(Teacher, :count).from(0).to(1)
+
+            training_period = TrainingPeriod.find_by!(started_on:)
+
+            expect(training_period.schedule.identifier).to eql("ecf-standard-april")
+            expect(training_period.schedule.contract_period_year).to be(2025)
+          end
         end
       end
 

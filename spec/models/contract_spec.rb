@@ -65,7 +65,13 @@ describe Contract do
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
 
     context "when creating a new contract" do
-      let(:contract) { FactoryBot.build(:contract, active_lead_provider:) }
+      let(:contract) do
+        FactoryBot.build(
+          :contract,
+          active_lead_provider:,
+          banded_fee_structure: FactoryBot.create(:contract_banded_fee_structure)
+        )
+      end
 
       it "assigns the active lead provider" do
         expect { contract.save! }.not_to raise_error

@@ -70,6 +70,16 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
         end
       end
 
+      context "when the only registered mentor is the ECT's current mentor" do
+        it "redirects to the register mentor wizard" do
+          subject
+
+          expect(response).to redirect_to(
+            schools_register_mentor_wizard_start_path(ect_id: ect_at_school_period.id, new_mentor_requested: true)
+          )
+        end
+      end
+
       context "when the current_step is invalid" do
         it "returns not found" do
           get path_for_step("nope")
@@ -79,6 +89,16 @@ describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interfac
       end
 
       context "when the current_step is valid" do
+        let!(:other_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            teacher: FactoryBot.create(:teacher),
+            school:,
+            started_on: mid_year - 3.months
+          )
+        end
+
         it "returns ok" do
           subject
 

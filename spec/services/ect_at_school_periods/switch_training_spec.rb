@@ -5,13 +5,20 @@ module ECTAtSchoolPeriods
     end
 
     let(:mentor_at_school_period) do
-      FactoryBot.create(:mentor_at_school_period, :ongoing,
-                        started_on: ect_at_school_period.started_on,
-                        school: ect_at_school_period.school)
+      FactoryBot.create(
+        :mentor_at_school_period,
+        :ongoing,
+        started_on: ect_at_school_period.started_on,
+        school: ect_at_school_period.school
+      )
     end
 
     let!(:mentorship_period) do
-      FactoryBot.create(:mentorship_period, mentee: ect_at_school_period, mentor: mentor_at_school_period)
+      FactoryBot.create(
+        :mentorship_period,
+        mentee: ect_at_school_period,
+        mentor: mentor_at_school_period
+      )
     end
 
     let(:author) do
@@ -157,9 +164,18 @@ module ECTAtSchoolPeriods
       end
 
       context "when there is no `current_or_next_training_period`" do
-        it "raises an error" do
-          expect { SwitchTraining.to_school_led(ect_at_school_period, author:) }
-            .to raise_error(NoTrainingPeriodError)
+        before do
+          allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)
+        end
+
+        it "creates a new school-led training period" do
+          expect {
+            SwitchTraining.to_school_led(ect_at_school_period, author:)
+          }.to change(TrainingPeriod, :count).by(1)
+
+          ect_at_school_period_from_database = ECTAtSchoolPeriod.find(ect_at_school_period.id)
+
+          expect(ect_at_school_period_from_database).to be_school_led_training_programme
         end
       end
 
@@ -233,6 +249,21 @@ module ECTAtSchoolPeriods
             expect(new_training_period.school_partnership).to eq(school_partnership)
             expect(new_training_period.expression_of_interest).to be_nil
           end
+
+          context "when the switch happens on the last day of the current contract period" do
+            around do |example|
+              travel_to(Date.new(2025, 5, 31)) do
+                example.run
+              end
+            end
+
+            it "finds the existing partnership and assigns it" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = ect_at_school_period.training_periods.last
+              expect(new_training_period.school_partnership).to eq(school_partnership)
+            end
+          end
         end
 
         context "when there is no confirmed school partnership" do
@@ -252,6 +283,21 @@ module ECTAtSchoolPeriods
             new_training_period = ect_at_school_period.training_periods.last
             expect(new_training_period.school_partnership).to be_nil
             expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+          end
+
+          context "when the switch happens on the last day of the current contract period" do
+            around do |example|
+              travel_to(Date.new(2025, 5, 31)) do
+                example.run
+              end
+            end
+
+            it "finds the active_lead_provider with the correct contract period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = ect_at_school_period.training_periods.last
+              expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+            end
           end
         end
 
@@ -286,16 +332,6 @@ module ECTAtSchoolPeriods
         end
 
         context "when the switch happens before the ECT has started" do
-          before do
-            skip <<-MSG
-              Temporarily skipping this test as its causing a persistent failure due to
-              the schedule selection logic not lining up with the logic around selecting an
-              expression of interest for the provider-led training period. They end up with
-              different contract periods, which is not a valid training period state. There is
-              a bug ticket open to look into this and find a resolution.
-            MSG
-          end
-
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period, :not_started_yet)
           end
@@ -325,6 +361,37 @@ module ECTAtSchoolPeriods
             new_training_period = TrainingPeriod.last
             expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
           end
+
+          context "when the ect starts in the next contract period" do
+            around do |example|
+              travel_to(Date.new(2026, 5, 31)) do
+                example.run
+              end
+            end
+
+            let(:ect_at_school_period) do
+              FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.from_now)
+            end
+
+            let(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2026) }
+
+            let!(:future_active_lead_provider) do
+              FactoryBot.create(
+                :active_lead_provider,
+                lead_provider:,
+                contract_period: future_contract_period
+              )
+            end
+
+            it "creates a new provider-led training period that starts on the ECT start date" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              expect(ect_at_school_period.reload).to be_provider_led_training_programme
+              new_training_period = TrainingPeriod.last
+              expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
+              expect(new_training_period.expression_of_interest).to eq(future_active_lead_provider)
+            end
+          end
         end
       end
 
@@ -347,8 +414,32 @@ module ECTAtSchoolPeriods
       end
 
       context "when there is no `current_or_next_training_period`" do
+        before do
+          allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)
+        end
+
+        it "creates a new provider-led training period (with expression of interest if no partnership)" do
+          expect {
+            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+          }.to change(TrainingPeriod, :count).by(2)
+
+          ect_at_school_period_from_database = ECTAtSchoolPeriod.find(ect_at_school_period.id)
+
+          expect(ect_at_school_period_from_database).to be_provider_led_training_programme
+
+          new_ect_training_period = ect_at_school_period_from_database.training_periods.last
+          expect(new_ect_training_period.school_partnership).to be_nil
+          expect(new_ect_training_period.expression_of_interest).to eq(active_lead_provider)
+        end
+      end
+
+      context "when there is no `current_or_next_training_period` and no lead_provider provided" do
+        before do
+          allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)
+        end
+
         it "raises an error" do
-          expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+          expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider: nil, author:) }
             .to raise_error(NoTrainingPeriodError)
         end
       end
@@ -381,7 +472,8 @@ module ECTAtSchoolPeriods
         context "when the mentor has never had provider-led training" do
           context "when there is no confirmed school partnership" do
             it "assigns the mentor to the same lead provider with an expression of interest" do
-              expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }.to change(TrainingPeriod, :count).by(2)
+              expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+                .to change(TrainingPeriod, :count).by(2)
 
               expect(mentor_at_school_period.reload).to be_provider_led_training_programme
               new_training_period = mentor_at_school_period.training_periods.last
@@ -412,6 +504,21 @@ module ECTAtSchoolPeriods
                   happened_at: Time.current
                 )
             end
+
+            context "when the switch happens on the last day of the current contract period" do
+              around do |example|
+                travel_to(Date.new(2025, 5, 31)) do
+                  example.run
+                end
+              end
+
+              it "finds the active lead provider with the correct contract period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = mentor_at_school_period.training_periods.last
+                expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
+              end
+            end
           end
 
           context "when there is a confirmed school partnership" do
@@ -430,7 +537,8 @@ module ECTAtSchoolPeriods
             end
 
             it "assigns the mentor to the same lead provider" do
-              expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }.to change(TrainingPeriod, :count).by(2)
+              expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+                .to change(TrainingPeriod, :count).by(2)
 
               expect(mentor_at_school_period.reload).to be_provider_led_training_programme
               new_training_period = mentor_at_school_period.training_periods.last
@@ -438,6 +546,21 @@ module ECTAtSchoolPeriods
               expect(new_training_period.expression_of_interest).to be_nil
               expect(new_training_period.started_on).to eq(Date.current)
               expect(new_training_period.schedule.contract_period.year).to eq(contract_period.year)
+            end
+
+            context "when the switch happens on the last day of the current contract period" do
+              around do |example|
+                travel_to(Date.new(2025, 5, 31)) do
+                  example.run
+                end
+              end
+
+              it "finds the existing lead provider" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = mentor_at_school_period.training_periods.last
+                expect(new_training_period.school_partnership).to eq(school_partnership)
+              end
             end
           end
 
@@ -497,10 +620,13 @@ module ECTAtSchoolPeriods
         end
 
         context "when the mentor has had provider-led training before" do
-          let!(:previous_training_period) { FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period:) }
+          let!(:previous_training_period) do
+            FactoryBot.create(:training_period, :for_mentor, :provider_led, mentor_at_school_period:)
+          end
 
           it "does not create a new training period for the mentor" do
-            expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }.to change(TrainingPeriod, :count).by(1)
+            expect { SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:) }
+              .to change(TrainingPeriod, :count).by(1)
 
             expect(TrainingPeriod.where(mentor_at_school_period:)).to contain_exactly(previous_training_period)
           end
@@ -516,7 +642,13 @@ module ECTAtSchoolPeriods
         context "when the mentor is ineligible for funding" do
           let(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding) }
           let(:mentor_at_school_period) do
-            FactoryBot.create(:mentor_at_school_period, :ongoing, school: ect_at_school_period.school, teacher:, started_on: ect_at_school_period.started_on)
+            FactoryBot.create(
+              :mentor_at_school_period,
+              :ongoing,
+              school: ect_at_school_period.school,
+              teacher:,
+              started_on: ect_at_school_period.started_on
+            )
           end
 
           it "does not create a new training period for the mentor" do

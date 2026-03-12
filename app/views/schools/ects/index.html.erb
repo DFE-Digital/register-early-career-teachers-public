@@ -33,9 +33,9 @@
           <%= render Schools::ECTs::ListingCardComponent.new(
             teacher: teacher,
             ect_at_school_period: teacher.current_or_next_ect_at_school_period,
-            training_period: teacher.current_or_next_ect_at_school_period.current_or_next_training_period,
-            current_school: @school)
-          %>
+            training_period: teacher.current_or_next_ect_at_school_period.latest_training_period,
+            current_school: @school
+          ) %>
         <% end %>
       <% end %>
       <%= govuk_pagination(pagy: @pagy) %>

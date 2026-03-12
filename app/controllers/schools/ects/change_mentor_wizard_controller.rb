@@ -45,7 +45,7 @@ module Schools
       end
 
       def mentors_registered?
-        school.mentor_at_school_periods.ongoing.exists?
+        @wizard.ect_at_school_period.alternative_mentors_available?
       end
     end
   end

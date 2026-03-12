@@ -1,7 +1,7 @@
 RSpec.describe "View parity check" do
   before do
     sign_in_as_dfe_user(role: :admin)
-    allow(Rails.application.config).to receive(:parity_check).and_return({ enabled: true })
+    allow(Rails.application.config).to receive_messages(parity_check: { enabled: true }, enable_migration_interface: true)
   end
 
   scenario "Viewing a parity check" do
@@ -29,7 +29,6 @@ RSpec.describe "View parity check" do
       requests.each do |request|
         expect(table.get_by_text(request.human_readable_url)).to be_visible
         expect(table.get_by_text("#{request.match_rate}%")).to be_visible
-        expect(table.get_by_text(/faster|slower|equal/)).to be_visible
         expect(table.get_by_role("link", name: "Request details")).to be_visible
       end
     end

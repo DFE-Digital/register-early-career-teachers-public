@@ -21,7 +21,9 @@ RUN apk add --update --no-cache tzdata && \
 
 # build-base: dependencies for bundle
 # postgresql-dev: postgres driver and libraries
-RUN apk add --no-cache build-base yaml-dev nodejs npm postgresql16-dev
+# zlib-dev: required for some gems with native extensions
+RUN apk add --no-cache build-base yaml-dev nodejs npm postgresql18-dev zlib-dev && \
+    apk upgrade --no-cache zlib zlib-dev
 
 # Install gems defined in Gemfile
 COPY .ruby-version Gemfile Gemfile.lock ./
@@ -76,7 +78,9 @@ RUN apk add --update --no-cache tzdata && \
 RUN addgroup -S appgroup -g 20001 && adduser -S appuser -G appgroup -u 10001
 
 # libpq: required to run postgres
-RUN apk add --no-cache libpq
+# zlib: required for runtime compression support
+RUN apk add --no-cache libpq zlib && \
+    apk upgrade --no-cache zlib
 
 RUN apk add --no-cache plantuml # FIXME can be removed once the migration is done
 

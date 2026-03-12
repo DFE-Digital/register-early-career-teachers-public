@@ -13,7 +13,7 @@ module Declarations
       ActiveRecord::Base.transaction do
         if latest_billable_completed_declaration
           mentor_completed_training!
-          finish_training_period!
+          finish_training_period! if training_period_ongoing_or_finishing_in_the_future?
         else
           mentor_not_completed_training!
           create_training_period! unless latest_training_period.ongoing_today?
@@ -61,6 +61,10 @@ module Declarations
       else
         latest_training_period.started_on + 1.day
       end
+    end
+
+    def training_period_ongoing_or_finishing_in_the_future?
+      latest_training_period.finished_on.blank? || latest_training_period.finished_on.future?
     end
 
     def latest_training_period

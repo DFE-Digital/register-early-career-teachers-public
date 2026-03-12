@@ -66,6 +66,32 @@ describe "Schools::ECTs::ChangeTrainingProgrammeWizardController", :enable_schoo
           expect(response).to have_http_status(:ok)
         end
       end
+
+      context "when the latest training period is withdrawn" do
+        let!(:training_period) do
+          training_period = FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :provider_led,
+            :for_ect,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on
+          )
+          training_period.update!(
+            withdrawn_at: Time.zone.today,
+            withdrawal_reason: TrainingPeriod.withdrawal_reasons.keys.first,
+            finished_on: Time.zone.today
+          )
+          training_period
+        end
+
+        it "renders the provider-led branch for a withdrawn ECT" do
+          subject
+          expect(response).to have_http_status(:ok)
+
+          expect(response.body).to include("school-led")
+        end
+      end
     end
   end
 

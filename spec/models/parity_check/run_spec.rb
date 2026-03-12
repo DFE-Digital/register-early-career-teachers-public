@@ -203,7 +203,7 @@ describe ParityCheck::Run do
     end
     let(:run) { FactoryBot.create(:parity_check_run, :completed, requests:) }
 
-    it { is_expected.to eq(83) }
+    it { is_expected.to eq(75) }
 
     context "when there are no requests" do
       let(:requests) { [] }

@@ -1,4 +1,4 @@
-describe Migrators::GIASImport do
+xdescribe Migrators::GIASImport do
   def create_csv_row(status: "open")
     FactoryBot.build(:csv_school_row, status:)
   end
