@@ -1,6 +1,7 @@
 RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Alpha Teaching School Hub") }
-  let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe") }
+  let(:migration_mode) { :not_migrated }
+  let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe", migration_mode:) }
   let(:ect) do
     FactoryBot.create(:ect_at_school_period,
                       teacher:,
@@ -42,6 +43,36 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     it "renders the appropriate message" do
       expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
       expect(page).to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
+    end
+  end
+
+  context "when the appropriate body has not been reported and the record is migrated" do
+    let(:migration_mode) { :latest_induction_records }
+    let(:ect) do
+      FactoryBot.create(:ect_at_school_period,
+                        teacher:,
+                        school_reported_appropriate_body: nil,
+                        started_on: Date.new(2023, 9, 1))
+    end
+
+    it "renders not reported for the appropriate body" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "Not reported")
+    end
+
+    it "renders the induction start date fallback" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
+    end
+  end
+
+  context "when the appropriate body is reported for migrated data" do
+    let(:migration_mode) { :latest_induction_records }
+
+    it "renders the reported appropriate body" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+      expect(page).not_to have_selector(".govuk-summary-list__value", text: "Not reported")
     end
   end
 end
