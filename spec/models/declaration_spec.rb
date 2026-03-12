@@ -458,16 +458,6 @@ describe Declaration do
         end
       end
     end
-
-    describe ".voided" do
-      let!(:voided_declaration) { FactoryBot.create(:declaration, :voided) }
-      let!(:non_voided_declaration) { FactoryBot.create(:declaration, payment_status: :no_payment) }
-
-      it "returns only voided declarations" do
-        expect(described_class.voided).to include(voided_declaration)
-        expect(described_class.voided).not_to include(non_voided_declaration)
-      end
-    end
   end
 
   describe "enums" do

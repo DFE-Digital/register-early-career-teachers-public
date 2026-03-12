@@ -12,12 +12,26 @@
     end
 
     table.with_body do |body|
-      ORDERED_ROW_NAMES.each do |type|
+       %w[started retained completed extended].each do |type|
         body.with_row do |row|
-          row.with_cell { type }
-          columns[type].each do |value|
-            row.with_cell(numeric: true) { value.to_s }
+          row.with_cell { type.capitalize }
+          ordered_calculators.each do |calculator|
+            row.with_cell(numeric: true) { declarations_count(calculator, type).to_s }
           end
+        end
+      end
+
+      body.with_row do |row|
+        row.with_cell { "Clawed back" }
+        ordered_calculators.each do |calculator|
+          row.with_cell(numeric: true) { refunded(calculator).to_s }
+        end
+      end
+
+      body.with_row do |row|
+        row.with_cell { "Voided" }
+        ordered_calculators.each do |calculator|
+          row.with_cell(numeric: true) { voided(calculator).to_s }
         end
       end
     end

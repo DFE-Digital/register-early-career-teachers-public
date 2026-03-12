@@ -75,7 +75,7 @@ module PaymentCalculator
     end
 
     def voided_declarations
-      Declaration.where(payment_statement: statement).voided
+      Declaration.where(payment_statement: statement).payment_status_voided
     end
 
     def filtered_billable_declarations
