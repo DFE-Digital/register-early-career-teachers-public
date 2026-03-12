@@ -147,6 +147,13 @@ class ECTAtSchoolPeriod < ApplicationRecord
     mentors.excluding(current_mentor).exists?
   end
 
+  def appropriate_body_not_reported?
+    return false if teacher.not_migrated_migration_mode?
+    return false if school_reported_appropriate_body.present?
+
+    teacher.current_or_next_induction_period.blank?
+  end
+
   delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher
   delegate :name, to: :school, prefix: true
   delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true

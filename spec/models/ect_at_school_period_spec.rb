@@ -572,6 +572,59 @@ describe ECTAtSchoolPeriod do
     end
   end
 
+  describe "#appropriate_body_not_reported?" do
+    let(:migration_mode) { :latest_induction_records }
+    let(:teacher) { FactoryBot.create(:teacher, migration_mode:) }
+    let(:school_reported_appropriate_body) { nil }
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, school_reported_appropriate_body:)
+    end
+
+    context "when the teacher has not been migrated" do
+      let(:migration_mode) { :not_migrated }
+
+      it { expect(ect_at_school_period).not_to be_appropriate_body_not_reported }
+    end
+
+    context "when a school reported appropriate body is present" do
+      let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
+
+      it { expect(ect_at_school_period).not_to be_appropriate_body_not_reported }
+    end
+
+    context "when a school reported appropriate body is present and the teacher has a future induction period" do
+      let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
+
+      before do
+        travel_to(3.weeks.from_now) do
+          FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: 1.week.ago)
+        end
+      end
+
+      it { expect(ect_at_school_period).not_to be_appropriate_body_not_reported }
+    end
+
+    context "when the teacher has a current induction period" do
+      before { FactoryBot.create(:induction_period, :ongoing, teacher:) }
+
+      it { expect(ect_at_school_period).not_to be_appropriate_body_not_reported }
+    end
+
+    context "when the teacher has a future induction period" do
+      before do
+        travel_to(3.weeks.from_now) do
+          FactoryBot.create(:induction_period, :ongoing, teacher:, started_on: 1.week.ago)
+        end
+      end
+
+      it { expect(ect_at_school_period).not_to be_appropriate_body_not_reported }
+    end
+
+    context "when the teacher is migrated and has no appropriate body information" do
+      it { expect(ect_at_school_period).to be_appropriate_body_not_reported }
+    end
+  end
+
   describe "#leaving_reported_for_school?" do
     let(:reporting_school) { FactoryBot.create(:school) }
 
