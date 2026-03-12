@@ -20,9 +20,9 @@ module Admin
 
       def headers
         if ecf_contract?
-          %w[Total]
+          ["", "Total"]
         else
-          %w[ECTs Mentors]
+          ["", "ECTs", "Mentors"]
         end
       end
 
