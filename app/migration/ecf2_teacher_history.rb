@@ -1,6 +1,17 @@
 class ECF2TeacherHistory
   class InvalidPeriodType < StandardError; end
 
+  class Error
+    attr_reader :teacher, :model, :message, :migration_item_id
+
+    def initialize(teacher:, model:, message:, migration_item_id:)
+      @teacher = teacher
+      @model = model
+      @message = message
+      @migration_item_id = migration_item_id
+    end
+  end
+
   MIGRATION_ITEM_TYPE = "Migration::InductionRecord"
 
   AppropriateBodyData = Data.define(:id, :name)
@@ -88,6 +99,24 @@ class ECF2TeacherHistory
     migration_mode.to_s == "all_induction_records"
   end
 
+  def record_failure!(teacher:, model:, message:, migration_item_id:)
+    @failed = true
+
+    record_failed_combinations(at_school_period: model, message:) if model.respond_to?(:training_periods)
+    record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
+    record_failed_mentorship(mentorship: model, message:) if model.is_a?(ECF2TeacherHistory::MentorshipPeriod)
+    model_identifier = model.is_a?(Symbol) ? model : model.class.name.demodulize.underscore
+
+    ::TeacherMigrationFailure.create!(
+      teacher:,
+      model: model_identifier,
+      message: message.presence || "FIXME: no message was set for this failure!",
+      migration_item_id:,
+      migration_item_type: MIGRATION_ITEM_TYPE,
+      migration_mode:
+    )
+  end
+
 private
 
   def data_migration_teacher_combinations
@@ -118,33 +147,8 @@ private
     end
   end
 
-  def with_failure_recording(teacher:, model:, migration_item_id:)
-    yield
-  rescue ActiveRecord::ActiveRecordError => e
-    record_failure!(teacher:, model:, message: e.message, migration_item_id:)
-    raise if raise_errors?
-  end
-
   def raise_errors?
     Rails.application.config.raise_migration_errors
-  end
-
-  def record_failure!(teacher:, model:, message:, migration_item_id:)
-    @failed = true
-
-    record_failed_combinations(at_school_period: model, message:) if model.respond_to?(:training_periods)
-    record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
-    record_failed_mentorship(mentorship: model, message:) if model.is_a?(ECF2TeacherHistory::MentorshipPeriod)
-    model_identifier = model.is_a?(Symbol) ? model : model.class.name.demodulize.underscore
-
-    ::TeacherMigrationFailure.create!(
-      teacher:,
-      model: model_identifier,
-      message: message.presence || "FIXME: no message was set for this failure!",
-      migration_item_id:,
-      migration_item_type: MIGRATION_ITEM_TYPE,
-      migration_mode:
-    )
   end
 
   def record_failed_combinations(at_school_period:, message:)
@@ -245,5 +249,14 @@ private
         end
       end
     end
+  end
+
+  def with_failure_recording(teacher:, model:, migration_item_id:)
+    yield
+  rescue ActiveRecord::ActiveRecordError => e
+    if raise_errors?
+      raise(StandardError, message: e.message, cause: Error.new(teacher:, model:, message: e.message, migration_item_id:))
+    end
+    record_failure!(teacher:, model:, message: e.message, migration_item_id:)
   end
 end
