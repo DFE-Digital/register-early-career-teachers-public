@@ -40,6 +40,7 @@ describe "One induction record (end to end, existing teacher)" do
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "latest_induction_records"
     end
 
     it "sets the ECF2 teacher's created_at to the ECF1 user's" do
@@ -81,11 +82,12 @@ describe "One induction record (end to end, existing teacher)" do
     end
   end
 
-  context "when in all_induction_records mode (premium)", skip: "re-enable once we've implemented premium mode" do
+  context "when in all_induction_records mode (premium)" do
     let(:migration_mode) { :all_induction_records }
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "all_induction_records"
     end
 
     it "creates a single ect_at_school_period linked to the teacher at the right school" do

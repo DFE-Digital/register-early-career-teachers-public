@@ -42,6 +42,7 @@ describe "Creating a membership (end to end)" do
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq migration_mode.to_s
     end
 
     it "creates a single ect_at_school_period linked to the teacher at the right school" do
@@ -69,11 +70,36 @@ describe "Creating a membership (end to end)" do
     end
   end
 
-  context "when in all_induction_records mode (premium)", skip: "re-enable once we've implemented premium mode" do
+  context "when in all_induction_records mode (premium)" do
     let(:migration_mode) { :all_induction_records }
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq migration_mode.to_s
+    end
+
+    it "creates a single ect_at_school_period linked to the teacher at the right school" do
+      ect_at_school_periods = teacher.ect_at_school_periods
+      ect_at_school_period = ect_at_school_periods.first
+
+      aggregate_failures do
+        expect(ect_at_school_periods.count).to be(1)
+
+        expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+      end
+    end
+
+    it "creates a single mentorship_period for the teacher linked to the matching mentor" do
+      expect(MentorshipPeriod.count).to be(1)
+
+      mentorship_period = MentorshipPeriod.first
+
+      aggregate_failures do
+        expect(mentorship_period.started_on).to eql(ect_start_date)
+        expect(mentorship_period.finished_on).to be_nil
+        expect(mentorship_period.mentor.teacher).to eql(mentor_teacher_record)
+        expect(mentorship_period.mentee.teacher.trn).to eql(ecf1_teacher_profile.trn)
+      end
     end
   end
 end
