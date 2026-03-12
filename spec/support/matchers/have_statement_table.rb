@@ -1,10 +1,11 @@
 module HaveStatementTable
   class Matcher
-    def initialize(caption:, headings:, rows:, total: nil)
+    def initialize(caption:, headings:, rows:, total: nil, total_label: "Total")
       @caption = caption
       @headings = headings
       @rows = rows
       @total = total
+      @total_label = total_label
     end
 
     def matches?(page)
@@ -15,7 +16,7 @@ module HaveStatementTable
       table = page.find("table", text: @caption)
       # Assert table has the expected headings
       return false unless @headings.each_with_index.all? do |heading, index|
-        table.has_css?(th_selector(index: index + 1), text: heading)
+        table.has_css?(header_selector(index: index + 1), text: heading)
       end
 
       # Assert table has the expected number of rows
@@ -24,13 +25,13 @@ module HaveStatementTable
       # Assert table has the expected cells
       return false unless @rows.each_with_index.all? do |row, index|
         row.each_with_index.all? do |cell, cell_index|
-          table.has_css?(td_selector(row: index + 1, cell: cell_index + 1), text: cell)
+          table.has_css?(cell_selector(row: index + 1, cell: cell_index + 1), text: cell)
         end
       end
 
       # Assert the expected total is displayed as a heading
       if @total
-        total = table.sibling(".govuk-heading-s", text: "Total")
+        total = table.sibling(".govuk-heading-s", text: @total_label)
         return false unless total.sibling(".govuk-heading-s").has_text?(@total)
       end
 
@@ -50,8 +51,11 @@ module HaveStatementTable
 
   private
 
-    def td_selector(row:, cell:) = "tbody tr:nth-child(#{row}) td:nth-child(#{cell})"
-    def th_selector(index:) = "thead tr th:nth-child(#{index})"
+    def cell_selector(row:, cell:)
+      "tbody tr:nth-child(#{row}) td:nth-child(#{cell}), tbody tr:nth-child(#{row}) th:nth-child(#{cell})"
+    end
+
+    def header_selector(index:) = "thead tr th:nth-child(#{index})"
   end
 
   def have_statement_table(...) = Matcher.new(...)

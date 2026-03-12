@@ -200,3 +200,8 @@ $_current-link-border-width: govuk-spacing(1);
   background-color: $govuk-template-background-colour;
   white-space: pre-wrap;
 }
+
+.govuk-table__row--no-border > th,
+.govuk-table__row--no-border > td {
+  border-bottom: 0;
+}
