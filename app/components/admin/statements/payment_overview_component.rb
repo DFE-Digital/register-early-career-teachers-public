@@ -17,7 +17,7 @@ module Admin
           if statement.contract.ecf_contract_type?
             PaymentOverview::ECFComponent
           elsif statement.contract.ittecf_ectp_contract_type?
-            PaymentOverview::IttecfComponent
+            PaymentOverview::IttecfEctpComponent
           end
 
         klass.new(statement:)
@@ -25,14 +25,6 @@ module Admin
 
       def total
         number_to_pounds(total_amount)
-      end
-
-      def formatted_deadline_date
-        statement.deadline_date.to_fs(:govuk)
-      end
-
-      def formatted_payment_date
-        statement.payment_date.to_fs(:govuk)
       end
 
     private

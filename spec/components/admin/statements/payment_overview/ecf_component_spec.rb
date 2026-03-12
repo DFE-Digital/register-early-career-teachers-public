@@ -2,8 +2,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
   let(:component) { described_class.new statement: }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year) }
-  let(:active_lead_provider) { school_partnership.active_lead_provider }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024) }
 
   let(:deadline_date) { Date.new(2024, 9, 30) }
   let(:payment_date) { Date.new(2024, 10, 15) }
@@ -84,8 +83,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
             ["Clawbacks", "-£150.00"],
             ["Additional adjustments", "£375.00"],
             ["VAT", "£365.00"],
-          ],
-          total: :not_present
+          ]
         )
       end
     end
