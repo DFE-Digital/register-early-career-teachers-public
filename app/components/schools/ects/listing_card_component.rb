@@ -73,8 +73,14 @@ module Schools
       def appropriate_body_row
         {
           key: { text: "Appropriate body" },
-          value: { text: ect_at_school_period.school_reported_appropriate_body_name }
+          value: { text: appropriate_body_text }
         }
+      end
+
+      def appropriate_body_text
+        return "Not reported" if ect_at_school_period.appropriate_body_not_reported?
+
+        ect_at_school_period.school_reported_appropriate_body_name
       end
 
       def delivery_partner_row
