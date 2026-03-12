@@ -10,6 +10,11 @@ module Schools
             confirmation: ConfirmationStep
           }]
         end
+
+        def effective_training_period
+          ect_at_school_period.current_or_next_training_period ||
+            ect_at_school_period.latest_training_period
+        end
       end
     end
   end

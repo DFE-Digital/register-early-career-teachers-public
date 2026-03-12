@@ -24,12 +24,6 @@ RSpec.describe APISeedData::Teachers::SchoolTransfers do
       expect(school_transfers_for(lead_provider2)).not_to be_empty
       expect(school_transfers_for(lead_provider3)).not_to be_empty
     end
-
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(TrainingPeriod, :count)
-      refresh_teacher_metadata
-      expect { instance.plant }.not_to change(TrainingPeriod, :count)
-    end
   end
 
 private

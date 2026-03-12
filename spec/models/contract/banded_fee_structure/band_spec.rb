@@ -52,7 +52,7 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
 
     describe "sequential band declaration boundaries" do
       subject(:band) do
-        FactoryBot.build_stubbed(
+        FactoryBot.build(
           :contract_banded_fee_structure_band,
           banded_fee_structure:,
           min_declarations:,
@@ -61,13 +61,13 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
       end
 
       let(:banded_fee_structure) do
-        FactoryBot.build_stubbed(
+        FactoryBot.create(
           :contract_banded_fee_structure,
           :with_bands,
           declaration_boundaries: [
             { min: 1, max: 100 },
-            { min: 201, max: 300 },
             { min: 101, max: 200 },
+            { min: 201, max: 300 },
           ]
         )
       end
@@ -77,7 +77,10 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
         let(:min_declarations) { 250 }
         let(:max_declarations) { 400 }
 
-        it { is_expected.to be_invalid }
+        it "is expected to be invalid" do
+          expect(band).to be_invalid
+          expect(band.errors[:base]).to include("Declaration boundaries must be sequential without gaps")
+        end
       end
 
       context "when the band's min declarations is greater than the " \
@@ -85,7 +88,10 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
         let(:min_declarations) { 350 }
         let(:max_declarations) { 450 }
 
-        it { is_expected.to be_invalid }
+        it "is expected to be invalid" do
+          expect(band).to be_invalid
+          expect(band.errors[:base]).to include("Declaration boundaries must be sequential without gaps")
+        end
       end
 
       context "when the band's min declarations is greater than the " \
@@ -104,7 +110,10 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
         let(:min_declarations) { 2 }
         let(:max_declarations) { 400 }
 
-        it { is_expected.to be_invalid }
+        it "is expected to be invalid" do
+          expect(band).to be_invalid
+          expect(band.errors[:min_declarations]).to include("The first band's min declarations must be 1")
+        end
       end
 
       context "when the banded fee structure has no bands yet " \
@@ -116,6 +125,91 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
         let(:max_declarations) { 400 }
 
         it { is_expected.to be_valid }
+      end
+
+      context "when updating an existing band" do
+        let(:banded_fee_structure) { FactoryBot.create(:contract_banded_fee_structure, :with_bands) }
+
+        it "is valid if the updated band still has sequential declaration boundaries" do
+          band = banded_fee_structure.bands.last
+          band.max_declarations += 50
+
+          expect(band).to be_valid
+        end
+
+        it "is invalid if the updated band no longer has sequential declaration boundaries" do
+          band = banded_fee_structure.bands.last
+          band.min_declarations = 1
+
+          expect(band).to be_invalid
+          expect(band.errors[:base]).to include("Declaration boundaries must be sequential without gaps")
+        end
+      end
+    end
+
+    describe "band consistency across active lead providers" do
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
+
+      it "is valid when creating the first band for the active lead provider" do
+        contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract:)
+        band = FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure:)
+        expect(band).to be_valid
+      end
+
+      it "is valid when creating bands for another contract for the same active lead provider when the bands are consistent" do
+        original_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: original_contract)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 100)
+
+        new_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        new_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: new_contract)
+        new_band = FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 100)
+
+        expect(new_band).to be_valid
+      end
+
+      it "is invalid when creating bands for another contract for the same active lead provider when the bands are not consistent" do
+        original_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: original_contract)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 100, min_declarations: 1, max_declarations: 2)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 150, min_declarations: 3, max_declarations: 4)
+
+        new_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        new_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: new_contract)
+        new_band = FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 150, min_declarations: 1, max_declarations: 2)
+
+        expect(new_band).to be_invalid
+        expect(new_band.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
+
+        new_band.fee_per_declaration = 100
+        expect(new_band).to be_valid
+        new_band.save!
+
+        new_band = FactoryBot.build(:contract_banded_fee_structure_band, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 150, min_declarations: 3, max_declarations: 5)
+        expect(new_band).to be_invalid
+        expect(new_band.errors[:base]).to include(/Band at index 1 is inconsistent across statements for the same active lead provider/)
+
+        new_band.max_declarations = 4
+        expect(new_band).to be_valid
+      end
+
+      it "is invalid when updating a band such that it becomes inconsistent with bands for the same active lead provider" do
+        original_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: original_contract)
+        FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure:, fee_per_declaration: 100)
+
+        new_contract = FactoryBot.create(:contract, :for_ecf, active_lead_provider:)
+        new_banded_fee_structure = FactoryBot.create(:contract_banded_fee_structure, contract: new_contract)
+        new_band = FactoryBot.create(:contract_banded_fee_structure_band, banded_fee_structure: new_banded_fee_structure, fee_per_declaration: 100)
+
+        new_band.fee_per_declaration = 150
+
+        expect(new_band).to be_invalid
+        expect(new_band.errors[:base]).to include(/Band at index 0 is inconsistent across statements for the same active lead provider/)
+
+        new_band.fee_per_declaration = 100
+        expect(new_band).to be_valid
       end
     end
   end

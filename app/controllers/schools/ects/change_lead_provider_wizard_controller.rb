@@ -24,7 +24,9 @@ module Schools
     private
 
       def ensure_provider_led!
-        return if @ect_at_school_period&.provider_led_training_programme?
+        return render("errors/not_found", status: :not_found) unless @ect_at_school_period
+
+        return if @ect_at_school_period&.latest_training_period&.provider_led_training_programme?
 
         render "errors/not_found", status: :not_found
       end

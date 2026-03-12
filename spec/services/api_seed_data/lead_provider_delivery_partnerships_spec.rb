@@ -21,11 +21,6 @@ RSpec.describe APISeedData::LeadProviderDeliveryPartnerships do
       expect { instance.plant }.to(change(LeadProviderDeliveryPartnership, :count).by(be_between(minimum_records, maximum_records)))
     end
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(LeadProviderDeliveryPartnership, :count)
-      expect { instance.plant }.not_to change(LeadProviderDeliveryPartnership, :count)
-    end
-
     it "creates lead provider delivery partnerships with the correct attributes" do
       instance.plant
 

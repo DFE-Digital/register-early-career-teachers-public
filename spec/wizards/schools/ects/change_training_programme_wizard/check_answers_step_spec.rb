@@ -34,6 +34,11 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
   describe "#previous_step" do
     context "when the new training programme is provider_led" do
       let(:training_programme) { "provider_led" }
+      let(:training_period) { instance_double(TrainingPeriod, training_programme: "school_led") }
+
+      before do
+        allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(training_period)
+      end
 
       it "returns the lead_provider step" do
         expect(current_step.previous_step).to eq(:lead_provider)
@@ -56,18 +61,27 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
   end
 
   describe "#current_training_programme" do
-    context "when the new training programme is provider_led" do
-      let(:training_programme) { "provider_led" }
+    context "when there is a current_or_next training period" do
+      let(:training_period) { instance_double(TrainingPeriod, id: 1, training_programme: "provider_led") }
 
-      it "returns school_led" do
-        expect(current_step.current_training_programme).to eq("school_led")
+      before do
+        allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(training_period)
+      end
+
+      it "returns the current training period's programme" do
+        expect(current_step.current_training_programme).to eq("provider_led")
       end
     end
 
-    context "when the new training programme is school_led" do
-      let(:training_programme) { "school_led" }
+    context "when there is no current_or_next training period but there is a latest training period" do
+      let(:latest_training_period) { instance_double(TrainingPeriod, id: 2, training_programme: "provider_led") }
 
-      it "returns provider_led" do
+      before do
+        allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)
+        allow(ect_at_school_period).to receive_messages(current_or_next_training_period: nil, latest_training_period:)
+      end
+
+      it "falls back to the latest training period's programme" do
         expect(current_step.current_training_programme).to eq("provider_led")
       end
     end
@@ -104,11 +118,14 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
       let(:training_programme) { "provider_led" }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:lead_provider_id) { lead_provider.id }
+      let(:current_training_period) { instance_double(TrainingPeriod, training_programme: "school_led") }
 
       before do
+        allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(current_training_period)
         allow(ECTAtSchoolPeriods::SwitchTraining)
           .to receive(:to_provider_led)
           .with(ect_at_school_period, author: anything, lead_provider:)
+        allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
       end
 
       it "switches the training programme to provider led" do
@@ -124,15 +141,15 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
 
         expect(Events::Record)
           .to receive(:record_teacher_training_programme_updated_event!)
-          .with(
-            old_training_programme: "school_led",
-            new_training_programme: "provider_led",
-            author:,
-            ect_at_school_period:,
-            school:,
-            teacher: ect_at_school_period.teacher,
-            happened_at: Time.current
-          )
+          .with(hash_including(
+                  old_training_programme: "school_led",
+                  new_training_programme: "provider_led",
+                  author:,
+                  ect_at_school_period:,
+                  school:,
+                  teacher: ect_at_school_period.teacher,
+                  happened_at: Time.current
+                ))
 
         current_step.save!
       end
@@ -145,11 +162,14 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
     context "when the new training programme is school_led" do
       let(:training_programme) { "school_led" }
       let(:lead_provider_id) { "" }
+      let(:current_training_period) { instance_double(TrainingPeriod, training_programme: "provider_led") }
 
       before do
+        allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(current_training_period)
         allow(ECTAtSchoolPeriods::SwitchTraining)
           .to receive(:to_school_led)
           .with(ect_at_school_period, author: anything)
+        allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
       end
 
       it "switches the training programme to school led" do
@@ -165,21 +185,46 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::CheckAnswersStep do
 
         expect(Events::Record)
           .to receive(:record_teacher_training_programme_updated_event!)
-          .with(
-            old_training_programme: "provider_led",
-            new_training_programme: "school_led",
-            author:,
-            ect_at_school_period:,
-            school:,
-            teacher: ect_at_school_period.teacher,
-            happened_at: Time.current
-          )
+          .with(hash_including(
+                  old_training_programme: "provider_led",
+                  new_training_programme: "school_led",
+                  author:,
+                  ect_at_school_period:,
+                  school:,
+                  teacher: ect_at_school_period.teacher,
+                  happened_at: Time.current
+                ))
 
         current_step.save!
       end
 
       it "is truthy" do
         expect(current_step.save!).to be_truthy
+      end
+    end
+
+    context "when there is no current training period (eg withdrawn ended today)" do
+      let(:training_programme) { "school_led" }
+
+      before do
+        FactoryBot.create(:training_period, :provider_led, :withdrawn, ect_at_school_period:)
+        allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)
+
+        allow(ECTAtSchoolPeriods::SwitchTraining)
+          .to receive(:to_school_led)
+          .with(ect_at_school_period, author: anything)
+
+        allow(Events::Record).to receive(:record_teacher_training_programme_updated_event!)
+      end
+
+      it "records the old programme from the latest training period" do
+        freeze_time
+
+        expect(Events::Record)
+          .to receive(:record_teacher_training_programme_updated_event!)
+          .with(hash_including(old_training_programme: "provider_led"))
+
+        current_step.save!
       end
     end
   end

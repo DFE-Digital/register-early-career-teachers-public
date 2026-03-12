@@ -171,22 +171,9 @@
   - concurrency_key
   - expires_at
   - created_at
-  :gias_school_links:
-  - id
-  - urn
-  - link_urn
-  - link_type
-  - link_date
-  - created_at
-  - updated_at
   :users:
-  - id
-  - name
-  - email
   - otp_secret
   - otp_verified_at
-  - created_at
-  - updated_at
   - role
   - otp_school_urn
   :teacher_migration_failures:
@@ -507,3 +494,29 @@
   - ecf_mentor_contract_version
   - created_at
   - updated_at
+  :induction_periods:
+  - range
+  :training_periods:
+  - range
+  - ecf_start_induction_record_id
+  - ecf_end_induction_record_id
+  :mentorship_periods:
+  - range
+  - ecf_start_induction_record_id
+  - ecf_end_induction_record_id
+  :mentor_at_school_periods:
+  - range
+  - ecf_start_induction_record_id
+  - ecf_end_induction_record_id
+  :ect_at_school_periods:
+  - range
+  - ecf_start_induction_record_id
+  - ecf_end_induction_record_id
+  :contract_periods:
+  - range
+  :lead_providers:
+  - ecf_id
+  :statement_adjustments:
+  - ecf_id
+  :lead_provider_delivery_partnerships:
+  - ecf_id

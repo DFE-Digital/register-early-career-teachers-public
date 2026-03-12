@@ -6,7 +6,7 @@ describe MentorshipPeriod do
     let!(:target) { FactoryBot.create(:teacher) }
     let(:school) { FactoryBot.create(:school) }
 
-    it_behaves_like "a declarative metadata model", on_event: %i[create destroy]
+    it_behaves_like "a declarative metadata model", on_event: %i[create destroy update]
   end
 
   describe "associations" do

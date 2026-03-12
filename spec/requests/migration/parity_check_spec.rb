@@ -1,7 +1,7 @@
 RSpec.describe "Parity check", type: :request do
   let(:enabled) { true }
 
-  before { allow(Rails.configuration).to receive(:parity_check).and_return({ enabled: }) }
+  before { allow(Rails.application.config).to receive_messages(parity_check: { enabled: }, enable_migration_interface: true) }
 
   describe "GET /migration/parity-checks/new" do
     context "when signed in as a DfE user" do

@@ -23,6 +23,54 @@ RSpec.describe ECTHelper, type: :helper do
     end
   end
 
+  describe "#register_mentor_back_link" do
+    context "when a new mentor has been requested" do
+      context "when there are no alternative mentors to choose from" do
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :ongoing,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on:
+          )
+        end
+
+        it "returns the ECT details page" do
+          expect(helper.register_mentor_back_link(ect_at_school_period, true))
+            .to eq(schools_ect_path(ect_at_school_period))
+        end
+      end
+
+      context "when alternative mentors exist" do
+        let!(:current_mentor_teacher) { FactoryBot.create(:teacher, trs_first_name: "Current", trs_last_name: "Mentor") }
+        let!(:current_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            teacher: current_mentor_teacher,
+            school:,
+            started_on:
+          )
+        end
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :ongoing,
+            mentee: ect_at_school_period,
+            mentor: current_mentor_at_school_period,
+            started_on:
+          )
+        end
+
+        it "returns the change mentor form" do
+          expect(helper.register_mentor_back_link(ect_at_school_period, true))
+            .to eq(schools_ects_change_mentor_wizard_edit_path(ect_at_school_period, new_mentor_requested: true))
+        end
+      end
+    end
+  end
+
   describe "#ect_status" do
     context "when the ECT is leaving" do
       before do
@@ -74,8 +122,8 @@ RSpec.describe ECTHelper, type: :helper do
       end
 
       context "when the ECT does not have a current mentor" do
-        it "returns a red 'Mentor required' tag" do
-          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--red", text: "Mentor required")
+        it "returns a red 'Action required' tag" do
+          expect(helper.ect_status(ect_at_school_period)).to have_css("strong.govuk-tag.govuk-tag--red", text: "Action required")
         end
       end
     end

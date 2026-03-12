@@ -16,9 +16,10 @@ module Schools
         def lead_providers_for_select
           return [] unless contract_period
 
-          LeadProviders::Active
-            .in_contract_period(contract_period)
+          LeadProvider
+            .where(id: ActiveLeadProvider.where(contract_period_year: contract_period.year).select(:lead_provider_id))
             .select(:id, :name)
+            .order(:name)
         end
 
         def save!

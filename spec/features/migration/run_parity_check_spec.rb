@@ -9,12 +9,15 @@ RSpec.describe "Run parity check" do
 
   before do
     sign_in_as_dfe_user(role: :admin)
-    allow(Rails.application.config).to receive(:parity_check).and_return({
-      enabled: true,
-      ecf_url:,
-      rect_url:,
-      tokens: { lead_provider.ecf_id => "test-token" }.to_json
-    })
+    allow(Rails.application.config).to receive_messages(
+      parity_check: {
+        enabled: true,
+        ecf_url:,
+        rect_url:,
+        tokens: { lead_provider.ecf_id => "test-token" }.to_json
+      },
+      enable_migration_interface: true
+    )
   end
 
   scenario "Running a parity check with endpoints selected" do

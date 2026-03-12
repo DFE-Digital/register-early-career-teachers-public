@@ -48,11 +48,5 @@ module APISeedData
         end
       end
     end
-
-  protected
-
-    def plantable?
-      super && ContractPeriod.none?
-    end
   end
 end

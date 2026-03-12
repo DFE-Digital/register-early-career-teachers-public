@@ -36,8 +36,10 @@ teach_first_2022 = active_lead_providers.fetch([teach_first, 2022])
 teach_first_2023 = active_lead_providers.fetch([teach_first, 2023])
 teach_first_2024 = active_lead_providers.fetch([teach_first, 2024])
 teach_first_2025 = active_lead_providers.fetch([teach_first, 2025])
+teach_first_2026 = active_lead_providers.fetch([teach_first, 2026])
 best_practice_network_2023 = active_lead_providers.fetch([best_practice_network, 2023])
 best_practice_network_2024 = active_lead_providers.fetch([best_practice_network, 2024])
+best_practice_network_2026 = active_lead_providers.fetch([best_practice_network, 2026])
 capita_2022 = active_lead_providers.fetch([capita, 2022])
 
 artisan = DeliveryPartner.find_by!(name: "Artisan Education Group")
@@ -59,8 +61,10 @@ lead_provider_delivery_partnerships = []
   { active_lead_provider: teach_first_2023, delivery_partner: grain },
   { active_lead_provider: teach_first_2024, delivery_partner: grain },
   { active_lead_provider: teach_first_2025, delivery_partner: grain },
+  { active_lead_provider: teach_first_2026, delivery_partner: grain },
   { active_lead_provider: best_practice_network_2023, delivery_partner: rising_minds },
   { active_lead_provider: best_practice_network_2024, delivery_partner: rising_minds },
+  { active_lead_provider: best_practice_network_2026, delivery_partner: rising_minds },
   { active_lead_provider: capita_2022, delivery_partner: capita_delivery_partner }
 ].each do |data|
   LeadProviderDeliveryPartnership

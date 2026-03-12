@@ -42,9 +42,9 @@ module Schools
         end
 
         def current_lead_provider
-          @current_lead_provider ||= ECTAtSchoolPeriods::CurrentTraining
+          @current_lead_provider ||= ECTAtSchoolPeriods::ChangeLeadProviderResolver
             .new(ect_at_school_period)
-            .lead_provider_via_school_partnership_or_eoi
+            .call
         end
       end
     end

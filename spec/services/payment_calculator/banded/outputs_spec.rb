@@ -31,10 +31,10 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
 
   describe "#total_billable_amount" do
     it "sums billable amounts across all declaration types" do
-      # 3x eligible/started declarations (0.20 fee proportion)
+      # 5x eligible/started declarations (0.20 fee proportion)
       # 0.75 output fee ratio
       # 100.0 fee per declaration
-      expect(outputs.total_billable_amount).to eq(3 * 0.75 * 100.0 * 0.20)
+      expect(outputs.total_billable_amount).to eq(5 * 0.75 * 100.0 * 0.20)
     end
   end
 
@@ -49,7 +49,7 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
 
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
-      expect(outputs.total_net_amount).to eq(15.0)
+      expect(outputs.total_net_amount).to eq(45.0)
     end
   end
 

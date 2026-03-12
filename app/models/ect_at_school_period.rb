@@ -21,7 +21,7 @@ class ECTAtSchoolPeriod < ApplicationRecord
   touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
 
   refresh_metadata -> { school }, on_event: %i[create destroy update]
-  refresh_metadata -> { teacher }, on_event: %i[create destroy]
+  refresh_metadata -> { teacher }, on_event: %i[create destroy update]
 
   # Validations
   validate :appropriate_body_for_independent_school,
@@ -122,6 +122,29 @@ class ECTAtSchoolPeriod < ApplicationRecord
     return ECTAtSchoolPeriod.none unless teacher
 
     teacher.ect_at_school_periods.excluding(self)
+  end
+
+  def latest_training_status
+    latest_training_period&.status
+  end
+
+  def latest_lead_provider_name
+    training_period = latest_training_period
+    return if training_period.blank?
+
+    if training_period.only_expression_of_interest?
+      training_period.expression_of_interest_lead_provider&.name
+    else
+      training_period.lead_provider_name
+    end
+  end
+
+  def alternative_mentors_available?
+    current_mentor = current_or_next_mentorship_period&.mentor
+
+    mentors = Schools::EligibleMentors.new(school).for_ect(self)
+
+    mentors.excluding(current_mentor).exists?
   end
 
   delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher

@@ -28,7 +28,7 @@ data_sources:
 
   # http://localhost:3000/admin/blazer/queries/docs?data_source=ecf
   ecf:
-    url: <%= ENV.fetch("ECF_DATABASE_URL", "postgres://localhost:5432") %>
+    url: <%= ENV.fetch("MIGRATION_DATABASE_URL", "postgres://localhost:5432") %>
 
 
 # statement timeout, in seconds

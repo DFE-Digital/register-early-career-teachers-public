@@ -21,11 +21,6 @@ RSpec.describe APISeedData::TeachersWithHistories do
   describe "#plant" do
     subject(:plant) { instance.plant }
 
-    it "does not create data when already present" do
-      expect { instance.plant }.to change(TrainingPeriod, :count)
-      expect { instance.plant }.not_to change(TrainingPeriod, :count)
-    end
-
     context "when creating teachers in every contract period" do
       it "creates correct data" do
         plant

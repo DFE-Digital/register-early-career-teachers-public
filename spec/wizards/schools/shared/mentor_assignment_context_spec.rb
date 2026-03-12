@@ -23,6 +23,34 @@ RSpec.describe Schools::Shared::MentorAssignmentContext do
     it "returns the ECTs full name" do
       expect(context.ect_teacher_full_name).to eq("King Vegeta")
     end
+
+    context "when the ECT is provider-led via expression of interest" do
+      let(:started_on) { 2.days.ago.to_date }
+      let(:finished_on) { 2.days.from_now.to_date }
+
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+
+      let(:ect_at_school_period) do
+        FactoryBot.create(:ect_at_school_period, started_on:, finished_on:, school:, teacher: ect_teacher)
+      end
+
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :ongoing,
+          ect_at_school_period:,
+          started_on:,
+          finished_on:,
+          school_partnership: nil,
+          expression_of_interest: active_lead_provider
+        )
+      end
+
+      it "returns the ECT lead provider from the expression of interest" do
+        expect(context.ect_lead_provider).to eq(lead_provider)
+      end
+    end
   end
 
   describe "#mentor_teacher_full_name" do

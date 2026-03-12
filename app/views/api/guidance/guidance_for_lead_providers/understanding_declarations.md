@@ -36,7 +36,7 @@ Submitting declarations in order:
 - makes our data more accurate and reliable
 - reduces the need for clawbacks, voiding, and manual adjustments
 
-For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to post-2024 cohorts.
+For declarations relating to participants in pre-2025 cohorts, the declaration date must fall within the milestone dates set out in the contract management payment guidance. This requirement does not apply to the 2025 cohort or later.
 
 ## How declarations should be ordered
 
@@ -86,7 +86,7 @@ See the [Swagger documentation](/api/docs/v3#/Declarations) for full details of 
 
 ### How lead providers get paid for training participants
 
-1. Participant attends training.
+1. Participant attends training, completes training materials or shows other evidence of meeting the training milestone.
 2. Lead provider records training milestone.
 3. Lead provider submits declaration with 'retained-1' type via API.
 4. API validates and links to relevant financial statement.
@@ -124,10 +124,12 @@ When a declaration is voided, it will become:
 
 To see which evidence types are valid for each declaration type, check the [Swagger documentation](/api/docs/v3/) and refer to the relevant schema.
 
-For pre-2025 cohorts, evidence is optional. If you do provide it, valid evidence types are:
+For pre-2025 cohorts, evidence is optional for `started` declarations. If you do provide it, valid evidence types are:
 
 - `training-event-attended`
 - `self-study-material-completed`
 - `other`
 
-Evidence types for post-2024 cohorts are not compatible with pre-2025 cohorts. If a provider submits a declaration for a pre-2025 cohort using a post-2024 evidence type, the API will return a 422 error.
+For the 2025 cohort and later, evidence is now mandatory for started declarations, as shown in the documentation above. This means evidence is now required for all declaration types for cohorts 2025 and later.
+
+Evidence types for the 2025 cohort and later are not compatible with pre-2025 cohorts. If a provider submits a declaration for a pre-2025 cohort using a evidence type that is only valid for the 2025 cohort and later, the API will return a 422 error.
