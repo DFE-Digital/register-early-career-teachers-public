@@ -67,11 +67,8 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   end
 
   let(:statement) { Admin::StatementPresenter.new(feb_statement) }
-<<<<<<< HEAD
   let(:deadline_date) { Date.new(contract_period.year, 2, 1).prev_day }
   let(:payment_date) { Date.new(contract_period.year, 2, 28) }
-=======
->>>>>>> bab102fe1 ([1831] Rename statement presenter to statement)
 
   before do
     create_clawback(
