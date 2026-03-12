@@ -82,6 +82,10 @@ private
       **withdrawal_data(
         training_status: induction_record.training_status,
         lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+      ),
+      **deferral_data(
+        training_status: induction_record.training_status,
+        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       )
     }.merge(overrides)
 
@@ -100,5 +104,9 @@ private
 
   def withdrawal_data(training_status:, lead_provider_id:)
     TeacherHistoryConverter::WithdrawalData.new(training_status:, states:, lead_provider_id:).withdrawal_data
+  end
+
+  def deferral_data(training_status:, lead_provider_id:)
+    TeacherHistoryConverter::DeferralData.new(training_status:, states:, lead_provider_id:).deferral_data
   end
 end

@@ -259,7 +259,7 @@ private
 
   def ecf1_ect_states
     ecf1_teacher_history.ect.states.map do |s|
-      { state: s.state, reason: s.reason, created_at: s.created_at }
+      { state: s.state, reason: s.reason, created_at: s.created_at, cpd_lead_provider_id: s.cpd_lead_provider_id }
     end
   end
 
