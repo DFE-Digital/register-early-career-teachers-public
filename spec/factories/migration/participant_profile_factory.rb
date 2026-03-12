@@ -17,5 +17,15 @@ FactoryBot.define do
     trait :mentor do
       type { "ParticipantProfile::Mentor" }
     end
+
+    trait :completed_ect do
+      ect
+      induction_completion_date { 3.weeks.ago }
+    end
+
+    trait :completed_mentor do
+      mentor
+      mentor_completion_date { 2.weeks.ago }
+    end
   end
 end
