@@ -1,9 +1,8 @@
-RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :component do
+RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :component do
   let(:component) { described_class.new statement: }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year) }
-  let(:active_lead_provider) { school_partnership.active_lead_provider }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
 
   let(:deadline_date) { Date.new(2025, 9, 30) }
   let(:payment_date) { Date.new(2025, 10, 15) }
@@ -90,8 +89,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfComponent, type: :compo
             ["Mentors clawbacks", "-£300.00"],
             ["Additional adjustments", "£375.00"],
             ["VAT", "£395.00"],
-          ],
-          total: :not_present
+          ]
         )
       end
     end

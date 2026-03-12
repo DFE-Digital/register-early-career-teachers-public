@@ -268,10 +268,8 @@ capita_brookfield_2022 = find_or_create_school_partnership!(
   contract_period: cp_2022
 )
 
-FactoryBot.create(:contract_banded_fee_structure, :with_bands)
-
-teach_first_contract_2024 = Contract.where(active_lead_provider: teach_first_grain_2024, contract_type: :ecf).first
-teach_first_contract_2025 = Contract.where(active_lead_provider: teach_first_grain_2025, contract_type: :ittecf_ectp).first
+teach_first_contract_2024 = Contract.where(active_lead_provider: teach_first_grain_2024, contract_type: :ecf).first!
+teach_first_contract_2025 = Contract.where(active_lead_provider: teach_first_grain_2025, contract_type: :ittecf_ectp).first!
 
 teach_first_ittecf_statement1 = FactoryBot.create(
   :statement,

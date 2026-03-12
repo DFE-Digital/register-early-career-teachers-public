@@ -28,8 +28,6 @@ module HaveStatementTable
         end
       end
 
-      return true if @total == :not_present
-
       # Assert the expected total is displayed as a heading
       if @total
         total = table.sibling(".govuk-heading-s", text: "Total")

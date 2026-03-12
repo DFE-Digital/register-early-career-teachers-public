@@ -1,7 +1,7 @@
 module Admin
   module Statements
     module PaymentOverview
-      class IttecfComponent < PaymentOverviewComponent
+      class IttecfEctpComponent < PaymentOverviewComponent
         def rows
           [
             ["ECTs output payment", { text: number_to_pounds(outputs), numeric: true }],
