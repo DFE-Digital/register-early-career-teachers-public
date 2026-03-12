@@ -1,6 +1,5 @@
 class ECF2TeacherHistory::TrainingPeriod
-  attr_reader :started_on,
-              :training_programme,
+  attr_reader :training_programme,
               :lead_provider_info,
               :delivery_partner_info,
               :contract_period_year,
@@ -16,7 +15,7 @@ class ECF2TeacherHistory::TrainingPeriod
               :school,
               :combination
 
-  attr_accessor :finished_on
+  attr_accessor :started_on, :finished_on
 
   def initialize(started_on:,
                  finished_on:,
