@@ -7,7 +7,7 @@ FactoryBot.define do
     trait(:for_ecf) do
       contract_type { "ecf" }
       ecf_contract_version { "1" }
-      association :banded_fee_structure, :with_bands, factory: %i[contract_banded_fee_structure with_bands]
+      association :banded_fee_structure, :with_bands, factory: :contract_banded_fee_structure
       flat_rate_fee_structure_id { nil }
     end
 
@@ -17,10 +17,6 @@ FactoryBot.define do
       ecf_mentor_contract_version { "2" }
       association :banded_fee_structure, :with_bands, factory: :contract_banded_fee_structure
       association :flat_rate_fee_structure, factory: :contract_flat_rate_fee_structure
-    end
-
-    trait(:with_bands) do
-      # association :banded_fee_structure, factory: %i[contract_banded_fee_structure with_bands]
     end
   end
 end
