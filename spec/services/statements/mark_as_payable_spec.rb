@@ -1,5 +1,5 @@
 RSpec.describe Statements::MarkAsPayable do
-  describe ".mark_all!" do
+  describe ".mark_all_eligible!" do
     it "marks open statements past their deadline" do
       statement = FactoryBot.create(:statement, :open, deadline_date: 1.day.ago)
       eligible_declaration = FactoryBot.create(
@@ -8,7 +8,7 @@ RSpec.describe Statements::MarkAsPayable do
         payment_statement: statement
       )
 
-      described_class.mark_all!
+      described_class.mark_all_eligible!
 
       expect(statement.reload).to be_payable
       expect(eligible_declaration.reload.payment_status).to eq("payable")
@@ -17,21 +17,29 @@ RSpec.describe Statements::MarkAsPayable do
     it "ignores statements with a future deadline" do
       statement = FactoryBot.create(:statement, :open, deadline_date: 1.day.from_now)
 
-      described_class.mark_all!
+      described_class.mark_all_eligible!
+
+      expect(statement.reload).to be_open
+    end
+
+    it "ignores statements with a deadline of today" do
+      statement = FactoryBot.create(:statement, :open, deadline_date: Date.current)
+
+      described_class.mark_all_eligible!
 
       expect(statement.reload).to be_open
     end
 
     it "ignores statements that are already payable" do
-      statement = FactoryBot.create(:statement, :payable)
+      statement = FactoryBot.create(:statement, :payable, deadline_date: 1.day.ago)
 
-      expect { described_class.mark_all! }.not_to(change { statement.reload.status })
+      expect { described_class.mark_all_eligible! }.not_to(change { statement.reload.status })
     end
 
     it "ignores statements that are already paid" do
-      statement = FactoryBot.create(:statement, :paid)
+      statement = FactoryBot.create(:statement, :paid, deadline_date: 1.day.ago)
 
-      expect { described_class.mark_all! }.not_to(change { statement.reload.status })
+      expect { described_class.mark_all_eligible! }.not_to(change { statement.reload.status })
     end
   end
 
@@ -71,6 +79,32 @@ RSpec.describe Statements::MarkAsPayable do
 
       expect(voided_declaration.reload.payment_status).to eq("voided")
       expect(no_payment_declaration.reload.payment_status).to eq("no_payment")
+    end
+
+    it "records a declaration marked payable event for each eligible declaration" do
+      declaration = FactoryBot.create(
+        :declaration, :eligible,
+        active_lead_provider:,
+        payment_statement: statement
+      )
+
+      expect(Events::Record).to receive(:record_teacher_declaration_marked_payable!).with(
+        author: instance_of(Events::SystemAuthor),
+        teacher: declaration.training_period.teacher,
+        training_period: declaration.training_period,
+        declaration:
+      )
+
+      subject.mark!
+    end
+
+    it "records a statement marked payable event" do
+      expect(Events::Record).to receive(:record_statement_marked_payable!).with(
+        author: instance_of(Events::SystemAuthor),
+        statement:
+      )
+
+      subject.mark!
     end
 
     it "rolls back all changes if an error occurs" do

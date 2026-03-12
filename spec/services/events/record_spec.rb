@@ -1692,6 +1692,32 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_statement_marked_payable!" do
+    let(:statement) { FactoryBot.create(:statement) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_statement_marked_payable!(
+          author:,
+          statement:
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          heading: "Statement marked as payable",
+          event_type: :statement_marked_payable,
+          statement:,
+          active_lead_provider: statement.active_lead_provider,
+          lead_provider: statement.active_lead_provider.lead_provider,
+          happened_at: Time.current,
+          metadata: hash_including(
+            contract_period_year: statement.active_lead_provider.contract_period.year
+          ),
+          **author_params
+        )
+      end
+    end
+  end
+
   describe "#record_lead_provider_delivery_partnership_added_event!" do
     let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -2205,6 +2231,39 @@ RSpec.describe Events::Record do
           lead_provider:
         )
       end
+    end
+  end
+
+  describe ".record_teacher_declaration_marked_payable" do
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:)
+    end
+    let(:training_period) do
+      FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
+    end
+    let(:declaration) do
+      FactoryBot.create(:declaration, :payable, training_period:)
+    end
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_teacher_declaration_marked_payable!(
+        author:,
+        teacher:,
+        training_period:,
+        declaration:
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :teacher_declaration_marked_payable,
+        heading: "Rhys Ifans's declaration was marked as payable",
+        teacher:,
+        training_period:,
+        declaration:,
+        happened_at: Time.current,
+        **author_params
+      )
     end
   end
 
