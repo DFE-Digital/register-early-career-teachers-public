@@ -1,8 +1,8 @@
 describe Migration::PreMigrationGantt do
-  subject(:service) { described_class.new(induction_records, []) }
+  subject(:service) { described_class.new(induction_records, [], participant_profile) }
 
-  let(:induction_record_1) { FactoryBot.create(:migration_induction_record) }
-  let(:participant_profile) { induction_record_1.participant_profile }
+  let(:participant_profile) { FactoryBot.create(:migration_participant_profile, :completed_ect) }
+  let(:induction_record_1) { FactoryBot.create(:migration_induction_record, participant_profile:) }
   let!(:induction_record_2) { FactoryBot.create(:migration_induction_record, participant_profile:) }
   let(:induction_records) { Migration::InductionRecordExporter.new.where_participant_profile_id_is(participant_profile.id).rows }
 
@@ -41,6 +41,12 @@ describe Migration::PreMigrationGantt do
         expect(puml.scan(/-- 100001 --/).count).to eq(1)
         expect(puml.scan(/-- 100002 --/).count).to eq(1)
       end
+    end
+
+    it "adds the completion date" do
+      puml = service.build
+
+      expect(puml).to match(%r{\[Induction completed\] happens at #{participant_profile.induction_completion_date}})
     end
   end
 end
