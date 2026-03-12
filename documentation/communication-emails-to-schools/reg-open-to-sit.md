@@ -46,7 +46,7 @@ If you do not have access to the service, you can request it from your school or
 We’ll ask you to confirm your school’s induction tutor when you use the service to register ECTs and mentors for the first time.
 
 ## Sign in
-Sign in to [register early career teachers](https://staging.register-early-career-teachers.education.gov.uk/).
+Sign in to [register early career teachers](https://register-early-career-teachers.education.gov.uk/).
 
 Regards,
 
