@@ -13,11 +13,9 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
   let(:banded_fee_structure) do
     FactoryBot.create(
       :contract_banded_fee_structure,
-      :with_bands,
       monthly_service_fee:,
       uplift_fee_per_declaration: 50,
-      recruitment_target: 100,
-      declaration_boundaries: [{ min: 1, max: 200 }]
+      recruitment_target: 100
     )
   end
 
@@ -30,7 +28,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
   let(:monthly_service_fee) { 1_000 }
 
   let(:contract) do
-    FactoryBot.create(:contract, :for_ittecf_ectp, :with_bands, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:, flat_rate_fee_structure:)
+    FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:, flat_rate_fee_structure:)
   end
 
   let(:flat_rate_fee_structure) do
