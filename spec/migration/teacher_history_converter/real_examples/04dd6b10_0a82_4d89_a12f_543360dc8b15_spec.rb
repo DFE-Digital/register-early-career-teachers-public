@@ -234,13 +234,13 @@ describe "Real data check for user 04dd6b10-0a82-4d89-a12f-543360dc8b15" do
           ect_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2021, 9, 1),
-              finished_on: Date.new(2023, 2, 28),
+              finished_on: Date.new(2022, 8, 31),
               training_periods: array_including(
                 hash_including(
                   lead_provider_info: hash_including(name: "Ambition Institute"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   started_on: Date.new(2021, 9, 1),
-                  finished_on: Date.new(2023, 2, 28),
+                  finished_on: Date.new(2022, 8, 31),
                   contract_period_year: 2021,
                   withdrawn_at: Time.zone.local(2023, 2, 28, 12, 41, 18),
                   withdrawal_reason: "other"
