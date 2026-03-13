@@ -94,7 +94,7 @@ RSpec.describe "Delete adjustment from statement" do
     expect(Statement::Adjustment.where(id: @deleted_adjustment.id).count).to be(0)
   end
 
-  def and_i_see_a_sucess_banner
+  def and_i_see_a_success_banner
     expect(page.locator(".govuk-notification-banner"))
       .to have_text("Adjustment removed")
   end
