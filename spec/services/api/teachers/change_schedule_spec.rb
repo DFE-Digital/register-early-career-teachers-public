@@ -83,13 +83,34 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
           end
 
-          context "when there are future training periods (for the same teacher)" do
+          context "when the training period has not started yet" do
+            before { training_period.update!(started_on: 1.week.from_now, finished_on: nil) }
+
+            it { is_expected.to have_one_error_per_attribute }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
+          end
+
+          context "when there are future training periods with a different lead provider (for the same teacher)" do
             before do
-              FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period)
+              other_school_partnership = FactoryBot.create(:school_partnership, school: at_school_period.school)
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period, school_partnership: other_school_partnership)
             end
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.") }
+          end
+
+          context "when there are future training periods with the same lead provider (for the same teacher)" do
+            before do
+              # Skip metadata refresh so latest_training_period still points to the current (started)
+              # period rather than the newly created future one
+              DeclarativeUpdates.skip(:metadata) do
+                same_lead_provider_school_partnership = FactoryBot.create(:school_partnership, :for_year, school: at_school_period.school, lead_provider:, year: contract_period.year)
+                FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period, school_partnership: same_lead_provider_school_partnership)
+              end
+            end
+
+            it { is_expected.to be_valid }
           end
 
           context "when there are future training periods (for a different teacher)" do
