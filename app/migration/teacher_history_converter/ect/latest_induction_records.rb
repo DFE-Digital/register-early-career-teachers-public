@@ -108,9 +108,11 @@ private
       lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
     )
 
+    finished_on = induction_record.end_date
+
     training_attrs = {
       started_on: induction_record.start_date,
-      finished_on: induction_record.end_date,
+      finished_on:,
       created_at: induction_record.created_at,
       school:,
       training_programme:,
