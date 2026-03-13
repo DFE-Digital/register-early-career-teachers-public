@@ -66,7 +66,7 @@ class Event < ApplicationRecord
     dfe_user_updated
     statement_authorised_for_payment
     statement_marked_payable
-    teacher_declaration_marked_payable
+    teacher_declaration_payable
   ].freeze
 
   belongs_to :author, class_name: "User"
