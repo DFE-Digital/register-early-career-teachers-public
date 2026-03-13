@@ -3,12 +3,38 @@ module Admin
     class OutputPaymentsComponent < ApplicationComponent
       attr_reader :statement
 
+      delegate :contract, to: :statement, private: true
+      delegate :number_to_pounds, to: :helpers
+
       def initialize(statement:)
         @statement = statement
       end
 
       def render?
         statement.output_fee?
+      end
+
+      def declaration_types(calculator)
+        calculator.declaration_type_outputs
+          .map(&:declaration_type)
+          .uniq
+      end
+
+      def outputs_by_type(calculator)
+        calculator.outputs.declaration_type_outputs
+          .group_by(&:declaration_type)
+      end
+
+      def declaration_counts(outputs)
+        outputs.map(&:billable_count)
+      end
+
+      def declaration_fees(outputs)
+        outputs.map(&:type_adjusted_fee_per_declaration)
+      end
+
+      def declaration_total(outputs)
+        outputs.sum(&:total_billable_amount)
       end
 
     private
@@ -25,23 +51,6 @@ module Admin
         def fee_label = "Fee per mentor"
 
         def columns = %w[Participants]
-
-        def row_pairs
-          declaration_type_outputs.map do |output|
-            [
-              [
-                output.declaration_type.underscore.humanize,
-                output.billable_count.to_s,
-                nil
-              ],
-              [
-                fee_label,
-                output.type_adjusted_fee_per_declaration,
-                output.total_billable_amount
-              ]
-            ]
-          end
-        end
       end
 
       class BandedPresenter < BasePresenter
@@ -55,23 +64,6 @@ module Admin
             .uniq
             .map.with_index { |_, i| "Band " + ("A".ord + i).chr }
         end
-
-        def row_pairs
-          declaration_type_outputs.group_by(&:declaration_type).map do |declaration_type, outputs|
-            [
-              [
-                declaration_type.underscore.humanize,
-                *outputs.map { it.billable_count.to_s },
-                nil
-              ],
-              [
-                fee_label,
-                *outputs.map(&:type_adjusted_fee_per_declaration),
-                outputs.sum(&:total_billable_amount)
-              ]
-            ]
-          end
-        end
       end
 
       class ECFPresenter < BandedPresenter
@@ -79,9 +71,6 @@ module Admin
         def total_label = "Output payment total"
         def fee_label = "Fee per participant"
       end
-
-      delegate :number_to_pounds, to: :helpers
-      delegate :contract, to: :statement, private: true
 
       def calculators
         @calculators ||= PaymentCalculator::Resolver.new(statement:, contract:).calculators
