@@ -5,6 +5,22 @@ RSpec.describe API::Guidance::SidebarComponent, type: :component do
     let(:current_path) { nil }
     let(:page) { nil }
 
+    let(:mock_files) { %w[alpha_page.md beta_page.md gamma_page.md] }
+    let(:mock_frontmatter) do
+      {
+        "alpha_page.md" => { "title" => "Alpha Page", "sidebar_title" => "Alpha", "sidebar_position" => 2 },
+        "beta_page.md" => { "title" => "Beta Page", "sidebar_position" => 1 },
+        "gamma_page.md" => { "title" => "Gamma Page" }
+      }
+    end
+
+    before do
+      allow(Dir).to receive(:glob).with(described_class::GUIDANCE_DIR).and_return(mock_files)
+      mock_files.each do |file|
+        allow(described_class).to receive(:extract_frontmatter).with(file).and_return(mock_frontmatter[file])
+      end
+    end
+
     describe "#render?" do
       ["guidance-for-lead-providers", "guidance-for-lead-providers/test-1"].each do |guidance_page|
         context "when guidance page is '#{guidance_page}'" do
@@ -28,11 +44,9 @@ RSpec.describe API::Guidance::SidebarComponent, type: :component do
     end
 
     describe ".guidance_pages" do
-      let(:md_files) { Dir.glob(described_class::GUIDANCE_DIR) }
-
       it "returns one entry per markdown file" do
         pages = described_class.guidance_pages
-        expect(pages.length).to eq(md_files.length)
+        expect(pages.length).to eq(mock_files.length)
       end
 
       it "orders pages by sidebar_position" do
@@ -42,36 +56,20 @@ RSpec.describe API::Guidance::SidebarComponent, type: :component do
       end
 
       it "positions pages without sidebar_position last" do
-        allow(Dir).to receive(:glob).with(described_class::GUIDANCE_DIR).and_return(
-          %w[a.md b.md c.md]
-        )
-        allow(described_class).to receive(:extract_frontmatter).with("a.md").and_return("title" => "A", "sidebar_position" => 2)
-        allow(described_class).to receive(:extract_frontmatter).with("b.md").and_return("title" => "B")
-        allow(described_class).to receive(:extract_frontmatter).with("c.md").and_return("title" => "C", "sidebar_position" => 1)
-
         pages = described_class.guidance_pages
-
-        expect(pages.map { |p| p[:title] }).to eq(%w[C A B])
+        expect(pages.map { |p| p[:title] }).to eq(["Beta Page", "Alpha", "Gamma Page"])
       end
 
       it "uses sidebar_title when present" do
-        allow(Dir).to receive(:glob).with(described_class::GUIDANCE_DIR).and_return(%w[a.md])
-        allow(described_class).to receive(:extract_frontmatter).with("a.md")
-          .and_return("title" => "Full Title", "sidebar_title" => "Short", "sidebar_position" => 1)
-
         pages = described_class.guidance_pages
-
-        expect(pages.first[:title]).to eq("Short")
+        alpha = pages.find { |p| p[:path] == "alpha-page" }
+        expect(alpha[:title]).to eq("Alpha")
       end
 
       it "falls back to title when sidebar_title is not set" do
-        allow(Dir).to receive(:glob).with(described_class::GUIDANCE_DIR).and_return(%w[a.md])
-        allow(described_class).to receive(:extract_frontmatter).with("a.md")
-          .and_return("title" => "Full Title", "sidebar_position" => 1)
-
         pages = described_class.guidance_pages
-
-        expect(pages.first[:title]).to eq("Full Title")
+        beta = pages.find { |p| p[:path] == "beta-page" }
+        expect(beta[:title]).to eq("Beta Page")
       end
 
       it "derives path from filename with hyphens" do
@@ -84,30 +82,37 @@ RSpec.describe API::Guidance::SidebarComponent, type: :component do
     end
 
     describe "#structure" do
-      it "returns guidance pages in correct node format" do
+      let(:current_path) { "/api/guidance/guidance-for-lead-providers/beta-page" }
+      let(:page) { "guidance-for-lead-providers/beta-page" }
+
+      it "returns one node per guidance page" do
         render_inline(component)
-        structure = component.structure
 
-        expect(structure[0].name).to eq("API IDs explained")
-        expect(structure[0].href).to eq("/api/guidance/guidance-for-lead-providers/api-ids-explained")
-        expect(structure[0].prefix).to eq("/api/guidance/guidance-for-lead-providers/api-ids-explained")
-        expect(structure[0].nodes).to eq([])
+        expect(component.structure.length).to eq(mock_files.length)
+      end
 
-        expect(structure[1].name).to eq("API data states")
-        expect(structure[1].href).to eq("/api/guidance/guidance-for-lead-providers/api-data-states")
-        expect(structure[1].prefix).to eq("/api/guidance/guidance-for-lead-providers/api-data-states")
-        expect(structure[1].nodes).to eq([])
+      it "returns nodes with correct attributes" do
+        render_inline(component)
+
+        component.structure.each do |node|
+          expect(node.name).to be_present
+          expect(node.href).to start_with("/api/guidance/guidance-for-lead-providers/")
+          expect(node.prefix).to eq(node.href)
+          expect(node.nodes).to eq([])
+        end
       end
     end
 
     describe "#render" do
-      let(:current_path) { "/api/guidance/guidance-for-lead-providers/api-data-states" }
-      let(:page) { "guidance-for-lead-providers/api-data-states" }
+      let(:current_path) { "/api/guidance/guidance-for-lead-providers/beta-page" }
+      let(:page) { "guidance-for-lead-providers/beta-page" }
 
-      it "renders the component" do
+      it "renders links for guidance pages" do
         render_inline(component)
 
-        expect(rendered_content).to have_link("API data states")
+        expect(rendered_content).to have_link("Beta Page")
+        expect(rendered_content).to have_link("Alpha")
+        expect(rendered_content).to have_link("Gamma Page")
       end
     end
   end
