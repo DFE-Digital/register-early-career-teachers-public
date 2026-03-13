@@ -334,6 +334,7 @@ andre_roussimoff = Teacher.find_by!(trn: "0000015")
 anthony_hopkins = Teacher.find_by!(trn: "0000018")
 colin_firth = Teacher.find_by!(trn: "0000007")
 dominic_west = Teacher.find_by!(trn: "0000014")
+dave_seville = Teacher.find_by!(trn: "0000041")
 emma_thompson = Teacher.find_by!(trn: "0000004")
 frankie_howard = Teacher.find_by!(trn: "0000033")
 gemma_jones = Teacher.find_by!(trn: "0000017")
@@ -834,6 +835,26 @@ FactoryBot.create(:training_period,
 FactoryBot.create(:induction_extension,
                   teacher: imogen_stubbs,
                   number_of_terms: 1).tap { |ext| describe_extension(ext) }
+
+print_seed_info("Dave Seville (ECT - claimed leaver)", indent: 2, colour: ECT_COLOUR)
+
+FactoryBot.create(:induction_period,
+                  appropriate_body_period: golden_leaf_teaching_school_hub,
+                  teacher: dave_seville,
+                  started_on: Date.new(2024, 9, 1),
+                  finished_on: nil,
+                  induction_programme: "fip",
+                  training_programme: "provider_led",
+                  number_of_terms: nil).tap { |ip| describe_induction_period(ip) }
+
+FactoryBot.create(:ect_at_school_period,
+                  teacher: dave_seville,
+                  school: mallory_towers,
+                  email: "dave.seville@chipmunks.com",
+                  started_on: Date.new(2024, 9, 1),
+                  finished_on: Date.new(2025, 3, 1),
+                  school_reported_appropriate_body: golden_leaf_teaching_school_hub,
+                  working_pattern: "full_time").tap { |sp| describe_ect_at_school_period(sp) }
 
 print_seed_info("Gemma Jones (ECT)", indent: 2, colour: ECT_COLOUR)
 
