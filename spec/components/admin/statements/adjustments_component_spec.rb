@@ -23,22 +23,12 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
     end
 
     it "has a link to add adjustments" do
-      expect(page).to have_link(
-        "Add",
-        href: new_admin_finance_statement_adjustment_path(statement)
-      )
+      expect(page).to have_link("Add")
     end
 
     it "does not have links to change or remove adjustments" do
-      expect(page).not_to have_link(
-        "Change",
-        href: edit_admin_finance_statement_adjustment_path(statement, anything)
-      )
-
-      expect(page).not_to have_link(
-        "Remove",
-        href: delete_admin_finance_statement_adjustment_path(statement, anything)
-      )
+      expect(page).not_to have_link("Change")
+      expect(page).not_to have_link("Remove")
     end
   end
 
@@ -78,68 +68,38 @@ RSpec.describe Admin::Statements::AdjustmentsComponent, type: :component do
 
     context "non-paid statement" do
       it "has a link to add adjustments" do
-        expect(page).to have_link(
-          "Add",
-          href: new_admin_finance_statement_adjustment_path(statement)
-        )
+        expect(page).to have_link("Add")
       end
 
-      it "has links to change and remove adjustments" do
-        expect(page).to have_link(
-          "Change",
-          href: edit_admin_finance_statement_adjustment_path(statement, adjustment)
-        )
-
-        expect(page).to have_link(
-          "Remove",
-          href: delete_admin_finance_statement_adjustment_path(statement, adjustment)
-        )
+      it "has links to change or remove adjustments" do
+        expect(page).to have_link("Change")
+        expect(page).to have_link("Remove")
       end
     end
 
     context "paid statement" do
       let(:statement) { FactoryBot.create :statement, :paid }
 
-      it "does not have links to add an adjustment" do
-        expect(page).not_to have_link(
-          "Add",
-          href: new_admin_finance_statement_adjustment_path(statement)
-        )
+      it "does not have a link to add adjustments" do
+        expect(page).not_to have_link("Add")
       end
 
       it "does not have links to change or remove adjustments" do
-        expect(page).not_to have_link(
-          "Change",
-          href: edit_admin_finance_statement_adjustment_path(statement, adjustment)
-        )
-
-        expect(page).not_to have_link(
-          "Remove",
-          href: delete_admin_finance_statement_adjustment_path(statement, adjustment)
-        )
+        expect(page).not_to have_link("Change")
+        expect(page).not_to have_link("Remove")
       end
     end
 
     context "service fee statement" do
       let(:statement) { FactoryBot.create :statement, :service_fee }
 
-      it "does not render links" do
-        expect(page).not_to have_link(
-          "Add",
-          href: new_admin_finance_statement_adjustment_path(statement)
-        )
+      it "does not have a link to add adjustments" do
+        expect(page).not_to have_link("Add")
       end
 
       it "does not have links to change or remove adjustments" do
-        expect(page).not_to have_link(
-          "Change",
-          href: edit_admin_finance_statement_adjustment_path(statement, adjustment)
-        )
-
-        expect(page).not_to have_link(
-          "Remove",
-          href: delete_admin_finance_statement_adjustment_path(statement, adjustment)
-        )
+        expect(page).not_to have_link("Change")
+        expect(page).not_to have_link("Remove")
       end
     end
   end

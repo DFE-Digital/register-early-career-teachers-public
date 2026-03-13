@@ -46,11 +46,19 @@ module Admin
       end
 
       def change_link(adjustment)
-        govuk_link_to("Change", edit_admin_finance_statement_adjustment_path(statement, adjustment))
+        govuk_link_to(
+          "Change",
+          edit_admin_finance_statement_adjustment_path(statement, adjustment),
+          visually_hidden_text: "adjustment"
+        )
       end
 
       def remove_link(adjustment)
-        govuk_link_to("Remove", delete_admin_finance_statement_adjustment_path(statement, adjustment))
+        govuk_link_to(
+          "Remove",
+          delete_admin_finance_statement_adjustment_path(statement, adjustment),
+          visually_hidden_text: "adjustment"
+        )
       end
     end
   end
