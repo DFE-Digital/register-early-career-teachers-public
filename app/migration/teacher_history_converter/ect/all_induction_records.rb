@@ -76,25 +76,25 @@ private
           # we should check for withdrawn here and ensure we close it or not overwrite the finished_at
           withdrawal_data = withdrawal_data(
             training_status: induction_record.training_status,
-            lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+            lead_provider_id: induction_record.training_provider_info&.lead_provider_info&.ecf1_id
           )
 
           deferral_data = deferral_data(
             training_status: induction_record.training_status,
-            lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+            lead_provider_id: induction_record.training_provider_info&.lead_provider_info&.ecf1_id
           )
 
-          if withdrawal_data.withdrawn_at.present?
-            last_training_period.withdrawn_at = withdrawal_data.withdrawn_at
-            last_training_period.withdrawal_reason = withdrawal_data.withdrawal_reason
+          if withdrawal_data[:withdrawn_at].present?
+            last_training_period.withdrawn_at = withdrawal_data[:withdrawn_at]
+            last_training_period.withdrawal_reason = withdrawal_data[:withdrawal_reason]
           end
 
-          if deferral_data.deferred_at.present?
-            last_training_period.deferred_at = deferral_data.deferred_at
-            last_training_period.deferral_reason = deferral_data.deferral_reason
+          if deferral_data[:deferred_at].present?
+            last_training_period.deferred_at = deferral_data[:deferred_at]
+            last_training_period.deferral_reason = deferral_data[:deferral_reason]
           end
 
-          training_finished_on = [deferral_data.deferred_at&.to_date, withdrawal_data.withdrawn_at&.to_date].compact.min
+          training_finished_on = [last_training_period.deferred_at&.to_date, last_training_period.withdrawn_at&.to_date].compact.min
 
           last_training_period.finished_on = if training_finished_on.present?
                                                if last_training_period.finished_on.blank?
