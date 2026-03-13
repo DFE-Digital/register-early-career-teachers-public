@@ -98,7 +98,7 @@ module Migrators
       else
         failure_manager.record_failure(teacher_profile, e.message, migration_mode)
       end
-      [false, :latest_induction_records]
+      [false, migration_mode]
     end
   end
 end

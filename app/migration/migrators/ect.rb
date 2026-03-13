@@ -31,10 +31,11 @@ module Migrators
       end
     end
 
-    # if we have tried premium (all_induction_records) and it wasn't a
-    # success, fall back to economy (latest_induction_records)
     def migrate_one!(teacher_profile)
       success, migration_mode = migrate_one_first_attempt(teacher_profile)
+
+      # if we have tried premium (all_induction_records) and it wasn't a
+      # success, fall back to economy (latest_induction_records)
       return success if success || migration_mode == :latest_induction_records
 
       migrate_one_second_attempt(teacher_profile)
@@ -102,7 +103,7 @@ module Migrators
       else
         failure_manager.record_failure(teacher_profile, e.message, migration_mode)
       end
-      [false, :latest_induction_records]
+      [false, migration_mode]
     end
   end
 end
