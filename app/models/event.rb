@@ -60,7 +60,7 @@ class Event < ApplicationRecord
     teacher_declaration_voided
     teacher_declaration_awaiting_clawback
     teacher_declaration_created
-    teacher_declaration_marked_eligible
+    teacher_declaration_eligible
     mentor_completion_status_change
     training_period_assigned_to_school_partnership
     dfe_user_created

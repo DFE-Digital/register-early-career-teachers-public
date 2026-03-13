@@ -94,8 +94,8 @@ RSpec.describe DeclarationHelper, type: :helper do
       it { is_expected.to eq("Payable") }
     end
 
-    context "when the event type is 'teacher_declaration_marked_eligible'" do
-      let(:event_type) { "teacher_declaration_marked_eligible" }
+    context "when the event type is 'teacher_declaration_eligible'" do
+      let(:event_type) { "teacher_declaration_eligible" }
 
       it { is_expected.to eq("Eligible") }
     end
