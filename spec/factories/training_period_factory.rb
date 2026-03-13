@@ -86,6 +86,18 @@ FactoryBot.define do
       end
     end
 
+    trait :with_schedule_and_milestones do
+      transient do
+        schedule do
+          FactoryBot.build(:schedule, :with_milestones, contract_period: school_partnership&.contract_period || expression_of_interest_contract_period)
+        end
+      end
+
+      after(:build) do |training_period, evaluator|
+        training_period.schedule = evaluator.schedule
+      end
+    end
+
     trait :with_no_school_partnership do
       school_partnership { nil }
     end

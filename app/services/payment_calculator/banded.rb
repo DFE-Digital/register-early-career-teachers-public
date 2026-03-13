@@ -45,6 +45,10 @@ module PaymentCalculator
 
     def vat_amount = subtotal * vat_rate
 
+    def voided_declarations_count
+      filtered_voided_declarations.count
+    end
+
   private
 
     def subtotal
@@ -70,6 +74,10 @@ module PaymentCalculator
       Declaration.where(clawback_statement: previous_statements).refundable
     end
 
+    def voided_declarations
+      Declaration.where(payment_statement: statement).payment_status_voided
+    end
+
     def filtered_billable_declarations
       @filtered_billable_declarations ||= declaration_selector.call(billable_declarations)
     end
@@ -84,6 +92,10 @@ module PaymentCalculator
 
     def filtered_previous_refundable_declarations
       @filtered_previous_refundable_declarations ||= declaration_selector.call(previous_refundable_declarations)
+    end
+
+    def filtered_voided_declarations
+      @filtered_voided_declarations ||= declaration_selector.call(voided_declarations)
     end
 
     def previous_statements

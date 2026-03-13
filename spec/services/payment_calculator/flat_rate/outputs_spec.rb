@@ -40,6 +40,13 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
     end
   end
 
+  describe "#total_refundable_count" do
+    it "sums refundable counts across all declaration types" do
+      # 2x declaration types, 2x refund statuses
+      expect(outputs.total_refundable_count).to eq(2 * 2)
+    end
+  end
+
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
       # 2x declaration types (started, completed), 5x billable - 2x refundable, 100.0 fee per declaration and fee proportion of 0.5

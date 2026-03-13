@@ -273,4 +273,46 @@ RSpec.describe PaymentCalculator::Banded do
 
     it { is_expected.to eq(250) }
   end
+
+  describe "#voided_declarations_count" do
+    context "with no voided declarations" do
+      it "returns 0" do
+        expect(banded.voided_declarations_count).to eq(0)
+      end
+    end
+
+    context "with voided ECT declarations" do
+      let!(:voided_declarations) do
+        FactoryBot.create_list(
+          :declaration,
+          4,
+          :voided,
+          :with_ect,
+          school_partnership:,
+          payment_statement: statement_july
+        )
+      end
+
+      it "returns the count of voided declarations matching the selector" do
+        expect(banded.voided_declarations_count).to eq(4)
+      end
+    end
+
+    context "with voided mentor declarations" do
+      let!(:voided_declarations) do
+        FactoryBot.create_list(
+          :declaration,
+          2,
+          :voided,
+          :with_mentor,
+          school_partnership:,
+          payment_statement: statement_july
+        )
+      end
+
+      it "returns the count of voided declarations matching the selector" do
+        expect(banded.voided_declarations_count).to eq(2)
+      end
+    end
+  end
 end
