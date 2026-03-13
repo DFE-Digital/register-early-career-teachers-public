@@ -79,14 +79,28 @@ private
             lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
           )
 
-          last_training_period.finished_on = if withdrawal_data.withdrawn_at.present?
-                                               last_training_period.withdrawn_at = withdrawal_data.withdrawn_at
-                                               last_training_period.withdrawal_reason = withdrawal_data.withdrawal_reason
+          deferral_data = deferral_data(
+            training_status: induction_record.training_status,
+            lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+          )
 
+          if withdrawal_data.withdrawn_at.present?
+            last_training_period.withdrawn_at = withdrawal_data.withdrawn_at
+            last_training_period.withdrawal_reason = withdrawal_data.withdrawal_reason
+          end
+
+          if deferral_data.deferred_at.present?
+            last_training_period.deferred_at = deferral_data.deferred_at
+            last_training_period.deferral_reason = deferral_data.deferral_reason
+          end
+
+          training_finished_on = [deferral_data.deferred_at&.to_date, withdrawal_data.withdrawn_at&.to_date].compact.min
+
+          last_training_period.finished_on = if training_finished_on.present?
                                                if last_training_period.finished_on.blank?
-                                                 [last_training_period.started_on + 1.day, withdrawal_data.withdrawn_at.to_date].max
+                                                 [last_training_period.started_on + 1.day, training_finished_on].max
                                                else
-                                                 [finished_on, withdrawal_data.withdrawn_at.to_date].compact.max
+                                                 [finished_on, training_finished_on].compact.max
                                                end
                                              else
                                                finished_on
@@ -208,12 +222,20 @@ private
       **withdrawal_data(
         training_status: induction_record.training_status,
         lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+      ),
+      **deferral_data(
+        training_status: induction_record.training_status,
+        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       )
     }.merge(overrides)
 
     # if the period is ongoing but has been withdrawn by the provider we should close the period
-    if training_attrs[:finished_on].blank? && training_attrs[:withdrawn_at].present?
-      training_attrs[:finished_on] = [training_attrs[:started_on] + 1.day, training_attrs[:withdrawn_at].to_date].max
+    if training_attrs[:finished_on].blank? && (training_attrs[:withdrawn_at].present? || training_attrs[:deferred_at].present?)
+      training_attrs[:finished_on] = [
+        training_attrs[:started_on] + 1.day,
+        training_attrs[:withdrawn_at]&.to_date,
+        training_attrs[:deferred_at]&.to_date
+      ].compact.max
     end
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
@@ -239,5 +261,9 @@ private
 
   def withdrawal_data(training_status:, lead_provider_id:)
     TeacherHistoryConverter::WithdrawalData.new(training_status:, states:, lead_provider_id:).withdrawal_data
+  end
+
+  def deferral_data(training_status:, lead_provider_id:)
+    TeacherHistoryConverter::DeferralData.new(training_status:, states:, lead_provider_id:).deferral_data
   end
 end
