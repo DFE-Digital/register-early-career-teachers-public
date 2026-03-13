@@ -65,6 +65,16 @@ private
 
     return if training_provider_info.nil?
 
+    deferral_attrs = deferral_data(
+      training_status: induction_record.training_status,
+      lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+    )
+
+    withdrawal_attrs = withdrawal_data(
+      training_status: induction_record.training_status,
+      lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+    )
+
     training_attrs = {
       started_on: induction_record.start_date,
       finished_on: induction_record.end_date,
@@ -79,14 +89,8 @@ private
       schedule_info: induction_record.schedule_info,
       api_transfer_updated_at: transfers[training_provider_info.lead_provider_info.ecf1_id],
       combination: build_combination(induction_record:, training_programme:),
-      **withdrawal_data(
-        training_status: induction_record.training_status,
-        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-      ),
-      **deferral_data(
-        training_status: induction_record.training_status,
-        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-      )
+      **withdrawal_attrs,
+      **deferral_attrs
     }.merge(overrides)
 
     # if the period is ongoing but has been withdrawn by the provider we should close the period
