@@ -1,6 +1,8 @@
 module Declarations
   module Actions
     class MarkDeclarationsEligible
+      class MissingPaymentStatementError < StandardError; end
+
       attr_reader :declarations, :author
 
       def initialize(declarations:, author:)
@@ -10,9 +12,10 @@ module Declarations
 
       def mark
         ApplicationRecord.transaction do
-          declarations.payment_status_no_payment.each do |declaration|
-            declaration.update!(payment_status: :eligible, payment_statement: payment_statement(declaration:))
-            record_eligible_event!(declaration:, author:)
+          declarations.each do |declaration|
+            declaration.payment_statement = payment_statement(declaration:)
+            declaration.mark_as_eligible!
+            record_eligible_event!(declaration:)
           end
         end
       end
@@ -26,11 +29,13 @@ module Declarations
           fee_type: "output",
           deadline_date: Time.zone.today..,
           order: :deadline_date
-        ).statements.first
+        ).statements.first.tap do |statement|
+          raise MissingPaymentStatementError, "Payment statement not found for declaration #{declaration.id}" if statement.nil?
+        end
       end
 
-      def record_eligible_event!(declaration:, author:)
-        Events::Record.record_teacher_declaration_marked_eligible!(
+      def record_eligible_event!(declaration:)
+        Events::Record.record_teacher_declaration_eligible!(
           author:,
           teacher: declaration.training_period.teacher,
           training_period: declaration.training_period,
