@@ -539,7 +539,7 @@ RSpec.describe Schools::RegisterECT do
           teacher:,
           school: other_school,
           started_on: Date.new(2025, 8, 1),
-          finished_on: Date.new(2026, 3, 18),
+          finished_on: started_on,
           reported_leaving_by_school_id: other_school.id
         )
       end
