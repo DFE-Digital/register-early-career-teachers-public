@@ -112,4 +112,17 @@ RSpec.describe TasksIndex::TableSectionComponent, type: :component do
       expect(rendered.to_html).to include(appropriate_body_period.name)
     end
   end
+
+  context "with Leavers::TableRowComponent" do
+    let(:row_component) { TasksIndex::Leavers::TableRowComponent }
+
+    it "renders the correct headings" do
+      headers = rendered.css("th").map(&:text)
+      expect(headers).to contain_exactly("Name", "TRN", "Induction start date", "Recorded by", "Induction tutor name", "")
+    end
+
+    it "renders a release link" do
+      expect(rendered).to have_link("Release", href: /teachers\/\d+\/release\/new/)
+    end
+  end
 end

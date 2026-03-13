@@ -22,6 +22,29 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m">
+      Check records and release an ECT
+    </h2>
+    <p class="govuk-body">
+      The school has reported that the ECTs are leaving or have left.
+      You can release the ECT if you are no longer responsible for them.
+    </p>
+  </div>
+</div>
+<%= render AppropriateBodies::CardContainerComponent.new do %>
+  <div class="govuk-grid-column-one-third">
+  <%= render Shared::ActionCountCardComponent.new(
+    url: ab_tasks_leavers_path,
+    count: number_of_releasable_ect_records,
+    description: "Check and release ECT",
+    colour: "grey-and-blue"
+  ) %>
+  </div>
+<% end %>
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-m">
       ECT records that may need action
     </h2>
     <p class="govuk-body">

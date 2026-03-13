@@ -6,8 +6,10 @@ namespace :appropriate_bodies, path: "appropriate-body", as: :ab do
       resources :claimable, only: :index, path: "claimable"
       resources :no_qts, only: :index, path: "no-qts"
       resources :claimed_by_another, only: :index, path: "claimed-by-another-appropriate-body"
+      resources :leavers, only: :index, path: "leavers"
     end
   end
+
   resources :teachers, only: %i[show index] do
     match "closed", to: "teachers#index", via: :get, on: :collection, as: "closed", defaults: { status: "closed" }
     match "open", to: "teachers#index", via: :get, on: :collection, as: "open", defaults: { status: "open" }
