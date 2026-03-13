@@ -14,12 +14,6 @@ module Admin
         statement.output_fee?
       end
 
-      def declaration_types(calculator)
-        calculator.declaration_type_outputs
-          .map(&:declaration_type)
-          .uniq
-      end
-
       def declaration_counts(outputs)
         outputs.map(&:billable_count)
       end
