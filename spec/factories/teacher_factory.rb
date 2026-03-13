@@ -92,5 +92,14 @@ FactoryBot.define do
       induction_completed
       trs_induction_status { "Failed" }
     end
+
+    trait :induction_failed_in_wales do
+      induction_completed
+      trs_induction_status { "FailedInWales" }
+    end
+
+    trait :induction_exempt do
+      trs_induction_status { "Exempt" }
+    end
   end
 end

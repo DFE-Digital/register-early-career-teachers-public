@@ -434,20 +434,46 @@ describe Teacher do
     end
 
     context "induction status scopes" do
-      let!(:target) { FactoryBot.create(:teacher, :induction_in_progress) }
-      let!(:other) { FactoryBot.create(:teacher) }
+      let!(:teacher_without_induction_status) { FactoryBot.create(:teacher) }
+      let!(:in_progress_teacher) { FactoryBot.create(:teacher, :induction_in_progress) }
       let!(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
+      let!(:failed_in_wales_teacher) { FactoryBot.create(:teacher, :induction_failed_in_wales) }
       let!(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
+      let!(:exempt_teacher) { FactoryBot.create(:teacher, :induction_exempt) }
 
       describe ".not_failed" do
         it "only includes records where trs_induction_status is not 'Failed'" do
-          expect(Teacher.not_failed).to contain_exactly(target, other, passed_teacher)
+          expect(Teacher.not_failed).to contain_exactly(in_progress_teacher, teacher_without_induction_status, passed_teacher, failed_in_wales_teacher, exempt_teacher)
         end
       end
 
       describe ".not_passed" do
         it "only includes records where trs_induction_status is not 'Passed'" do
-          expect(Teacher.not_passed).to contain_exactly(target, other, failed_teacher)
+          expect(Teacher.not_passed).to contain_exactly(in_progress_teacher, teacher_without_induction_status, failed_teacher, failed_in_wales_teacher, exempt_teacher)
+        end
+      end
+
+      describe ".passed" do
+        it "only includes records where trs_induction_status is 'Passed'" do
+          expect(Teacher.passed).to contain_exactly(passed_teacher)
+        end
+      end
+
+      describe ".failed" do
+        it "only includes records where trs_induction_status is 'Failed'" do
+          expect(Teacher.failed).to contain_exactly(failed_teacher)
+        end
+      end
+
+      describe ".failed_in_wales" do
+        it "only includes records where trs_induction_status is 'FailedInWales'" do
+          expect(Teacher.failed_in_wales).to contain_exactly(failed_in_wales_teacher)
+        end
+      end
+
+      describe ".exempt" do
+        it "only includes records where trs_induction_status is 'Exempt'" do
+          expect(Teacher.exempt).to contain_exactly(exempt_teacher)
         end
       end
     end
