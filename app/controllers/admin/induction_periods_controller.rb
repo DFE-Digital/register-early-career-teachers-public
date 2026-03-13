@@ -1,5 +1,7 @@
 module Admin
   class InductionPeriodsController < AdminController
+    include MultiparameterDateErrorHandling
+
     before_action :set_teacher
     before_action :set_induction_period, except: %i[new create]
 
@@ -19,6 +21,10 @@ module Admin
     rescue ActiveRecord::RecordInvalid, ActiveRecord::Rollback
       @induction_period = service.induction_period
       render :new, status: :unprocessable_content
+    rescue ActiveRecord::MultiparameterAssignmentErrors => e
+      @induction_period = service.induction_period
+      add_multiparameter_date_errors(@induction_period, e)
+      render :new, status: :unprocessable_content
     end
 
     def update
@@ -30,6 +36,9 @@ module Admin
       render :edit, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid
       @induction_period = service.induction_period
+      render :edit, status: :unprocessable_content
+    rescue ActiveRecord::MultiparameterAssignmentErrors => e
+      add_multiparameter_date_errors(@induction_period, e)
       render :edit, status: :unprocessable_content
     end
 

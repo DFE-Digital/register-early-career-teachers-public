@@ -1,5 +1,7 @@
 module AppropriateBodies
   class InductionPeriodsController < AppropriateBodiesController
+    include MultiparameterDateErrorHandling
+
     def edit
       @induction_period = induction_period
     end
@@ -13,6 +15,10 @@ module AppropriateBodies
       render :edit, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid
       @induction_period = service.induction_period
+      render :edit, status: :unprocessable_content
+    rescue ActiveRecord::MultiparameterAssignmentErrors => e
+      @induction_period = service.induction_period
+      add_multiparameter_date_errors(induction_period, e)
       render :edit, status: :unprocessable_content
     end
 
