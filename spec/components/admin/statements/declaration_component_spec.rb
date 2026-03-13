@@ -1,4 +1,6 @@
 RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
   subject { render_inline(component) }
 
   let(:component) { described_class.new statement: }
@@ -7,7 +9,8 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   let!(:contract_period) { active_lead_provider.contract_period }
   let(:contract) { FactoryBot.create(:contract, contract_trait, active_lead_provider:, contract_period:) }
   let(:contract_trait) { :for_ecf }
-  let(:statement) { FactoryBot.create(:statement, :payable, :output_fee, active_lead_provider:, contract:) }
+  let(:statement_trait) { :output_fee }
+  let(:statement) { FactoryBot.create(:statement, :payable, statement_trait, active_lead_provider:, contract:) }
 
   let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :with_active_lead_provider, active_lead_provider:) }
   let!(:ect_declaration) { FactoryBot.create(:declaration, :voided, training_period: ect_training_period, payment_statement: statement) }
@@ -163,6 +166,27 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     it "renders the correct headers" do
       expect(subject).to have_table(text: "ECTs")
       expect(subject).to have_table(text: "Mentors")
+    end
+  end
+
+  describe "download CSV link" do
+    context "when the statement is for output fees" do
+      let(:statement_trait) { :output_fee }
+
+      it "shows the CSV download link for output fee statements" do
+        expect(subject).to have_link(
+          "Download declarations (CSV)",
+          href: declarations_export_admin_finance_statement_path(statement, format: :csv)
+        )
+      end
+    end
+
+    context "when the statement is for service fees" do
+      let(:statement_trait) { :service_fee }
+
+      it "does not show the CSV download link" do
+        expect(subject).not_to have_link("Download declarations (CSV)")
+      end
     end
   end
 end
