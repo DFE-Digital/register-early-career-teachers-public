@@ -254,7 +254,7 @@ describe "Real data check for user 04dd6b10-0a82-4d89-a12f-543360dc8b15" do
                 hash_including(
                   lead_provider_info: hash_including(name: "Teach First"),
                   delivery_partner_info: hash_including(name: "Delivery partner 2"),
-                  started_on: Date.new(2021, 9, 1),
+                  started_on: Date.new(2022, 9, 1),
                   finished_on: Date.new(2023, 7, 21), # induction_completion_date
                   contract_period_year: 2021
                 )
