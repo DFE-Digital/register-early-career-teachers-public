@@ -66,6 +66,10 @@ describe ECF2TeacherHistory do
 
   let(:other_arguments) { {} }
 
+  before do
+    allow(Rails.application.config).to receive(:raise_migration_errors).and_return(false)
+  end
+
   describe "#initialize" do
     it "is initialized with a teacher" do
       aggregate_failures do
