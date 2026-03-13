@@ -98,14 +98,16 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period
 
-      errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") unless training_period.ongoing_today?
+      unless !training_period.started_on.future? && training_period.ongoing_today?
+        errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.")
+      end
     end
 
     def no_future_training_periods_exist
       return if errors[:teacher_api_id].any?
       return unless training_period
 
-      if future_training_periods.exists?
+      if future_training_periods_with_different_lead_provider.exists?
         errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.")
       end
     end
@@ -122,6 +124,12 @@ module API::Teachers
           .where(ect_at_school_period: { teacher: })
           .started_after(training_period.started_on)
       end
+    end
+
+    def future_training_periods_with_different_lead_provider
+      future_training_periods
+        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+        .where.not(lead_providers: { id: lead_provider.id })
     end
 
     def can_move_to_frozen_cohort
