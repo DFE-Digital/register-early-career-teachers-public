@@ -37,4 +37,10 @@
       end
     end
   end %>
+
+  <% if statement.output_fee? %>
+    <p class="govuk-body-s govuk-!-text-align-right">
+      <%= govuk_link_to "Download declarations (CSV)", declarations_export_admin_finance_statement_path(statement, format: :csv) %>
+    </p>
+  <% end %>
 </div>

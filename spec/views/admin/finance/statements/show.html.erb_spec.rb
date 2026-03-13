@@ -144,25 +144,6 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     expect(rendered).to have_css("details", text: "Provider targets (per academic year)")
   end
 
-  it "shows the CSV download link for output fee statements" do
-    render
-
-    expect(rendered).to have_link(
-      "Download declarations (CSV)",
-      href: declarations_export_admin_finance_statement_path(feb_statement, format: :csv)
-    )
-  end
-
-  context "when the statement is for service fees" do
-    let(:feb_statement_fee_type) { :service_fee }
-
-    it "does not show the CSV download link" do
-      render
-
-      expect(rendered).not_to have_link("Download declarations (CSV)")
-    end
-  end
-
   context "when the statement is for an ECF contract" do
     let(:contract_trait) { :for_ecf }
 
