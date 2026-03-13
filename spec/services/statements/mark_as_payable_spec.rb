@@ -49,6 +49,17 @@ RSpec.describe Statements::MarkAsPayable do
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
     let(:statement) { FactoryBot.create(:statement, :open, deadline_date: 1.day.ago, active_lead_provider:) }
 
+    %i[payable paid].each do |status|
+      it "raises StatementNotOpenError when statement is #{status}" do
+        statement = FactoryBot.create(:statement, status, deadline_date: 1.day.ago, active_lead_provider:)
+
+        expect { described_class.new(statement).mark! }.to raise_error(
+          Statements::StatementNotOpenError,
+          "Cannot mark statement as payable: statement is #{status}"
+        )
+      end
+    end
+
     it "transitions the statement from open to payable" do
       subject.mark!
 
@@ -88,7 +99,7 @@ RSpec.describe Statements::MarkAsPayable do
         payment_statement: statement
       )
 
-      expect(Events::Record).to receive(:record_teacher_declaration_marked_payable!).with(
+      expect(Events::Record).to receive(:record_teacher_declaration_payable!).with(
         author: instance_of(Events::SystemAuthor),
         teacher: declaration.training_period.teacher,
         training_period: declaration.training_period,

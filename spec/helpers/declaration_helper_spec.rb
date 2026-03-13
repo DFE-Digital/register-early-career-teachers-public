@@ -88,6 +88,12 @@ RSpec.describe DeclarationHelper, type: :helper do
       it { is_expected.to eq("Awaiting clawback") }
     end
 
+    context "when the event type is 'teacher_declaration_payable'" do
+      let(:event_type) { "teacher_declaration_payable" }
+
+      it { is_expected.to eq("Payable") }
+    end
+
     context "when the event type is not recognised" do
       let(:event_type) { "unknown_type" }
 

@@ -2234,7 +2234,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_teacher_declaration_marked_payable" do
+  describe ".record_teacher_declaration_payable" do
     let(:ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period, teacher:)
     end
@@ -2248,7 +2248,7 @@ RSpec.describe Events::Record do
     it "queues a RecordEventJob with the correct values" do
       freeze_time
 
-      Events::Record.record_teacher_declaration_marked_payable!(
+      Events::Record.record_teacher_declaration_payable!(
         author:,
         teacher:,
         training_period:,
@@ -2256,8 +2256,8 @@ RSpec.describe Events::Record do
       )
 
       expect(RecordEventJob).to have_received(:perform_later).with(
-        event_type: :teacher_declaration_marked_payable,
-        heading: "Rhys Ifans's declaration was marked as payable",
+        event_type: :teacher_declaration_payable,
+        heading: "Rhys Ifans's started declaration was marked as payable",
         teacher:,
         training_period:,
         declaration:,

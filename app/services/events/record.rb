@@ -957,10 +957,11 @@ module Events
       ).record_event!
     end
 
-    def self.record_teacher_declaration_marked_payable!(author:, teacher:, training_period:, declaration:, happened_at: Time.current)
-      event_type = :teacher_declaration_marked_payable
+    def self.record_teacher_declaration_payable!(author:, teacher:, training_period:, declaration:, happened_at: Time.current)
+      event_type = :teacher_declaration_payable
       teacher_name = Teachers::Name.new(teacher).full_name
-      heading = "#{teacher_name}'s declaration was marked as payable"
+      declaration_type = declaration.declaration_type
+      heading = "#{teacher_name}'s #{declaration_type} declaration was marked as payable"
 
       new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
     end
