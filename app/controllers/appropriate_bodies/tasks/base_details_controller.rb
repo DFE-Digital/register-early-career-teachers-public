@@ -1,6 +1,6 @@
 module AppropriateBodies
   module Tasks
-    # Abstract base for the ECT detail pages (claimable, no QTS, claimed by another AB).
+    # Abstract base for the ECT detail pages (claimable, no QTS, claimed by another AB, leavers).
     # Subclasses must implement #initial_ect_at_school_periods.
     class BaseDetailsController < AppropriateBodiesController
       layout "full", only: :index

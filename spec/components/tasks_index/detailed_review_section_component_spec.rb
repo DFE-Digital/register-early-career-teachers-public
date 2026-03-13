@@ -6,7 +6,8 @@ RSpec.describe TasksIndex::DetailedReviewSectionComponent, type: :component do
     allow(component).to receive_messages(
       number_of_claimable_ect_records: 5,
       number_of_missing_qts_records: 3,
-      number_of_records_claimed_by_another_appropriate_body: 2
+      number_of_records_claimed_by_another_appropriate_body: 2,
+      number_of_releasable_ect_records: 1
     )
     render_inline(component)
   end
@@ -27,6 +28,11 @@ RSpec.describe TasksIndex::DetailedReviewSectionComponent, type: :component do
   it "displays the number of missing QTS records" do
     expect(page).to have_css("h3", text: "3")
     expect(page).to have_css(".govuk-caption-l", text: "No QTS")
+  end
+
+  it "displays the number of releasable ECT records" do
+    expect(page).to have_css("h3", text: "1")
+    expect(page).to have_css(".govuk-caption-l", text: "Check and release ECT")
   end
 
   it "displays the number of records claimed by another appropriate body" do
