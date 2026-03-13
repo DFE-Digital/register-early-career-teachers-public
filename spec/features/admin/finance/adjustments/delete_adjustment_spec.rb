@@ -18,7 +18,7 @@ RSpec.describe "Delete adjustment from statement" do
     and_i_click_button("Remove adjustment")
 
     then_i_see_adjustments_section
-    and_i_see_a_sucess_banner
+    and_i_see_a_success_banner
     and_i_see_new_adjustment_values
     and_i_see_new_adjustment_total
     and_deleted_adjustment_should_not_exist
