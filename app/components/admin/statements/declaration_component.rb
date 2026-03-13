@@ -66,10 +66,6 @@ module Admin
       def voided(calculator)
         calculator.voided_declarations_count
       end
-
-      def payments_count(declaration_type_output)
-        declaration_type_output.billable_count - declaration_type_output.refundable_count
-      end
     end
   end
 end
