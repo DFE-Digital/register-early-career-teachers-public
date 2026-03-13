@@ -2099,7 +2099,7 @@ RSpec.describe Events::Record do
     end
   end
 
-  describe ".record_teacher_declaration_marked_eligible!" do
+  describe ".record_teacher_declaration_eligible!" do
     let(:ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period, teacher:)
     end
@@ -2107,13 +2107,13 @@ RSpec.describe Events::Record do
       FactoryBot.create(:training_period, :for_ect, ect_at_school_period:)
     end
     let(:declaration) do
-      FactoryBot.create(:declaration, :voided, training_period:)
+      FactoryBot.create(:declaration, training_period:)
     end
 
     it "queues a RecordEventJob with the correct values" do
       freeze_time
 
-      Events::Record.record_teacher_declaration_marked_eligible!(
+      Events::Record.record_teacher_declaration_eligible!(
         author:,
         teacher:,
         training_period:,
@@ -2121,8 +2121,8 @@ RSpec.describe Events::Record do
       )
 
       expect(RecordEventJob).to have_received(:perform_later).with(
-        event_type: :teacher_declaration_marked_eligible,
-        heading: "Rhys Ifans’s declaration was marked as eligible",
+        event_type: :teacher_declaration_eligible,
+        heading: "Rhys Ifans’s started declaration was marked as eligible",
         teacher:,
         training_period:,
         declaration:,
