@@ -474,7 +474,7 @@ RSpec.describe Schools::RegisterECT do
         )
       end
 
-      it "finishes the previous overlapping ECT period using ECTAtSchoolPeriods::Finish" do
+      it "finishes the previous ECT period using ECTAtSchoolPeriods::Finish" do
         expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
           ect_at_school_period: existing_period,
           finished_on: expected_finished_on,
