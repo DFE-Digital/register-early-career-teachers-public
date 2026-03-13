@@ -23,22 +23,19 @@ module Schools
     end
 
     def appropriate_body_row
-      { key: { text: "Appropriate body" }, value: { text: @ect.school_reported_appropriate_body_name } }
+      { key: { text: "Appropriate body" }, value: { text: appropriate_body_text } }
     end
 
     def induction_start_date_row
+      return induction_start_date_not_reported_row if appropriate_body_not_reported?
+
       date = induction_start_date
-      if date.present?
-        {
-          key: { text: "Induction start date" },
-          value: { text: induction_start_date_with_suffix(date) }
-        }
-      else
-        {
-          key: { text: "Induction start date" },
-          value: { text: "Yet to be reported by the appropriate body" }
-        }
-      end
+      return induction_start_date_not_reported_row if date.blank?
+
+      {
+        key: { text: "Induction start date" },
+        value: { text: induction_start_date_with_suffix(date) }
+      }
     end
 
     def induction_start_date
@@ -51,6 +48,23 @@ module Schools
         tag.br,
         tag.span("This has been reported by an appropriate body", class: "govuk-hint")
       ])
+    end
+
+    def appropriate_body_text
+      return "Not reported" if appropriate_body_not_reported?
+
+      @ect.school_reported_appropriate_body_name
+    end
+
+    def appropriate_body_not_reported?
+      @ect.appropriate_body_not_reported?
+    end
+
+    def induction_start_date_not_reported_row
+      {
+        key: { text: "Induction start date" },
+        value: { text: "Yet to be reported by the appropriate body" }
+      }
     end
   end
 end
