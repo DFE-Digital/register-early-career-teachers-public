@@ -16,12 +16,14 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Some LP") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+  let(:feb_statement_fee_type) { :output_fee }
 
   let!(:jan_statement) do
     deadline_date = Date.new(contract_period.year, 1, 1).prev_day
     payment_date = Date.new(contract_period.year, 1, 31)
     FactoryBot.create(
       :statement,
+      :output_fee,
       contract:,
       contract_period:,
       active_lead_provider:,
@@ -35,6 +37,7 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
   let!(:feb_statement) do
     FactoryBot.create(
       :statement,
+      feb_statement_fee_type,
       contract:,
       contract_period:,
       active_lead_provider:,
@@ -186,5 +189,11 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
       expect(rendered).to have_css("table caption", text: "ECT clawbacks")
       expect(rendered).to have_css("table caption", text: "Mentor clawbacks")
     end
+  end
+
+  it "displays the adjustments in a table" do
+    render
+
+    expect(rendered).to have_css("table caption", text: "Additional adjustments")
   end
 end

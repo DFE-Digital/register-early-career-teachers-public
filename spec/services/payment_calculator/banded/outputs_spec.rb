@@ -47,6 +47,12 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
     end
   end
 
+  describe "#total_refundable_count" do
+    it "sums refundable counts across all declaration types" do
+      expect(outputs.total_refundable_count).to eq(2)
+    end
+  end
+
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
       expect(outputs.total_net_amount).to eq(45.0)

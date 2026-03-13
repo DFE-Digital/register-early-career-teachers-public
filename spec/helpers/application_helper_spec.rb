@@ -183,6 +183,27 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
 
+    context "with yaml containing unknown keys" do
+      let(:front_matter) do
+        <<~FRONT_MATTER
+          ---
+          title: Some title
+          sidebar: true
+          unknown_key: value
+          ---
+          ignored content
+        FRONT_MATTER
+      end
+
+      it "filters out keys that are not valid page_data parameters" do
+        allow(self).to receive(:page_data)
+
+        page_data_from_front_matter(front_matter)
+
+        expect(self).to have_received(:page_data).with(title: "Some title")
+      end
+    end
+
     context "handles empty content" do
       let(:front_matter) { "" }
 
