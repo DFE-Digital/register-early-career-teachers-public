@@ -23,6 +23,7 @@ module DeclarationHelper
     "teacher_declaration_created" => "Submitted",
     "teacher_declaration_voided" => "Voided",
     "teacher_declaration_awaiting_clawback" => "Awaiting clawback",
+    "teacher_declaration_eligible" => "Eligible",
   }.freeze
 
   def declaration_state_tag(declaration)

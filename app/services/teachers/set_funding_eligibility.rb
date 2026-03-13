@@ -9,6 +9,7 @@ class Teachers::SetFundingEligibility
   def set!
     ActiveRecord::Base.transaction do
       set_eligibility!
+      make_declarations_eligible!
       record_teacher_set_funding_eligibility_event!
     end
   end
@@ -25,6 +26,19 @@ private
     end
 
     teacher.save!
+  end
+
+  def make_declarations_eligible!
+    declarations_to_mark_eligible = []
+    declarations_to_mark_eligible += teacher.ect_declarations.payment_status_no_payment if teacher.ect_first_became_eligible_for_training_at
+    declarations_to_mark_eligible += teacher.mentor_declarations.payment_status_no_payment if teacher.mentor_first_became_eligible_for_training_at
+
+    return unless declarations_to_mark_eligible.any?
+
+    Declarations::Actions::MarkDeclarationsEligible.new(
+      declarations: declarations_to_mark_eligible,
+      author:
+    ).mark
   end
 
   def eligible_for_ect_training?
