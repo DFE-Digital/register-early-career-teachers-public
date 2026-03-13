@@ -21,6 +21,10 @@ module PaymentCalculator
       @total_refundable_amount ||= declaration_type_outputs.sum(&:total_refundable_amount)
     end
 
+    def total_refundable_count
+      @total_refundable_count ||= declaration_type_outputs.sum(&:refundable_count)
+    end
+
     def total_net_amount
       @total_net_amount ||= declaration_type_outputs.sum(&:total_net_amount)
     end

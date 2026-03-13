@@ -19,15 +19,97 @@ class TeacherHistoryConverter
 
 private
 
-  def select_migration_mode
-    MigrationStrategy.new(ecf1_teacher_history).strategy
-  end
-
   def date_corrector
     @date_corrector ||= DateCorrector.new(
       ect_induction_completion_date: ecf1_teacher_history.ect&.induction_completion_date,
       mentor_completion_date: ecf1_teacher_history.mentor&.mentor_completion_date
     )
+  end
+
+  def economy_mode? = migration_mode == :latest_induction_records
+
+  def ect_at_school_periods
+    return [] if ecf1_teacher_history.ect.blank?
+
+    trn = ecf1_teacher_history.user.trn
+    profile_id = ecf1_teacher_history.ect.participant_profile_id
+    raw_induction_records = ecf1_teacher_history.ect.induction_records
+    induction_completion_date = ecf1_teacher_history.ect.induction_completion_date
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, induction_completion_date:, participant_type: :ect).induction_records
+    mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
+    states = ecf1_teacher_history.ect.states
+    transfers = ecf1_teacher_history.ect.transfers
+    kwargs = { trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers: }
+
+    economy_mode? ? economy_ect_migrator(**kwargs) : premium_ect_migrator(**kwargs.except(:transfers))
+  end
+
+  def economy_ect_migrator(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
+    TeacherHistoryConverter::ECT::LatestInductionRecords
+      .new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
+      .ect_at_school_periods
+      .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.ect.created_at) }
+  end
+
+  def economy_mentor_migrator(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods:)
+    TeacherHistoryConverter::Mentor::LatestInductionRecords
+      .new(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods:)
+      .mentor_at_school_periods
+      .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
+  end
+
+  def exclude_ero_training_periods?
+    ecf1_teacher_history.mentor.ero_mentor && !ecf1_teacher_history.mentor.ero_declarations
+  end
+
+  def mentor_at_school_periods
+    return [] if ecf1_teacher_history.mentor.blank?
+
+    trn = ecf1_teacher_history.user.trn
+    profile_id = ecf1_teacher_history.mentor.participant_profile_id
+    raw_induction_records = ecf1_teacher_history.mentor.induction_records
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, participant_type: :mentor).induction_records
+    states = ecf1_teacher_history.mentor.states
+    exclude_training_periods = exclude_ero_training_periods?
+    transfers = ecf1_teacher_history.mentor.transfers
+    kwargs = { trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: }
+
+    economy_mode? ? economy_mentor_migrator(**kwargs) : premium_mentor_migrator(**kwargs.except(:transfers))
+  end
+
+  # in ECF1 we use the participant profile `created_at`, but as
+  # there's no equivalent in RECT we are taking the school period's
+  # created_at.
+  #
+  # Are we able to populate the earliest school period with the
+  # created at from the participant profile during migration?
+  def override_first_at_school_period_created_at(at_school_periods, participant_profile_created_at)
+    return at_school_periods if at_school_periods.empty?
+
+    at_school_periods[0].created_at = participant_profile_created_at
+    at_school_periods
+  end
+
+  def parsed_name
+    @parsed_name ||= Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
+  end
+
+  def premium_ect_migrator(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+    TeacherHistoryConverter::ECT::AllInductionRecords
+      .new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+      .ect_at_school_periods
+  end
+
+  def premium_mentor_migrator(trn:, profile_id:, induction_records:, states:, exclude_training_periods:)
+    TeacherHistoryConverter::Mentor::AllInductionRecords
+      .new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:)
+      .mentor_at_school_periods
+  end
+
+  def premium_mode? = migration_mode == :all_induction_records
+
+  def select_migration_mode
+    MigrationStrategy.new(ecf1_teacher_history).strategy
   end
 
   def teacher
@@ -49,72 +131,6 @@ private
       created_at: ecf1_teacher_history.user.created_at,
       updated_at: ecf1_teacher_history.user.updated_at
     )
-  end
-
-  def ect_at_school_periods
-    return [] if ecf1_teacher_history.ect.blank?
-
-    trn = ecf1_teacher_history.user.trn
-    profile_id = ecf1_teacher_history.ect.participant_profile_id
-    raw_induction_records = ecf1_teacher_history.ect.induction_records
-    induction_completion_date = ecf1_teacher_history.ect.induction_completion_date
-    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, induction_completion_date:, participant_type: :ect).induction_records
-    mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
-    states = ecf1_teacher_history.ect.states
-    transfers = ecf1_teacher_history.ect.transfers
-
-    case migration_mode
-    when :latest_induction_records
-      TeacherHistoryConverter::ECT::LatestInductionRecords.new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
-        .ect_at_school_periods
-        .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.ect.created_at) }
-    when :all_induction_records
-      TeacherHistoryConverter::ECT::AllInductionRecords.new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
-        .ect_at_school_periods
-    end
-  end
-
-  def parsed_name
-    @parsed_name ||= Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
-  end
-
-  def mentor_at_school_periods
-    return [] if ecf1_teacher_history.mentor.blank?
-
-    trn = ecf1_teacher_history.user.trn
-    profile_id = ecf1_teacher_history.mentor.participant_profile_id
-    raw_induction_records = ecf1_teacher_history.mentor.induction_records
-    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, participant_type: :mentor).induction_records
-    states = ecf1_teacher_history.mentor.states
-    exclude_training_periods = exclude_ero_training_periods?
-    transfers = ecf1_teacher_history.mentor.transfers
-
-    case migration_mode
-    when :latest_induction_records
-      TeacherHistoryConverter::Mentor::LatestInductionRecords.new(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods:)
-        .mentor_at_school_periods
-        .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
-    when :all_induction_records
-      TeacherHistoryConverter::Mentor::AllInductionRecords.new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:)
-        .mentor_at_school_periods
-    end
-  end
-
-  def exclude_ero_training_periods?
-    ecf1_teacher_history.mentor.ero_mentor && !ecf1_teacher_history.mentor.ero_declarations
-  end
-
-  # in ECF1 we use the participant profile `created_at`, but as
-  # there's no equivalent in RECT we are taking the school period's
-  # created_at.
-  #
-  # Are we able to populate the earliest school period with the
-  # created at from the participant profile during migration?
-  def override_first_at_school_period_created_at(at_school_periods, participant_profile_created_at)
-    return at_school_periods if at_school_periods.empty?
-
-    at_school_periods[0].created_at = participant_profile_created_at
-    at_school_periods
   end
 
   # def build_mentorship_periods(induction_record)
