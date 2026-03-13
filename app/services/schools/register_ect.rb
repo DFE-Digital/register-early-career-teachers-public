@@ -51,7 +51,7 @@ module Schools
         create_teacher!
         not_registered_as_an_ect!
         update_school_last_choices!
-        close_ongoing_ect_period!
+        finish_previous_ect_period!
         @ect_at_school_period = start_at_school!
         create_training_period!
         set_eligibility_for_funding!
@@ -123,14 +123,32 @@ module Schools
                      last_chosen_training_programme: training_programme)
     end
 
-    def close_ongoing_ect_period!
+    def finish_previous_ect_period!
       return unless teacher
 
-      ongoing_period = teacher.ect_at_school_periods.ongoing.started_on_or_before(started_on).first
-      return unless ongoing_period
+      previous_period = ongoing_previous_period || previous_period_with_future_end
+      return unless previous_period
 
+      finish_period(previous_period)
+    end
+
+    def ongoing_previous_period
+      previous_periods.ongoing.first
+    end
+
+    def previous_period_with_future_end
+      previous_periods.finished_on_or_after(started_on).first
+    end
+
+    def previous_periods
+      teacher.ect_at_school_periods
+             .where.not(school:)
+             .started_on_or_before(started_on)
+    end
+
+    def finish_period(period)
       ECTAtSchoolPeriods::Finish.new(
-        ect_at_school_period: ongoing_period,
+        ect_at_school_period: period,
         finished_on: started_on.yesterday,
         author:
       ).finish!
