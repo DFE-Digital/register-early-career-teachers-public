@@ -27,6 +27,10 @@ class AppropriateBodyPeriod < ApplicationRecord
            -> { unclaimed_by_school_reported_appropriate_body },
            class_name: "ECTAtSchoolPeriod",
            foreign_key: :school_reported_appropriate_body_id
+  has_many :claimed_ect_at_school_periods,
+           -> { claimed_by_school_reported_appropriate_body },
+           class_name: "ECTAtSchoolPeriod",
+           foreign_key: :school_reported_appropriate_body_id
 
   # Scopes
   scope :active, -> { where.not(dfe_sign_in_organisation_id: nil) }
