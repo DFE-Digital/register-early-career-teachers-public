@@ -1,5 +1,7 @@
 ---
 title: Glossary for lead providers
+sidebar_title: Glossary
+sidebar_position: 10
 ---
 
 ## Appropriate body

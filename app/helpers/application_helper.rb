@@ -48,7 +48,8 @@ module ApplicationHelper
 
     return unless parsed_yaml
 
-    page_data(**parsed_yaml)
+    allowed_keys = self.class.instance_method(:page_data).parameters.map(&:last)
+    page_data(**parsed_yaml.slice(*allowed_keys))
   end
 
   def support_mailto_link(text = Rails.application.config.support_email_address)
