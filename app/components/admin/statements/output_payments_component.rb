@@ -20,11 +20,6 @@ module Admin
           .uniq
       end
 
-      def outputs_by_type(calculator)
-        calculator.outputs.declaration_type_outputs
-          .group_by(&:declaration_type)
-      end
-
       def declaration_counts(outputs)
         outputs.map(&:billable_count)
       end
@@ -43,6 +38,10 @@ module Admin
         delegate :total_billable_amount,
                  :declaration_type_outputs,
                  to: :outputs
+
+        def outputs_by_type
+          declaration_type_outputs.group_by(&:declaration_type)
+        end
       end
 
       class FlatRatePresenter < BasePresenter
