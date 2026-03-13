@@ -198,7 +198,7 @@ RSpec.describe Schools::RegisterECT do
         describe "recording an event" do
           before { allow(Events::Record).to receive(:record_teacher_registered_as_ect_event!).with(any_args).and_call_original }
 
-          it "records a mentor_registered event with the expected attributes" do
+          it "records a teacher_registered_as_ect event with the expected attributes" do
             service.register!
 
             expect(Events::Record).to have_received(:record_teacher_registered_as_ect_event!).with(
@@ -474,7 +474,7 @@ RSpec.describe Schools::RegisterECT do
         )
       end
 
-      it "uses ECTAtSchoolPeriods::Finish to bring the previous period forward" do
+      it "finishes the previous overlapping ECT period using ECTAtSchoolPeriods::Finish" do
         expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
           ect_at_school_period: existing_period,
           finished_on: expected_finished_on,
@@ -484,13 +484,13 @@ RSpec.describe Schools::RegisterECT do
         service.register!
       end
 
-      it "brings the previous ECT period forward to the day before the new start date" do
+      it "updates the previous ECT period to end the day before the new start date" do
         service.register!
 
         expect(existing_period.reload.finished_on).to eq(expected_finished_on)
       end
 
-      it "allows registration at the new school" do
+      it "creates a new ECT period at the new school" do
         expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
 
         new_period = teacher.ect_at_school_periods.find_by!(school:)
