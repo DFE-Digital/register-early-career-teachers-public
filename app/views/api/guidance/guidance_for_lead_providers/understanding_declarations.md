@@ -1,5 +1,6 @@
 ---
 title: Understanding declarations
+sidebar_position: 8
 ---
 
 ## What are declarations?
