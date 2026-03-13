@@ -30,7 +30,9 @@ module HaveStatementTable
 
       # Assert the expected total is displayed as a heading
       if @total
-        total = table.sibling(".govuk-heading-s", text: "Total")
+        panel = table.ancestor(".finance-panel")
+        total = panel.find(".govuk-heading-s", text: "Total")
+
         return false unless total.sibling(".govuk-heading-s").has_text?(@total)
       end
 
