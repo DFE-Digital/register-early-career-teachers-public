@@ -1,5 +1,6 @@
 ---
 title: Schedules and milestones guidance
+sidebar_position: 6
 ---
 
 ## Purpose and scope of this guidance

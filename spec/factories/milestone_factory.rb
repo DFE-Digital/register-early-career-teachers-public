@@ -5,5 +5,9 @@ FactoryBot.define do
 
     start_date { Date.new(2024, 9, 1) }
     milestone_date { Date.new(2024, 10, 1) }
+
+    initialize_with do
+      Milestone.find_or_create_by(schedule:, declaration_type:)
+    end
   end
 end

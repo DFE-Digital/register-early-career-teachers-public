@@ -1,7 +1,8 @@
 class Statement::Adjustment < ApplicationRecord
   belongs_to :statement
 
-  validates :payment_type, presence: { message: "Payment type is required" }
+  validates :payment_type, presence: { message: "Payment type is required" },
+                           length: { maximum: 500, message: "Payment type must be 500 characters or fewer" }
   validates :amount, presence: { message: "Amount is required" }
   validates :amount, numericality: { other_than: 0, message: "Amount must be greater than 0" }
   validate :amount_min_and_max_values
