@@ -4,16 +4,18 @@
 # See TeacherHistoryConverter::CalculatedFields
 class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
+  include TeacherHistoryConverter::SetFinishedOn
 
-  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods
+  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods, :mentor_completion_date
 
-  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: false)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, mentor_completion_date:, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @states = states
     @transfers = transfers
     @exclude_training_periods = exclude_training_periods
+    @mentor_completion_date = mentor_completion_date
   end
 
   # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
@@ -75,11 +77,18 @@ private
       lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
     )
 
-    finished_on = induction_record.end_date
+    if overrides[:finished_on].blank?
+      overrides[:finished_on] = mentor_finished_on(
+        start_date: induction_record.start_date,
+        end_date: induction_record.end_date,
+        withdrawal_date: withdrawal_attrs[:withdrawn_at]&.to_date,
+        deferral_date: deferral_attrs[:deferred_at]&.to_date,
+        mentor_completion_date:
+      )
+    end
 
     training_attrs = {
       started_on: induction_record.start_date,
-      finished_on:,
       created_at: induction_record.created_at,
       school: induction_record.school,
       training_programme:,
