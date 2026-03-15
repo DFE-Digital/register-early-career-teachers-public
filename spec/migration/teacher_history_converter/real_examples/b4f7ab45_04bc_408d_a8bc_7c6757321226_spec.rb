@@ -136,7 +136,7 @@ describe "Real data check for user b4f7ab45-04bc-408d-a8bc-7c6757321226" do
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2022, 9, 7),
-                  finished_on: nil,
+                  finished_on: Date.new(2023, 3, 23), # set by the mentor_completion_date
                   lead_provider_info: hash_including(name: "Best Practice Network"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1")
                 )
