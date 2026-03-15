@@ -147,7 +147,7 @@ describe "Real data check for user bb7234c4-d75c-4fd0-be9f-77cfa254535c (one ECT
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2021, 9, 1),
-                  finished_on: nil,
+                  finished_on: Date.new(2023, 2, 8), # set by mentor_completion_date
                   lead_provider_info: hash_including(name: "UCL Institute of Education"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   contract_period_year: 2021

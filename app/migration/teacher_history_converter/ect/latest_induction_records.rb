@@ -4,16 +4,18 @@
 # See TeacherHistoryConverter::CalculatedFields.
 class TeacherHistoryConverter::ECT::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
+  include TeacherHistoryConverter::SetFinishedOn
 
-  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states, :transfers
+  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states, :transfers, :induction_completion_date
 
-  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
+  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:, induction_completion_date:)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @mentor_at_school_periods = mentor_at_school_periods
     @states = states
     @transfers = transfers
+    @induction_completion_date = induction_completion_date
   end
 
   # Returns [ECF2TeacherHistory::ECTAtSchoolPeriod[], String[]]
@@ -98,9 +100,28 @@ private
       api_transfer_updated_at = transfers[training_provider_info.lead_provider_info.ecf1_id]
     end
 
+    deferral_attrs = deferral_data(
+      training_status: induction_record.training_status,
+      lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+    )
+
+    withdrawal_attrs = withdrawal_data(
+      training_status: induction_record.training_status,
+      lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+    )
+
+    if overrides[:finished_on].blank?
+      overrides[:finished_on] = ect_finished_on(
+        start_date: induction_record.start_date,
+        end_date: induction_record.end_date,
+        withdrawal_date: withdrawal_attrs[:withdrawn_at]&.to_date,
+        deferral_date: deferral_attrs[:deferred_at]&.to_date,
+        induction_completion_date:
+      )
+    end
+
     training_attrs = {
       started_on: induction_record.start_date,
-      finished_on: induction_record.end_date,
       created_at: induction_record.created_at,
       school:,
       training_programme:,
@@ -112,14 +133,8 @@ private
       schedule_info: induction_record.schedule_info,
       api_transfer_updated_at:,
       combination: build_combination(induction_record:, training_programme:),
-      **withdrawal_data(
-        training_status: induction_record.training_status,
-        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-      ),
-      **deferral_data(
-        training_status: induction_record.training_status,
-        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-      )
+      **withdrawal_attrs,
+      **deferral_attrs
     }.merge(overrides)
 
     # if the period is ongoing but has been withdrawn by the provider we should close the period
