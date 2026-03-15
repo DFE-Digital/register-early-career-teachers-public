@@ -83,7 +83,7 @@ describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d (one men
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2023, 6, 1),
-                  finished_on: nil,
+                  finished_on: Date.new(2025, 6, 16), # set by the mentor_completion_date
                   lead_provider_info: hash_including(name: "Ambition Institute"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   contract_period_year: 2023

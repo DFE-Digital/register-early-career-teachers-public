@@ -127,7 +127,7 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2024, 9, 1),
-                  finished_on: nil,
+                  finished_on: Date.new(2024, 9, 2), # made into a stub because completion date already happened in 2023
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 2"),
                   contract_period_year: 2024
