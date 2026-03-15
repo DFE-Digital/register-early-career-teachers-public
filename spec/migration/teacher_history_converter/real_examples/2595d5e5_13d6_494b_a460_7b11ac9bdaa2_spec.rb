@@ -226,7 +226,7 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2023, 2, 20),
-                  finished_on: nil,
+                  finished_on: Date.new(2024, 12, 12), # set by the mentor_completion_date
                   lead_provider_info: hash_including(name: "Best Practice Network"),
                   delivery_partner_info: hash_including(name: "Delivery partner 2"),
                   contract_period_year: 2022
