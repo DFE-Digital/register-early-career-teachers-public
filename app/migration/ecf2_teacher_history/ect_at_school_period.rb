@@ -26,6 +26,7 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
 
   def to_hash
     {
+      created_at:,
       started_on:,
       finished_on:,
       school: real_school,
@@ -36,6 +37,7 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
 
   def to_h
     {
+      created_at:,
       started_on:,
       finished_on:,
       school: school.to_h,
