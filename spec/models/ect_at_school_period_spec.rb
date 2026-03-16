@@ -619,4 +619,73 @@ describe ECTAtSchoolPeriod do
       end
     end
   end
+
+  describe "#migrated_data_accurate?" do
+    subject(:migrated_data_accurate?) { ect_at_school_period.migrated_data_accurate? }
+
+    before do
+      stub_const(
+        "ECTAtSchoolPeriod::RECT_GO_LIVE_DATE",
+        Date.yesterday
+      )
+    end
+
+    let(:ect_at_school_period) do
+      FactoryBot.build_stubbed(:ect_at_school_period, teacher:, created_at:)
+    end
+
+    context "when the teacher has not been migrated" do
+      let(:teacher) do
+        FactoryBot.build_stubbed(:teacher, :not_migrated)
+      end
+
+      context "when the record was created after `RECT_GO_LIVE_DATE`" do
+        let(:created_at) { Time.current }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context "when the record was created before `RECT_GO_LIVE_DATE`" do
+        let(:created_at) { 2.days.ago }
+
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context "when the teacher has been partially migrated" do
+      let(:teacher) do
+        FactoryBot.build_stubbed(:teacher, :latest_induction_records)
+      end
+
+      context "when the record was created after `RECT_GO_LIVE_DATE`" do
+        let(:created_at) { Time.current }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context "when the record was created before `RECT_GO_LIVE_DATE`" do
+        let(:created_at) { 2.days.ago }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context "when the teacher has been fully migrated" do
+      let(:teacher) do
+        FactoryBot.build_stubbed(:teacher, :all_induction_records)
+      end
+
+      context "when the record was created after `RECT_GO_LIVE_DATE`" do
+        let(:created_at) { Time.current }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context "when the record was created before `RECT_GO_LIVE_DATE`" do
+        let(:created_at) { 2.days.ago }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
 end
