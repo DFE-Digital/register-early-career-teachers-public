@@ -15,7 +15,8 @@ module TeachersIndex
     attr_reader :appropriate_body
 
     def number_of_ect_records_to_review
-      appropriate_body.unclaimed_ect_at_school_periods.count
+      appropriate_body.unclaimed_ect_at_school_periods.count +
+        appropriate_body.claimed_ect_at_school_periods.marked_as_leaving.count
     end
   end
 end
