@@ -145,16 +145,16 @@ teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
   contract_period: cp_2025
 )
 
-october_statement_2024 = FactoryBot.create(:statement, :paid_in_month, month: 10, year: 2024, contract: teach_first_contract_2024).tap do |statement|
+october_statement_2024 = FactoryBot.create(:statement, :adjustable, month: 10, year: 2024, contract: teach_first_contract_2024).tap do |statement|
   describe_statement(statement)
 end
-november_statement_2024 = FactoryBot.create(:statement, :paid_in_month, month: 11, year: 2024, contract: teach_first_contract_2024).tap do |statement|
+november_statement_2024 = FactoryBot.create(:statement, :adjustable, month: 11, year: 2024, contract: teach_first_contract_2024).tap do |statement|
   describe_statement(statement)
 end
-october_statement_2025 = FactoryBot.create(:statement, :paid_in_month, month: 10, year: 2025, contract: teach_first_contract_2025).tap do |statement|
+october_statement_2025 = FactoryBot.create(:statement, :adjustable, month: 10, year: 2025, contract: teach_first_contract_2025).tap do |statement|
   describe_statement(statement)
 end
-november_statement_2025 = FactoryBot.create(:statement, :paid_in_month, month: 11, year: 2025, contract: teach_first_contract_2025).tap do |statement|
+november_statement_2025 = FactoryBot.create(:statement, :adjustable, month: 11, year: 2025, contract: teach_first_contract_2025).tap do |statement|
   describe_statement(statement)
 end
 
