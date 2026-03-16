@@ -53,10 +53,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     expect(rendered_content).to have_text(ect_at_school_period.school_reported_appropriate_body_name)
   end
 
-  context "when the appropriate body has not been reported for migrated data" do
-    let(:teacher) do
-      FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki", migration_mode: :latest_induction_records)
-    end
+  context "when the appropriate body has not been reported" do
     let(:ect_at_school_period) do
       FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil, school_reported_appropriate_body: nil)
     end
@@ -69,11 +66,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     end
   end
 
-  context "when the appropriate body is reported for migrated data" do
-    let(:teacher) do
-      FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki", migration_mode: :latest_induction_records)
-    end
-
+  context "when the appropriate body is reported" do
     it "renders the school reported appropriate body name" do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 

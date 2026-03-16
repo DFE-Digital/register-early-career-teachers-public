@@ -78,9 +78,7 @@ module Schools
       end
 
       def appropriate_body_text
-        return "Not reported" if ect_at_school_period.appropriate_body_not_reported?
-
-        ect_at_school_period.school_reported_appropriate_body_name
+        ect_at_school_period.school_reported_appropriate_body_name.presence || "Not reported"
       end
 
       def delivery_partner_row

@@ -1,7 +1,6 @@
 RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Alpha Teaching School Hub") }
-  let(:migration_mode) { :not_migrated }
-  let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe", migration_mode:) }
+  let(:teacher) { FactoryBot.create(:teacher, trn: "9876543", trs_first_name: "John", trs_last_name: "Doe") }
   let(:ect) do
     FactoryBot.create(:ect_at_school_period,
                       teacher:,
@@ -46,8 +45,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     end
   end
 
-  context "when the appropriate body has not been reported and the record is migrated" do
-    let(:migration_mode) { :latest_induction_records }
+  context "when the appropriate body has not been reported" do
     let(:ect) do
       FactoryBot.create(:ect_at_school_period,
                         teacher:,
@@ -66,9 +64,7 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
     end
   end
 
-  context "when the appropriate body is reported for migrated data" do
-    let(:migration_mode) { :latest_induction_records }
-
+  context "when the appropriate body is reported" do
     it "renders the reported appropriate body" do
       expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
       expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")

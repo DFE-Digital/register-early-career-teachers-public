@@ -27,8 +27,6 @@ module Schools
     end
 
     def induction_start_date_row
-      return induction_start_date_not_reported_row if appropriate_body_not_reported?
-
       date = induction_start_date
       return induction_start_date_not_reported_row if date.blank?
 
@@ -51,13 +49,7 @@ module Schools
     end
 
     def appropriate_body_text
-      return "Not reported" if appropriate_body_not_reported?
-
-      @ect.school_reported_appropriate_body_name
-    end
-
-    def appropriate_body_not_reported?
-      @ect.appropriate_body_not_reported?
+      @ect.school_reported_appropriate_body_name.presence || "Not reported"
     end
 
     def induction_start_date_not_reported_row
