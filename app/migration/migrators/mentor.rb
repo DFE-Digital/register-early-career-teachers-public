@@ -90,6 +90,7 @@ module Migrators
         [ecf2_teacher_history.success?, migration_mode]
       end
     rescue ECF2TeacherHistory::SaveError => e
+      ecf2_teacher_history.save_mentor_combination_summaries!
       ecf2_teacher_history.record_failure!(teacher: e.teacher,
                                            model: e.model,
                                            message: e.message,
