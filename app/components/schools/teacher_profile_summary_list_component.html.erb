@@ -50,19 +50,23 @@
     <% end %>
   <% end %>
 
-  <% list.with_row do |row| %>
-    <% row.with_key { "School start date" } %>
-    <% row.with_value { ect_start_date(@ect) } %>
+  <% if show_school_start_date? %>
+    <% list.with_row do |row| %>
+      <% row.with_key { "School start date" } %>
+      <% row.with_value { ect_start_date(@ect) } %>
+    <% end %>
   <% end %>
 
-  <% list.with_row do |row| %>
-    <% row.with_key { "Working pattern" } %>
-    <% row.with_value { @ect.working_pattern&.humanize } %>
-    <% row.with_action(
-      text: "Change",
-      visually_hidden_text: "working pattern",
-      href: schools_ects_change_working_pattern_wizard_edit_path(@ect),
-      classes: "govuk-link--no-visited-state"
-    ) %>
+  <% if show_working_pattern? %>
+    <% list.with_row do |row| %>
+      <% row.with_key { "Working pattern" } %>
+      <% row.with_value { @ect.working_pattern&.humanize } %>
+      <% row.with_action(
+        text: "Change",
+        visually_hidden_text: "working pattern",
+        href: schools_ects_change_working_pattern_wizard_edit_path(@ect),
+        classes: "govuk-link--no-visited-state"
+      ) %>
+    <% end %>
   <% end %>
 <% end %>

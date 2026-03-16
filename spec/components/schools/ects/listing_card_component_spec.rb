@@ -359,4 +359,30 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       expect(rendered_content).not_to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
     end
   end
+
+  context "when the ECT's migrated data is not accurate" do
+    before do
+      allow(ect_at_school_period).to receive(:migrated_data_accurate?).and_return(false)
+    end
+
+    it "does not show the start date" do
+      component = described_class.new(teacher:, ect_at_school_period:, training_period:)
+      render_inline(component)
+
+      expect(page).not_to have_summary_list_row("School start date")
+    end
+  end
+
+  context "when the ECT's migrated data is accurate" do
+    before do
+      allow(ect_at_school_period).to receive(:migrated_data_accurate?).and_return(true)
+    end
+
+    it "shows the start date" do
+      component = described_class.new(teacher:, ect_at_school_period:, training_period:)
+      render_inline(component)
+
+      expect(page).to have_summary_list_row("School start date")
+    end
+  end
 end
