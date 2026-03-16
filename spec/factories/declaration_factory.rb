@@ -5,6 +5,7 @@ FactoryBot.define do
     end
 
     training_period { FactoryBot.create(:training_period, :with_active_lead_provider, active_lead_provider:) }
+
     payment_status { :no_payment }
     clawback_status { :no_clawback }
     api_id { SecureRandom.uuid }
@@ -91,6 +92,8 @@ FactoryBot.define do
     trait :with_ect do
       transient do
         school_partnership { nil }
+        training_period { nil }
+        active_lead_provider { nil }
         started_on { declaration_date }
         declaration_type { "started" }
       end
@@ -116,6 +119,7 @@ FactoryBot.define do
             :training_period,
             :for_ect,
             :with_schedule_and_milestones,
+            :with_school_partnership,
             ect_at_school_period:,
             started_on: evaluator.started_on,
             finished_on: nil,
@@ -132,6 +136,8 @@ FactoryBot.define do
     trait :with_mentor do
       transient do
         school_partnership { nil }
+        training_period { nil }
+        active_lead_provider { nil }
         started_on { declaration_date }
         declaration_type { "started" }
       end
@@ -156,6 +162,7 @@ FactoryBot.define do
             :training_period,
             :for_mentor,
             :with_schedule_and_milestones,
+            :with_school_partnership,
             mentor_at_school_period:,
             started_on: evaluator.started_on,
             finished_on: nil,
