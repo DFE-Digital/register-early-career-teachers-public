@@ -1,4 +1,4 @@
-RSpec.describe "Participants API", :with_metadata, type: :request do
+RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request do
   let(:serializer) { API::TeacherSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::Query }
@@ -58,7 +58,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     let(:path) { change_schedule_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::ChangeSchedule }
     let(:resource_type) { Teacher }
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:) } }
     let(:schedule_identifier) { FactoryBot.create(:schedule, contract_period:).identifier }
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let(:contract_period_year) { contract_period.year.to_s }
@@ -100,7 +100,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     let(:path) { defer_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Defer }
     let(:resource_type) { Teacher }
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:) } }
     let(:reason) { service::DEFERRAL_REASONS.sample }
     let(:course_identifier) { "ecf-induction" }
     let(:service_args) do
@@ -131,7 +131,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     let(:path) { resume_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Resume }
     let(:resource_type) { Teacher }
-    let(:resource) { create_resource(active_lead_provider:, training_status: :withdrawn) }
+    let(:resource) { travel_to(3.days.ago) {  create_resource(active_lead_provider:, training_status: :withdrawn) } }
     let(:course_identifier) { "ecf-induction" }
     let(:service_args) do
       {
@@ -159,7 +159,7 @@ RSpec.describe "Participants API", :with_metadata, type: :request do
     let(:path) { withdraw_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::Withdraw }
     let(:resource_type) { Teacher }
-    let(:resource) { create_resource(active_lead_provider:) }
+    let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:) } }
     let(:reason) { service::WITHDRAWAL_REASONS.sample }
     let(:course_identifier) { "ecf-mentor" }
     let(:service_args) do
