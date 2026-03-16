@@ -113,6 +113,31 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to be_valid }
           end
 
+          context "when the metadata selects a future training period but an ongoing training period exists for the same lead provider" do
+            let(:future_training_period_started_on) { 2.months.from_now.to_date }
+            let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: nil) }
+            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: future_training_period_started_on) }
+            let!(:future_training_period) do
+              DeclarativeUpdates.skip(:metadata) do
+                same_lp_school_partnership = FactoryBot.create(:school_partnership, :for_year, school: at_school_period.school, lead_provider:, year: contract_period.year)
+                FactoryBot.create(
+                  :training_period,
+                  :"for_#{trainee_type}",
+                  started_on: future_training_period_started_on,
+                  finished_on: nil,
+                  "#{trainee_type}_at_school_period": at_school_period,
+                  school_partnership: same_lp_school_partnership
+                )
+              end
+            end
+
+            it { is_expected.to be_valid }
+
+            it "operates on the ongoing training period, not the future one" do
+              expect(instance.send(:training_period)).to eq(training_period)
+            end
+          end
+
           context "when there are future training periods (for a different teacher)" do
             before do
               at_school_period = FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 3.years.ago, finished_on: nil)

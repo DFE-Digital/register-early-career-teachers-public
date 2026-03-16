@@ -31,7 +31,34 @@ module API::Teachers
       ).change_schedule
     end
 
+    # The metadata handler selects the training period with the latest started_on.
+    # When a future training period exists for the same lead provider, it gets selected
+    # instead of the ongoing one, causing lead_provider_is_currently_training_teacher
+    # to reject it (started_on.future?). We fall back to the ongoing training period
+    # so the schedule change can proceed against the correct record.
+    def training_period
+      tp = super
+      return tp unless tp&.started_on&.future?
+
+      ongoing_training_period_for_lead_provider || tp
+    end
+
   private
+
+    def ongoing_training_period_for_lead_provider
+      scope = if teacher_type == :ect
+                TrainingPeriod.joins(:ect_at_school_period).where(ect_at_school_period: { teacher: })
+              else
+                TrainingPeriod.joins(:mentor_at_school_period).where(mentor_at_school_period: { teacher: })
+              end
+
+      scope
+        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+        .where(lead_providers: { id: lead_provider.id })
+        .ongoing_today
+        .latest_first
+        .first
+    end
 
     def contract_period
       @contract_period ||= ContractPeriod.find_by(year: contract_period_year) || fallback_contract_period

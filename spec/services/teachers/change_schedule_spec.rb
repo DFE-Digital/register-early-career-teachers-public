@@ -132,6 +132,43 @@ RSpec.describe Teachers::ChangeSchedule do
           end
         end
 
+        context "when a future training period exists for the same lead provider" do
+          let(:training_period_finished_on) { 2.months.from_now.to_date }
+          let(:future_training_period_started_on) { training_period_finished_on }
+          let!(:future_school_partnership) { FactoryBot.create(:school_partnership, :for_year, school: at_school_period.school, lead_provider:, year: new_contract_period.year) }
+          let!(:future_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :"for_#{trainee_type}",
+              "#{trainee_type}_at_school_period": at_school_period,
+              started_on: future_training_period_started_on,
+              finished_on: nil,
+              school_partnership: future_school_partnership
+            )
+          end
+
+          it "slots the new training period between the ongoing and future training periods" do
+            expect { service.change_schedule }.to change(TrainingPeriod, :count).from(2).to(3)
+
+            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+
+            new_training_period = TrainingPeriod.where.not(id: [training_period.id, future_training_period.id]).last
+            expect(new_training_period.started_on).to eq(Time.zone.today)
+            expect(new_training_period.finished_on).to eq(future_training_period.started_on)
+            expect(new_training_period.schedule).to eq(new_schedule)
+            expect(new_training_period.school_partnership).to eq(new_school_partnership)
+          end
+
+          it "updates the future training period's schedule and school_partnership" do
+            service.change_schedule
+
+            future_training_period.reload
+            expect(future_training_period.schedule).to eq(new_schedule)
+            expect(future_training_period.school_partnership).to eq(new_school_partnership)
+            expect(future_training_period.expression_of_interest).to be_nil
+          end
+        end
+
         context "when the existing training_period.started_on has not yet passed" do
           let(:school_period_started_on) { Time.zone.today }
 

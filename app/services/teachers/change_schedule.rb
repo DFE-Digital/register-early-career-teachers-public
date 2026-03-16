@@ -43,20 +43,22 @@ module Teachers
 
       finish_training_period!
       new_training_period = create_new_training_period_with!(finished_on:)
+      update_future_training_period!
 
       record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period:)
     end
 
     # Determine the correct finished_on date for the new training period.
-    # In order of priority, we will take:
+    # Takes the earliest future date from the following, or nil if none apply:
     #
-    # 1. The finished_on of the current training period (if today or later)
-    # 2. The finished_on of the school period (if today or later)
-    # 3. nil (meaning the training period we are closing is ongoing)
+    # 1. The finished_on of the current training period
+    # 2. The finished_on of the school period
+    # 3. The started_on of a future training period for the same lead provider (to avoid overlap)
     def determine_finished_on
       [
         training_period.finished_on,
-        training_period.at_school_period_finished_on
+        training_period.at_school_period_finished_on,
+        future_training_period_for_same_lead_provider&.started_on
       ].compact.reject(&:past?).min
     end
 
@@ -100,6 +102,26 @@ module Teachers
         new_training_period:,
         teacher:,
         lead_provider:
+      )
+    end
+
+    def future_training_period_for_same_lead_provider
+      @future_training_period_for_same_lead_provider ||= training_period
+        .siblings
+        .started_after(training_period.started_on)
+        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+        .where(lead_providers: { id: lead_provider.id })
+        .earliest_first
+        .first
+    end
+
+    def update_future_training_period!
+      return unless future_training_period_for_same_lead_provider
+
+      future_training_period_for_same_lead_provider.update!(
+        schedule:,
+        school_partnership:,
+        expression_of_interest: nil
       )
     end
 
