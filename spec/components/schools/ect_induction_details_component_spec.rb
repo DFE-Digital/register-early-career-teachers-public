@@ -44,4 +44,31 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       expect(page).to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
     end
   end
+
+  context "when the appropriate body has not been reported" do
+    let(:ect) do
+      FactoryBot.create(:ect_at_school_period,
+                        teacher:,
+                        school_reported_appropriate_body: nil,
+                        started_on: Date.new(2023, 9, 1))
+    end
+
+    it "renders not reported for the appropriate body" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "Not reported")
+    end
+
+    it "renders the induction start date fallback" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
+    end
+  end
+
+  context "when the appropriate body is reported" do
+    it "renders the reported appropriate body" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Appropriate body")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
+      expect(page).not_to have_selector(".govuk-summary-list__value", text: "Not reported")
+    end
+  end
 end
