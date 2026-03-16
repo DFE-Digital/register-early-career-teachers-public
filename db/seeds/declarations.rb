@@ -15,6 +15,54 @@ def find_or_create_school_partnership!(school:, delivery_partner:, lead_provider
   )
 end
 
+def assign_uplift(declaration_type, uplift_count)
+  return false unless declaration_type == "started"
+
+  uplift = uplift_count < 2 ? true : [true, false].sample
+  uplift_count + 1 if uplift
+  uplift
+end
+
+def create_results
+  results = {}
+  years = [2024, 2025]
+  years.each do |year|
+    results[year] = {}
+    milestones.each do |milestone|
+      results[year][milestone] = { ects: 0, mentors: 0, uplifts: 0, clawbacks: 0 }
+    end
+  end
+  results
+end
+
+def collect_results(results, n, year, declaration_type, pupil_premium_uplift, create_mentor_declarations)
+  uplifts = pupil_premium_uplift ? n + 1 : 0
+  mentors = create_mentor_declarations ? 1 : 0
+
+  result = results[year][declaration_type]
+  result[:ects] += (n + 1)
+  result[:mentors] += mentors
+  result[:uplifts] += uplifts
+end
+
+def add_to_results(results, year, declaration_type, clawbacks)
+  results[year][declaration_type][:clawbacks] += clawbacks
+end
+
+def describe_results(results)
+  print_seed_info("Statements:")
+
+  years = [2024, 2025]
+  years.each do |year|
+    print_seed_info("Year: #{year}", indent: 2, colour: :green)
+    print_seed_info("Type\tECTs\tMentors\tUplifts\tClawbacks", indent: 4, colour: :blue)
+    milestones.each do |milestone|
+      result = results[year][milestone]
+      print_seed_info("#{milestone.ljust(12)}\t\t#{result[:ects]}\t#{result[:mentors]}\t#{result[:uplifts]}\t#{result[:clawbacks]}", indent: 4)
+    end
+  end
+end
+
 def describe_declaration(declaration, period_type)
   return unless declaration
 
@@ -114,6 +162,9 @@ payment_statements = [september_statement_2024, september_statement_2025]
 statement_pairs = [[august_statement_2024, september_statement_2024], [august_statement_2025, september_statement_2025]]
 all_statements = statement_pairs.flatten
 
+uplift_count = 0
+results = create_results
+
 payment_statements.each do |payment_statement|
   describe_statement_declaration(payment_statement)
   school_partnerships.each do |school_partnership|
@@ -125,30 +176,27 @@ payment_statements.each do |payment_statement|
 
     milestones.each do |declaration_type|
       n = Random.rand(25)
-      pupil_premium_uplift = declaration_type == "started" ? [true, false].sample : false
+      pupil_premium_uplift = assign_uplift(declaration_type, uplift_count)
       FactoryBot.create_list(:declaration, n, :with_ect, :paid,
                              declaration_type:,
                              school_partnership:,
                              pupil_premium_uplift:,
-                             payment_statement:).tap do |declarations|
-        describe_declaration(declarations.first, "ECT")
-      end
+                             payment_statement:)
 
       FactoryBot.create(:declaration, :with_ect, :voided,
                         declaration_type:,
                         school_partnership:,
-                        payment_statement:).tap do |declaration|
-        describe_declaration(declaration, "ECT")
-      end
+                        payment_statement:)
 
-      next unless %w[started completed].include?(declaration_type)
+      create_mentor_declarations = %w[started completed].include?(declaration_type)
+      collect_results(results, n, payment_statement.contract.contract_period.year, declaration_type, pupil_premium_uplift, create_mentor_declarations)
+
+      next unless create_mentor_declarations
 
       FactoryBot.create(:declaration, :with_mentor, :paid,
                         declaration_type:,
                         school_partnership:,
-                        payment_statement:).tap do |declaration|
-        describe_declaration(declaration, "Mentor")
-      end
+                        payment_statement:)
     end
   end
 end
@@ -168,9 +216,9 @@ statement_pairs.each do |payment_statement, clawback_statement|
                              declaration_type:,
                              school_partnership:,
                              payment_statement:,
-                             clawback_statement:).tap do |declarations|
-        describe_declaration(declarations.first, "ECT")
-      end
+                             clawback_statement:)
+
+      add_to_results(results, clawback_statement.contract.contract_period.year, declaration_type, n)
 
       next unless %w[started completed].include?(declaration_type)
 
@@ -178,12 +226,12 @@ statement_pairs.each do |payment_statement, clawback_statement|
                         declaration_type:,
                         school_partnership:,
                         payment_statement:,
-                        clawback_statement:).tap do |declaration|
-        describe_declaration(declaration, "Mentor")
-      end
+                        clawback_statement:)
     end
   end
 end
+
+describe_results(results)
 
 all_statements.each do |statement|
   FactoryBot.create :statement_adjustment, statement:, payment_type: "Big amount", amount: Random.rand(1000)
