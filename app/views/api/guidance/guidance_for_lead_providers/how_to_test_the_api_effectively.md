@@ -82,7 +82,7 @@ To test declaration submission functionality, include:
 
 Make a declaration submission using this header: `X-With-Server-Date: 2027-01-10T10:42:00Z`
 
-[View more information on declaration states](https://manage-training-for-early-career-teachers.education.gov.uk/api-reference/ecf/definitions-and-states/#declaration-states).
+[View more information on declaration states](/api/guidance/guidance-for-lead-providers/understanding-declarations).
 
 ## Check seed data is adequate or request seed data that’s more tailored to your needs 
 
