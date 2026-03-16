@@ -50,7 +50,7 @@ teachers = [
   { trn: "3013021", trs_first_name: "Dave", trs_last_name: "Teacher", trs_induction_status: "None", corrected_name: "Substitutus Magister (merged)" },
 
   # NB: DO NOT use TRNs from TRS because attributes like name will change when refreshed
-  { trn: "0000001", trs_first_name: "Stephen", trs_last_name: "Griddle", trs_induction_status: "InProgress", migration_mode: "latest_induction_records" },
+  { trn: "0000001", trs_first_name: "Stephen", trs_last_name: "Griddle", trs_induction_status: "InProgress" },
   { trn: "0000002", trs_first_name: "Dominic", trs_last_name: "East", trs_induction_status: "InProgress" },
   { trn: "0000003", trs_first_name: "Hugh", trs_last_name: "Stipend",  trs_induction_status: "Failed", trs_induction_completed_date: Date.new(2023, 6, 30) },
   { trn: "0000004", trs_first_name: "Emma", trs_last_name: "Thompson", trs_induction_status: "InProgress", **uplift_attrs },
