@@ -1,7 +1,7 @@
 class ECF2TeacherHistory
   class InvalidPeriodType < StandardError; end
 
-  class Error
+  class SaveError < StandardError
     attr_reader :teacher, :model, :message, :migration_item_id
 
     def initialize(teacher:, model:, message:, migration_item_id:)
@@ -9,6 +9,8 @@ class ECF2TeacherHistory
       @model = model
       @message = message
       @migration_item_id = migration_item_id
+
+      super(message:)
     end
   end
 
@@ -252,9 +254,9 @@ private
 
   def with_failure_recording(teacher:, model:, migration_item_id:)
     yield
-  rescue ActiveRecord::ActiveRecordError => e
+  rescue StandardError => e
     if raise_errors?
-      raise(StandardError, message: e.message, cause: Error.new(teacher:, model:, message: e.message, migration_item_id:))
+      raise(SaveError.new(teacher:, model:, message: e.message, migration_item_id:))
     end
 
     record_failure!(teacher:, model:, message: e.message, migration_item_id:)
