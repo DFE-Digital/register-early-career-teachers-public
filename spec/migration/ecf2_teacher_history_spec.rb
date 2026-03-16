@@ -268,7 +268,7 @@ describe ECF2TeacherHistory do
               appropriate_body: appropriate_body_a_data,
               training_periods: [first_training_period],
               mentorship_periods: []
-            )
+            ).tap { it.created_at = 2.months.ago }
           end
 
           let(:second_training_period) do
@@ -320,6 +320,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(30.days.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
+                expect(p1.created_at).to be_within(5.seconds).of(first_ect_at_school_period.created_at)
                 # expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
 
                 p1.training_periods.first!.tap do |p1_tp|
@@ -675,7 +676,7 @@ describe ECF2TeacherHistory do
               school: school_a_data,
               email: "a@example.org",
               training_periods: [first_training_period]
-            )
+            ).tap { it.created_at = 2.months.ago }
           end
 
           let(:mentor_at_school_periods) do
@@ -697,6 +698,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(1.month.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
+                expect(p1.created_at).to be_within(5.seconds).of(first_mentor_at_school_period.created_at)
 
                 p1.training_periods.first!.tap do |p1_tp|
                   expect(p1_tp.started_on).to eql(1.year.ago.to_date)
