@@ -66,7 +66,7 @@ private
             # we should check for withdrawn here and ensure we close it or not overwrite the finished_at
             withdrawal_data = withdrawal_data(
               training_status: induction_record.training_status,
-              lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+              lead_provider_id: induction_record.training_provider_info&.lead_provider_info&.ecf1_id
             )
 
             deferral_data = deferral_data(
