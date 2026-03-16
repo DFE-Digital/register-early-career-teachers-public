@@ -23,44 +23,45 @@ def assign_uplift(declaration_type, uplift_count)
   uplift
 end
 
-def create_results
+def pre_populate_results
   results = {}
-  years = [2024, 2025]
-  years.each do |year|
+  headers.each_key do |year|
     results[year] = {}
     milestones.each do |milestone|
-      results[year][milestone] = { ects: 0, mentors: 0, uplifts: 0, clawbacks: 0 }
+      results[year][milestone] = { type: milestone.ljust(12), ects: 0, mentors: 0, uplifts: 0, clawbacks: 0, mentor_clawbacks: 0, ect_clawbacks: 0 }
     end
   end
   results
 end
 
-def collect_results(results, n, year, declaration_type, pupil_premium_uplift, create_mentor_declarations)
-  uplifts = pupil_premium_uplift ? n + 1 : 0
-  mentors = create_mentor_declarations ? 1 : 0
-
-  result = results[year][declaration_type]
-  result[:ects] += (n + 1)
-  result[:mentors] += mentors
-  result[:uplifts] += uplifts
-end
-
-def add_to_results(results, year, declaration_type, clawbacks)
-  results[year][declaration_type][:clawbacks] += clawbacks
+def add_to_results(results, year, declaration_type, field, amount)
+  results[year][declaration_type][field] += amount
 end
 
 def describe_results(results)
   print_seed_info("Statements:")
 
-  years = [2024, 2025]
-  years.each do |year|
+  headers.each_key do |year|
+    columns = headers[year]
+
     print_seed_info("Year: #{year}", indent: 2, colour: :green)
-    print_seed_info("Type\tECTs\tMentors\tUplifts\tClawbacks", indent: 4, colour: :blue)
+    print_seed_info(columns.map { it.humanize.titleize.ljust(20) }.join, indent: 4, colour: :blue)
     milestones.each do |milestone|
       result = results[year][milestone]
-      print_seed_info("#{milestone.ljust(12)}\t\t#{result[:ects]}\t#{result[:mentors]}\t#{result[:uplifts]}\t#{result[:clawbacks]}", indent: 4)
+
+      print_seed_info(
+        columns.map { result[it.to_sym].to_s.ljust(20) }.join,
+        indent: 4
+      )
     end
   end
+end
+
+def headers
+  {
+    2024 => %w[type ects mentors uplifts clawbacks],
+    2025 => %w[type ects mentors mentor_clawbacks ect_clawbacks]
+  }
 end
 
 def describe_declaration(declaration, period_type)
@@ -144,26 +145,26 @@ teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
   contract_period: cp_2025
 )
 
-august_statement_2024 = FactoryBot.create(:statement, :paid_in_month, month: 8, year: 2024, contract: teach_first_contract_2024).tap do |statement|
+october_statement_2024 = FactoryBot.create(:statement, :paid_in_month, month: 10, year: 2024, contract: teach_first_contract_2024).tap do |statement|
   describe_statement(statement)
 end
-september_statement_2024 = FactoryBot.create(:statement, :paid_in_month, month: 9, year: 2024, contract: teach_first_contract_2024).tap do |statement|
+november_statement_2024 = FactoryBot.create(:statement, :paid_in_month, month: 11, year: 2024, contract: teach_first_contract_2024).tap do |statement|
   describe_statement(statement)
 end
-august_statement_2025 = FactoryBot.create(:statement, :paid_in_month, month: 8, year: 2025, contract: teach_first_contract_2025).tap do |statement|
+october_statement_2025 = FactoryBot.create(:statement, :paid_in_month, month: 10, year: 2025, contract: teach_first_contract_2025).tap do |statement|
   describe_statement(statement)
 end
-september_statement_2025 = FactoryBot.create(:statement, :paid_in_month, month: 9, year: 2025, contract: teach_first_contract_2025).tap do |statement|
+november_statement_2025 = FactoryBot.create(:statement, :paid_in_month, month: 11, year: 2025, contract: teach_first_contract_2025).tap do |statement|
   describe_statement(statement)
 end
 
 school_partnerships = [teach_first_grain_abbey_grove_2024, teach_first_grain_abbey_grove_2025]
-payment_statements = [september_statement_2024, september_statement_2025]
-statement_pairs = [[august_statement_2024, september_statement_2024], [august_statement_2025, september_statement_2025]]
+payment_statements = [november_statement_2024, november_statement_2025]
+statement_pairs = [[october_statement_2024, november_statement_2024], [october_statement_2025, november_statement_2025]]
 all_statements = statement_pairs.flatten
 
 uplift_count = 0
-results = create_results
+results = pre_populate_results
 
 payment_statements.each do |payment_statement|
   describe_statement_declaration(payment_statement)
@@ -188,21 +189,26 @@ payment_statements.each do |payment_statement|
                         school_partnership:,
                         payment_statement:)
 
-      create_mentor_declarations = %w[started completed].include?(declaration_type)
-      collect_results(results, n, payment_statement.contract.contract_period.year, declaration_type, pupil_premium_uplift, create_mentor_declarations)
+      year = payment_statement.contract.contract_period.year
 
-      next unless create_mentor_declarations
+      add_to_results(results, year, declaration_type, :ects, n + 1)
+      if pupil_premium_uplift
+        add_to_results(results, year, declaration_type, :uplifts, n + 1)
+      end
+
+      next unless %w[started completed].include?(declaration_type)
 
       FactoryBot.create(:declaration, :with_mentor, :paid,
                         declaration_type:,
                         school_partnership:,
                         payment_statement:)
+
+      add_to_results(results, year, declaration_type, :mentors, 1)
     end
   end
 end
 
 statement_pairs.each do |payment_statement, clawback_statement|
-  describe_statement_declaration(clawback_statement)
   school_partnerships.each do |school_partnership|
     alp = payment_statement.contract.active_lead_provider
     school_alp = school_partnership.lead_provider_delivery_partnership.active_lead_provider
@@ -218,7 +224,9 @@ statement_pairs.each do |payment_statement, clawback_statement|
                              payment_statement:,
                              clawback_statement:)
 
-      add_to_results(results, clawback_statement.contract.contract_period.year, declaration_type, n)
+      year = clawback_statement.contract.contract_period.year
+      field = year == 2025 ? :ect_clawbacks : :clawbacks
+      add_to_results(results, year, declaration_type, field, n)
 
       next unless %w[started completed].include?(declaration_type)
 
@@ -227,6 +235,9 @@ statement_pairs.each do |payment_statement, clawback_statement|
                         school_partnership:,
                         payment_statement:,
                         clawback_statement:)
+
+      field = year == 2025 ? :mentor_clawbacks : :clawbacks
+      add_to_results(results, year, declaration_type, field, 1)
     end
   end
 end
