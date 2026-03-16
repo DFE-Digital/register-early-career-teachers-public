@@ -775,6 +775,29 @@ module Events
       ).record_event!
     end
 
+    def self.record_statement_marked_payable!(author:, statement:, happened_at: Time.current)
+      event_type = :statement_marked_payable
+
+      active_lead_provider = statement.active_lead_provider
+      lead_provider        = active_lead_provider.lead_provider
+      heading              = "Statement marked as payable"
+
+      metadata = {
+        contract_period_year: active_lead_provider.contract_period_year
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        statement:,
+        active_lead_provider:,
+        lead_provider:,
+        happened_at:,
+        metadata:
+      ).record_event!
+    end
+
     # Statement Adjustment Events
 
     def self.record_statement_adjustment_added_event!(author:, statement_adjustment:)
@@ -932,6 +955,15 @@ module Events
         lead_provider:,
         happened_at: Time.zone.now
       ).record_event!
+    end
+
+    def self.record_teacher_declaration_payable!(author:, teacher:, training_period:, declaration:, happened_at: Time.current)
+      event_type = :teacher_declaration_payable
+      teacher_name = Teachers::Name.new(teacher).full_name
+      declaration_type = declaration.declaration_type
+      heading = "#{teacher_name}'s #{declaration_type} declaration was marked as payable"
+
+      new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
     end
 
   private
