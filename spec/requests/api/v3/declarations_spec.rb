@@ -127,7 +127,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
     Declaration::VOIDABLE_PAYMENT_STATUSES.each do |status|
       context "when the declaration is in a `voidable` status: #{status}" do
-        let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:, declaration_trait: status.to_sym) } }
+        let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: status.to_sym) } }
         let(:service) { API::Declarations::Void }
 
         it_behaves_like "a token authenticated endpoint", :put
@@ -136,7 +136,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is in `paid` status" do
-      let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:, declaration_trait: :paid) } }
+      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :paid) } }
       let(:service) { API::Declarations::Clawback }
 
       it_behaves_like "a token authenticated endpoint", :put
@@ -144,7 +144,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is in `voided` status" do
-      let(:resource) { travel_to(3.days.ago) {  create_resource(active_lead_provider:, declaration_trait: :voided) } }
+      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider:, declaration_trait: :voided) } }
 
       it "returns a 422 response" do
         authenticated_api_put(path, params:)
@@ -156,7 +156,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     end
 
     context "when the declaration is a previous declaration for a different lead provider" do
-      let(:resource) { travel_to(3.days.ago) {  create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) } }
+      let(:resource) { travel_to(3.days.from_now) { create_resource(active_lead_provider: FactoryBot.create(:active_lead_provider)) } }
 
       before do
         # Close training periods for other lead providers.
