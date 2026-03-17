@@ -200,6 +200,8 @@ describe "Real data check for user 2595d5e5-13d6-494b-a460-7b11ac9bdaa2 (inducti
       {
         teacher: hash_including(
           trn: "1111111",
+          mentor_became_ineligible_for_funding_on: Date.new(2024, 12, 12),
+          mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
           mentor_at_school_periods: array_including(
             hash_including(
               # NOTE: this will be converted to a stub as part of the Cleaner functionality

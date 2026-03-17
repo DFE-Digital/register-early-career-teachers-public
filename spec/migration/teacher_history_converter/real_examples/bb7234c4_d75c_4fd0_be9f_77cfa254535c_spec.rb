@@ -125,6 +125,8 @@ describe "Real data check for user bb7234c4-d75c-4fd0-be9f-77cfa254535c (one ECT
       {
         teacher: hash_including(
           trn: "1111111",
+          mentor_became_ineligible_for_funding_on: Date.new(2023, 2, 8),
+          mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
           ect_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2025, 9, 1),
