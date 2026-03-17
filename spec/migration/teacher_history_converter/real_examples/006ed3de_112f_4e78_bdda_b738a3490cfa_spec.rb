@@ -180,16 +180,71 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
     end
   end
 
-  context "when using the premium migrator", skip: "Implement the premium migrator" do
+  context "when using the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
     let(:mentor_at_school_periods) do
-      # TODO: add the premium mentor at school periods
-      []
+      [
+        {
+          # This teacher's data is covered by c82e38f1_920b_4ad0_98a3_5d69ee7f7b83_spec.rb
+          #
+          # When this record was imported using the premium migrator (all the induction records),
+          # we have an overlap with the ECT and therefore a mentorship period
+          mentor_at_school_period_id: 1,
+          started_on: Date.new(2022, 6, 1),
+          finished_on: nil,
+          school: { urn: "100001", name: "School 1" },
+          teacher: { trn: "9000009", api_mentor_training_record_id: "410e7dfe-7561-4149-aad5-5bfdd099d04c" }
+        }
+      ]
     end
 
     let(:expected_output) do
-      {}
+      {
+        teacher: hash_including(
+          trn: "1111111",
+          ect_at_school_periods: array_including(
+            hash_including(
+              school: hash_including(urn: "100001", name: "School 1"),
+              started_on: Date.new(2022, 9, 1),
+              finished_on: Date.new(2023, 9, 1),
+              mentorship_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2022, 9, 1),
+                  finished_on: Date.new(2023, 9, 1),
+                  mentor_at_school_period_id: 1
+                )
+              ),
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2022, 9, 1),
+                  finished_on: Date.new(2023, 9, 1),
+                  lead_provider_info: hash_including(name: "Education Development Trust"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 1"),
+                  contract_period_year: 2022
+                )
+              )
+            ),
+            hash_including(
+              # NOTE: here, the final induction record above has been converted to a stub because
+              #       the induction_completion_date is before the start's end date
+              school: hash_including(urn: "100002", name: "School 2"),
+              started_on: Date.new(2024, 7, 22),
+              finished_on: Date.new(2024, 7, 23),
+              mentorship_periods: [],
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2024, 7, 22),
+                  finished_on: Date.new(2024, 7, 23),
+                  lead_provider_info: hash_including(name: "Ambition Institute"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 2"),
+                  contract_period_year: 2022
+                )
+              )
+            )
+          )
+        )
+      }
     end
 
     it "matches the expected output" do
