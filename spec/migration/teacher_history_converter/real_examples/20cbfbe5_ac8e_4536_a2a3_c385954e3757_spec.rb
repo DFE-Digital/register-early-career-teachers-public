@@ -84,7 +84,7 @@ describe "Real data check for user 20cbfbe5-ac8e-4536-a2a3-c385954e3757" do
     end
   end
 
-  context "when using the premium migrator", skip: "Implement the premium migrator" do
+  context "when using the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
     let(:expected_output) do

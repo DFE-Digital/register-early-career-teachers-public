@@ -186,6 +186,8 @@ describe "Real data check for user 1ed6d4d4-fc15-4536-bcbc-bc6250f859da (with a 
     end
   end
 
+  # this one needs to wait until we're handling induction completion I think,
+  # it doesn't do the right thing at the moment
   context "when using the premium migrator", skip: "Implement the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
