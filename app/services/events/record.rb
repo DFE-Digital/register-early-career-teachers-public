@@ -571,6 +571,14 @@ module Events
       new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
     end
 
+    def self.record_teacher_declaration_eligible!(author:, teacher:, training_period:, declaration:, happened_at: Time.current)
+      event_type = :teacher_declaration_eligible
+      teacher_name = Teachers::Name.new(teacher).full_name
+      heading = "#{teacher_name}’s #{declaration.declaration_type} declaration was marked as eligible"
+
+      new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
+    end
+
     # Bulk Upload Events
 
     def self.record_bulk_upload_started_event!(author:, batch:)
