@@ -68,7 +68,7 @@ class ECF2TeacherHistory::Teacher
     @updated_at = updated_at
   end
 
-  def to_hash
+  def to_h
     {
       trn:,
       trs_first_name:,
@@ -97,6 +97,10 @@ class ECF2TeacherHistory::Teacher
 
       created_at:,
       updated_at:
-    }.compact
+    }
+  end
+
+  def to_hash
+    to_h.compact
   end
 end
