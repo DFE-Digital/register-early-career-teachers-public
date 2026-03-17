@@ -1,7 +1,7 @@
 class ECF2TeacherHistory
   class InvalidPeriodType < StandardError; end
 
-  class Error
+  class SaveError < StandardError
     attr_reader :teacher, :model, :message, :migration_item_id
 
     def initialize(teacher:, model:, message:, migration_item_id:)
@@ -9,6 +9,8 @@ class ECF2TeacherHistory
       @model = model
       @message = message
       @migration_item_id = migration_item_id
+
+      super(message:)
     end
   end
 
@@ -39,16 +41,38 @@ class ECF2TeacherHistory
 
   def save_all_ect_data!
     find_or_create_teacher!.tap do |teacher|
-      save_ect_periods!(teacher)
       save_ect_combination_and_mentorship_summaries!
+      save_ect_periods!(teacher)
+      update_ect_combination_and_mentorship_summaries!
     end
   end
 
   def save_all_mentor_data!
     find_or_create_teacher!.tap do |teacher|
-      save_mentor_periods!(teacher)
       save_mentor_combination_summaries!
+      save_mentor_periods!(teacher)
+      update_mentor_combination_summaries!
     end
+  end
+
+  def save_ect_combination_and_mentorship_summaries!
+    data_migration_teacher_combinations.update!(
+      ecf1_ect_profile_id: teacher&.api_ect_training_record_id,
+      ecf1_ect_combinations: ecf1_ect_combination_summaries,
+      ecf2_ect_combinations: [],
+      ecf1_mentorships: ecf1_mentorship_summaries,
+      ecf2_mentorships: [],
+      migration_mode:
+    )
+  end
+
+  def save_mentor_combination_summaries!
+    data_migration_teacher_combinations.update!(
+      ecf1_mentor_profile_id: teacher&.api_mentor_training_record_id,
+      ecf1_mentor_combinations: ecf1_mentor_combination_summaries,
+      ecf2_mentor_combinations: [],
+      migration_mode:
+    )
   end
 
   def success?
@@ -179,26 +203,6 @@ private
     training_period.school_partnership
   end
 
-  def save_ect_combination_and_mentorship_summaries!
-    data_migration_teacher_combinations.update!(
-      ecf1_ect_profile_id: teacher.api_ect_training_record_id,
-      ecf1_ect_combinations: ecf1_ect_combination_summaries,
-      ecf2_ect_combinations: ecf2_ect_combination_summaries,
-      ecf1_mentorships: ecf1_mentorship_summaries,
-      ecf2_mentorships: ecf2_mentorship_summaries,
-      migration_mode:
-    )
-  end
-
-  def save_mentor_combination_summaries!
-    data_migration_teacher_combinations.update!(
-      ecf1_mentor_profile_id: teacher.api_mentor_training_record_id,
-      ecf1_mentor_combinations: ecf1_mentor_combination_summaries,
-      ecf2_mentor_combinations: ecf2_mentor_combination_summaries,
-      migration_mode:
-    )
-  end
-
   def save_ect_periods!(found_teacher)
     ect_at_school_periods.each do |ect_at_school_period|
       with_failure_recording(teacher: found_teacher,
@@ -250,11 +254,31 @@ private
     end
   end
 
+  def update_ect_combination_and_mentorship_summaries!
+    data_migration_teacher_combinations.update!(
+      ecf1_ect_profile_id: teacher.api_ect_training_record_id,
+      ecf1_ect_combinations: ecf1_ect_combination_summaries,
+      ecf2_ect_combinations: ecf2_ect_combination_summaries,
+      ecf1_mentorships: ecf1_mentorship_summaries,
+      ecf2_mentorships: ecf2_mentorship_summaries,
+      migration_mode:
+    )
+  end
+
+  def update_mentor_combination_summaries!
+    data_migration_teacher_combinations.update!(
+      ecf1_mentor_profile_id: teacher.api_mentor_training_record_id,
+      ecf1_mentor_combinations: ecf1_mentor_combination_summaries,
+      ecf2_mentor_combinations: ecf2_mentor_combination_summaries,
+      migration_mode:
+    )
+  end
+
   def with_failure_recording(teacher:, model:, migration_item_id:)
     yield
-  rescue ActiveRecord::ActiveRecordError => e
+  rescue StandardError => e
     if raise_errors?
-      raise(StandardError, message: e.message, cause: Error.new(teacher:, model:, message: e.message, migration_item_id:))
+      raise(SaveError.new(teacher:, model:, message: e.message, migration_item_id:))
     end
 
     record_failure!(teacher:, model:, message: e.message, migration_item_id:)
