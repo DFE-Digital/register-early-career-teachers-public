@@ -132,6 +132,8 @@ private
       mentor_payments_frozen_year: ecf1_teacher_history.mentor&.payments_frozen_cohort_start_year,
       mentor_became_ineligible_for_funding_on: ecf1_teacher_history.mentor&.mentor_completion_date,
       mentor_became_ineligible_for_funding_reason: ecf1_teacher_history.mentor&.mentor_completion_reason,
+      trs_induction_start_date: ecf1_teacher_history.ect&.induction_start_date,
+      trs_induction_completion_date: ecf1_teacher_history.ect&.induction_completion_date,
       created_at: ecf1_teacher_history.user.created_at,
       updated_at: ecf1_teacher_history.user.updated_at
     )
