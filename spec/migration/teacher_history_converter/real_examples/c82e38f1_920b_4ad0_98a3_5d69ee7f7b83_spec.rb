@@ -148,14 +148,31 @@ describe "Real data check for user c82e38f1-920b-4ad0-98a3-5d69ee7f7b83" do
     end
   end
 
-  context "when using the premium migrator", skip: "Implement premium migrator" do
+  context "when using the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
     let(:expected_output) do
       {
         teacher: hash_including(
           trn: "1111111",
-          mentor_at_school_periods: []
+          mentor_at_school_periods: array_including(
+            hash_including(
+              started_on: Date.new(2022, 6, 1),
+              finished_on: nil,
+              school: hash_including(urn: "100001", name: "School 1"),
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2022, 6, 1),
+                  finished_on: Date.new(2024, 1, 8),
+                  lead_provider_info: hash_including(name: "Education Development Trust"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 1"),
+                  contract_period_year: 2022,
+                  withdrawn_at: Time.zone.local(2024, 1, 8, 11, 40, 7),
+                  withdrawal_reason: "switched_to_school_led"
+                )
+              )
+            )
+          )
         )
       }
     end
