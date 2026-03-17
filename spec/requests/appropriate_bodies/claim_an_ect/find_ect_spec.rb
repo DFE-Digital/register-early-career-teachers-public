@@ -130,6 +130,24 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
         end
       end
 
+      context "when date of birth is not valid" do
+        let(:search_params) do
+          {
+            trn: "1234567",
+            "date_of_birth(3i)" => "aa",
+            "date_of_birth(2i)" => "bb",
+            "date_of_birth(1i)" => "cccc",
+          }
+        end
+
+        it "returns error with the entered value" do
+          post("/appropriate-body/claim-an-ect/find-ect", params: { pending_induction_submission: search_params })
+
+          expect(response.body).to include(page_heading)
+          expect(response.body).to include("aa/bb/cccc is not a valid date")
+        end
+      end
+
       context "when the submission is invalid" do
         let(:birth_year_param) { (Date.current.year - 2).to_s }
 

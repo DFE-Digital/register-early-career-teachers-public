@@ -72,6 +72,24 @@ RSpec.describe "Appropriate body recording a passed induction outcome for a teac
         end
       end
 
+      context "when date is not valid" do
+        let(:params) do
+          {
+            appropriate_bodies_record_pass: {
+              "finished_on(3i)" => "aa",
+              "finished_on(2i)" => "bb",
+              "finished_on(1i)" => "cccc",
+              number_of_terms: 3,
+            }
+          }
+        end
+
+        it "returns error with the entered value" do
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(response.body).to include("aa/bb/cccc is not a valid date")
+        end
+      end
+
       context "with missing params" do
         let(:params) do
           {
