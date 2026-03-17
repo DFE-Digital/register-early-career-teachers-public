@@ -21,11 +21,12 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
     )
   end
 
-  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:) }
-  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: -300) }
+  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:, total_billable_amount:) }
+  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: 300) }
 
-  let(:total_net_amount) { 400 }
-  let(:total_refundable_amount) { -150 }
+  let(:total_billable_amount) { 550 }
+  let(:total_net_amount) { total_billable_amount - total_refundable_amount }
+  let(:total_refundable_amount) { 150 }
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }
 
@@ -70,7 +71,7 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
       # total_manual_adjustments_amount(375) + vat(395)
       # setup fee is no longer included
 
-      expect(page).to have_css("h2.govuk-heading-l", text: "£2,370.00")
+      expect(page).to have_css("h2.govuk-heading-l", text: "Total £2,370.00")
     end
 
     it "renders the overview table" do

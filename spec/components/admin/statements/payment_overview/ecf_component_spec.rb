@@ -21,11 +21,12 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     )
   end
 
-  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:) }
+  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:, total_billable_amount:) }
   let(:uplifts_double) { double(total_net_amount: total_uplifts_amount) }
 
-  let(:total_net_amount) { 400 }
-  let(:total_refundable_amount) { -150 }
+  let(:total_billable_amount) { 550 }
+  let(:total_net_amount) { total_billable_amount - total_refundable_amount }
+  let(:total_refundable_amount) { 150 }
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }
   let(:total_uplifts_amount) { 50 }
@@ -61,11 +62,11 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     end
 
     it "has a total payment which comes from the Banded calculator" do
-      # total_net_amount(400) + uplifts_amount(50) + monthly_service_fee(1000) +
+      # total_billable_amount(400) + uplifts_amount(50) + monthly_service_fee(1000) +
       # + total_manual_adjustments_amount(375) + vat(365)
       # NB setup fee is no longer included
 
-      expect(page).to have_css("h2.govuk-heading-l", text: "£2,190.00")
+      expect(page).to have_css("h2.govuk-heading-l", text: "Total £2,190.00")
     end
 
     it "renders the overview table" do

@@ -35,7 +35,7 @@ module Admin
         end
 
         def mentors_clawbacks
-          @mentors_clawbacks ||= flat_rate.outputs.total_refundable_amount
+          @mentors_clawbacks ||= -flat_rate.outputs.total_refundable_amount
         end
       end
     end
