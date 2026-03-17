@@ -104,6 +104,8 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
       {
         teacher: hash_including(
           trn: "1111111",
+          trs_induction_start_date: Date.new(2026, 1, 13),
+          trs_induction_completion_date: nil,
           ect_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2025, 6, 1),
