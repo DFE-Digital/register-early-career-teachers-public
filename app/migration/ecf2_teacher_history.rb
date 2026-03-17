@@ -58,12 +58,11 @@ class ECF2TeacherHistory
   def to_h
     {
       teacher: {
-        trn: teacher.trn,
-        api_ect_training_record_id: teacher.api_ect_training_record_id,
         ect_at_school_periods: ect_at_school_periods.map(&:to_h),
         mentor_at_school_periods: mentor_at_school_periods.map(&:to_h),
         ecf2_ect_combination_summaries:,
-        ecf2_mentor_combination_summaries:
+        ecf2_mentor_combination_summaries:,
+        **teacher.to_h,
       }
     }
   end
