@@ -89,15 +89,15 @@ module Migrators
         ecf2_teacher_history.save_all_mentor_data!
         [ecf2_teacher_history.success?, migration_mode]
       end
+    rescue ECF2TeacherHistory::SaveError => e
+      ecf2_teacher_history.save_mentor_combination_summaries!
+      ecf2_teacher_history.record_failure!(teacher: e.teacher,
+                                           model: e.model,
+                                           message: e.message,
+                                           migration_item_id: e.migration_item_id)
+      [false, migration_mode]
     rescue StandardError => e
-      if e.cause.is_a?(ECF2TeacherHistory::Error)
-        ecf2_teacher_history.record_failure!(teacher: e.cause.teacher,
-                                             model: e.cause.model,
-                                             message: e.cause.message,
-                                             migration_item_id: e.cause.migration_item_id)
-      else
-        failure_manager.record_failure(teacher_profile, e.message, migration_mode)
-      end
+      failure_manager.record_failure(teacher_profile, e.message, migration_mode)
       [false, migration_mode]
     end
   end
