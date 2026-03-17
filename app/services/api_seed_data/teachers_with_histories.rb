@@ -131,11 +131,14 @@ module APISeedData
         )
       end
 
-      Schedule
+      schedules = Schedule
         .excluding_replacement_schedules
         .where(contract_period:)
-        .order(Arel.sql("RANDOM()"))
-        .first
+        .order(:id)
+
+      # We cycle the schedules to avoid flaky tests that happen
+      # with random schedules.
+      schedules.offset(Teacher.count % schedules.count).first
     end
 
     def generate_training_status_traits
