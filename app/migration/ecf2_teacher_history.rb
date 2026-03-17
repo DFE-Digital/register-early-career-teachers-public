@@ -65,7 +65,9 @@ class ECF2TeacherHistory
         ecf2_ect_combination_summaries:,
         ecf2_mentor_combination_summaries:,
         mentor_became_ineligible_for_funding_on: teacher.mentor_became_ineligible_for_funding_on,
-        mentor_became_ineligible_for_funding_reason: teacher.mentor_became_ineligible_for_funding_reason
+        mentor_became_ineligible_for_funding_reason: teacher.mentor_became_ineligible_for_funding_reason,
+        trs_induction_start_date: teacher.trs_induction_start_date,
+        trs_induction_completion_date: teacher.trs_induction_completion_date
       }
     }
   end
