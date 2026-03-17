@@ -110,6 +110,27 @@ RSpec.describe "AppropriateBodies::InductionPeriodsController", type: :request d
         end
       end
 
+      context "when date is not valid" do
+        let(:params) do
+          {
+            induction_period: {
+              "started_on(3i)" => "aa",
+              "started_on(2i)" => "bb",
+              "started_on(1i)" => "cccc",
+              training_programme: "provider_led",
+              appropriate_body_period_id: appropriate_body_period.id
+            }
+          }
+        end
+
+        it "returns error with the entered value" do
+          patch(ab_teacher_induction_period_path(induction_period.teacher, induction_period), params:)
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(response.body).to include("aa/bb/cccc is not a valid date")
+        end
+      end
+
       context "when dates would cause overlap" do
         before do
           FactoryBot.create(:induction_period, teacher:, started_on: 1.year.ago, finished_on: 9.months.ago)
