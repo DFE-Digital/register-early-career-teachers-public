@@ -22,12 +22,12 @@ def assign_uplift(declaration_type, uplift_count)
 end
 
 def describe_results(results)
-  print_seed_info("Statements:")
+  print_seed_info("\n🌱 Statements:")
 
   headers.each_key do |year|
     columns = headers[year]
 
-    print_seed_info("Year: #{year}", indent: 2, colour: :green)
+    print_seed_info("\n🌱 Year: #{year}\n🌱", indent: 2, colour: :green)
     print_seed_info(columns.map { it.humanize.titleize.ljust(20) }.join, indent: 4, colour: :blue)
     milestones.each do |milestone|
       result = results[year][milestone]
@@ -48,12 +48,12 @@ def headers
 end
 
 def describe_statement_declaration(statement)
-  print_seed_info("Adding declarations for: #{statement.month} #{statement.year}", indent: 4)
+  print_seed_info("➕ Adding declarations for: #{statement.month} #{statement.year}", indent: 4)
 end
 
 def describe_statement(statement)
   lp_name = statement.contract.active_lead_provider.lead_provider.name
-  print_seed_info("📜 Statement created for #{lp_name} #{statement.month} #{statement.year} ", indent: 2)
+  print_seed_info("📜 Statement created for #{lp_name} #{statement.month} #{statement.year} ", indent: 4)
 end
 
 def describe_contract(contract)
@@ -68,7 +68,7 @@ def describe_school_partnership(school_partnership)
   school_partnership.lead_provider_delivery_partnership.active_lead_provider.contract_period.year
   school_name = school_partnership.school.gias_school.name
 
-  print_seed_info("Partnership #{school_name} #{lead_provider_name}", indent: 6)
+  print_seed_info("🤝 Partnership #{school_name} #{lead_provider_name}", indent: 4)
 end
 
 def milestones
@@ -125,10 +125,12 @@ teach_first_contract_2024 = FactoryBot.create(:contract,
   describe_contract(contract)
 end
 
-teach_first_contract_2025 = FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: school_partnership_2025.active_lead_provider, banded_fee_structure: ittecf_fee_structure)
-
-describe_contract(teach_first_contract_2024)
-describe_contract(teach_first_contract_2025)
+teach_first_contract_2025 = FactoryBot.create(:contract,
+                                              :for_ecf,
+                                              active_lead_provider: school_partnership_2025.active_lead_provider,
+                                              banded_fee_structure: ittecf_fee_structure).tap do |contract|
+  describe_contract(contract)
+end
 
 august_statement_2024 = FactoryBot.create(:statement,
                                           :adjustable,
@@ -136,6 +138,7 @@ august_statement_2024 = FactoryBot.create(:statement,
                                           year: 2024,
                                           deadline_date: Date.new(2024, 7, 31),
                                           payment_date: Date.new(2024, 8, 31),
+                                          active_lead_provider: school_partnership_2024.active_lead_provider,
                                           contract: teach_first_contract_2024).tap do |statement|
   describe_statement(statement)
 end
@@ -146,6 +149,7 @@ october_statement_2024 = FactoryBot.create(:statement,
                                            year: 2024,
                                            deadline_date: Date.new(2024, 9, 30),
                                            payment_date: Date.new(2024, 10, 31),
+                                           active_lead_provider: school_partnership_2024.active_lead_provider,
                                            contract: teach_first_contract_2024).tap do |statement|
   describe_statement(statement)
 end
@@ -156,6 +160,7 @@ august_statement_2025 = FactoryBot.create(:statement,
                                           year: 2025,
                                           deadline_date: Date.new(2025, 7, 31),
                                           payment_date: Date.new(2025, 8, 31),
+                                          active_lead_provider: school_partnership_2025.active_lead_provider,
                                           contract: teach_first_contract_2025).tap do |statement|
   describe_statement(statement)
 end
@@ -166,6 +171,7 @@ october_statement_2025 = FactoryBot.create(:statement,
                                            year: 2025,
                                            deadline_date: Date.new(2025, 9, 30),
                                            payment_date: Date.new(2025, 10, 31),
+                                           active_lead_provider: school_partnership_2025.active_lead_provider,
                                            contract: teach_first_contract_2025).tap do |statement|
   describe_statement(statement)
 end
