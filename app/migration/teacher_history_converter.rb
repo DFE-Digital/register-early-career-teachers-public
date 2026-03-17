@@ -41,7 +41,7 @@ private
     transfers = ecf1_teacher_history.ect.transfers
     kwargs = { trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers: }
 
-    economy_mode? ? economy_ect_migrator(**kwargs) : premium_ect_migrator(**kwargs.except(:transfers))
+    economy_mode? ? economy_ect_migrator(**kwargs) : premium_ect_migrator(**kwargs)
   end
 
   def economy_ect_migrator(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
@@ -74,7 +74,7 @@ private
     transfers = ecf1_teacher_history.mentor.transfers
     kwargs = { trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: }
 
-    economy_mode? ? economy_mentor_migrator(**kwargs) : premium_mentor_migrator(**kwargs.except(:transfers))
+    economy_mode? ? economy_mentor_migrator(**kwargs) : premium_mentor_migrator(**kwargs)
   end
 
   # in ECF1 we use the participant profile `created_at`, but as
@@ -94,16 +94,18 @@ private
     @parsed_name ||= Teachers::FullNameParser.new(full_name: ecf1_teacher_history.user.full_name)
   end
 
-  def premium_ect_migrator(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+  def premium_ect_migrator(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
     TeacherHistoryConverter::ECT::AllInductionRecords
-      .new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+      .new(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
       .ect_at_school_periods
+      .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.ect.created_at) }
   end
 
-  def premium_mentor_migrator(trn:, profile_id:, induction_records:, states:, exclude_training_periods:)
+  def premium_mentor_migrator(trn:, profile_id:, induction_records:, states:, exclude_training_periods:, transfers:)
     TeacherHistoryConverter::Mentor::AllInductionRecords
-      .new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:)
+      .new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:, transfers:)
       .mentor_at_school_periods
+      .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
   end
 
   def premium_mode? = migration_mode == :all_induction_records

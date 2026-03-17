@@ -1,13 +1,10 @@
 class ECF2TeacherHistory::ECTAtSchoolPeriod
-  attr_reader :started_on,
-              :finished_on,
-              :school,
-              :email,
+  attr_reader :school,
               :appropriate_body,
               :mentorship_periods,
               :training_periods
 
-  attr_accessor :created_at
+  attr_accessor :created_at, :email, :started_on, :finished_on
 
   def initialize(started_on:,
                  finished_on:,
@@ -50,14 +47,14 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
 
   # if we update a ect_at_school_period's finished_on after creation
   # we need to adjust any training_period that matches it too
-  def finished_on=(date)
-    original_finished_on = @finished_on
+  # def finished_on=(date)
+  #   original_finished_on = @finished_on
 
-    @finished_on = date
+  #   @finished_on = date
 
-    training_periods.select { it.finished_on == original_finished_on }
-                    .each { |tp| tp.finished_on = date }
-  end
+  #   training_periods.select { it.finished_on == original_finished_on }
+  #                   .each { |tp| tp.finished_on = date }
+  # end
 
   def real_school
     GIAS::School.find_by!(urn: school.urn).school

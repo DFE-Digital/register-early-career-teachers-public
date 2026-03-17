@@ -58,4 +58,10 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
   def ongoing?
     end_date.nil?
   end
+
+  def dates_in_order?
+    return true if ongoing?
+
+    start_date < end_date
+  end
 end

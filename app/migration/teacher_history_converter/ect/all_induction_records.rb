@@ -1,47 +1,174 @@
 class TeacherHistoryConverter::ECT::AllInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states
+  attr_reader :trn, :profile_id, :induction_records, :mentor_at_school_periods, :states, :transfers
 
-  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:)
+  def initialize(trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers:)
     @trn = trn
     @profile_id = profile_id
     @induction_records = induction_records
     @mentor_at_school_periods = mentor_at_school_periods
     @states = states
+    @transfers = transfers
   end
 
   # Returns [ECF2TeacherHistory::ECTAtSchoolPeriod[], String[]]
   def ect_at_school_periods
-    @ect_at_school_periods ||= induction_records
-                                 .reverse
-                                 .each_with_object([]) do |induction_record, periods|
-                                   process(periods, induction_record)
-    end
+    @ect_at_school_periods ||= build_ect_at_school_periods
   end
 
 private
 
-  def process(ect_at_school_periods, induction_record)
-    started_on = induction_record.start_date
-    finished_on = induction_record.end_date
+  def build_ect_at_school_periods
+    school_periods = []
+    last_school_period = nil
+    last_training_period = nil
+    last_mentorship_period = nil
 
-    training_period = build_training_period(induction_record:, started_on:, finished_on:)
+    induction_records.sort_by { |ir| [ir.start_date, ir.created_at] }.each do |induction_record|
+      # first_school_period = school_periods.first
+      # started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date].compact.min
+      # finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date].compact.min
 
-    mentorship_period = build_mentorship_period(induction_record:,
-                                                ect_started_on: started_on,
-                                                ect_finished_on: finished_on)
+      started_on = induction_record.start_date
+      finished_on = induction_record.end_date
 
-    ect_at_school_periods.unshift(
-      ECF2TeacherHistory::ECTAtSchoolPeriod.new(
-        started_on:,
-        finished_on:,
-        school: induction_record.school,
-        email: induction_record.preferred_identity_email,
-        mentorship_periods: [mentorship_period].compact,
-        training_periods: [training_period].compact
-      )
-    )
+      if last_school_period.nil? || last_school_period.school != induction_record.school
+        # this is a new ect_at_school_period
+        # with a new training_period
+        # and mentorship period
+
+        # check for overlaps if the last_school_period exists
+        if last_school_period.present?
+          # check school period and nested training and mentorship period for overlapping dates
+          check_and_fix_all_overlaps(school_periods, last_school_period, started_on)
+        end
+
+        last_training_period = build_training_period(induction_record:, started_on:, finished_on:)
+
+        last_mentorship_period = build_mentorship_period(induction_record:,
+                                                         ect_started_on: started_on,
+                                                         ect_finished_on: finished_on)
+
+        last_school_period = ECF2TeacherHistory::ECTAtSchoolPeriod.new(
+          started_on:,
+          finished_on:,
+          school: induction_record.school,
+          email: induction_record.preferred_identity_email,
+          mentorship_periods: [last_mentorship_period].compact,
+          training_periods: [last_training_period].compact
+        )
+        school_periods << last_school_period
+      else
+        # extend school period
+        last_school_period.finished_on = finished_on
+        last_school_period.email = induction_record.preferred_identity_email
+
+        if training_period_changed?(last_training_period, induction_record)
+          # this is a new training_period
+          # check for overlaps
+          check_and_fix_period_overlaps(last_training_period, started_on) if last_training_period.present?
+
+          last_training_period = build_training_period(induction_record:, started_on:, finished_on:)
+          last_school_period.training_periods << last_training_period if last_training_period.present?
+        elsif last_training_period.present?
+          # extend training period
+          # we should check for withdrawn here and ensure we close it or not overwrite the finished_at
+          withdrawal_data = withdrawal_data(
+            training_status: induction_record.training_status,
+            lead_provider_id: induction_record.training_provider_info&.lead_provider_info&.ecf1_id
+          )
+
+          deferral_data = deferral_data(
+            training_status: induction_record.training_status,
+            lead_provider_id: induction_record.training_provider_info&.lead_provider_info&.ecf1_id
+          )
+
+          if withdrawal_data[:withdrawn_at].present?
+            last_training_period.withdrawn_at = withdrawal_data[:withdrawn_at]
+            last_training_period.withdrawal_reason = withdrawal_data[:withdrawal_reason]
+          end
+
+          if deferral_data[:deferred_at].present?
+            last_training_period.deferred_at = deferral_data[:deferred_at]
+            last_training_period.deferral_reason = deferral_data[:deferral_reason]
+          end
+
+          training_finished_on = [last_training_period.deferred_at&.to_date, last_training_period.withdrawn_at&.to_date].compact.min
+
+          last_training_period.finished_on = if training_finished_on.present?
+                                               if last_training_period.finished_on.blank?
+                                                 [last_training_period.started_on + 1.day, training_finished_on].max
+                                               else
+                                                 [finished_on, training_finished_on].compact.max
+                                               end
+                                             else
+                                               finished_on
+                                             end
+        end
+
+        # mentorship period check
+        if last_mentorship_period&.api_mentor_training_record_id != induction_record.mentor_profile_id
+          # a new mentorship period
+          check_and_fix_period_overlaps(last_mentorship_period, started_on) if last_mentorship_period.present?
+          last_mentorship_period = build_mentorship_period(induction_record:,
+                                                           ect_started_on: started_on,
+                                                           ect_finished_on: finished_on)
+
+          last_school_period.mentorship_periods << last_mentorship_period if last_mentorship_period.present?
+        elsif last_mentorship_period.present?
+          # extend mentorship period
+          last_mentorship_period.ecf_end_induction_record_id = induction_record.induction_record_id
+          last_mentorship_period.finished_on = finished_on
+        end
+      end
+    end
+
+    school_periods
+  end
+
+  def training_period_changed?(training_period, induction_record)
+    return true if training_period.blank?
+    return true if training_period.withdrawn_at.present?
+
+    training_period.training_programme != convert_training_programme_name(induction_record.training_programme) ||
+      training_period&.lead_provider_info != induction_record&.training_provider_info&.lead_provider_info ||
+      training_period&.delivery_partner_info != induction_record&.training_provider_info&.delivery_partner_info ||
+      training_period.contract_period_year != induction_record&.training_provider_info&.cohort_year
+  end
+
+  def check_and_fix_all_overlaps(school_periods, current_school_period, next_period_started_on)
+    if next_period_started_on <= current_school_period.started_on + 1.day
+      # stub the school period and nested periods
+      num_periods_needed = [1, current_school_period.training_periods.count, current_school_period.mentorship_periods.count].compact.max
+
+      # stub before 1st period (this might be the same as current_school_period)
+      first_period = school_periods.min_by(&:started_on)
+      # need 2 days per period
+      modified_started_on = first_period.started_on - (num_periods_needed * 2.days)
+      modified_finished_on = first_period.started_on - 1.day
+
+      current_school_period.started_on = modified_started_on
+      current_school_period.finished_on = modified_finished_on
+      current_school_period.training_periods.each_with_index do |training_period, idx|
+        training_period.started_on = modified_started_on + (idx * 2.days)
+        training_period.finished_on = modified_started_on + 1.day + (idx * 2.days)
+      end
+      current_school_period.mentorship_periods.each_with_index do |mentorship_period, idx|
+        mentorship_period.started_on = modified_started_on + (idx * 2.days)
+        mentorship_period.finished_on = modified_started_on + 1.day + (idx * 2.days)
+      end
+    else
+      check_and_fix_period_overlaps(current_school_period, next_period_started_on)
+      current_school_period.training_periods.each { check_and_fix_period_overlaps(it, next_period_started_on) }
+      current_school_period.mentorship_periods.each { check_and_fix_period_overlaps(it, next_period_started_on) }
+    end
+  end
+
+  def check_and_fix_period_overlaps(period, next_period_started_on)
+    if period.finished_on.blank? || period.finished_on >= next_period_started_on
+      period.finished_on = next_period_started_on - 1.day
+    end
   end
 
   def build_mentorship_period(induction_record:, ect_started_on:, ect_finished_on:)
@@ -74,6 +201,10 @@ private
 
     training_provider_info = induction_record.training_provider_info
 
+    if training_provider_info&.lead_provider_info.present?
+      api_transfer_updated_at = transfers[training_provider_info.lead_provider_info.ecf1_id]
+    end
+
     training_attrs = {
       started_on: induction_record.start_date,
       finished_on: induction_record.end_date,
@@ -82,16 +213,30 @@ private
       training_programme:,
       lead_provider_info: training_provider_info&.lead_provider_info,
       delivery_partner_info: training_provider_info&.delivery_partner_info,
-      contract_period_year: induction_record.cohort_year,
+      contract_period_year: training_provider_info&.cohort_year,
       is_ect: true,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
+      api_transfer_updated_at:,
       combination: build_combination(induction_record:, training_programme:),
       **withdrawal_data(
         training_status: induction_record.training_status,
         lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
+      ),
+      **deferral_data(
+        training_status: induction_record.training_status,
+        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       )
     }.merge(overrides)
+
+    # if the period is ongoing but has been withdrawn by the provider we should close the period
+    if training_attrs[:finished_on].blank? && (training_attrs[:withdrawn_at].present? || training_attrs[:deferred_at].present?)
+      training_attrs[:finished_on] = [
+        training_attrs[:started_on] + 1.day,
+        training_attrs[:withdrawn_at]&.to_date,
+        training_attrs[:deferred_at]&.to_date
+      ].compact.max
+    end
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"
 
@@ -116,5 +261,9 @@ private
 
   def withdrawal_data(training_status:, lead_provider_id:)
     TeacherHistoryConverter::WithdrawalData.new(training_status:, states:, lead_provider_id:).withdrawal_data
+  end
+
+  def deferral_data(training_status:, lead_provider_id:)
+    TeacherHistoryConverter::DeferralData.new(training_status:, states:, lead_provider_id:).deferral_data
   end
 end
