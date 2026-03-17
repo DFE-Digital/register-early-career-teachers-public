@@ -47,7 +47,7 @@ module Schools
         create_teacher!
         finish_existing_at_school_periods! if finish_existing_at_school_periods
         start_at_school!
-        create_training_period!
+        create_training_period! unless mentoring_at_several_schools?
         set_eligibility_for_funding!
         record_event!
       end
@@ -102,6 +102,12 @@ module Schools
 
     def finish_existing_at_school_periods!
       MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on, author:).finish_existing_at_school_periods!
+    end
+
+    def mentoring_at_several_schools?
+      return false if finish_existing_at_school_periods
+
+      teacher.mentor_at_school_periods.ongoing.where.not(school:).exists?
     end
 
     def start_at_school!
