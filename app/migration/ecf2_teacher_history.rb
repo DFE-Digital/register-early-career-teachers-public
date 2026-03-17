@@ -63,7 +63,9 @@ class ECF2TeacherHistory
         ect_at_school_periods: ect_at_school_periods.map(&:to_h),
         mentor_at_school_periods: mentor_at_school_periods.map(&:to_h),
         ecf2_ect_combination_summaries:,
-        ecf2_mentor_combination_summaries:
+        ecf2_mentor_combination_summaries:,
+        mentor_became_ineligible_for_funding_on: teacher.mentor_became_ineligible_for_funding_on,
+        mentor_became_ineligible_for_funding_reason: teacher.mentor_became_ineligible_for_funding_reason
       }
     }
   end
