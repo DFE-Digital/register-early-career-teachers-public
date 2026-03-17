@@ -153,7 +153,7 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
@@ -170,7 +170,7 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2025, 6, 2),
-                  finished_on: nil,
+                  finished_on: Date.new(2025, 6, 3),
                   lead_provider_info: hash_including(name: "UCL Institute of Education"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   deferred_at: Time.zone.local(2025, 6, 2, 16, 6, 52),
@@ -188,7 +188,7 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
     end
   end
 
-  context "when using the premium migrator", skip: "Implement premium migrator" do
+  context "when using the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
     let(:expected_output) do
@@ -197,32 +197,22 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
           trn: "1111111",
           ect_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2024, 1, 1),
-              finished_on: Date.new(2024, 6, 12),
+              started_on: Date.new(2023, 7, 3),
+              finished_on: Date.new(2024, 6, 11),
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2024, 1, 1),
-                  finished_on: Date.new(2024, 6, 12)
+                  started_on: Date.new(2023, 7, 3),
+                  finished_on: Date.new(2024, 6, 11)
                 )
               )
             ),
             hash_including(
               started_on: Date.new(2024, 6, 12),
-              finished_on: Date.new(2025, 6, 2),
+              finished_on: nil,
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2024, 6, 12),
                   finished_on: Date.new(2025, 6, 2)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2025, 6, 2),
-              finished_on: nil,
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2025, 6, 2),
-                  finished_on: nil
                 )
               )
             )
