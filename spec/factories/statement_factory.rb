@@ -7,13 +7,15 @@ FactoryBot.define do
 
     contract { association(:contract, :for_ittecf_ectp, active_lead_provider:) }
     api_id { SecureRandom.uuid }
-    sequence(:month) { |n| ((n - 1) % 12) + 1 }
-    sequence(:year) do |n|
-      available_years = (2021..Date.current.year).to_a
-      available_years[(n - 1) % available_years.size]
+
+    transient do
+      sequence(:statement_month_offset) { |n| n - 1 }
     end
-    deadline_date { Faker::Date.forward(days: 30) }
-    payment_date { Faker::Date.forward(days: 30) }
+
+    month { (statement_month_offset % 12) + 1 }
+    year { contract.active_lead_provider.contract_period.year + 1 + (statement_month_offset / 12) }
+    deadline_date { Date.new(year, month, 1).prev_day }
+    payment_date { Date.new(year, month, 25) }
     output_fee
 
     initialize_with do
@@ -59,7 +61,7 @@ FactoryBot.define do
     trait :paid_in_month do
       paid
 
-      deadline_date { Date.new(year, month, 1) }
+      deadline_date { Date.new(year, month, 1).prev_day }
       payment_date  { Date.new(year, month, 25) }
 
       marked_as_paid_at do
