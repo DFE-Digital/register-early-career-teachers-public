@@ -34,6 +34,8 @@ module Schools
         { key: { text: "Assigned ECTs" }, value: { text: assigned_ects_summary } }
       end
 
+      def show_training_details? = training_status != :hidden
+
       def training_period_summary_rows
         return [] unless latest_training_period
 
@@ -47,10 +49,23 @@ module Schools
         @latest_training_period ||= mentor_period_for_school&.latest_training_period
       end
 
-      def training_status
-        return :not_registered unless latest_training_period
+      def current_training_period
+        @current_training_period ||= mentor_period_for_school&.current_or_next_training_period
+      end
 
-        latest_training_period.status
+      def latest_training_period_status = latest_training_period&.status
+
+      def mentor_completed_training? = @mentor.mentor_became_ineligible_for_funding_on.present?
+
+      def training_status
+        return :hidden if mentor_completed_training?
+        return :hidden unless latest_training_period
+
+        if current_training_period || latest_training_period_status.in?(%i[withdrawn deferred])
+          latest_training_period_status
+        else
+          :hidden
+        end
       end
 
       def lead_provider_name
