@@ -40,5 +40,9 @@ FactoryBot.define do
         create(:migration_statement_line_item, participant_declaration:, state: participant_declaration.state)
       end
     end
+
+    trait :with_delivery_partner do
+      delivery_partner { FactoryBot.create(:migration_delivery_partner) }
+    end
   end
 end
