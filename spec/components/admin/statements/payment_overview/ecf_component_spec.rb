@@ -62,7 +62,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     end
 
     it "has a total payment which comes from the Banded calculator" do
-      # total_billable_amount(400) + uplifts_amount(50) + monthly_service_fee(1000) +
+      # total_net_amount(400) + uplifts_amount(50) + monthly_service_fee(1000) +
       # + total_manual_adjustments_amount(375) + vat(365)
       # NB setup fee is no longer included
 
@@ -78,7 +78,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
             "Payments"
           ],
           rows: [
-            ["Output payment", "£400.00"],
+            ["Output payment", "£550.00"],
             ["Service fee", "£1,000.00"],
             ["Uplift fees", "£50.00"],
             ["Clawbacks", "-£150.00"],
