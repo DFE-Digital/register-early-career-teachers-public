@@ -113,13 +113,13 @@ A declaration's state value will reflect if and when DfE will pay providers for 
 | `payable` | A declaration that has been approved and is ready for payment by DfE | Providers can view and void payable declarations |
 | `voided` | A declaration that has been retracted by a provider | Providers can only view voided declarations |
 | `paid` | A declaration that has been paid for by DfE | Providers can view and void paid declarations |
-| `awaiting_clawback` | A paid declaration that has since been voided by a provider | Providers can only view awaiting_clawback declarations |
-| `clawed_back` | An awaiting_clawback declaration that has since had its value deducted from payment by DfE to a provider | Providers can only view clawed_back declarations |
+| `awaiting-clawback` | A paid declaration that has since been voided by a provider | Providers can only view awaiting_clawback declarations |
+| `clawed-back` | An awaiting_clawback declaration that has since had its value deducted from payment by DfE to a provider | Providers can only view clawed_back declarations |
 
 When a declaration is voided, it will become:
 
 - `voided` if it had been `submitted`, `ineligible`, `eligible`, or `payable`
-- `awaiting_clawback` if it had been `paid`
+- `awaiting-clawback` if it had been `paid`
 
 ## Evidence types
 
