@@ -140,6 +140,28 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
         end
       end
 
+      context "when the start date is not valid" do
+        let(:registration_params) do
+          {
+            trs_induction_status: "None",
+            training_programme: "provider_led",
+            "started_on(3i)" => "aa",
+            "started_on(2i)" => "bb",
+            "started_on(1i)" => "cccc",
+          }
+        end
+
+        it "returns error with the entered value" do
+          patch(
+            "/appropriate-body/claim-an-ect/register-ect/#{pending_induction_submission.id}",
+            params: { pending_induction_submission: registration_params }
+          )
+
+          expect(response.body).to include(page_heading)
+          expect(response.body).to include("aa/bb/cccc is not a valid date")
+        end
+      end
+
       context "when the submission is invalid" do
         context "with new induction programme types (post-2025)" do
           let(:registration_params) { { training_programme: "xyz", } }

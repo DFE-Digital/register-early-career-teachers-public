@@ -255,6 +255,8 @@ describe "Real data check for user 653c0693-e8ad-4487-8a4a-0d48f678ba70" do
       {
         teacher: hash_including(
           trn: "1111111",
+          trs_induction_start_date: Date.new(2022, 9, 1),
+          trs_induction_completed_date: Date.new(2024, 7, 23),
           ect_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2024, 7, 23),

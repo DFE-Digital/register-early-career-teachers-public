@@ -123,8 +123,12 @@ private
     }.merge(overrides)
 
     # if the period is ongoing but has been withdrawn by the provider we should close the period
-    if training_attrs[:finished_on].blank? && training_attrs[:withdrawn_at].present?
-      training_attrs[:finished_on] = [training_attrs[:started_on] + 1.day, training_attrs[:withdrawn_at].to_date].max
+    if training_attrs[:finished_on].blank? && (training_attrs[:withdrawn_at].present? || training_attrs[:deferred_at].present?)
+      training_attrs[:finished_on] = [
+        training_attrs[:started_on] + 1.day,
+        training_attrs[:withdrawn_at]&.to_date,
+        training_attrs[:deferred_at]&.to_date
+      ].compact.max
     end
 
     training_attrs.except!(:lead_provider_info, :delivery_partner_info, :schedule_info) if training_programme == "school_led"

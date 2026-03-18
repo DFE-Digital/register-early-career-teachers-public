@@ -1,10 +1,11 @@
 class TeacherHistoryConverter::Cleaner
-  attr_reader :induction_completion_date, :participant_type
+  attr_reader :induction_completion_date, :participant_type, :migration_mode
 
-  def initialize(raw_induction_records, participant_type:, induction_completion_date: nil)
+  def initialize(raw_induction_records, participant_type:, induction_completion_date: nil, migration_mode: "latest_induction_records")
     @raw_induction_records = raw_induction_records
     @induction_completion_date = induction_completion_date
     @participant_type = participant_type
+    @migration_mode = migration_mode.to_s
   end
 
   def induction_records
@@ -14,6 +15,14 @@ class TeacherHistoryConverter::Cleaner
 private
 
   def clean!
+    if migration_mode == "all_induction_records"
+      premium_clean!
+    else
+      economy_clean!
+    end
+  end
+
+  def economy_clean!
     remove_british_schools_overseas(@raw_induction_records)
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
@@ -24,6 +33,12 @@ private
       .then { fix_zero_day_periods(it) }
       .then { override_first_start_date_with_creation_date_if_earlier(it) }
       .then { override_first_start_date_for_induction_record_introduction(it) }
+  end
+
+  def premium_clean!
+    remove_british_schools_overseas(@raw_induction_records)
+      .then { remove_school_funded_fip(it) }
+      .then { remove_independent_non_section_41(it) }
   end
 
   def remove_british_schools_overseas(induction_records)

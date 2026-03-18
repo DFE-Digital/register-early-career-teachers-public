@@ -48,6 +48,14 @@ FactoryBot.define do
       fee_type { "service" }
     end
 
+    trait :adjustable do
+      open
+      output_fee
+
+      deadline_date { Date.new(year, month, 1) }
+      payment_date { Date.new(year, month, 25) }
+    end
+
     trait :paid_in_month do
       paid
 

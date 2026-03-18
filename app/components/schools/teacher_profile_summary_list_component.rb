@@ -10,6 +10,9 @@ module Schools
 
   private
 
+    def show_school_start_date? = @ect.migrated_data_accurate?
+    def show_working_pattern? = @ect.migrated_data_accurate?
+
     def show_withdrawn_or_deferred_status?
       return false if leaving_school?
       return false if exempt?

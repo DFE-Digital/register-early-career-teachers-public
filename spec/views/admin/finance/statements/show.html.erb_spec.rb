@@ -108,6 +108,8 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     expect(rendered).to have_css(".govuk-heading-m", text: "28 February 2025")
     expect(rendered).to have_css(".govuk-heading-m", text: "31 January 2025")
     expect(rendered).to have_css(".govuk-table", text: "VAT")
+    expect(rendered).to have_link("Save as PDF", href: admin_finance_statement_path(statement))
+    expect(rendered).to have_css("a[data-print-link='true'][data-print-filename='Some LP February 2025 financial statement']", text: "Save as PDF")
   end
 
   context "when the statement is payable" do

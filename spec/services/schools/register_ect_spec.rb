@@ -1,4 +1,5 @@
 RSpec.describe Schools::RegisterECT do
+  include ActiveJob::TestHelper
   subject(:service) do
     described_class.new(school_reported_appropriate_body:,
                         corrected_name:,
@@ -197,7 +198,7 @@ RSpec.describe Schools::RegisterECT do
         describe "recording an event" do
           before { allow(Events::Record).to receive(:record_teacher_registered_as_ect_event!).with(any_args).and_call_original }
 
-          it "records a mentor_registered event with the expected attributes" do
+          it "records a teacher_registered_as_ect event with the expected attributes" do
             service.register!
 
             expect(Events::Record).to have_received(:record_teacher_registered_as_ect_event!).with(
@@ -390,6 +391,22 @@ RSpec.describe Schools::RegisterECT do
         expect(new_period.started_on).to eq(started_on)
       end
 
+      it "records a teacher_left_school_as_ect event for the previous school period" do
+        allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_call_original
+
+        service.register!
+
+        expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).with(
+          hash_including(
+            author:,
+            ect_at_school_period: existing_period,
+            school: other_school,
+            teacher:,
+            happened_at: expected_finished_on
+          )
+        )
+      end
+
       context "when transfer happens today" do
         let(:started_on) { Date.current }
 
@@ -435,6 +452,131 @@ RSpec.describe Schools::RegisterECT do
           expect(new_period.started_on).to eq(started_on)
           expect(new_period.finished_on).to be_nil
         end
+      end
+    end
+
+    context "when ECT is transferring from another school and the previous period has a future leaving date" do
+      let(:training_programme) { "school_led" }
+      let(:lead_provider) { nil }
+      let(:other_school) { FactoryBot.create(:school) }
+      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:started_on) { Date.new(2026, 3, 15) }
+      let(:expected_finished_on) { started_on.yesterday }
+
+      let!(:existing_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: other_school,
+          started_on: Date.new(2025, 8, 1),
+          finished_on: Date.new(2026, 3, 18),
+          reported_leaving_by_school_id: other_school.id
+        )
+      end
+
+      it "finishes the previous ECT period using ECTAtSchoolPeriods::Finish" do
+        expect(ECTAtSchoolPeriods::Finish).to receive(:new).with(
+          ect_at_school_period: existing_period,
+          finished_on: expected_finished_on,
+          author:
+        ).and_call_original
+
+        service.register!
+      end
+
+      it "updates the previous ECT period to end the day before the new start date" do
+        service.register!
+
+        expect(existing_period.reload.finished_on).to eq(expected_finished_on)
+      end
+
+      it "creates a new ECT period at the new school" do
+        expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+
+        new_period = teacher.ect_at_school_periods.find_by!(school:)
+        expect(new_period.started_on).to eq(started_on)
+        expect(new_period.finished_on).to be_nil
+      end
+
+      it "records a leaving event for the previous school period" do
+        allow(Events::Record).to receive(:record_teacher_left_school_as_ect!).and_call_original
+
+        service.register!
+
+        expect(Events::Record).to have_received(:record_teacher_left_school_as_ect!).with(
+          hash_including(
+            author:,
+            ect_at_school_period: existing_period,
+            school: other_school,
+            teacher:,
+            happened_at: expected_finished_on
+          )
+        )
+      end
+
+      it "persists the leaving and registration events" do
+        perform_enqueued_jobs do
+          service.register!
+        end
+
+        event_types = Event.where(teacher:).pluck(:event_type)
+
+        expect(event_types).to include("teacher_left_school_as_ect", "teacher_registered_as_ect")
+      end
+    end
+
+    context "when ECT is transferring from another school on the same date as the previously reported leaving date" do
+      let(:training_programme) { "school_led" }
+      let(:lead_provider) { nil }
+      let(:other_school) { FactoryBot.create(:school) }
+      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:started_on) { Date.new(2026, 3, 18) }
+      let(:expected_finished_on) { started_on.yesterday }
+
+      let!(:existing_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: other_school,
+          started_on: Date.new(2025, 8, 1),
+          finished_on: started_on,
+          reported_leaving_by_school_id: other_school.id
+        )
+      end
+
+      it "updates the previous period to end the day before the new start date" do
+        service.register!
+
+        expect(existing_period.reload.finished_on).to eq(expected_finished_on)
+
+        new_period = teacher.ect_at_school_periods.find_by!(school:)
+        expect(new_period.started_on).to eq(started_on)
+      end
+    end
+
+    context "when ECT is transferring from another school and the previous period does not overlap the new start date" do
+      let(:training_programme) { "school_led" }
+      let(:lead_provider) { nil }
+      let(:other_school) { FactoryBot.create(:school) }
+      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:started_on) { Date.new(2026, 3, 20) }
+
+      let!(:existing_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: other_school,
+          started_on: Date.new(2025, 8, 1),
+          finished_on: Date.new(2026, 3, 10),
+          reported_leaving_by_school_id: other_school.id
+        )
+      end
+
+      it "does not change the previous period" do
+        expect { service.register! }.not_to(change { existing_period.reload.finished_on })
+
+        new_period = teacher.ect_at_school_periods.find_by!(school:)
+        expect(new_period.started_on).to eq(started_on)
       end
     end
   end

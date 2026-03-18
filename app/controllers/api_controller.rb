@@ -20,7 +20,9 @@ protected
 
   def respond_with_service(service:, action:)
     if service.valid?
-      render json: to_json(service.send(action))
+      response = service.send(action)
+      response.reload if response.respond_to?(:reload)
+      render json: to_json(response)
     else
       render json: API::Errors::Response.from(service), status: :unprocessable_content
     end

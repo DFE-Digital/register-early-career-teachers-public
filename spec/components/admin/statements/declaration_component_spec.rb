@@ -178,6 +178,7 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
           "Download declarations (CSV)",
           href: declarations_export_admin_finance_statement_path(statement, format: :csv)
         )
+        expect(subject).to have_css(".govuk-\\!-display-none-print", text: "Download declarations (CSV)")
       end
     end
 

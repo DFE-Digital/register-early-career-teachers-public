@@ -1,4 +1,6 @@
 class ECTAtSchoolPeriod < ApplicationRecord
+  RECT_GO_LIVE_DATE = Date.new(2026, 4, 28).freeze
+
   include Interval
   include DeclarativeUpdates
 
@@ -145,6 +147,10 @@ class ECTAtSchoolPeriod < ApplicationRecord
     mentors = Schools::EligibleMentors.new(school).for_ect(self)
 
     mentors.excluding(current_mentor).exists?
+  end
+
+  def migrated_data_accurate?
+    teacher.not_migrated_migration_mode? || created_at.after?(RECT_GO_LIVE_DATE.beginning_of_day)
   end
 
   delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher

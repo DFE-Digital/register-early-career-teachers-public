@@ -18,8 +18,6 @@ module APISeedData
     OPTIONAL_MENTOR_TRAINING_RATIO = 0.1
     OPTIONAL_ECT_TRAINING_RATIO = 0.1
     ECT_ELIGIBLE_FOR_TRAINING_RATIO = 0.65
-    PUPIL_PREMIUM_UPLIFT_RATIO = 0.15
-    SPARSITY_UPLIFT_RATIO = 0.20
     MENTOR_ELIGIBLE_FOR_TRAINING_RATIO = 0.65
     TEACHER_ID_CHANGE_RATIO = 0.15
     ASSIGN_ECT_TO_MENTOR_RATIO = 0.20
@@ -131,11 +129,14 @@ module APISeedData
         )
       end
 
-      Schedule
+      schedules = Schedule
         .excluding_replacement_schedules
         .where(contract_period:)
-        .order(Arel.sql("RANDOM()"))
-        .first
+        .order(:id)
+
+      # We cycle the schedules to avoid flaky tests that happen
+      # with random schedules.
+      schedules.offset(Teacher.count % schedules.count).first
     end
 
     def generate_training_status_traits
@@ -306,9 +307,7 @@ module APISeedData
       return unless rand_boolean(ECT_ELIGIBLE_FOR_TRAINING_RATIO)
 
       teacher.update!(
-        ect_first_became_eligible_for_training_at: teacher.created_at + 3.months,
-        pupil_premium_uplift: rand_boolean(PUPIL_PREMIUM_UPLIFT_RATIO),
-        sparsity_uplift: rand_boolean(SPARSITY_UPLIFT_RATIO)
+        ect_first_became_eligible_for_training_at: teacher.created_at + 3.months
       )
     end
 
