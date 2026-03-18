@@ -87,6 +87,15 @@ describe API::DeclarationSerializer, type: :serializer do
           expect(attributes["clawback_statement_id"]).to be_nil
         end
       end
+
+      context "when the declaration has been voided" do
+        let(:declaration) { FactoryBot.create(:declaration, :voided) }
+
+        it "does not return the `statement_id`" do
+          expect(declaration.payment_statement).to be_present
+          expect(attributes["statement_id"]).to be_nil
+        end
+      end
     end
 
     describe "clawback_statement_id" do
