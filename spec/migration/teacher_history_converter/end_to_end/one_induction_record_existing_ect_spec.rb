@@ -1,4 +1,4 @@
-describe "One induction record (end to end, existing teacher)" do
+describe "One induction record (end to end, existing ECT)" do
   subject(:teacher) { Teacher.find_by(trn: ecf1_teacher_profile.trn) }
 
   # Timestamps we care about
