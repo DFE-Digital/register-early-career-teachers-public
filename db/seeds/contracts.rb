@@ -16,7 +16,7 @@ ActiveLeadProvider
 
     active_lead_providers.map do |active_lead_provider|
       number_of_contracts = Faker::Number.between(from: 1, to: 3)
-      contracts = if active_lead_provider.contract_period.mentor_funding_enabled?
+      contracts = if active_lead_provider.contract_period.mentor_funding_enabled? && active_lead_provider.contract_period.year > 2024
                     FactoryBot.create_list(:contract, number_of_contracts, :for_ittecf_ectp, active_lead_provider:)
                   else
                     FactoryBot.create_list(:contract, number_of_contracts, :for_ecf, active_lead_provider:)
