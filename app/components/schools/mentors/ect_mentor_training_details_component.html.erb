@@ -1,8 +1,6 @@
 <h2 class="govuk-heading-m">ECTE mentor training details</h2>
 
 <% case training_status %>
-<% when :not_registered %>
-  <p class="govuk-body"><%= teacher_name %> is not currently registered for ECTE mentor training with a lead provider.</p>
 <% when :deferred  %>
   <p class="govuk-body"><%= lead_provider_name %> have told us that <%= teacher_name %>’s ECTE mentor training is paused. Contact them if you think this is an error.</p>
 <% when :withdrawn %>
