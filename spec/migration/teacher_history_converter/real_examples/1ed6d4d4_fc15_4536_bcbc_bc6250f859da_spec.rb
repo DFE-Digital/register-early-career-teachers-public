@@ -155,7 +155,7 @@ describe "Real data check for user 1ed6d4d4-fc15-4536-bcbc-bc6250f859da (with a 
         teacher: hash_including(
           trn: "1111111",
           trs_induction_start_date: Date.new(2023, 9, 1),
-          trs_induction_completion_date: Date.new(2025, 7, 22),
+          trs_induction_completed_date: Date.new(2025, 7, 22),
           ect_at_school_periods: array_including(
             hash_including(
               # NOTE: here, the final induction record above has been converted to a stub because
