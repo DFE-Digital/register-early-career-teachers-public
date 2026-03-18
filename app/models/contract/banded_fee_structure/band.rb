@@ -44,6 +44,8 @@ class Contract::BandedFeeStructure::Band < ApplicationRecord
   validate :first_band_min_declarations_is_one
   validate :band_consistency_across_active_lead_provider
 
+  def letter = ("A".ord + banded_fee_structure.bands.index(self)).chr
+
   def capacity
     max_declarations - min_declarations + 1
   end

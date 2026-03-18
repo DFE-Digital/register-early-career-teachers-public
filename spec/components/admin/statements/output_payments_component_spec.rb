@@ -3,13 +3,20 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
 
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
-  let(:banded_outputs) do
-    bands = [
-      { min_declarations: 1, max_declarations: 10 },
-      { min_declarations: 11, max_declarations: 20 },
-      { min_declarations: 21, max_declarations: 30 },
-    ].map { FactoryBot.build_stubbed(:contract_banded_fee_structure_band, **it) }
+  let(:banded_fee_structure) do
+    FactoryBot.build_stubbed(
+      :contract_banded_fee_structure,
+      :with_bands,
+      declaration_boundaries: [
+        { min: 1, max: 10 },
+        { min: 11, max: 20 },
+        { min: 21, max: 30 },
+      ]
+    )
+  end
 
+  let(:banded_outputs) do
+    bands = banded_fee_structure.bands
     declaration_type_outputs = [
       double(
         declaration_type: "started",
