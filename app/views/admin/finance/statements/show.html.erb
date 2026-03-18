@@ -19,11 +19,5 @@
 <%= render Admin::Statements::UpliftFeesComponent.new(statement: @statement) %>
 <%= render Admin::Statements::ClawbacksComponent.new(statement: @statement) %>
 <%= render Admin::Statements::AdjustmentsComponent.new(statement: @statement) %>
-
-<div class="govuk-!-display-none-print">
-  <%= render Admin::Statements::ProviderTargetsComponent.new(statement: @statement) %>
-</div>
-
-<div class="govuk-!-display-none-print">
-  <%= render Admin::Statements::GuidanceComponent.new %>
-</div>
+<%= render Admin::Statements::ProviderTargetsComponent.new(statement: @statement) %>
+<%= render Admin::Statements::GuidanceComponent.new %>
