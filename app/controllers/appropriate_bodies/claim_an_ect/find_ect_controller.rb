@@ -1,6 +1,7 @@
 module AppropriateBodies
   module ClaimAnECT
     class FindECTController < AppropriateBodiesController
+      include MultiparameterDateErrorHandling
       def new
         @pending_induction_submission = PendingInductionSubmission.new trn: params[:trn]
       end
@@ -29,6 +30,13 @@ module AppropriateBodies
         teacher = Teacher.find_by(trn: @pending_induction_submission.trn)
         full_name = ::Teachers::Name.new(teacher).full_name
         redirect_to ab_teacher_path(teacher), notice: "Teacher #{full_name} already has an ongoing induction period with this appropriate body"
+      rescue ActiveRecord::MultiparameterAssignmentErrors => e
+        @pending_induction_submission = PendingInductionSubmission.new(
+          trn: params.dig(:pending_induction_submission, :trn),
+          appropriate_body_period_id: @appropriate_body.id
+        )
+        add_multiparameter_date_errors(@pending_induction_submission, e, param_key: :pending_induction_submission)
+        render :new
       end
 
     private

@@ -1,5 +1,7 @@
 module Admin
   class InductionPeriodsController < AdminController
+    include MultiparameterDateErrorHandling
+
     before_action :set_teacher
     before_action :set_induction_period, except: %i[new create]
 
@@ -8,16 +10,20 @@ module Admin
     end
 
     def create
-      service = create_induction_period_service
+      @service = create_induction_period_service
 
-      if service.create_induction_period!
+      if @service.create_induction_period!
         redirect_to admin_teacher_induction_path(@teacher), alert: "Induction period created successfully"
       else
-        @induction_period = service.induction_period
+        @induction_period = @service.induction_period
         render :new, status: :unprocessable_content
       end
     rescue ActiveRecord::RecordInvalid, ActiveRecord::Rollback
-      @induction_period = service.induction_period
+      @induction_period = @service.induction_period
+      render :new, status: :unprocessable_content
+    rescue ActiveRecord::MultiparameterAssignmentErrors => e
+      @induction_period = @service.induction_period
+      add_multiparameter_date_errors(@induction_period, e, param_key: :induction_period)
       render :new, status: :unprocessable_content
     end
 
@@ -30,6 +36,9 @@ module Admin
       render :edit, status: :unprocessable_content
     rescue ActiveRecord::RecordInvalid
       @induction_period = service.induction_period
+      render :edit, status: :unprocessable_content
+    rescue ActiveRecord::MultiparameterAssignmentErrors => e
+      add_multiparameter_date_errors(@induction_period, e, param_key: :induction_period)
       render :edit, status: :unprocessable_content
     end
 

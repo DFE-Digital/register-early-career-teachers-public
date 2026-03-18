@@ -21,6 +21,7 @@ module Migration
     belongs_to :participant_profile
     belongs_to :cpd_lead_provider
     belongs_to :cohort
+    belongs_to :delivery_partner, class_name: "Migration::DeliveryPartner"
 
     has_many :statement_line_items
 

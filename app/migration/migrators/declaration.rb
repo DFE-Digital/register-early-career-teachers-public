@@ -76,73 +76,33 @@ module Migrators
 
   private
 
-    def build_training_period(teacher:, participant_declaration:, special_declaration:)
-      raise "Can't build a training period for declaration id #{participant_declaration.id}" unless special_declaration
-
-      contract_period_year = find_contract_period_by_year!(participant_declaration.cohort.start_year).year
-      delivery_partner_id = find_delivery_partner_by_api_id!(special_declaration[:delivery_partner_id])
-      lead_provider = find_lead_provider_by_ecf_id!(participant_declaration.cpd_lead_provider.lead_provider.id)
-      school = find_school_by_urn!(special_declaration[:urn])
-      at_school_period = create_at_school_period(teacher:, participant_declaration:, school:, contract_period_year:)
-      school_partnership = find_or_create_school_partnership(school:, lead_provider:, delivery_partner_id:, contract_period_year:)
-
-      create_training_period(at_school_period:, school_partnership:)
-    end
-
     def clawback_statement(participant_declaration:)
       if (ecf_clawback_statement_id = participant_declaration.clawback_statement&.id)
         statement_from_ecf_id(ecf_clawback_statement_id)
       end
     end
 
-    def closest_training_period(teacher:, participant_declaration:)
-      training_periods = participant_declaration.ect? ? teacher.ect_training_periods : teacher.mentor_training_periods
+    def create_training_period(at_school_period:, school_partnership:, started_on:, finished_on:)
+      schedule = ::Schedule.find_by(contract_period_year: school_partnership.contract_period.year,
+                                    identifier: "ecf-standard-september")
 
-      training_periods
-        .joins(school_partnership: {
-          lead_provider_delivery_partnership: [
-            :delivery_partner,
-            { active_lead_provider: %i[lead_provider contract_period] }
-          ]
-        })
-        .where(lead_provider: { ecf_id: participant_declaration.cpd_lead_provider.lead_provider.id },
-               contract_period: { year: participant_declaration.cohort.start_year })
-        .closest_to(participant_declaration.declaration_date)
-        .first
+      at_school_period.training_periods
+                      .provider_led_training_programme
+                      .create!(school_partnership:, started_on:, finished_on:, schedule:)
     end
 
-    def create_at_school_period(teacher:, participant_declaration:, school:, contract_period_year:)
-      started_on, finished_on = dates_for_new_at_school_period(teacher:,
-                                                               participant_declaration:,
-                                                               started_on: Date.new(contract_period_year, 9, 1),
-                                                               finished_on: Date.new(contract_period_year, 9, 2))
-
-      teacher.ect_at_school_periods.create!(school:, started_on:, finished_on:)
-    end
-
-    def dates_for_new_at_school_period(teacher:, participant_declaration:, started_on:, finished_on:)
-      at_school_periods = (participant_declaration.ect? ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods)
-                            .where(started_on: ..finished_on)
-                            .order(started_on: :desc)
-
-      at_school_periods.each do |at_school_period|
+    # Finds a date to create an at_school_period starting from started_on backwards, so that
+    # a 1-day ASP can be created without overlapping any existing teacher ASPs.
+    def date_for_new_training_period(at_school_periods:, started_on:)
+      finished_on = started_on + 1.day
+      potential_at_school_periods = at_school_periods.select { it.started_on <= finished_on }
+      potential_at_school_periods.sort_by(&:started_on).reverse_each do |at_school_period|
         break unless at_school_period.range.overlaps?(started_on..finished_on)
 
         started_on = at_school_period.started_on - 2.days
-        finished_on = started_on + 1.day
       end
 
-      [started_on, finished_on]
-    end
-
-    def create_training_period(at_school_period:, school_partnership:)
-      at_school_period.training_periods
-                      .provider_led_training_programme
-                      .create!(school_partnership:,
-                               started_on: at_school_period.started_on,
-                               finished_on: at_school_period.finished_on,
-                               schedule: ::Schedule.find_by(contract_period_year: school_partnership.contract_period.year,
-                                                            identifier: "ecf-standard-september"))
+      started_on
     end
 
     def delivery_partner_when_created(participant_declaration:)
@@ -160,13 +120,72 @@ module Migrators
 
     def find_or_create_school_partnership(school:, lead_provider:, delivery_partner_id:, contract_period_year:)
       active_lead_provider_id = find_active_lead_provider_id!(lead_provider_id: lead_provider.id, contract_period_year:)
-      raise "Lead Provider (#{lead_provider.name}) no active on #{contract_period_year}. Can't build school partnership" unless active_lead_provider_id
+      raise "Lead Provider (#{lead_provider.name}) no active on #{contract_period_year}. Can't build school partnership to migrate declaration" unless active_lead_provider_id
 
       lpdp_id = cache_manager.find_lead_provider_delivery_partnership_by_key(active_lead_provider_id:, delivery_partner_id:)&.id
       lpdp_id ||= ::LeadProviderDeliveryPartnership.create!(active_lead_provider_id:, delivery_partner_id:).id
 
       cache_manager.find_school_partnership(lead_provider_delivery_partnership_id: lpdp_id, school_id: school.id) ||
         school.school_partnerships.create!(lead_provider_delivery_partnership_id: lpdp_id)
+    end
+
+    # For the participant declaration, find teacher TP matching exactly lead_provider, delivery_partner, school and contract_period
+    # that contains the declaration date
+    # Otherwise nil is returned.
+    def fully_matching_training_period(training_periods:, lead_provider:, delivery_partner_id:, contract_period_year:, school:, declaration_date:)
+      return unless contract_period_year && lead_provider && delivery_partner_id
+
+      training_periods.find do
+        (school.nil? || it.school_id == school.id) &&
+          it.contract_period&.year == contract_period_year &&
+          it.lead_provider == lead_provider &&
+          it.delivery_partner.id == delivery_partner_id &&
+          (it.range.include?(declaration_date))
+      end
+    end
+
+    # Create an ASP and TP for the participant declaration in a date that do not overlap with existing teacher at school periods.
+    # Also, a stub school partnership might be created if none matches the declaration combo.
+    def make_training_period(teacher:, participant_declaration:, school:, lead_provider:, delivery_partner_id:, contract_period_year:, started_on:)
+      at_school_period_class = participant_declaration.ect? ? ECTAtSchoolPeriod : MentorAtSchoolPeriod
+      at_school_periods = (participant_declaration.ect? ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods)
+
+      started_on = date_for_new_training_period(at_school_periods:, started_on:)
+      finished_on = started_on + 1.day
+      at_school_period ||= at_school_period_class.create!(teacher:, school:, started_on:, finished_on:)
+      school_partnership = find_or_create_school_partnership(school:, lead_provider:, delivery_partner_id:, contract_period_year:)
+
+      create_training_period(at_school_period:, school_partnership:, started_on:, finished_on:)
+    end
+
+    # For the participant declaration, find a teacher TP matching exactly lead_provider, delivery_partner, school and contract_period
+    # being the most recent starting before declaration date or the less recent
+    # Otherwise nil is returned.
+    def matching_closest_earlier_training_period(training_periods:, lead_provider:, delivery_partner_id:, contract_period_year:, school:, declaration_date:)
+      return unless contract_period_year && lead_provider && delivery_partner_id
+
+      matching = training_periods.select do
+        (school.nil? || it.school_id == school.id) &&
+          it.contract_period&.year == contract_period_year &&
+          it.lead_provider == lead_provider &&
+          it.delivery_partner.id == delivery_partner_id
+      end
+      matching = matching.sort_by(&:started_on).reverse
+      past_more_recent = matching.find { it.started_on < declaration_date }
+      past_more_recent || matching.last
+    end
+
+    # For the participant declaration, find teacher TP matching exactly lead_provider and contract_period
+    # being the most recent starting before declaration date or the less recent.
+    # Otherwise nil is returned.
+    def matching_closest_earlier_training_period_no_dp(training_periods:, lead_provider:, contract_period_year:, declaration_date:)
+      matching = training_periods.select do
+        it.contract_period&.year == contract_period_year &&
+          it.lead_provider == lead_provider
+      end
+      matching = matching.sort_by(&:started_on).reverse
+      past_more_recent = matching.find { it.started_on < declaration_date }
+      past_more_recent || matching.last
     end
 
     def payment_statement(participant_declaration:)
@@ -206,11 +225,37 @@ module Migrators
       end
     end
 
+    # Try to provide a training_period for the participant declaration:
+    #   1. Try and find a TP matching teacher, lead_provider, delivery_partner, school and contract_period, or
+    #   2. If the declaration is special, build a TP trying backwards from the first of September of the declaration cohort, or
+    #   3. Try and find the closest teacher TP matching the declaration lead_provider and contract_period.
     def training_period(participant_declaration:, special_declaration:)
       teacher = teacher(participant_declaration:)
+      declaration_date = participant_declaration.declaration_date
+      contract_period_year = find_contract_period_by_year!(participant_declaration.cohort.start_year).year
+      lead_provider = find_lead_provider_by_ecf_id!(participant_declaration.cpd_lead_provider.lead_provider.id)
+      delivery_partner_api_id = special_declaration ? special_declaration[:delivery_partner_id] : participant_declaration.delivery_partner_id
+      delivery_partner_id = find_delivery_partner_by_api_id!(delivery_partner_api_id).id if delivery_partner_api_id
+      school = find_school_by_urn!(special_declaration[:urn]) if special_declaration
+      started_on = Date.new(contract_period_year, 9, 1)
+      training_periods = participant_declaration.ect? ? teacher.ect_training_periods : teacher.mentor_training_periods
+      training_periods = training_periods
+                           .includes(school_partnership: {
+                             lead_provider_delivery_partnership: [
+                               :delivery_partner,
+                               { active_lead_provider: %i[lead_provider contract_period] }
+                             ]
+                           }).to_a
 
-      closest_training_period(teacher:, participant_declaration:) ||
-        build_training_period(teacher:, participant_declaration:, special_declaration:)
+      training_period = fully_matching_training_period(training_periods:, lead_provider:, delivery_partner_id:, contract_period_year:, school:, declaration_date:)
+      training_period ||= matching_closest_earlier_training_period(training_periods:, lead_provider:, delivery_partner_id:, contract_period_year:, school:, declaration_date:)
+      return training_period if training_period
+
+      if special_declaration
+        make_training_period(teacher:, participant_declaration:, school:, lead_provider:, delivery_partner_id:, contract_period_year:, started_on:)
+      else
+        matching_closest_earlier_training_period_no_dp(training_periods:, lead_provider:, contract_period_year:, declaration_date:)
+      end
     end
   end
 end
