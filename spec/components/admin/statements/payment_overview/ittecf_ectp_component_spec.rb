@@ -21,12 +21,9 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
     )
   end
 
-  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:, total_billable_amount:) }
-  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: 300) }
+  let(:banded_outputs_double) { double(total_net_amount: 400, total_refundable_amount: 150, total_billable_amount: 550) }
+  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: 300, total_billable_amount: 500) }
 
-  let(:total_billable_amount) { 550 }
-  let(:total_net_amount) { total_billable_amount - total_refundable_amount }
-  let(:total_refundable_amount) { 150 }
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }
 
@@ -83,8 +80,8 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
             "Payments"
           ],
           rows: [
-            ["ECTs output payment", "£400.00"],
-            ["Mentors output payment", "£200.00"],
+            ["ECTs output payment", "£550.00"],
+            ["Mentors output payment", "£500.00"],
             ["Service fee", "£1,000.00"],
             ["ECTs clawbacks", "-£150.00"],
             ["Mentors clawbacks", "-£300.00"],
