@@ -16,11 +16,18 @@ module Teachers
       ActiveRecord::Base.transaction do
         track_payments_frozen_year!
 
-        if training_period.started_on.past?
-          create_new_training_period!
-        else
-          update_training_period_in_place!
-        end
+        new_training_period = if training_period.started_on.past?
+                                new_training_period = create_new_training_period!
+                                if future_training_period_for_same_lead_provider
+                                  update_training_period_in_place!(future_training_period_for_same_lead_provider)
+                                end
+                                new_training_period
+                              else
+                                update_training_period_in_place!(training_period)
+                                training_period
+                              end
+
+        record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period:)
       end
 
       teacher
@@ -28,24 +35,22 @@ module Teachers
 
   private
 
-    def update_training_period_in_place!
-      training_period.update!(
-        schedule:,
-        school_partnership:,
-        expression_of_interest: training_period.expression_of_interest.present? ? school_partnership.active_lead_provider : nil
-      )
+    def update_training_period_in_place!(target_training_period)
+      attrs = { schedule: }
 
-      record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period: training_period)
+      if target_training_period.at_school_period == training_period.at_school_period
+        attrs[:school_partnership] = school_partnership
+        attrs[:expression_of_interest] = target_training_period.expression_of_interest.present? ? school_partnership.active_lead_provider : nil
+      end
+
+      target_training_period.update!(**attrs)
     end
 
     def create_new_training_period!
       finished_on = determine_finished_on
 
       finish_training_period!
-      new_training_period = create_new_training_period_with!(finished_on:)
-      update_future_training_period!
-
-      record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period:)
+      create_new_training_period_with!(finished_on:)
     end
 
     # Determine the correct finished_on date for the new training period.
@@ -106,23 +111,21 @@ module Teachers
     end
 
     def future_training_period_for_same_lead_provider
-      @future_training_period_for_same_lead_provider ||= training_period
-        .siblings
-        .started_after(training_period.started_on)
-        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
-        .where(lead_providers: { id: lead_provider.id })
-        .earliest_first
-        .first
-    end
+      @future_training_period_for_same_lead_provider ||= begin
+        scope = if training_period.for_ect?
+                  TrainingPeriod.joins(:ect_at_school_period).where(ect_at_school_period: { teacher_id: teacher.id })
+                else
+                  TrainingPeriod.joins(:mentor_at_school_period).where(mentor_at_school_period: { teacher_id: teacher.id })
+                end
 
-    def update_future_training_period!
-      return unless future_training_period_for_same_lead_provider
-
-      future_training_period_for_same_lead_provider.update!(
-        schedule:,
-        school_partnership:,
-        expression_of_interest: nil
-      )
+        scope
+          .where.not(id: training_period.id)
+          .started_after(training_period.started_on)
+          .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+          .where(lead_providers: { id: lead_provider.id })
+          .earliest_first
+          .first
+      end
     end
 
     def current_contract_period
