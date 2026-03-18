@@ -1,19 +1,24 @@
 module HaveStatementTable
   class Matcher
-    def initialize(caption:, headings:, rows:, total: nil, total_label: "Total")
+    def initialize(headings:, rows:, caption: nil, total: nil, total_label: "Total", selector: nil)
       @caption = caption
       @headings = headings
       @rows = rows
       @total = total
       @total_label = total_label
+      @selector = selector
     end
 
     def matches?(page)
       @page = page
-      # Assert table exists with the expected caption
-      return false unless page.has_css?("table caption", text: @caption)
 
-      table = page.find("table", text: @caption)
+      # Assert table exists with the expected caption, if present
+      return false if @caption && !page.has_css?("table caption", text: @caption)
+
+      # Find the table by caption or selector
+      table = find_table(@page)
+      return false unless table
+
       # Assert table has the expected headings
       return false unless @headings.each_with_index.all? do |heading, index|
         table.has_css?(header_selector(index: index + 1), text: heading)
@@ -58,6 +63,12 @@ module HaveStatementTable
     end
 
     def header_selector(index:) = "thead tr th:nth-child(#{index})"
+
+    def find_table(page)
+      return page.find("table", text: @caption) if @caption
+
+      page.find(@selector)
+    end
   end
 
   def have_statement_table(...) = Matcher.new(...)

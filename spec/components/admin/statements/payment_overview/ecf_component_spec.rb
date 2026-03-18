@@ -70,23 +70,21 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
     end
 
     it "renders the overview table" do
-      within(".finance-panel__summary__total-payment-breakdown") do
-        expect(page).to have_statement_table(
-          caption: "",
-          headings: [
-            "Payment type",
-            "Payments"
-          ],
-          rows: [
-            ["Output payment", "£550.00"],
-            ["Service fee", "£1,000.00"],
-            ["Uplift fees", "£50.00"],
-            ["Clawbacks", "-£150.00"],
-            ["Additional adjustments", "£375.00"],
-            ["VAT", "£365.00"],
-          ]
-        )
-      end
+      expect(page).to have_statement_table(
+        selector: ".finance-panel__summary__total-payment-breakdown",
+        headings: [
+          "Payment type",
+          "Payment"
+        ],
+        rows: [
+          ["Output payment", "£550.00"],
+          ["Service fee", "£1,000.00"],
+          ["Uplift fees", "£50.00"],
+          ["Clawbacks", "-£150.00"],
+          ["Additional adjustments", "£375.00"],
+          ["VAT", "£365.00"],
+        ]
+      )
     end
 
     context "when the lead provider is not VAT registered" do
