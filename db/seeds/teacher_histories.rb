@@ -196,13 +196,6 @@ teach_first_grain_abbey_grove_2025 = find_or_create_school_partnership!(
   contract_period: cp_2025
 )
 
-find_or_create_school_partnership!(
-  school: abbey_grove_school,
-  lead_provider: teach_first,
-  delivery_partner: grain_teaching_school_hub,
-  contract_period: cp_2024
-)
-
 # Ackley Bridge — Ambition / Artisan
 
 ambition_artisan_brookfield_2023 = find_or_create_school_partnership!(
@@ -296,7 +289,7 @@ sid_james = Teacher.find_by!(trn: "0000027")
 stephen_fry = Teacher.find_by!(trn: "0000013")
 stephen_griddle = Teacher.find_by!(trn: "0000001")
 terry_thomas = Teacher.find_by!(trn: "0000026")
-kenneth_williams = Teacher.find_by!(trn: "0000039")
+kenneth_williams = Teacher.find_by!(trn: "0000040")
 
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
