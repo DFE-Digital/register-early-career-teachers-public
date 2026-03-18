@@ -94,7 +94,7 @@ print_seed_info("Creating Statements")
 ecf_fee_structure = FactoryBot.create(:contract_banded_fee_structure, :with_bands, declaration_boundaries: ECF_BOUNDARIES)
 ittecf_fee_structure = FactoryBot.create(:contract_banded_fee_structure, :with_bands, declaration_boundaries: ITTECF_BOUNDARIES)
 
-teach_first = LeadProvider.find_by!(name: "Teach First")
+ucl = LeadProvider.find_by!(name: "UCL Institute of Education")
 grain_teaching_school_hub = DeliveryPartner.find_by!(name: "Grain Teaching School Hub")
 school = FactoryBot.create(:school)
 
@@ -103,7 +103,7 @@ school_partnership_2024 = FactoryBot.create(:school_partnership,
                                             :for_year,
                                             year: 2024,
                                             school:,
-                                            lead_provider: teach_first,
+                                            lead_provider: ucl,
                                             delivery_partner: grain_teaching_school_hub).tap do |partnership|
   describe_school_partnership(partnership)
 end
@@ -113,22 +113,22 @@ school_partnership_2025 = FactoryBot.create(:school_partnership,
                                             :for_year,
                                             year: 2025,
                                             school:,
-                                            lead_provider: teach_first,
+                                            lead_provider: ucl,
                                             delivery_partner: grain_teaching_school_hub).tap do |partnership|
   describe_school_partnership(partnership)
 end
 
-teach_first_contract_2024 = FactoryBot.create(:contract,
-                                              :for_ecf,
-                                              active_lead_provider: school_partnership_2024.active_lead_provider,
-                                              banded_fee_structure: ecf_fee_structure).tap do |contract|
+ucl_contract_2024 = FactoryBot.create(:contract,
+                                      :for_ecf,
+                                      active_lead_provider: school_partnership_2024.active_lead_provider,
+                                      banded_fee_structure: ecf_fee_structure).tap do |contract|
   describe_contract(contract)
 end
 
-teach_first_contract_2025 = FactoryBot.create(:contract,
-                                              :for_ecf,
-                                              active_lead_provider: school_partnership_2025.active_lead_provider,
-                                              banded_fee_structure: ittecf_fee_structure).tap do |contract|
+ucl_contract_2025 = FactoryBot.create(:contract,
+                                      :for_ecf,
+                                      active_lead_provider: school_partnership_2025.active_lead_provider,
+                                      banded_fee_structure: ittecf_fee_structure).tap do |contract|
   describe_contract(contract)
 end
 
@@ -139,7 +139,7 @@ august_statement_2024 = FactoryBot.create(:statement,
                                           deadline_date: Date.new(2024, 7, 31),
                                           payment_date: Date.new(2024, 8, 31),
                                           active_lead_provider: school_partnership_2024.active_lead_provider,
-                                          contract: teach_first_contract_2024).tap do |statement|
+                                          contract: ucl_contract_2024).tap do |statement|
   describe_statement(statement)
 end
 
@@ -150,7 +150,7 @@ october_statement_2024 = FactoryBot.create(:statement,
                                            deadline_date: Date.new(2024, 9, 30),
                                            payment_date: Date.new(2024, 10, 31),
                                            active_lead_provider: school_partnership_2024.active_lead_provider,
-                                           contract: teach_first_contract_2024).tap do |statement|
+                                           contract: ucl_contract_2024).tap do |statement|
   describe_statement(statement)
 end
 
@@ -161,7 +161,7 @@ august_statement_2025 = FactoryBot.create(:statement,
                                           deadline_date: Date.new(2025, 7, 31),
                                           payment_date: Date.new(2025, 8, 31),
                                           active_lead_provider: school_partnership_2025.active_lead_provider,
-                                          contract: teach_first_contract_2025).tap do |statement|
+                                          contract: ucl_contract_2025).tap do |statement|
   describe_statement(statement)
 end
 
@@ -172,7 +172,7 @@ october_statement_2025 = FactoryBot.create(:statement,
                                            deadline_date: Date.new(2025, 9, 30),
                                            payment_date: Date.new(2025, 10, 31),
                                            active_lead_provider: school_partnership_2025.active_lead_provider,
-                                           contract: teach_first_contract_2025).tap do |statement|
+                                           contract: ucl_contract_2025).tap do |statement|
   describe_statement(statement)
 end
 
