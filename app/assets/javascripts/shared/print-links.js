@@ -1,6 +1,7 @@
 const PRINT_LINK_SELECTOR = '[data-print-link]'
 
 let originalDocumentTitle
+let originalDetailsState = []
 
 const setPageTitle = (link) => {
   const { printFilename } = link.dataset
@@ -25,9 +26,39 @@ const restorePageTitle = () => {
   originalDocumentTitle = undefined
 }
 
-const preparePageTitleRestore = () => {
-  window.addEventListener('afterprint', restorePageTitle, { once: true })
-  window.addEventListener('focus', restorePageTitle, { once: true })
+const expandDetailsForPrint = () => {
+  if (originalDetailsState.length > 0) {
+    return
+  }
+
+  originalDetailsState = Array.from(document.querySelectorAll('details')).map((detail) => {
+    const { open } = detail
+    detail.open = true
+
+    return { detail, open }
+  })
+}
+
+const restoreDetailsState = () => {
+  if (originalDetailsState.length === 0) {
+    return
+  }
+
+  originalDetailsState.forEach(({ detail, open }) => {
+    detail.open = open
+  })
+
+  originalDetailsState = []
+}
+
+const restorePageState = () => {
+  restorePageTitle()
+  restoreDetailsState()
+}
+
+const preparePageStateRestore = () => {
+  window.addEventListener('afterprint', restorePageState, { once: true })
+  window.addEventListener('focus', restorePageState, { once: true })
 }
 
 const printLinkFor = (event) => {
@@ -54,6 +85,7 @@ document.addEventListener('click', (event) => {
 
   event.preventDefault()
   setPageTitle(link)
-  preparePageTitleRestore()
+  expandDetailsForPrint()
+  preparePageStateRestore()
   window.print()
 })

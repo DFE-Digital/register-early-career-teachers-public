@@ -146,12 +146,6 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     expect(rendered).to have_css("details", text: "Provider targets (per academic year)")
   end
 
-  it "adds the print hidden class to provider targets" do
-    render
-
-    expect(rendered).to have_css(".govuk-\\!-display-none-print", text: "Provider targets (per academic year)")
-  end
-
   context "when the statement is for an ECF contract" do
     let(:contract_trait) { :for_ecf }
 
