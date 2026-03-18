@@ -55,9 +55,9 @@ module Admin::Statements
           end
 
           table.with_body do |body|
-            bands.each_with_index do |band, index|
+            bands.each do |band|
               body.with_row do |row|
-                row.with_cell { band_label(index) }
+                row.with_cell { band_label(band) }
                 row.with_cell(numeric: true, text: band.min_declarations)
                 row.with_cell(numeric: true, text: band.max_declarations)
                 row.with_cell(numeric: true, text: number_to_pounds(band.fee_per_declaration))
@@ -93,10 +93,6 @@ module Admin::Statements
     def uplift_amount = banded_fee_structure.uplift_fee_per_declaration
     def setup_fee = banded_fee_structure.setup_fee
     def bands = banded_fee_structure.bands
-
-    def band_label(index)
-      letter = ("A"..."Z").to_a[index]
-      "Band #{letter}"
-    end
+    def band_label(band) = "Band #{band.letter}"
   end
 end

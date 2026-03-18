@@ -214,6 +214,25 @@ RSpec.describe Contract::BandedFeeStructure::Band, type: :model do
     end
   end
 
+  describe "#letter" do
+    let(:banded_fee_structure) do
+      FactoryBot.build_stubbed(
+        :contract_banded_fee_structure,
+        :with_bands,
+        declaration_boundaries: [
+          { min: 1, max: 100 },
+          { min: 301, max: 400 },
+          { min: 101, max: 200 },
+          { min: 201, max: 300 },
+        ]
+      )
+    end
+
+    it "letters bands alphabetically in boundary order" do
+      expect(banded_fee_structure.bands.map(&:letter)).to eq(%w[A B C D])
+    end
+  end
+
   describe "#capacity" do
     it "returns max_declarations - min_declarations + 1" do
       band = FactoryBot.build_stubbed(:contract_banded_fee_structure_band, min_declarations: 1, max_declarations: 100)
