@@ -468,16 +468,22 @@ put:
   - "/api/v3/participant-declarations/:id/void":
       description: "Void a paid declaration"
       id: ":paid_declaration_for_clawback_id"
+      exclude:
+        - has_passed
       exclude_lead_providers:
         - Capita
   - "/api/v3/participant-declarations/:id/void":
       description: "Void a voidable declaration"
       id: ":voidable_declaration_for_voiding_id"
+      exclude:
+        - has_passed
       exclude_lead_providers:
         - Capita
   - "/api/v3/participant-declarations/:id/void":
       description: "Void a declaration that has already been voided"
       id: ":already_voided_declaration_for_voiding_id"
+      exclude:
+        - has_passed
       exclude_lead_providers:
         - Capita
 
