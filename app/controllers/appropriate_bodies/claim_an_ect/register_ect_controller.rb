@@ -1,11 +1,13 @@
 module AppropriateBodies
   module ClaimAnECT
     class RegisterECTController < AppropriateBodiesController
+      include MultiparameterDateErrorHandling
       def edit
         @pending_induction_submission = find_pending_induction_submission
       end
 
       def update
+        register_ect = nil
         register_ect = AppropriateBodies::ClaimAnECT::RegisterECT
           .new(
             appropriate_body_period: @appropriate_body,
@@ -20,6 +22,10 @@ module AppropriateBodies
 
           render(:edit)
         end
+      rescue ActiveRecord::MultiparameterAssignmentErrors => e
+        @pending_induction_submission = register_ect.pending_induction_submission
+        add_multiparameter_date_errors(@pending_induction_submission, e, param_key: :pending_induction_submission)
+        render :edit
       end
 
       def show
