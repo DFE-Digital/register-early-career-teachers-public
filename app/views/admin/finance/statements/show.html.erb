@@ -4,9 +4,16 @@
 <span class="govuk-caption-l"><%= @statement.lead_provider_name %></span>
 <h2 class="govuk-heading-m"><%= @statement.period %></h2>
 
-<%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
+<div class="govuk-!-display-none-print">
+  <%= render Admin::Statements::SelectorComponent.new(statement: @statement) %>
+</div>
+
 <%= render Admin::Statements::PaymentOverviewComponent.for(statement: @statement) %>
-<%= render Admin::Statements::PaymentAuthorisationComponent.new(statement: @statement) %>
+
+<div class="govuk-!-display-none-print">
+  <%= render Admin::Statements::PaymentAuthorisationComponent.new(statement: @statement) %>
+</div>
+
 <%= render Admin::Statements::DeclarationComponent.new(statement: @statement)%>
 <%= render Admin::Statements::OutputPaymentsComponent.new(statement: @statement) %>
 <%= render Admin::Statements::UpliftFeesComponent.new(statement: @statement) %>
