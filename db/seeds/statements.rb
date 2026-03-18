@@ -36,7 +36,10 @@ def describe_group_of_statements(lead_provider, statements, month_col_width: 15,
   end
 end
 
+ucl = LeadProvider.find_by!(name: "UCL Institute of Education")
+
 grouped_active_lead_providers = ActiveLeadProvider
+  .where.not(lead_provider: ucl)
   .joins(:contract_period)
   .group_by(&:lead_provider)
 
