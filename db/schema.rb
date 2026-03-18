@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_07_121950) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -759,6 +759,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
     t.index ["contract_period_year", "identifier"], name: "index_schedules_on_contract_period_year_and_identifier", unique: true
   end
 
+  create_table "school_funding_eligibilities", force: :cascade do |t|
+    t.bigint "school_urn", null: false
+    t.integer "contract_period_year", null: false
+    t.boolean "pupil_premium_uplift", default: false, null: false
+    t.boolean "sparsity_uplift", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_period_year"], name: "index_school_funding_eligibilities_on_contract_period_year"
+    t.index ["school_urn"], name: "index_school_funding_eligibilities_on_school_urn"
+  end
+
   create_table "school_partnerships", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -999,8 +1010,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
     t.uuid "api_mentor_training_record_id"
     t.integer "ect_payments_frozen_year"
     t.integer "mentor_payments_frozen_year"
-    t.boolean "pupil_premium_uplift", default: false, null: false
-    t.boolean "sparsity_uplift", default: false, null: false
     t.date "trs_induction_start_date"
     t.date "trs_induction_completed_date"
     t.datetime "ect_first_became_eligible_for_training_at"
@@ -1135,6 +1144,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_152754) do
   add_foreign_key "pending_induction_submissions", "pending_induction_submission_batches"
   add_foreign_key "regions", "appropriate_bodies"
   add_foreign_key "schedules", "contract_periods", column: "contract_period_year", primary_key: "year"
+  add_foreign_key "school_funding_eligibilities", "contract_periods", column: "contract_period_year", primary_key: "year"
+  add_foreign_key "school_funding_eligibilities", "schools", column: "school_urn", primary_key: "urn"
   add_foreign_key "school_partnerships", "schools"
   add_foreign_key "schools", "appropriate_body_periods", column: "last_chosen_appropriate_body_id"
   add_foreign_key "schools", "contract_periods", column: "induction_tutor_last_nominated_in", primary_key: "year"

@@ -14,7 +14,9 @@ end
   {
     urn: 1_759_427,
     name: "Abbey Grove School",
-    type: :state_school_type
+    type: :state_school_type,
+    sparsity_uplift: true,
+    pupil_premium_uplift: true,
   },
   {
     urn: 2_472_261,
@@ -31,7 +33,9 @@ end
   {
     urn: 5_279_293,
     name: "Malory Towers",
-    type: :state_school_type
+    type: :state_school_type,
+    sparsity_uplift: true,
+    pupil_premium_uplift: true,
   },
   {
     urn: 2_921_596,
@@ -92,15 +96,26 @@ end
       :induction_tutor_email,
       :induction_tutor_last_nominated_in,
       :section_41_approved,
-      :type
+      :type,
+      :sparsity_uplift,
+      :pupil_premium_uplift
     )
   ).school
 
   # Update School-specific attributes separately
-  school.update!(**data.except(:name, :type, :section_41_approved))
+  school.update!(**data.except(:name, :type, :section_41_approved, :sparsity_uplift, :pupil_premium_uplift))
 
   if data.key?(:section_41_approved)
     school.gias_school&.update!(section_41_approved: data[:section_41_approved])
+  end
+
+  if data.key?(:sparsity_uplift) && data.key?(:pupil_premium_uplift)
+    ContractPeriod.find_each do |contract_period|
+      school.school_funding_eligibilities << FactoryBot.create(:school_funding_eligibility,
+                                                               sparsity_uplift: contract_period.uplift_fees_enabled? ? data[:sparsity_uplift] : false,
+                                                               pupil_premium_uplift: contract_period.uplift_fees_enabled? ? data[:pupil_premium_uplift] : false,
+                                                               contract_period:)
+    end
   end
 
   describe_school(school)
