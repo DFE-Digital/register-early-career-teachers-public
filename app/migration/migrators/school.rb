@@ -41,10 +41,13 @@ module Migrators
 
       migrate(schools_with_associations) do |ecf_school|
         gias_school = find_gias_school_by_urn(ecf_school.urn.to_i) || migrate_school!(ecf_school)
+
         if check_gias_school(gias_school:, ecf_school:)
+          school = ::School.find_by!(urn: ecf_school.urn)
+
           [
             compare_fields(gias_school:, ecf_school:),
-            update_school!(school: gias_school.school, ecf_school:),
+            update_school!(school:, ecf_school:)
           ].all?
         end
       end
@@ -85,11 +88,15 @@ module Migrators
     def find_gias_school_by_urn(urn) = gias_schools_by_urn[urn.to_i]
 
     def gias_schools_by_urn
-      @gias_schools_by_urn ||= ::GIAS::School.where(urn: self.class.schools.pluck(:urn)).index_by(&:urn)
+      @gias_schools_by_urn ||= ::GIAS::School.where(urn: self.class.schools.pluck(:urn)).index_by { |s| s.urn.to_i }
     end
 
     def migrate_school!(ecf_school)
-      Builders::GIAS::School.new(ecf_school).build if migratable_school?(ecf_school)
+      return unless migratable_school?(ecf_school)
+
+      school = Builders::GIAS::School.new(ecf_school).build
+      gias_schools_by_urn[school.urn] = school if school
+      school
     end
 
     def migratable_school?(ecf_school)
