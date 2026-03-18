@@ -63,3 +63,10 @@
     }
   }
 }
+
+@media print {
+  .app-adjustments-total-column {
+    float: none;
+    width: 100%;
+  }
+}
