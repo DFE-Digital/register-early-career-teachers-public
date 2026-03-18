@@ -298,7 +298,7 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
         teacher: hash_including(
           trn: "1111111",
           trs_induction_start_date: Date.new(2025, 1, 10),
-          trs_induction_completion_date: Date.new(2025, 4, 4),
+          trs_induction_completed_date: Date.new(2025, 4, 4),
           ect_at_school_periods: array_including(
             hash_including(
               # NOTE: here, the final induction record above has been converted to a stub because

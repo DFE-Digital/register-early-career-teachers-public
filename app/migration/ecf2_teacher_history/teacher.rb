@@ -18,7 +18,7 @@ class ECF2TeacherHistory::Teacher
               :mentor_first_became_eligible_for_training_at,
               :mentor_payments_frozen_year,
               :trs_induction_start_date,
-              :trs_induction_completion_date,
+              :trs_induction_completed_date,
               :created_at,
               :updated_at
 
@@ -41,7 +41,7 @@ class ECF2TeacherHistory::Teacher
                  mentor_first_became_eligible_for_training_at: nil,
                  mentor_payments_frozen_year: nil,
                  trs_induction_start_date: nil,
-                 trs_induction_completion_date: nil,
+                 trs_induction_completed_date: nil,
                  created_at: nil,
                  updated_at: nil)
     @trn = trn
@@ -63,7 +63,7 @@ class ECF2TeacherHistory::Teacher
     @mentor_first_became_eligible_for_training_at = mentor_first_became_eligible_for_training_at
     @mentor_payments_frozen_year = mentor_payments_frozen_year
     @trs_induction_start_date = trs_induction_start_date
-    @trs_induction_completion_date = trs_induction_completion_date
+    @trs_induction_completed_date = trs_induction_completed_date
     @created_at = created_at
     @updated_at = updated_at
   end
@@ -77,7 +77,7 @@ class ECF2TeacherHistory::Teacher
       corrected_name:,
 
       trs_induction_start_date:,
-      trs_induction_completion_date:,
+      trs_induction_completed_date:,
 
       api_id:,
       api_ect_training_record_id:,
