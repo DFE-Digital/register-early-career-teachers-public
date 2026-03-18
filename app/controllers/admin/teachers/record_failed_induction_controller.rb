@@ -1,6 +1,7 @@
 module Admin
   module Teachers
     class RecordFailedInductionController < CloseInductionController
+      include MultiparameterDateErrorHandling
       def new
         @record_fail = RecordFail.new(
           teacher: @teacher,
@@ -31,6 +32,9 @@ module Admin
         end
       rescue ActiveRecord::RecordInvalid,
              ActiveModel::ValidationError
+        render :new, status: :unprocessable_content
+      rescue ActiveRecord::MultiparameterAssignmentErrors => e
+        add_multiparameter_date_errors(@record_fail, e, param_key: RecordFail.model_name.param_key)
         render :new, status: :unprocessable_content
       end
 
