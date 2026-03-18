@@ -99,7 +99,6 @@ grain_teaching_school_hub = DeliveryPartner.find_by!(name: "Grain Teaching Schoo
 school = FactoryBot.create(:school)
 
 school_partnership_2024 = FactoryBot.create(:school_partnership,
-                                            :with_active_lead_provider,
                                             :for_year,
                                             year: 2024,
                                             school:,
@@ -109,7 +108,6 @@ school_partnership_2024 = FactoryBot.create(:school_partnership,
 end
 
 school_partnership_2025 = FactoryBot.create(:school_partnership,
-                                            :with_active_lead_provider,
                                             :for_year,
                                             year: 2025,
                                             school:,
@@ -179,15 +177,15 @@ end
 uplift_count = 0
 results = pre_populate_results
 
-data = { 2024 => { school_partnership: school_partnership_2024, payment_statement: october_statement_2024, clawback_statement: august_statement_2024 },
-         2025 => { school_partnership: school_partnership_2025, payment_statement: october_statement_2025, clawback_statement: august_statement_2025 } }
+data = { 2024 => { school_partnership: school_partnership_2024, october_statement: october_statement_2024, august_statement: august_statement_2024 },
+         2025 => { school_partnership: school_partnership_2025, october_statement: october_statement_2025, august_statement: august_statement_2025 } }
 
 [2024, 2025].each do |year|
   school_partnership = data[year][:school_partnership]
-  payment_statement = data[year][:payment_statement]
-  clawback_statement  = data[year][:clawback_statement]
+  october_statement = data[year][:october_statement]
+  august_statement  = data[year][:august_statement]
 
-  describe_statement_declaration(payment_statement)
+  describe_statement_declaration(october_statement)
 
   milestones.each do |declaration_type|
     # Create billable declarations
@@ -197,12 +195,12 @@ data = { 2024 => { school_partnership: school_partnership_2024, payment_statemen
                            declaration_type:,
                            school_partnership:,
                            pupil_premium_uplift:,
-                           payment_statement:)
+                           payment_statement: october_statement)
 
     FactoryBot.create(:declaration, :with_ect, :voided,
                       declaration_type:,
                       school_partnership:,
-                      payment_statement:)
+                      payment_statement: october_statement)
 
     add_to_results(results, year, declaration_type, :ects, n + 1)
 
@@ -215,8 +213,8 @@ data = { 2024 => { school_partnership: school_partnership_2024, payment_statemen
     FactoryBot.create_list(:declaration, n, :with_ect, :awaiting_clawback,
                            declaration_type:,
                            school_partnership:,
-                           payment_statement:,
-                           clawback_statement:)
+                           payment_statement: august_statement,
+                           clawback_statement: october_statement)
 
     field = year == 2025 ? :ect_clawbacks : :clawbacks
     add_to_results(results, year, declaration_type, field, n)
@@ -227,7 +225,7 @@ data = { 2024 => { school_partnership: school_partnership_2024, payment_statemen
     FactoryBot.create(:declaration, :with_mentor, :paid,
                       declaration_type:,
                       school_partnership:,
-                      payment_statement:)
+                      payment_statement: october_statement)
 
     add_to_results(results, year, declaration_type, :mentors, 1)
 
@@ -235,16 +233,16 @@ data = { 2024 => { school_partnership: school_partnership_2024, payment_statemen
     FactoryBot.create(:declaration, :with_mentor, :awaiting_clawback,
                       declaration_type:,
                       school_partnership:,
-                      payment_statement:,
-                      clawback_statement:)
+                      payment_statement: august_statement,
+                      clawback_statement: october_statement)
 
     field = year == 2025 ? :mentor_clawbacks : :clawbacks
     add_to_results(results, year, declaration_type, field, 1)
   end
 
   # Add some manual adjustments to the statement
-  FactoryBot.create :statement_adjustment, statement: payment_statement, payment_type: "Big amount", amount: Random.rand(1000)
-  FactoryBot.create :statement_adjustment, statement: payment_statement, payment_type: "Negative", amount: Random.rand(100) * -1
+  FactoryBot.create :statement_adjustment, statement: october_statement, payment_type: "Big amount", amount: Random.rand(1000)
+  FactoryBot.create :statement_adjustment, statement: october_statement, payment_type: "Negative", amount: Random.rand(100) * -1
 end
 
 describe_results(results)
