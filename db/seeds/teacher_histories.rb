@@ -1607,7 +1607,6 @@ FactoryBot.create(:declaration,
                   declaration_date: kenneth_williams_mentor_started_date,
                   evidence_type: "training-event-attended",
                   payment_statement: teach_first_ittecf_statement2,
-                  pupil_premium_uplift: true,
                   training_period: kenneth_williams_mentor_training_period).tap do |decl|
   FactoryBot.create(:event,
                     event_type: "teacher_declaration_created",

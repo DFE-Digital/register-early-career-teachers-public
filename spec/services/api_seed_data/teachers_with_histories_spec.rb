@@ -29,34 +29,6 @@ RSpec.describe APISeedData::TeachersWithHistories do
       end
     end
 
-    context "when creating teachers with pupil premium uplifts" do
-      before do
-        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
-        stub_const("#{described_class}::ECT_ELIGIBLE_FOR_TRAINING_RATIO", 1.0)
-        stub_const("#{described_class}::PUPIL_PREMIUM_UPLIFT_RATIO", 1.0)
-      end
-
-      it "creates correct data" do
-        plant
-
-        expect(Teacher.where(pupil_premium_uplift: true)).to exist
-      end
-    end
-
-    context "when creating teachers with sparsity uplifts" do
-      before do
-        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
-        stub_const("#{described_class}::ECT_ELIGIBLE_FOR_TRAINING_RATIO", 1.0)
-        stub_const("#{described_class}::SPARSITY_UPLIFT_RATIO", 1.0)
-      end
-
-      it "creates correct data" do
-        plant
-
-        expect(Teacher.where(sparsity_uplift: true)).to exist
-      end
-    end
-
     context "when creating teachers with different schedules" do
       before do
         stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
