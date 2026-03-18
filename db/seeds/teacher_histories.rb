@@ -289,7 +289,6 @@ sid_james = Teacher.find_by!(trn: "0000027")
 stephen_fry = Teacher.find_by!(trn: "0000013")
 stephen_griddle = Teacher.find_by!(trn: "0000001")
 terry_thomas = Teacher.find_by!(trn: "0000026")
-kenneth_williams = Teacher.find_by!(trn: "0000040")
 
 print_seed_info("Emma Thompson (mentor)", indent: 2, colour: MENTOR_COLOUR)
 
@@ -1041,44 +1040,6 @@ FactoryBot.create(:training_period,
                   finished_on: nil,
                   school_partnership: ambition_artisan_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
-
-print_seed_info("Kenneth Williams (mentor)", indent: 2, colour: MENTOR_COLOUR)
-
-kenneth_williams_mentor_started_date = Date.new(2025, 9, 1)
-kenneth_williams_mentoring_at_abbey_grove = FactoryBot.create(:mentor_at_school_period,
-                                                              teacher: kenneth_williams,
-                                                              school: abbey_grove_school,
-                                                              email: "barbara.winsor@st-trinians.org.uk",
-                                                              started_on: Date.new(2024, 9, 1),
-                                                              finished_on: nil).tap { |sp| describe_mentor_at_school_period(sp) }
-
-kenneth_williams_mentor_training_period = FactoryBot.create(:training_period,
-                                                            :for_mentor,
-                                                            :with_schedule,
-                                                            mentor_at_school_period: kenneth_williams_mentoring_at_abbey_grove,
-                                                            started_on: kenneth_williams_mentor_started_date,
-                                                            finished_on: nil,
-                                                            school_partnership: teach_first_grain_abbey_grove_2025,
-                                                            training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
-
-kenneth_williams_mentor_lp_author = { author_name: kenneth_williams_mentor_training_period.lead_provider.name, author_type: "lead_provider_api" }
-
-FactoryBot.create(:declaration,
-                  :eligible,
-                  declaration_type: :started,
-                  declaration_date: kenneth_williams_mentor_started_date,
-                  evidence_type: "training-event-attended",
-                  payment_statement: teach_first_ittecf_statement2,
-                  training_period: kenneth_williams_mentor_training_period).tap do |decl|
-  FactoryBot.create(:event,
-                    event_type: "teacher_declaration_created",
-                    declaration: decl,
-                    teacher: kenneth_williams,
-                    heading: "Declaration submitted",
-                    happened_at: kenneth_williams_mentor_started_date.at_midday,
-                    **kenneth_williams_mentor_lp_author)
-  describe_declaration(decl)
-end
 
 print_seed_info("Adding mentorships:")
 
