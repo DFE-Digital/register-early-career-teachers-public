@@ -16,20 +16,22 @@ RSpec.describe APISeedData::Statements do
     it "creates statements for active lead providers with the correct attributes" do
       instance.plant
 
-      registration_year = contract_period.year
-      years = (registration_year...(registration_year + described_class::YEARS_TO_CREATE)).to_a
-      months = described_class::MONTHS.to_a
+      cohort_year = contract_period.year
+      year_month_pairs = instance.send(:statement_year_month_pairs, cohort_year)
 
-      years.product(months).each_with_index do |(year, month), index|
+      year_month_pairs.each_with_index do |(year, month), index|
         statement = Statement.find_by(year:, month:)
-        expected_deadline_date = Date.new(year, month).end_of_month
-        expected_contract = contracts[(index * contracts.size) / (years.size * months.size)]
+        expected_deadline_date = Date.new(year, month, 1).prev_day
+        expected_payment_date = Date.new(year, month, 25)
+        expected_fee_type = month.in?(described_class::OUTPUT_FEE_MONTHS) ? "output" : "service"
+        expected_contract = contracts[(index * contracts.size) / year_month_pairs.size]
 
         expect(statement).to have_attributes(
           active_lead_provider:,
           deadline_date: expected_deadline_date,
-          payment_date: be_between(expected_deadline_date, expected_deadline_date + 2.months),
+          payment_date: expected_payment_date,
           status: be_in(%w[open payable paid]),
+          fee_type: expected_fee_type,
           contract: expected_contract
         )
       end
@@ -52,9 +54,9 @@ RSpec.describe APISeedData::Statements do
       expect(logger).to have_received(:info).with(/#{active_lead_provider.lead_provider.name}/).once
 
       expect(logger).to have_received(:info).with(/#{contract_period.year}/).once
-      expect(logger).to have_received(:info).with(/#{contract_period.year + described_class::YEARS_TO_CREATE - 1}/).once
+      expect(logger).to have_received(:info).with(/#{contract_period.year + 3}/).once
 
-      described_class::MONTHS.each do |month|
+      (1..12).each do |month|
         expect(logger).to have_received(:info).with(/#{Date::MONTHNAMES[month]}/).at_least(:once)
       end
 

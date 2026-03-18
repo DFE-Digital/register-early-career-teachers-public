@@ -1,7 +1,6 @@
 module APISeedData
   class Statements < Base
-    YEARS_TO_CREATE = 4
-    MONTHS = (1..12).to_a.freeze
+    OUTPUT_FEE_MONTHS = [1, 4, 8, 11].freeze
     STATE_COLOURS = {
       OP: :blue,
       PB: :cyan,
@@ -19,36 +18,43 @@ module APISeedData
 
       active_lead_providers_by_lead_provider.each do |lead_provider, active_lead_providers|
         statements = []
-        existing_statements = Statement
-          .joins(contract: :active_lead_provider)
-          .where(contract: { active_lead_provider: active_lead_providers })
 
         active_lead_providers.each do |active_lead_provider|
-          years = years(active_lead_provider.contract_period.year)
+          cohort_year = active_lead_provider.contract_period.year
+          year_month_pairs = statement_year_month_pairs(cohort_year)
 
-          statements += years.product(MONTHS).each_with_index.map { |(year, month), index|
+          statements += year_month_pairs.each_with_index.map { |(year, month), index|
             deadline_date = deadline_date(year, month)
-            random_fee_type = fee_type
+            payment_date = payment_date(year, month)
+            statement_fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
 
             next if active_lead_provider.contract_period.payments_frozen? &&
-              random_fee_type == "output"
+              statement_fee_type == "output"
 
             # Distribute contracts across statements evenly and in order, so if there are
             # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
             # second, and the final 1/3rd get the third.
-            contract_index = (index * active_lead_provider.contracts.size) / (years.size * MONTHS.size)
+            contract_index = (index * active_lead_provider.contracts.size) / year_month_pairs.size
             contract = active_lead_provider.contracts[contract_index]
 
-            existing_statements.find { |s| s.month == month && s.year == year && s.deadline_date == deadline_date } ||
-              FactoryBot.create(:statement,
-                                active_lead_provider:,
-                                contract:,
-                                month:,
-                                year:,
-                                deadline_date:,
-                                payment_date: payment_date(deadline_date),
-                                status: status(payment_date(deadline_date), deadline_date),
-                                fee_type: random_fee_type)
+            attributes = {
+              contract:,
+              month:,
+              year:,
+              deadline_date:,
+              payment_date:,
+              status: status(payment_date, deadline_date),
+              fee_type: statement_fee_type,
+            }
+
+            existing = find_existing_statement(active_lead_provider, year, month)
+
+            if existing
+              existing.update!(attributes)
+              existing
+            else
+              FactoryBot.create(:statement, active_lead_provider:, **attributes)
+            end
           }.compact
         end
 
@@ -62,32 +68,29 @@ module APISeedData
       active_lead_providers.group_by(&:lead_provider)
     end
 
-    def years(registration_year)
-      (registration_year...(registration_year + YEARS_TO_CREATE)).to_a
+    def find_existing_statement(active_lead_provider, year, month)
+      Statement
+        .joins(contract: :active_lead_provider)
+        .where(contract: { active_lead_provider: })
+        .find_by(year:, month:)
     end
 
-    def fee_type
-      %w[service output].sample
-    end
-
-    def payment_date(deadline_date)
-      @payment_dates ||= {}
-
-      @payment_dates[deadline_date] ||= begin
-        payment_date_range = deadline_date..(deadline_date + 2.months)
-
-        # If the range includes the current date, adjust the window
-        # to ensure we always get a payable statement.
-        if Date.current.in?(payment_date_range)
-          payment_date_range = Date.current..payment_date_range.end
-        end
-
-        Time.zone.at(rand(payment_date_range.begin.to_time.to_i..payment_date_range.end.to_time.to_i))
+    def statement_year_month_pairs(cohort_year)
+      pairs = []
+      (11..12).each { |m| pairs << [cohort_year, m] }
+      [cohort_year + 1, cohort_year + 2].each do |y|
+        (1..12).each { |m| pairs << [y, m] }
       end
+      (1..8).each { |m| pairs << [cohort_year + 3, m] }
+      pairs
     end
 
     def deadline_date(year, month)
-      Time.zone.local(year, month).end_of_month
+      Date.new(year, month, 1).prev_day
+    end
+
+    def payment_date(year, month)
+      Date.new(year, month, 25)
     end
 
     def status(payment_date, deadline_date)
@@ -138,7 +141,7 @@ module APISeedData
 
       log_header_info(lead_provider, years)
 
-      MONTHS.each do |month|
+      (1..12).each do |month|
         row = build_month_row(month, years, statements_by_year_and_month)
         log_seed_info(row.join, indent: 2)
       end
