@@ -3,7 +3,7 @@ def pre_populate_results
   headers.each_key do |year|
     results[year] = {}
     milestones.each do |milestone|
-      results[year][milestone] = { type: milestone.ljust(12), ects: 0, mentors: 0, uplifts: 0, clawbacks: 0, mentor_clawbacks: 0, ect_clawbacks: 0 }
+      results[year][milestone] = { type: milestone.ljust(12), ects: 0, mentors: 0, uplifts: 0, voided: 0, clawbacks: 0, mentor_clawbacks: 0, ect_clawbacks: 0 }
     end
   end
   results
@@ -42,8 +42,8 @@ end
 
 def headers
   {
-    2024 => %w[type ects mentors uplifts clawbacks],
-    2025 => %w[type ects mentors mentor_clawbacks ect_clawbacks]
+    2024 => %w[type ects mentors uplifts voided clawbacks],
+    2025 => %w[type ects mentors voided mentor_clawbacks ect_clawbacks]
   }
 end
 
@@ -124,7 +124,7 @@ ucl_contract_2024 = FactoryBot.create(:contract,
 end
 
 ucl_contract_2025 = FactoryBot.create(:contract,
-                                      :for_ecf,
+                                      :for_ittecf_ectp,
                                       active_lead_provider: school_partnership_2025.active_lead_provider,
                                       banded_fee_structure: ittecf_fee_structure).tap do |contract|
   describe_contract(contract)
@@ -197,15 +197,17 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
                            pupil_premium_uplift:,
                            payment_statement: october_statement)
 
+    add_to_results(results, year, declaration_type, :ects, n)
+
     FactoryBot.create(:declaration, :with_ect, :voided,
                       declaration_type:,
                       school_partnership:,
                       payment_statement: october_statement)
 
-    add_to_results(results, year, declaration_type, :ects, n + 1)
+    add_to_results(results, year, declaration_type, :voided, 1)
 
     if pupil_premium_uplift
-      add_to_results(results, year, declaration_type, :uplifts, n + 1)
+      add_to_results(results, year, declaration_type, :uplifts, n)
     end
 
     # Create refunded declarations
