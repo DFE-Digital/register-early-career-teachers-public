@@ -1515,8 +1515,8 @@ components:
               - payable
               - paid
               - voided
-              - awaiting_clawback
-              - clawed_back
+              - awaiting-clawback
+              - clawed-back
               example: submitted
             updated_at:
               description: The date the declaration was last updated.
@@ -1653,8 +1653,8 @@ components:
               - payable
               - paid
               - voided
-              - awaiting_clawback
-              - clawed_back
+              - awaiting-clawback
+              - clawed-back
               example: submitted
             updated_at:
               description: The date the declaration was last updated.
