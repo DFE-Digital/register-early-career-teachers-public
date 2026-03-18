@@ -72,7 +72,7 @@ describe API::DeclarationSerializer, type: :serializer do
             expected_state = status.to_s
             expected_state = "submitted" if expected_state == "no_payment"
 
-            expect(attributes["state"]).to eq(expected_state)
+            expect(attributes["state"]).to eq(expected_state.dasherize)
           end
         end
       end
