@@ -3,11 +3,20 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
 
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
-  let(:bands) do
-    [band(from: 1, to: 10), band(from: 11, to: 20), band(from: 21, to: 30)]
+  let(:banded_fee_structure) do
+    FactoryBot.build_stubbed(
+      :contract_banded_fee_structure,
+      :with_bands,
+      declaration_boundaries: [
+        { min: 1, max: 10 },
+        { min: 11, max: 20 },
+      ]
+    )
   end
-  let(:banded_declaration_type_outputs) do
-    [
+
+  let(:banded_outputs) do
+    bands = banded_fee_structure.bands
+    banded_declaration_type_outputs = [
       double(
         declaration_type: "started",
         band: bands.first,
@@ -24,14 +33,20 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
       ),
       double(
         declaration_type: "completed",
-        band: bands.third,
+        band: bands.first,
         refundable_count: 5,
         type_adjusted_fee_per_declaration: 20,
         total_refundable_amount: 100
+      ),
+      double(
+        declaration_type: "completed",
+        band: bands.second,
+        refundable_count: 0,
+        type_adjusted_fee_per_declaration: 20,
+        total_refundable_amount: 0
       )
     ]
-  end
-  let(:banded_outputs) do
+
     instance_double(
       PaymentCalculator::Banded::Outputs,
       declaration_type_outputs: banded_declaration_type_outputs,
@@ -88,9 +103,9 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
           "Payments"
         ],
         rows: [
-          ["Started (Band 1 to 10)", "10", "-£15.00", "-£150.00"],
-          ["Started (Band 11 to 20)", "10", "-£15.00", "-£150.00"],
-          ["Completed (Band 21 to 30)", "5", "-£20.00", "-£100.00"]
+          ["Started (Band A)", "10", "-£15.00", "-£150.00"],
+          ["Started (Band B)", "10", "-£15.00", "-£150.00"],
+          ["Completed (Band A)", "5", "-£20.00", "-£100.00"]
         ],
         total: "-£400.00"
       )
@@ -100,8 +115,11 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
   context "for `ittecf_ectp` contracts" do
     let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
-    it "renders two tables of clawbacks" do
+    it "renders two tables of clawbacks with ECT clawbacks first" do
       expect(page).to have_css("table", count: 2)
+      tables = page.find_all("table")
+      expect(tables.first).to have_css("caption", text: "ECT clawbacks")
+      expect(tables.last).to have_css("caption", text: "Mentor clawbacks")
     end
 
     it "renders ECT clawbacks" do
@@ -114,9 +132,9 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
           "Payments"
         ],
         rows: [
-          ["Started (Band 1 to 10)", "10", "-£15.00", "-£150.00"],
-          ["Started (Band 11 to 20)", "10", "-£15.00", "-£150.00"],
-          ["Completed (Band 21 to 30)", "5", "-£20.00", "-£100.00"]
+          ["Started (Band A)", "10", "-£15.00", "-£150.00"],
+          ["Started (Band B)", "10", "-£15.00", "-£150.00"],
+          ["Completed (Band A)", "5", "-£20.00", "-£100.00"]
         ],
         total: "-£400.00"
       )

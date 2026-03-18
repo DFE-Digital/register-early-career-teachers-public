@@ -53,7 +53,7 @@ module Admin
           declaration_type_outputs
             .map(&:band)
             .uniq
-            .map.with_index { |_, i| "Band " + ("A".ord + i).chr }
+            .map { |band| "Band #{band.letter}" }
         end
 
         def row_pairs
