@@ -13,7 +13,7 @@
         end
 
         table.with_body do |body|
-          calculator.outputs.declaration_type_outputs.each do |declaration_type_output|
+          declaration_type_outputs_with_clawbacks(calculator).each do |declaration_type_output|
             body.with_row do |row|
               row.with_cell { payment_type(calculator, declaration_type_output) }
               row.with_cell { declaration_type_output.refundable_count.to_s }
