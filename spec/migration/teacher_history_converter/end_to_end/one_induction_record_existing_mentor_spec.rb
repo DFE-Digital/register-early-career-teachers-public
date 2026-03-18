@@ -1,13 +1,16 @@
-describe "One induction record (end to end, existing teacher)" do
+describe "One induction record (end to end, existing mentor)" do
   subject(:teacher) { Teacher.find_by(trn: ecf1_teacher_profile.trn) }
 
   # Timestamps we care about
   let(:user_created_at) { 3.years.ago.round }
   let(:original_teacher_created_at) { 1.year.ago.round }
+  let(:mentor_completion_date) { Date.new(2023, 2, 3) }
+  let(:mentor_completion_reason) { "completed_declaration_received" }
 
   # ECF1 data
+  let(:ecf1_participant_profile) { FactoryBot.create(:migration_participant_profile, :mentor, mentor_completion_date:, mentor_completion_reason:) }
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round) }
+  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round, participant_profile: ecf1_participant_profile) }
   let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
   let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
 
@@ -32,7 +35,7 @@ describe "One induction record (end to end, existing teacher)" do
     ecf1_teacher_profile.user.update!(created_at: user_created_at)
 
     ecf2_teacher_history = teacher_history_converter.convert_to_ecf2!
-    ecf2_teacher_history.save_all_ect_data!
+    ecf2_teacher_history.save_all_mentor_data!
   end
 
   context "when in latest_induction_records mode (economy)" do
@@ -47,24 +50,31 @@ describe "One induction record (end to end, existing teacher)" do
       expect(teacher.created_at).to eql(user_created_at)
     end
 
+    it "sets the ECF2 teacher's mentor completion date and reason" do
+      aggregate_failures do
+        expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_completion_date)
+        expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_completion_reason)
+      end
+    end
+
     it "doesn't overwrite the TRS first and last names" do
       expect(teacher.trs_first_name).to eql("Janet")
       expect(teacher.trs_last_name).to eql("Fielding")
     end
 
-    it "creates a single ect_at_school_period linked to the teacher at the right school" do
-      ect_at_school_periods = teacher.ect_at_school_periods
-      ect_at_school_period = ect_at_school_periods.first
+    it "creates a single mentor_at_school_period linked to the teacher at the right school" do
+      mentor_at_school_periods = teacher.mentor_at_school_periods
+      mentor_at_school_period = mentor_at_school_periods.first
 
       aggregate_failures do
-        expect(ect_at_school_periods.count).to be(1)
+        expect(mentor_at_school_periods.count).to be(1)
 
-        expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+        expect(mentor_at_school_period.school.urn).to eql(ecf1_urn)
       end
     end
 
     it "creates a single training_period for the teacher linked to the right schedule and school partnership" do
-      training_periods = teacher.ect_at_school_periods.first.training_periods
+      training_periods = teacher.mentor_at_school_periods.first.training_periods
       training_period = training_periods.first
 
       aggregate_failures do
@@ -90,19 +100,19 @@ describe "One induction record (end to end, existing teacher)" do
       expect(teacher.migration_mode).to eq "all_induction_records"
     end
 
-    it "creates a single ect_at_school_period linked to the teacher at the right school" do
-      ect_at_school_periods = teacher.ect_at_school_periods
-      ect_at_school_period = ect_at_school_periods.first
+    it "creates a single mentor_at_school_period linked to the teacher at the right school" do
+      mentor_at_school_periods = teacher.mentor_at_school_periods
+      mentor_at_school_period = mentor_at_school_periods.first
 
       aggregate_failures do
-        expect(ect_at_school_periods.count).to be(1)
+        expect(mentor_at_school_periods.count).to be(1)
 
-        expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+        expect(mentor_at_school_period.school.urn).to eql(ecf1_urn)
       end
     end
 
     it "creates a single training_period for the teacher linked to the right schedule and school partnership" do
-      training_periods = teacher.ect_at_school_periods.first.training_periods
+      training_periods = teacher.mentor_at_school_periods.first.training_periods
       training_period = training_periods.first
 
       aggregate_failures do
