@@ -163,7 +163,7 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
         teacher: hash_including(
           trn: "1111111",
           trs_induction_start_date: Date.new(2023, 9, 1),
-          trs_induction_completion_date: nil,
+          trs_induction_completed_date: nil,
           ect_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2025, 6, 2),

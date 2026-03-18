@@ -131,7 +131,7 @@ describe "Real data check for user 3dfb8ce4-2df6-4aff-a69a-107244d04615", skip: 
         teacher: hash_including(
           trn: "1111111",
           trs_induction_start_date: Date.new(2021, 11, 29),
-          trs_induction_completion_date: :ignore,
+          trs_induction_completed_date: :ignore,
           ect_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2021, 12, 1),

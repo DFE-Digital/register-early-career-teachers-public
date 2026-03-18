@@ -206,7 +206,7 @@ describe "Real data check for user d283a5c2-ab76-465e-b261-cb55cf946f00" do
         teacher: hash_including(
           trn: "1111111",
           trs_induction_start_date: Date.new(2024, 9, 2),
-          trs_induction_completion_date: nil,
+          trs_induction_completed_date: nil,
           ect_at_school_periods: array_including(
             # stub record
             hash_including(
