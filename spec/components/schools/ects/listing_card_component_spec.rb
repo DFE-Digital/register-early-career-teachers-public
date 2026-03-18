@@ -53,6 +53,29 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
     expect(rendered_content).to have_text(ect_at_school_period.school_reported_appropriate_body_name)
   end
 
+  context "when the appropriate body has not been reported" do
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on:, finished_on: nil, school_reported_appropriate_body: nil)
+    end
+
+    it "renders not reported" do
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Appropriate body")
+      expect(rendered_content).to have_text("Not reported")
+    end
+  end
+
+  context "when the appropriate body is reported" do
+    it "renders the school reported appropriate body name" do
+      render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
+
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Appropriate body")
+      expect(rendered_content).to have_text(ect_at_school_period.school_reported_appropriate_body_name)
+      expect(rendered_content).not_to have_text("Not reported")
+    end
+  end
+
   context "when provider led chosen" do
     let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period:, started_on:) }
 
@@ -334,6 +357,32 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       render_inline(described_class.new(teacher:, ect_at_school_period:, training_period:))
 
       expect(rendered_content).not_to have_css("strong.govuk-tag.govuk-tag--yellow", text: "Leaving school")
+    end
+  end
+
+  context "when the ECT's migrated data is not accurate" do
+    before do
+      allow(ect_at_school_period).to receive(:migrated_data_accurate?).and_return(false)
+    end
+
+    it "does not show the start date" do
+      component = described_class.new(teacher:, ect_at_school_period:, training_period:)
+      render_inline(component)
+
+      expect(page).not_to have_summary_list_row("School start date")
+    end
+  end
+
+  context "when the ECT's migrated data is accurate" do
+    before do
+      allow(ect_at_school_period).to receive(:migrated_data_accurate?).and_return(true)
+    end
+
+    it "shows the start date" do
+      component = described_class.new(teacher:, ect_at_school_period:, training_period:)
+      render_inline(component)
+
+      expect(page).to have_summary_list_row("School start date")
     end
   end
 end

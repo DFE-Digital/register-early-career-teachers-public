@@ -96,9 +96,10 @@ describe "Two mentor induction records (with the second being a withdrawal)" do
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "latest_induction_records"
     end
 
-    it "creates two ect_at_school_periods" do
+    it "creates two mentor_at_school_periods" do
       expect(teacher.mentor_at_school_periods.count).to be(2)
     end
 
@@ -127,6 +128,33 @@ describe "Two mentor induction records (with the second being a withdrawal)" do
   context "when in all_induction_records mode (premium)" do
     let(:migration_mode) { :all_induction_records }
 
-    it "creates the teacher record"
+    it "creates the teacher record" do
+      expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "all_induction_records"
+    end
+
+    it "creates one mentor_at_school_period" do
+      expect(teacher.mentor_at_school_periods.count).to eq(1)
+    end
+
+    it "creates two training_periods at the mentor_at_school_period" do
+      expect(teacher.mentor_at_school_periods.first.training_periods.count).to eq(2)
+    end
+
+    it "sets the withdrawal time and reason on the second training period" do
+      withdrawal_training_period = teacher.mentor_at_school_periods.first.training_periods[1]
+
+      aggregate_failures do
+        expect(withdrawal_training_period.withdrawn_at).to eql(ecf1_participant_profile_state.created_at)
+        expect(withdrawal_training_period.withdrawal_reason).to eql(ecf1_participant_profile_state.reason.underscore)
+      end
+    end
+
+    it "closes the withdrawn training_period" do
+      withdrawal_training_period = teacher.mentor_at_school_periods.first.training_periods[1]
+      expected_closing_date = [withdrawal_training_period.started_on + 1.day, withdrawal_training_period.withdrawn_at.to_date].max
+
+      expect(withdrawal_training_period.finished_on).to eq(expected_closing_date)
+    end
   end
 end

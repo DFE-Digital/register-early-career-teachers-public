@@ -31,101 +31,80 @@ RSpec.describe Migrators::ECT do
   end
 
   describe "#migrate_one!" do
-    subject(:migrator) { described_class.new }
+    let(:fake_ecf2_teacher_history) { double(ECF2TeacherHistory, save_all_ect_data!: true, success?: false) }
+    let(:economy_fake_migration_strategy) { double(TeacherHistoryConverter::MigrationStrategy, strategy: :latest_induction_records) }
+    let(:premium_fake_migration_strategy) { double(TeacherHistoryConverter::MigrationStrategy, strategy: :all_induction_records) }
+    let(:economy_fake_converter) do
+      double(
+        TeacherHistoryConverter,
+        convert_to_ecf2!: fake_ecf2_teacher_history,
+        migration_mode: :latest_induction_records
+      )
+    end
+    let(:premium_fake_converter) do
+      double(
+        TeacherHistoryConverter,
+        convert_to_ecf2!: fake_ecf2_teacher_history,
+        migration_mode: :all_induction_records
+      )
+    end
 
-    describe "mentorship period creation", skip: "Add back once we re-implement mentorship migration" do
-      # Set up an ECF Migration school that matches the RECT school
-      let!(:ecf_migration_school) { FactoryBot.create(:ecf_migration_school) }
-      let!(:school) { FactoryBot.create(:school, urn: ecf_migration_school.urn) }
+    before do
+      allow(TeacherHistoryConverter::MigrationStrategy).to receive(:new).and_return(premium_fake_migration_strategy, economy_fake_migration_strategy)
+      allow(TeacherHistoryConverter).to receive(:new).and_return(premium_fake_converter, economy_fake_converter)
+    end
 
-      let(:mentor_profile_id) { SecureRandom.uuid }
-      let!(:mentor_teacher) do
-        FactoryBot.create(:teacher, api_mentor_training_record_id: mentor_profile_id)
-      end
-      let!(:mentor_at_school_period) do
-        FactoryBot.create(
-          :mentor_at_school_period,
-          teacher: mentor_teacher,
-          school:,
-          started_on: 1.year.ago.to_date,
-          finished_on: nil
-        )
-      end
+    it "falls back to latest_induction_records (economy) if all_induction_records (premium) mode fails" do
+      teacher_profile = FactoryBot.create(:migration_teacher_profile)
 
-      # Create school_cohort with the migration school
-      let(:school_cohort) { FactoryBot.create(:migration_school_cohort, school: ecf_migration_school) }
-      let(:ect_teacher_profile) { FactoryBot.create(:migration_teacher_profile) }
-      let(:ect_participant_profile) do
-        FactoryBot.create(
-          :migration_participant_profile,
-          :ect,
-          teacher_profile: ect_teacher_profile,
-          user: ect_teacher_profile.user,
-          school_cohort:
-        )
-      end
-      let!(:ect_induction_record) do
-        FactoryBot.create(
-          :migration_induction_record,
-          participant_profile: ect_participant_profile,
-          mentor_profile_id:,
-          start_date: 6.months.ago.to_date,
-          end_date: nil
-        )
-      end
+      participant_identity = FactoryBot.create(:migration_participant_identity, user: teacher_profile.user)
+      FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user, participant_identity:)
 
-      it "creates a mentorship period when mentor has been migrated" do
-        expect { migrator.migrate_one!(ect_teacher_profile) }.to change(MentorshipPeriod, :count).by(1)
-      end
+      migrator = Migrators::ECT.new
+      migrator.migrate_one!(teacher_profile)
 
-      it "links the mentorship period to the correct mentor" do
-        migrator.migrate_one!(ect_teacher_profile)
+      expect(TeacherHistoryConverter).to have_received(:new).twice
+      expect(economy_fake_converter).to have_received(:convert_to_ecf2!).once
+      expect(premium_fake_converter).to have_received(:convert_to_ecf2!).once
+      expect(fake_ecf2_teacher_history).to have_received(:save_all_ect_data!).twice
+    end
+  end
 
-        mentorship_period = MentorshipPeriod.last
-        expect(mentorship_period.mentor).to eq(mentor_at_school_period)
-      end
+  describe "#migrate_one! (part 2)" do
+    subject(:teacher) { Teacher.find_by(trn: ecf1_teacher_profile.trn) }
 
-      it "sets the correct dates on the mentorship period" do
-        migrator.migrate_one!(ect_teacher_profile)
+    # Timestamps we care about
+    let(:user_created_at) { 3.years.ago.round }
 
-        mentorship_period = MentorshipPeriod.last
-        expect(mentorship_period.started_on).to eq(6.months.ago.to_date)
-        expect(mentorship_period.finished_on).to be_nil
-      end
+    # ECF1 data
+    let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
+    let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round) }
+    let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
+    let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
 
-      context "when mentor has not been migrated" do
-        # Use a different mentor_profile_id that doesn't have a corresponding teacher
-        let(:mentor_profile_id) { SecureRandom.uuid }
-        let!(:mentor_teacher) { nil }
-        let!(:mentor_at_school_period) { nil }
+    # ECF2 data
+    let(:ecf2_school) { ecf2_gias_school.school }
+    let(:ecf2_contract_period) { FactoryBot.create(:contract_period, year: ecf1_induction_record.induction_programme.school_cohort.cohort.start_year) }
+    let(:ecf2_lead_provider) { FactoryBot.create(:lead_provider, name: ecf1_induction_programme.partnership.lead_provider.name, ecf_id: ecf1_induction_programme.partnership.lead_provider_id) }
+    let(:ecf2_delivery_partner) { FactoryBot.create(:delivery_partner, name: ecf1_induction_programme.partnership.delivery_partner.name, api_id: ecf1_induction_programme.partnership.delivery_partner_id) }
+    let(:ecf2_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: ecf2_lead_provider, contract_period: ecf2_contract_period) }
+    let(:ecf2_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: ecf2_active_lead_provider, delivery_partner: ecf2_delivery_partner) }
 
-        it "does not create a mentorship period" do
-          expect { migrator.migrate_one!(ect_teacher_profile) }.not_to change(MentorshipPeriod, :count)
-        end
+    let!(:ecf2_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: ecf1_urn) }
+    let!(:ecf2_schedule) { FactoryBot.create(:schedule, contract_period: ecf2_contract_period, identifier: ecf1_induction_record.schedule.schedule_identifier) }
+    # let!(:ecf2_school_partnership) { FactoryBot.create(:school_partnership, school: ecf2_school, lead_provider_delivery_partnership: ecf2_lead_provider_delivery_partnership) }
 
-        it "does not record a mentorship period failure" do
-          migrator.migrate_one!(ect_teacher_profile)
+    before do
+      DataMigration.create!(worker: 1, model: :ect)
+      migrator = Migrators::ECT.new(worker: 1)
+      migrator.migrate_one!(ecf1_teacher_profile)
+    end
 
-          mentorship_failure = TeacherMigrationFailure.find_by(model: "mentorship_period")
-          expect(mentorship_failure).to be_nil
-        end
-      end
+    context "when there are errors" do
+      let(:migration_mode) { :latest_induction_records }
 
-      context "when mentor at school period does not exist" do
-        # Mentor teacher exists but no MentorAtSchoolPeriod for the school
-        let!(:mentor_at_school_period) { nil }
-
-        it "does not create a mentorship period" do
-          expect { migrator.migrate_one!(ect_teacher_profile) }.not_to change(MentorshipPeriod, :count)
-        end
-
-        it "records a mentorship period failure" do
-          migrator.migrate_one!(ect_teacher_profile)
-
-          mentorship_failure = TeacherMigrationFailure.find_by(model: "mentorship_period")
-          expect(mentorship_failure).to be_present
-          expect(mentorship_failure.message).to eq("No MentorAtSchoolPeriod found for mentorship dates")
-        end
+      it "records the errors" do
+        expect(DataMigrationFailedCombination.count).not_to be_zero
       end
     end
   end

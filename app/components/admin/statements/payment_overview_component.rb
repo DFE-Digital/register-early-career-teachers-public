@@ -27,7 +27,23 @@ module Admin
         number_to_pounds(total_amount)
       end
 
+      def statement_print_link
+        govuk_link_to(
+          "Save as PDF",
+          admin_finance_statement_path(statement),
+          no_visited_state: true,
+          data: {
+            print_link: true,
+            print_filename: statement_print_filename
+          }
+        )
+      end
+
     private
+
+      def statement_print_filename
+        "#{statement.lead_provider_name} #{statement.period} financial statement"
+      end
 
       def total_amount
         calculators.sum { |calculator| calculator.total_amount(with_vat: true) }

@@ -1,6 +1,7 @@
 module AppropriateBodies
   module Teachers
     class CloseInductionController < AppropriateBodiesController
+      include MultiparameterDateErrorHandling
       before_action :find_former_teacher, only: [:show]
       before_action :find_current_teacher, except: [:show]
 

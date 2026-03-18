@@ -1,4 +1,4 @@
-RSpec.describe "Partnerships API", type: :request do
+RSpec.describe "Partnerships API", :with_touches, type: :request do
   let(:serializer) { API::SchoolPartnershipSerializer }
   let(:serializer_options) { { lead_provider: } }
   let(:query) { API::SchoolPartnerships::Query }
@@ -73,7 +73,7 @@ RSpec.describe "Partnerships API", type: :request do
     let(:path) { api_v3_partnership_path(resource.api_id) }
     let(:service) { API::SchoolPartnerships::Update }
     let(:resource_type) { SchoolPartnership }
-    let(:resource) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) }
+    let(:resource) { travel_to(3.days.ago) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:) } }
     let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
     let(:other_delivery_partner) do
       other_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)

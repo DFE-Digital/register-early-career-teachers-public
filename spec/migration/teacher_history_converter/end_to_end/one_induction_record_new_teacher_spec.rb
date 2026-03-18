@@ -3,10 +3,13 @@ describe "One induction record (end to end, new teacher)" do
 
   # Timestamps we care about
   let(:user_created_at) { 3.years.ago.round }
+  let(:induction_start_date) { Date.new(2022, 2, 3) }
+  let(:induction_completion_date) { Date.new(2024, 2, 3) }
 
   # ECF1 data
+  let(:ecf1_participant_profile) { FactoryBot.create(:migration_participant_profile, :ect, induction_start_date:, induction_completion_date:) }
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round) }
+  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round, participant_profile: ecf1_participant_profile) }
   let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
   let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
 
@@ -38,6 +41,14 @@ describe "One induction record (end to end, new teacher)" do
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "latest_induction_records"
+    end
+
+    it "sets the teacher's trs_induction_start_date and trs_induction_completed_date" do
+      aggregate_failures do
+        expect(teacher.trs_induction_start_date).to eql(induction_start_date)
+        expect(teacher.trs_induction_completed_date).to eql(induction_completion_date)
+      end
     end
 
     it "sets the ECF2 teacher's created_at to the ECF1 user's" do
@@ -74,11 +85,12 @@ describe "One induction record (end to end, new teacher)" do
     end
   end
 
-  context "when in all_induction_records mode (premium)", skip: "re-enable once we've implemented premium mode" do
+  context "when in all_induction_records mode (premium)" do
     let(:migration_mode) { :all_induction_records }
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "all_induction_records"
     end
 
     it "creates a single ect_at_school_period linked to the teacher at the right school" do

@@ -63,8 +63,6 @@ class Teacher < ApplicationRecord
           mentor_became_ineligible_for_funding_reason
           ect_first_became_eligible_for_training_at
           mentor_first_became_eligible_for_training_at
-          pupil_premium_uplift
-          sparsity_uplift
           ect_payments_frozen_year
           mentor_payments_frozen_year
         ]

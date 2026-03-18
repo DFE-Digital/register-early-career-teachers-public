@@ -32,23 +32,52 @@ module Migrators
     end
 
     def migrate_one!(teacher_profile)
-      ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
-      return true if ecf1_teacher_history.ect.blank?
+      success, migration_mode = migrate_one_first_attempt(teacher_profile)
 
-      history_converter = TeacherHistoryConverter.new(ecf1_teacher_history:)
-      migration_mode = history_converter.migration_mode
+      # if we have tried premium (all_induction_records) and it wasn't a
+      # success, fall back to economy (latest_induction_records)
+      return success if success || migration_mode == :latest_induction_records
 
-      begin
-        ecf2_teacher_history = history_converter.convert_to_ecf2!
-        ecf2_teacher_history.save_all_ect_data!
-        ecf2_teacher_history.success?
-      rescue StandardError => e
-        failure_manager.record_failure(teacher_profile, e.message, migration_mode)
-        false
-      end
+      migrate_one_second_attempt(teacher_profile)
     end
 
   private
+
+    def migrate_one_first_attempt(teacher_profile)
+      history_converter, ecf2_teacher_history = nil
+
+      begin
+        Teacher.transaction do
+          ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
+          return true if ecf1_teacher_history.ect.blank?
+
+          history_converter = TeacherHistoryConverter.new(ecf1_teacher_history:)
+          ecf2_teacher_history = history_converter.convert_to_ecf2!
+        end
+      rescue StandardError => e
+        failure_manager.record_failure(teacher_profile, e.message, history_converter&.migration_mode)
+        return [false, history_converter&.migration_mode]
+      end
+
+      save_all_ect_data!(ecf2_teacher_history:, teacher_profile:, migration_mode: history_converter&.migration_mode)
+    end
+
+    def migrate_one_second_attempt(teacher_profile)
+      history_converter, ecf2_teacher_history = nil
+
+      begin
+        Teacher.transaction do
+          ecf1_teacher_history = ECF1TeacherHistory.build(teacher_profile:)
+          history_converter = TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode: :latest_induction_records)
+          ecf2_teacher_history = history_converter.convert_to_ecf2!
+        end
+      rescue StandardError => e
+        failure_manager.record_failure(teacher_profile, e.message, :latest_induction_records)
+        return [false, :latest_induction_records]
+      end
+
+      save_all_ect_data!(ecf2_teacher_history:, teacher_profile:, migration_mode: :latest_induction_records)
+    end
 
     def preload_caches
       cache_manager.cache_teachers
@@ -58,6 +87,23 @@ module Migrators
       cache_manager.cache_delivery_partners
       cache_manager.cache_school_partnerships
       cache_manager.cache_lead_provider_delivery_partnerships
+    end
+
+    def save_all_ect_data!(ecf2_teacher_history:, teacher_profile:, migration_mode:)
+      Teacher.transaction do
+        ecf2_teacher_history.save_all_ect_data!
+        [ecf2_teacher_history.success?, migration_mode]
+      end
+    rescue ECF2TeacherHistory::SaveError => e
+      ecf2_teacher_history.save_ect_combination_and_mentorship_summaries!
+      ecf2_teacher_history.record_failure!(teacher: e.teacher,
+                                           model: e.model,
+                                           message: e.message,
+                                           migration_item_id: e.migration_item_id)
+      [false, migration_mode]
+    rescue StandardError => e
+      failure_manager.record_failure(teacher_profile, e.message, migration_mode)
+      [false, migration_mode]
     end
   end
 end

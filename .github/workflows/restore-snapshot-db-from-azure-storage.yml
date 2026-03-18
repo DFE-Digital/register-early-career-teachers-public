@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: Environment to restore
+        description: Environment to restore from
         required: true
         default: production
         type: choice
@@ -32,7 +32,7 @@ on:
         required: true
     inputs:
       environment:
-        description: Environment to restore
+        description: Environment to restore from
         required: true
         default: production
         type: string

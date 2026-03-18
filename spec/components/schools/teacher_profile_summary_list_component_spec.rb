@@ -247,4 +247,34 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       expect(page).not_to have_text("Mentor required")
     end
   end
+
+  context "when the ECT's migrated data is not accurate" do
+    before do
+      allow(mentee).to receive(:migrated_data_accurate?).and_return(false)
+      render_inline(described_class.new(mentee))
+    end
+
+    it "does not show the school start date" do
+      expect(page).not_to have_summary_list_row("School start date")
+    end
+
+    it "does not show the working pattern" do
+      expect(page).not_to have_summary_list_row("Working pattern")
+    end
+  end
+
+  context "when the ECT's migrated data is accurate" do
+    before do
+      allow(mentee).to receive(:migrated_data_accurate?).and_return(true)
+      render_inline(described_class.new(mentee))
+    end
+
+    it "shows the school start date" do
+      expect(page).to have_summary_list_row("School start date")
+    end
+
+    it "shows the working pattern" do
+      expect(page).to have_summary_list_row("Working pattern")
+    end
+  end
 end

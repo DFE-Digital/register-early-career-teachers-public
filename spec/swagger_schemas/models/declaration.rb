@@ -48,7 +48,7 @@ DECLARATION = {
           description: "Indicates the state of this payment declaration.",
           type: :string,
           nullable: false,
-          enum: %w[submitted] + Declaration.payment_statuses.values.excluding("no_payment") + Declaration.clawback_statuses.values.excluding("no_clawback"),
+          enum: %w[submitted] + (Declaration.payment_statuses.values.excluding("no_payment") + Declaration.clawback_statuses.values.excluding("no_clawback")).map(&:dasherize),
           example: "submitted",
         },
         updated_at: {

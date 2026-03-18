@@ -12,7 +12,8 @@ FactoryBot.define do
 
     induction_tutor_last_nominated_in do
       if create_contract_period
-        association(:contract_period, :current)
+        # Current contract periods >= 2025 should have `uplift_fees_enabled` set to false.
+        association(:contract_period, :current, uplift_fees_enabled: false)
       end
     end
 
@@ -76,9 +77,6 @@ FactoryBot.define do
     trait :with_induction_tutor do
       induction_tutor_name { "Induction Tutor" }
       induction_tutor_email { "induction.tutor@st-trinians.org.uk" }
-      induction_tutor_last_nominated_in do
-        association(:contract_period, :current)
-      end
     end
 
     trait :with_unconfirmed_induction_tutor do

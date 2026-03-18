@@ -105,6 +105,8 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
       {
         teacher: hash_including(
           trn: "1111111",
+          mentor_became_ineligible_for_funding_on: Date.new(2023, 2, 23),
+          mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
           mentor_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2021, 9, 1),

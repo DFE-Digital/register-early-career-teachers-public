@@ -111,6 +111,8 @@ describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d (one men
       {
         teacher: hash_including(
           trn: "1111111",
+          mentor_became_ineligible_for_funding_on: Date.new(2025, 6, 16),
+          mentor_became_ineligible_for_funding_reason: "completed_declaration_received",
           mentor_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2023, 6, 1),

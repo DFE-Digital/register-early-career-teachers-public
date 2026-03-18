@@ -520,3 +520,11 @@
   - ecf_id
   :lead_provider_delivery_partnerships:
   - ecf_id
+  :school_funding_eligibilities:
+  - id
+  - school_urn
+  - contract_period_year
+  - pupil_premium_uplift
+  - sparsity_uplift
+  - created_at
+  - updated_at

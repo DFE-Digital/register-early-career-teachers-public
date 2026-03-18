@@ -39,6 +39,7 @@ describe "ERO mentor without a relevant declaration" do
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "latest_induction_records"
     end
 
     it "creates a single mentor_at_school_period linked to the teacher at the right school" do
@@ -58,11 +59,12 @@ describe "ERO mentor without a relevant declaration" do
     end
   end
 
-  context "when in all_induction_records mode (premium)", skip: "re-enable once we've implemented premium mode" do
+  context "when in all_induction_records mode (premium)" do
     let(:migration_mode) { :all_induction_records }
 
     it "creates the teacher record" do
       expect(teacher).to be_persisted
+      expect(teacher.migration_mode).to eq "all_induction_records"
     end
 
     it "creates a single mentor_at_school_period linked to the teacher at the right school" do

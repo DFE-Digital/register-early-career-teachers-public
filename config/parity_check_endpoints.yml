@@ -468,16 +468,22 @@ put:
   - "/api/v3/participant-declarations/:id/void":
       description: "Void a paid declaration"
       id: ":paid_declaration_for_clawback_id"
+      exclude:
+        - has_passed
       exclude_lead_providers:
         - Capita
   - "/api/v3/participant-declarations/:id/void":
       description: "Void a voidable declaration"
       id: ":voidable_declaration_for_voiding_id"
+      exclude:
+        - has_passed
       exclude_lead_providers:
         - Capita
   - "/api/v3/participant-declarations/:id/void":
       description: "Void a declaration that has already been voided"
       id: ":already_voided_declaration_for_voiding_id"
+      exclude:
+        - has_passed
       exclude_lead_providers:
         - Capita
 
@@ -555,18 +561,30 @@ put:
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_different_schedule_and_cohort_participant_body
+      exclude:
+        - teacher_reference_number_validated
+        - overall_induction_start_date
   - "/api/v3/participants/:id/change-schedule":
       description: "Change schedule to a different cohort"
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_different_cohort_participant_body
+      exclude:
+        - teacher_reference_number_validated
+        - overall_induction_start_date
   - "/api/v3/participants/:id/change-schedule":
       description: "Change schedule to a different schedule"
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_different_schedule_participant_body
+      exclude:
+        - teacher_reference_number_validated
+        - overall_induction_start_date
   - "/api/v3/participants/:id/change-schedule":
       description: "Change schedule with incorrect course identifier"
       ecf_path: "/api/v3/participants/ecf/:id/change-schedule"
       id: ":teacher_api_id_for_change_schedule_action"
       body: change_schedule_error_state_participant_body
+      exclude:
+        - teacher_reference_number_validated
+        - overall_induction_start_date

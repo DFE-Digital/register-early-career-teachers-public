@@ -4,7 +4,6 @@ class API::DeclarationSerializer < Blueprinter::Base
 
     field(:participant_id) { |declaration| declaration.training_period.teacher.api_id }
     field(:declaration_type)
-    field(:declaration_date)
 
     field(:course_identifier) do |declaration|
       if declaration.training_period.for_ect?
@@ -14,10 +13,13 @@ class API::DeclarationSerializer < Blueprinter::Base
       end
     end
 
+    field(:declaration_date)
+    field(:mentor_id) { |declaration| declaration.mentorship_period&.mentor&.teacher&.api_id }
+
     field(:state) do |declaration|
       status = declaration.overall_status
       # This is for ecf1 consistency as "submitted" has been renamed to "no_payment" on rect
-      status == "no_payment" ? "submitted" : status
+      status == "no_payment" ? "submitted" : status.dasherize
     end
 
     field(:updated_at)
@@ -28,7 +30,6 @@ class API::DeclarationSerializer < Blueprinter::Base
     # This will be removed at a later date, retaining for now for ECF parity and so
     # we don't have to communicate another change to LPs just yet.
     field(:ineligible_for_funding_reason) { nil }
-    field(:mentor_id) { |declaration| declaration.mentorship_period&.mentor&.teacher&.api_id }
     field(:uplift_paid?, name: :uplift_paid)
     field(:evidence_type, name: :evidence_held)
     field(:lead_provider_name) { |declaration| declaration.training_period.lead_provider.name }

@@ -24,24 +24,12 @@ def describe_teacher(teacher)
                  Colourize.text("no", :red)
                end
 
-  uplift =
-    if teacher.pupil_premium_uplift || teacher.sparsity_uplift
-      Colourize.text("yes", :green)
-    else
-      Colourize.text("no", :red)
-    end
-
-  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status}, payments frozen: #{payments_frozen}, id changes: #{id_changes}, uplift: #{uplift})", indent: 2)
+  print_seed_info("#{teacher_name} (early roll out mentor: #{ero_status}, payments frozen: #{payments_frozen}, id changes: #{id_changes})", indent: 2)
 end
 
 early_roll_out_mentor_attrs = {
   mentor_became_ineligible_for_funding_reason: "completed_during_early_roll_out",
   mentor_became_ineligible_for_funding_on: Date.new(2021, 4, 19)
-}
-
-uplift_attrs = {
-  sparsity_uplift: true,
-  pupil_premium_uplift: true,
 }
 
 teachers = [
@@ -53,8 +41,8 @@ teachers = [
   { trn: "0000001", trs_first_name: "Stephen", trs_last_name: "Griddle", trs_induction_status: "InProgress" },
   { trn: "0000002", trs_first_name: "Dominic", trs_last_name: "East", trs_induction_status: "InProgress" },
   { trn: "0000003", trs_first_name: "Hugh", trs_last_name: "Stipend",  trs_induction_status: "Failed", trs_induction_completed_date: Date.new(2023, 6, 30) },
-  { trn: "0000004", trs_first_name: "Emma", trs_last_name: "Thompson", trs_induction_status: "InProgress", **uplift_attrs },
-  { trn: "0000005", trs_first_name: "Kate", trs_last_name: "Winslet",  trs_induction_status: "Passed", trs_induction_completed_date: Date.new(2023, 6, 30), **uplift_attrs },
+  { trn: "0000004", trs_first_name: "Emma", trs_last_name: "Thompson", trs_induction_status: "InProgress" },
+  { trn: "0000005", trs_first_name: "Kate", trs_last_name: "Winslet",  trs_induction_status: "Passed", trs_induction_completed_date: Date.new(2023, 6, 30) },
   { trn: "0000006", trs_first_name: "Alan", trs_last_name: "Rickman",  trs_induction_status: "RequiredToComplete" },
   { trn: "0000007", trs_first_name: "Colin", trs_last_name: "Firth",  trs_induction_status: "Exempt" },
   { trn: "0000008", trs_first_name: "Robert", trs_last_name: "Webb",  **early_roll_out_mentor_attrs },

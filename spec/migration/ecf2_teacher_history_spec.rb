@@ -66,6 +66,10 @@ describe ECF2TeacherHistory do
 
   let(:other_arguments) { {} }
 
+  before do
+    allow(Rails.application.config).to receive(:raise_migration_errors).and_return(false)
+  end
+
   describe "#initialize" do
     it "is initialized with a teacher" do
       aggregate_failures do
@@ -103,8 +107,6 @@ describe ECF2TeacherHistory do
       let(:api_ect_training_record_id) { SecureRandom.uuid }
       let(:api_mentor_training_record_id) { SecureRandom.uuid }
       let(:migration_mode) { "latest_induction_records" }
-      let(:pupil_premium_uplift) { true }
-      let(:sparsity_uplift) { true }
       let(:ect_first_became_eligible_for_training_at) { 3.years.ago.round(2) }
       let(:ect_payments_frozen_year) { contract_period.year }
 
@@ -114,15 +116,10 @@ describe ECF2TeacherHistory do
           trs_first_name:,
           trs_last_name:,
           corrected_name:,
-
           api_id:,
           api_ect_training_record_id:,
           api_mentor_training_record_id:,
-
           migration_mode:,
-
-          pupil_premium_uplift:,
-          sparsity_uplift:,
           ect_first_became_eligible_for_training_at:,
           ect_payments_frozen_year:
         )
@@ -138,14 +135,10 @@ describe ECF2TeacherHistory do
           expect(teacher.trs_first_name).to eql(trs_first_name)
           expect(teacher.trs_last_name).to eql(trs_last_name)
           expect(teacher.corrected_name).to eql(corrected_name)
-
           expect(teacher.api_id).to eql(api_id)
           expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
           expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
-
           expect(teacher.migration_mode).to eql(migration_mode)
-          expect(teacher.pupil_premium_uplift).to eql(pupil_premium_uplift)
-          expect(teacher.sparsity_uplift).to eql(sparsity_uplift)
           expect(teacher.ect_first_became_eligible_for_training_at).to eql(ect_first_became_eligible_for_training_at)
           expect(teacher.ect_payments_frozen_year).to eql(ect_payments_frozen_year)
         end
@@ -190,8 +183,6 @@ describe ECF2TeacherHistory do
           aggregate_failures do
             expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
             expect(teacher.migration_mode).to eql(migration_mode)
-            expect(teacher.pupil_premium_uplift).to eql(pupil_premium_uplift)
-            expect(teacher.sparsity_uplift).to eql(sparsity_uplift)
           end
         end
       end
@@ -264,7 +255,7 @@ describe ECF2TeacherHistory do
               appropriate_body: appropriate_body_a_data,
               training_periods: [first_training_period],
               mentorship_periods: []
-            )
+            ).tap { it.created_at = 2.months.ago }
           end
 
           let(:second_training_period) do
@@ -316,6 +307,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(30.days.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
+                expect(p1.created_at).to be_within(5.seconds).of(first_ect_at_school_period.created_at)
                 # expect(p1.school_reported_appropriate_body.id).to eql(appropriate_body_a_data.id)
 
                 p1.training_periods.first!.tap do |p1_tp|
@@ -545,14 +537,9 @@ describe ECF2TeacherHistory do
           expect(teacher.trs_first_name).to eql(trs_first_name)
           expect(teacher.trs_last_name).to eql(trs_last_name)
           expect(teacher.corrected_name).to eql(corrected_name)
-
           expect(teacher.api_id).to eql(api_id)
           expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
           expect(teacher.api_mentor_training_record_id).to eql(api_mentor_training_record_id)
-
-          expect(teacher.pupil_premium_uplift).to be(false)
-          expect(teacher.sparsity_uplift).to be(false)
-
           expect(teacher.migration_mode).to eql(migration_mode)
           expect(teacher.mentor_became_ineligible_for_funding_on).to eql(mentor_became_ineligible_for_funding_on)
           expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
@@ -671,7 +658,7 @@ describe ECF2TeacherHistory do
               school: school_a_data,
               email: "a@example.org",
               training_periods: [first_training_period]
-            )
+            ).tap { it.created_at = 2.months.ago }
           end
 
           let(:mentor_at_school_periods) do
@@ -693,6 +680,7 @@ describe ECF2TeacherHistory do
                 expect(p1.finished_on).to eql(1.month.ago.to_date)
                 expect(p1.school.urn).to eql(school_a_data.urn)
                 expect(p1.email).to eql("a@example.org")
+                expect(p1.created_at).to be_within(5.seconds).of(first_mentor_at_school_period.created_at)
 
                 p1.training_periods.first!.tap do |p1_tp|
                   expect(p1_tp.started_on).to eql(1.year.ago.to_date)

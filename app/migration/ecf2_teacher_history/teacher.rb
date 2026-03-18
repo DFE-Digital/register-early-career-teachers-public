@@ -9,14 +9,14 @@ class ECF2TeacherHistory::Teacher
               :api_mentor_training_record_id,
               :api_updated_at,
               :migration_mode,
-              :pupil_premium_uplift,
-              :sparsity_uplift,
               :ect_first_became_eligible_for_training_at,
               :ect_payments_frozen_year,
               :mentor_became_ineligible_for_funding_on,
               :mentor_became_ineligible_for_funding_reason,
               :mentor_first_became_eligible_for_training_at,
               :mentor_payments_frozen_year,
+              :trs_induction_start_date,
+              :trs_induction_completed_date,
               :created_at,
               :updated_at
 
@@ -30,14 +30,14 @@ class ECF2TeacherHistory::Teacher
                  api_mentor_training_record_id: nil,
                  api_updated_at: nil,
                  migration_mode: nil,
-                 pupil_premium_uplift: nil,
-                 sparsity_uplift: nil,
                  ect_first_became_eligible_for_training_at: nil,
                  ect_payments_frozen_year: nil,
                  mentor_became_ineligible_for_funding_on: nil,
                  mentor_became_ineligible_for_funding_reason: nil,
                  mentor_first_became_eligible_for_training_at: nil,
                  mentor_payments_frozen_year: nil,
+                 trs_induction_start_date: nil,
+                 trs_induction_completed_date: nil,
                  created_at: nil,
                  updated_at: nil)
     @trn = trn
@@ -50,44 +50,44 @@ class ECF2TeacherHistory::Teacher
     @api_mentor_training_record_id = api_mentor_training_record_id
     @api_updated_at = api_updated_at
     @migration_mode = migration_mode
-    @pupil_premium_uplift = pupil_premium_uplift
-    @sparsity_uplift = sparsity_uplift
     @ect_first_became_eligible_for_training_at = ect_first_became_eligible_for_training_at
     @ect_payments_frozen_year = ect_payments_frozen_year
     @mentor_became_ineligible_for_funding_on = mentor_became_ineligible_for_funding_on
     @mentor_became_ineligible_for_funding_reason = mentor_became_ineligible_for_funding_reason
     @mentor_first_became_eligible_for_training_at = mentor_first_became_eligible_for_training_at
     @mentor_payments_frozen_year = mentor_payments_frozen_year
+    @trs_induction_start_date = trs_induction_start_date
+    @trs_induction_completed_date = trs_induction_completed_date
     @created_at = created_at
     @updated_at = updated_at
   end
 
-  def to_hash
+  def to_h
     {
       trn:,
       trs_first_name:,
       trs_last_name:,
       trnless:,
       corrected_name:,
-
+      trs_induction_start_date:,
+      trs_induction_completed_date:,
       api_id:,
       api_ect_training_record_id:,
       api_mentor_training_record_id:,
       api_updated_at:,
-
       migration_mode:,
-      pupil_premium_uplift:,
-      sparsity_uplift:,
       ect_first_became_eligible_for_training_at:,
       ect_payments_frozen_year:,
-
       mentor_became_ineligible_for_funding_on:,
       mentor_became_ineligible_for_funding_reason:,
       mentor_first_became_eligible_for_training_at:,
       mentor_payments_frozen_year:,
-
       created_at:,
       updated_at:
-    }.compact
+    }
+  end
+
+  def to_hash
+    to_h.compact
   end
 end

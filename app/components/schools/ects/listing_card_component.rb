@@ -56,6 +56,10 @@ module Schools
         !withdrawn_training_period?
       end
 
+      def show_school_start_date_row?
+        ect_at_school_period.migrated_data_accurate?
+      end
+
       def withdrawn_message_text
         training_period_withdrawn_message_text(
           teacher_name: teacher_full_name(teacher),
@@ -73,8 +77,12 @@ module Schools
       def appropriate_body_row
         {
           key: { text: "Appropriate body" },
-          value: { text: ect_at_school_period.school_reported_appropriate_body_name }
+          value: { text: appropriate_body_text }
         }
+      end
+
+      def appropriate_body_text
+        ect_at_school_period.school_reported_appropriate_body_name.presence || "Not reported"
       end
 
       def delivery_partner_row
@@ -105,6 +113,8 @@ module Schools
       end
 
       def start_date_row
+        return unless show_school_start_date_row?
+
         {
           key: { text: "School start date" },
           value: { text: ect_at_school_period.started_on.to_fs(:govuk) }

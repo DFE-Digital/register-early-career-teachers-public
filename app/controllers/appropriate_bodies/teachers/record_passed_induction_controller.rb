@@ -23,6 +23,9 @@ module AppropriateBodies
       rescue ActiveRecord::RecordInvalid,
              ActiveModel::ValidationError
         render :new, status: :unprocessable_content
+      rescue ActiveRecord::MultiparameterAssignmentErrors => e
+        add_multiparameter_date_errors(@record_pass, e, param_key: RecordPass.model_name.param_key)
+        render :new, status: :unprocessable_content
       end
 
     private
