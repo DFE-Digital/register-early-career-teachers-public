@@ -107,7 +107,11 @@ module Schools
     def mentoring_at_several_schools?
       return false if mentoring_at_new_school_only?
 
-      teacher.mentor_at_school_periods.ongoing.where.not(school:).exists?
+      teacher
+        .mentor_at_school_periods
+        .current_or_future
+        .where.not(school:)
+        .exists?
     end
 
     def mentoring_at_new_school_only? = finish_existing_at_school_periods
