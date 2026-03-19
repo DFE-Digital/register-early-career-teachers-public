@@ -1,5 +1,5 @@
 describe "Latest induction records mode conversion" do
-  subject { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  subject { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode: :latest_induction_records).convert_to_ecf2! }
 
   let(:cohort_year) { 2024 }
 
