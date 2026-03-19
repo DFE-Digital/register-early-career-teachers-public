@@ -16,7 +16,7 @@ module Schools
       end
 
       def render?
-        !%i[finished not_registered].include?(training_status)
+        %i[finished not_registered].exclude?(training_status)
       end
 
       def show_list?
