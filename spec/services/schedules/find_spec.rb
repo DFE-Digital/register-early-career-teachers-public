@@ -11,6 +11,19 @@ RSpec.shared_examples "replacement schedule assigned" do
   end
 end
 
+RSpec.shared_examples "extended schedule assigned" do
+  it "assigns an extended schedule" do
+    expect(service.identifier).to include("extended")
+  end
+end
+
+RSpec.shared_examples "no extended schedule assigned" do
+  it "does not assign an extended schedule" do
+    expect(service.identifier).not_to include("extended")
+    expect(service.identifier).not_to be_nil
+  end
+end
+
 RSpec.describe Schedules::Find do
   include ActiveJob::TestHelper
 
@@ -365,6 +378,47 @@ RSpec.describe Schedules::Find do
             it_behaves_like "no replacement schedule assigned"
           end
         end
+      end
+    end
+
+    context "extended schedule for ect" do
+      let(:period_type_key) { :ect_at_school_period }
+      let(:period) { ect_at_school_period }
+
+      let(:started_on) { provider_led_start_date }
+      let(:provider_led_start_date) { Date.new(year, 12, 1) }
+
+      let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+      let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
+
+      around do |example|
+        travel_to(provider_led_start_date) do
+          example.run
+        end
+      end
+
+      context "when the ECT started training in the 2021 contract period" do
+        let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, year: 2021) }
+        let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2021) }
+        let!(:old_training_period) do
+          FactoryBot.create(:training_period,
+                            :provider_led,
+                            :ongoing,
+                            :with_active_lead_provider,
+                            started_on: Date.new(2021, 7, 1),
+                            ect_at_school_period:,
+                            active_lead_provider: old_active_lead_provider)
+        end
+
+        before do
+          contract_period_2021.update!(payments_frozen_at: 1.day.ago)
+        end
+
+        it_behaves_like "extended schedule assigned"
+      end
+
+      context "when the ECT started training in a contract period that is still open" do
+        it_behaves_like "no extended schedule assigned"
       end
     end
 
