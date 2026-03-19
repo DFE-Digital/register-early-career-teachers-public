@@ -205,8 +205,6 @@ describe Migrators::Declaration do
           let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
           let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: participant_declaration.declaration_date - 2.years) }
           let!(:training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership:, ect_at_school_period:) }
-          # let(:started_on) { Date.new(contract_period.year, 9, 1) }
-          # let(:finished_on) { Date.new(contract_period.year, 9, 2) }
 
           it "associate that training period and creates a declaration with the expected attributes" do
             instance.migrate!
@@ -235,7 +233,7 @@ describe Migrators::Declaration do
           let!(:training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership:, ect_at_school_period:) }
           let(:started_on) { Date.new(contract_period.year, 8, 30) }
 
-          it "build ASP and TP and create a declaration with the expected attributes" do
+          it "build ASP and TP and create a declaration with the expected attributes associated to them" do
             instance.migrate!
 
             declaration = Declaration.find_by(api_id: participant_declaration.id)
@@ -254,6 +252,21 @@ describe Migrators::Declaration do
               expect(declaration.training_period.finished_on).to eq(started_on + 1.day)
               expect(declaration.training_period.school_partnership).not_to eq(school_partnership)
               expect(declaration.voided_by_user_at).to eq(participant_declaration.voided_at)
+            end
+          end
+
+          context "when the at school period created is the teacher's only one" do
+            let!(:ect_at_school_period) {}
+            let!(:training_period) {}
+
+            it "set its creation date to the participant profile's creation date" do
+              instance.migrate!
+
+              declaration = Declaration.find_by(api_id: participant_declaration.id)
+              training_period = declaration.training_period
+
+              expect(training_period.created_at).to eq(participant_profile.created_at)
+              expect(training_period.at_school_period.created_at).to eq(training_period.created_at)
             end
           end
 

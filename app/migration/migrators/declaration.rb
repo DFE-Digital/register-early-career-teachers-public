@@ -85,10 +85,14 @@ module Migrators
     def create_training_period(at_school_period:, school_partnership:, started_on:, finished_on:)
       schedule = ::Schedule.find_by(contract_period_year: school_partnership.contract_period.year,
                                     identifier: "ecf-standard-september")
-
       at_school_period.training_periods
                       .provider_led_training_programme
-                      .create!(school_partnership:, started_on:, finished_on:, schedule:)
+                      .create!(school_partnership:,
+                               started_on:,
+                               finished_on:,
+                               schedule:,
+                               created_at: at_school_period.created_at,
+                               updated_at: at_school_period.updated_at)
     end
 
     # Finds a date to create an at_school_period starting from started_on backwards, so that
@@ -148,11 +152,15 @@ module Migrators
     # Also, a stub school partnership might be created if none matches the declaration combo.
     def make_training_period(teacher:, participant_declaration:, school:, lead_provider:, delivery_partner_id:, contract_period_year:, started_on:)
       at_school_period_class = participant_declaration.ect? ? ECTAtSchoolPeriod : MentorAtSchoolPeriod
-      at_school_periods = (participant_declaration.ect? ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods)
-
+      at_school_periods = (participant_declaration.ect? ? teacher.ect_at_school_periods : teacher.mentor_at_school_periods).to_a
       started_on = date_for_new_training_period(at_school_periods:, started_on:)
       finished_on = started_on + 1.day
-      at_school_period ||= at_school_period_class.create!(teacher:, school:, started_on:, finished_on:)
+      at_school_period = at_school_period_class.create!(teacher:, school:, started_on:, finished_on:).tap do |period|
+        if at_school_periods.none?
+          period.update!(created_at: participant_declaration.participant_profile.created_at,
+                         updated_at: participant_declaration.participant_profile.created_at)
+        end
+      end
       school_partnership = find_or_create_school_partnership(school:, lead_provider:, delivery_partner_id:, contract_period_year:)
 
       create_training_period(at_school_period:, school_partnership:, started_on:, finished_on:)
@@ -246,7 +254,6 @@ module Migrators
                                { active_lead_provider: %i[lead_provider contract_period] }
                              ]
                            }).to_a
-
       training_period = fully_matching_training_period(training_periods:, lead_provider:, delivery_partner_id:, contract_period_year:, school:, declaration_date:)
       training_period ||= matching_closest_earlier_training_period(training_periods:, lead_provider:, delivery_partner_id:, contract_period_year:, school:, declaration_date:)
       return training_period if training_period
