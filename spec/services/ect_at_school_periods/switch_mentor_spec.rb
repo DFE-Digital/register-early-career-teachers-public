@@ -224,6 +224,26 @@ module ECTAtSchoolPeriods
           end
         end
 
+        context "when the mentor is mentoring at another school" do
+          let(:other_school) { FactoryBot.create(:school) }
+          let(:other_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher: selected_mentor_teacher) }
+          let!(:other_mentor_training_period) { FactoryBot.create(:training_period, :ongoing, :provider_led, :for_mentor, mentor_at_school_period: other_mentor_at_school_period, started_on: 1.month.ago) }
+
+          it "does not create a training period" do
+            expect { switch_mentor }.not_to change(TrainingPeriod, :count)
+          end
+
+          it "does not record a `teacher_starts_training_period` event" do
+            allow(Events::Record)
+              .to receive(:record_teacher_starts_training_period_event!)
+
+            switch_mentor
+
+            expect(Events::Record)
+              .not_to have_received(:record_teacher_starts_training_period_event!)
+          end
+        end
+
         context "on the last day of the contract period" do
           let(:travel_date) { Date.new(2026, 5, 31) }
 
