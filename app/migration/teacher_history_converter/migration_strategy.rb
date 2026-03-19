@@ -18,7 +18,7 @@ private
   def teacher_history_meets_premium_criteria?
     below_threshold_for_induction_records &&
       has_not_been_withdrawn_or_deferred? &&
-      is_not_induction_completed? &&
+      has_not_completed_induction? &&
       dates_are_in_the_right_order_for?(ecf1_teacher_history.ect&.induction_records) &&
       dates_are_in_the_right_order_for?(ecf1_teacher_history.mentor&.induction_records)
   end
@@ -29,13 +29,22 @@ private
     induction_records.all?(&:dates_in_order?)
   end
 
-  def is_not_induction_completed?
-    ecf1_teacher_history.ect&.induction_completion_date.blank?
+  def has_completed_induction?
+    ecf1_teacher_history.ect.present? && ecf1_teacher_history.ect.induction_completion_date.present?
+  end
+
+  def has_not_completed_induction?
+    !has_completed_induction?
   end
 
   def has_not_been_withdrawn_or_deferred?
-    ecf1_teacher_history.ect&.induction_records&.none? { |ir| ir.training_status.in? %w[withdrawn deferred] } &&
-      ecf1_teacher_history.mentor&.induction_records&.none? { |ir| ir.training_status.in? %w[withdrawn deferred] }
+    !(withdrawn_or_deferred?(ecf1_teacher_history.ect) || withdrawn_or_deferred?(ecf1_teacher_history.mentor))
+  end
+
+  def withdrawn_or_deferred?(profile)
+    return false unless profile.present? && profile.induction_records.present?
+
+    profile.induction_records.any? { |ir| ir.training_status.in? %w[withdrawn deferred] }
   end
 
   def below_threshold_for_induction_records
