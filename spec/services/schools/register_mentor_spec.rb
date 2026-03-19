@@ -116,8 +116,9 @@ RSpec.describe Schools::RegisterMentor do
             it "creates a new training period and closes the old period" do
               expect { service.register! }.to change(TrainingPeriod, :count).by(1)
 
-              new_training_period = mentor_at_school_period.training_periods.first
-
+              new_training_period = TrainingPeriod.find_by!(mentor_at_school_period:)
+             
+              expect(new_training_period).not_to be_nil
               expect(new_training_period).not_to eq(existing_training_period)
               expect(existing_training_period.reload.finished_on).not_to be_nil
             end
