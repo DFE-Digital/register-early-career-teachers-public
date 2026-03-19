@@ -60,7 +60,7 @@ describe "Real data check for user 4ab942af-3437-44a4-ba84-767ff8ba5b67" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
@@ -77,11 +77,9 @@ describe "Real data check for user 4ab942af-3437-44a4-ba84-767ff8ba5b67" do
               finished_on: nil,
               school: hash_including(urn: "100001", name: "School 1"),
               training_periods: array_including(
-                # FIXME: once #2457 is merged and we set the TP to finish on the mentor_completion_date,
-                #        this training period will become a stub
                 hash_including(
                   started_on: Date.new(2022, 6, 1),
-                  finished_on: nil,
+                  finished_on: Date.new(2022, 6, 2),
                   lead_provider_info: hash_including(name: "Ambition Institute"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   training_programme: "provider_led",
