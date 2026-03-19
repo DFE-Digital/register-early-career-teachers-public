@@ -29,45 +29,130 @@ describe TeacherHistoryConverter::MigrationStrategy do
     end
   end
 
-  context "when the teacher has completed induction" do
-    let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, induction_completion_date: 2.months.ago.to_date) }
-    let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
-    let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
-
-    it "does not meet the criteria for premium" do
-      expect(subject.strategy).to eq(:latest_induction_records)
-    end
-  end
-
-  context "when the teacher is deferred" do
-    let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "deferred")] }
-    let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, states:) }
-    let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "deferred")] }
-    let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
-
-    it "does not meet the criteria for premium" do
-      expect(subject.strategy).to eq(:latest_induction_records)
-    end
-  end
-
-  context "when the teacher is withdrawn" do
-    let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "withdrawn")] }
-    let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records, states:) }
-    let(:mentor_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "withdrawn")] }
+  context "when only ect profile is present" do
+    let(:mentor) { nil }
     let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
 
-    it "does not meet the criteria for premium" do
-      expect(subject.strategy).to eq(:latest_induction_records)
+    it "correctly chooses premium mode" do
+      expect(subject.strategy).to eq :all_induction_records
+    end
+
+    context "when there are more than 2 induction records" do
+      let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 3) }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher has completed induction" do
+      let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, induction_completion_date: 2.months.ago.to_date) }
+      let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher is deferred" do
+      let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "deferred")] }
+      let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, states:) }
+      let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "deferred")] }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher is withdrawn" do
+      let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "withdrawn")] }
+      let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, states:) }
+      let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "withdrawn")] }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
     end
   end
 
-  context "when the teacher dates in the wrong order" do
-    let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records) }
-    let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, start_date: 1.week.ago, end_date: 1.month.ago)] }
+  context "when only mentor profile is present" do
+    let(:ect) { nil }
     let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
 
-    it "does not meet the criteria for premium" do
-      expect(subject.strategy).to eq(:latest_induction_records)
+    it "correctly chooses premium mode" do
+      expect(subject.strategy).to eq :all_induction_records
+    end
+
+    context "when there are more than 2 induction records" do
+      let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 3) }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher is deferred" do
+      let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "deferred")] }
+      let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records, states:) }
+      let(:mentor_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "deferred")] }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher is withdrawn" do
+      let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "withdrawn")] }
+      let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records, states:) }
+      let(:mentor_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "withdrawn")] }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+  end
+
+  context "when both profiles are present" do
+    context "when the teacher has completed induction" do
+      let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, induction_completion_date: 2.months.ago.to_date) }
+      let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
+      let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher is deferred" do
+      let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "deferred")] }
+      let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, states:) }
+      let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "deferred")] }
+      let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher is withdrawn" do
+      let(:states) { [FactoryBot.build(:ecf1_teacher_history_profile_state_row, state: "withdrawn")] }
+      let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records, states:) }
+      let(:mentor_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "withdrawn")] }
+      let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
+    end
+
+    context "when the teacher dates in the wrong order" do
+      let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records) }
+      let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, start_date: 1.week.ago, end_date: 1.month.ago)] }
+      let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
+
+      it "does not meet the criteria for premium" do
+        expect(subject.strategy).to eq(:latest_induction_records)
+      end
     end
   end
 end
