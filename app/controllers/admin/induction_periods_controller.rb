@@ -23,7 +23,7 @@ module Admin
       render :new, status: :unprocessable_content
     rescue ActiveRecord::MultiparameterAssignmentErrors => e
       @induction_period = @service.induction_period
-      add_multiparameter_date_errors(@induction_period, e, param_key: :induction_period)
+      add_multiparameter_date_errors(@induction_period, e)
       render :new, status: :unprocessable_content
     end
 
@@ -38,7 +38,7 @@ module Admin
       @induction_period = service.induction_period
       render :edit, status: :unprocessable_content
     rescue ActiveRecord::MultiparameterAssignmentErrors => e
-      add_multiparameter_date_errors(@induction_period, e, param_key: :induction_period)
+      add_multiparameter_date_errors(@induction_period, e)
       render :edit, status: :unprocessable_content
     end
 

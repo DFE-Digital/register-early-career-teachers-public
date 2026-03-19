@@ -86,9 +86,9 @@ RSpec.describe "Appropriate body recording a failed induction outcome for a teac
           }
         end
 
-        it "returns error with the entered value" do
+        it "returns error with the correct format hint" do
           expect(response).to have_http_status(:unprocessable_content)
-          expect(response.body).to include("aa/bb/cccc is not a valid date")
+          expect(response.body).to include("Enter the finished on using the correct format, for example, 17 09 1999")
         end
       end
 

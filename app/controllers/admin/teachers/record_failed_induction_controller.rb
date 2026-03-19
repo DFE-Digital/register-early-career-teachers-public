@@ -34,7 +34,7 @@ module Admin
              ActiveModel::ValidationError
         render :new, status: :unprocessable_content
       rescue ActiveRecord::MultiparameterAssignmentErrors => e
-        add_multiparameter_date_errors(@record_fail, e, param_key: RecordFail.model_name.param_key)
+        add_multiparameter_date_errors(@record_fail, e)
         render :new, status: :unprocessable_content
       end
 

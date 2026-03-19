@@ -24,7 +24,7 @@ module AppropriateBodies
         end
       rescue ActiveRecord::MultiparameterAssignmentErrors => e
         @pending_induction_submission = register_ect.pending_induction_submission
-        add_multiparameter_date_errors(@pending_induction_submission, e, param_key: :pending_induction_submission)
+        add_multiparameter_date_errors(@pending_induction_submission, e)
         render :edit
       end
 

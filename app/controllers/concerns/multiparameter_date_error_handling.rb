@@ -3,17 +3,10 @@ module MultiparameterDateErrorHandling
 
 private
 
-  def add_multiparameter_date_errors(record, exception, param_key:)
-    raw_params = params[param_key]
-
+  def add_multiparameter_date_errors(record, exception)
     exception.errors.each do |error|
       attribute = error.attribute
-      day = raw_params["#{attribute}(3i)"]
-      month = raw_params["#{attribute}(2i)"]
-      year = raw_params["#{attribute}(1i)"]
-      entered = "#{day}/#{month}/#{year}"
-
-      record.errors.add(attribute, "#{entered} is not a valid date")
+      record.errors.add(attribute, "Enter the #{attribute.humanize.downcase} using the correct format, for example, 17 09 1999")
     end
   end
 end

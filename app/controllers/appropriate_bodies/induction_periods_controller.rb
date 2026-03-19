@@ -19,7 +19,7 @@ module AppropriateBodies
       render :edit, status: :unprocessable_content
     rescue ActiveRecord::MultiparameterAssignmentErrors => e
       @induction_period = service&.induction_period
-      add_multiparameter_date_errors(induction_period, e, param_key: :induction_period)
+      add_multiparameter_date_errors(induction_period, e)
       render :edit, status: :unprocessable_content
     end
 

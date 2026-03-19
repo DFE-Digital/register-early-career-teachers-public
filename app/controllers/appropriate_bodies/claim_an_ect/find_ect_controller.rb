@@ -35,7 +35,7 @@ module AppropriateBodies
           trn: params.dig(:pending_induction_submission, :trn),
           appropriate_body_period_id: @appropriate_body.id
         )
-        add_multiparameter_date_errors(@pending_induction_submission, e, param_key: :pending_induction_submission)
+        add_multiparameter_date_errors(@pending_induction_submission, e)
         render :new
       end
 

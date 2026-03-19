@@ -140,11 +140,11 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
           }
         end
 
-        it "returns error with the entered value" do
+        it "returns error with the correct format hint" do
           post("/appropriate-body/claim-an-ect/find-ect", params: { pending_induction_submission: search_params })
 
           expect(response.body).to include(page_heading)
-          expect(response.body).to include("aa/bb/cccc is not a valid date")
+          expect(response.body).to include("Enter the date of birth using the correct format, for example, 17 09 1999")
         end
       end
 
