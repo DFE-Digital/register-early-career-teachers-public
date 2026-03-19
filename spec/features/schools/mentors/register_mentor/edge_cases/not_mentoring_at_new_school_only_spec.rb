@@ -173,7 +173,6 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     expect(@existing_mentor_at_school_period.reload.finished_on).to be_nil
     expect(@teacher.mentor_at_school_periods.count).to eq(2)
 
-    @teacher.mentor_at_school_periods.excluding(@existing_mentor_at_school_period).last
     expect(new_mentor_at_school_period.started_on).to eq(Date.current)
     expect(new_mentor_at_school_period.finished_on).to be_nil
   end
