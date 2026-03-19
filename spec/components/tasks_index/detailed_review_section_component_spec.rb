@@ -13,11 +13,11 @@ RSpec.describe TasksIndex::DetailedReviewSectionComponent, type: :component do
   end
 
   it "displays the claim section heading" do
-    expect(page).to have_css("h2", text: "Check records and claim an ECT")
+    expect(page).to have_css("h2", text: "Check records, claim or release an ECT")
   end
 
   it "displays the action required section heading" do
-    expect(page).to have_css("h2", text: "ECT records that may need action")
+    expect(page).to have_css("h2", text: "ECT records that may need other action")
   end
 
   it "displays the number of claimable ECT records" do
