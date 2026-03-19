@@ -1,11 +1,12 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m">
-      Check records and claim an ECT
+      Check records, claim or release an ECT
     </h2>
     <p class="govuk-body">
-      The school has told us that you are the AB for these ECTs.
-      You can check the records and claim the ECTs induction.
+      The school has told us that you are the AB for these ECTs, 
+      or an ECT under your Appropriate Body is moving school.
+      You can check the records and claim or release the ECTs induction.
     </p>
   </div>
 </div>
@@ -18,19 +19,6 @@
     colour: "grey-and-blue"
   ) %>
   </div>
-<% end %>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-m">
-      Check records and release an ECT
-    </h2>
-    <p class="govuk-body">
-      The school has reported that the ECTs are leaving or have left.
-      You can release the ECT if you are no longer responsible for them.
-    </p>
-  </div>
-</div>
-<%= render AppropriateBodies::CardContainerComponent.new do %>
   <div class="govuk-grid-column-one-third">
   <%= render Shared::ActionCountCardComponent.new(
     url: ab_tasks_leavers_path,
@@ -39,13 +27,14 @@
     colour: "grey-and-blue"
   ) %>
   </div>
+  
+  
 <% end %>
-
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m">
-      ECT records that may need action
+      ECT records that may need other action
     </h2>
     <p class="govuk-body">
       These ECTs cannot be claimed yet.

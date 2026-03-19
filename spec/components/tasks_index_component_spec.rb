@@ -11,7 +11,7 @@ RSpec.describe TasksIndexComponent, type: :component do
   end
 
   it "renders the detailed review section" do
-    expect(page).to have_css("h2", text: "Check records and claim an ECT")
+    expect(page).to have_css("h2", text: "Check records, claim or release an ECT")
   end
 
   describe "#period" do
