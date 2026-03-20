@@ -16,7 +16,7 @@ module TeachersIndex
 
     def number_of_ect_records_to_review
       appropriate_body.unclaimed_ect_at_school_periods.count +
-        appropriate_body.claimed_ect_at_school_periods.marked_as_leaving.count
+        appropriate_body.claimed_ect_at_school_periods.marked_as_leaving_without_ongoing_period_at_same_appropriate_body.count
     end
   end
 end
