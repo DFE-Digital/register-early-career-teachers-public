@@ -158,7 +158,7 @@ RSpec.describe "Appropriate body claiming an ECT: registering the ECT" do
           )
 
           expect(response.body).to include(page_heading)
-          expect(response.body).to include("aa/bb/cccc is not a valid date")
+          expect(response.body).to include("aa/bb/cccc is not a valid date format")
         end
       end
 

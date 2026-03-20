@@ -144,7 +144,7 @@ RSpec.describe "Appropriate body claiming an ECT: finding the ECT" do
           post("/appropriate-body/claim-an-ect/find-ect", params: { pending_induction_submission: search_params })
 
           expect(response.body).to include(page_heading)
-          expect(response.body).to include("aa/bb/cccc is not a valid date")
+          expect(response.body).to include("aa/bb/cccc is not a valid date format")
         end
       end
 
