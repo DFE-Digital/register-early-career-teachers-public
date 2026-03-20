@@ -1,3 +1,4 @@
+# rubocop:disable RSpec/AnyInstance
 describe ECF2TeacherHistory do
   subject { ECF2TeacherHistory.new(teacher: teacher_data, **other_arguments) }
 
@@ -493,6 +494,26 @@ describe ECF2TeacherHistory do
                   expect(p1_mp.ecf_end_induction_record_id).to eql(mentorship_period.ecf_end_induction_record_id)
                 end
               end
+            end
+          end
+
+          context "when a mentorship period cannot be persisted" do
+            before do
+              allow_any_instance_of(MentorshipPeriod).to receive(:save!).and_raise(ActiveRecord::ActiveRecordError)
+            end
+
+            it "do not raise an exception" do
+              expect { teacher }.not_to raise_exception
+            end
+
+            it "do not set the teacher save as failed" do
+              expect { teacher }.not_to change(subject, :success?)
+            end
+
+            it "persist the failure but still allow the teacher to continue be saved" do
+              expect { teacher }
+                .to change(DataMigrationFailedMentorship, :count).by(1)
+                .and change(TeacherMigrationFailure, :count).by(1)
             end
           end
         end
@@ -1190,3 +1211,4 @@ describe ECF2TeacherHistory do
     end
   end
 end
+# rubocop:enable RSpec/AnyInstance
