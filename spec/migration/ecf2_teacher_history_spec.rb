@@ -109,6 +109,7 @@ describe ECF2TeacherHistory do
       let(:migration_mode) { "latest_induction_records" }
       let(:ect_first_became_eligible_for_training_at) { 3.years.ago.round(2) }
       let(:ect_payments_frozen_year) { contract_period.year }
+      let(:api_unfunded_mentor_updated_at) { 1.month.ago }
 
       let(:teacher_data) do
         ECF2TeacherHistory::Teacher.new(
@@ -121,7 +122,8 @@ describe ECF2TeacherHistory do
           api_mentor_training_record_id:,
           migration_mode:,
           ect_first_became_eligible_for_training_at:,
-          ect_payments_frozen_year:
+          ect_payments_frozen_year:,
+          api_unfunded_mentor_updated_at:
         )
       end
 
@@ -141,6 +143,7 @@ describe ECF2TeacherHistory do
           expect(teacher.migration_mode).to eql(migration_mode)
           expect(teacher.ect_first_became_eligible_for_training_at).to eql(ect_first_became_eligible_for_training_at)
           expect(teacher.ect_payments_frozen_year).to eql(ect_payments_frozen_year)
+          expect(teacher.api_unfunded_mentor_updated_at).to be_within(5.seconds).of(api_unfunded_mentor_updated_at)
         end
       end
 
@@ -506,6 +509,7 @@ describe ECF2TeacherHistory do
       let(:mentor_became_ineligible_for_funding_reason) { "completed_declaration_received" }
       let(:mentor_first_became_eligible_for_training_at) { 2.years.ago.round(2) }
       let(:mentor_payments_frozen_year) { contract_period.year }
+      let(:api_unfunded_mentor_updated_at) { 1.month.ago }
 
       let(:teacher_data) do
         ECF2TeacherHistory::Teacher.new(
@@ -517,6 +521,7 @@ describe ECF2TeacherHistory do
           api_id:,
           api_ect_training_record_id:,
           api_mentor_training_record_id:,
+          api_unfunded_mentor_updated_at:,
 
           migration_mode:,
 
@@ -545,6 +550,7 @@ describe ECF2TeacherHistory do
           expect(teacher.mentor_became_ineligible_for_funding_reason).to eql(mentor_became_ineligible_for_funding_reason)
           expect(teacher.mentor_first_became_eligible_for_training_at).to eql(mentor_first_became_eligible_for_training_at)
           expect(teacher.mentor_payments_frozen_year).to eql(mentor_payments_frozen_year)
+          expect(teacher.api_unfunded_mentor_updated_at).to be_within(5.seconds).of(api_unfunded_mentor_updated_at)
         end
       end
 
