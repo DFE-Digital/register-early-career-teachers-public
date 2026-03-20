@@ -1,5 +1,6 @@
 ---
-title: How cohort closures and changes work 
+title: How cohort closures and changes work
+sidebar_position: 11
 ---
 
 ## Cohort closures
