@@ -22,6 +22,13 @@ describe TeacherHistoryConverter do
         expect(subject.teacher.corrected_name).to eql("Test User")
       end
     end
+
+    describe "setting api_unfunded_mentor_updated_at" do
+      let(:ecf1_teacher_history_user) { FactoryBot.build(:ecf1_teacher_history_user, updated_at: 1.week.ago) }
+      let(:ecf1_teacher_history) { FactoryBot.build(:ecf1_teacher_history, user: ecf1_teacher_history_user) }
+
+      it { expect(subject.teacher.api_unfunded_mentor_updated_at).to eql(ecf1_teacher_history_user.updated_at) }
+    end
   end
 
   describe "building ect_at_school_periods" do
