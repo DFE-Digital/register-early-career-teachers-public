@@ -18,7 +18,8 @@ class ECF2TeacherHistory::Teacher
               :trs_induction_start_date,
               :trs_induction_completed_date,
               :created_at,
-              :updated_at
+              :updated_at,
+              :api_unfunded_mentor_updated_at
 
   def initialize(trn:,
                  trs_first_name:,
@@ -39,7 +40,8 @@ class ECF2TeacherHistory::Teacher
                  trs_induction_start_date: nil,
                  trs_induction_completed_date: nil,
                  created_at: nil,
-                 updated_at: nil)
+                 updated_at: nil,
+                 api_unfunded_mentor_updated_at: nil)
     @trn = trn
     @trnless = trnless
     @trs_first_name = trs_first_name
@@ -60,6 +62,7 @@ class ECF2TeacherHistory::Teacher
     @trs_induction_completed_date = trs_induction_completed_date
     @created_at = created_at
     @updated_at = updated_at
+    @api_unfunded_mentor_updated_at = api_unfunded_mentor_updated_at
   end
 
   def to_h
@@ -83,7 +86,8 @@ class ECF2TeacherHistory::Teacher
       mentor_first_became_eligible_for_training_at:,
       mentor_payments_frozen_year:,
       created_at:,
-      updated_at:
+      updated_at:,
+      api_unfunded_mentor_updated_at:
     }
   end
 
