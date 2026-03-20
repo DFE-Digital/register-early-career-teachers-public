@@ -67,7 +67,7 @@ module Schedules
     end
 
     def contract_period_year
-      return ContractPeriod.where(year: 2024) if extended_schedule?
+      return replacement_contract_period if extended_schedule?
 
       ContractPeriod.containing_date(latest_start_date)&.year || raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
     end
@@ -109,11 +109,15 @@ module Schedules
     def extended_schedule?
       return false unless period_type_key == :ect_at_school_period
 
-      teacher.ect_training_periods.joins(:contract_period).where.not(contract_periods: { payments_frozen_at: nil }).exists?
+      ContractPeriods::Historic.ect_training_started_in_closed_contract_period?(teacher:)
+    end
+
+    def replacement_contract_period
+      ContractPeriods::Historic.replacement_contract_period
     end
 
     def extended_schedule
-      Schedule.find_by(contract_period_year: 2024, identifier:)
+      replacement_contract_period.schedules.find_by!(identifier:)
     end
   end
 end
