@@ -1,11 +1,11 @@
 class ECF2TeacherHistory::MentorshipPeriod
-  attr_reader :started_on,
-              :finished_on,
-              :ecf_start_induction_record_id,
-              :ecf_end_induction_record_id,
-              :mentor_at_school_period_id,
-              :api_ect_training_record_id,
-              :api_mentor_training_record_id
+  attr_accessor :started_on,
+                :finished_on,
+                :ecf_start_induction_record_id,
+                :ecf_end_induction_record_id,
+                :mentor_at_school_period_id,
+                :api_ect_training_record_id,
+                :api_mentor_training_record_id
 
   def initialize(started_on:,
                  finished_on:,
