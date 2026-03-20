@@ -4,8 +4,15 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:trn) { teacher.trn }
   let(:registration_store) do
-    Struct.new(:trn, :appropriate_body_id, :lead_provider_id, :start_date, :ect_at_school_period_id)
-      .new(trn, appropriate_body_id, lead_provider_id, start_date, ect_at_school_period_id)
+    Struct.new(:trn, :appropriate_body_id, :lead_provider_id, :start_date, :ect_at_school_period_id) {
+      attr_accessor :previous_training_period
+    }.new(
+      trn,
+      appropriate_body_id,
+      lead_provider_id,
+      start_date,
+      ect_at_school_period_id
+    )
   end
 
   let(:appropriate_body_id) { nil }
@@ -64,11 +71,67 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
 
     context "when the start_date is present" do
-      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-      let(:start_date) { (contract_period.finished_on).to_s }
+      let!(:contract_period) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          started_on: Date.new(2025, 9, 1),
+          finished_on: Date.new(2026, 8, 31)
+        )
+      end
+      let(:start_date) { contract_period.finished_on.to_s }
 
-      it "returns the current contract period" do
+      it "returns the normal registration contract period" do
         expect(queries.registration_contract_period).to eq(contract_period)
+      end
+    end
+
+    context "when the previous training period is provider-led in closed 2021" do
+      let!(:contract_period_2021) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2021,
+          started_on: Date.new(2021, 9, 1),
+          finished_on: Date.new(2022, 8, 31),
+          enabled: false
+        )
+      end
+
+      let!(:contract_period_2024) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2024,
+          started_on: Date.new(2024, 9, 1),
+          finished_on: Date.new(2025, 8, 31)
+        )
+      end
+
+      let!(:contract_period_2025) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          started_on: Date.new(2025, 9, 1),
+          finished_on: Date.new(2026, 8, 31)
+        )
+      end
+
+      let(:start_date) { contract_period_2025.started_on.to_s }
+
+      let(:previous_training_period) do
+        instance_double(
+          TrainingPeriod,
+          provider_led_training_programme?: true,
+          contract_period: contract_period_2021,
+          expression_of_interest_contract_period: nil
+        )
+      end
+
+      before do
+        allow(queries).to receive(:previous_training_period).and_return(previous_training_period)
+      end
+
+      it "returns the 2024 contract period" do
+        expect(queries.registration_contract_period).to eq(contract_period_2024)
       end
     end
   end
@@ -83,7 +146,14 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
 
     context "when a contract period is present" do
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+      let(:contract_period) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          started_on: Date.new(2025, 9, 1),
+          finished_on: Date.new(2026, 8, 31)
+        )
+      end
       let(:start_date) { (contract_period.started_on + 2.days).to_s }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let(:another_lead_provider) { FactoryBot.create(:lead_provider) }
@@ -99,28 +169,63 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         expect(ids).to contain_exactly(lead_provider.id, another_lead_provider.id)
       end
     end
-  end
 
-  context "when start_date is backdated but registration policy uses current contract period" do
-    let!(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
-    let!(:contract_period_2025) { FactoryBot.create(:contract_period, year: 2025) }
+    context "when the previous training period is provider-led in closed 2021" do
+      let!(:contract_period_2021) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2021,
+          started_on: Date.new(2021, 9, 1),
+          finished_on: Date.new(2022, 8, 31),
+          enabled: false
+        )
+      end
 
-    let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
-    let!(:lead_provider_2024_only) { FactoryBot.create(:lead_provider, name: "MATRIX LPX (2024 only)") }
+      let!(:contract_period_2024) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2024,
+          started_on: Date.new(2024, 9, 1),
+          finished_on: Date.new(2025, 8, 31)
+        )
+      end
 
-    before do
-      allow(ContractPeriod).to receive(:current).and_return(contract_period_2025)
+      let!(:contract_period_2025) do
+        FactoryBot.create(
+          :contract_period,
+          year: 2025,
+          started_on: Date.new(2025, 9, 1),
+          finished_on: Date.new(2026, 8, 31)
+        )
+      end
 
-      FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025, lead_provider: lead_provider_2025)
-      FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024, lead_provider: lead_provider_2024_only)
+      let(:start_date) { contract_period_2025.started_on.to_s }
 
-      allow(registration_store).to receive(:start_date).and_return(Date.new(2025, 2, 3))
-    end
+      let!(:lead_provider_2024) { FactoryBot.create(:lead_provider, name: "LP 2024") }
+      let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
 
-    it "returns lead providers for the registration contract period, not the date-derived contract period" do
-      names = queries.lead_providers_within_contract_period.map(&:name)
-      expect(names).to include("LP 2025")
-      expect(names).not_to include("MATRIX LPX (2024 only)")
+      let(:previous_training_period) do
+        instance_double(
+          TrainingPeriod,
+          provider_led_training_programme?: true,
+          contract_period: contract_period_2021,
+          expression_of_interest_contract_period: nil
+        )
+      end
+
+      before do
+        FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024, lead_provider: lead_provider_2024)
+        FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025, lead_provider: lead_provider_2025)
+
+        allow(queries).to receive(:previous_training_period).and_return(previous_training_period)
+      end
+
+      it "returns lead providers for the 2024 contract period" do
+        names = queries.lead_providers_within_contract_period.map(&:name)
+
+        expect(names).to include("LP 2024")
+        expect(names).not_to include("LP 2025")
+      end
     end
   end
 
