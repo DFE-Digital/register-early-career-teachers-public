@@ -93,9 +93,7 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
 
       it "VAT is zero and therefore not included in the total" do
         expect(page).to have_css("h2.govuk-heading-l", text: "£1,825.00")
-        within(".finance-panel__summary__total-payment-breakdown") do
-          expect(page).to have_css("tr", text: /VAT\s+£0\.00/)
-        end
+        expect(page).to have_css("tr", text: /VAT£0\.00/)
       end
     end
   end

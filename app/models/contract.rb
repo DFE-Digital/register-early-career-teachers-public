@@ -44,7 +44,7 @@ class Contract < ApplicationRecord
     validates :ecf_contract_version, presence: { message: "ECF contract version must be provided for ECF contracts" }
   end
 
-  def calculated_vat_rate
+  def applicable_vat_rate
     return 0 unless lead_provider.vat_registered
 
     vat_rate

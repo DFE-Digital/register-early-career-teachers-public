@@ -92,25 +92,23 @@ describe Contract do
     end
   end
 
-  describe "#calculated_vat_rate" do
-    context "when the lead provider is VAT registered" do
-      let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered: true) }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-      let(:contract) { FactoryBot.create(:contract, active_lead_provider:, vat_rate: 0.2) }
+  describe "#applicable_vat_rate" do
+    subject(:applicable_vat_rate) { contract.applicable_vat_rate }
 
-      it "returns the contract's VAT rate" do
-        expect(contract.calculated_vat_rate).to eq(0.2)
-      end
+    let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+    let(:contract) { FactoryBot.create(:contract, active_lead_provider:, vat_rate: 0.2) }
+
+    context "when the lead provider is VAT registered" do
+      let(:vat_registered) { true }
+
+      it { is_expected.to eq(0.2) }
     end
 
     context "when the lead provider is not VAT registered" do
-      let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered: false) }
-      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-      let(:contract) { FactoryBot.create(:contract, active_lead_provider:, vat_rate: 0.2) }
+      let(:vat_registered) { false }
 
-      it "returns 0" do
-        expect(contract.calculated_vat_rate).to eq(0)
-      end
+      it { is_expected.to eq(0) }
     end
   end
 end
