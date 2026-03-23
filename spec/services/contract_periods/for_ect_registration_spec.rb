@@ -2,6 +2,7 @@ describe ContractPeriods::ForECTRegistration do
   subject(:resolver) { described_class.new(started_on:, previous_training_period:) }
 
   let(:previous_training_period) { nil }
+
   let!(:contract_2024) do
     FactoryBot.create(
       :contract_period,
@@ -21,15 +22,15 @@ describe ContractPeriods::ForECTRegistration do
   end
 
   describe "#call" do
-    context "when started_on falls within a contract period" do
+    context "when started_on falls within an older contract period than current" do
       let(:started_on) { Date.new(2024, 9, 5) }
 
-      it "returns the contract period covering the start date" do
-        expect(resolver.call).to eq(contract_2024)
+      it "returns the current registration contract period" do
+        expect(resolver.call).to eq(contract_2025)
       end
     end
 
-    context "when started_on is exactly the start date of a contract period" do
+    context "when started_on is exactly the start date of the current contract period" do
       let(:started_on) { Date.new(2025, 9, 1) }
 
       it "returns the matching contract period" do
@@ -37,27 +38,27 @@ describe ContractPeriods::ForECTRegistration do
       end
     end
 
-    context "when started_on is the last included date of a contract period" do
+    context "when started_on is the last included date of an older contract period" do
       let(:started_on) { Date.new(2025, 8, 31) }
 
-      it "returns the matching contract period" do
-        expect(resolver.call).to eq(contract_2024)
+      it "returns the current registration contract period" do
+        expect(resolver.call).to eq(contract_2025)
       end
     end
 
     context "when started_on does not fall within any contract period" do
       let(:started_on) { Date.new(2023, 1, 1) }
 
-      it "raises an error" do
-        expect { resolver.call }.to raise_error(ContractPeriods::ForECTRegistration::NoContractPeriodFoundForStartedOnDate)
+      it "returns the current contract period" do
+        expect(resolver.call).to eq(contract_2025)
       end
     end
 
     context "when started_on is in a future period that does not yet exist" do
       let(:started_on) { Date.new(2026, 9, 1) }
 
-      it "raises an error" do
-        expect { resolver.call }.to raise_error(ContractPeriods::ForECTRegistration::NoContractPeriodFoundForStartedOnDate)
+      it "returns the current contract period" do
+        expect(resolver.call).to eq(contract_2025)
       end
     end
 
