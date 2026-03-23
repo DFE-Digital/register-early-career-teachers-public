@@ -4,9 +4,12 @@ RSpec.describe PaymentCalculator::FlatRate do
   end
 
   let(:school_partnership) do
-    FactoryBot.create(:school_partnership, :for_year, year: Date.current.year)
+    FactoryBot.create(:school_partnership, :for_year, year: Date.current.year, lead_provider:)
   end
+
   let(:active_lead_provider) { school_partnership.active_lead_provider }
+  let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
+  let(:vat_registered) { true }
 
   let(:mentor_training_period) do
     FactoryBot.create(:training_period, :for_mentor, school_partnership:)
@@ -54,7 +57,7 @@ RSpec.describe PaymentCalculator::FlatRate do
     FactoryBot.create(:statement, active_lead_provider:)
   end
   let(:contract) do
-    FactoryBot.create(:contract, :for_ittecf_ectp, vat_rate: 0.20)
+    FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20)
   end
   let(:flat_rate_fee_structure) do
     FactoryBot.create(
@@ -77,16 +80,30 @@ RSpec.describe PaymentCalculator::FlatRate do
         .and_return(double(total_net_amount: 100))
     end
 
-    context "when `with_vat` is false" do
-      let(:with_vat) { false }
+    context "when the lead provider is VAT registered" do
+      let(:vat_registered) { true }
 
-      it { is_expected.to eq(100) }
+      context "when `with_vat` is false" do
+        let(:with_vat) { false }
+
+        it { is_expected.to eq(100) }
+      end
+
+      context "when `with_vat` is true" do
+        let(:with_vat) { true }
+
+        it { is_expected.to eq(120) }
+      end
     end
 
-    context "when `with_vat` is true" do
-      let(:with_vat) { true }
+    context "when the lead provider is not VAT registered" do
+      let(:vat_registered) { false }
 
-      it { is_expected.to eq(120) }
+      context "when `with_vat` is true" do
+        let(:with_vat) { true }
+
+        it { is_expected.to eq(100) }
+      end
     end
   end
 
@@ -99,7 +116,17 @@ RSpec.describe PaymentCalculator::FlatRate do
         .and_return(double(total_net_amount: 200))
     end
 
-    it { is_expected.to eq(40) }
+    context "when the lead provider is VAT registered" do
+      let(:vat_registered) { true }
+
+      it { is_expected.to eq(40) }
+    end
+
+    context "when the lead provider is not VAT registered" do
+      let(:vat_registered) { false }
+
+      it { is_expected.to eq(0) }
+    end
   end
 
   describe "#outputs" do
