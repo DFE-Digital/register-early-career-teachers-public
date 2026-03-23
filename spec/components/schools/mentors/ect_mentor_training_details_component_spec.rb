@@ -17,8 +17,6 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
   describe "eligibility states" do
     context "when there are no mentor training periods" do
       it "does not render" do
-        expect(component.render?).to be(false)
-
         render_inline(component)
         expect(rendered_content).to be_empty
       end
