@@ -1,11 +1,12 @@
 class TeacherHistoryConverter::Cleaner
-  attr_reader :induction_completion_date, :participant_type, :migration_mode
+  attr_reader :induction_completion_date, :participant_type, :migration_mode, :states
 
-  def initialize(raw_induction_records, participant_type:, induction_completion_date: nil, migration_mode: "latest_induction_records")
+  def initialize(raw_induction_records, participant_type:, induction_completion_date: nil, states: [], migration_mode: "latest_induction_records")
     @raw_induction_records = raw_induction_records
     @induction_completion_date = induction_completion_date
     @participant_type = participant_type
     @migration_mode = migration_mode.to_s
+    @states = states
   end
 
   def induction_records
@@ -39,6 +40,7 @@ private
     remove_british_schools_overseas(@raw_induction_records)
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
+      .then { remove_records_with_matching_withdrawn_and_deferred_states(it) }
   end
 
   def remove_british_schools_overseas(induction_records)
@@ -79,5 +81,9 @@ private
 
   def snip_ongoing_records_to_induction_completion_date(induction_records, induction_completion_date:)
     TeacherHistoryConverter::Cleaner::SnipOngoingRecordsToInductionCompletionDate.new(induction_records, induction_completion_date:).induction_records
+  end
+
+  def remove_records_with_matching_withdrawn_and_deferred_states(induction_records)
+    TeacherHistoryConverter::Cleaner::RemoveRecordsWithMatchingWithdrawnAndDeferredStates.new(induction_records, states:).induction_records
   end
 end
