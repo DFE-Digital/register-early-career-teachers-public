@@ -398,10 +398,10 @@ describe Declaration do
 
       describe ".refundable" do
         let(:declarations) { described_class.clawback_statuses.keys.map { |status| FactoryBot.create(:declaration, :"#{status}") } }
-        let(:refundable_declarations) { declarations.select { |d| described_class::REFUNDABLE_PAYMENT_STATUSES.include?(d.clawback_status) } }
+        let(:refundable_declarations) { declarations.select { |d| described_class::REFUNDABLE_CLAWBACK_STATUSES.include?(d.clawback_status) } }
 
         it "returns declarations with refundable statuses" do
-          expect(described_class.refundable.pluck(:clawback_status)).to all(be_in(described_class::REFUNDABLE_PAYMENT_STATUSES))
+          expect(described_class.refundable.pluck(:clawback_status)).to all(be_in(described_class::REFUNDABLE_CLAWBACK_STATUSES))
         end
       end
     end
