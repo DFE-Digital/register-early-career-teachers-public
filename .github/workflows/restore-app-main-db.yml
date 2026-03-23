@@ -127,24 +127,24 @@ jobs:
         azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         backup-file: ${{ env.BACKUP_FILE }}
 
-    - name: Notify Slack channel on job success
-      if: success()
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: ${{ inputs.environment }} database restore success
-        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.FROM_ENV_NAME }} - ${{ env.BACKUP_FILE_IN_STORAGE }} succeeded!
-        SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
-        SLACK_COLOR: success
-        SLACK_FOOTER: Sent from restore-app-main workflow
+    # - name: Notify Slack channel on job success
+    #   if: success()
+    #   uses: rtCamp/action-slack-notify@v2
+    #   env:
+    #     SLACK_USERNAME: CI Deployment
+    #     SLACK_TITLE: ${{ inputs.environment }} database restore success
+    #     SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.FROM_ENV_NAME }} - ${{ env.BACKUP_FILE_IN_STORAGE }} succeeded!
+    #     SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+    #     SLACK_COLOR: success
+    #     SLACK_FOOTER: Sent from restore-app-main workflow
 
-    - name: Notify Slack channel on job failure
-      if: failure()
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_USERNAME: CI Deployment
-        SLACK_TITLE: ${{ inputs.environment }} database restore failure
-        SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.FROM_ENV_NAME }} - ${{ env.BACKUP_FILE_IN_STORAGE }} failed!
-        SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
-        SLACK_COLOR: failure
-        SLACK_FOOTER: Sent from restore-app-main workflow
+    # - name: Notify Slack channel on job failure
+    #   if: failure()
+    #   uses: rtCamp/action-slack-notify@v2
+    #   env:
+    #     SLACK_USERNAME: CI Deployment
+    #     SLACK_TITLE: ${{ inputs.environment }} database restore failure
+    #     SLACK_MESSAGE: ${{ env.APP_NAME }} - restore main db job from ${{ env.FROM_ENV_NAME }} - ${{ env.BACKUP_FILE_IN_STORAGE }} failed!
+    #     SLACK_WEBHOOK: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
+    #     SLACK_COLOR: failure
+    #     SLACK_FOOTER: Sent from restore-app-main workflow
