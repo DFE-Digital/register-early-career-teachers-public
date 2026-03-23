@@ -58,7 +58,7 @@ When calling the `GET participants` endpoint, the ECT's cohort value will be `20
 
 Providers can identify which cohort participants have moved from by taking the following steps:
 
-1. Start by checking the `GET participants/ecf` endpoint for participants who've moved to the 2024 cohort after originally starting their training in 2021 or 2022. They're identified by the `cohort_changed_after_payments_frozen` attribute being `true`.
+1. Start by checking the `GET participants` endpoint for participants who've moved to the 2024 cohort after originally starting their training in 2021 or 2022. They're identified by the `cohort_changed_after_payments_frozen` attribute being `true`.
 
 2. Then, using the `GET participant-declarations` or `GET participant-declarations/{id}` endpoint and filtering by `participant_id`, find the `statement_id`.
 
