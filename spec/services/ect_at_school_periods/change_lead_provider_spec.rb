@@ -173,6 +173,36 @@ module ECTAtSchoolPeriods
           change_lead_provider
         end
       end
+
+      context "when the training period is in a closed contract period" do
+        let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, year: 2021) }
+        let!(:contract_period_2022) { FactoryBot.create(:contract_period, :with_schedules, year: 2022) }
+        let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+        let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
+
+        let(:contract_period) { contract_period_2021 }
+
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            started_on: Date.new(2021, 9, 1)
+          )
+        end
+
+        before do
+          contract_period_2021.update!(payments_frozen_at: 1.day.ago)
+          contract_period_2022.update!(payments_frozen_at: 1.day.ago)
+        end
+
+        it "creates a new training period with an extended september schedule in 2024" do
+          change_lead_provider
+
+          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          expect(new_training_period.schedule.identifier).to eq("ecf-extended-september")
+          expect(new_training_period.schedule.contract_period_year).to eq(2024)
+        end
+      end
     end
 
     context "when there is no existing school partnership" do
