@@ -3,7 +3,7 @@ title: View financial statement payment dates
 sidebar_position: 10
 ---
 
-Providers can view up to date payment cut-off dates, upcoming payment dates, and check to see whether output payments have been made by DfE. Financial statements are also directly provided to lead providers by DfE, and contain the same information, but the below endpoints are available for on-demand requests.
+Providers can view up-to-date payment cut-off dates, upcoming payment dates, and check to see whether output payments have been made by DfE. Financial statements are also directly provided to lead providers by DfE and contain the same information, but the below endpoints are available for on-demand requests.
 
 ## View all statement payment dates
 ```
