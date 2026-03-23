@@ -125,9 +125,30 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period
 
-      unless !training_period.started_on.future? && training_period.ongoing_today?
+      if training_period.started_on.future?
+        # A future TP is only blocked if another LP is actively training the participant.
+        # When no other LP is involved (e.g. a new ECT with a single future TP), the LP
+        # should be allowed to change the schedule.
+        if ongoing_training_period_with_different_lead_provider?
+          errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.")
+        end
+      elsif !training_period.ongoing_today?
         errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.")
       end
+    end
+
+    def ongoing_training_period_with_different_lead_provider?
+      scope = if teacher_type == :ect
+                TrainingPeriod.joins(:ect_at_school_period).where(ect_at_school_period: { teacher: })
+              else
+                TrainingPeriod.joins(:mentor_at_school_period).where(mentor_at_school_period: { teacher: })
+              end
+
+      scope
+        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+        .where.not(lead_providers: { id: lead_provider.id })
+        .ongoing_today
+        .exists?
     end
 
     def no_future_training_periods_exist

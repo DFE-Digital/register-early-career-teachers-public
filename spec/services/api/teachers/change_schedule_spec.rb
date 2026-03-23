@@ -86,8 +86,27 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           context "when the training period has not started yet" do
             before { training_period.update!(started_on: 1.week.from_now, finished_on: nil) }
 
-            it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
+            context "when no other lead provider has an ongoing training period" do
+              it { is_expected.to be_valid }
+            end
+
+            context "when another lead provider has an ongoing training period" do
+              before do
+                other_school_partnership = FactoryBot.create(:school_partnership, school: at_school_period.school)
+                FactoryBot.create(
+                  :training_period,
+                  :"for_#{trainee_type}",
+                  :active,
+                  started_on: 2.months.ago,
+                  finished_on: 1.week.from_now,
+                  "#{trainee_type}_at_school_period": at_school_period,
+                  school_partnership: other_school_partnership
+                )
+              end
+
+              it { is_expected.to have_one_error_per_attribute }
+              it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
+            end
           end
 
           context "when there are future training periods with a different lead provider (for the same teacher)" do
