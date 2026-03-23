@@ -15,7 +15,7 @@ module API::Teachers
     validate :trainee_not_completed
     validate :lead_provider_is_currently_training_teacher
     validate :no_future_training_periods_exist
-    validate :can_move_to_frozen_cohort
+    validate :can_move_to_frozen_contract_period
     validate :schedule_does_not_invalidate_declarations
 
     def change_schedule
@@ -124,13 +124,13 @@ module API::Teachers
       end
     end
 
-    def can_move_to_frozen_cohort
+    def can_move_to_frozen_contract_period
       return unless contract_period&.payments_frozen?
 
       original_frozen_year = training_period.for_ect? ? teacher.ect_payments_frozen_year : teacher.mentor_payments_frozen_year
 
       unless original_frozen_year == contract_period.year
-        errors.add(:contract_period_year, "You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.")
+        errors.add(:contract_period_year, "You cannot move a participant to a payments frozen contract period unless they previously belonged to that contract period.")
       end
     end
 

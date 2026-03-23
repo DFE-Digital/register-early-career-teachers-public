@@ -137,7 +137,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it { is_expected.to have_one_error_per_attribute }
 
-            it { is_expected.to have_error(:contract_period_year, "You cannot move a participant to a payments frozen cohort unless they previously belonged to that cohort.") }
+            it { is_expected.to have_error(:contract_period_year, "You cannot move a participant to a payments frozen contract period unless they previously belonged to that contract period.") }
           end
 
           context "when the training period `started_on` has not yet passed and there are existing declarations" do
