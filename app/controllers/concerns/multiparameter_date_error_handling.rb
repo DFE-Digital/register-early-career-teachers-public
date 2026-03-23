@@ -13,7 +13,7 @@ private
       year = raw_params["#{attribute}(1i)"]
       entered = "#{day}/#{month}/#{year}"
 
-      record.errors.add(attribute, "#{entered} is not a valid date")
+      record.errors.add(attribute, "#{entered} is not a valid date format")
     end
   end
 end
