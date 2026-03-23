@@ -5,8 +5,6 @@ sidebar_position: 11
 
 ## Cohort closures
 
-
-
 When a cohort is closed, it means:
 
 - lead providers will no longer be able to receive payments for training participants remaining in that cohort until they are moved to the 2024 cohort
