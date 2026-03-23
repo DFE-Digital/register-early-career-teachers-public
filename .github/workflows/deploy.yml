@@ -177,7 +177,6 @@ jobs:
         azure-client-id:  ${{ secrets.AZURE_CLIENT_ID }}
         azure-tenant-id:  ${{ secrets.AZURE_TENANT_ID }}
         azure-subscription-id:  ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
         terraform-base: config/terraform/domains/infrastructure
 
   deploy_domains_env:
@@ -204,5 +203,4 @@ jobs:
           azure-subscription-id:  ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           environment: ${{ matrix.domain_environment }}
           healthcheck: healthcheck
-          slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
           terraform-base: config/terraform/domains/environment_domains
