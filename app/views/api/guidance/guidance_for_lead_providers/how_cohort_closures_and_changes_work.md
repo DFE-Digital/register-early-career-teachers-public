@@ -5,18 +5,19 @@ sidebar_position: 11
 
 ## Cohort closures
 
-A cohort is closed when DfE stops funding training for that cohort year.
+
 
 When a cohort is closed, it means:
 
-- lead providers will no longer be able to receive payments for training participants assigned to that cohort
+- lead providers will no longer be able to receive payments for training participants remaining in that cohort until they are moved to the 2024 cohort
 - DfE will stop generating output fee statements for the closed cohort
 - we'll move partially trained early career teachers (ECTs) from the closed cohort to the 2024 cohort if there's evidence they require training
-- lead providers can no longer void declarations for participants and no declarations should be submitted
+- lead providers can no longer void declarations for participants remaining in that cohort
+- no declarations should be submitted for participants remaining in that cohort
 
 ## How we'll handle participants in closed cohorts
 
-### Partially trained ECTs
+### Partially trained ECTs from closed cohorts
 
 We'll move ECTs to the 2024 cohort when there's evidence they require training.
 
@@ -33,11 +34,17 @@ If there's been a mistake and the ECT shouldn't have been moved to the 2024 coho
 
 If an ECT doesn't meet one of the above criteria for an automatic move, they'll stay visible in `GET participants` for their original 2021 or 2022 cohort. You will not be able to submit declarations for them.
 
+ECTs that only received a started declaration in a closed cohort may completely restart their training in ECTP. You will have to update them to a 2025 or later cohort over the API.
+
 ECTs with no declarations submitted against them have been archived. Schools can re-register them at any point to start training.
 
-### Partially trained mentors
+### Mentors from closed cohorts
 
-We will not transfer mentors to the 2024 cohort because they're not eligible for further training. We'll mark them as completed and update their `mentor_funding_end_date`.
+We will not transfer mentors to the 2024 cohort because they may not be eligible for further training.
+
+Check the fully trained mentor guidance that was emailed out to lead providers. Speak to your contract manager about any other specific cases.
+
+Mentors that only received a started declaration in a closed cohort may completely restart their training in the early career training programme (ECTP) in a later cohort. 
 
 ### ECTs and mentors with no eligible, payable, paid, awaiting_clawback or clawed_back declarations
 
@@ -51,7 +58,13 @@ For ECTs who've moved to the 2024 cohort, the field will have a `true` value in 
 
 When calling the `GET participants` endpoint, the ECT's cohort value will be `2024`. When calling the `GET participant-declarations` endpoint, the ECT will have historical declarations in their original cohort.
 
-Providers should use the `cohort_changed_after_payments_frozen` field to identify the ECT.
+Providers can identify which cohort participants have moved from by taking the following steps:
+
+1. Start by checking the `GET participants/ecf` endpoint for participants who've moved to the 2024 cohort after originally starting their training in 2021 or 2022. They're identified by the `cohort_changed_after_payments_frozen` attribute being `true`.
+
+2. Then, using the `GET participant-declarations` or `GET participant-declarations/{id}` endpoint and filtering by `participant_id`, find the `statement_id`.
+
+3. Finally, call `GET statements/{id}`. The `cohort` field in the response shows which cohort each declaration was originally made in.
 
 We'll also assign these ECTs to the `ecf-extended-september` schedule. This allows providers to submit any required declarations for these ECTs.
 
@@ -65,14 +78,9 @@ When providers receive a participant who has moved to the 2024 cohort from a clo
 
 Many of these participants will have experienced stop-start or interrupted training journeys, often due to deferrals or other changes.
 
-There's no automated process to determine their continuation point or how much induction an ECT has left to serve, so it's important for providers to confirm this directly with the participant, the participant's school or their appropriate body.
+There’s no automated process to determine their continuation point of training or how much induction an ECT has left to serve, so it’s important for providers to confirm this directly with:
 
-## How to tell between 2022 and 2021 starters who've moved to the 2024 cohort
-
-Providers can identify which cohort participants have moved from by taking the following steps:
-
-1. Start by checking the `GET participants/ecf` endpoint for participants who've moved to the 2024 cohort after originally starting their training in 2021 or 2022. They're identified by the `cohort_changed_after_payments_frozen` attribute being `true`.
-
-2. Then, using the `GET participant-declarations` or `GET participant-declarations/{id}` endpoint and filtering by `participant_id`, find the `statement_id`.
-
-3. Finally, call `GET statements/{id}`. The `cohort` field in the response shows which cohort each declaration was originally made in.
+- the participant
+- the participant’s school 
+- the participant's appropriate body
+- the participant’s previous provider
