@@ -12,6 +12,7 @@ describe Contract do
 
   describe "associations" do
     it { is_expected.to belong_to(:active_lead_provider) }
+    it { is_expected.to have_one(:lead_provider).through(:active_lead_provider) }
     it { is_expected.to belong_to(:banded_fee_structure).class_name("Contract::BandedFeeStructure").optional }
     it { is_expected.to belong_to(:flat_rate_fee_structure).class_name("Contract::FlatRateFeeStructure").optional }
     it { is_expected.to have_one(:contract_period).through(:active_lead_provider) }
@@ -87,6 +88,28 @@ describe Contract do
         expect { contract.update!(active_lead_provider: other_active_lead_provider) }
           .to raise_error(ActiveRecord::ReadonlyAttributeError)
         expect(contract.active_lead_provider).to eq(active_lead_provider)
+      end
+    end
+  end
+
+  describe "#calculated_vat_rate" do
+    context "when the lead provider is VAT registered" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered: true) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let(:contract) { FactoryBot.create(:contract, active_lead_provider:, vat_rate: 0.2) }
+
+      it "returns the contract's VAT rate" do
+        expect(contract.calculated_vat_rate).to eq(0.2)
+      end
+    end
+
+    context "when the lead provider is not VAT registered" do
+      let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered: false) }
+      let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
+      let(:contract) { FactoryBot.create(:contract, active_lead_provider:, vat_rate: 0.2) }
+
+      it "returns 0" do
+        expect(contract.calculated_vat_rate).to eq(0)
       end
     end
   end

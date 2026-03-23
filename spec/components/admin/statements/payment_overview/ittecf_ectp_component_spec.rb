@@ -2,7 +2,9 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
   let(:component) { described_class.new statement: }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
-  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025, lead_provider:) }
+  let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
+  let(:vat_registered) { true }
 
   let(:deadline_date) { Date.new(2025, 9, 30) }
   let(:payment_date) { Date.new(2025, 10, 15) }
@@ -89,6 +91,17 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
             ["VAT", "£395.00"],
           ]
         )
+      end
+    end
+
+    context "when the lead provider is not VAT registered" do
+      let(:vat_registered) { false }
+
+      it "VAT is zero and therefore not included in the total" do
+        expect(page).to have_css("h2.govuk-heading-l", text: "£1,975.00")
+        within(".finance-panel__summary__total-payment-breakdown") do
+          expect(page).to have_css("tr", text: /VAT\s+£0\.00/)
+        end
       end
     end
   end
