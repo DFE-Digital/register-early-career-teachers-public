@@ -6,12 +6,22 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
 
   def setup_test_data(lead_provider:)
-    FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, lead_provider:)
+    school_partnership = FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, lead_provider:)
     FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september").tap do |schedule|
       Declaration.declaration_types.each_key do |declaration_type|
         schedule.milestones.create!(declaration_type:, start_date: Date.new(2025, 6, 1))
       end
     end
+
+    # API::Declarations::Create validates that an open output fee statement with a
+    # future deadline exists for the lead provider's contract period
+    active_lead_provider = school_partnership.active_lead_provider
+    FactoryBot.create(:statement, :open, :output_fee,
+                      active_lead_provider:,
+                      month: 1.month.from_now.month,
+                      year: 1.month.from_now.year,
+                      deadline_date: 1.month.from_now.to_date,
+                      payment_date: 2.months.from_now.to_date)
   end
 
   before do

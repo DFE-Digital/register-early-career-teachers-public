@@ -20,8 +20,8 @@ module APISeedData
         statements = []
 
         active_lead_providers.each do |active_lead_provider|
-          cohort_year = active_lead_provider.contract_period.year
-          year_month_pairs = statement_year_month_pairs(cohort_year)
+          contract_year = active_lead_provider.contract_period.year
+          year_month_pairs = statement_year_month_pairs(contract_year)
 
           statements += year_month_pairs.each_with_index.map { |(year, month), index|
             deadline_date = deadline_date(year, month)
@@ -75,13 +75,17 @@ module APISeedData
         .find_by(year:, month:)
     end
 
-    def statement_year_month_pairs(cohort_year)
+    def statement_year_month_pairs(contract_year)
+      # Statements start in November and run to August 3 years ahead
+      # So for 2021 cohort we would have November 21 through to August 24
+      from = Date.new(contract_year, 11, 1)
+      to = Date.new(contract_year + 3, 8, 1)
       pairs = []
-      (11..12).each { |m| pairs << [cohort_year, m] }
-      [cohort_year + 1, cohort_year + 2].each do |y|
-        (1..12).each { |m| pairs << [y, m] }
+      current = from
+      while current <= to
+        pairs << [current.year, current.month]
+        current = current.next_month
       end
-      (1..8).each { |m| pairs << [cohort_year + 3, m] }
       pairs
     end
 

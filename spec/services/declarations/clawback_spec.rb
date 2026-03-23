@@ -14,7 +14,13 @@ RSpec.describe Declarations::Clawback do
   let(:lead_provider) { declaration.training_period.lead_provider }
   let(:contract_period) { declaration.training_period.contract_period }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
-  let!(:next_available_output_fee_statement) { FactoryBot.create(:statement, :output_fee, active_lead_provider:) }
+  let!(:next_available_output_fee_statement) do
+    FactoryBot.create(:statement, :output_fee, active_lead_provider:,
+                                               month: 1.month.from_now.month,
+                                               year: 1.month.from_now.year,
+                                               deadline_date: 1.month.from_now.to_date,
+                                               payment_date: 2.months.from_now.to_date)
+  end
 
   before do
     # make payment statement precede clawback statement
