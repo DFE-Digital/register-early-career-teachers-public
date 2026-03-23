@@ -34,12 +34,13 @@ private
     trn = ecf1_teacher_history.user.trn
     profile_id = ecf1_teacher_history.ect.participant_profile_id
     raw_induction_records = ecf1_teacher_history.ect.induction_records
-    induction_completion_date = ecf1_teacher_history.ect.induction_completion_date
-    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, induction_completion_date:, participant_type: :ect).induction_records
-    mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
+    ecf1_teacher_history.ect.induction_completion_date
     states = ecf1_teacher_history.ect.states
+    mentor_at_school_periods = ecf1_teacher_history.ect.mentor_at_school_periods
     transfers = ecf1_teacher_history.ect.transfers
     induction_completion_date = ecf1_teacher_history.ect.induction_completion_date
+
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, induction_completion_date:, states:, participant_type: :ect).induction_records
     kwargs = { trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers: }
 
     economy_mode? ? economy_ect_migrator(induction_completion_date:, **kwargs) : premium_ect_migrator(**kwargs)
@@ -69,11 +70,13 @@ private
     trn = ecf1_teacher_history.user.trn
     profile_id = ecf1_teacher_history.mentor.participant_profile_id
     raw_induction_records = ecf1_teacher_history.mentor.induction_records
-    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, participant_type: :mentor).induction_records
     states = ecf1_teacher_history.mentor.states
     exclude_training_periods = exclude_ero_training_periods?
     transfers = ecf1_teacher_history.mentor.transfers
     mentor_completion_date = ecf1_teacher_history.mentor.mentor_completion_date
+
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, participant_type: :mentor, states:).induction_records
+
     kwargs = { trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: }
 
     economy_mode? ? economy_mentor_migrator(mentor_completion_date:, **kwargs) : premium_mentor_migrator(**kwargs)
