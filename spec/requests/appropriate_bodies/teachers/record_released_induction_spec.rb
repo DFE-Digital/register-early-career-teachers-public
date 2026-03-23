@@ -82,7 +82,7 @@ RSpec.describe "Appropriate body releasing an ECT" do
 
           it "returns error with the entered value" do
             expect(response).to have_http_status(:unprocessable_content)
-            expect(response.body).to include("aa/bb/cccc is not a valid date")
+            expect(response.body).to include("aa/bb/cccc is not a valid date format")
           end
         end
 
