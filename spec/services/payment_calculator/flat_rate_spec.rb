@@ -80,14 +80,14 @@ RSpec.describe PaymentCalculator::FlatRate do
         .and_return(double(total_net_amount: 100))
     end
 
+    context "when `with_vat` is false" do
+      let(:with_vat) { false }
+
+      it { is_expected.to eq(100) }
+    end
+
     context "when the lead provider is VAT registered" do
       let(:vat_registered) { true }
-
-      context "when `with_vat` is false" do
-        let(:with_vat) { false }
-
-        it { is_expected.to eq(100) }
-      end
 
       context "when `with_vat` is true" do
         let(:with_vat) { true }

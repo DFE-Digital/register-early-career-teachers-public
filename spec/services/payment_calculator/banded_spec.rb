@@ -244,15 +244,15 @@ RSpec.describe PaymentCalculator::Banded do
         .and_return(uplifts_double)
     end
 
+    context "when with_vat is false" do
+      it "returns the subtotal" do
+        # subtotal = outputs(200) + uplifts(50) + monthly_service_fee(1000) + adjustments(0)
+        expect(banded.total_amount(with_vat: false)).to eq(1_250)
+      end
+    end
+
     context "when the lead provider is VAT registered" do
       let(:vat_registered) { true }
-
-      context "when with_vat is false" do
-        it "returns the subtotal" do
-          # subtotal = outputs(200) + uplifts(50) + monthly_service_fee(1000) + adjustments(0)
-          expect(banded.total_amount(with_vat: false)).to eq(1_250)
-        end
-      end
 
       context "when with_vat is true" do
         it "returns the subtotal plus VAT" do
