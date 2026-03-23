@@ -10,7 +10,7 @@ module ContractPeriods
       contract_period = previous_contract_period
       return false unless contract_period
 
-      contract_period.year.in?([2021, 2022]) && !contract_period.enabled?
+      contract_period.payments_frozen?
     end
 
   private
