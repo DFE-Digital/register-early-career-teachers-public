@@ -16,14 +16,9 @@ RSpec.describe Schools::Mentors::ECTMentorTrainingDetailsComponent, type: :compo
 
   describe "eligibility states" do
     context "when there are no mentor training periods" do
-      it "shows a message saying the mentor can be registered for training and does not show the list" do
-        component = described_class.new(teacher:, mentor:)
-
+      it "does not render" do
         render_inline(component)
-        expect(rendered_content).to have_css("h2", text: "ECTE mentor training details")
-        expect(rendered_content).to have_text("is not currently registered for ECTE mentor training with a lead provider.")
-        expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Lead provider")
-        expect(rendered_content).not_to have_css("dt.govuk-summary-list__key", text: "Delivery partner")
+        expect(rendered_content).to be_empty
       end
     end
 
