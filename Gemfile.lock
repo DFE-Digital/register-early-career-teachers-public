@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/DFE-Digital/dfe-analytics.git
-  revision: 31c25462e5fa824c1e75a1099c06e0676724731c
-  tag: v1.15.14
+  revision: b8dd37585c87f52e2f107a70fe94afbd331c0788
+  tag: v1.15.15
   specs:
-    dfe-analytics (1.15.14)
+    dfe-analytics (1.15.15)
       google-cloud-bigquery (~> 1.38)
       httparty (~> 0.24)
       multi_xml (~> 0.6.0)
@@ -91,7 +91,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.8.8)
+    addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
     adsf (1.5.3)
       rack (>= 1.0.0, < 4.0.0)
@@ -235,7 +235,7 @@ GEM
       raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
-    google-apis-bigquery_v2 (0.98.0)
+    google-apis-bigquery_v2 (0.100.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-core (1.0.2)
       addressable (~> 2.8, >= 2.8.7)
@@ -259,7 +259,7 @@ GEM
     google-cloud-env (2.3.1)
       base64 (~> 0.2)
       faraday (>= 1.0, < 3.a)
-    google-cloud-errors (1.5.0)
+    google-cloud-errors (1.6.0)
     google-logging-utils (0.2.0)
     google-protobuf (4.33.4)
       bigdecimal
@@ -288,7 +288,7 @@ GEM
     google-protobuf (4.33.4-x86_64-linux-musl)
       bigdecimal
       rake (>= 13)
-    googleauth (1.16.1)
+    googleauth (1.16.2)
       faraday (>= 1.0, < 3.a)
       google-cloud-env (~> 2.2)
       google-logging-utils (~> 0.1)
@@ -576,7 +576,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    public_suffix (7.0.2)
+    public_suffix (7.0.5)
     puma (7.2.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
@@ -656,7 +656,7 @@ GEM
       uber (< 0.2.0)
     request_store_rails (2.0.0)
       concurrent-ruby (~> 1.0)
-    retriable (3.1.2)
+    retriable (3.4.1)
     rexml (3.4.4)
     rotp (6.3.0)
     rouge (4.5.1)
