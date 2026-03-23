@@ -4,7 +4,6 @@ module Migrators
       administrative_district_name: :administrative_district_name,
       eligible: :eligible_for_fip?,
       in_england: :in_england?,
-      name: :name,
       phase_name: :school_phase_name,
       section_41_approved: :section_41_approved,
       status: :status,
