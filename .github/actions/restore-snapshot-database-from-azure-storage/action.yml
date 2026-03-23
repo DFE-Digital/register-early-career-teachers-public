@@ -28,9 +28,6 @@ inputs:
   backup-file:
     description: Name of the backup file to restore. Must include the .gz extension if the remote file has it.
     required: true
-  slack-webhook:
-    description: Name of the slack webhook
-    required: true
 
 runs:
   using: composite

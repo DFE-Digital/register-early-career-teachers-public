@@ -21,9 +21,6 @@ inputs:
   app-name:
     description: Name of the app deployment
     required: true
-  slack-webhook:
-    description: Name of the slack webhook
-    required: true
 
 runs:
   using: composite

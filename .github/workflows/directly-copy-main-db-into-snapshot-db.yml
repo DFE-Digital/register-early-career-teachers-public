@@ -51,15 +51,6 @@ jobs:
           # Set Azure environment variables
           echo "KEYVAULT_NAME=${AZURE_RESOURCE_PREFIX}-${SERVICE_SHORT}-${CONFIG_SHORT}-inf-kv" >> $GITHUB_ENV
 
-      - name: Fetch secrets from key vault
-        uses: azure/CLI@v2
-        id: key-vault-secrets
-        with:
-          inlineScript: |
-            SLACK_WEBHOOK=$(az keyvault secret show --name "SLACK-WEBHOOK" --vault-name ${KEYVAULT_NAME} --query "value" -o tsv)
-            echo "::add-mask::$SLACK_WEBHOOK"
-            echo "SLACK_WEBHOOK=$SLACK_WEBHOOK" >> $GITHUB_OUTPUT
-
       - name: Backup and restore snapshot
         uses: ./.github/actions/directly-backup-and-restore-snapshot-database
         with:
@@ -68,5 +59,4 @@ jobs:
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           app-name: ${{ env.SERVICE_NAME }}-${{ inputs.environment || 'production' }}-web
-          slack-webhook: ${{ steps.key-vault-secrets.outputs.SLACK_WEBHOOK }}
           exclude-jobs: ${{ inputs.exclude-jobs }}
