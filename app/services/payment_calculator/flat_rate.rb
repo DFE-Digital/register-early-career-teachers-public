@@ -29,7 +29,7 @@ module PaymentCalculator
   private
 
     def fee_per_declaration = flat_rate_fee_structure.fee_per_declaration
-    def vat_rate = flat_rate_fee_structure.contract.calculated_vat_rate
+    def vat_rate = flat_rate_fee_structure.contract.applicable_vat_rate
 
     def filtered_declarations
       declarations = statement.payment_declarations.billable
