@@ -32,7 +32,7 @@ If there's been a mistake and the ECT shouldn't have been moved to the 2024 coho
 
 If an ECT doesn't meet one of the above criteria for an automatic move, they'll stay visible in `GET participants` for their original 2021 or 2022 cohort. You will not be able to submit declarations for them.
 
-ECTs that only received a started declaration in a closed cohort may completely restart their training in ECTP. You will have to update them to a 2025 or later cohort over the API.
+ECTs that only received a started declaration in a closed cohort may completely restart their training in the early career training programme (ECTP). You will have to update them to a 2025 or later cohort over the API.
 
 ECTs with no declarations submitted against them have been archived. Schools can re-register them at any point to start training.
 
@@ -42,7 +42,7 @@ We will not transfer mentors to the 2024 cohort because they may not be eligible
 
 Check the fully trained mentor guidance that was emailed out to lead providers. Speak to your contract manager about any other specific cases.
 
-Mentors that only received a started declaration in a closed cohort may completely restart their training in the early career training programme (ECTP) in a later cohort. 
+Mentors that only received a started declaration in a closed cohort may completely restart their training in the ECTP in a later cohort. 
 
 ### ECTs and mentors with no eligible, payable, paid, awaiting_clawback or clawed_back declarations
 
