@@ -4,21 +4,41 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:trn) { teacher.trn }
   let(:registration_store) do
-    Struct.new(:trn, :appropriate_body_id, :lead_provider_id, :start_date, :ect_at_school_period_id) {
-      attr_accessor :previous_training_period
-    }.new(
-      trn,
-      appropriate_body_id,
-      lead_provider_id,
-      start_date,
-      ect_at_school_period_id
-    )
+    Struct.new(:trn, :appropriate_body_id, :lead_provider_id, :start_date, :ect_at_school_period_id)
+      .new(
+        trn,
+        appropriate_body_id,
+        lead_provider_id,
+        start_date,
+        ect_at_school_period_id
+      )
   end
 
   let(:appropriate_body_id) { nil }
   let(:lead_provider_id) { nil }
   let(:start_date) { nil }
   let(:ect_at_school_period_id) { nil }
+
+  def setup_previous_training_history(previous_ect_period:, previous_training_period:, trn:)
+    ect_period_search = instance_double(ECTAtSchoolPeriods::Search)
+    training_period_search = instance_double(TrainingPeriods::Search)
+
+    allow(ECTAtSchoolPeriods::Search).to receive(:new)
+      .with(order: :started_on)
+      .and_return(ect_period_search)
+
+    allow(ect_period_search).to receive(:ect_periods)
+      .with(trn:)
+      .and_return([previous_ect_period])
+
+    allow(TrainingPeriods::Search).to receive(:new)
+      .with(order: :started_on)
+      .and_return(training_period_search)
+
+    allow(training_period_search).to receive(:training_periods)
+      .with(ect_id: previous_ect_period.id)
+      .and_return([previous_training_period])
+  end
 
   describe "#ect_at_school_period" do
     context "when the stored ect_at_school_period_id is present" do
@@ -117,6 +137,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
       let(:start_date) { contract_period_2025.started_on.to_s }
 
+      let(:previous_ect_period) { instance_double(ECTAtSchoolPeriod, id: 123) }
+
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
@@ -127,7 +149,11 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
 
       before do
-        allow(queries).to receive(:previous_training_period).and_return(previous_training_period)
+        setup_previous_training_history(
+          previous_ect_period:,
+          previous_training_period:,
+          trn: registration_store.trn
+        )
       end
 
       it "returns the 2024 contract period" do
@@ -204,6 +230,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       let!(:lead_provider_2024) { FactoryBot.create(:lead_provider, name: "LP 2024") }
       let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
 
+      let(:previous_ect_period) { instance_double(ECTAtSchoolPeriod, id: 123) }
+
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
@@ -217,7 +245,11 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         FactoryBot.create(:active_lead_provider, contract_period: contract_period_2024, lead_provider: lead_provider_2024)
         FactoryBot.create(:active_lead_provider, contract_period: contract_period_2025, lead_provider: lead_provider_2025)
 
-        allow(queries).to receive(:previous_training_period).and_return(previous_training_period)
+        setup_previous_training_history(
+          previous_ect_period:,
+          previous_training_period:,
+          trn: registration_store.trn
+        )
       end
 
       it "returns lead providers for the 2024 contract period" do
