@@ -1,4 +1,4 @@
-module Teachers::SchoolTransfers
+module API::Teachers::SchoolTransfers
   class History
     def self.transfers_for(...) = new(...).transfers
     def self.exists_for?(...) = new(...).exists?
@@ -49,8 +49,7 @@ module Teachers::SchoolTransfers
     end
 
     def teacher_completed_induction?(teacher, next_school_period)
-      finished_induction_period = teacher.finished_induction_period
-      next_school_period.nil? && finished_induction_period&.complete?
+      next_school_period.nil? && API::Teachers::InductionStatus.new(teacher:).completed_induction?
     end
 
     def relevant_to_lead_provider?(leaving_training_period, joining_training_period)
