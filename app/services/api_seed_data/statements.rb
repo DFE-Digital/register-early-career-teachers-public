@@ -28,9 +28,6 @@ module APISeedData
             payment_date = payment_date(year, month)
             statement_fee_type = month.in?(OUTPUT_FEE_MONTHS) ? "output" : "service"
 
-            next if active_lead_provider.contract_period.payments_frozen? &&
-              statement_fee_type == "output"
-
             # Distribute contracts across statements evenly and in order, so if there are
             # 3 contracts, the first 1/3rd of statements get the first, the next 1/3rd get the
             # second, and the final 1/3rd get the third.
