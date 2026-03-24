@@ -3,13 +3,14 @@ module PaymentCalculator
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attribute :declarations
+    attribute :billable_declarations
+    attribute :refundable_declarations
     attribute :fee_per_declaration
     attribute :fee_proportions
 
     def declaration_type_outputs
       @declaration_type_outputs ||= declaration_types.map do |declaration_type|
-        FlatRate::DeclarationTypeOutput.new(declarations:, declaration_type:, fee_per_declaration:, fee_proportions:)
+        FlatRate::DeclarationTypeOutput.new(billable_declarations:, refundable_declarations:, declaration_type:, fee_per_declaration:, fee_proportions:)
       end
     end
 
@@ -32,7 +33,8 @@ module PaymentCalculator
   private
 
     def declaration_types
-      declarations.pluck("DISTINCT declaration_type")
+      (billable_declarations.pluck("DISTINCT declaration_type") +
+        refundable_declarations.pluck("DISTINCT declaration_type")).uniq
     end
   end
 end

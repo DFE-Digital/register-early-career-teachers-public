@@ -19,7 +19,12 @@ module PaymentCalculator
     def vat_amount = outputs.total_net_amount * vat_rate
 
     def outputs
-      @outputs ||= FlatRate::Outputs.new(declarations: filtered_declarations, fee_per_declaration:, fee_proportions:)
+      @outputs ||= FlatRate::Outputs.new(
+        billable_declarations: filtered_billable_declarations,
+        refundable_declarations: filtered_refundable_declarations,
+        fee_per_declaration:,
+        fee_proportions:
+      )
     end
 
     def voided_declarations_count
@@ -31,10 +36,12 @@ module PaymentCalculator
     def fee_per_declaration = flat_rate_fee_structure.fee_per_declaration
     def vat_rate = flat_rate_fee_structure.contract.applicable_vat_rate
 
-    def filtered_declarations
-      declarations = statement.payment_declarations.billable
-        .or(statement.clawback_declarations.refundable)
-      declaration_selector.call(declarations)
+    def filtered_billable_declarations
+      declaration_selector.call(statement.payment_declarations.billable)
+    end
+
+    def filtered_refundable_declarations
+      declaration_selector.call(statement.clawback_declarations.refundable)
     end
 
     def filtered_voided_declarations
