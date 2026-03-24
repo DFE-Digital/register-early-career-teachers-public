@@ -105,7 +105,7 @@ module Schools
     end
 
     def mentoring_at_several_schools?
-      return false if mentoring_at_new_school_only?
+      return false if finish_existing_at_school_periods
 
       teacher
         .mentor_at_school_periods
@@ -113,8 +113,6 @@ module Schools
         .where.not(school:)
         .exists?
     end
-
-    def mentoring_at_new_school_only? = finish_existing_at_school_periods
 
     def start_at_school!
       @mentor_at_school_period = teacher.mentor_at_school_periods.create!(school:, started_on:, email:)
