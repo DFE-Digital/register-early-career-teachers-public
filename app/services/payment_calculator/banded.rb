@@ -113,7 +113,7 @@ module PaymentCalculator
     end
 
     def vat_rate
-      statement.contract.vat_rate
+      statement.contract.applicable_vat_rate
     end
   end
 end
