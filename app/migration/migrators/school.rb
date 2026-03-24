@@ -64,15 +64,20 @@ module Migrators
         gias_value = gias_school.send(gias_field)
         ecf_value = ecf_school.send(ecf_field)
         next true if gias_value.presence == ecf_value.presence
-        next true if skip_missing_field?(gias_school:, field_name: gias_field)
+        next true if skip_missing_field?(gias_school:, field_name: gias_field, gias_value:, ecf_value:)
 
         field_mismatch(gias_school, gias_field, gias_value, ecf_value)
       }.all?
     end
 
-    def skip_missing_field?(gias_school:, field_name:)
-      # administrative_district_name is not in the split out GIAS export for Children's Centres
-      field_name.to_s == "administrative_district_name" && gias_school.type_name.in?(GIAS::Types::CHILDRENS_CENTRE_TYPES)
+    # administrative_district_name is not in the split out GIAS export for Children's Centres
+    # statuses open and proposed_to_close are considered the same status
+    # statuses closed and proposed_to_open are considered the same status
+    def skip_missing_field?(gias_school:, field_name:, gias_value:, ecf_value:)
+      return true if field_name.to_s == "administrative_district_name" && gias_school.type_name.in?(GIAS::Types::CHILDRENS_CENTRE_TYPES)
+      return true if field_name.to_s == "status" && ([gias_value, ecf_value] - %w[open proposed_to_close]).empty?
+
+      field_name.to_s == "status" && ([gias_value, ecf_value] - %w[closed proposed_to_open]).empty?
     end
 
     def field_mismatch(school, field, gias_value, ecf_value)
