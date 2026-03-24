@@ -58,6 +58,25 @@ RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
     end
   end
 
+  context "when previous training period uses expression_of_interest_contract_period that is not payments frozen" do
+    let(:contract_period) do
+      instance_double(ContractPeriod, payments_frozen?: false)
+    end
+
+    let(:previous_training_period) do
+      instance_double(
+        TrainingPeriod,
+        provider_led_training_programme?: true,
+        contract_period: nil,
+        expression_of_interest_contract_period: contract_period
+      )
+    end
+
+    it "returns false" do
+      expect(result).to be false
+    end
+  end
+
   context "when previous training period is not provider-led" do
     let(:previous_training_period) do
       instance_double(
