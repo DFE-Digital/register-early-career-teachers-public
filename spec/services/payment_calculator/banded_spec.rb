@@ -4,9 +4,12 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   let(:school_partnership) do
-    FactoryBot.create(:school_partnership, :for_year, year: Date.current.year)
+    FactoryBot.create(:school_partnership, :for_year, year: Date.current.year, lead_provider:)
   end
+
   let(:active_lead_provider) { school_partnership.active_lead_provider }
+  let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
+  let(:vat_registered) { true }
 
   let(:contract) do
     FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
@@ -248,10 +251,24 @@ RSpec.describe PaymentCalculator::Banded do
       end
     end
 
-    context "when with_vat is true" do
-      it "returns the subtotal plus VAT" do
-        # subtotal = 1250, VAT = 1250 * 0.20 = 250
-        expect(banded.total_amount(with_vat: true)).to eq(1_500)
+    context "when the lead provider is VAT registered" do
+      let(:vat_registered) { true }
+
+      context "when with_vat is true" do
+        it "returns the subtotal plus VAT" do
+          # subtotal = 1250, VAT = 1250 * 0.20 = 250
+          expect(banded.total_amount(with_vat: true)).to eq(1_500)
+        end
+      end
+    end
+
+    context "when the lead provider is not VAT registered" do
+      let(:vat_registered) { false }
+
+      context "when with_vat is true" do
+        it "returns the subtotal with zero VAT" do
+          expect(banded.total_amount(with_vat: true)).to eq(1_250)
+        end
       end
     end
   end
@@ -271,7 +288,17 @@ RSpec.describe PaymentCalculator::Banded do
         .and_return(uplifts_double)
     end
 
-    it { is_expected.to eq(250) }
+    context "when the lead provider is VAT registered" do
+      let(:vat_registered) { true }
+
+      it { is_expected.to eq(250) }
+    end
+
+    context "when the lead provider is not VAT registered" do
+      let(:vat_registered) { false }
+
+      it { is_expected.to eq(0) }
+    end
   end
 
   describe "#voided_declarations_count" do
