@@ -109,11 +109,11 @@ module Schedules
     def extended_schedule?
       return false unless period_type_key == :ect_at_school_period
 
-      ContractPeriods::Historic.ect_training_started_in_closed_contract_period?(teacher:)
+      ContractPeriods::MoveFromClosedProviderLedPeriod.new(previous_training_period: most_recent_provider_led_period).call
     end
 
     def replacement_contract_period
-      ContractPeriods::Historic.replacement_contract_period
+      ContractPeriods::MoveFromClosedProviderLedPeriod.replacement_contract_period
     end
 
     def extended_schedule
