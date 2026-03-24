@@ -79,7 +79,11 @@ module Teachers
     def set_ect_payments_frozen_year!
       return unless ect_training_period_in_closed_contract_period?
 
-      teacher.update!(ect_payments_frozen_year: training_period.contract_period.year)
+      teacher.update!(ect_payments_frozen_year: previous_contract_period.year)
+    end
+
+    def previous_contract_period
+      training_period.contract_period || training_period.expression_of_interest_contract_period
     end
 
     def active_lead_provider

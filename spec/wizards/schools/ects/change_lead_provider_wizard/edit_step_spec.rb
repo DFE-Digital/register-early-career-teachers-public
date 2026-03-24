@@ -103,7 +103,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
     let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2026) }
 
     context "when there are no active lead providers in contract period containing the ect's start date" do
-      let(:started_on) { Date.new(2023, 6, 1) }
+      let(:started_on) { Date.new(2024, 6, 1) }
 
       it "returns an empty array" do
         expect(current_step.lead_providers_for_select).to be_empty

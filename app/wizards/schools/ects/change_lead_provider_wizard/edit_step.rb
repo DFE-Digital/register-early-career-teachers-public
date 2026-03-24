@@ -46,7 +46,7 @@ module Schools
         def contract_period_reassignment
           @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period:)
         end
-    
+
         delegate :successor_contract_period, to: :contract_period_reassignment
 
         def training_period
