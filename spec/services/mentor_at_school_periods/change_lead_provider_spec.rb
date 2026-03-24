@@ -122,7 +122,6 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
 
       context "when the existing training_period is in a closed contract period" do
         let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, year: 2021) }
-        let!(:contract_period_2022) { FactoryBot.create(:contract_period, :with_schedules, year: 2022) }
         let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
         let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
 
@@ -131,7 +130,6 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
 
         before do
           contract_period_2021.update!(payments_frozen_at: 1.day.ago)
-          contract_period_2022.update!(payments_frozen_at: 1.day.ago)
         end
 
         it "does not assign an extended schedule to the new training period" do
