@@ -2,13 +2,14 @@ module ContractPeriods
   class ForECTRegistration
     class NoContractPeriodFoundForStartedOnDate < StandardError; end
 
-    def initialize(started_on:, previous_training_period: nil)
+    def initialize(started_on:, previous_training_period: nil, reassigner: nil)
       @started_on = started_on
       @previous_training_period = previous_training_period
+      @reassigner = reassigner
     end
 
     def call
-      return contract_period_2024 if move_from_closed_provider_led_period?
+      return contract_period_reassigner.successor_contract_period if contract_period_reassigner.contract_period_closed?
 
       ContractPeriod.for_registration_start_date(@started_on) ||
         raise(
@@ -19,14 +20,10 @@ module ContractPeriods
 
   private
 
-    def move_from_closed_provider_led_period?
-      ContractPeriods::MoveFromClosedProviderLedPeriod
-        .new(previous_training_period: @previous_training_period)
-        .call
-    end
-
-    def contract_period_2024
-      ContractPeriod.find_by!(year: 2024)
+    def contract_period_reassigner
+      @contract_period_reassigner ||= @reassigner || ContractPeriods::Reassigner.new(
+        training_period: @previous_training_period
+      )
     end
   end
 end

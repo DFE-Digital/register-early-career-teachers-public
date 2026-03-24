@@ -1,7 +1,14 @@
-describe ContractPeriods::ForECTRegistration do
-  subject(:resolver) { described_class.new(started_on:, previous_training_period:) }
+RSpec.describe ContractPeriods::ForECTRegistration do
+  subject(:resolver) do
+    described_class.new(
+      started_on:,
+      previous_training_period:,
+      reassigner:
+    )
+  end
 
   let(:previous_training_period) { nil }
+  let(:reassigner) { nil }
 
   let!(:contract_2024) do
     FactoryBot.create(
@@ -62,90 +69,35 @@ describe ContractPeriods::ForECTRegistration do
       end
     end
 
-    context "when previous training period is provider-led in closed 2021" do
+    context "when the training period should be reassigned" do
       let(:started_on) { Date.new(2025, 9, 1) }
+      let(:previous_training_period) { instance_double(TrainingPeriod) }
 
-      let!(:contract_2021) do
-        FactoryBot.create(
-          :contract_period,
-          year: 2021,
-          started_on: Date.new(2021, 9, 1),
-          finished_on: Date.new(2022, 8, 31),
-          enabled: false
-        )
-      end
-
-      let(:previous_training_period) do
+      let(:reassigner) do
         instance_double(
-          TrainingPeriod,
-          provider_led_training_programme?: true,
-          contract_period: contract_2021,
-          expression_of_interest_contract_period: nil
+          ContractPeriods::Reassigner,
+          contract_period_closed?: true,
+          successor_contract_period: contract_2024
         )
       end
 
-      it "returns the 2024 contract period" do
+      it "returns the successor contract period" do
         expect(resolver.call).to eq(contract_2024)
       end
     end
 
-    context "when previous training period is provider-led in closed 2022" do
+    context "when the training period should not be reassigned" do
       let(:started_on) { Date.new(2025, 9, 1) }
+      let(:previous_training_period) { instance_double(TrainingPeriod) }
 
-      let!(:contract_2022) do
-        FactoryBot.create(
-          :contract_period,
-          year: 2022,
-          started_on: Date.new(2022, 9, 1),
-          finished_on: Date.new(2023, 8, 31),
-          enabled: false
-        )
-      end
-
-      let(:previous_training_period) do
+      let(:reassigner) do
         instance_double(
-          TrainingPeriod,
-          provider_led_training_programme?: true,
-          contract_period: contract_2022,
-          expression_of_interest_contract_period: nil
+          ContractPeriods::Reassigner,
+          contract_period_closed?: false
         )
       end
 
-      it "returns the 2024 contract period" do
-        expect(resolver.call).to eq(contract_2024)
-      end
-    end
-
-    context "when previous training period is not provider-led" do
-      let(:started_on) { Date.new(2025, 9, 1) }
-
-      let(:previous_training_period) do
-        instance_double(
-          TrainingPeriod,
-          provider_led_training_programme?: false,
-          contract_period: contract_2024,
-          expression_of_interest_contract_period: nil
-        )
-      end
-
-      it "returns the contract period for the start date" do
-        expect(resolver.call).to eq(contract_2025)
-      end
-    end
-
-    context "when previous training period is provider-led in an enabled contract period" do
-      let(:started_on) { Date.new(2025, 9, 1) }
-
-      let(:previous_training_period) do
-        instance_double(
-          TrainingPeriod,
-          provider_led_training_programme?: true,
-          contract_period: contract_2024,
-          expression_of_interest_contract_period: nil
-        )
-      end
-
-      it "returns the contract period for the start date" do
+      it "returns the normal registration contract period" do
         expect(resolver.call).to eq(contract_2025)
       end
     end
