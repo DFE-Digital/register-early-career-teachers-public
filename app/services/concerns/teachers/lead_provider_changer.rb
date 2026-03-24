@@ -92,22 +92,24 @@ module Teachers
 
     def reuse_existing_schedule?
       return false unless existing_schedule
-      return false if ect_training_started_in_closed_contract_period
+      return false if training_period_in_closed_contract_period?
 
       existing_schedule.contract_period != contract_period_at_transition
     end
 
-    def ect_training_started_in_closed_contract_period
+    def training_period_in_closed_contract_period?
       return false if mentor_at_school_period.present?
 
-      @training_started_in_closed_contract_period ||= ContractPeriods::Historic.ect_training_started_in_closed_contract_period?(teacher:)
+      @training_period_in_closed_contract_period ||= ContractPeriods::MoveFromClosedProviderLedPeriod.new(previous_training_period: training_period).call
     end
 
     def contract_period_at_transition
-      return ContractPeriods::Historic.replacement_contract_period if ect_training_started_in_closed_contract_period
+      return replacement_contract_period if training_period_in_closed_contract_period?
 
       @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
     end
+
+    def replacement_contract_period = ContractPeriods::MoveFromClosedProviderLedPeriod.replacement_contract_period
 
     def existing_schedule
       training_period&.schedule
