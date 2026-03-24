@@ -1,6 +1,6 @@
-RSpec.describe ContractPeriods::Reassigner do
-  describe "#contract_period_closed?" do
-    subject(:result) { described_class.new(training_period:).contract_period_closed? }
+RSpec.describe ContractPeriods::Reassignment do
+  describe "#required?" do
+    subject(:result) { described_class.new(training_period:).required? }
 
     context "when training period is provider-led in a payments-frozen contract period" do
       let(:contract_period) do
