@@ -87,6 +87,10 @@ describe Migrators::School do
     end
 
     context "when fields mismatch" do
+      let(:school_status_name) { "Open" }
+      let(:status) { "closed" }
+      let(:failure_messages) { data_migration.migration_failures.order(:created_at).pluck(:failure_message) }
+
       let!(:ecf_school) do
         FactoryBot.create(:ecf_migration_school,
                           school_status_code: 1,
@@ -95,7 +99,7 @@ describe Migrators::School do
                           school_type_code: 1,
                           school_phase_name: "Phase one",
                           section_41_approved: false,
-                          school_status_name: "Open",
+                          school_status_name:,
                           school_type_name: "Type one",
                           ukprn: "12345")
       end
@@ -108,7 +112,7 @@ describe Migrators::School do
                           in_england: true,
                           phase_name: "Another Phase one",
                           section_41_approved: true,
-                          status: "proposed_to_close",
+                          status:,
                           type_name: "Academy converter",
                           ukprn: 54_321)
       end
@@ -119,15 +123,31 @@ describe Migrators::School do
 
       it "adds mismatch errors" do
         expect(data_migration.reload.failure_count).to eq(1)
-        expect(data_migration.migration_failures.order(:created_at).pluck(:failure_message))
+        expect(failure_messages)
           .to contain_exactly(":administrative_district_name - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'administrative_district_name': 'AD1' on ECF whilst 'AAD1' expected on RECT!",
                               ":eligible - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'eligible': 'false' on ECF whilst 'true' expected on RECT!",
                               ":in_england - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'in_england': 'false' on ECF whilst 'true' expected on RECT!",
                               ":phase_name - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'phase_name': 'Phase one' on ECF whilst 'Another Phase one' expected on RECT!",
                               ":section_41_approved - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'section_41_approved': 'false' on ECF whilst 'true' expected on RECT!",
-                              ":status - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'status': 'open' on ECF whilst 'proposed_to_close' expected on RECT!",
+                              ":status - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'status': 'open' on ECF whilst 'closed' expected on RECT!",
                               ":type_name - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'type_name': 'Type one' on ECF whilst 'Academy converter' expected on RECT!",
                               ":ukprn - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'ukprn': '12345' on ECF whilst '54321' expected on RECT!")
+      end
+
+      {
+        "Open" => "proposed_to_close",
+        "Proposed to Close" => "open",
+        "Closed" => "proposed_to_open",
+        "Proposed to Open" => "closed"
+      }.each do |ecf1_value, ecf2_value|
+        context "when the ECF1 school has status value '#{ecf1_value}' and the ECF2's is '#{ecf2_value}'" do
+          let(:school_status_name) { ecf1_value }
+          let(:status) { ecf2_value }
+
+          it "do not add mismatch errors on :status" do
+            expect(failure_messages.join(" ")).not_to include(":status")
+          end
+        end
       end
     end
 
