@@ -9,17 +9,13 @@ Financial statements are also directly provided to lead providers by DfE and con
 
 ## View all statement payment dates
 
-```
-GET /api/v3/statements
-```
+`GET /api/v3/statements`
 
 For more information on this endpoint, [view the Swagger documentation](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3#/Statements).
 
 ## View specific statement payment dates
 
-```
-GET /api/v3/statements/{id}
-```
+`GET /api/v3/statements/{id}`
 
 Providers can find statement IDs within [previously submitted declaration](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3#/Declarations) response bodies. This shows which cohort the declaration was made in, which can be helpful to identify when a participant started their training.
 
