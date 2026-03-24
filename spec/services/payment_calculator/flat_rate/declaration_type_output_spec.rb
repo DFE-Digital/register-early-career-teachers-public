@@ -1,7 +1,8 @@
 RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
   subject(:output) do
     described_class.new(
-      declarations: Declaration.all,
+      billable_declarations:,
+      refundable_declarations:,
       declaration_type:,
       fee_per_declaration:,
       fee_proportions:
@@ -12,32 +13,45 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
   let(:declaration_type) { "started" }
   let(:fee_proportions) { { started: 0.25, completed: 0.75 } }
 
+  let(:billable_ids) { [] }
+  let(:refundable_ids) { [] }
+  let(:billable_declarations) { Declaration.where(id: billable_ids) }
+  let(:refundable_declarations) { Declaration.where(id: refundable_ids) }
+
   before do
-    traits = %i[no_payment eligible payable paid voided awaiting_clawback clawed_back]
-    traits.each do |trait|
-      # Create a `started` declaration for each trait
+    %i[eligible payable paid].each do |trait|
+      billable_ids << FactoryBot.create(:declaration, trait, declaration_type:).id
+      billable_ids << FactoryBot.create(:declaration, trait, declaration_type: "completed").id
+    end
+
+    %i[awaiting_clawback clawed_back].each do |trait|
+      refundable_ids << FactoryBot.create(:declaration, trait, declaration_type:).id
+      refundable_ids << FactoryBot.create(:declaration, trait, declaration_type: "completed").id
+    end
+
+    %i[no_payment voided].each do |trait|
       FactoryBot.create(:declaration, trait, declaration_type:)
-      # Create a `completed` declaration for each trait, should not be counted
       FactoryBot.create(:declaration, trait, declaration_type: "completed")
     end
   end
 
   describe "#billable_count" do
-    it "counts declarations with billable statuses" do
-      # eligible(1) + payable(1) + paid(1) + awaiting_clawback(1, payment_status: paid) + clawed_back(1, payment_status: paid)
-      expect(output.billable_count).to eq(5)
+    it "counts billable declarations of matching type" do
+      # eligible(1) + payable(1) + paid(1) for "started"
+      expect(output.billable_count).to eq(3)
     end
   end
 
   describe "#refundable_count" do
-    it "counts declarations with refundable statuses" do
+    it "counts refundable declarations of matching type" do
+      # awaiting_clawback(1) + clawed_back(1) for "started"
       expect(output.refundable_count).to eq(2)
     end
   end
 
   describe "#total_billable_amount" do
     it "returns billable_count multiplied by fee_per_declaration and fee proportion" do
-      expect(output.total_billable_amount).to eq(5 * 100.0 * 0.25)
+      expect(output.total_billable_amount).to eq(3 * 100.0 * 0.25)
     end
   end
 
@@ -49,7 +63,7 @@ RSpec.describe PaymentCalculator::FlatRate::DeclarationTypeOutput do
 
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
-      expect(output.total_net_amount).to eq(75.0)
+      expect(output.total_net_amount).to eq(25.0)
     end
   end
 

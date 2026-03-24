@@ -134,8 +134,10 @@ RSpec.describe PaymentCalculator::FlatRate do
       expect(PaymentCalculator::FlatRate::Outputs)
         .to receive(:new)
         .with(
-          declarations: contain_exactly(
-            mentor_billable_declaration,
+          billable_declarations: contain_exactly(
+            mentor_billable_declaration
+          ),
+          refundable_declarations: contain_exactly(
             mentor_refundable_declaration
           ),
           fee_per_declaration: flat_rate_fee_structure.fee_per_declaration,
