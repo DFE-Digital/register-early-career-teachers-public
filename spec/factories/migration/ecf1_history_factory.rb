@@ -131,6 +131,16 @@ FactoryBot.define do
     end
   end
 
+  factory :ecf1_school_mentor, class: "ECF1TeacherHistory::SchoolMentor" do
+    sequence(:school) { |n| Types::SchoolData.new(urn: 100_000 + n, name: "School #{n}") }
+    sequence(:preferred_identity_email) { |n| "example#{n}@school.uk" }
+    created_at { 6.months.ago }
+
+    initialize_with do
+      new(school:, preferred_identity_email:, created_at:)
+    end
+  end
+
   factory :ecf1_teacher_history_mentor_at_school_period_row, class: "ECF1TeacherHistory::MentorAtSchoolPeriod" do
     mentor_at_school_period_id { SecureRandom.uuid }
     started_on { Date.new(2023, 9, 1) }
@@ -245,6 +255,7 @@ FactoryBot.define do
     induction_records { [] }
     ero_mentor { false }
     ero_declarations { false }
+    school_mentors { [] }
     transfers { {} }
 
     payments_frozen_cohort_start_year { nil }
@@ -260,7 +271,8 @@ FactoryBot.define do
           ero_mentor:,
           ero_declarations:,
           payments_frozen_cohort_start_year:,
-          transfers:)
+          transfers:,
+          school_mentors:)
     end
   end
 end
