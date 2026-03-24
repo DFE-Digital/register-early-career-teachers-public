@@ -1,5 +1,7 @@
 module ContractPeriods
   class MoveFromClosedProviderLedPeriod
+    REPLACEMENT_CONTRACT_YEAR = 2024
+
     def initialize(previous_training_period:)
       @previous_training_period = previous_training_period
     end
@@ -11,6 +13,10 @@ module ContractPeriods
       return false unless contract_period
 
       contract_period.payments_frozen?
+    end
+
+    def self.replacement_contract_period
+      @replacement_contract_period ||= ContractPeriod.find_by!(year: REPLACEMENT_CONTRACT_YEAR)
     end
 
   private
