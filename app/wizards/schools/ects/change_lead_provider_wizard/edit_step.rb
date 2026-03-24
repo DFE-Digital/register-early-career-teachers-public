@@ -37,24 +37,24 @@ module Schools
         end
 
         def contract_period
-          return replacement_contract_period if previous_training_period_in_closed_contract_period?
+          return successor_contract_period if contract_period_reassignment.required?
 
           @contract_period ||= ContractPeriod
             .containing_date(ect_at_school_period.started_on)
         end
 
-        def previous_training_period_in_closed_contract_period?
-          @previous_training_period_in_closed_contract_period ||= ContractPeriods::MoveFromClosedProviderLedPeriod.new(previous_training_period:).call
+        def contract_period_reassignment
+          @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period:)
         end
+    
+        delegate :successor_contract_period, to: :contract_period_reassignment
 
-        def previous_training_period
+        def training_period
           TrainingPeriods::Search
             .new(order: :started_on)
             .training_periods(ect_id: ect_at_school_period.id)
             .last
         end
-
-        def replacement_contract_period = ContractPeriods::MoveFromClosedProviderLedPeriod.replacement_contract_period
 
         def current_lead_provider
           @current_lead_provider ||= ECTAtSchoolPeriods::ChangeLeadProviderResolver

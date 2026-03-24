@@ -139,6 +139,10 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
           expect(new_training_period.schedule.identifier).not_to include("extended")
           expect(new_training_period.schedule.contract_period_year).to eq(2021)
         end
+
+        it "does not mark the mentor's payments as frozen" do
+          expect { subject }.not_to change(teacher, :ect_payments_frozen_year)
+        end
       end
     end
 

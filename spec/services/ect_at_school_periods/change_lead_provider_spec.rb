@@ -200,6 +200,10 @@ module ECTAtSchoolPeriods
           expect(new_training_period.schedule.identifier).to eq("ecf-extended-september")
           expect(new_training_period.schedule.contract_period_year).to eq(2024)
         end
+
+        it "sets the ECT's payments frozen year to 2021" do
+          expect { change_lead_provider }.to change(ect_at_school_period.teacher, :ect_payments_frozen_year).from(nil).to(2021)
+        end
       end
     end
 
