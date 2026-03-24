@@ -566,6 +566,16 @@ describe "Real data check for user 62025249-8b6f-4fa3-9113-076b329aafde (mentor 
             reason: :ignore,
             created_at: Time.zone.local(2022, 9, 20, 11, 55, 26)
           }
+        ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2022, 9, 20, 11, 55, 26)
+          }
         ]
       }
     }
