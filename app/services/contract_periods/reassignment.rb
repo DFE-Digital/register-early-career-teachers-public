@@ -1,5 +1,5 @@
 module ContractPeriods
-  class Reassigner
+  class Reassignment
     SUCCESSOR_CONTRACT_YEAR = 2024
     attr_reader :training_period
 
@@ -7,7 +7,7 @@ module ContractPeriods
       @training_period = training_period
     end
 
-    def contract_period_closed?
+    def required?
       return false unless training_period&.provider_led_training_programme?
 
       contract_period = assigned_contract_period
@@ -23,7 +23,7 @@ module ContractPeriods
   private
 
     def assigned_contract_period
-      @training_period.contract_period || @training_period.expression_of_interest_contract_period
+      training_period.contract_period || training_period.expression_of_interest_contract_period
     end
   end
 end
