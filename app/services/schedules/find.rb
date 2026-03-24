@@ -19,6 +19,7 @@ module Schedules
   private
 
     def schedule_for_target_period
+      return extended_schedule if extended_schedule?
       return most_recent_schedule if most_recent_schedule&.contract_period_year == contract_period_year
 
       Schedule.find_by(contract_period_year:, identifier: most_recent_schedule&.identifier) || Schedule.find_by(contract_period_year:, identifier:)
@@ -51,6 +52,8 @@ module Schedules
     end
 
     def schedule_month
+      return "september" if extended_schedule?
+
       month = latest_start_date.month
 
       case month
@@ -64,13 +67,24 @@ module Schedules
     end
 
     def contract_period_year
+      return replacement_contract_period if extended_schedule?
+
       ContractPeriod.containing_date(latest_start_date)&.year || raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
     end
 
     def identifier
-      identifier_type = replacement_schedule? ? "replacement" : "standard"
-
       "ecf-#{identifier_type}-#{schedule_month}"
+    end
+
+    def identifier_type
+      case
+      when replacement_schedule?
+        "replacement"
+      when extended_schedule?
+        "extended"
+      else
+        "standard"
+      end
     end
 
     def mentorship_periods_for_mentee_with_different_mentor
@@ -91,5 +105,21 @@ module Schedules
 
       previous_mentor_started_training?
     end
+
+    def extended_schedule?
+      return false unless period_type_key == :ect_at_school_period
+
+      contract_period_reassignment.required?
+    end
+
+    def contract_period_reassignment
+      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period: most_recent_provider_led_period)
+    end
+
+    def extended_schedule
+      successor_contract_period.schedules.find_by!(identifier:)
+    end
+
+    delegate :successor_contract_period, to: :contract_period_reassignment
   end
 end
