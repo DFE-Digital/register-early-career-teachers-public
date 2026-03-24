@@ -85,11 +85,7 @@ RSpec.describe Schedules::Find do
             context "when they were registered before their start date" do
               let(:registered_on) { started_on - 1.day }
 
-              around do |example|
-                travel_to(registered_on) do
-                  example.run
-                end
-              end
+              before { travel_to registered_on }
 
               context "when the training period started between 1st June and 31st October" do
                 let(:started_on) { Date.new(year, 7, 1) }
@@ -134,11 +130,7 @@ RSpec.describe Schedules::Find do
               let(:registered_on) { Date.new(year, 12, 1) }
               let(:started_on) { Date.new(year, 7, 1) }
 
-              around do |example|
-                travel_to(registered_on) do
-                  example.run
-                end
-              end
+              before { travel_to registered_on }
 
               it "assigns the schedule based on the registration date to the current training period" do
                 expect(service.identifier).to include("january")
@@ -283,12 +275,7 @@ RSpec.describe Schedules::Find do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-january")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
-      end
-
-      around do |example|
-        travel_to(provider_led_start_date) do
-          example.run
-        end
+        travel_to provider_led_start_date
       end
 
       context "when the mentee has not previously received training" do
@@ -391,14 +378,10 @@ RSpec.describe Schedules::Find do
       let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
       let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
 
-      around do |example|
-        travel_to(provider_led_start_date) do
-          example.run
-        end
-      end
+      before { travel_to provider_led_start_date }
 
       context "when the ECT started training in the 2021 contract period" do
-        let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, year: 2021) }
+        let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
         let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2021) }
         let!(:old_training_period) do
           FactoryBot.create(:training_period,
@@ -408,10 +391,6 @@ RSpec.describe Schedules::Find do
                             started_on: Date.new(2021, 7, 1),
                             ect_at_school_period:,
                             active_lead_provider: old_active_lead_provider)
-        end
-
-        before do
-          contract_period_2021.update!(payments_frozen_at: 1.day.ago)
         end
 
         it_behaves_like "extended schedule assigned"
@@ -429,9 +408,8 @@ RSpec.describe Schedules::Find do
       let(:previous_start_date) { Date.new(year - 1, 7, 1) }
       let!(:old_schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-standard-september") }
 
-      around { |example| travel_to(started_on) { example.run } }
-
       before do
+        travel_to started_on
         FactoryBot.create(:training_period, :provider_led, :ongoing,
                           ect_at_school_period:,
                           started_on: previous_start_date,
@@ -451,9 +429,8 @@ RSpec.describe Schedules::Find do
       let(:previous_start_date) { Date.new(year - 1, 7, 1) }
       let!(:old_schedule) { FactoryBot.create(:schedule, contract_period: previous_contract_period, identifier: "ecf-replacement-september") }
 
-      around { |example| travel_to(started_on) { example.run } }
-
       before do
+        travel_to started_on
         FactoryBot.create(:training_period, :provider_led, :ongoing,
                           :for_mentor,
                           mentor_at_school_period:,
