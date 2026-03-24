@@ -23,8 +23,8 @@ module Admin
         klass.new(statement:)
       end
 
-      def total
-        number_to_pounds(total_amount)
+      def caption
+        "Total #{number_to_pounds(total_amount)}"
       end
 
       def statement_print_link
@@ -70,11 +70,11 @@ module Admin
       end
 
       def outputs
-        @outputs ||= banded.outputs.total_net_amount
+        @outputs ||= banded.outputs.total_billable_amount
       end
 
       def clawbacks
-        @clawbacks ||= banded.outputs.total_refundable_amount
+        @clawbacks ||= -banded.outputs.total_refundable_amount
       end
     end
   end

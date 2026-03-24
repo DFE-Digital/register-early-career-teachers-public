@@ -21,11 +21,9 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
     )
   end
 
-  let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:) }
-  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: -300) }
+  let(:banded_outputs_double) { double(total_net_amount: 400, total_refundable_amount: 150, total_billable_amount: 550) }
+  let(:flat_rate_outputs_double) { double(total_net_amount: 200, total_refundable_amount: 300, total_billable_amount: 500) }
 
-  let(:total_net_amount) { 400 }
-  let(:total_refundable_amount) { -150 }
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }
 
@@ -70,28 +68,26 @@ RSpec.describe Admin::Statements::PaymentOverview::IttecfEctpComponent, type: :c
       # total_manual_adjustments_amount(375) + vat(395)
       # setup fee is no longer included
 
-      expect(page).to have_css("h2.govuk-heading-l", text: "£2,370.00")
+      expect(page).to have_css("h2.govuk-heading-l", text: "Total £2,370.00")
     end
 
     it "renders the overview table" do
-      within(".finance-panel__summary__total-payment-breakdown") do
-        expect(page).to have_statement_table(
-          caption: "",
-          headings: [
-            "Payment type",
-            "Payments"
-          ],
-          rows: [
-            ["ECTs output payment", "£400.00"],
-            ["Mentors output payment", "£200.00"],
-            ["Service fee", "£1,000.00"],
-            ["ECTs clawbacks", "-£150.00"],
-            ["Mentors clawbacks", "-£300.00"],
-            ["Additional adjustments", "£375.00"],
-            ["VAT", "£395.00"],
-          ]
-        )
-      end
+      expect(page).to have_statement_table(
+        selector: ".finance-panel__summary__total-payment-breakdown",
+        headings: [
+          "Payment type",
+          "Payment"
+        ],
+        rows: [
+          ["ECTs output payment", "£550.00"],
+          ["Mentors output payment", "£500.00"],
+          ["Service fee", "£1,000.00"],
+          ["ECTs clawbacks", "-£150.00"],
+          ["Mentors clawbacks", "-£300.00"],
+          ["Additional adjustments", "£375.00"],
+          ["VAT", "£395.00"],
+        ]
+      )
     end
 
     context "when the lead provider is not VAT registered" do
