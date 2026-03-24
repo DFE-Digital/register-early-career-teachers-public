@@ -1,4 +1,4 @@
-RSpec.describe Teachers::SchoolTransfers::Transfer do
+RSpec.describe API::Teachers::SchoolTransfers::Transfer do
   subject(:transfer) do
     described_class.new(
       leaving_training_period:,
@@ -95,7 +95,7 @@ RSpec.describe Teachers::SchoolTransfers::Transfer do
 
       it "raises an error" do
         expect { type }.to raise_error(
-          Teachers::SchoolTransfers::InvalidTransferError,
+          API::Teachers::SchoolTransfers::InvalidTransferError,
           "Unexpected transfer"
         )
       end

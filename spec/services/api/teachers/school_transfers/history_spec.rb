@@ -1,5 +1,5 @@
 # rubocop:disable RSpec/InstanceVariable
-RSpec.describe Teachers::SchoolTransfers::History do
+RSpec.describe API::Teachers::SchoolTransfers::History do
   include SchoolTransferHelpers
 
   describe "transfers" do
@@ -90,7 +90,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
 
         expect(history.transfers.size).to eq(1)
         transfer = history.transfers.first
-        expect(transfer).to be_a(Teachers::SchoolTransfers::Transfer)
+        expect(transfer).to be_a(API::Teachers::SchoolTransfers::Transfer)
         expect(transfer.type).to eq(:unknown)
         expect(transfer.status).to eq(:complete)
         expect(transfer).to be_for_ect
@@ -157,7 +157,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
 
         expect(history.transfers.size).to eq(1)
         transfer = history.transfers.first
-        expect(transfer).to be_a(Teachers::SchoolTransfers::Transfer)
+        expect(transfer).to be_a(API::Teachers::SchoolTransfers::Transfer)
         expect(transfer.type).to eq(:new_school)
         expect(transfer.status).to eq(:complete)
         expect(transfer).to be_for_ect
@@ -201,7 +201,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
 
         expect(history.transfers.size).to eq(1)
         transfer = history.transfers.first
-        expect(transfer).to be_a(Teachers::SchoolTransfers::Transfer)
+        expect(transfer).to be_a(API::Teachers::SchoolTransfers::Transfer)
         expect(transfer.type).to eq(:new_provider)
         expect(transfer.status).to eq(:complete)
         expect(transfer).to be_for_ect
@@ -219,7 +219,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
 
         expect(history.transfers.size).to eq(1)
         transfer = history.transfers.first
-        expect(transfer).to be_a(Teachers::SchoolTransfers::Transfer)
+        expect(transfer).to be_a(API::Teachers::SchoolTransfers::Transfer)
         expect(transfer.type).to eq(:new_provider)
         expect(transfer.status).to eq(:complete)
         expect(transfer).to be_for_ect
@@ -259,7 +259,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
 
         expect(history.transfers.size).to eq(1)
         transfer = history.transfers.first
-        expect(transfer).to be_a(Teachers::SchoolTransfers::Transfer)
+        expect(transfer).to be_a(API::Teachers::SchoolTransfers::Transfer)
         expect(transfer.type).to eq(:new_provider)
         expect(transfer.status).to eq(:complete)
         expect(transfer).to be_for_ect
@@ -289,7 +289,7 @@ RSpec.describe Teachers::SchoolTransfers::History do
 
         expect(history.transfers.size).to eq(1)
         transfer = history.transfers.first
-        expect(transfer).to be_a(Teachers::SchoolTransfers::Transfer)
+        expect(transfer).to be_a(API::Teachers::SchoolTransfers::Transfer)
         expect(transfer.type).to eq(:new_provider)
         expect(transfer.status).to eq(:complete)
         expect(transfer).to be_for_ect
