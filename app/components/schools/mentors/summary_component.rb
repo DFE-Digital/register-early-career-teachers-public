@@ -41,7 +41,7 @@ module Schools
 
         [
           { key: { text: "Lead provider" }, value: { text: provider_display_with_status } },
-          { key: { text: "Delivery partner" }, value: { text: delivery_partner_name } },
+          { key: { text: "Delivery partner" }, value: { text: delivery_partner_display_text } },
         ]
       end
 
@@ -103,8 +103,12 @@ module Schools
         latest_training_period.only_expression_of_interest?
       end
 
-      def delivery_partner_name
-        latest_training_period&.delivery_partner_name
+      def delivery_partner_display_text
+        if partnership_confirmed? && latest_training_period.delivery_partner_name.present?
+          latest_training_period.delivery_partner_name
+        else
+          "Yet to be reported by the lead provider"
+        end
       end
 
       def mentor_period_for_school

@@ -47,14 +47,26 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
       end
 
       let(:completed_period) do
-        FactoryBot.create(:ect_at_school_period, teacher: completed_teacher, school:, started_on: finished, finished_on: completed_teacher.trs_induction_completed_date)
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher: completed_teacher,
+          school:,
+          started_on: finished,
+          finished_on: completed_teacher.trs_induction_completed_date
+        )
       end
 
       before do
         FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: current_period, started_on: current, finished_on: nil)
         FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: upcoming_period, started_on: upcoming, finished_on: nil)
         FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: finished_period, started_on: finished, finished_on: Date.yesterday)
-        FactoryBot.create(:mentorship_period, mentor: mentor_at_school_period, mentee: completed_period, started_on: finished, finished_on: completed_teacher.trs_induction_completed_date)
+        FactoryBot.create(
+          :mentorship_period,
+          mentor: mentor_at_school_period,
+          mentee: completed_period,
+          started_on: finished,
+          finished_on: completed_teacher.trs_induction_completed_date
+        )
       end
 
       it { is_expected.not_to have_text("No ECTs assigned") }
@@ -150,12 +162,59 @@ RSpec.describe Schools::Mentors::SummaryComponent, type: :component do
     end
 
     context "when the mentor has a current training period" do
-      let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, mentor_at_school_period:, started_on: 1.week.ago, finished_on: nil) }
-      let!(:old_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, mentor_at_school_period:, started_on:, finished_on: 2.weeks.ago) }
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :for_mentor,
+          mentor_at_school_period:,
+          started_on: 1.week.ago,
+          finished_on: nil
+        )
+      end
+
+      let!(:old_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :for_mentor,
+          mentor_at_school_period:,
+          started_on:,
+          finished_on: 2.weeks.ago
+        )
+      end
 
       it { is_expected.to have_text(active_text) }
       it { is_expected.to have_summary_list_row("Lead provider", value: "#{training_period.lead_provider_name}Confirmed by #{training_period.lead_provider_name}") }
       it { is_expected.to have_summary_list_row("Delivery partner", value: training_period.delivery_partner_name) }
+    end
+
+    context "when the mentor has a current expression of interest training period" do
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :for_mentor,
+          :with_only_expression_of_interest,
+          mentor_at_school_period:,
+          started_on: 1.week.ago,
+          finished_on: nil
+        )
+      end
+
+      let!(:old_training_period) do
+        FactoryBot.create(
+          :training_period,
+          :provider_led,
+          :for_mentor,
+          mentor_at_school_period:,
+          started_on:,
+          finished_on: 2.weeks.ago
+        )
+      end
+
+      it { is_expected.to have_text(active_text) }
+      it { is_expected.to have_summary_list_row("Delivery partner", value: "Yet to be reported by the lead provider") }
     end
 
     context "when the latest training period is deferred" do
