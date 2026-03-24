@@ -106,6 +106,24 @@ describe "Real data check for user b4f7ab45-04bc-408d-a8bc-7c6757321226" do
             reason: :ignore,
             created_at: Time.zone.local(2021, 6, 29, 9, 19, 44)
           }
+        ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2022, 5, 10, 14, 35, 9)
+          },
+          {
+            school: {
+              urn: "100002",
+              name: "School 2"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2023, 9, 25, 16, 54, 50)
+          }
         ]
       }
     }
