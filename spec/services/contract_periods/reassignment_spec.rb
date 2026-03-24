@@ -16,9 +16,7 @@ RSpec.describe ContractPeriods::Reassignment do
         )
       end
 
-      it "returns true" do
-        expect(result).to be true
-      end
+      it { is_expected.to be_truthy }
     end
 
     context "when training period is provider-led but contract period is not payments frozen" do
@@ -35,9 +33,7 @@ RSpec.describe ContractPeriods::Reassignment do
         )
       end
 
-      it "returns false" do
-        expect(result).to be false
-      end
+      it { is_expected.to be_falsey }
     end
 
     context "when training period uses expression_of_interest_contract_period" do
@@ -54,9 +50,7 @@ RSpec.describe ContractPeriods::Reassignment do
         )
       end
 
-      it "returns true" do
-        expect(result).to be true
-      end
+      it { is_expected.to be_truthy }
     end
 
     context "when training period uses expression_of_interest_contract_period that is not payments frozen" do
@@ -73,9 +67,7 @@ RSpec.describe ContractPeriods::Reassignment do
         )
       end
 
-      it "returns false" do
-        expect(result).to be false
-      end
+      it { is_expected.to be_falsey }
     end
 
     context "when training period is not provider-led" do
@@ -88,17 +80,13 @@ RSpec.describe ContractPeriods::Reassignment do
         )
       end
 
-      it "returns false" do
-        expect(result).to be false
-      end
+      it { is_expected.to be_falsey }
     end
 
     context "when there is no training period" do
       let(:training_period) { nil }
 
-      it "returns false" do
-        expect(result).to be false
-      end
+      it { is_expected.to be_falsey }
     end
   end
 
