@@ -109,15 +109,17 @@ module Schedules
     def extended_schedule?
       return false unless period_type_key == :ect_at_school_period
 
-      ContractPeriods::MoveFromClosedProviderLedPeriod.new(previous_training_period: most_recent_provider_led_period).call
+      contract_period_reassigner.contract_period_closed?
     end
 
-    def replacement_contract_period
-      ContractPeriods::MoveFromClosedProviderLedPeriod.replacement_contract_period
+    def contract_period_reassigner
+      @contract_period_reassigner ||= ContractPeriods::Reassigner.new(training_period: most_recent_provider_led_period)
     end
 
     def extended_schedule
-      replacement_contract_period.schedules.find_by!(identifier:)
+      successor_contract_period.schedules.find_by!(identifier:)
     end
+
+    delegate :successor_contract_period, to: :contract_period_reassigner
   end
 end

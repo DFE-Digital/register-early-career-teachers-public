@@ -1,13 +1,13 @@
-RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
-  describe "#call" do
-    subject(:result) { described_class.new(previous_training_period:).call }
+RSpec.describe ContractPeriods::Reassigner do
+  describe "#contract_period_closed?" do
+    subject(:result) { described_class.new(training_period:).contract_period_closed? }
 
-    context "when previous training period is provider-led in a payments-frozen contract period" do
+    context "when training period is provider-led in a payments-frozen contract period" do
       let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: true)
       end
 
-      let(:previous_training_period) do
+      let(:training_period) do
         instance_double(
           TrainingPeriod,
           provider_led_training_programme?: true,
@@ -21,12 +21,12 @@ RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
       end
     end
 
-    context "when previous training period is provider-led but contract period is not payments frozen" do
+    context "when training period is provider-led but contract period is not payments frozen" do
       let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: false)
       end
 
-      let(:previous_training_period) do
+      let(:training_period) do
         instance_double(
           TrainingPeriod,
           provider_led_training_programme?: true,
@@ -40,12 +40,12 @@ RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
       end
     end
 
-    context "when previous training period uses expression_of_interest_contract_period" do
+    context "when training period uses expression_of_interest_contract_period" do
       let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: true)
       end
 
-      let(:previous_training_period) do
+      let(:training_period) do
         instance_double(
           TrainingPeriod,
           provider_led_training_programme?: true,
@@ -59,12 +59,12 @@ RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
       end
     end
 
-    context "when previous training period uses expression_of_interest_contract_period that is not payments frozen" do
+    context "when training period uses expression_of_interest_contract_period that is not payments frozen" do
       let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: false)
       end
 
-      let(:previous_training_period) do
+      let(:training_period) do
         instance_double(
           TrainingPeriod,
           provider_led_training_programme?: true,
@@ -78,8 +78,8 @@ RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
       end
     end
 
-    context "when previous training period is not provider-led" do
-      let(:previous_training_period) do
+    context "when training period is not provider-led" do
+      let(:training_period) do
         instance_double(
           TrainingPeriod,
           provider_led_training_programme?: false,
@@ -93,8 +93,8 @@ RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
       end
     end
 
-    context "when there is no previous training period" do
-      let(:previous_training_period) { nil }
+    context "when there is no training period" do
+      let(:training_period) { nil }
 
       it "returns false" do
         expect(result).to be false
@@ -102,13 +102,13 @@ RSpec.describe ContractPeriods::MoveFromClosedProviderLedPeriod do
     end
   end
 
-  describe ".replacement_contract_period" do
+  describe "successor_contract_period" do
     let!(:contract_period_2024) { FactoryBot.create(:contract_period, year: 2024) }
 
     it "returns the contract period for 2024" do
-      replacement_contract_period = described_class.replacement_contract_period
+      successor_contract_period = described_class.new(training_period: nil).successor_contract_period
 
-      expect(replacement_contract_period.year).to eq(2024)
+      expect(successor_contract_period.year).to eq(2024)
     end
   end
 end
