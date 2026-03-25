@@ -1,6 +1,4 @@
 describe "School user can change ECT's lead provider", :enable_schools_interface do
-  include_context "safe_schedules"
-
   it "changes the lead provider" do
     given_there_is_a_school
     and_there_is_a_closed_contract_period
@@ -15,8 +13,7 @@ describe "School user can change ECT's lead provider", :enable_schools_interface
     when_i_visit_the_ect_page
     then_i_can_change_the_assigned_lead_provider
     and_i_see_the_change_lead_provider_form
-    and_the_current_lead_provider_is_not_an_option
-    and_the_third_active_lead_provider_is_not_an_option
+    and_i_can_only_see_lead_providers_from_2024_contract_periods_as_options
 
     when_i_choose_lead_provider("Other Lead Provider")
     and_i_continue
@@ -24,6 +21,8 @@ describe "School user can change ECT's lead provider", :enable_schools_interface
 
     when_i_confirm_the_change
     then_i_see_the_confirmation_message
+    and_a_training_period_has_been_created_in_the_open_contract_period
+    and_the_old_training_period_has_been_finished
     and_the_ect_has_payments_frozen_year_set
   end
 
@@ -113,11 +112,9 @@ private
     expect(heading).to have_text("Change lead provider for John Doe")
   end
 
-  def and_the_current_lead_provider_is_not_an_option
+  def and_i_can_only_see_lead_providers_from_2024_contract_periods_as_options
+    expect(page.get_by_text(@other_active_lead_provider.lead_provider.name)).to be_visible
     expect(page.get_by_text(@school_partnership.lead_provider.name)).not_to be_visible
-  end
-
-  def and_the_third_active_lead_provider_is_not_an_option
     expect(page.get_by_text(@third_active_lead_provider.lead_provider.name)).not_to be_visible
   end
 
@@ -144,6 +141,17 @@ private
     expect(success_panel).to have_text(
       "You have chosen #{@selected_lead_provider_name} as the new lead provider for John Doe"
     )
+  end
+
+  def and_a_training_period_has_been_created_in_the_open_contract_period
+    @ect_at_school_period.reload
+    new_training_period = @ect_at_school_period.training_periods.last
+    expect(new_training_period.expression_of_interest_contract_period.year).to eq(2024)
+  end
+
+  def and_the_old_training_period_has_been_finished
+    @provider_led_training_period.reload
+    expect(@provider_led_training_period.finished_on).to eq(Date.current)
   end
 
   def and_the_ect_has_payments_frozen_year_set
