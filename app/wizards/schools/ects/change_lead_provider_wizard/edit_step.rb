@@ -37,10 +37,11 @@ module Schools
         end
 
         def contract_period
-          return successor_contract_period if contract_period_reassignment.required?
+          @contract_period ||= contract_period_reassignment.required? ? successor_contract_period : contract_period_on_start_date
+        end
 
-          @contract_period ||= ContractPeriod
-            .containing_date(ect_at_school_period.started_on)
+        def contract_period_on_start_date
+          ContractPeriod.containing_date(ect_at_school_period.started_on)
         end
 
         def contract_period_reassignment
@@ -50,7 +51,7 @@ module Schools
         delegate :successor_contract_period, to: :contract_period_reassignment
 
         def training_period
-          TrainingPeriods::Search
+          @training_period ||= TrainingPeriods::Search
             .new(order: :started_on)
             .training_periods(ect_id: ect_at_school_period.id)
             .last

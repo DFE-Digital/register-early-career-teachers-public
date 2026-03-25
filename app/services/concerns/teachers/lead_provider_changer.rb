@@ -37,7 +37,7 @@ module Teachers
       raise LeadProviderNotChangedError unless lead_provider_changed?
 
       ActiveRecord::Base.transaction do
-        set_ect_payments_frozen_year!
+        before_training_period_change!
 
         if current_or_future_training_period?
           update_training_period_in_place!
@@ -76,16 +76,10 @@ module Teachers
       )
     end
 
-    def set_ect_payments_frozen_year!
-      return unless ect_training_period_in_closed_contract_period?
-
-      teacher.update!(ect_payments_frozen_year: previous_contract_period.year)
+    def before_training_period_change!
+      # Do nothing
     end
-
-    def previous_contract_period
-      training_period.contract_period || training_period.expression_of_interest_contract_period
-    end
-
+    
     def active_lead_provider
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
     end
@@ -104,26 +98,14 @@ module Teachers
 
     def reuse_existing_schedule?
       return false unless existing_schedule
-      return false if ect_training_period_in_closed_contract_period?
+      return false if contract_period_reassignment_required?
 
       existing_schedule.contract_period != contract_period_at_transition
     end
 
-    def ect_training_period_in_closed_contract_period?
-      return false if mentor_at_school_period.present?
-
-      @ect_training_period_in_closed_contract_period ||= contract_period_reassignment.required?
-    end
-
-    def contract_period_reassignment
-      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period:)
-    end
-
-    delegate :successor_contract_period, to: :contract_period_reassignment
+    def contract_period_reassignment_required? = false
 
     def contract_period_at_transition
-      return successor_contract_period if ect_training_period_in_closed_contract_period?
-
       @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
     end
 
@@ -157,7 +139,7 @@ module Teachers
     alias_method :started_on, :date_of_transition
 
     def training_period
-      period.current_or_next_training_period
+      @training_period ||= period.current_or_next_training_period
     end
 
     def current_or_future_training_period?
