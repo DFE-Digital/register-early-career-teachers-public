@@ -51,10 +51,7 @@ module Schools
         delegate :successor_contract_period, to: :contract_period_reassignment
 
         def training_period
-          @training_period ||= TrainingPeriods::Search
-            .new(order: :started_on)
-            .training_periods(ect_id: ect_at_school_period.id)
-            .last
+          @training_period ||= ect_at_school_period.latest_training_period
         end
 
         def current_lead_provider

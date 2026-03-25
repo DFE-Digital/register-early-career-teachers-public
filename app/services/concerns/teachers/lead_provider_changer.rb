@@ -79,7 +79,7 @@ module Teachers
     def before_training_period_change!
       # Do nothing
     end
-    
+
     def active_lead_provider
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
     end

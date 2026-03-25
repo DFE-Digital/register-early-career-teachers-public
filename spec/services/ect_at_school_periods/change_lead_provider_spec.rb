@@ -175,7 +175,7 @@ module ECTAtSchoolPeriods
       end
 
       context "when the training period is in a closed contract period" do
-        let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, year: 2021) }
+        let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
         let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
         let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
 
@@ -187,10 +187,6 @@ module ECTAtSchoolPeriods
             :ongoing,
             started_on: Date.new(2021, 9, 1)
           )
-        end
-
-        before do
-          contract_period_2021.update!(payments_frozen_at: 1.day.ago)
         end
 
         it "creates a new training period with an extended september schedule in 2024" do

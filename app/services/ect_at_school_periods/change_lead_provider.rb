@@ -43,10 +43,10 @@ module ECTAtSchoolPeriods
 
     def contract_period_at_transition
       @contract_period_at_transition ||= if contract_period_reassignment_required?
-        successor_contract_period
-      else
-        super
-      end
+                                           successor_contract_period
+                                         else
+                                           super
+                                         end
     end
 
     def contract_period_reassignment
@@ -54,6 +54,5 @@ module ECTAtSchoolPeriods
     end
 
     delegate :successor_contract_period, to: :contract_period_reassignment
-
   end
 end
