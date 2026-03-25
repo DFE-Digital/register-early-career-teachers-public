@@ -6,7 +6,8 @@ module PaymentCalculator
     include ActiveModel::Model
     include ActiveModel::Attributes
 
-    attribute :declarations
+    attribute :billable_declarations
+    attribute :refundable_declarations
     attribute :declaration_type
     attribute :fee_per_declaration
     attribute :fee_proportions
@@ -18,11 +19,11 @@ module PaymentCalculator
     end
 
     def billable_count
-      @billable_count ||= declarations_of_matching_type.billable.count
+      @billable_count ||= billable_declarations.where(declaration_type:).count
     end
 
     def refundable_count
-      @refundable_count ||= declarations_of_matching_type.refundable.count
+      @refundable_count ||= refundable_declarations.where(declaration_type:).count
     end
 
     def type_adjusted_fee_per_declaration
@@ -34,10 +35,6 @@ module PaymentCalculator
     def total_net_amount = total_billable_amount - total_refundable_amount
 
   private
-
-    def declarations_of_matching_type
-      declarations.where(declaration_type:)
-    end
 
     def fee_proportion
       fee_proportions.fetch(declaration_type.to_sym) do
