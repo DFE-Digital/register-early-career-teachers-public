@@ -72,9 +72,19 @@ FactoryBot.define do
       full_name { Faker::FunnyName.two_word_name }
     end
 
+    trait(:consecutive) do
+      sequence(:start_date) { |n| Date.new(cohort_year) + (n * 2).days }
+      sequence(:end_date) { start_date.tomorrow }
+    end
+
+    trait(:concurrent) do
+      start_date { Date.new(cohort_year, 9, 1) }
+      end_date { Date.new(cohort_year + 2, 6, 1) }
+    end
+
+    concurrent
+
     induction_record_id { SecureRandom.uuid }
-    start_date { Date.new(cohort_year, 9, 1) }
-    end_date { Date.new(cohort_year + 2, 6, 1) }
     cohort_year { 2024 }
     created_at { start_date }
     updated_at { 6.months.ago }

@@ -16,11 +16,20 @@ class TeacherHistoryConverter::MigrationStrategy
 private
 
   def teacher_history_meets_premium_criteria?
-    below_threshold_for_induction_records &&
-      has_not_been_withdrawn_or_deferred? &&
-      has_not_completed_induction? &&
-      dates_are_in_the_right_order_for?(ecf1_teacher_history.ect&.induction_records) &&
-      dates_are_in_the_right_order_for?(ecf1_teacher_history.mentor&.induction_records)
+    [
+      has_not_been_withdrawn_or_deferred?,
+      has_not_completed_induction?,
+      dates_are_in_the_right_order_for?(ecf1_teacher_history.ect&.induction_records),
+      dates_are_in_the_right_order_for?(ecf1_teacher_history.mentor&.induction_records),
+      (below_threshold_for_induction_records || !any_induction_records_overlap?)
+    ].all?
+  end
+
+  def any_induction_records_overlap?
+    [
+      has_overlaps?(ecf1_teacher_history.mentor&.induction_records),
+      has_overlaps?(ecf1_teacher_history.ect&.induction_records)
+    ].any?
   end
 
   def dates_are_in_the_right_order_for?(induction_records)
@@ -57,5 +66,14 @@ private
 
   def mentor_induction_records_count
     ecf1_teacher_history.mentor&.induction_records&.count || 0
+  end
+
+  def has_overlaps?(induction_records)
+    return false if induction_records.blank?
+
+    induction_records
+      .map { it.start_date..it.end_date }
+      .each_cons(2)
+      .any? { |a, b| a.overlap?(b) }
   end
 end
