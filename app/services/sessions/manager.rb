@@ -22,7 +22,7 @@ module Sessions
       check_authorisation!(session_user)
       @current_user = nil
       session["user_session"] = session_user.to_h
-      cookies["id_token"] = encrypt_token(id_token)
+      cookies["id_token"] = { value: encrypt_token(id_token), httponly: true, secure: true, same_site: :strict }
     end
 
     # @see Sessions::User
