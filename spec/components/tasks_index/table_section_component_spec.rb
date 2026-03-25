@@ -8,6 +8,13 @@ RSpec.describe TasksIndex::TableSectionComponent, type: :component do
       row_component:
     )
   end
+  let(:ect_at_school_periods) do
+    ECTAtSchoolPeriod
+      .where(id: [postman_pat_at_school_period.id, bob_builder_at_school_period.id])
+      .with_teacher
+      .with_school
+      .with_teacher_current_induction_period_appropriate_body
+  end
 
   let(:pagy) { double("Pagy", count: 25, page: 1, limit: 20, pages: 2, series: [1, 2], vars: {}, prev: nil, next: 2) }
 
@@ -30,18 +37,12 @@ RSpec.describe TasksIndex::TableSectionComponent, type: :component do
                       trs_initial_teacher_training_provider_name: "ITT")
   end
 
-  let!(:postman_pat_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: postman_pat, school:) }
-  let!(:bob_builder_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: bob_builder, school:) }
+  let(:postman_pat_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: postman_pat, school:) }
+  let(:bob_builder_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: bob_builder, school:) }
 
-  let!(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: postman_pat, appropriate_body_period:) }
+  let(:induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: postman_pat, appropriate_body_period:) }
 
-  let(:ect_at_school_periods) do
-    ECTAtSchoolPeriod
-      .where(id: [postman_pat_at_school_period.id, bob_builder_at_school_period.id])
-      .with_teacher
-      .with_school
-      .with_teacher_current_induction_period_appropriate_body
-  end
+  before { postman_pat_at_school_period && bob_builder_at_school_period && induction_period }
 
   context "with no ect_at_school_periods" do
     let(:ect_at_school_periods) { ECTAtSchoolPeriod.none }
@@ -116,13 +117,37 @@ RSpec.describe TasksIndex::TableSectionComponent, type: :component do
   context "with Leavers::TableRowComponent" do
     let(:row_component) { TasksIndex::Leavers::TableRowComponent }
 
+    before { postman_pat_at_school_period.finish! }
+
     it "renders the correct headings" do
       headers = rendered.css("th").map(&:text)
-      expect(headers).to contain_exactly("Name", "TRN", "Induction start date", "Recorded by", "Induction tutor name", "")
+      expect(headers).to contain_exactly("Name", "TRN", "Recorded by", "Induction tutor name", "")
     end
 
     it "renders a release link" do
       expect(rendered).to have_link("Release", href: /teachers\/\d+\/release\/new/)
+    end
+
+    describe "reported by" do
+      context "when the teacher has started at another school" do
+        let(:new_school) { FactoryBot.create(:school, :with_induction_tutor) }
+        let(:new_school_ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :ongoing, teacher: postman_pat,
+                                                             school: new_school, started_on: 1.week.from_now)
+        end
+
+        before { new_school_ect_at_school_period }
+
+        it "renders the new school name as recorded by" do
+          expect(rendered.to_html).to include(new_school.name)
+        end
+      end
+
+      context "when the teacher has no ongoing period at another school" do
+        it "renders the current school name as recorded by" do
+          expect(rendered.to_html).to include(school.name)
+        end
+      end
     end
   end
 end
