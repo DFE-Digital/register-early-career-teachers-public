@@ -40,9 +40,33 @@ RSpec.describe Sessions::Manager do
       expect(session["user_session"]["dfe_sign_in_user_id"]).to eql("1")
     end
 
-    it "'stores the id_token encrypted in the 'id_token' cookie'" do
-      service.begin_session!(user, id_token: "dfe_token")
-      expect(cookies["id_token"]).to be_present
+    describe "storing the 'id_token' cookie" do
+      let(:secret_key) { Rails.application.secret_key_base.byteslice(0, 32) }
+
+      before do
+        allow(ActiveSupport::MessageEncryptor).to receive(:new).and_call_original
+        service.begin_session!(user, id_token: "dfe_token")
+      end
+
+      it "is set" do
+        expect(cookies["id_token"]).to be_present
+      end
+
+      it "id_token is encrypted" do
+        expect(ActiveSupport::MessageEncryptor).to have_received(:new).once.with(secret_key)
+      end
+
+      it "has 'httponly: true' set" do
+        expect(cookies.dig("id_token", "httponly")).to be(true)
+      end
+
+      it "has 'secure: true' set" do
+        expect(cookies.dig("id_token", "secure")).to be(true)
+      end
+
+      it "has 'same_site: :strict' set" do
+        expect(cookies.dig("id_token", "same_site")).to be(:strict)
+      end
     end
 
     context "when the user signs via DfE Sign In but has no role permissions for their organisation" do
