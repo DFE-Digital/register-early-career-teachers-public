@@ -155,7 +155,8 @@ private
 
     if found_teacher.present?
       with_failure_recording(teacher: found_teacher, model: :teacher, migration_item_id: teacher.api_id) do
-        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name, :api_updated_at))
+        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name, :trs_induction_start_date, :api_updated_at))
+        found_teacher.trs_induction_start_date ||= teacher.trs_induction_start_date
         found_teacher.api_updated_at = [found_teacher.api_updated_at, teacher.api_updated_at].compact.max
         found_teacher.save!
         found_teacher
