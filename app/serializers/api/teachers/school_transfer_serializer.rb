@@ -58,11 +58,11 @@ class API::Teachers::SchoolTransferSerializer < Blueprinter::Base
   field(:type) { "participant-transfer" }
 
   association :attributes, blueprint: AttributesSerializer do |teacher, options|
-    ect_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
+    ect_transfers = ::API::Teachers::SchoolTransfers::History.transfers_for(
       school_periods: teacher.ect_at_school_periods,
       lead_provider_id: options[:lead_provider_id]
     )
-    mentor_transfers = ::Teachers::SchoolTransfers::History.transfers_for(
+    mentor_transfers = ::API::Teachers::SchoolTransfers::History.transfers_for(
       school_periods: teacher.mentor_at_school_periods,
       lead_provider_id: options[:lead_provider_id]
     )

@@ -1,4 +1,4 @@
-module Teachers::SchoolTransfers
+module API::Teachers::SchoolTransfers
   class InvalidTransferError < StandardError; end
 
   class Transfer

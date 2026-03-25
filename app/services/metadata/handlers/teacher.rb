@@ -73,7 +73,7 @@ module Metadata::Handlers
     end
 
     def school_transfers_exist_for(school_periods, lead_provider_id)
-      ::Teachers::SchoolTransfers::History.exists_for?(school_periods:, lead_provider_id:)
+      ::API::Teachers::SchoolTransfers::History.exists_for?(school_periods:, lead_provider_id:)
     end
   end
 end
