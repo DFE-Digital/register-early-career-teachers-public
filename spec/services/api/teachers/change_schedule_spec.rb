@@ -116,7 +116,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.") }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.") }
           end
 
           context "when there are future training periods with the same lead provider (for the same teacher)" do
@@ -186,7 +186,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it "returns error" do
               expect(subject).to have_one_error_per_attribute
-              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training or induction.")
+              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
             end
           end
 

@@ -2,6 +2,8 @@ module API::Teachers
   class ChangeSchedule
     include API::Concerns::Teachers::SharedAction
 
+    SCHEDULE_CHANGE_NOT_ALLOWED = "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule."
+
     attribute :contract_period_year
     attribute :schedule_identifier
 
@@ -13,8 +15,9 @@ module API::Teachers
     validate :schedule_applicable_for_trainee
     validate :school_partnership_exists_if_changing_contract_period
     validate :trainee_not_completed
-    validate :lead_provider_is_currently_training_teacher
-    validate :no_future_training_periods_exist
+    validate :training_period_not_finished
+    validate :future_training_period_not_blocked_by_another_lead_provider
+    validate :no_future_training_periods_with_different_lead_provider
     validate :can_move_to_frozen_contract_period
     validate :schedule_does_not_invalidate_declarations
 
@@ -33,9 +36,8 @@ module API::Teachers
 
     # The metadata handler selects the training period with the latest started_on.
     # When a future training period exists for the same lead provider, it gets selected
-    # instead of the ongoing one, causing lead_provider_is_currently_training_teacher
-    # to reject it (started_on.future?). We fall back to the ongoing training period
-    # so the schedule change can proceed against the correct record.
+    # instead of the ongoing one. We fall back to the ongoing training period so the
+    # schedule change can proceed against the correct record.
     def training_period
       tp = super
       return tp unless tp&.started_on&.future?
@@ -44,21 +46,6 @@ module API::Teachers
     end
 
   private
-
-    def ongoing_training_period_for_lead_provider
-      scope = if teacher_type == :ect
-                TrainingPeriod.joins(:ect_at_school_period).where(ect_at_school_period: { teacher: })
-              else
-                TrainingPeriod.joins(:mentor_at_school_period).where(mentor_at_school_period: { teacher: })
-              end
-
-      scope
-        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
-        .where(lead_providers: { id: lead_provider.id })
-        .ongoing_today
-        .latest_first
-        .first
-    end
 
     def contract_period
       @contract_period ||= ContractPeriod.find_by(year: contract_period_year) || fallback_contract_period
@@ -121,63 +108,67 @@ module API::Teachers
         )
     end
 
-    def lead_provider_is_currently_training_teacher
+    # Prevents schedule changes on training periods that have finished.
+    def training_period_not_finished
       return if errors[:teacher_api_id].any?
       return unless training_period
+      return if training_period.started_on.future?
+      return if training_period.ongoing_today?
 
-      if training_period.started_on.future?
-        # A future TP is only blocked if another LP is actively training the participant.
-        # When no other LP is involved (e.g. a new ECT with a single future TP), the LP
-        # should be allowed to change the schedule.
-        if ongoing_training_period_with_different_lead_provider?
-          errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.")
-        end
-      elsif !training_period.ongoing_today?
-        errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.")
-      end
+      errors.add(:teacher_api_id, SCHEDULE_CHANGE_NOT_ALLOWED)
+    end
+
+    # Prevents schedule changes on future training periods when another LP is actively training the participant.
+    # When no other LP is involved (e.g. a new ECT with a single future TP), the change is allowed.
+    def future_training_period_not_blocked_by_another_lead_provider
+      return if errors[:teacher_api_id].any?
+      return unless training_period
+      return unless training_period.started_on.future?
+      return unless ongoing_training_period_with_different_lead_provider?
+
+      errors.add(:teacher_api_id, SCHEDULE_CHANGE_NOT_ALLOWED)
     end
 
     def ongoing_training_period_with_different_lead_provider?
-      scope = if teacher_type == :ect
-                TrainingPeriod.joins(:ect_at_school_period).where(ect_at_school_period: { teacher: })
-              else
-                TrainingPeriod.joins(:mentor_at_school_period).where(mentor_at_school_period: { teacher: })
-              end
-
-      scope
-        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+      with_lead_provider_join(training_periods_for_teacher)
         .where.not(lead_providers: { id: lead_provider.id })
         .ongoing_today
         .exists?
     end
 
-    def no_future_training_periods_exist
+    def no_future_training_periods_with_different_lead_provider
       return if errors[:teacher_api_id].any?
       return unless training_period
+      return unless future_training_periods_with_different_lead_provider.exists?
 
-      if future_training_periods_with_different_lead_provider.exists?
-        errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.")
-      end
-    end
-
-    def future_training_periods
-      if training_period.for_mentor?
-        TrainingPeriod
-          .joins(:mentor_at_school_period)
-          .where(mentor_at_school_period: { teacher: })
-          .started_after(training_period.started_on)
-      else
-        TrainingPeriod
-          .joins(:ect_at_school_period)
-          .where(ect_at_school_period: { teacher: })
-          .started_after(training_period.started_on)
-      end
+      errors.add(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.")
     end
 
     def future_training_periods_with_different_lead_provider
-      future_training_periods
-        .joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+      with_lead_provider_join(training_periods_for_teacher.started_after(training_period.started_on))
         .where.not(lead_providers: { id: lead_provider.id })
+    end
+
+    # Base scope for all training periods belonging to this teacher, filtered by teacher type.
+    def training_periods_for_teacher
+      if teacher_type == :ect
+        TrainingPeriod.joins(:ect_at_school_period).where(ect_at_school_period: { teacher: })
+      else
+        TrainingPeriod.joins(:mentor_at_school_period).where(mentor_at_school_period: { teacher: })
+      end
+    end
+
+    # Joins a training period scope through to lead_providers for filtering by LP.
+    def with_lead_provider_join(scope)
+      scope.joins(school_partnership: { lead_provider_delivery_partnership: { active_lead_provider: :lead_provider } })
+    end
+
+    def ongoing_training_period_for_lead_provider
+      with_lead_provider_join(training_periods_for_teacher)
+        .where(lead_providers: { id: lead_provider.id })
+        .ongoing_today
+        .latest_first
+        .first
     end
 
     def can_move_to_frozen_contract_period
@@ -194,7 +185,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period&.teacher_completed_training?
 
-      errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training or induction.")
+      errors.add(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
     end
 
     def schedule_does_not_invalidate_declarations
