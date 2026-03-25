@@ -80,20 +80,12 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:induction_end_date) do |(training_period, teacher, _)|
         if training_period.for_ect?
-          if teacher.finished_induction_period.present?
-            teacher.finished_induction_period.finished_on
-          else
-            teacher.trs_induction_completed_date
-          end
+          API::Teachers::InductionStatus.new(teacher:).induction_end_date
         end
       end
       field(:overall_induction_start_date) do |(training_period, teacher, _)|
         if training_period.for_ect?
-          if teacher.started_induction_period.present?
-            teacher.started_induction_period.started_on
-          else
-            teacher.trs_induction_start_date
-          end
+          API::Teachers::InductionStatus.new(teacher:).induction_start_date
         end
       end
       field(:mentor_funding_end_date) { |(training_period, teacher, _)| teacher.mentor_became_ineligible_for_funding_on if training_period.for_mentor? }
