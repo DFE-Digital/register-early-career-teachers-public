@@ -38,6 +38,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     when_i_click_confirm_details
     then_i_should_be_taken_to_the_confirmation_page
     and_mentor_has_mentorship_with_new_school
+    and_there_is_no_training_period_at_the_new_school
   end
 
   def given_there_is_a_school_in_the_service
@@ -172,9 +173,15 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
     expect(@existing_mentor_at_school_period.reload.finished_on).to be_nil
     expect(@teacher.mentor_at_school_periods.count).to eq(2)
 
-    new_mentor_at_school_period = @teacher.mentor_at_school_periods.excluding(@existing_mentor_at_school_period).last
     expect(new_mentor_at_school_period.started_on).to eq(Date.current)
     expect(new_mentor_at_school_period.finished_on).to be_nil
-    expect(new_mentor_at_school_period.training_periods.count).to eq(1)
+  end
+
+  def and_there_is_no_training_period_at_the_new_school
+    expect(new_mentor_at_school_period.training_periods.count).to eq(0)
+  end
+
+  def new_mentor_at_school_period
+    @new_mentor_at_school_period ||= @teacher.mentor_at_school_periods.excluding(@existing_mentor_at_school_period).last
   end
 end

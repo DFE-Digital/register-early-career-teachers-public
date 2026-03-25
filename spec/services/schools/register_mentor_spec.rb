@@ -79,6 +79,7 @@ RSpec.describe Schools::RegisterMentor do
 
         context "with MentorATSchoolPeriod records" do
           let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: 2.years.ago) }
+          let!(:existing_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, mentor_at_school_period: existing_mentor_at_school_period, started_on: existing_mentor_at_school_period.started_on) }
           let(:mentor_at_school_period) { teacher.mentor_at_school_periods.excluding(existing_mentor_at_school_period).first }
 
           context "with :finish_existing_at_school_periods set to false" do
@@ -93,6 +94,34 @@ RSpec.describe Schools::RegisterMentor do
               expect(existing_mentor_at_school_period.reload.teacher_id).to eq(teacher.id)
               expect(existing_mentor_at_school_period.finished_on).to be_nil
             end
+
+            context "when the existing mentor_at_school_period is ongoing" do
+              it "does not create a new training period" do
+                expect { service.register! }.not_to change(TrainingPeriod, :count)
+              end
+            end
+
+            context "when the existing mentor_at_school_period finishes in the future" do
+              let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.years.ago, finished_on: 1.day.from_now) }
+
+              it "does not create a new training period" do
+                expect { service.register! }.not_to change(TrainingPeriod, :count)
+              end
+            end
+
+            context "when the existing mentor_at_school_period has finished" do
+              let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.years.ago, finished_on: Time.zone.today) }
+
+              it "creates a new training period and finishes the old period" do
+                expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+                new_training_period = TrainingPeriod.find_by!(mentor_at_school_period:)
+
+                expect(new_training_period).not_to be_nil
+                expect(new_training_period).not_to eq(existing_training_period)
+                expect(existing_training_period.reload.finished_on).not_to be_nil
+              end
+            end
           end
 
           context "with :finish_existing_at_school_periods set to true" do
@@ -106,6 +135,16 @@ RSpec.describe Schools::RegisterMentor do
 
               expect(existing_mentor_at_school_period.reload.teacher_id).to eq(teacher.id)
               expect(existing_mentor_at_school_period.finished_on).to eq(mentor_at_school_period.started_on)
+            end
+
+            it "creates a new training period and finishes the old period" do
+              expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+              new_training_period = TrainingPeriod.find_by!(mentor_at_school_period:)
+
+              expect(new_training_period).not_to be_nil
+              expect(new_training_period).not_to eq(existing_training_period)
+              expect(existing_training_period.reload.finished_on).not_to be_nil
             end
           end
         end
