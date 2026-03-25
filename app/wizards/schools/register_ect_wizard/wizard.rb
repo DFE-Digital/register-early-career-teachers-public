@@ -170,8 +170,17 @@ module Schools
 
           if ect.provider_led?
             steps << :lead_provider
+            steps << :change_training_programme
+            steps << :training_programme_change_lead_provider
             return steps unless ect.lead_provider_id || can_reach_check_answers?
           end
+        end
+
+        # Provider-led training requires a lead provider before reaching check_answers
+        if ect.provider_led? && ect.lead_provider_id.blank?
+          steps << :change_training_programme
+          steps << :training_programme_change_lead_provider
+          return steps
         end
 
         steps += %i[check_answers]
@@ -223,6 +232,9 @@ module Schools
 
         # Check training programme is selected
         return false if ect.training_programme.blank?
+
+        # Provider-led training requires a lead provider
+        return false if ect.provider_led? && ect.lead_provider_id.blank?
 
         true
       end
