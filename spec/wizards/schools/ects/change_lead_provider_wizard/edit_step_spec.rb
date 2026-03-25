@@ -102,6 +102,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
     let!(:other_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
     let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2026) }
 
+    # TODO this test also keeps failing
     context "when there are no active lead providers in contract period containing the ect's start date" do
       let(:started_on) { Date.new(2024, 6, 1) }
 
@@ -126,6 +127,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       end
     end
 
+    # TODO fix this test
     context "when the ECT's current training period is in a closed contract period" do
       let(:started_on) { Date.new(2021, 9, 1) }
 
@@ -133,12 +135,8 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       let!(:other_lead_provider_2024) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024) }
 
       let!(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
-      let!(:contract_period_2022) { FactoryBot.create(:contract_period, :with_schedules, year: 2022) }
-
-      before do
-        contract_period_2022.update!(payments_frozen_at: 1.day.ago)
-      end
-
+      let!(:contract_period_2022) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2022) }
+ 
       it "returns the active lead providers in the replacement contract period" do
         expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider_2024.lead_provider, other_lead_provider_2024.lead_provider)
       end

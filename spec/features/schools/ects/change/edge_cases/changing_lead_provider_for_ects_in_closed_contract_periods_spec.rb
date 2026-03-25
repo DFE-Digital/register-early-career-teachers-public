@@ -62,14 +62,6 @@ private
     @school_partnership = FactoryBot.create(:school_partnership, :with_active_lead_provider, :for_year, year: 2021, school: @school)
   end
 
-  def and_there_is_an_active_lead_provider
-    @active_lead_provider = FactoryBot.create(
-      :active_lead_provider,
-      :for_year,
-      year: 2021
-    )
-  end
-
   def with_confirmed_provider_led_training
     @provider_led_training_period = FactoryBot.create(
       :training_period,
@@ -122,11 +114,11 @@ private
   end
 
   def and_the_current_lead_provider_is_not_an_option
-    expect(page.get_by_label(@school_partnership.lead_provider.name)).not_to be_visible
+    expect(page.get_by_text(@school_partnership.lead_provider.name)).not_to be_visible
   end
 
   def and_the_third_active_lead_provider_is_not_an_option
-    expect(page.get_by_label(@third_active_lead_provider.lead_provider.name)).not_to be_visible
+    expect(page.get_by_text(@third_active_lead_provider.lead_provider.name)).not_to be_visible
   end
 
   def when_i_choose_lead_provider(name)
