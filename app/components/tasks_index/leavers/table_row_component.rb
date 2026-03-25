@@ -4,13 +4,16 @@ module TasksIndex
       include Rails.application.routes.url_helpers
 
       def self.headings
-        ["Name", "TRN", "Induction start date", "Recorded by", "Induction tutor name", ""]
+        ["Name", "TRN", "Recorded by", "Induction tutor name", ""]
       end
 
-      delegate :current_or_next_induction_period, to: :teacher
-      delegate :started_on, to: :current_or_next_induction_period, prefix: :induction, allow_nil: true
-      delegate :appropriate_body_name, to: :current_or_next_induction_period, prefix: :current_induction_period, allow_nil: true
       delegate :induction_tutor_name, to: :school
+      delegate :ect_at_school_periods, to: :teacher
+      delegate :ongoing, to: :ect_at_school_periods, prefix: true
+
+      def recorded_by_school_name
+        ect_at_school_periods_ongoing.first&.school_name || school_name
+      end
     end
   end
 end
