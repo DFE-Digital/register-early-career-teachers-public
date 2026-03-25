@@ -135,12 +135,12 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
 
     it "renders the declaration types correctly" do
       expect(subject).to have_table rows: [
-        ["Started", "10"],
-        ["Retained", "20"],
-        ["Completed", "7"],
-        ["Extended", "3"],
-        ["Clawed back", "6"],
-        ["Voided", "2"],
+        %w[Started 10],
+        %w[Retained 20],
+        %w[Completed 7],
+        %w[Extended 3],
+        %w[Clawbacks 6],
+        %w[Voided 2],
       ]
     end
 
@@ -155,10 +155,10 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
     it "displays banded first and flat rate second" do
       expect(subject).to have_table rows: [
         ["Started", "10", "9"],
-        ["Retained", "20", "0"],
+        ["Retained", "20", "-"],
         ["Completed", "7", "2"],
-        ["Extended", "3", "0"],
-        ["Clawed back", "6", "4"],
+        ["Extended", "3", "-"],
+        ["Clawbacks", "6", "4"],
         ["Voided", "1", "1"],
       ]
     end
