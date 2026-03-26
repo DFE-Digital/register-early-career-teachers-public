@@ -40,7 +40,5 @@ class TeacherHistoryConverter::WithdrawalData
     }
   end
 
-  def ecf2_reason(ecf1_reason)
-    Mappers::WithdrawalReasonMapper.ecf2_reason(ecf1_reason)
-  end
+  delegate :ecf2_reason, to: :'Mappers::WithdrawalReasonMapper'
 end
