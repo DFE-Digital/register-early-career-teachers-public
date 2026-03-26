@@ -157,6 +157,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             contract_period.update!(payments_frozen_at: 1.day.ago)
           end
         end
+
         let!(:reassigned_contract_period) { FactoryBot.create(:contract_period, year: 2024) }
 
         let(:previous_training_period) do
@@ -198,7 +199,80 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
           end
         end
 
-        context "and no partnership is reusable but a previous EOI exists and the LP is available in the reassigned contract period" do
+        context "and only an earlier-year compatible partnership exists" do
+          let!(:delivery_partner_alpha) { FactoryBot.create(:delivery_partner) }
+
+          let!(:active_lead_provider_2024) do
+            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          end
+
+          let!(:lpdp_2024) do
+            FactoryBot.create(
+              :lead_provider_delivery_partnership,
+              active_lead_provider: active_lead_provider_2024,
+              delivery_partner: delivery_partner_alpha
+            )
+          end
+
+          let!(:earlier_year_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              :for_year,
+              year: 2023,
+              school:,
+              lead_provider:,
+              delivery_partner: delivery_partner_alpha
+            )
+          end
+
+          it "is not allowed" do
+            expect(step.allowed?).to be(false)
+          end
+        end
+
+        context "and only a later-year compatible partnership exists" do
+          let!(:delivery_partner_alpha) { FactoryBot.create(:delivery_partner) }
+
+          let!(:active_lead_provider_2024) do
+            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          end
+
+          let!(:lpdp_2024) do
+            FactoryBot.create(
+              :lead_provider_delivery_partnership,
+              active_lead_provider: active_lead_provider_2024,
+              delivery_partner: delivery_partner_alpha
+            )
+          end
+
+          let!(:later_year_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              :for_year,
+              year: 2025,
+              school:,
+              lead_provider:,
+              delivery_partner: delivery_partner_alpha
+            )
+          end
+
+          it "is not allowed" do
+            expect(step.allowed?).to be(false)
+          end
+        end
+
+        context "and only an earlier-year compatible partnership exists but a previous EOI exists and the LP is available in the reassigned contract period" do
+          let!(:earlier_year_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              :for_year,
+              year: 2023,
+              school:,
+              lead_provider:,
+              delivery_partner: FactoryBot.create(:delivery_partner)
+            )
+          end
+
           let!(:previous_year_active_lead_provider) do
             FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: frozen_contract_period)
           end
@@ -228,15 +302,7 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             )
           end
 
-          it "checks lead provider availability in the reassigned contract period" do
-            expect(ActiveLeadProvider)
-              .to receive(:exists?)
-              .with(
-                contract_period_year: reassigned_contract_period.year,
-                lead_provider_id: active_lead_provider_2024.lead_provider_id
-              )
-              .and_call_original
-
+          it "is allowed via EOI fallback" do
             expect(step.allowed?).to be(true)
           end
         end
