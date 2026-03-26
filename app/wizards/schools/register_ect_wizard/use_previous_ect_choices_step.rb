@@ -54,7 +54,10 @@ module Schools
         start_date = ect.normalized_start_date
         return unless start_date
 
-        ContractPeriod.for_registration_start_date(start_date)
+        ContractPeriods::ForECTRegistration.new(
+          started_on: start_date,
+          previous_training_period: ect.previous_training_period
+        ).call
       end
 
     private
