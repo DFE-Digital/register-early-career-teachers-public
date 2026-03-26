@@ -54,7 +54,8 @@ describe "Real data check for user 4ab942af-3437-44a4-ba84-767ff8ba5b67" do
             reason: :ignore,
             created_at: Time.zone.local(2022, 6, 22, 12, 1, 57)
           }
-        ]
+        ],
+        school_mentors: []
       }
     }
   end

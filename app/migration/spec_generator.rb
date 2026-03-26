@@ -162,6 +162,16 @@ class SpecGenerator
     #           cohort_year: mentor_cohort_year
     #         }
     #       },
+    #     ],
+    #     school_mentors: [
+    #       {
+    #         school: {
+    #           urn: "100002",
+    #           name: "School 2"
+    #         },
+    #         preferred_identity_email: "something@example.com",
+    #         created_at: Time.zone.local(2023, 7, 10, 11, 57, 7)
+    #       }
     #     ]
     #   }
     # }
@@ -278,8 +288,19 @@ private
         payments_frozen_cohort_start_year: mentor.payments_frozen_cohort_start_year,
         induction_records: ecf1_mentor_induction_records,
         states: ecf1_mentor_states,
+        school_mentors: ecf1_school_mentors,
       }
     }
+  end
+
+  def ecf1_school_mentors
+    ecf1_teacher_history.mentor.school_mentors.map do |school_mentor|
+      {
+        school: school_mentor.school.to_h,
+        preferred_identity_email: school_mentor.preferred_identity_email,
+        created_at: school_mentor.created_at
+      }
+    end
   end
 
   def ecf1_mentor_states

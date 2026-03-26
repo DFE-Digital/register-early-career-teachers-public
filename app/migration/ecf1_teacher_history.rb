@@ -123,6 +123,7 @@ class ECF1TeacherHistory
       induction_records:,
       ero_mentor: ero_check.ero_mentor?,
       ero_declarations: ero_check.ero_mentor_with_declarations?,
+      school_mentors: build_school_mentors(participant_profile:),
       transfers:
     )
   end
@@ -134,6 +135,16 @@ class ECF1TeacherHistory
         reason: profile_state.reason,
         created_at: profile_state.created_at,
         cpd_lead_provider_id: profile_state.cpd_lead_provider_id
+      )
+    end
+  end
+
+  def self.build_school_mentors(participant_profile:)
+    participant_profile.school_mentors.order(:created_at).map do |school_mentor|
+      ECF1TeacherHistory::SchoolMentor.new(
+        school: build_school_data(school_mentor.school),
+        preferred_identity_email: school_mentor.preferred_identity.email,
+        created_at: school_mentor.created_at
       )
     end
   end
