@@ -413,6 +413,59 @@ module ECTAtSchoolPeriods
         end
       end
 
+      context "when there is previous confirmed provider-led training in a closed contract period" do
+        let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
+        let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+        let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
+        let(:contract_period) { contract_period_2024 }
+
+        let!(:school_partnership) do
+          FactoryBot.create(
+            :school_partnership,
+            :for_year,
+            year: 2021,
+            school: ect_at_school_period.school
+          )
+        end
+
+        let!(:old_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :finished,
+            :provider_led,
+            ect_at_school_period:,
+            school_partnership:,
+            started_on: ect_at_school_period.started_on
+          )
+        end
+
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :ongoing,
+            :school_led,
+            ect_at_school_period:,
+            started_on: old_training_period.finished_on + 1.day
+          )
+        end
+
+        let(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :ongoing, started_on: Date.new(2021, 9, 1))
+        end
+
+        it "creates a new training period for provider-led training with an extended schedule in the 2024 contract period" do
+          SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+          expect(ect_at_school_period.reload).to be_provider_led_training_programme
+          new_training_period = ect_at_school_period.training_periods.last
+          schedule = new_training_period.schedule
+          expect(schedule.contract_period).to eq(contract_period_2024)
+          expect(schedule.identifier).to eq("ecf-extended-september")
+        end
+      end
+
       context "when there is no `current_or_next_training_period`" do
         before do
           allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)
