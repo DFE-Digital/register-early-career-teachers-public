@@ -42,6 +42,20 @@ shared:
     - trs_not_found
     - trs_induction_start_date
     - trs_induction_completed_date
+    - trs_first_name
+    - trs_last_name
+    - corrected_name
+    - api_id
+    - api_ect_training_record_id
+    - api_mentor_training_record_id
+    - mentor_became_ineligible_for_funding_on
+    - mentor_became_ineligible_for_funding_reason
+    - ect_payments_frozen_year
+    - mentor_payments_frozen_year
+    - ect_first_became_eligible_for_training_at
+    - mentor_first_became_eligible_for_training_at
+    - api_updated_at
+    - api_unfunded_mentor_updated_at
   :users:
     - id
     - name

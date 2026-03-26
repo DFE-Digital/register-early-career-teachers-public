@@ -187,23 +187,7 @@
   - created_at
   - updated_at
   :teachers:
-  - api_id
-  - api_ect_training_record_id
-  - api_mentor_training_record_id
-  - corrected_name
-  - trs_first_name
-  - trs_last_name
-  - mentor_became_ineligible_for_funding_on
-  - mentor_became_ineligible_for_funding_reason
-  - ect_payments_frozen_year
-  - mentor_payments_frozen_year
   - migration_mode
-  - pupil_premium_uplift
-  - sparsity_uplift
-  - ect_first_became_eligible_for_training_at
-  - mentor_first_became_eligible_for_training_at
-  - api_updated_at
-  - api_unfunded_mentor_updated_at
   :metadata_teachers_lead_providers:
   - id
   - teacher_id
