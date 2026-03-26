@@ -17,7 +17,6 @@ private
 
   def teacher_history_meets_premium_criteria?
     [
-      has_not_been_withdrawn_or_deferred?,
       has_not_completed_induction?,
       dates_are_in_the_right_order_for?(ecf1_teacher_history.ect&.induction_records),
       dates_are_in_the_right_order_for?(ecf1_teacher_history.mentor&.induction_records),

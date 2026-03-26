@@ -76,8 +76,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, states:) }
       let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "deferred")] }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
 
@@ -86,8 +86,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, states:) }
       let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "withdrawn")] }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
   end
@@ -101,10 +101,20 @@ describe TeacherHistoryConverter::MigrationStrategy do
     end
 
     context "when there are more than 2 induction records" do
-      let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 3) }
+      context "when the induction records overlap" do
+        let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 3) }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+        it "does not meet the criteria for premium" do
+          expect(subject.strategy).to eq(:latest_induction_records)
+        end
+      end
+
+      context "when the induction records don't overlap" do
+        let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 3, :consecutive) }
+
+        it "meets the criteria for premium" do
+          expect(subject.strategy).to eq(:all_induction_records)
+        end
       end
     end
 
@@ -113,8 +123,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records, states:) }
       let(:mentor_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "deferred")] }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
 
@@ -123,8 +133,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records, states:) }
       let(:mentor_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "withdrawn")] }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
   end
@@ -146,8 +156,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:ect_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "deferred")] }
       let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
 
@@ -157,8 +167,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:mentor_induction_records) { [FactoryBot.build(:ecf1_teacher_history_induction_record_row, training_status: "withdrawn")] }
       let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
 
