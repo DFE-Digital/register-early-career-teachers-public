@@ -20,6 +20,8 @@ module APISeedData
         statements = []
 
         active_lead_providers.each do |active_lead_provider|
+          next if active_lead_provider.contracts.empty?
+
           contract_year = active_lead_provider.contract_period.year
           year_month_pairs = statement_year_month_pairs(contract_year)
 
@@ -40,7 +42,7 @@ module APISeedData
               year:,
               deadline_date:,
               payment_date:,
-              status: status(payment_date, deadline_date),
+              status: status(payment_date),
               fee_type: statement_fee_type,
             }
 
@@ -94,10 +96,10 @@ module APISeedData
       Date.new(year, month, 25)
     end
 
-    def status(payment_date, deadline_date)
-      if payment_date < Date.current
+    def status(payment_date)
+      if payment_date.past?
         :paid
-      elsif Date.current.between?(deadline_date, payment_date)
+      elsif payment_date.prev_month.past? # create 1 payable (otherwise if today is 26th - 31st we dont create payable)
         :payable
       else
         :open
