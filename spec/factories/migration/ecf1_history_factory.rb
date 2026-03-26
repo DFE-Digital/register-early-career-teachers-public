@@ -3,7 +3,7 @@ FactoryBot.define do
     initialize_with { new(user:, ect:, mentor:) }
 
     transient do
-      cohort_year { Random.rand(2020..2119) }
+      cohort_year { 2024 }
     end
 
     user { FactoryBot.build(:ecf1_teacher_history_user) }
@@ -45,7 +45,7 @@ FactoryBot.define do
     schedule_id { SecureRandom.uuid }
     name { "ECF Standard September" }
     identifier { "ecf-standard-september" }
-    cohort_year { Random.rand(2020..2119) }
+    cohort_year { 2024 }
 
     initialize_with do
       new(schedule_id:,
@@ -72,10 +72,20 @@ FactoryBot.define do
       full_name { Faker::FunnyName.two_word_name }
     end
 
+    trait(:consecutive) do
+      sequence(:start_date) { |n| Date.new(cohort_year) + (n * 2).days }
+      sequence(:end_date) { start_date.tomorrow }
+    end
+
+    trait(:concurrent) do
+      start_date { Date.new(cohort_year, 9, 1) }
+      end_date { Date.new(cohort_year + 2, 6, 1) }
+    end
+
+    concurrent
+
     induction_record_id { SecureRandom.uuid }
-    cohort_year { Random.rand(2020..2119) }
-    start_date { Date.new(cohort_year, 9, 1) }
-    end_date { Date.new(cohort_year + 2, 6, 1) }
+    cohort_year { 2024 }
     created_at { start_date }
     updated_at { 6.months.ago }
     sequence(:school) { |n| Types::SchoolData.new(urn: 100_000 + n, name: "School #{n}") }
@@ -158,7 +168,7 @@ FactoryBot.define do
 
   factory :ecf1_teacher_history_ect, class: "ECF1TeacherHistory::ECT" do
     transient do
-      cohort_year { Random.rand(2020..2119) }
+      cohort_year { 2024 }
     end
 
     participant_profile_id { SecureRandom.uuid }
@@ -223,7 +233,7 @@ FactoryBot.define do
 
   factory :ecf1_teacher_history_mentor, class: "ECF1TeacherHistory::Mentor" do
     transient do
-      cohort_year { Random.rand(2020..2119) }
+      cohort_year { 2024 }
     end
 
     participant_profile_id { SecureRandom.uuid }
