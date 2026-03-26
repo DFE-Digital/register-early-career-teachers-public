@@ -119,6 +119,23 @@ describe TeacherHistoryConverter::Cleaner::RemoveRecordsWithMatchingWithdrawnAnd
             expect(cleaner.induction_records).to match raw_induction_records
           end
         end
+
+        context "when there is an induction record that matches the '#{state}' state created date and provider, but it is ongoing" do
+          let(:induction_record_3) do
+            FactoryBot.build(
+              :ecf1_teacher_history_induction_record_row,
+              start_date: Date.new(2022, 5, 1),
+              end_date: nil,
+              created_at: Time.zone.local(2022, 5, 1, 12, 0, 0),
+              training_status: state,
+              training_provider_info:
+            )
+          end
+
+          it "does not remove the induction record" do
+            expect(cleaner.induction_records).to match raw_induction_records
+          end
+        end
       end
     end
   end

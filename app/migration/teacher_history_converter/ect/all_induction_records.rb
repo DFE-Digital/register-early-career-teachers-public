@@ -26,10 +26,6 @@ private
     last_mentorship_period = nil
 
     induction_records.sort_by { |ir| [ir.start_date, ir.created_at] }.each do |induction_record|
-      # first_school_period = school_periods.first
-      # started_on = [first_school_period&.started_on&.-(2.days), induction_record.start_date].compact.min
-      # finished_on = [first_school_period&.started_on&.-(1.day), induction_record.end_date].compact.min
-
       started_on = induction_record.start_date
       finished_on = induction_record.end_date
 
@@ -65,24 +61,26 @@ private
         last_school_period.email = induction_record.preferred_identity_email
 
         if training_period_changed?(last_training_period, induction_record)
-          # this is a new training_period
-          # check for overlaps
-          check_and_fix_period_overlaps(last_training_period, started_on) if last_training_period.present?
+          # ignore if this induction_record is withdrawn or deferred and ongoing
+          # as this mean it's the final record and wasn't pre-washed
+          if !ongoing_withdrawal_or_deferral?(induction_record:)
+            # this is a new training_period
+            # check for overlaps
+            check_and_fix_period_overlaps(last_training_period, started_on) if last_training_period.present?
 
-          last_training_period = build_training_period(induction_record:, started_on:, finished_on:)
-          last_school_period.training_periods << last_training_period if last_training_period.present?
+            last_training_period = build_training_period(induction_record:, started_on:, finished_on:)
+            last_school_period.training_periods << last_training_period if last_training_period.present?
+          end
         elsif last_training_period.present?
           # extend training period
-          # we should check for withdrawn here and ensure we close it or not overwrite the finished_at
-          withdrawal_data = withdrawal_data(
-            training_status: induction_record.training_status,
-            lead_provider_id: induction_record.training_provider_info&.lead_provider_info&.ecf1_id
-          )
 
-          deferral_data = deferral_data(
-            training_status: induction_record.training_status,
-            lead_provider_id: induction_record.training_provider_info&.lead_provider_info&.ecf1_id
-          )
+          # we should check for withdrawn here and ensure we close it or not overwrite the finished_at
+          state_changed_at = induction_record.end_date
+          lead_provider_id = induction_record.training_provider_info&.lead_provider_info&.ecf1_id
+
+          withdrawal_data = withdrawal_data(state_changed_at:, lead_provider_id:)
+
+          deferral_data = deferral_data(state_changed_at:, lead_provider_id:)
 
           if withdrawal_data[:withdrawn_at].present?
             last_training_period.withdrawn_at = withdrawal_data[:withdrawn_at]
@@ -130,6 +128,7 @@ private
   def training_period_changed?(training_period, induction_record)
     return true if training_period.blank?
     return true if training_period.withdrawn_at.present?
+    return true if training_period.deferred_at.present?
 
     training_period.training_programme != convert_training_programme_name(induction_record.training_programme) ||
       training_period&.lead_provider_info != induction_record&.training_provider_info&.lead_provider_info ||
@@ -220,16 +219,16 @@ private
       api_transfer_updated_at:,
       combination: build_combination(induction_record:, training_programme:),
       **withdrawal_data(
-        training_status: induction_record.training_status,
+        state_changed_at: induction_record.end_date,
         lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       ),
       **deferral_data(
-        training_status: induction_record.training_status,
+        state_changed_at: induction_record.end_date,
         lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
       )
     }.merge(overrides)
 
-    # if the period is ongoing but has been withdrawn by the provider we should close the period
+    # if the period is ongoing but has been withdrawn or deferred by the provider we should close the period
     if training_attrs[:finished_on].blank? && (training_attrs[:withdrawn_at].present? || training_attrs[:deferred_at].present?)
       training_attrs[:finished_on] = [
         training_attrs[:started_on] + 1.day,
@@ -259,11 +258,15 @@ private
     OVERLAPPING_MENTOR_PERIODS_SORTING.call(overlapping_mentor_periods).last
   end
 
-  def withdrawal_data(training_status:, lead_provider_id:)
-    TeacherHistoryConverter::WithdrawalData.new(training_status:, states:, lead_provider_id:).withdrawal_data
+  def ongoing_withdrawal_or_deferral?(induction_record:)
+    induction_record.end_date.blank? && induction_record.training_status.in?(%w[withdrawn deferred])
   end
 
-  def deferral_data(training_status:, lead_provider_id:)
-    TeacherHistoryConverter::DeferralData.new(training_status:, states:, lead_provider_id:).deferral_data
+  def withdrawal_data(state_changed_at:, lead_provider_id:)
+    TeacherHistoryConverter::PremiumWithdrawalData.new(state_changed_at:, states:, lead_provider_id:).withdrawal_data
+  end
+
+  def deferral_data(state_changed_at:, lead_provider_id:)
+    TeacherHistoryConverter::PremiumDeferralData.new(state_changed_at:, states:, lead_provider_id:).deferral_data
   end
 end

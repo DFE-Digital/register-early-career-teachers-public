@@ -40,7 +40,7 @@ private
     transfers = ecf1_teacher_history.ect.transfers
     induction_completion_date = ecf1_teacher_history.ect.induction_completion_date
 
-    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, induction_completion_date:, states:, participant_type: :ect).induction_records
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, induction_completion_date:, states:, participant_type: :ect, migration_mode:).induction_records
     kwargs = { trn:, profile_id:, induction_records:, mentor_at_school_periods:, states:, transfers: }
 
     economy_mode? ? economy_ect_migrator(induction_completion_date:, **kwargs) : premium_ect_migrator(**kwargs)
@@ -75,7 +75,7 @@ private
     transfers = ecf1_teacher_history.mentor.transfers
     mentor_completion_date = ecf1_teacher_history.mentor.mentor_completion_date
 
-    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, participant_type: :mentor, states:).induction_records
+    induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, participant_type: :mentor, states:, migration_mode:).induction_records
 
     kwargs = { trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: }
 

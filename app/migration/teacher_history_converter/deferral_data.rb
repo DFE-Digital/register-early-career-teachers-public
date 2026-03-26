@@ -7,14 +7,8 @@ class TeacherHistoryConverter::DeferralData
     @lead_provider_id = lead_provider_id
   end
 
-  def cpd_lead_provider_id
-    return if lead_provider_id.nil?
-
-    Mappers::LeadProviderMapper.new(index_by: :id).get(lead_provider_id)&.cpd_lead_provider_id
-  end
-
   def deferral_data
-    return {} if cpd_lead_provider_id.blank?
+    return {} if lead_provider_id.blank?
     return {} unless training_status == "deferred"
     return {} unless states.any?
 
@@ -32,7 +26,7 @@ class TeacherHistoryConverter::DeferralData
     #
     # https://github.com/DFE-Digital/early-careers-framework/blob/main/app/serializers/api/v3/ecf/participant_serializer.rb#L37-L41
 
-    return {} unless (matching_state = states.find { it.state == "deferred" && it.cpd_lead_provider_id == cpd_lead_provider_id })
+    return {} unless (matching_state = states.find { it.state == "deferred" && it.lead_provider_id == lead_provider_id })
 
     {
       deferral_reason: ecf2_reason(matching_state.reason.to_s),
@@ -41,26 +35,6 @@ class TeacherHistoryConverter::DeferralData
   end
 
   def ecf2_reason(ecf1_reason)
-    # ECF1 reasons:
-    # * bereavement
-    # * career-break
-    # * long-term-sickness
-    # * parental-leave
-    # * other
-    # * (null)
-    #
-    # ECF2 reasons:
-    # * bereavement
-    # * career_break
-    # * long_term_sickness
-    # * parental_leave
-    # * other
-    case ecf1_reason
-    when "bereavement" then "bereavement"
-    when "career-break" then "career_break"
-    when "long-term-sickness" then "long_term_sickness"
-    when "parental-leave" then "parental_leave"
-    else "other"
-    end
+    Mappers::DeferralReasonMapper.ecf2_reason(ecf1_reason)
   end
 end
