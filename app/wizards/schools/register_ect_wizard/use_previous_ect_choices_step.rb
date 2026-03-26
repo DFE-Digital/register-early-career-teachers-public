@@ -86,14 +86,32 @@ module Schools
         contract_period = registration_contract_period
         return unless contract_period
 
-        SchoolPartnerships::FindReusablePartnership
-          .new(
-            school:,
-            lead_provider: school.last_chosen_lead_provider,
-            contract_period:
-          )
-          .call
-          &.id
+        partnership =
+          SchoolPartnerships::FindReusablePartnership
+            .new(
+              school:,
+              lead_provider: school.last_chosen_lead_provider,
+              contract_period:
+            )
+            .call
+
+        return unless reusable_partnership_allowed_for_registration_contract_period?(partnership, contract_period)
+
+        partnership.id
+      end
+
+      def reusable_partnership_allowed_for_registration_contract_period?(partnership, contract_period)
+        return false unless partnership
+        return true unless payments_frozen_reassignment?
+
+        partnership
+          .lead_provider_delivery_partnership
+          .active_lead_provider
+          .contract_period_year == contract_period.year
+      end
+
+      def payments_frozen_reassignment?
+        ect.previous_training_period&.contract_period&.payments_frozen_at.present?
       end
 
       def choices

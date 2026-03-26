@@ -3,12 +3,12 @@ RSpec.describe ContractPeriods::ForECTRegistration do
     described_class.new(
       started_on:,
       previous_training_period:,
-      reassigner:
+      reassignment:
     )
   end
 
   let(:previous_training_period) { nil }
-  let(:reassigner) { nil }
+  let(:reassignment) { nil }
 
   let!(:contract_2024) do
     FactoryBot.create(
@@ -73,10 +73,10 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       let(:started_on) { Date.new(2025, 9, 1) }
       let(:previous_training_period) { instance_double(TrainingPeriod) }
 
-      let(:reassigner) do
+      let(:reassignment) do
         instance_double(
-          ContractPeriods::Reassigner,
-          contract_period_closed?: true,
+          ContractPeriods::Reassignment,
+          required?: true,
           successor_contract_period: contract_2024
         )
       end
@@ -90,10 +90,10 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       let(:started_on) { Date.new(2025, 9, 1) }
       let(:previous_training_period) { instance_double(TrainingPeriod) }
 
-      let(:reassigner) do
+      let(:reassignment) do
         instance_double(
-          ContractPeriods::Reassigner,
-          contract_period_closed?: false
+          ContractPeriods::Reassignment,
+          required?: false
         )
       end
 
