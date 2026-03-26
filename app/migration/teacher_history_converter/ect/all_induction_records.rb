@@ -63,7 +63,7 @@ private
         if training_period_changed?(last_training_period, induction_record)
           # ignore if this induction_record is withdrawn or deferred and ongoing
           # as this mean it's the final record and wasn't pre-washed
-          if !ongoing_withdrawal_or_deferral?(induction_record:)
+          unless ongoing_withdrawal_or_deferral?(induction_record:)
             # this is a new training_period
             # check for overlaps
             check_and_fix_period_overlaps(last_training_period, started_on) if last_training_period.present?

@@ -19,7 +19,7 @@ private
 
     @raw_induction_records - records_to_remove
   end
-  
+
   # find induction_records that match the profile_state attributes but are not ongoing
   def matching_induction_records(profile_state)
     @raw_induction_records.find_all do |ir|

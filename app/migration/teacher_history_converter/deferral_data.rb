@@ -34,7 +34,5 @@ class TeacherHistoryConverter::DeferralData
     }
   end
 
-  def ecf2_reason(ecf1_reason)
-    Mappers::DeferralReasonMapper.ecf2_reason(ecf1_reason)
-  end
+  delegate :ecf2_reason, to: :'Mappers::DeferralReasonMapper'
 end

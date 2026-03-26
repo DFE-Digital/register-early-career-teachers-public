@@ -30,10 +30,8 @@ class TeacherHistoryConverter::PremiumDeferralData
       profile_state.state == "deferred" &&
         profile_state.lead_provider_id == lead_provider_id &&
         profile_state.created_on == state_changed_at.to_date
-    }.sort_by(&:created_at).last
+    }.max_by(&:created_at)
   end
 
-  def ecf2_reason(ecf1_reason)
-    Mappers::DeferralReasonMapper.ecf2_reason(ecf1_reason)
-  end
+  delegate :ecf2_reason, to: :'Mappers::DeferralReasonMapper'
 end

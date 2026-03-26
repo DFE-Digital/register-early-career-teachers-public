@@ -30,10 +30,8 @@ class TeacherHistoryConverter::PremiumWithdrawalData
       profile_state.state == "withdrawn" &&
         profile_state.lead_provider_id == lead_provider_id &&
         profile_state.created_on == state_changed_at.to_date
-    }.sort_by(&:created_at).reverse.first
+    }.max_by(&:created_at)
   end
 
-  def ecf2_reason(ecf1_reason)
-    Mappers::WithdrawalReasonMapper.ecf2_reason(ecf1_reason)
-  end
+  delegate :ecf2_reason, to: :'Mappers::WithdrawalReasonMapper'
 end
