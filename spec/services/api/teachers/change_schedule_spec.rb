@@ -152,8 +152,20 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it { is_expected.to be_valid }
 
-            it "operates on the ongoing training period, not the future one" do
-              expect(instance.send(:training_period)).to eq(training_period)
+            it "returns the ongoing training period as training_period" do
+              expect(instance.training_period).to eq(training_period)
+            end
+
+            it "returns the ongoing training period" do
+              expect(instance.ongoing_training_period).to eq(training_period)
+            end
+
+            it "returns nil for future_training_period since metadata points to the ongoing one" do
+              expect(instance.future_training_period).to be_nil
+            end
+
+            it "returns the ongoing training period as latest_training_period_from_metadata" do
+              expect(instance.latest_training_period_from_metadata).to eq(training_period)
             end
           end
 

@@ -34,15 +34,39 @@ module API::Teachers
       ).change_schedule
     end
 
-    # The metadata handler selects the training period with the latest started_on.
-    # When a future training period exists for the same lead provider, it gets selected
-    # instead of the ongoing one. We fall back to the ongoing training period so the
-    # schedule change can proceed against the correct record.
-    def training_period
-      tp = super
-      return tp unless tp&.started_on&.future?
+    # The training period with the latest started_on for this LP, from metadata.
+    def latest_training_period_from_metadata
+      return unless metadata
 
-      ongoing_training_period_for_lead_provider || tp
+      @latest_training_period_from_metadata ||=
+        case teacher_type
+        when :ect
+          metadata.latest_ect_training_period
+        when :mentor
+          metadata.latest_mentor_training_period
+        end
+    end
+
+    # The currently active training period for this LP.
+    def ongoing_training_period
+      return unless lead_provider
+
+      ongoing_training_period_for_lead_provider
+    end
+
+    # The metadata training period, only if it hasn't started yet.
+    def future_training_period
+      tp = latest_training_period_from_metadata
+      tp if tp&.started_on&.future?
+    end
+
+    # Overrides SharedAction#training_period. Metadata selects by latest started_on,
+    # which picks a future TP over an ongoing one. We prefer ongoing so the schedule
+    # change operates against the currently active record.
+    def training_period
+      return latest_training_period_from_metadata unless future_training_period
+
+      ongoing_training_period || future_training_period
     end
 
   private
@@ -112,8 +136,8 @@ module API::Teachers
     def training_period_not_finished
       return if errors[:teacher_api_id].any?
       return unless training_period
-      return if training_period.started_on.future?
-      return if training_period.ongoing_today?
+      return if future_training_period
+      return if ongoing_training_period
 
       errors.add(:teacher_api_id, SCHEDULE_CHANGE_NOT_ALLOWED)
     end
@@ -122,8 +146,7 @@ module API::Teachers
     # When no other LP is involved (e.g. a new ECT with a single future TP), the change is allowed.
     def future_training_period_not_blocked_by_another_lead_provider
       return if errors[:teacher_api_id].any?
-      return unless training_period
-      return unless training_period.started_on.future?
+      return unless future_training_period
       return unless ongoing_training_period_with_different_lead_provider?
 
       errors.add(:teacher_api_id, SCHEDULE_CHANGE_NOT_ALLOWED)
