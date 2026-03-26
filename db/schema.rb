@@ -9,6 +9,8 @@
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
+#
+# Remove this pointless comment before merging!
 
 ActiveRecord::Schema[8.0].define(version: 2026_03_07_121950) do
   # These are extensions that must be enabled in order to support this database

@@ -1,0 +1,47 @@
+name: Remind us to inform data & insights when we make changes that might impact analytics
+
+on:
+  pull_request:
+    # by default, this triggers when a PR is opened, reopened, or synchronized
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request
+    paths:
+      # this triggers when changes are made to db/schema.rb
+      - "db/schema.rb"
+
+jobs:
+  check-analytics-configuration:
+    name: Prompt the author to check the analytics configuration
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment on PR about schema changes
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+            const commentBody = `Hey @${author}, this modifies \`db/schema.rb\`. Check whether any of the changes impact the analytics configuration. If needed, discuss with @DFE-Digital/teacher-cpd-data-insights.`;
+
+            // Get all comments on the PR
+            const comments = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            // Check if a comment already exists
+            const commentExists = comments.data.some(comment =>
+              comment.body.includes('db/schema.rb') &&
+              comment.body.includes('teacher-cpd-data-insights')
+            );
+
+            // Only add a comment if one doesn't already exist
+            if (!commentExists) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }
