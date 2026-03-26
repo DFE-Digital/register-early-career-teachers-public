@@ -41,6 +41,8 @@ module ECTAtSchoolPeriods
       raise NoTrainingPeriodError if @lead_provider.blank?
 
       ActiveRecord::Base.transaction do
+        set_ect_payments_frozen_year!
+
         handle_training_period_for_switch!
 
         create_provider_led_training_period_for_ect_at_school_period!
@@ -98,6 +100,14 @@ module ECTAtSchoolPeriods
     end
 
     delegate :successor_contract_period, to: :contract_period_reassignment
+
+    def set_ect_payments_frozen_year!
+      return unless contract_period_reassignment_required?
+
+      @ect_at_school_period
+        .teacher
+        .update!(ect_payments_frozen_year: last_confirmed_provider_led_training_period.contract_period.year)
+    end
 
     def finish_training_period!
       TrainingPeriods::Finish.ect_training(
