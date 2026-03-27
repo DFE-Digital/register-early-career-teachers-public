@@ -90,6 +90,7 @@ Each declaration includes:
 - course identifier (indicates whether the declaration is for ECT or mentor training)
 - evidence held (the type of evidence a lead provider holds to verify that a participant has engaged in training)
 
+The evidence type that can be used may differ by cohort and declaration type. Check the schema in the [Swagger documentation](/api/docs/v3#/Declarations) to see which evidence types will be valid.
 Declarations cannot be submitted or voided after a cohort has closed. 
 
 Duplicate declarations cannot be submitted. If a duplicate is attempted, the API will return an error.
