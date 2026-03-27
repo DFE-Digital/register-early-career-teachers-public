@@ -11,7 +11,7 @@ Declarations are formal submissions made by lead providers to confirm that a par
 
 Declarations:
 
-- inform DfE training has taken place over a specific period of time
+- inform DfE that training has taken place over a specific period of time
 - trigger payments from DfE to lead providers
 
 The possible declaration types over the API are:
