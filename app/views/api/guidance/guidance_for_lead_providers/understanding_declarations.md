@@ -11,16 +11,15 @@ Declarations are formal submissions made by lead providers to confirm that a par
 
 Declarations:
 
-- inform DfE training has taken place
-- record participant progress across date milestones
+- inform DfE that training has taken place over a specific period of time
 - trigger payments from DfE to lead providers
 
-The possible declaration types are:
+The possible declaration types over the API are:
 
 - `started` – training began in a given period
-- `retained-1` / `retained-2` / `retained-3` / `retained-4` – participant continued training through subsequent milestones
-- `completed` – full programme finished
-- `extended-1` / `extended-2` / `extended-3` – when an ECT's training continues beyond the standard schedule (not to be used for mentors)
+- `retained-1` / `retained-2` / `retained-3` / `retained-4` – participant continued training through subsequent engagement windows
+- `completed` – engagement window criteria has been met for training
+- `extended-1` / `extended-2` / `extended-3` – when an ECT’s training is required beyond the standard schedule due to the ECT’s induction being extended (not to be used for mentors)
 
 Declaration types should ideally be submitted in order for each participant. For example, submit a `started` declaration before a `retained-1` declaration. This enables DfE to pay lead providers promptly.
 
@@ -41,7 +40,7 @@ For declarations relating to participants in pre-2025 cohorts, the declaration d
 
 ## How declarations should be ordered
 
-### For ECTs across all cohorts, the declaration types in order are:
+### For ECTs in the 2025 cohort onwards, the declaration types in order are:
 
 - `started`
 - `retained-1`
@@ -52,6 +51,18 @@ For declarations relating to participants in pre-2025 cohorts, the declaration d
 - `extended-1`
 - `extended-2`
 - `extended-3`
+
+### For 2023 or 2024 ECTs, the declaration types in order are:
+
+- `started`
+- `retained-1`
+- `retained-2`
+- `retained-3`
+- `retained-4`
+- `extended-1`
+- `extended-2`
+- `extended-3`
+- `completed`
 
 ### For mentors in the 2025 cohort onwards, the declaration types in order are:
 
@@ -75,11 +86,14 @@ Each declaration includes:
 
 - participant ID
 - declaration type
-- declaration date (aligned with what's outlined in the payment guidance)
+- declaration date (aligned with what's outlined in the payment guidance, this refers to the date the engagement has taken place during an engagement window.)
 - course identifier (indicates whether the declaration is for ECT or mentor training)
 - evidence held (the type of evidence a lead provider holds to verify that a participant has engaged in training)
 
-Declarations cannot be submitted or voided after a cohort has closed. Duplicate declarations cannot be submitted. If a duplicate is attempted, the API will return an error.
+The evidence type that can be used may differ by cohort and declaration type. Check the schema in the [Swagger documentation](/api/docs/v3#/Declarations) to see which evidence types will be valid.
+Declarations cannot be submitted or voided after a cohort has closed. 
+
+Duplicate declarations cannot be submitted. If a duplicate is attempted, the API will return an error.
 
 Providers can test they're able to submit declarations using [X-With-Server-Date](/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
@@ -87,17 +101,17 @@ See the [Swagger documentation](/api/docs/v3#/Declarations) for full details of 
 
 ### How lead providers get paid for training participants
 
-1. Participant attends training, completes training materials or shows other evidence of meeting the training milestone.
-2. Lead provider records training milestone.
-3. Lead provider submits declaration with 'retained-1' type via API.
+1. Participant engages with training and meets the evidence requirements within the engagement window.
+2. Lead provider records this internally.
+3. Lead provider submits declaration via API.
 4. API validates and links to relevant financial statement.
-5. Declaration triggers payment (if valid).
+5. Declaration triggers payment if valid.
 
-If an ECT hasn't had their eligibility for funding confirmed, because their induction hasn't been recorded as starting by an appropriate body yet, you will be unable to receive payment for the associated declarations. They will be stuck in the submitted state.
+If an ECT hasn’t had their eligibility for funding confirmed, this means that their induction hasn’t been recorded as starting by an appropriate body yet. You will be unable to receive payment for the associated declarations. They will be stuck in the 'submitted' state.
 
-Appropriate bodies will not be able to submit inductions until after the ECT has started, so expect them to stay in submitted until after the ECT should have officially started induction.
+Appropriate bodies will not be able to submit inductions until after the ECT has started. Expect declarations to stay in submitted until after the ECT should have officially started induction.
 
-Once an `induction_start_date` appears over the API, they will be eligible for funding and any submitted declarations that are valid should move to `eligible`.
+Once an `induction_start_date` appears over the API, an ECT will be eligible for funding and any submitted declarations that are valid should move to `eligible`.
 
 
 ## Declaration states
@@ -106,14 +120,14 @@ Declaration states are defined by the `state` attribute.
 
 A declaration's state value will reflect if and when DfE will pay providers for the training delivered.
 
-| state | Definition | Action |
+| state | Definition | Possible actions lead providers can take |
 |-------|------------|--------|
 | `submitted` | A declaration associated to a participant who has not yet been confirmed to be eligible for funding. An ECT's induction must be recorded as started by an appropriate body to make them eligible for funding | Providers can view and void submitted declarations |
 | `eligible` | A declaration associated with a participant who has been confirmed to be eligible for funding | Providers can view and void eligible declarations |
 | `payable` | A declaration that has been approved and is ready for payment by DfE | Providers can view and void payable declarations |
-| `voided` | A declaration that has been retracted by a provider | Providers can only view voided declarations |
+| `voided` | A declaration that has been retracted by a provider or DfE | Providers can only view voided declarations |
 | `paid` | A declaration that has been paid for by DfE | Providers can view and void paid declarations |
-| `awaiting-clawback` | A paid declaration that has since been voided by a provider | Providers can only view awaiting-clawback declarations |
+| `awaiting-clawback` | A paid declaration that has since been voided by a provider or DfE | Providers can only view awaiting-clawback declarations |
 | `clawed-back` | An awaiting-clawback declaration that has since had its value deducted from payment by DfE to a provider | Providers can only view clawed-back declarations |
 
 When a declaration is voided, it will become:
