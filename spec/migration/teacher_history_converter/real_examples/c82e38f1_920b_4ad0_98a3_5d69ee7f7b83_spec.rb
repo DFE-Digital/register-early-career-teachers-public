@@ -190,6 +190,7 @@ describe "Real data check for user c82e38f1-920b-4ad0-98a3-5d69ee7f7b83" do
     end
 
     it "matches the expected output" do
+      debugger
       expect(actual_output).to include(expected_output)
     end
   end

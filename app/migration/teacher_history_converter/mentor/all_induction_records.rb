@@ -1,14 +1,16 @@
 class TeacherHistoryConverter::Mentor::AllInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
+  include TeacherHistoryConverter::SetFinishedOn
 
-  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods
+  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods, :mentor_completion_date
 
-  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: false)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, mentor_completion_date: nil, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = induction_records
     @states = states
     @transfers = transfers
+    @mentor_completion_date = mentor_completion_date
     @exclude_training_periods = exclude_training_periods
   end
 
@@ -145,12 +147,30 @@ private
   end
 
   def build_training_period(induction_record, overrides = {})
+    # do not add training periods after the mentor completion date
+    return if mentor_completion_date.present? && induction_record.start_date < mentor_completion_date
+
     training_programme = convert_training_programme_name(induction_record.training_programme)
     return if training_programme != "provider_led"
 
     training_provider_info = induction_record.training_provider_info
 
     raise(StandardError, "No training provider info for #{induction_record.induction_record_id}") if training_provider_info.nil?
+
+    state_changed_at = induction_record.end_date
+    lead_provider_id = induction_record.training_provider_info.lead_provider_info&.ecf1_id
+    withdrawal_data = withdrawal_data(state_changed_at:, lead_provider_id:)
+    deferral_data = deferral_data(state_changed_at:, lead_provider_id:)
+
+    if overrides[:finished_on].blank?
+      overrides[:finished_on] = mentor_finished_on(
+        start_date: induction_record.start_date,
+        end_date: induction_record.end_date,
+        withdrawal_date: withdrawal_data[:withdrawn_at]&.to_date,
+        deferral_date: deferral_data[:deferred_at]&.to_date,
+        mentor_completion_date:
+      )
+    end
 
     training_attrs = {
       started_on: induction_record.start_date,
@@ -166,24 +186,9 @@ private
       schedule_info: induction_record.schedule_info,
       api_transfer_updated_at: transfers[training_provider_info.lead_provider_info.ecf1_id],
       combination: build_combination(induction_record:, training_programme:),
-      **withdrawal_data(
-        state_changed_at: induction_record.end_date,
-        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-      ),
-      **deferral_data(
-        state_changed_at: induction_record.end_date,
-        lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-      )
+      **withdrawal_data,
+      **deferral_data
     }.merge(overrides)
-
-    # if the period is ongoing but has been withdrawn or deferred by the provider we should close the period
-    if training_attrs[:finished_on].blank? && (training_attrs[:withdrawn_at].present? || training_attrs[:deferred_at].present?)
-      training_attrs[:finished_on] = [
-        training_attrs[:started_on] + 1.day,
-        training_attrs[:withdrawn_at]&.to_date,
-        training_attrs[:deferred_at]&.to_date
-      ].compact.max
-    end
 
     ECF2TeacherHistory::TrainingPeriod.new(**training_attrs)
   end
