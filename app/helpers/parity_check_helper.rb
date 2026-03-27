@@ -62,7 +62,7 @@ module ParityCheckHelper
 
     formatted_ratio = ratio.abs.to_s.chomp(".0")
 
-    return "⚖️ equal" if ratio == 1
+    return "⚖️ equal" if ratio.abs == 1
     return "🚀 #{formatted_ratio}x faster" if ratio.positive?
 
     "🐌 #{formatted_ratio}x slower"
