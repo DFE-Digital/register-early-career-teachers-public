@@ -7,11 +7,11 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
       full_name: "A Teacher",
       user_id: "f38e67d0-d01b-41ff-a197-ef58b4080a47",
       created_at: Time.zone.local(2022, 7, 22, 17, 34, 50),
-      updated_at: Time.zone.local(2026, 1, 16, 10, 2, 27),
+      updated_at: Time.zone.local(2026, 3, 2, 11, 42, 34),
       mentor: {
         participant_profile_id: "9278cc1a-29ee-4714-8ffa-4b1641a2c4df",
         created_at: Time.zone.local(2022, 7, 22, 17, 34, 50),
-        updated_at: Time.zone.local(2026, 1, 16, 10, 2, 27),
+        updated_at: Time.zone.local(2026, 3, 2, 11, 42, 34),
         mentor_completion_date: Date.new(2023, 2, 23),
         mentor_completion_reason: "completed_declaration_received",
         payments_frozen_cohort_start_year: :ignore,
@@ -35,7 +35,7 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
                 name: "Teach First"
               },
               delivery_partner: {
-                ecf1_id: "e0a93c21-86d4-4baa-badc-ced93609a625",
+                ecf1_id: "53663261-e0a3-4454-9953-37fe760254ea",
                 name: "Delivery partner 1"
               },
               cohort_year: 2021
@@ -49,14 +49,14 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
           },
           {
             start_date: Date.new(2024, 9, 1),
-            end_date: :ignore,
+            end_date: Date.new(2026, 2, 3),
             training_programme: "full_induction_programme",
-            cohort_year: 2021,
+            cohort_year: 2024,
             school: {
               urn: "100002",
               name: "School 2"
             },
-            induction_status: "completed",
+            induction_status: "changed",
             training_status: "active",
             preferred_identity_email: "a.teacher@example.com",
             mentor_profile_id: :ignore,
@@ -66,11 +66,32 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
                 name: "Education Development Trust"
               },
               delivery_partner: {
-                ecf1_id: "0c6b3c61-53ab-4d62-bf94-44fe75b06a6d",
+                ecf1_id: "371bfac2-ef05-474d-8369-2459e00bb5a1",
                 name: "Delivery partner 2"
               },
               cohort_year: 2024
             },
+            schedule_info: {
+              schedule_id: "a033708c-7aa4-4410-afbf-0e0f3f2f7466",
+              identifier: "ecf-standard-september",
+              name: "ECF Standard September",
+              cohort_year: 2024
+            }
+          },
+          {
+            start_date: Date.new(2026, 2, 3),
+            end_date: :ignore,
+            training_programme: "core_induction_programme",
+            cohort_year: 2021,
+            school: {
+              urn: "100002",
+              name: "School 2"
+            },
+            induction_status: "completed",
+            training_status: "active",
+            preferred_identity_email: "a.teacher@example.com",
+            mentor_profile_id: :ignore,
+            training_provider_info: {},
             schedule_info: {
               schedule_id: "80e0a108-d5f7-433f-8c56-27b436b4dea8",
               identifier: "ecf-standard-september",
@@ -88,6 +109,16 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
           {
             state: "active",
             reason: :ignore,
+            created_at: Time.zone.local(2022, 7, 22, 17, 34, 50)
+          }
+        ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
             created_at: Time.zone.local(2022, 7, 22, 17, 34, 50)
           }
         ]
@@ -123,11 +154,15 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
             ),
             hash_including(
               started_on: Date.new(2024, 9, 1),
-              finished_on: nil,
+              finished_on: Date.new(2026, 2, 2),
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2024, 9, 1),
-                  finished_on: Date.new(2024, 9, 2), # made into a stub because completion date already happened in 2023
+                  # This was originally made ito a stub made into a stub because mentor completion date already happened in 2023
+                  # but since then there's a new CIP induction record which we're ignoring for economy, so the new period runs
+                  # up to the day before the new starts
+                  # finished_on: Date.new(2024, 9, 2),
+                  finished_on: Date.new(2026, 2, 2),
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 2"),
                   contract_period_year: 2024

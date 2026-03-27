@@ -59,11 +59,11 @@ module Admin
           .sum(&:billable_count)
       end
 
-      def refunded(calculator)
+      def refunded_count(calculator)
         calculator.outputs.total_refundable_count
       end
 
-      def voided(calculator)
+      def voided_count(calculator)
         calculator.voided_declarations_count
       end
     end

@@ -3,11 +3,7 @@ RSpec.describe PaymentCalculator::Banded do
     described_class.new(statement: statement_july, banded_fee_structure:, declaration_selector:)
   end
 
-  let(:school_partnership) do
-    FactoryBot.create(:school_partnership, :for_year, year: Date.current.year, lead_provider:)
-  end
-
-  let(:active_lead_provider) { school_partnership.active_lead_provider }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
   let(:vat_registered) { true }
 
@@ -69,15 +65,28 @@ RSpec.describe PaymentCalculator::Banded do
     )
   end
 
-  let(:training_period) do
-    FactoryBot.create(:training_period, :for_ect, school_partnership:)
+  let(:ect_training_period) do
+    FactoryBot.create(
+      :training_period,
+      :for_ect,
+      :with_active_lead_provider,
+      active_lead_provider:
+    )
+  end
+  let(:mentor_training_period) do
+    FactoryBot.create(
+      :training_period,
+      :for_mentor,
+      :with_active_lead_provider,
+      active_lead_provider:
+    )
   end
   let!(:billable_declaration) do
     FactoryBot.create(
       :declaration,
       :payable,
       declaration_type: :started,
-      training_period:,
+      training_period: ect_training_period,
       payment_statement: statement_july
     )
   end
@@ -87,7 +96,7 @@ RSpec.describe PaymentCalculator::Banded do
       payment_status: :paid,
       clawback_status: :awaiting_clawback,
       declaration_type: :completed,
-      training_period:,
+      training_period: ect_training_period,
       payment_statement: statement_may,
       clawback_statement: statement_july
     )
@@ -97,7 +106,7 @@ RSpec.describe PaymentCalculator::Banded do
       :declaration,
       :no_payment,
       declaration_type: :completed,
-      training_period:,
+      training_period: ect_training_period,
       payment_statement: statement_july
     )
   end
@@ -106,7 +115,12 @@ RSpec.describe PaymentCalculator::Banded do
 
   describe "#outputs" do
     let(:previous_training_period) do
-      FactoryBot.create(:training_period, :for_ect, school_partnership:)
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        :with_active_lead_provider,
+        active_lead_provider:
+      )
     end
 
     let!(:previous_billable_declaration) do
@@ -274,7 +288,7 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   describe "#vat_amount" do
-    subject { banded.vat_amount }
+    subject(:vat_amount) { banded.vat_amount }
 
     let(:outputs_double) { double(total_net_amount: 200) }
     let(:uplifts_double) { double(total_net_amount: 50) }
@@ -302,10 +316,10 @@ RSpec.describe PaymentCalculator::Banded do
   end
 
   describe "#voided_declarations_count" do
+    subject(:voided_declarations_count) { banded.voided_declarations_count }
+
     context "with no voided declarations" do
-      it "returns 0" do
-        expect(banded.voided_declarations_count).to eq(0)
-      end
+      it { is_expected.to eq(0) }
     end
 
     context "with voided ECT declarations" do
@@ -314,15 +328,12 @@ RSpec.describe PaymentCalculator::Banded do
           :declaration,
           4,
           :voided,
-          :with_ect,
-          school_partnership:,
+          training_period: ect_training_period,
           payment_statement: statement_july
         )
       end
 
-      it "returns the count of voided declarations matching the selector" do
-        expect(banded.voided_declarations_count).to eq(4)
-      end
+      it { is_expected.to eq(4) }
     end
 
     context "with voided mentor declarations" do
@@ -331,15 +342,12 @@ RSpec.describe PaymentCalculator::Banded do
           :declaration,
           2,
           :voided,
-          :with_mentor,
-          school_partnership:,
+          training_period: mentor_training_period,
           payment_statement: statement_july
         )
       end
 
-      it "returns the count of voided declarations matching the selector" do
-        expect(banded.voided_declarations_count).to eq(2)
-      end
+      it { is_expected.to eq(2) }
     end
   end
 end

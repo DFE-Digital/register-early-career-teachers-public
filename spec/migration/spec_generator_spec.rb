@@ -3,6 +3,7 @@ describe SpecGenerator do
 
   let(:school_a) { { name: "School A", urn: 123_456 } }
   let(:school_b) { { name: "School B", urn: 123_457 } }
+  let(:school_c) { { name: "School C", urn: 123_458 } }
   let(:lead_provider_a) { { name: "Lead provider A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-cccccccccccc" } }
   let(:delivery_partner_a) { { name: "DeliveryPartner A", ecf1_id: "aaaaaaaa-2222-3333-aaaa-dddddddddddd" } }
   let(:lead_provider_b) { { name: "Lead provider B", ecf1_id: "bbbbbbbb-2222-3333-aaaa-cccccccccccc" } }
@@ -133,6 +134,9 @@ describe SpecGenerator do
               cohort_year: mentor_cohort_year,
             }
           }
+        ],
+        school_mentors: [
+          { school: school_c, preferred_identity_email: "test4@account.com", created_at: Time.zone.local(2024, 1, 1) }
         ]
       }
     }
@@ -340,6 +344,16 @@ describe SpecGenerator do
             expect(hash.dig(:schedule_info, :name)).to eql("ECF Replacement January")
             expect(hash.dig(:schedule_info, :cohort_year)).to be(mentor_cohort_year)
           end
+        end
+      end
+
+      it "sets up the school mentor records correctly" do
+        hash = spec_generator.ecf1_teacher_history_hash.dig(:mentor, :school_mentors, 0)
+
+        aggregate_failures do
+          expect(hash[:school]).to eql(school_c)
+          expect(hash[:preferred_identity_email]).to eql("test4@account.com")
+          expect(hash[:created_at]).to eql(Time.zone.local(2024, 1, 1))
         end
       end
     end

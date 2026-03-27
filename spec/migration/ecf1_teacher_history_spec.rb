@@ -24,8 +24,15 @@ describe ECF1TeacherHistory do
       ]
     end
 
+    let(:school_mentors) do
+      [
+        FactoryBot.build(:ecf1_school_mentor, created_at: 9.months.ago),
+        FactoryBot.build(:ecf1_school_mentor, created_at: 6.months.ago)
+      ]
+    end
+
     let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, mentor_at_school_periods:) }
-    let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records) }
+    let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, induction_records: mentor_induction_records, school_mentors:) }
 
     it "can be initialized directly with teacher history classes" do
       expect(subject.user.trn).to eq(user.trn)
@@ -33,6 +40,7 @@ describe ECF1TeacherHistory do
       expect(subject.ect.induction_records).to match_array(ect_induction_records)
       expect(subject.ect.mentor_at_school_periods).to match_array(mentor_at_school_periods)
       expect(subject.mentor.induction_records).to match_array(mentor_induction_records)
+      expect(subject.mentor.school_mentors).to match_array(school_mentors)
     end
   end
 
@@ -68,6 +76,13 @@ describe ECF1TeacherHistory do
       [
         FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile, induction_programme:, appropriate_body:, start_date: 1.month.ago, end_date: 3.weeks.ago),
         FactoryBot.create(:migration_induction_record, participant_profile: mentor_profile, induction_programme:, appropriate_body:, start_date: 3.weeks.ago, end_date: nil)
+      ]
+    end
+
+    let!(:school_mentors) do
+      [
+        FactoryBot.create(:ecf_migration_school_mentor, participant_profile: mentor_profile, created_at: 4.months.ago),
+        FactoryBot.create(:ecf_migration_school_mentor, participant_profile: mentor_profile, created_at: 3.months.ago)
       ]
     end
 
@@ -259,6 +274,25 @@ describe ECF1TeacherHistory do
               expect(historic_record.training_provider_info.delivery_partner_info.ecf1_id).to eq(induction_record.induction_programme.partnership.delivery_partner_id)
               expect(historic_record.training_provider_info.delivery_partner_info.name).to eq(induction_record.induction_programme.partnership.delivery_partner.name)
               expect(historic_record.training_provider_info.cohort_year).to eq(induction_record.induction_programme.partnership.cohort.start_year)
+            end
+          end
+        end
+      end
+
+      describe "Mentor school records" do
+        it "creates the right number" do
+          expect(history.mentor.school_mentors.count).to eq school_mentors.count
+        end
+
+        it "populates the right attributes" do
+          aggregate_failures do
+            school_mentors.each_with_index do |test_school_mentor, i|
+              teacher_history_school_mentor = subject.mentor.school_mentors[i]
+
+              expect(teacher_history_school_mentor.school.urn).to eql(test_school_mentor.school.urn)
+              expect(teacher_history_school_mentor.school.name).to eql(test_school_mentor.school.name)
+              expect(teacher_history_school_mentor.created_at).to eql(test_school_mentor.created_at)
+              expect(teacher_history_school_mentor.preferred_identity_email).to eql(test_school_mentor.preferred_identity.email)
             end
           end
         end
