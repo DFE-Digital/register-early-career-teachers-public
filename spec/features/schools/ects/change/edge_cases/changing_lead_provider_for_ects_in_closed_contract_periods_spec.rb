@@ -1,11 +1,15 @@
-describe "School user can change ECT's lead provider", :enable_schools_interface do
-  it "changes the lead provider" do
+describe "Changing lead provider when the ECT started training in a closed contract period", :enable_schools_interface do
+  before do
     given_there_is_a_school
     and_there_is_a_closed_contract_period
     and_there_is_an_open_contract_period_with_extended_schedules
-    and_there_is_a_school_partnership
+    and_there_is_a_school_partnership_in_the_closed_contract_period
     and_there_is_an_ect_who_started_in_a_closed_contract_period
     with_confirmed_provider_led_training
+  end
+
+  it "creates an expression of interest when changing the lead provider to one the school has no existing partnership with" do
+    and_there_is_another_lead_provider
     and_there_is_an_active_lead_provider_in_the_open_contract_period
     and_there_is_a_third_active_lead_provider
     and_i_am_logged_in_as_a_school_user
@@ -21,7 +25,33 @@ describe "School user can change ECT's lead provider", :enable_schools_interface
 
     when_i_confirm_the_change
     then_i_see_the_confirmation_message
-    and_a_training_period_has_been_created_in_the_open_contract_period
+    and_a_training_period_has_been_created
+    and_the_training_period_has_an_expression_of_interest_for_the_new_lead_provider
+    and_the_expression_of_interest_is_in_the_open_contract_period
+    and_the_old_training_period_has_been_finished
+    and_the_ect_has_payments_frozen_year_set
+  end
+
+  it "uses an existing partnership when changing the lead provider" do
+    and_there_is_another_lead_provider
+    and_there_is_a_school_partnership_in_the_open_contract_period
+    and_there_is_a_third_active_lead_provider
+    and_i_am_logged_in_as_a_school_user
+
+    when_i_visit_the_ect_page
+    then_i_can_change_the_assigned_lead_provider
+    and_i_see_the_change_lead_provider_form
+    and_i_can_only_see_lead_providers_from_2024_contract_periods_as_options
+
+    when_i_choose_lead_provider("Other Lead Provider")
+    and_i_continue
+    then_i_am_asked_to_check_and_confirm_the_change
+
+    when_i_confirm_the_change
+    then_i_see_the_confirmation_message
+    and_a_training_period_has_been_created
+    and_the_training_period_uses_the_existing_school_partnership
+    and_the_school_partnership_is_in_the_open_contract_period
     and_the_old_training_period_has_been_finished
     and_the_ect_has_payments_frozen_year_set
   end
@@ -57,7 +87,7 @@ private
     FactoryBot.create(:schedule, contract_period: open_contract_period, identifier: "ecf-extended-september")
   end
 
-  def and_there_is_a_school_partnership
+  def and_there_is_a_school_partnership_in_the_closed_contract_period
     @school_partnership = FactoryBot.create(:school_partnership, :with_active_lead_provider, :for_year, year: 2021, school: @school)
   end
 
@@ -74,14 +104,25 @@ private
     )
   end
 
+  def and_there_is_another_lead_provider
+    @lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
+  end
+
   def and_there_is_an_active_lead_provider_in_the_open_contract_period
-    lead_provider = FactoryBot.create(:lead_provider, name: "Other Lead Provider")
     @other_active_lead_provider = FactoryBot.create(
       :active_lead_provider,
       :for_year,
       year: 2024,
-      lead_provider:
+      lead_provider: @lead_provider
     )
+  end
+
+  def and_there_is_a_school_partnership_in_the_open_contract_period
+    @other_school_partnership = FactoryBot.create(:school_partnership,
+                                                  :with_active_lead_provider,
+                                                  :for_year, year: 2024,
+                                                             school: @school, lead_provider: @lead_provider)
+    @other_active_lead_provider = @other_school_partnership.active_lead_provider
   end
 
   def and_there_is_a_third_active_lead_provider
@@ -143,10 +184,26 @@ private
     )
   end
 
-  def and_a_training_period_has_been_created_in_the_open_contract_period
+  def and_a_training_period_has_been_created
     @ect_at_school_period.reload
-    new_training_period = @ect_at_school_period.training_periods.last
-    expect(new_training_period.expression_of_interest_contract_period.year).to eq(2024)
+    @new_training_period = @ect_at_school_period.training_periods.last
+    expect(@new_training_period).not_to eq(@provider_led_training_period)
+  end
+
+  def and_the_training_period_has_an_expression_of_interest_for_the_new_lead_provider
+    expect(@new_training_period.expression_of_interest).to eq(@other_active_lead_provider)
+  end
+
+  def and_the_expression_of_interest_is_in_the_open_contract_period
+    expect(@new_training_period.expression_of_interest_contract_period.year).to eq(2024)
+  end
+
+  def and_the_training_period_uses_the_existing_school_partnership
+    expect(@new_training_period.school_partnership).to eq(@other_school_partnership)
+  end
+
+  def and_the_school_partnership_is_in_the_open_contract_period
+    expect(@new_training_period.contract_period.year).to eq(2024)
   end
 
   def and_the_old_training_period_has_been_finished

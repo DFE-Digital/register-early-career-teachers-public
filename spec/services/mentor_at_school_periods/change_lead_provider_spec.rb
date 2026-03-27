@@ -128,7 +128,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
         let(:contract_period) { contract_period_2021 }
         let(:started_on) { Date.new(2021, 9, 1) }
 
-        it "does not assign an extended schedule to the new training period" do
+        it "does not reassign the contract period and leaves it in the closed contract period" do
           subject
 
           new_training_period = mentor_at_school_period.training_periods.ongoing.first

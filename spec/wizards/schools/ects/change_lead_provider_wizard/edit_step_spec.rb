@@ -145,7 +145,7 @@ describe Schools::ECTs::ChangeLeadProviderWizard::EditStep do
       let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2021, school:) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on:, school_partnership:) }
 
-      it "returns the active lead providers in the replacement contract period" do
+      it "only returns the active lead providers in the replacement contract period and no other year" do
         expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
       end
     end
