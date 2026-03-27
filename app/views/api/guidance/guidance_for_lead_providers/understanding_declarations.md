@@ -19,7 +19,7 @@ The possible declaration types over the API are:
 - `started` – training began in a given period
 - `retained-1` / `retained-2` / `retained-3` / `retained-4` – participant continued training through subsequent engagement windows
 - `completed` – engagement window criteria has been met for training
-- `extended-1` / `extended-2` / `extended-3` – when an ECT's training is required beyond the standard schedule due to the ECT's induction being extended (not to be used for mentors)
+- `extended-1` / `extended-2` / `extended-3` – when an ECT’s training is required beyond the standard schedule due to the ECT’s induction being extended (not to be used for mentors)
 
 Declaration types should ideally be submitted in order for each participant. For example, submit a `started` declaration before a `retained-1` declaration. This enables DfE to pay lead providers promptly.
 
