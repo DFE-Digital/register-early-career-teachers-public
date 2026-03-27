@@ -199,12 +199,14 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
           trn: "1111111",
           ect_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2023, 7, 3),
+              started_on: Date.new(2024, 1, 1),
               finished_on: Date.new(2024, 6, 11),
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2023, 7, 3),
-                  finished_on: Date.new(2024, 6, 11)
+                  started_on: Date.new(2024, 1, 1),
+                  finished_on: Date.new(2024, 6, 11),
+                  lead_provider_info: hash_including(name: "UCL Institute of Education"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 1")
                 )
               )
             ),
@@ -214,7 +216,11 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2024, 6, 12),
-                  finished_on: Date.new(2025, 6, 2)
+                  finished_on: Date.new(2025, 6, 2),
+                  lead_provider_info: hash_including(name: "UCL Institute of Education"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 1"),
+                  deferred_at: Time.zone.local(2025, 6, 2, 16, 6, 52),
+                  deferral_reason: "other"
                 )
               )
             )
