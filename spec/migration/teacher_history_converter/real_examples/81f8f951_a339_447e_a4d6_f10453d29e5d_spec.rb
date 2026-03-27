@@ -48,6 +48,16 @@ describe "Real data check for user 81f8f951-a339-447e-a4d6-f10453d29e5d (one men
             }
           }
         ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2023, 9, 6, 15, 45, 0)
+          }
+        ],
         states: [
           {
             state: "active",

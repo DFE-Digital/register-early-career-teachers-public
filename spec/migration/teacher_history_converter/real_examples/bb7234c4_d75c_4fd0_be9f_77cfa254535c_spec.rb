@@ -110,6 +110,16 @@ describe "Real data check for user bb7234c4-d75c-4fd0-be9f-77cfa254535c (one ECT
             reason: :ignore,
             created_at: Time.zone.local(2022, 7, 12, 16, 59, 38)
           }
+        ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2022, 7, 12, 16, 59, 38)
+          }
         ]
       }
     }

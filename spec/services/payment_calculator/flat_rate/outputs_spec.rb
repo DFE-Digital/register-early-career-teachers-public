@@ -1,7 +1,8 @@
 RSpec.describe PaymentCalculator::FlatRate::Outputs do
   subject(:outputs) do
     described_class.new(
-      declarations: Declaration.all,
+      billable_declarations:,
+      refundable_declarations:,
       fee_per_declaration:,
       fee_proportions:
     )
@@ -10,9 +11,23 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
   let(:fee_per_declaration) { 100.0 }
   let(:fee_proportions) { { started: 0.5, completed: 0.5 } }
 
+  let(:billable_ids) { [] }
+  let(:refundable_ids) { [] }
+  let(:billable_declarations) { Declaration.where(id: billable_ids) }
+  let(:refundable_declarations) { Declaration.where(id: refundable_ids) }
+
   before do
-    traits = %i[no_payment eligible payable paid voided awaiting_clawback clawed_back]
-    traits.each do |trait|
+    %i[eligible payable paid].each do |trait|
+      billable_ids << FactoryBot.create(:declaration, trait, declaration_type: "started").id
+      billable_ids << FactoryBot.create(:declaration, trait, declaration_type: "completed").id
+    end
+
+    %i[awaiting_clawback clawed_back].each do |trait|
+      refundable_ids << FactoryBot.create(:declaration, trait, declaration_type: "started").id
+      refundable_ids << FactoryBot.create(:declaration, trait, declaration_type: "completed").id
+    end
+
+    %i[no_payment voided].each do |trait|
       FactoryBot.create(:declaration, trait, declaration_type: "started")
       FactoryBot.create(:declaration, trait, declaration_type: "completed")
     end
@@ -20,16 +35,21 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
 
   describe "#declaration_type_outputs" do
     it "returns an output for each valid declaration type" do
-      expect(outputs.declaration_type_outputs.map(&:declaration_type)).to match_array(Declaration.all.map(&:declaration_type).uniq)
-      expect(outputs.declaration_type_outputs).to all(have_attributes(declarations: Declaration.all, fee_per_declaration:, fee_proportions:))
+      expect(outputs.declaration_type_outputs.map(&:declaration_type)).to match_array(%w[started completed])
+      expect(outputs.declaration_type_outputs).to all(have_attributes(
+                                                        billable_declarations:,
+                                                        refundable_declarations:,
+                                                        fee_per_declaration:,
+                                                        fee_proportions:
+                                                      ))
     end
   end
 
   describe "#total_billable_amount" do
     it "sums billable amounts across all declaration types" do
-      # 2x declaration types, 5x billable statuses (eligible, payable, paid, awaiting_clawback, clawed_back),
+      # 2x declaration types, 3x billable statuses (eligible, payable, paid),
       # 100.0 fee per declaration, 0.5 fee proportion for each declaration type
-      expect(outputs.total_billable_amount).to eq(2 * 5 * 100.0 * 0.5)
+      expect(outputs.total_billable_amount).to eq(2 * 3 * 100.0 * 0.5)
     end
   end
 
@@ -49,8 +69,8 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
 
   describe "#total_net_amount" do
     it "returns total_billable_amount minus total_refundable_amount" do
-      # 2x declaration types (started, completed), 5x billable - 2x refundable, 100.0 fee per declaration and fee proportion of 0.5
-      expect(outputs.total_net_amount).to eq((2 * 5 * 100.0 * 0.5) - (2 * 2 * 100.0 * 0.5))
+      # 2x declaration types (started, completed), 3x billable - 2x refundable, 100.0 fee per declaration and fee proportion of 0.5
+      expect(outputs.total_net_amount).to eq((2 * 3 * 100.0 * 0.5) - (2 * 2 * 100.0 * 0.5))
     end
   end
 

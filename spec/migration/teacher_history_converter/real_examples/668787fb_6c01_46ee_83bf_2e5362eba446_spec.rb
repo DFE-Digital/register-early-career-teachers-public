@@ -282,6 +282,16 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
             reason: :ignore,
             created_at: Time.zone.local(2025, 5, 8, 14, 47, 37)
           }
+        ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2024, 7, 11, 10, 20, 41)
+          }
         ]
       }
     }

@@ -3,16 +3,17 @@ RSpec.describe PaymentCalculator::FlatRate do
     described_class.new(statement:, flat_rate_fee_structure:, declaration_selector:, fee_proportions:)
   end
 
-  let(:school_partnership) do
-    FactoryBot.create(:school_partnership, :for_year, year: Date.current.year, lead_provider:)
-  end
-
-  let(:active_lead_provider) { school_partnership.active_lead_provider }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
   let(:vat_registered) { true }
 
   let(:mentor_training_period) do
-    FactoryBot.create(:training_period, :for_mentor, school_partnership:)
+    FactoryBot.create(
+      :training_period,
+      :for_mentor,
+      :with_active_lead_provider,
+      active_lead_provider:
+    )
   end
   let!(:mentor_billable_declaration) do
     FactoryBot.create(
@@ -42,7 +43,12 @@ RSpec.describe PaymentCalculator::FlatRate do
     )
   end
   let(:ect_training_period) do
-    FactoryBot.create(:training_period, :for_ect, school_partnership:)
+    FactoryBot.create(
+      :training_period,
+      :for_ect,
+      :with_active_lead_provider,
+      active_lead_provider:
+    )
   end
   let!(:ect_declaration) do
     FactoryBot.create(
@@ -72,7 +78,7 @@ RSpec.describe PaymentCalculator::FlatRate do
   let(:fee_proportions) { { started: 0.5, completed: 0.5 } }
 
   describe "#total_amount" do
-    subject { flat_rate.total_amount(with_vat:) }
+    subject(:total_amount) { flat_rate.total_amount(with_vat:) }
 
     before do
       allow(PaymentCalculator::FlatRate::Outputs)
@@ -108,7 +114,7 @@ RSpec.describe PaymentCalculator::FlatRate do
   end
 
   describe "#vat_amount" do
-    subject { flat_rate.vat_amount }
+    subject(:vat_amount) { flat_rate.vat_amount }
 
     before do
       allow(PaymentCalculator::FlatRate::Outputs)
@@ -130,27 +136,31 @@ RSpec.describe PaymentCalculator::FlatRate do
   end
 
   describe "#outputs" do
+    subject(:outputs) { flat_rate.outputs }
+
     it "calls the `FlatRate::Outputs` service with filtered declarations" do
       expect(PaymentCalculator::FlatRate::Outputs)
         .to receive(:new)
         .with(
-          declarations: contain_exactly(
-            mentor_billable_declaration,
+          billable_declarations: contain_exactly(
+            mentor_billable_declaration
+          ),
+          refundable_declarations: contain_exactly(
             mentor_refundable_declaration
           ),
           fee_per_declaration: flat_rate_fee_structure.fee_per_declaration,
           fee_proportions:
         )
 
-      flat_rate.outputs
+      outputs
     end
   end
 
   describe "#voided_declarations_count" do
+    subject(:voided_declarations_count) { flat_rate.voided_declarations_count }
+
     context "with no voided declarations" do
-      it "returns 0" do
-        expect(flat_rate.voided_declarations_count).to eq(0)
-      end
+      it { is_expected.to eq(0) }
     end
 
     context "with voided mentor declarations" do
@@ -159,15 +169,12 @@ RSpec.describe PaymentCalculator::FlatRate do
           :declaration,
           4,
           :voided,
-          :with_mentor,
-          school_partnership:,
+          training_period: mentor_training_period,
           payment_statement: statement
         )
       end
 
-      it "returns the count of voided declarations matching the selector" do
-        expect(flat_rate.voided_declarations_count).to eq(4)
-      end
+      it { is_expected.to eq(4) }
     end
 
     context "with voided ECT declarations" do
@@ -176,15 +183,12 @@ RSpec.describe PaymentCalculator::FlatRate do
           :declaration,
           2,
           :voided,
-          :with_ect,
-          school_partnership:,
+          training_period: ect_training_period,
           payment_statement: statement
         )
       end
 
-      it "does not count them" do
-        expect(flat_rate.voided_declarations_count).to eq(0)
-      end
+      it { is_expected.to eq(0) }
     end
   end
 end

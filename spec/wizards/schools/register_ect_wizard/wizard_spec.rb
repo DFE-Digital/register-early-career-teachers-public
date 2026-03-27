@@ -384,6 +384,21 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
         it "allows direct progression to check_answers" do
           expect(wizard.allowed_steps).to include(:check_answers)
         end
+
+        context "but then changes training programme to provider-led without selecting a lead provider" do
+          before do
+            wizard.ect.update!(training_programme: "provider_led", lead_provider_id: nil)
+            allow(wizard.ect).to receive(:provider_led?).and_return(true)
+          end
+
+          it "does not allow progression to check_answers" do
+            expect(wizard.allowed_steps).not_to include(:check_answers)
+          end
+
+          it "includes training_programme_change_lead_provider step" do
+            expect(wizard.allowed_steps).to include(:training_programme_change_lead_provider)
+          end
+        end
       end
     end
 
@@ -408,6 +423,12 @@ RSpec.describe Schools::RegisterECTWizard::Wizard do
 
       it "includes lead_provider step" do
         expect(wizard.allowed_steps).to include(:lead_provider)
+      end
+
+      context "and lead provider is not selected" do
+        it "does not allow progression to check_answers" do
+          expect(wizard.allowed_steps).not_to include(:check_answers)
+        end
       end
 
       context "and lead provider is selected" do

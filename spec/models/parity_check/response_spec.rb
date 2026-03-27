@@ -219,6 +219,20 @@ describe ParityCheck::Response do
 
       it { is_expected.to eq(-2.9) }
     end
+
+    context "when the response times are very close together (RECT faster)" do
+      let(:rect_time_ms) { 253 }
+      let(:ecf_time_ms) { 260 }
+
+      it { is_expected.to eq(1.0) }
+    end
+
+    context "when the response times are very close together (RECT slower)" do
+      let(:rect_time_ms) { 260 }
+      let(:ecf_time_ms) { 253 }
+
+      it { is_expected.to eq(-1.0) }
+    end
   end
 
   describe "#description" do

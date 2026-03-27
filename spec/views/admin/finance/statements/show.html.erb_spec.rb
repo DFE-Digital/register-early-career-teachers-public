@@ -152,14 +152,12 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     it "displays the ECF payment overview component" do
       render
 
-      expect(rendered).to have_text("Uplift fees")
-      expect(rendered).to have_text("Output payment")
-      expect(rendered).to have_text("Clawbacks")
-
-      expect(rendered).not_to have_text("ECTs output payment")
-      expect(rendered).not_to have_text("Mentors output payment")
-      expect(rendered).not_to have_text("ECTs clawbacks")
-      expect(rendered).not_to have_text("Mentors clawbacks")
+      expect(rendered).to have_css("table tr:nth-child(1) td:nth-child(1)", text: "Output payment")
+      expect(rendered).to have_css("table tr:nth-child(2) td:nth-child(1)", text: "Service fee")
+      expect(rendered).to have_css("table tr:nth-child(3) td:nth-child(1)", text: "Uplift fees")
+      expect(rendered).to have_css("table tr:nth-child(4) td:nth-child(1)", text: "Clawbacks")
+      expect(rendered).to have_css("table tr:nth-child(5) td:nth-child(1)", text: "Additional adjustments")
+      expect(rendered).to have_css("table tr:nth-child(6) td:nth-child(1)", text: "VAT")
     end
 
     it "displays clawbacks in a single table" do
@@ -175,14 +173,13 @@ RSpec.describe "admin/finance/statements/show.html.erb" do
     it "displays the ITTECF ECTP payment overview component" do
       render
 
-      expect(rendered).to have_text("ECTs output payment")
-      expect(rendered).to have_text("Mentors output payment")
-      expect(rendered).to have_text("ECTs clawbacks")
-      expect(rendered).to have_text("Mentors clawbacks")
-
-      expect(rendered).not_to have_text("Uplift fees")
-      expect(rendered).not_to have_text("Output payment")
-      expect(rendered).not_to have_text("Clawbacks")
+      expect(rendered).to have_css("table tr:nth-child(1) td:nth-child(1)", text: "ECTs output payment")
+      expect(rendered).to have_css("table tr:nth-child(2) td:nth-child(1)", text: "Mentors output payment")
+      expect(rendered).to have_css("table tr:nth-child(3) td:nth-child(1)", text: "Service fee")
+      expect(rendered).to have_css("table tr:nth-child(4) td:nth-child(1)", text: "ECTs clawbacks")
+      expect(rendered).to have_css("table tr:nth-child(5) td:nth-child(1)", text: "Mentors clawbacks")
+      expect(rendered).to have_css("table tr:nth-child(6) td:nth-child(1)", text: "Additional adjustments")
+      expect(rendered).to have_css("table tr:nth-child(7) td:nth-child(1)", text: "VAT")
     end
 
     it "displays clawbacks in separate tables" do

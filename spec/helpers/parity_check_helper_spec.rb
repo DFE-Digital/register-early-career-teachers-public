@@ -144,6 +144,12 @@ RSpec.describe ParityCheckHelper, type: :helper do
       it { is_expected.to eq("⚖️ equal") }
     end
 
+    context "when the ratio is -1" do
+      let(:ratio) { -1 }
+
+      it { is_expected.to eq("⚖️ equal") }
+    end
+
     context "when the ratio is greater than 0" do
       let(:ratio) { 2.5 }
 

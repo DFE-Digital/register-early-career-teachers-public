@@ -4,9 +4,10 @@ describe ECF2TeacherHistory do
   let(:trn) { "2345678" }
   let(:trs_first_name) { "Colin" }
   let(:trs_last_name) { "Jeavons" }
+  let(:trs_induction_start_date) { Date.yesterday }
   let(:corrected_name) { "Colin Abel Jeavons" }
   let(:migration_mode) { "latest_induction_records" }
-  let(:teacher_data) { ECF2TeacherHistory::Teacher.new(trn:, trs_first_name:, trs_last_name:, corrected_name:, migration_mode:) }
+  let(:teacher_data) { ECF2TeacherHistory::Teacher.new(trn:, trs_first_name:, trs_last_name:, trs_induction_start_date:, corrected_name:, migration_mode:) }
 
   let!(:school_a) { FactoryBot.create(:school, urn: 111_111) }
   let!(:school_b) { FactoryBot.create(:school, urn: 222_222) }
@@ -116,6 +117,7 @@ describe ECF2TeacherHistory do
           trn:,
           trs_first_name:,
           trs_last_name:,
+          trs_induction_start_date:,
           corrected_name:,
           api_id:,
           api_ect_training_record_id:,
@@ -136,6 +138,7 @@ describe ECF2TeacherHistory do
           expect(teacher.trn).to eql(trn)
           expect(teacher.trs_first_name).to eql(trs_first_name)
           expect(teacher.trs_last_name).to eql(trs_last_name)
+          expect(teacher.trs_induction_start_date).to eql(trs_induction_start_date)
           expect(teacher.corrected_name).to eql(corrected_name)
           expect(teacher.api_id).to eql(api_id)
           expect(teacher.api_ect_training_record_id).to eql(api_ect_training_record_id)
@@ -154,6 +157,7 @@ describe ECF2TeacherHistory do
             trn:,
             trs_first_name: "Old First Name",
             trs_last_name: "Old Last Name",
+            trs_induction_start_date: Date.current,
             corrected_name: nil
           )
         end
@@ -171,12 +175,13 @@ describe ECF2TeacherHistory do
           end
         end
 
-        it "does not overwrite the trs_first_name and trs_last_name fields" do
+        it "does not overwrite the trs_first_name, trs_last_name or trs_induction_start_date fields" do
           teacher = subject.save_all_ect_data!
 
           aggregate_failures do
             expect(teacher.trs_first_name).to eql("Old First Name")
             expect(teacher.trs_last_name).to eql("Old Last Name")
+            expect(teacher.trs_induction_start_date).to eql(Date.current)
           end
         end
 
