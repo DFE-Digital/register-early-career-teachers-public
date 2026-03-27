@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_27_141539) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_01_092632) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -735,6 +735,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_27_141539) do
     t.date "trs_induction_completed_date"
     t.date "trs_date_of_birth"
     t.date "fail_confirmation_sent_on"
+    t.string "trs_routes_to_professional_status_summaries", default: [], array: true
     t.index ["appropriate_body_period_id"], name: "idx_on_appropriate_body_period_id_b868757d9f"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
@@ -1020,6 +1021,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_27_141539) do
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.enum "migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
     t.boolean "trs_not_found", default: false
+    t.string "trs_routes_to_professional_status_summaries", default: [], array: true
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true

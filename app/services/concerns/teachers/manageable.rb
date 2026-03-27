@@ -39,6 +39,7 @@ module Teachers
         trs_qts_awarded_on: trs_data.trs_qts_awarded_on,
         trs_initial_teacher_training_provider_name: trs_data.trs_initial_teacher_training_provider_name,
         trs_initial_teacher_training_end_date: trs_data.trs_initial_teacher_training_end_date,
+        trs_routes_to_professional_status_summaries: trs_data.trs_routes_to_professional_status_summaries,
         trs_data_last_refreshed_at: Time.zone.now
       )
     end

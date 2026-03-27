@@ -128,6 +128,22 @@ RSpec.describe TRS::Teacher do
     }
   end
 
+  describe "#trs_routes_to_professional_status_summaries" do
+    it "returns formatted summaries from the routes to professional statuses" do
+      expect(service.trs_routes_to_professional_status_summaries).to eq(
+        ["Holds QTS from 19 Sep 2024 via Scottish Recognition"]
+      )
+    end
+
+    context "when routesToProfessionalStatuses is missing from the API response" do
+      let(:data) { {} }
+
+      it "returns an empty array" do
+        expect(service.trs_routes_to_professional_status_summaries).to eq([])
+      end
+    end
+  end
+
   describe "#to_h" do
     it "returns a hash of attributes" do
       expect(service.to_h).to eq({

@@ -451,6 +451,18 @@ describe Teacher do
     end
   end
 
+  describe "trs_routes_to_professional_status_summaries" do
+    it "defaults to an empty array" do
+      teacher = FactoryBot.create(:teacher)
+      expect(teacher.trs_routes_to_professional_status_summaries).to eq([])
+    end
+
+    it "stores and retrieves summary strings" do
+      teacher = FactoryBot.create(:teacher, trs_routes_to_professional_status_summaries: ["Holds QTS from 19 Sep 2024 via Scottish Recognition"])
+      expect(teacher.trs_routes_to_professional_status_summaries).to eq(["Holds QTS from 19 Sep 2024 via Scottish Recognition"])
+    end
+  end
+
   describe "normalizing" do
     subject { FactoryBot.build(:teacher, corrected_name: " Tobias Menzies ") }
 

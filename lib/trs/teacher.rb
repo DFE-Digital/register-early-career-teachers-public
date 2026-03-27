@@ -47,7 +47,7 @@ module TRS
       @trs_national_insurance_number = data["nationalInsuranceNumber"]
       @trs_alerts = data.fetch("alerts", []).map { |a| a.dig(*%w[alertType alertCategory alertCategoryId]) }
       @trs_qtls_status = data["qtlsStatus"]
-      @trs_routes_to_professional_status = data["routesToProfessionalStatuses"]
+      @trs_routes_to_professional_status = data.fetch("routesToProfessionalStatuses", [])
       @trs_induction_start_date = data.dig("induction", "startDate")
       @trs_induction_completed_date = data.dig("induction", "completedDate")
       @trs_induction_status = data.dig("induction", "status")
@@ -93,6 +93,10 @@ module TRS
       true
     end
 
+    def trs_routes_to_professional_status_summaries
+      QualificationRoute.to_summary(trs_routes_to_professional_status)
+    end
+
     # @return [Hash] splatted into PendingInductionSubmissions and wizard SessionRepositories
     def to_h
       {
@@ -107,6 +111,7 @@ module TRS
         trs_qts_status_description:,
         trs_initial_teacher_training_provider_name:,
         trs_initial_teacher_training_end_date:,
+        trs_routes_to_professional_status_summaries:,
         trs_alerts:,
         trs_prohibited_from_teaching:,
       }

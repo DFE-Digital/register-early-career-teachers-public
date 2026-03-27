@@ -56,6 +56,7 @@ shared:
     - mentor_first_became_eligible_for_training_at
     - api_updated_at
     - api_unfunded_mentor_updated_at
+    - trs_routes_to_professional_status_summaries
   :users:
     - id
     - name

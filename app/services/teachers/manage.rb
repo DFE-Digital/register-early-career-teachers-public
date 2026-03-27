@@ -69,13 +69,14 @@ class Teachers::Manage
     end
   end
 
-  def update_trs_attributes!(trs_qts_status_description:, trs_qts_awarded_on:, trs_initial_teacher_training_provider_name:, trs_initial_teacher_training_end_date:, trs_data_last_refreshed_at:)
+  def update_trs_attributes!(trs_qts_status_description:, trs_qts_awarded_on:, trs_initial_teacher_training_provider_name:, trs_initial_teacher_training_end_date:, trs_routes_to_professional_status_summaries:, trs_data_last_refreshed_at:)
     Teacher.transaction do
       teacher.assign_attributes(
         trs_qts_status_description:,
         trs_qts_awarded_on:,
         trs_initial_teacher_training_provider_name:,
-        trs_initial_teacher_training_end_date:
+        trs_initial_teacher_training_end_date:,
+        trs_routes_to_professional_status_summaries:
       )
 
       record_teacher_trs_attribute_update(modifications: teacher.changes)
