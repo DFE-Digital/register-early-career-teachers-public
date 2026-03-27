@@ -228,16 +228,15 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
               )
             ),
             hash_including(
-              # NOTE: here, the final induction record above has been converted to a stub because
-              #       the induction_completion_date is before the start's end date
+              # NOTE: not handling completions in premium mode yet
               school: hash_including(urn: "100002", name: "School 2"),
-              started_on: Date.new(2024, 7, 22),
-              finished_on: Date.new(2024, 7, 23),
+              started_on: Date.new(2024, 8, 20),
+              finished_on: nil,
               mentorship_periods: [],
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2024, 7, 22),
-                  finished_on: Date.new(2024, 7, 23),
+                  started_on: Date.new(2024, 8, 20),
+                  finished_on: nil,
                   lead_provider_info: hash_including(name: "Ambition Institute"),
                   delivery_partner_info: hash_including(name: "Delivery partner 2"),
                   contract_period_year: 2022

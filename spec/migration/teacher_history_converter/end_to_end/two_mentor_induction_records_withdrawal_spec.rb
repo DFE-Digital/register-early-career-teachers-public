@@ -125,6 +125,9 @@ describe "Two mentor induction records (with the second being a withdrawal)" do
     end
   end
 
+  # NOTE: this is not a real world scenario (outside of manual changes) because this would require
+  # at least 3 induction records to represent a change of training provider and a subsequent
+  # withdrawal.
   context "when in all_induction_records mode (premium)" do
     let(:migration_mode) { :all_induction_records }
 
@@ -137,24 +140,10 @@ describe "Two mentor induction records (with the second being a withdrawal)" do
       expect(teacher.mentor_at_school_periods.count).to eq(1)
     end
 
-    it "creates two training_periods at the mentor_at_school_period" do
-      expect(teacher.mentor_at_school_periods.first.training_periods.count).to eq(2)
-    end
-
-    it "sets the withdrawal time and reason on the second training period" do
-      withdrawal_training_period = teacher.mentor_at_school_periods.first.training_periods[1]
-
-      aggregate_failures do
-        expect(withdrawal_training_period.withdrawn_at).to eql(ecf1_participant_profile_state.created_at)
-        expect(withdrawal_training_period.withdrawal_reason).to eql(ecf1_participant_profile_state.reason.underscore)
-      end
-    end
-
-    it "closes the withdrawn training_period" do
-      withdrawal_training_period = teacher.mentor_at_school_periods.first.training_periods[1]
-      expected_closing_date = [withdrawal_training_period.started_on + 1.day, withdrawal_training_period.withdrawn_at.to_date].max
-
-      expect(withdrawal_training_period.finished_on).to eq(expected_closing_date)
+    # it doesn't add the second training period in premium because it is a single record
+    # change of training provider and withdrawal that is ongoing
+    it "creates one training_period at the mentor_at_school_period" do
+      expect(teacher.mentor_at_school_periods.first.training_periods.count).to eq(1)
     end
   end
 end

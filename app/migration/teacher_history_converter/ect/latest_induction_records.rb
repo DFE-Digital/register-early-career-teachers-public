@@ -100,15 +100,11 @@ private
       api_transfer_updated_at = transfers[training_provider_info.lead_provider_info.ecf1_id]
     end
 
-    deferral_attrs = deferral_data(
-      training_status: induction_record.training_status,
-      lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-    )
+    training_status = induction_record.training_status
+    lead_provider_id = training_provider_info&.lead_provider_info&.ecf1_id
 
-    withdrawal_attrs = withdrawal_data(
-      training_status: induction_record.training_status,
-      lead_provider_id: training_provider_info&.lead_provider_info&.ecf1_id
-    )
+    deferral_attrs = deferral_data(training_status:, lead_provider_id:)
+    withdrawal_attrs = withdrawal_data(training_status:, lead_provider_id:)
 
     if overrides[:finished_on].blank?
       overrides[:finished_on] = ect_finished_on(
