@@ -106,7 +106,7 @@ See the [Swagger documentation](/api/docs/v3#/Declarations) for full details of 
 4. API validates and links to relevant financial statement.
 5. Declaration triggers payment if valid.
 
-If an ECT hasn't had their eligibility for funding confirmed, their induction hasn't been recorded as starting by an appropriate body yet. You will be unable to receive payment for the associated declarations. They will be stuck in the submitted state.
+If an ECT hasn’t had their eligibility for funding confirmed, this means that their induction hasn’t been recorded as starting by an appropriate body yet. You will be unable to receive payment for the associated declarations. They will be stuck in the 'submitted' state.
 
 Appropriate bodies will not be able to submit inductions until after the ECT has started. Expect declarations to stay in submitted until after the ECT should have officially started induction.
 
