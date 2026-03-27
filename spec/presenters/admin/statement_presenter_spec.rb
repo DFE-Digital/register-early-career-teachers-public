@@ -9,7 +9,7 @@ describe Admin::StatementPresenter do
     end
 
     context "when the month is invalid" do
-      let(:statement) { FactoryBot.build(:statement, month: 13, year: 2023) }
+      let(:statement) { FactoryBot.build(:statement, month: 13, year: 2023, deadline_date: Date.new(2023, 1, 31), payment_date: Date.new(2023, 1, 25)) }
 
       it "raises an IndexError" do
         expect { subject.period }.to raise_error(IndexError)
