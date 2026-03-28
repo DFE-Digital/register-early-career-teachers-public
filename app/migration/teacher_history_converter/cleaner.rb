@@ -34,6 +34,7 @@ private
       .then { fix_zero_day_periods(it) }
       .then { override_first_start_date_with_creation_date_if_earlier(it) }
       .then { override_first_start_date_for_induction_record_introduction(it) }
+      .then { remove_future_withdrawn_or_deferred_records(it) }
   end
 
   def premium_clean!
@@ -85,5 +86,9 @@ private
 
   def remove_records_with_matching_withdrawn_and_deferred_states(induction_records)
     TeacherHistoryConverter::Cleaner::RemoveRecordsWithMatchingWithdrawnAndDeferredStates.new(induction_records, states:).induction_records
+  end
+
+  def remove_future_withdrawn_or_deferred_records(induction_records)
+    TeacherHistoryConverter::Cleaner::RemoveFutureWithdrawnOrDeferredRecords.new(induction_records).induction_records
   end
 end
