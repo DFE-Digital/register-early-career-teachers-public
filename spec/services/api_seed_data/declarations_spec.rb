@@ -3,13 +3,17 @@ RSpec.describe APISeedData::Declarations do
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
 
-  let(:ect_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2023) }
-  let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership: ect_school_partnership) }
-  let!(:ect_active_lead_provider) { ect_training_period.school_partnership.active_lead_provider }
+  let(:contract_period) { FactoryBot.create(:contract_period, year: 2023) }
 
-  let(:mentor_school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: 2023) }
-  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, school_partnership: mentor_school_partnership) }
-  let!(:mentor_active_lead_provider) { mentor_training_period.school_partnership.active_lead_provider }
+  let(:ect_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+  let(:ect_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: ect_active_lead_provider) }
+  let(:ect_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: ect_lead_provider_delivery_partnership) }
+  let!(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership: ect_school_partnership) }
+
+  let(:mentor_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+  let(:mentor_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: mentor_active_lead_provider) }
+  let(:mentor_school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership: mentor_lead_provider_delivery_partnership) }
+  let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, school_partnership: mentor_school_partnership) }
 
   before do
     stub_const("#{described_class}::MAX_TEACHERS_WITH_DECLARATIONS", 1)
