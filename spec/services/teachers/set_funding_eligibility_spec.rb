@@ -16,7 +16,12 @@ RSpec.describe Teachers::SetFundingEligibility do
                                             :ongoing,
                                             ect_at_school_period:)
         FactoryBot.create(:declaration, training_period:)
-        FactoryBot.create(:statement, :open, active_lead_provider: training_period.active_lead_provider)
+        FactoryBot.create(:statement, :open, :output_fee,
+                          active_lead_provider: training_period.active_lead_provider,
+                          month: 1.month.from_now.month,
+                          year: 1.month.from_now.year,
+                          deadline_date: 1.month.from_now.to_date,
+                          payment_date: 2.months.from_now.to_date)
       end
 
       context "when `ect_first_became_eligible_for_training_at` is not already set" do
@@ -67,7 +72,12 @@ RSpec.describe Teachers::SetFundingEligibility do
                                             :ongoing,
                                             mentor_at_school_period:)
         FactoryBot.create(:declaration, training_period:)
-        FactoryBot.create(:statement, :open, active_lead_provider: training_period.active_lead_provider)
+        FactoryBot.create(:statement, :open, :output_fee,
+                          active_lead_provider: training_period.active_lead_provider,
+                          month: 1.month.from_now.month,
+                          year: 1.month.from_now.year,
+                          deadline_date: 1.month.from_now.to_date,
+                          payment_date: 2.months.from_now.to_date)
       end
 
       context "when `mentor_first_became_eligible_for_training_at` is not already set" do
@@ -167,7 +177,12 @@ RSpec.describe Teachers::SetFundingEligibility do
                                             :ongoing,
                                             ect_at_school_period:)
         FactoryBot.create(:declaration, training_period:)
-        FactoryBot.create(:statement, :open, active_lead_provider: training_period.active_lead_provider)
+        FactoryBot.create(:statement, :open, :output_fee,
+                          active_lead_provider: training_period.active_lead_provider,
+                          month: 1.month.from_now.month,
+                          year: 1.month.from_now.year,
+                          deadline_date: 1.month.from_now.to_date,
+                          payment_date: 2.months.from_now.to_date)
 
         mentor_at_school_period = FactoryBot.create(:mentor_at_school_period,
                                                     teacher:,
@@ -178,7 +193,12 @@ RSpec.describe Teachers::SetFundingEligibility do
                                             :ongoing,
                                             mentor_at_school_period:)
         FactoryBot.create(:declaration, training_period:)
-        FactoryBot.create(:statement, :open, active_lead_provider: training_period.active_lead_provider)
+        FactoryBot.create(:statement, :open, :output_fee,
+                          active_lead_provider: training_period.active_lead_provider,
+                          month: 1.month.from_now.month,
+                          year: 1.month.from_now.year,
+                          deadline_date: 1.month.from_now.to_date,
+                          payment_date: 2.months.from_now.to_date)
       end
 
       it "calls `Declarations::Actions::MarkDeclarationsEligible` service" do
