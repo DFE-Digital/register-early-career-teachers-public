@@ -6,6 +6,9 @@ module Schools
       include Wizardable
       wizard_for :mentor
 
+      before_action -> { redirect_to @wizard.previous_step_path },
+                    if: -> { @current_step == :check_answers && session[form_key].blank? }
+
       def new
         render @current_step
       end

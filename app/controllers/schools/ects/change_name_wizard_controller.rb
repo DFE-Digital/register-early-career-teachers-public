@@ -7,6 +7,9 @@ module Schools
 
       wizard_for :ect
 
+      before_action -> { redirect_to @wizard.previous_step_path },
+                    if: -> { @current_step == :check_answers && session[form_key].blank? }
+
       def new
         render @current_step
       end
