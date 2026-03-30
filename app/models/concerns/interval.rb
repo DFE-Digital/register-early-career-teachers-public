@@ -55,12 +55,12 @@ module Interval
     errors.add(:finished_on, "The end date must be later than the start date (#{started_on.to_fs(:govuk)})") if invalid_date_order?
   end
 
-  def overlap_validation(name:, scope: nil)
+  def overlap_validation(name:)
     return unless has_overlap_with_siblings?
 
-    if siblings.any? { |s| s.range.include?(started_on) && (scope.nil? || s.public_send(scope) == public_send(scope)) }
+    if siblings.any? { |s| s.range.include?(started_on) }
       errors.add(:started_on, "Start date cannot overlap another #{name} period")
-    elsif siblings.any? { |s| s.range.include?(finished_on) && (scope.nil? || s.public_send(scope) == public_send(scope)) }
+    elsif siblings.any? { |s| s.range.include?(finished_on) }
       errors.add(:finished_on, "End date cannot overlap another #{name} period")
     end
   end

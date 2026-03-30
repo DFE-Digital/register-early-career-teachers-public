@@ -79,7 +79,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
 private
 
   def teacher_school_distinct_period
-    overlap_validation(name: "Teacher School Mentor", scope: :school_id)
+    overlap_validation(name: "Teacher School Mentor")
   end
 
   def latest_mentor_at_school_period?
