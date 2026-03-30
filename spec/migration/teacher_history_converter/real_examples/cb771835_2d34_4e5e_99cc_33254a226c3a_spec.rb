@@ -171,51 +171,6 @@ describe "Real data check for user cb771835-2d34-4e5e-99cc-33254a226c3a" do
                 )
               )
             ),
-            hash_including(
-              started_on: Date.new(2024, 11, 21),
-              finished_on: nil,
-              school: {
-                urn: "100005",
-                name: "School 5"
-              },
-              training_periods: []
-            ),
-            hash_including(
-              started_on: Date.new(2024, 11, 21),
-              finished_on: nil,
-              school: {
-                urn: "100006",
-                name: "School 6"
-              },
-              training_periods: []
-            ),
-            hash_including(
-              started_on: Date.new(2024, 11, 21),
-              finished_on: nil,
-              school: {
-                urn: "100001",
-                name: "School 1"
-              },
-              training_periods: []
-            ),
-            hash_including(
-              started_on: Date.new(2024, 11, 21),
-              finished_on: nil,
-              school: {
-                urn: "100002",
-                name: "School 2"
-              },
-              training_periods: []
-            ),
-            hash_including(
-              started_on: Date.new(2024, 11, 21),
-              finished_on: nil,
-              school: {
-                urn: "100007",
-                name: "School 7"
-              },
-              training_periods: []
-            )
           )
         )
       }

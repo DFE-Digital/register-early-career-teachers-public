@@ -69,23 +69,13 @@ describe "One induction record (end to end, existing mentor)" do
     end
 
     it "creates a single mentor_at_school_period linked to the teacher at the right school" do
-      mentor_at_school_periods = teacher.mentor_at_school_periods.where(school: ecf2_school)
+      mentor_at_school_periods = teacher.mentor_at_school_periods
       mentor_at_school_period = mentor_at_school_periods.first
 
       aggregate_failures do
         expect(mentor_at_school_periods.count).to be(1)
 
         expect(mentor_at_school_period.school.urn).to eql(ecf1_urn)
-      end
-    end
-
-    it "creates an extra mentor_at_school_period linked to the teacher and the extra school_mentor school" do
-      mentor_at_school_periods = teacher.mentor_at_school_periods.where.not(school: ecf2_school)
-      mentor_at_school_period = mentor_at_school_periods.first
-
-      aggregate_failures do
-        expect(mentor_at_school_periods.count).to be(1)
-        expect(mentor_at_school_period.school).to eql(ecf2_extra_school)
       end
     end
 
