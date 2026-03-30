@@ -1,0 +1,21 @@
+<% page_data(
+  title: "ECTs leaving your appropriate body",
+  backlink_href: ab_tasks_path
+) %>
+
+<p class="govuk-body">
+  The school has reported that the ECTs are leaving or have left.
+  You can release the ECT if you are no longer responsible for them.
+</p>
+<%= govuk_section_break(visible: false, size: "l") %>
+
+<%= render TasksIndex::SearchSectionComponent.new(
+  query: @query,
+  form_url: ab_tasks_leavers_path
+) %>
+
+<%= render TasksIndex::TableSectionComponent.new(
+  ect_at_school_periods: @ect_at_school_periods,
+  pagy: @pagy,
+  row_component: TasksIndex::Leavers::TableRowComponent
+) %>

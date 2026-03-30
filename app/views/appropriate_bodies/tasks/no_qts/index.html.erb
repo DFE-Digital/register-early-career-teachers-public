@@ -1,0 +1,20 @@
+<% page_data(
+  title: "ECTs without qualified teacher status (QTS)",
+  backlink_href: ab_tasks_path
+) %>
+
+<p class="govuk-body">
+  You cannot claim these ECTs until their QTS award has been verified by the school.
+</p>
+<%= govuk_section_break(visible: false, size: "l") %>
+
+<%= render TasksIndex::SearchSectionComponent.new(
+  query: @query,
+  form_url: ab_tasks_no_qts_path
+) %>
+
+<%= render TasksIndex::TableSectionComponent.new(
+  ect_at_school_periods: @ect_at_school_periods,
+  pagy: @pagy,
+  row_component: TasksIndex::NoQts::TableRowComponent
+) %>

@@ -79,6 +79,28 @@ class ECTAtSchoolPeriod < ApplicationRecord
       SQL
       .where(induction_periods: { id: nil })
   }
+  scope :claimed_by_school_reported_appropriate_body, -> {
+    where.not(school_reported_appropriate_body_id: nil)
+      .joins(:teacher)
+      .joins(<<~SQL)
+        INNER JOIN induction_periods
+          ON induction_periods.teacher_id = ect_at_school_periods.teacher_id
+          AND induction_periods.finished_on IS NULL
+          AND induction_periods.appropriate_body_period_id = ect_at_school_periods.school_reported_appropriate_body_id
+      SQL
+  }
+  scope :without_ongoing_period_at_same_appropriate_body, -> {
+    where(<<~SQL)
+      NOT EXISTS (
+        SELECT 1 FROM ect_at_school_periods AS ongoing_periods
+        WHERE ongoing_periods.teacher_id = ect_at_school_periods.teacher_id
+        AND ongoing_periods.id != ect_at_school_periods.id
+        AND ongoing_periods.finished_on IS NULL
+        AND ongoing_periods.school_reported_appropriate_body_id = ect_at_school_periods.school_reported_appropriate_body_id
+      )
+    SQL
+  }
+  scope :marked_as_leaving_without_ongoing_period_at_same_appropriate_body, -> { finished.without_ongoing_period_at_same_appropriate_body }
   scope :induction_not_completed, -> {
     joins("LEFT JOIN teachers AS induction_teachers ON induction_teachers.id = ect_at_school_periods.teacher_id")
     .where(
