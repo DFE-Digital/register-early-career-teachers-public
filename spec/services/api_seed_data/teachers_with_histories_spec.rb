@@ -11,10 +11,12 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     stub_const("#{described_class}::NUMBER_OF_RECORDS", 2)
 
-    # Ensure the default and other schedules exist for some contract periods
+    # Ensure the default and another schedule exist for the contract periods
+    # of the school partnerships.
     school_partnerships.each do |school_partnership|
-      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
-      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: Schedule.excluding_replacement_schedules.identifiers.keys.sample)
+      schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
+      other_identifier = Schedule.excluding_replacement_schedules.identifiers.keys.excluding(schedule.identifier).sample
+      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: other_identifier)
     end
   end
 
@@ -33,6 +35,9 @@ RSpec.describe APISeedData::TeachersWithHistories do
       before do
         stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
         stub_const("#{described_class}::SCHEDULE_RATIO", 0.0)
+        # Avoid creating extra teachers as we cycle the schedules based on
+        # the number of teachers and that can make the assertion flaky.
+        stub_const("#{described_class}::TEACHER_ID_CHANGE_RATIO", 0.0)
       end
 
       it "creates correct data" do
