@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_07_121950) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_27_141539) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -948,6 +948,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_07_121950) do
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.bigint "contract_id", null: false
     t.index ["contract_id"], name: "index_statements_on_contract_id"
+    t.index ["payment_date"], name: "index_statements_on_payment_date"
   end
 
   create_table "support_queries", force: :cascade do |t|
