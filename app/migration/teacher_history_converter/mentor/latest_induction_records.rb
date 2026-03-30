@@ -6,28 +6,35 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
   include TeacherHistoryConverter::SetFinishedOn
 
-  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods, :mentor_completion_date
+  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :school_mentors, :exclude_training_periods, :mentor_completion_date
 
-  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, mentor_completion_date:, exclude_training_periods: false)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, mentor_completion_date:, school_mentors:, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = latest_induction_records(induction_records:)
     @states = states
     @transfers = transfers
+    @school_mentors = school_mentors
     @exclude_training_periods = exclude_training_periods
     @mentor_completion_date = mentor_completion_date
   end
 
   # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
   def mentor_at_school_periods
-    @mentor_at_school_periods ||= induction_records
-                                 .reverse
-                                 .each_with_object([]) do |induction_record, periods|
-                                   process(periods, induction_record)
-    end
+    @mentor_at_school_periods ||= build_mentor_at_school_periods
   end
 
 private
+
+  def build_mentor_at_school_periods
+    school_periods = induction_records
+                       .reverse
+                       .each_with_object([]) do |induction_record, periods|
+                         process(periods, induction_record)
+    end
+
+    school_periods + pooled_mentor_at_school_periods(excluded_schools: school_periods.map(&:school).map(&:urn))
+  end
 
   # Add a new school_period period to the beginning of mentor_at_school_periods with:
   #  - start_date: the earliest of the induction_record.start_date and the first school_period start_date - 2.days
@@ -111,6 +118,17 @@ private
   def build_combination(induction_record:, **overrides)
     ECF2TeacherHistory::Combination
       .from_induction_record(trn:, profile_id:, profile_type: "mentor", induction_record:, **overrides)
+  end
+
+  def pooled_mentor_at_school_periods(excluded_schools:)
+    school_mentors.reject { excluded_schools.include?(it.school[:urn]) }.map do |school_mentor|
+      ECF2TeacherHistory::MentorAtSchoolPeriod.new(
+        started_on: school_mentor.created_at.to_date,
+        finished_on: nil,
+        school: school_mentor.school,
+        email: school_mentor.preferred_identity_email
+      )
+    end
   end
 
   def withdrawal_data(training_status:, lead_provider_id:)

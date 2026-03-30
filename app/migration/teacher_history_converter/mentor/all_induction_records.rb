@@ -1,14 +1,15 @@
 class TeacherHistoryConverter::Mentor::AllInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
 
-  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods
+  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :school_mentors, :exclude_training_periods
 
-  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods: false)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, school_mentors:, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = induction_records
     @states = states
     @transfers = transfers
+    @school_mentors = school_mentors
     @exclude_training_periods = exclude_training_periods
   end
 
@@ -101,7 +102,18 @@ private
       end
     end
 
-    school_periods
+    school_periods + pooled_mentor_at_school_periods(excluded_schools: school_periods.map(&:school).map(&:urn))
+  end
+
+  def pooled_mentor_at_school_periods(excluded_schools:)
+    school_mentors.reject { excluded_schools.include?(it.school[:urn]) }.map do |school_mentor|
+      ECF2TeacherHistory::MentorAtSchoolPeriod.new(
+        started_on: school_mentor.created_at.to_date,
+        finished_on: nil,
+        school: school_mentor.school,
+        email: school_mentor.preferred_identity_email
+      )
+    end
   end
 
   def training_period_changed?(training_period, induction_record)
