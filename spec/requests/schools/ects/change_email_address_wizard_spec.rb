@@ -126,6 +126,20 @@ describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_in
         end
       end
 
+      context "when the session store is empty on check-answers" do
+        it "redirects to the edit step" do
+          get path_for_step("check-answers")
+
+          expect(response).to redirect_to(path_for_step("edit"))
+        end
+
+        it "redirects to the edit step on POST" do
+          post path_for_step("check-answers")
+
+          expect(response).to redirect_to(path_for_step("edit"))
+        end
+      end
+
       context "when the email is unchanged" do
         it "returns unprocessable_content" do
           subject
