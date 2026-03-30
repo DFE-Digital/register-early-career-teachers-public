@@ -2,8 +2,10 @@ RSpec.describe APISeedData::TeachersWithHistories do
   let(:instance) { described_class.new }
   let(:environment) { "sandbox" }
   let(:logger) { instance_double(Logger, info: nil, "formatter=" => nil, "level=" => nil) }
-  let!(:school_partnerships) { FactoryBot.create_list(:school_partnership, 5) }
-  let!(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body, 5) }
+  let!(:school_partnerships) { FactoryBot.create_list(:school_partnership, 2) }
+  let!(:appropriate_bodies) { FactoryBot.create_list(:appropriate_body, 2) }
+  let(:expected_teachers_per_iteration) { 2 } # ECT and mentor
+  let(:expected_number_of_teachers) { described_class::NUMBER_OF_RECORDS * school_partnerships.count * expected_teachers_per_iteration }
 
   before do
     allow(Logger).to receive(:new).with($stdout) { logger }
@@ -11,10 +13,12 @@ RSpec.describe APISeedData::TeachersWithHistories do
 
     stub_const("#{described_class}::NUMBER_OF_RECORDS", 2)
 
-    # Ensure the default and other schedules exist for some contract periods
+    # Ensure the default and another schedule exist for the contract periods
+    # of the school partnerships.
     school_partnerships.each do |school_partnership|
-      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
-      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: Schedule.excluding_replacement_schedules.identifiers.keys.sample)
+      schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
+      other_identifier = Schedule.excluding_replacement_schedules.identifiers.keys.excluding(schedule.identifier).sample
+      FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: other_identifier)
     end
   end
 
@@ -33,6 +37,9 @@ RSpec.describe APISeedData::TeachersWithHistories do
       before do
         stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
         stub_const("#{described_class}::SCHEDULE_RATIO", 0.0)
+        # Avoid creating extra teachers as we cycle the schedules based on
+        # the number of teachers and that can make the assertion flaky.
+        stub_const("#{described_class}::TEACHER_ID_CHANGE_RATIO", 0.0)
       end
 
       it "creates correct data" do
@@ -95,18 +102,25 @@ RSpec.describe APISeedData::TeachersWithHistories do
     end
 
     context "when creating ECTAtSchoolPeriod records" do
-      before { stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0) }
+      let(:expected_teachers_per_iteration) { 1 } # ECT only
 
-      it { expect { plant }.to change(ECTAtSchoolPeriod, :count).by(10) }
+      before do
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::OPTIONAL_ECT_TRAINING_RATIO", 0.0)
+      end
+
+      it { expect { plant }.to change(ECTAtSchoolPeriod, :count).by(expected_number_of_teachers) }
     end
 
     context "when creating MentorAtSchoolPeriod records" do
+      let(:expected_teachers_per_iteration) { 1 } # Mentor only
+
       before do
         stub_const("#{described_class}::ECT_MENTOR_RATIO", 0.0)
         stub_const("#{described_class}::ASSIGN_ECT_TO_MENTOR_RATIO", 1.0)
       end
 
-      it { expect { plant }.to change(MentorAtSchoolPeriod, :count).by(10) }
+      it { expect { plant }.to change(MentorAtSchoolPeriod, :count).by(expected_number_of_teachers) }
     end
 
     context "when assigning ECTs to Mentors" do
@@ -147,7 +161,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
         stub_const("#{described_class}::FINISHED_PERIOD_RATIO", 0.0)
       end
 
-      it { expect { plant }.to change(TrainingPeriod.where(finished_on: nil), :count).by(20) }
+      it { expect { plant }.to change(TrainingPeriod.where(finished_on: nil), :count).by(expected_number_of_teachers) }
     end
 
     context "when creating TrainingPeriod records with a finished_on" do
@@ -157,7 +171,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
         stub_const("#{described_class}::FINISHED_PERIOD_RATIO", 1.0)
       end
 
-      it { expect { plant }.to change(TrainingPeriod.where.not(finished_on: nil), :count).by(20) }
+      it { expect { plant }.to change(TrainingPeriod.where.not(finished_on: nil), :count).by(expected_number_of_teachers) }
     end
 
     context "when creating withdrawn TrainingPeriod records" do
@@ -174,7 +188,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
         travel_to Date.new(latest_contract_period.year, 12, 31)
       end
 
-      it { expect { plant }.to change(TrainingPeriod.where.not(withdrawn_at: nil), :count).by(20) }
+      it { expect { plant }.to change(TrainingPeriod.where.not(withdrawn_at: nil), :count).by(expected_number_of_teachers) }
     end
 
     context "when creating deferred TrainingPeriod records" do
@@ -192,7 +206,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
         travel_to Date.new(latest_contract_period.year, 12, 31)
       end
 
-      it { expect { plant }.to change(TrainingPeriod.where.not(deferred_at: nil), :count).by(20) }
+      it { expect { plant }.to change(TrainingPeriod.where.not(deferred_at: nil), :count).by(expected_number_of_teachers) }
     end
 
     context "when creating active TrainingPeriod records" do
@@ -205,7 +219,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
         stub_const("#{described_class}::DEFERRED_RATIO", 0.0)
       end
 
-      it { expect { plant }.to change(TrainingPeriod.where(deferred_at: nil, withdrawn_at: nil), :count).by(20) }
+      it { expect { plant }.to change(TrainingPeriod.where(deferred_at: nil, withdrawn_at: nil), :count).by(expected_number_of_teachers) }
     end
 
     context "when creating teachers with induction period" do
