@@ -285,6 +285,34 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
     end
 
+    context "when the previous training period is provider-led in payments frozen contract period (2022)" do
+      let!(:contract_period_2022) { create_contract_period(year: 2022, payments_frozen: true) }
+      let!(:contract_period_2024) { create_contract_period(year: 2024) }
+      let!(:contract_period_2025) { create_contract_period(year: 2025) }
+
+      let(:start_date) { contract_period_2025.started_on.to_s }
+
+      let!(:lead_provider_2024) { FactoryBot.create(:lead_provider, name: "LP 2024") }
+      let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
+
+      let(:previous_training_period) do
+        build_previous_training_period_double(
+          provider_led: true,
+          contract_period: contract_period_2022
+        )
+      end
+
+      before do
+        create_active_lead_provider(contract_period: contract_period_2024, lead_provider: lead_provider_2024)
+        create_active_lead_provider(contract_period: contract_period_2025, lead_provider: lead_provider_2025)
+        stub_previous_training(previous_training_period, previous_ect_period:)
+      end
+
+      it "returns lead providers for the 2024 contract period" do
+        expect(queries.lead_providers_within_contract_period.map(&:name)).to contain_exactly("LP 2024")
+      end
+    end
+
     context "when the previous training period is provider-led in a non-frozen contract period" do
       let!(:contract_period_2021) { create_contract_period(year: 2021) }
       let!(:contract_period_2025) { create_contract_period(year: 2025) }
@@ -378,6 +406,37 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         build_previous_training_period_double(
           provider_led: true,
           contract_period: contract_period_2021,
+          lead_provider:
+        )
+      end
+
+      let!(:school_partnership_2024) { create_school_partnership(year: 2024, school:, lead_provider:) }
+      let!(:school_partnership_2025) { create_school_partnership(year: 2025, school:, lead_provider:) }
+      let!(:other_school_partnership_2024) { create_school_partnership(year: 2024, school:, lead_provider: other_lead_provider) }
+
+      before do
+        registration_store.lead_provider_id = lead_provider.id
+        stub_previous_training(previous_training_period, previous_ect_period:)
+      end
+
+      it "returns partnerships for the reassigned 2024 contract period" do
+        expect(queries.lead_provider_partnerships_for_contract_period(school:))
+          .to contain_exactly(school_partnership_2024)
+      end
+    end
+
+    context "when the previous training period is provider-led in payments frozen contract period (2022)" do
+      let!(:contract_period_2022) { create_contract_period(year: 2022, payments_frozen: true) }
+
+      let(:start_date) { Date.new(2025, 9, 1).to_s }
+      let(:school) { FactoryBot.create(:school) }
+      let(:lead_provider) { FactoryBot.create(:lead_provider) }
+      let(:other_lead_provider) { FactoryBot.create(:lead_provider) }
+
+      let(:previous_training_period) do
+        build_previous_training_period_double(
+          provider_led: true,
+          contract_period: contract_period_2022,
           lead_provider:
         )
       end
