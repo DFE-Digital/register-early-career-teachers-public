@@ -278,6 +278,66 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
               expect(ect_enrolment["deferral"]).to eq({ "date" => ect_training_period.deferred_at.utc.rfc3339, "reason" => "bereavement" })
             end
           end
+
+          context "when reassigned from a closed contract period" do
+            let!(:closed_contract_period) do
+              FactoryBot.create(
+                :contract_period,
+                year: 2021,
+                started_on: Date.new(2021, 9, 1),
+                finished_on: Date.new(2022, 8, 31),
+                enabled: false
+              )
+            end
+
+            let!(:contract_period_2024) do
+              FactoryBot.create(:contract_period, :with_schedules, year: 2024)
+            end
+
+            let!(:schedule_2024) do
+              FactoryBot.create(:schedule, contract_period: contract_period_2024)
+            end
+
+            before do
+              teacher.update!(ect_payments_frozen_year: closed_contract_period.year)
+
+              delivery_partner = ect_training_period.school_partnership.delivery_partner
+
+              active_lead_provider_2024 = FactoryBot.create(
+                :active_lead_provider,
+                lead_provider:,
+                contract_period: contract_period_2024
+              )
+
+              lead_provider_delivery_partnership_2024 = FactoryBot.create(
+                :lead_provider_delivery_partnership,
+                active_lead_provider: active_lead_provider_2024,
+                delivery_partner:
+              )
+
+              school_partnership_2024 = FactoryBot.create(
+                :school_partnership,
+                school: ect_at_school_period.school,
+                lead_provider_delivery_partnership: lead_provider_delivery_partnership_2024
+              )
+
+              ect_training_period.update!(
+                school_partnership: school_partnership_2024,
+                schedule: schedule_2024
+              )
+
+              FactoryBot.create(
+                :school_funding_eligibility,
+                school: ect_at_school_period.school,
+                contract_period: contract_period_2024
+              )
+            end
+
+            it "returns cohort 2024 and marks cohort_changed_after_payments_frozen as true" do
+              expect(ect_enrolment["cohort"]).to eq(contract_period_2024.year.to_s)
+              expect(ect_enrolment["cohort_changed_after_payments_frozen"]).to be(true)
+            end
+          end
         end
 
         describe "mentor enrolment" do
