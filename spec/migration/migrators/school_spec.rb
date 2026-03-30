@@ -34,13 +34,33 @@ describe Migrators::School do
 
     def create_resource(migration_resource) = create_gias_school(migration_resource)
 
-    def setup_failure_state = create_migration_resource
+    def setup_failure_state
+      ecf_school = create_migration_resource
+      gias_school = create_resource(ecf_school)
+
+      gias_school.update!(section_41_approved: !ecf_school.section_41_approved)
+    end
   end
 
   describe "#migrate!" do
     let!(:data_migration) { FactoryBot.create(:data_migration, model: :school, worker: 0) }
 
     context "when the ECF school can't be found in RECT" do
+      context "when the GIAS school can't be created from the ECF school" do
+        let!(:induction_record) { FactoryBot.create(:migration_induction_record) }
+        let!(:ecf_school) { induction_record.school.tap { it.update!(school_status_name: "open") } }
+
+        before do
+          allow(::GIAS::School).to receive(:create!).and_raise(ActiveRecord::ActiveRecordError, "can't create school!")
+        end
+
+        it "logs a failure" do
+          expect { described_class.new(worker: 0).migrate! }.not_to change(GIAS::School, :count)
+          failure_messages = data_migration.migration_failures.pluck(:failure_message)
+          expect(failure_messages).to contain_exactly("Failed to find or build a GIAS school for school with urn #{ecf_school.urn} (#{ecf_school.name}): can't create school!")
+        end
+      end
+
       context "when the school is closed and with induction records" do
         let!(:induction_record) { FactoryBot.create(:migration_induction_record) }
         let!(:ecf_school) { induction_record.school }
@@ -56,13 +76,13 @@ describe Migrators::School do
         end
       end
 
-      context "when the school is open and with partnerships" do
+      context "when the school is closed and with an unchallenged partnerships" do
         let!(:partnership) { FactoryBot.create(:migration_partnership) }
         let!(:ecf_school) { partnership.school }
         let(:rect_school) { School.find_by_urn(ecf_school.urn) }
 
         before do
-          ecf_school.update!(school_status_code: 1, school_type_code: 10, school_status_name: "open", school_type_name: "Community school")
+          ecf_school.update!(school_status_code: 1, school_type_code: 10, school_status_name: "closed", school_type_name: "Community school")
         end
 
         it "migrates it to RECT" do
@@ -71,18 +91,22 @@ describe Migrators::School do
         end
       end
 
-      context "when the school has no partnerships or induction records" do
-        let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_status_name: "open", school_type_code: 10) }
+      context "when the school is closed and with an challenged partnerships" do
+        let!(:partnership) { FactoryBot.create(:migration_partnership, challenged_at: 1.month.ago) }
+        let!(:ecf_school) { partnership.school }
+        let(:rect_school) { School.find_by_urn(ecf_school.urn) }
 
         before do
-          described_class.new(worker: 0).migrate!
+          ecf_school.update!(school_status_code: 1, school_type_code: 10, school_status_name: "closed", school_type_name: "Community school")
         end
 
-        it "adds an error" do
-          expect(data_migration.reload.failure_count).to eq(1)
-          expect(data_migration.migration_failures.count).to eq(1)
-          expect(data_migration.migration_failures.first.failure_message).to eq(":school_missing - School #{ecf_school.urn} (#{ecf_school.name}) missing on RECT!")
-        end
+        it { expect { described_class.new(worker: 0).migrate! }.not_to change(School, :count) }
+      end
+
+      context "when the school has no partnerships or induction records and is not returned by the API" do
+        let!(:ecf_school) { FactoryBot.create(:ecf_migration_school, school_status_code: 1, school_status_name: "open", school_type_code: 10) }
+
+        it { expect { described_class.new(worker: 0).migrate! }.not_to change(School, :count) }
       end
     end
 
@@ -124,14 +148,14 @@ describe Migrators::School do
       it "adds mismatch errors" do
         expect(data_migration.reload.failure_count).to eq(1)
         expect(failure_messages)
-          .to contain_exactly(":administrative_district_name - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'administrative_district_name': 'AD1' on ECF whilst 'AAD1' expected on RECT!",
-                              ":eligible - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'eligible': 'false' on ECF whilst 'true' expected on RECT!",
-                              ":in_england - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'in_england': 'false' on ECF whilst 'true' expected on RECT!",
-                              ":phase_name - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'phase_name': 'Phase one' on ECF whilst 'Another Phase one' expected on RECT!",
-                              ":section_41_approved - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'section_41_approved': 'false' on ECF whilst 'true' expected on RECT!",
-                              ":status - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'status': 'open' on ECF whilst 'closed' expected on RECT!",
-                              ":type_name - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'type_name': 'Type one' on ECF whilst 'Academy converter' expected on RECT!",
-                              ":ukprn - School #{gias_school.urn} (#{gias_school.name}) mismatch value on field named 'ukprn': '12345' on ECF whilst '54321' expected on RECT!")
+          .to contain_exactly(":administrative_district_name - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'administrative_district_name': 'AD1' on ECF whilst 'AAD1' expected on RECT!",
+                              ":eligible - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'eligible': 'false' on ECF whilst 'true' expected on RECT!",
+                              ":in_england - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'in_england': 'false' on ECF whilst 'true' expected on RECT!",
+                              ":phase_name - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'phase_name': 'Phase one' on ECF whilst 'Another Phase one' expected on RECT!",
+                              ":section_41_approved - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'section_41_approved': 'false' on ECF whilst 'true' expected on RECT!",
+                              ":status - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'status': 'open' on ECF whilst 'closed' expected on RECT!",
+                              ":type_name - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'type_name': 'Type one' on ECF whilst 'Academy converter' expected on RECT!",
+                              ":ukprn - School #{ecf_school.urn} (#{ecf_school.name}) mismatch value on field named 'ukprn': '12345' on ECF whilst '54321' expected on RECT!")
       end
 
       {
