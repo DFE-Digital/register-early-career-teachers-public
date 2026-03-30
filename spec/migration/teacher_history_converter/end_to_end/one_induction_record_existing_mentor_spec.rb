@@ -10,12 +10,16 @@ describe "One induction record (end to end, existing mentor)" do
   # ECF1 data
   let(:ecf1_participant_profile) { FactoryBot.create(:migration_participant_profile, :mentor, mentor_completion_date:, mentor_completion_reason:) }
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
+  let(:ecf1_school) { ecf1_induction_programme.school_cohort.school }
   let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round, participant_profile: ecf1_participant_profile) }
   let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
   let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
+  let(:ecf1_school_mentor) { FactoryBot.create(:ecf_migration_school_mentor, participant_profile: ecf1_participant_profile, created_at: ecf1_induction_record.start_date, school: ecf1_school) }
+  let(:ecf1_extra_school_mentor) { FactoryBot.create(:ecf_migration_school_mentor, participant_profile: ecf1_participant_profile) }
 
   # ECF2 data
   let(:ecf2_school) { ecf2_gias_school.school }
+  let(:ecf2_extra_school) { ecf2_extra_gias_school.school }
   let(:ecf2_contract_period) { FactoryBot.create(:contract_period, year: ecf1_induction_record.induction_programme.school_cohort.cohort.start_year) }
   let(:ecf2_lead_provider) { FactoryBot.create(:lead_provider, name: ecf1_induction_programme.partnership.lead_provider.name, ecf_id: ecf1_induction_programme.partnership.lead_provider_id) }
   let(:ecf2_delivery_partner) { FactoryBot.create(:delivery_partner, name: ecf1_induction_programme.partnership.delivery_partner.name, api_id: ecf1_induction_programme.partnership.delivery_partner_id) }
@@ -24,6 +28,7 @@ describe "One induction record (end to end, existing mentor)" do
 
   let!(:ecf2_teacher) { FactoryBot.create(:teacher, trn: ecf1_teacher_profile.trn, created_at: original_teacher_created_at, trs_first_name: "Janet", trs_last_name: "Fielding") }
   let!(:ecf2_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: ecf1_urn) }
+  let!(:ecf2_extra_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: ecf1_extra_school_mentor.school.urn) }
   let!(:ecf2_schedule) { FactoryBot.create(:schedule, contract_period: ecf2_contract_period, identifier: ecf1_induction_record.schedule.schedule_identifier) }
   let!(:ecf2_school_partnership) { FactoryBot.create(:school_partnership, school: ecf2_school, lead_provider_delivery_partnership: ecf2_lead_provider_delivery_partnership) }
 
@@ -33,6 +38,7 @@ describe "One induction record (end to end, existing mentor)" do
 
   before do
     ecf1_teacher_profile.user.update!(created_at: user_created_at)
+    ecf1_participant_profile.school_mentors = [ecf1_school_mentor, ecf1_extra_school_mentor]
 
     ecf2_teacher_history = teacher_history_converter.convert_to_ecf2!
     ecf2_teacher_history.save_all_mentor_data!
@@ -63,13 +69,23 @@ describe "One induction record (end to end, existing mentor)" do
     end
 
     it "creates a single mentor_at_school_period linked to the teacher at the right school" do
-      mentor_at_school_periods = teacher.mentor_at_school_periods
+      mentor_at_school_periods = teacher.mentor_at_school_periods.where(school: ecf2_school)
       mentor_at_school_period = mentor_at_school_periods.first
 
       aggregate_failures do
         expect(mentor_at_school_periods.count).to be(1)
 
         expect(mentor_at_school_period.school.urn).to eql(ecf1_urn)
+      end
+    end
+
+    it "creates an extra mentor_at_school_period linked to the teacher and the extra school_mentor school" do
+      mentor_at_school_periods = teacher.mentor_at_school_periods.where.not(school: ecf2_school)
+      mentor_at_school_period = mentor_at_school_periods.first
+
+      aggregate_failures do
+        expect(mentor_at_school_periods.count).to be(1)
+        expect(mentor_at_school_period.school).to eql(ecf2_extra_school)
       end
     end
 
@@ -101,13 +117,23 @@ describe "One induction record (end to end, existing mentor)" do
     end
 
     it "creates a single mentor_at_school_period linked to the teacher at the right school" do
-      mentor_at_school_periods = teacher.mentor_at_school_periods
+      mentor_at_school_periods = teacher.mentor_at_school_periods.where(school: ecf2_school)
       mentor_at_school_period = mentor_at_school_periods.first
 
       aggregate_failures do
         expect(mentor_at_school_periods.count).to be(1)
 
         expect(mentor_at_school_period.school.urn).to eql(ecf1_urn)
+      end
+    end
+
+    it "creates an extra mentor_at_school_period linked to the teacher and the extra school_mentor school" do
+      mentor_at_school_periods = teacher.mentor_at_school_periods.where.not(school: ecf2_school)
+      mentor_at_school_period = mentor_at_school_periods.first
+
+      aggregate_failures do
+        expect(mentor_at_school_periods.count).to be(1)
+        expect(mentor_at_school_period.school).to eql(ecf2_extra_school)
       end
     end
 
