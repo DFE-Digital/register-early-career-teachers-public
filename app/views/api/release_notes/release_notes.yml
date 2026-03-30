@@ -21,10 +21,24 @@
 #
 #     **bold** and _italic_ text
 
+- title: You can submit schedule or cohort changes even you are not the current or most recent lead provider for an ECT or mentor
+  date: 2026-03-30
+  tags:
+    - sandbox-release
+    - production-release
+  body: |
+    
+    In API specification point 19.1 we told you when we moved to the Register ECTs API, only the most recent lead provider can update a schedule or cohort. If you try to do this and the participant has a newer lead provider, you’ll get a validation error. This also meant as the new lead provider you will not be able to change their schedule or cohort until the date they're supposed to start with you has elapsed.
+
+    However, in testing we realised we fixed some functionality in the change schedule endpoint that means as the newer lead provider you can still make cohort or schedule changes to an ECT or mentor that hasn't started with you yet (has a participant_status of 'joining'). This means if you need to update this information before they officially start training with you, you should be able to. This will not impact the cohort or schedule the participant is set to with the old lead provider or how they can submit declarations.    
+    
+    ## What's changed
+
 - title: Uplift fees for early career teachers (ECTs) and mentors are now fixed
   date: 2026-02-23
   tags:
     - sandbox-release
+    - production-release
   body: |
     We've now fixed how uplift fees are shown for early career teachers and mentors.
     
