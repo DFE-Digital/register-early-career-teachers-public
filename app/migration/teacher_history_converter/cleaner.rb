@@ -24,7 +24,8 @@ private
   end
 
   def economy_clean!
-    remove_british_schools_overseas(@raw_induction_records)
+    @raw_induction_records
+      .then { remove_british_schools_overseas(it) }
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
       .then { remove_provider_led_ect_without_partnerships(it) }
@@ -38,7 +39,8 @@ private
   end
 
   def premium_clean!
-    remove_british_schools_overseas(@raw_induction_records)
+    @raw_induction_records
+      .then { remove_british_schools_overseas(it) }
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
       .then { remove_records_with_matching_withdrawn_and_deferred_states(it) }
