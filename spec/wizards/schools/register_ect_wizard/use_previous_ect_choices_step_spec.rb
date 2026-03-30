@@ -44,12 +44,19 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
     allow(SchoolPartnerships::FindReusablePartnership).to receive(:new).and_return(finder)
   end
 
-  def reassignable_provider_led_training_period(step, contract_period:)
+  def reassignable_provider_led_training_period(
+    step,
+    contract_period:,
+    expression_of_interest_id: nil,
+    started_on: Date.new(2021, 9, 1)
+  )
     instance_double(
       TrainingPeriod,
       provider_led_training_programme?: true,
+      training_programme: "provider_led",
       contract_period:,
-      expression_of_interest_contract_period: nil
+      expression_of_interest_id:,
+      started_on:
     ).tap do |previous_training_period|
       allow(step.ect).to receive(:previous_training_period).and_return(previous_training_period)
     end
@@ -202,6 +209,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         context "and only an earlier-year compatible partnership exists" do
           let!(:delivery_partner_alpha) { FactoryBot.create(:delivery_partner) }
 
+          let(:previous_training_period) do
+            reassignable_provider_led_training_period(
+              step,
+              contract_period: frozen_contract_period,
+              expression_of_interest_id: nil
+            )
+          end
+
           let!(:active_lead_provider_2024) do
             FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
           end
@@ -232,6 +247,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
         context "and only a later-year compatible partnership exists" do
           let!(:delivery_partner_alpha) { FactoryBot.create(:delivery_partner) }
+
+          let(:previous_training_period) do
+            reassignable_provider_led_training_period(
+              step,
+              contract_period: frozen_contract_period,
+              expression_of_interest_id: nil
+            )
+          end
 
           let!(:active_lead_provider_2024) do
             FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
@@ -273,6 +296,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             )
           end
 
+          let(:previous_training_period) do
+            reassignable_provider_led_training_period(
+              step,
+              contract_period: frozen_contract_period,
+              expression_of_interest_id: previous_year_active_lead_provider.id
+            )
+          end
+
           let!(:previous_year_active_lead_provider) do
             FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: frozen_contract_period)
           end
@@ -281,29 +312,16 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
           end
 
-          let!(:ect_at_school_period) do
-            FactoryBot.create(
-              :ect_at_school_period,
-              school:,
-              started_on: Date.new(2021, 9, 1),
-              finished_on: nil
-            )
-          end
-
-          before do
-            FactoryBot.create(
-              :training_period,
-              ect_at_school_period:,
-              training_programme: "provider_led",
-              expression_of_interest: previous_year_active_lead_provider,
-              school_partnership: nil,
-              started_on: Date.new(2021, 9, 1),
-              finished_on: nil
-            )
-          end
-
           it "is allowed via EOI fallback" do
             expect(step.allowed?).to be(true)
+          end
+
+          it "has no reusable partnership id" do
+            expect(step.reusable_partnership_id).to be_nil
+          end
+
+          it "uses the reassigned registration contract period" do
+            expect(step.registration_contract_period).to eq(reassigned_contract_period)
           end
         end
       end
@@ -342,6 +360,14 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
 
         it "is allowed" do
           expect(step.allowed?).to be(true)
+        end
+
+        it "has no reusable partnership id" do
+          expect(step.reusable_partnership_id).to be_nil
+        end
+
+        it "treats reuse as available" do
+          expect(step.reusable_available?).to be(true)
         end
 
         context "with a start date on the last day of the next contract period, when today is the end of the current period" do

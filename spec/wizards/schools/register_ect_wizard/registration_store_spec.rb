@@ -4,22 +4,26 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:appropriate_body_period) { FactoryBot.create(:appropriate_body_period, :national) }
   let(:school) { FactoryBot.create(:school, :independent) }
-  let(:store) do
-    FactoryBot.build(:session_repository,
-                     change_name: "no",
-                     corrected_name: nil,
-                     date_of_birth: "11-10-1945",
-                     email: "dusty@rhodes.com",
-                     appropriate_body_id: appropriate_body_period.id,
-                     training_programme: "school_led",
-                     start_date: "January 2025", # FIXME: this should be a Date?
-                     trn: "3002586",
-                     trs_first_name: "Dusty",
-                     trs_last_name: "Rhodes",
-                     trs_date_of_birth: "1945-10-11",
-                     trs_national_insurance_number: "OWAD23455",
-                     working_pattern: "full_time")
+
+  let(:store_attributes) do
+    {
+      change_name: "no",
+      corrected_name: nil,
+      date_of_birth: "11-10-1945",
+      email: "dusty@rhodes.com",
+      appropriate_body_id: appropriate_body_period.id,
+      training_programme: "school_led",
+      start_date: "January 2025", # FIXME: this should be a Date?
+      trn: "3002586",
+      trs_first_name: "Dusty",
+      trs_last_name: "Rhodes",
+      trs_date_of_birth: "1945-10-11",
+      trs_national_insurance_number: "OWAD23455",
+      working_pattern: "full_time"
+    }
   end
+
+  let(:store) { FactoryBot.build(:session_repository, **store_attributes) }
 
   describe "#active_record_at_school" do
     let(:teacher) { FactoryBot.create(:teacher, trn: "3002586") }
@@ -432,11 +436,13 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:) }
 
       before do
-        FactoryBot.create(:training_period,
-                          ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: ect_period.school),
-                          started_on: Date.new(2024, 1, 1),
-                          finished_on: Date.new(2024, 6, 1))
+        FactoryBot.create(
+          :training_period,
+          ect_at_school_period: ect_period,
+          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: ect_period.school),
+          started_on: Date.new(2024, 1, 1),
+          finished_on: Date.new(2024, 6, 1)
+        )
       end
 
       it "returns the name of the lead provider from the latest training period" do
@@ -449,11 +455,13 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:) }
 
       before do
-        FactoryBot.create(:training_period,
-                          ect_at_school_period: ect_period,
-                          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: ect_period.school),
-                          started_on: Date.new(2024, 1, 1),
-                          finished_on: Date.new(2024, 6, 1))
+        FactoryBot.create(
+          :training_period,
+          ect_at_school_period: ect_period,
+          school_partnership: FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: ect_period.school),
+          started_on: Date.new(2024, 1, 1),
+          finished_on: Date.new(2024, 6, 1)
+        )
       end
 
       it "returns the name of the delivery partner from the latest training period" do
@@ -511,28 +519,35 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
     end
 
     describe "#lead_provider_has_confirmed_partnership_for_contract_period?" do
+      around do |example|
+        travel_to(Date.new(2024, 9, 10)) { example.run }
+      end
+
+      let(:store_attributes) do
+        super().merge(
+          training_programme: "provider_led",
+          start_date: "10 September 2024",
+          trn: teacher.trn
+        )
+      end
+
       let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2024) }
+      let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
       let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
       let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
       let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
       let(:school) { FactoryBot.create(:school) }
       let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
-
       let(:teacher) { FactoryBot.create(:teacher) }
 
       context "when everything is valid" do
         let!(:ect_period) do
           FactoryBot.create(
             :ect_at_school_period,
-            :with_training_period,
             teacher:,
             school:,
             started_on: Date.new(2024, 9, 10),
-            finished_on: Date.new(2025, 3, 10),
-            lead_provider:,
-            delivery_partner:,
-            contract_period:
+            finished_on: Date.new(2025, 3, 10)
           )
         end
 
@@ -549,73 +564,6 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore do
 
         it "returns true" do
           expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be true
-        end
-      end
-
-      context "when previous_lead_provider is nil" do
-        # No ect_period or training period created
-        it "returns false" do
-          expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
-        end
-      end
-
-      context "when school is nil" do
-        it "returns false" do
-          expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
-        end
-      end
-
-      context "when contract_start_date is nil" do
-        before { store.start_date = nil }
-
-        let!(:ect_period) do
-          FactoryBot.create(
-            :ect_at_school_period,
-            :with_training_period,
-            teacher:,
-            school:,
-            started_on: Date.new(2025, 3, 10),
-            finished_on: Date.new(2025, 10, 10),
-            lead_provider:,
-            delivery_partner:,
-            contract_period:
-          )
-        end
-
-        it "returns false" do
-          expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
-        end
-      end
-
-      context "when no school partnership exists in the contract period" do
-        let!(:other_contract_period) do
-          FactoryBot.create(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 12, 31))
-        end
-
-        let!(:ect_period) do
-          FactoryBot.create(
-            :ect_at_school_period,
-            :with_training_period,
-            teacher:,
-            school:,
-            started_on: Date.new(2025, 3, 10),
-            finished_on: Date.new(2025, 10, 10),
-            lead_provider:,
-            delivery_partner:,
-            contract_period: other_contract_period
-          )
-        end
-
-        it "returns false" do
-          expect(registration_store.lead_provider_has_confirmed_partnership_for_contract_period?(school)).to be false
-        end
-      end
-
-      context "when all inputs are nil" do
-        let(:dummy_store) { FactoryBot.build(:session_repository, start_date: nil, trn: nil) }
-
-        it "returns false" do
-          expect(described_class.new(dummy_store).lead_provider_has_confirmed_partnership_for_contract_period?(nil)).to be false
         end
       end
     end

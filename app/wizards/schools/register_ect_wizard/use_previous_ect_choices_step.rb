@@ -150,13 +150,13 @@ module Schools
       def most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
         return unless contract_period
 
-        TrainingPeriod
-          .at_school(school)
-          .where(training_programme: "provider_led")
-          .where.not(expression_of_interest_id: nil)
-          .where("training_periods.started_on <= ?", contract_period.finished_on)
-          .order(started_on: :desc, id: :desc)
-          .first
+        training_period = ect.previous_training_period
+        return unless training_period
+        return unless training_period.training_programme == "provider_led"
+        return if training_period.expression_of_interest_id.blank?
+        return if training_period.started_on > contract_period.finished_on
+
+        training_period
       end
     end
   end
