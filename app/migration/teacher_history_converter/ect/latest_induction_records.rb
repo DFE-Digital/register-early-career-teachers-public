@@ -78,6 +78,8 @@ private
       mentorship_started_on = [ect_started_on, mentor_started_on].max
       mentorship_finished_on = [ect_finished_on, mentor_finished_on].compact.min
 
+      return if mentorship_started_on == mentorship_finished_on
+
       ECF2TeacherHistory::MentorshipPeriod.new(
         started_on: mentorship_started_on,
         finished_on: mentorship_finished_on,
