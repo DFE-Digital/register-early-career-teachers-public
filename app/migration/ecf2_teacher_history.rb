@@ -123,8 +123,6 @@ class ECF2TeacherHistory
   end
 
   def record_failure!(teacher:, model:, message:, migration_item_id:)
-    @failed = true
-
     record_failed_combinations(at_school_period: model, message:) if model.respond_to?(:training_periods)
     record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
     record_failed_mentorship(mentorship: model, message:) if model.is_a?(ECF2TeacherHistory::MentorshipPeriod)
@@ -223,7 +221,7 @@ private
         end
 
         ect_at_school_period.mentorship_periods.each do |mentorship_period|
-          with_failure_recording(teacher: found_teacher, model: mentorship_period, migration_item_id: mentorship_period.ecf_start_induction_record_id) do
+          with_failure_recording(teacher: found_teacher, model: mentorship_period, migration_item_id: mentorship_period.ecf_start_induction_record_id, acceptable: true) do
             ::MentorshipPeriod.create!(mentee: created_ect_at_school_period, **mentorship_period.to_h)
             ecf2_mentorship_summaries << mentorship_period.summary
           end
@@ -275,10 +273,11 @@ private
     )
   end
 
-  def with_failure_recording(teacher:, model:, migration_item_id:)
+  def with_failure_recording(teacher:, model:, migration_item_id:, acceptable: false)
     yield
   rescue StandardError => e
-    if raise_errors?
+    @failed = true unless acceptable
+    if !acceptable && raise_errors?
       raise(SaveError.new(teacher:, model:, message: e.message, migration_item_id:))
     end
 
