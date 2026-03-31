@@ -429,7 +429,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
     let(:other_school) { FactoryBot.create(:school) }
 
-    before { store.start_date = Date.current }
+    before { store.started_on = Date.current }
 
     context "when there is an ongoing record at another school" do
       before do
@@ -449,10 +449,12 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
   end
 
   describe "#previous_school_closed_mentor_at_school_periods?" do
+    subject { registration_store.previous_school_closed_mentor_at_school_periods? }
+
     let(:teacher) { FactoryBot.create(:teacher, trn: registration_store.trn) }
     let(:other_school) { FactoryBot.create(:school) }
 
-    before { store.start_date = Date.current - 1.year }
+    before { store.started_on = Date.current - 1.year }
 
     context "when a previous school period finished recently" do
       before do
@@ -465,9 +467,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
         )
       end
 
-      it "returns true" do
-        expect(registration_store.previous_school_closed_mentor_at_school_periods?).to be(true)
-      end
+      it { is_expected.to be_truthy }
     end
 
     context "when all previous periods are ongoing" do
@@ -475,9 +475,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
         FactoryBot.create(:mentor_at_school_period, :ongoing, school: other_school, teacher:)
       end
 
-      it "returns false" do
-        expect(registration_store.previous_school_closed_mentor_at_school_periods?).to be(false)
-      end
+      it { is_expected.to be_falsey }
     end
   end
 
