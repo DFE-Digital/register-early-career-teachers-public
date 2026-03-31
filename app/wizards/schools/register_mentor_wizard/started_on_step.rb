@@ -4,15 +4,13 @@ module Schools
       attr_accessor :started_on
 
       validates :started_on, mentor_start_date: true
-      validate :started_on_cannot_be_before_previous_started_and_finished_dates, if: :started_on
+      validate :started_on_after_all_previous_period_started_on_dates
       validate :started_on_within_4_months, if: :currently_mentor_at_another_school?
 
-      def self.permitted_params
-        %i[started_on]
-      end
+      def self.permitted_params = %i[started_on]
 
       def next_step
-        if !contract_period_enabled?
+        if registrations_closed_for_contract_period?
           :cannot_register_mentor_yet
         elsif mentor.became_ineligible_for_funding? || !mentor.provider_led_ect?
           :check_answers
@@ -43,21 +41,30 @@ module Schools
         self.started_on = Schools::Validation::MentorStartDate.new(date_as_hash: mentor.started_on).date_as_hash unless started_on
       end
 
-      def started_on_cannot_be_before_previous_started_and_finished_dates
+      def started_on_after_all_previous_period_started_on_dates
         return if errors.any?
 
-        date = mentor.previous_school_mentor_at_school_periods.pluck(:started_on, :finished_on).flatten.compact.max
-        return unless date
+        latest_started_on_at_previous_school = mentor
+          .previous_school_mentor_at_school_periods
+          .maximum(:started_on)
+        return unless latest_started_on_at_previous_school
 
-        if started_on_as_date.before?(date.next_day)
-          errors.add(:started_on, "#{mentor.full_name} was registered as a mentor at their last school starting on the #{date.to_fs(:govuk)}. Enter a later date.")
+        unless started_on_as_date.after?(latest_started_on_at_previous_school)
+          error_message = <<~TXT.squish
+            #{mentor.full_name} was registered as a mentor at their last school
+            starting on the #{latest_started_on_at_previous_school.to_fs(:govuk)}.
+            Enter a later date.
+          TXT
+          errors.add(:started_on, error_message)
         end
       end
 
       def started_on_within_4_months
-        earliest_invalid_started_on = (4.months + 1.day).from_now.to_date
+        return if errors.any?
 
-        if started_on_as_date >= earliest_invalid_started_on
+        earliest_invalid_started_on = 4.months.from_now.to_date.next_day
+
+        unless started_on_as_date.before?(earliest_invalid_started_on)
           errors.add(
             :started_on,
             "Start date must be before #{earliest_invalid_started_on.to_formatted_s(:govuk)}"
@@ -77,10 +84,8 @@ module Schools
         @started_on_as_date ||= started_on_obj.value_as_date
       end
 
-      def contract_period_enabled?
-        return true if started_on_as_date <= Time.zone.today
-
-        contract_period&.enabled?
+      def registrations_closed_for_contract_period?
+        started_on_as_date.future? && !contract_period&.enabled?
       end
 
       def contract_period
