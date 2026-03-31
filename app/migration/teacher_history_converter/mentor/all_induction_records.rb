@@ -4,7 +4,7 @@ class TeacherHistoryConverter::Mentor::AllInductionRecords
 
   attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods, :mentor_completion_date, :school_mentors
 
-  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, mentor_completion_date: nil, exclude_training_periods: false, school_mentors:)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, school_mentors:, mentor_completion_date: nil, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = induction_records
@@ -35,7 +35,7 @@ private
       end
     end
 
-    @school_periods += pooled_mentor_at_school_periods(excluded_schools: school_periods.map(&:school).map(&:urn))
+    @school_periods += pooled_mentor_at_school_periods(excluded_schools: @school_periods.map(&:school).map(&:urn))
   end
 
   def pooled_mentor_at_school_periods(excluded_schools:)
