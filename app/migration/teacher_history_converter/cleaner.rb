@@ -24,7 +24,8 @@ private
   end
 
   def economy_clean!
-    remove_british_schools_overseas(@raw_induction_records)
+    @raw_induction_records
+      .then { remove_british_schools_overseas(it) }
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
       .then { remove_provider_led_ect_without_partnerships(it) }
@@ -34,10 +35,12 @@ private
       .then { fix_zero_day_periods(it) }
       .then { override_first_start_date_with_creation_date_if_earlier(it) }
       .then { override_first_start_date_for_induction_record_introduction(it) }
+      .then { remove_future_withdrawn_or_deferred_records(it) }
   end
 
   def premium_clean!
-    remove_british_schools_overseas(@raw_induction_records)
+    @raw_induction_records
+      .then { remove_british_schools_overseas(it) }
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
       .then { remove_records_with_matching_withdrawn_and_deferred_states(it) }
@@ -85,5 +88,9 @@ private
 
   def remove_records_with_matching_withdrawn_and_deferred_states(induction_records)
     TeacherHistoryConverter::Cleaner::RemoveRecordsWithMatchingWithdrawnAndDeferredStates.new(induction_records, states:).induction_records
+  end
+
+  def remove_future_withdrawn_or_deferred_records(induction_records)
+    TeacherHistoryConverter::Cleaner::RemoveFutureWithdrawnOrDeferredRecords.new(induction_records).induction_records
   end
 end

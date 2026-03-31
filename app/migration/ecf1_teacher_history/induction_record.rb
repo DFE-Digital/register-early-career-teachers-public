@@ -47,6 +47,9 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
     new(FactoryBot.attributes_for(:ecf1_teacher_history_induction_record_row, **hash))
   end
 
+  def withdrawn_or_deferred? = training_status.in?(%w[withdrawn deferred])
+  def future? = start_date.to_date > Date.current
+
   def range
     start_date.to_date..end_date&.to_date
   end

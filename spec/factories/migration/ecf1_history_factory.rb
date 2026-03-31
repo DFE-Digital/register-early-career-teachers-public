@@ -92,7 +92,7 @@ FactoryBot.define do
     schedule_info { FactoryBot.build(:ecf1_teacher_history_schedule_info, cohort_year:) }
     preferred_identity_email { Faker::Internet.unique.email(name: full_name) }
     mentor_profile_id { SecureRandom.uuid }
-    training_status { "active" }
+    active
     induction_status { "active" }
     training_programme { "full_induction_programme" }
     training_provider_info { FactoryBot.build(:ecf1_teacher_history_training_provider_info, cohort_year:) }
@@ -128,6 +128,22 @@ FactoryBot.define do
 
     trait :ongoing do
       end_date { nil }
+    end
+
+    trait :future do
+      start_date { Date.current + 2.weeks }
+    end
+
+    trait :active do
+      training_status { "active" }
+    end
+
+    trait :withdrawn do
+      training_status { "withdrawn" }
+    end
+
+    trait :deferred do
+      training_status { "deferred" }
     end
   end
 
