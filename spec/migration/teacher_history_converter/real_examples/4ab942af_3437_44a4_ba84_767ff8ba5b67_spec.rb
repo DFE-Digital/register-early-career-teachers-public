@@ -112,18 +112,7 @@ describe "Real data check for user 4ab942af-3437-44a4-ba84-767ff8ba5b67" do
               started_on: Date.new(2022, 6, 1),
               finished_on: nil,
               school: hash_including(urn: "100001", name: "School 1"),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2022, 6, 1),
-                  finished_on: nil,
-                  # FIXME: once #2457 is merged and we set the TP to finish on the mentor_completion_date,
-                  #        this training period should vanish
-                  lead_provider_info: hash_including(name: "Ambition Institute"),
-                  delivery_partner_info: hash_including(name: "Delivery partner 1"),
-                  training_programme: "provider_led",
-                  contract_period_year: 2022
-                )
-              )
+              training_periods: []
             )
           )
         )
