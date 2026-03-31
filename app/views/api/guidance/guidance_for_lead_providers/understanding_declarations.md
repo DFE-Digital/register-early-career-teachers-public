@@ -147,4 +147,6 @@ For pre-2025 cohorts, evidence is optional for `started` declarations. If you do
 
 For the 2025 cohort and later, evidence is now mandatory for started declarations, as shown in the documentation above. This means evidence is now required for all declaration types for cohorts 2025 and later.
 
+In these 2025 cohort and later, there's also a new evidence type '75-percent-engagement-met-reduced-induction'. This is used for ECTs undergoing reduced inductions, but also for mentors if they are doing reduced hours training. This is usually because the mentor has already undertaken mentor training as an initial teacher training mentor, or for school-led mentor training.
+
 Evidence types for the 2025 cohort and later are not compatible with pre-2025 cohorts. If a provider submits a declaration for a pre-2025 cohort using a evidence type that is only valid for the 2025 cohort and later, the API will return a 422 error.
