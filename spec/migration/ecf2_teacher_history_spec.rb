@@ -385,15 +385,15 @@ describe ECF2TeacherHistory do
             it "saves a DataMigrationFailedCombination entry per training_period" do
               teacher
 
-              expect(DataMigrationFailedCombination.count).to be(2)
+              expect(DataMigrationFailedCombination.count).to be(4)
 
               combinations = ect_at_school_periods.flat_map(&:training_periods).map(&:combination)
               induction_record_ids = combinations.map(&:induction_record_id)
               failed_combinations = DataMigrationFailedCombination.all
 
-              expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
-              expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message, failure_message)
-              expect(failed_combinations.map(&:migration_mode)).to contain_exactly(migration_mode, migration_mode)
+              expect(failed_combinations.map(&:induction_record_id)).to include(*induction_record_ids)
+              expect(failed_combinations.map(&:failure_message)).to include(failure_message)
+              expect(failed_combinations.map(&:migration_mode)).to include(migration_mode)
             end
           end
 

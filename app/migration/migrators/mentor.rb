@@ -58,7 +58,7 @@ module Migrators
     end
 
     def migrate_one_second_attempt(teacher_profile)
-      history_converter, ecf2_teacher_history = nil
+      ecf2_teacher_history = nil
 
       begin
         Teacher.transaction do
@@ -94,7 +94,8 @@ module Migrators
       ecf2_teacher_history.record_failure!(teacher: e.teacher,
                                            model: e.model,
                                            message: e.message,
-                                           migration_item_id: e.migration_item_id)
+                                           migration_item_id: e.migration_item_id,
+                                           profile_type: "mentor")
       [false, migration_mode]
     rescue StandardError => e
       failure_manager.record_failure(teacher_profile, e.message, migration_mode)
