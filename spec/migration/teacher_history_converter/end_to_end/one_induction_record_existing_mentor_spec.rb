@@ -6,11 +6,12 @@ describe "One induction record (end to end, existing mentor)" do
   let(:original_teacher_created_at) { 1.year.ago.round }
   let(:mentor_completion_date) { Date.new(2023, 2, 3) }
   let(:mentor_completion_reason) { "completed_declaration_received" }
+  let(:start_date) { mentor_completion_date - 1.year }
 
   # ECF1 data
   let(:ecf1_participant_profile) { FactoryBot.create(:migration_participant_profile, :mentor, mentor_completion_date:, mentor_completion_reason:) }
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round, participant_profile: ecf1_participant_profile) }
+  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round, participant_profile: ecf1_participant_profile, start_date:, end_date: nil) }
   let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
   let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
 
@@ -108,6 +109,8 @@ describe "One induction record (end to end, existing mentor)" do
         expect(mentor_at_school_periods.count).to be(1)
 
         expect(mentor_at_school_period.school.urn).to eql(ecf1_urn)
+        expect(mentor_at_school_period.started_on).to eq(start_date)
+        expect(mentor_at_school_period).to be_ongoing
       end
     end
 
@@ -126,6 +129,9 @@ describe "One induction record (end to end, existing mentor)" do
         expect(training_period.schedule.contract_period_year).to eql(ecf1_induction_record.schedule.cohort.start_year)
 
         expect(training_period.created_at).to eql(ecf1_induction_record.created_at)
+
+        expect(training_period.started_on).to eq(start_date)
+        expect(training_period.finished_on).to eq(mentor_completion_date)
       end
     end
   end
