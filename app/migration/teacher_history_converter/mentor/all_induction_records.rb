@@ -184,8 +184,8 @@ private
     training_status = induction_record.training_status
     return false unless training_status.in? %(withdrawn deferred)
 
-    return false if (training_status == "withdrawn" && @current_training_period.withdrawn_at.blank?) ||
-      (training_status == "deferred" && @current_training_period.deferred_at.blank?)
+    return false if training_status == "withdrawn" && @current_training_period.withdrawn_at.blank?
+    return false if training_status == "deferred" && @current_training_period.deferred_at.blank?
 
     return false if induction_record.training_provider_info&.lead_provider_info != @current_training_period.lead_provider_info
 
