@@ -33,8 +33,7 @@ module PaymentCalculator
   private
 
     def declaration_types
-      (billable_declarations.pluck("DISTINCT declaration_type") +
-        refundable_declarations.pluck("DISTINCT declaration_type")).uniq
+      Declaration.declaration_types.keys.select { |t| fee_proportions.key?(t.underscore.to_sym) }
     end
   end
 end

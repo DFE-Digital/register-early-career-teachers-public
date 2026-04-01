@@ -4,68 +4,50 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   let(:statement) { FactoryBot.create(:statement, contract:) }
 
   let(:banded_fee_structure) do
-    FactoryBot.build_stubbed(
-      :contract_banded_fee_structure,
-      :with_bands,
-      declaration_boundaries: [
-        { min: 1, max: 10 },
-        { min: 11, max: 20 },
-        { min: 21, max: 30 },
-      ]
-    )
+    fs = FactoryBot.create(:contract_banded_fee_structure)
+    [
+      { min: 1, max: 10, fee: 100 },
+      { min: 11, max: 20, fee: 75 },
+      { min: 21, max: 30, fee: 50 },
+    ].each do |attrs|
+      FactoryBot.create(
+        :contract_banded_fee_structure_band,
+        banded_fee_structure: fs,
+        min_declarations: attrs[:min],
+        max_declarations: attrs[:max],
+        fee_per_declaration: attrs[:fee],
+        output_fee_ratio: 0.8,
+        service_fee_ratio: 0.2
+      )
+    end
+    fs.reload
   end
 
+  let(:bands) { banded_fee_structure.bands }
+
   let(:banded_outputs) do
-    bands = banded_fee_structure.bands
-    declaration_type_outputs = [
-      double(
-        declaration_type: "started",
-        band: bands.first,
-        billable_count: 10,
-        type_adjusted_fee_per_declaration: 15,
-        total_billable_amount: 150
-      ),
-      double(
-        declaration_type: "started",
-        band: bands.second,
-        billable_count: 8,
-        type_adjusted_fee_per_declaration: 12,
-        total_billable_amount: 96
-      ),
-      double(
-        declaration_type: "started",
-        band: bands.third,
-        billable_count: 5,
-        type_adjusted_fee_per_declaration: 10,
-        total_billable_amount: 50
-      ),
-      double(
-        declaration_type: "completed",
-        band: bands.first,
-        billable_count: 3,
-        type_adjusted_fee_per_declaration: 20,
-        total_billable_amount: 60
-      ),
-      double(
-        declaration_type: "completed",
-        band: bands.second,
-        billable_count: 0,
-        type_adjusted_fee_per_declaration: 18,
-        total_billable_amount: 0
-      ),
-      double(
-        declaration_type: "completed",
-        band: bands.third,
-        billable_count: 0,
-        type_adjusted_fee_per_declaration: 16,
-        total_billable_amount: 0
-      )
-    ]
+    fee_proportions = PaymentCalculator::Banded::DeclarationTypeOutput::FEE_PROPORTIONS
+    billable_counts = { "started" => [10, 8, 5], "completed" => [3, 0, 0] }
+
+    declaration_type_outputs = Declaration.declaration_types.keys.flat_map do |declaration_type|
+      bands.map.with_index do |band, i|
+        count = billable_counts.dig(declaration_type, i) || 0
+        fee = fee_proportions[declaration_type] * band.output_fee_ratio * band.fee_per_declaration
+
+        double(
+          declaration_type:,
+          band:,
+          billable_count: count,
+          type_adjusted_fee_per_declaration: fee,
+          total_billable_amount: count * fee
+        )
+      end
+    end
 
     instance_double(
       PaymentCalculator::Banded::Outputs,
       declaration_type_outputs:,
-      total_billable_amount: 356
+      total_billable_amount: 344
     )
   end
 
@@ -99,43 +81,63 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   end
 
   context "for `ecf` contracts" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf) }
+    let(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
 
     it "renders one table of output payments" do
       expect(page).to have_css("table", count: 1)
     end
 
-    it "renders declaration type count rows with billable counts and fees per band" do
+    it "renders all declaration types in order including empty rows" do
       expect(page).to have_statement_table(
         caption: "Output payments",
         headings: ["Outputs", "Band A", "Band B", "Band C", "Payments"],
         rows: [
           ["Started", "10", "8", "5", ""],
-          ["Fee per participant", "£15.00", "£12.00", "£10.00", "£296.00"],
+          ["Fee per participant", "£16.00", "£12.00", "£8.00", "£296.00"],
+          ["Retained 1", "0", "0", "0", ""],
+          ["Fee per participant", "£12.00", "£9.00", "£6.00", "£0.00"],
+          ["Retained 2", "0", "0", "0", ""],
+          ["Fee per participant", "£12.00", "£9.00", "£6.00", "£0.00"],
+          ["Retained 3", "0", "0", "0", ""],
+          ["Fee per participant", "£12.00", "£9.00", "£6.00", "£0.00"],
+          ["Retained 4", "0", "0", "0", ""],
+          ["Fee per participant", "£12.00", "£9.00", "£6.00", "£0.00"],
           ["Completed", "3", "0", "0", ""],
-          ["Fee per participant", "£20.00", "£18.00", "£16.00", "£60.00"]
+          ["Fee per participant", "£16.00", "£12.00", "£8.00", "£48.00"],
+          ["Extended", "0", "0", "0", ""],
+          ["Fee per participant", "£12.00", "£9.00", "£6.00", "£0.00"],
         ],
         total_label: "Output payment total",
-        total: "£356.00"
+        total: "£344.00"
       )
     end
   end
 
   context "for `ittecf_ectp` contracts" do
-    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
+    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, banded_fee_structure:) }
 
-    it "renders the ECTs output payment table" do
+    it "renders the ECTs output payment table with all declaration types" do
       expect(page).to have_statement_table(
         caption: "Early career teacher (ECT) output payments",
         headings: ["Outputs", "Band A", "Band B", "Band C", "Payments"],
         rows: [
           ["Started", "10", "8", "5", ""],
-          ["Fee per ECT", "£15.00", "£12.00", "£10.00", "£296.00"],
+          ["Fee per ECT", "£16.00", "£12.00", "£8.00", "£296.00"],
+          ["Retained 1", "0", "0", "0", ""],
+          ["Fee per ECT", "£12.00", "£9.00", "£6.00", "£0.00"],
+          ["Retained 2", "0", "0", "0", ""],
+          ["Fee per ECT", "£12.00", "£9.00", "£6.00", "£0.00"],
+          ["Retained 3", "0", "0", "0", ""],
+          ["Fee per ECT", "£12.00", "£9.00", "£6.00", "£0.00"],
+          ["Retained 4", "0", "0", "0", ""],
+          ["Fee per ECT", "£12.00", "£9.00", "£6.00", "£0.00"],
           ["Completed", "3", "0", "0", ""],
-          ["Fee per ECT", "£20.00", "£18.00", "£16.00", "£60.00"],
+          ["Fee per ECT", "£16.00", "£12.00", "£8.00", "£48.00"],
+          ["Extended", "0", "0", "0", ""],
+          ["Fee per ECT", "£12.00", "£9.00", "£6.00", "£0.00"],
         ],
         total_label: "ECTs output payment total",
-        total: "£356.00"
+        total: "£344.00"
       )
     end
 
@@ -156,7 +158,7 @@ RSpec.describe Admin::Statements::OutputPaymentsComponent, type: :component do
   end
 
   context "for service fee statements" do
-    let(:contract) { FactoryBot.create(:contract, :for_ecf) }
+    let(:contract) { FactoryBot.create(:contract, :for_ecf, banded_fee_structure:) }
     let(:statement) { FactoryBot.create(:statement, contract:, fee_type: :service) }
 
     it "does not render" do
