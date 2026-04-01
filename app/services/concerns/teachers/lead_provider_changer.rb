@@ -37,7 +37,7 @@ module Teachers
       raise LeadProviderNotChangedError unless lead_provider_changed?
 
       ActiveRecord::Base.transaction do
-        before_training_period_change!
+        track_payments_frozen_year! if contract_period_reassignment_required?
 
         if current_or_future_training_period?
           update_training_period_in_place!
@@ -76,7 +76,7 @@ module Teachers
       )
     end
 
-    def before_training_period_change!
+    def track_payments_frozen_year!
       # Do nothing
     end
 
