@@ -20,14 +20,14 @@ class TeacherHistoryConverter::Mentor::LatestInductionRecords
 
   # Returns [ECF2TeacherHistory::MentorAtSchoolPeriod[], String[]]
   def mentor_at_school_periods
-    @mentor_at_school_periods ||= induction_records
-                                 .reverse
-                                 .each_with_object([]) do |induction_record, periods|
-                                   process(periods, induction_record)
-    end
+    @mentor_at_school_periods ||= build_mentor_at_school_periods
   end
 
 private
+
+  def build_mentor_at_school_periods
+    induction_records.reverse.each_with_object([]) { |induction_record, periods| process(periods, induction_record) }
+  end
 
   # Add a new school_period period to the beginning of mentor_at_school_periods with:
   #  - start_date: the earliest of the induction_record.start_date and the first school_period start_date - 2.days
