@@ -92,11 +92,11 @@ module ECTAtSchoolPeriods
     end
 
     def contract_period_reassignment
-      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period: last_confirmed_provider_led_training_period)
+      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period: last_provider_led_training_period)
     end
 
-    def last_confirmed_provider_led_training_period
-      @last_confirmed_provider_led_training_period ||= @ect_at_school_period.training_periods.where.not(school_partnership: nil).last
+    def last_provider_led_training_period
+      @last_provider_led_training_period ||= @ect_at_school_period.training_periods.provider_led_training_programme.latest_first.first
     end
 
     delegate :successor_contract_period, to: :contract_period_reassignment
@@ -106,7 +106,7 @@ module ECTAtSchoolPeriods
 
       @ect_at_school_period
         .teacher
-        .update!(ect_payments_frozen_year: last_confirmed_provider_led_training_period.contract_period.year)
+        .update!(ect_payments_frozen_year: contract_period_reassignment.assigned_contract_period.year)
     end
 
     def finish_training_period!

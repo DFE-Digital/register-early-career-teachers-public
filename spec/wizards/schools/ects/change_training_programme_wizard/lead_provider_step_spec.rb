@@ -147,7 +147,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
         FactoryBot.create(:training_period, :for_ect, :ongoing, :school_led, ect_at_school_period:, started_on: old_training_period.finished_on + 1.day)
       end
 
-      it "returns the active lead providers in the 2024 contract period" do
+      it "returns the active lead providers in the successor contract period" do
         expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
       end
     end
