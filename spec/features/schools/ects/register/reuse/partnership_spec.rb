@@ -53,19 +53,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     FactoryBot.create(:appropriate_body_period, name: @appropriate_body_name)
     FactoryBot.create(:appropriate_body_period, name: "Umber Teaching Hub")
 
-    stub_reuse_finder_to_return(@current_school_partnership)
-
     sign_in_as_school_user(school: @current_school)
-  end
-
-  def stub_reuse_finder_to_return(partnership)
-    reuse_finder = instance_double(SchoolPartnerships::FindReusablePartnership)
-
-    allow(SchoolPartnerships::FindReusablePartnership).to receive(:new)
-      .and_return(reuse_finder)
-
-    allow(reuse_finder).to receive(:call)
-      .and_return(partnership)
   end
 
   def and_i_am_on_the_schools_ects_index_page
