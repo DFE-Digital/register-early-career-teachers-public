@@ -63,7 +63,14 @@ module API::Declarations
       return unless teacher
 
       @training_period ||= training_periods
-                             .includes(:lead_provider)
+                             .includes(
+                               :lead_provider,
+                               :contract_period,
+                               :delivery_partner,
+                               { schedule: %i[contract_period milestones] },
+                               { ect_at_school_period: %i[teacher school] },
+                               { mentor_at_school_period: %i[teacher school] }
+                             )
                              .where(active_lead_providers: { lead_provider_id: })
                              .latest_first
                              .first
