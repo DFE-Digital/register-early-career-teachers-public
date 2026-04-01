@@ -107,9 +107,15 @@ runs:
           COMPRESS_ARG=-c
         fi
 
-        ./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -t 60 -x ${{ inputs.app-name }} -- psql -c "drop schema public cascade; create schema public;"
+        # Drop and create schema with retry
+        ${{ github.action_path }}/retry-konduit.sh \
+          "./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -t 360 -x ${{ inputs.app-name }} -- psql -c \"drop schema public cascade; create schema public;\"" \
+          "Schema recreate"
 
-        ./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i ${{ inputs.backup-file }} ${COMPRESS_ARG} -t 7200 -x ${{ inputs.app-name }} -- psql
+        # Restore backup with retry
+        ${{ github.action_path }}/retry-konduit.sh \
+          "./konduit.sh ${NAMESPACE_ARG} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i ${{ inputs.backup-file }} ${COMPRESS_ARG} -t 7200 -x ${{ inputs.app-name }} -- psql" \
+          "Database restore"
 
     - name: Restore Summary
       if: success()
