@@ -309,6 +309,55 @@ RSpec.describe API::Declarations::Create, type: :model do
           end
         end
 
+        describe "training period selection" do
+          context "when multiple training periods exist for the same lead provider" do
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :"for_#{trainee_type}",
+                :active,
+                "#{trainee_type}_at_school_period": at_school_period,
+                started_on: at_school_period.started_on,
+                finished_on: 2.months.ago
+              )
+            end
+
+            let!(:current_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :"for_#{trainee_type}",
+                :ongoing,
+                "#{trainee_type}_at_school_period": at_school_period,
+                school_partnership: training_period.school_partnership,
+                started_on: 2.months.ago
+              )
+            end
+
+            let!(:current_milestone) { FactoryBot.create(:milestone, declaration_type:, schedule: current_training_period.schedule, start_date: Date.new(2024, 11, 1), milestone_date: Date.new(2024, 12, 1)) }
+
+            it "selects the latest started training period, not the one closest to declaration_date" do
+              expect(instance.training_period).to eq(current_training_period)
+            end
+          end
+
+          context "when a future training period exists" do
+            let!(:future_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :"for_#{trainee_type}",
+                :ongoing,
+                "#{trainee_type}_at_school_period": at_school_period,
+                school_partnership: training_period.school_partnership,
+                started_on: 1.month.from_now
+              )
+            end
+
+            it "excludes future training periods" do
+              expect(instance.training_period).to eq(training_period)
+            end
+          end
+        end
+
         context "validate declaration types are in sequence order" do
           let(:school_partnership) do
             FactoryBot.create(
