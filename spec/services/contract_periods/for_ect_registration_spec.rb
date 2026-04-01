@@ -32,7 +32,7 @@ RSpec.describe ContractPeriods::ForECTRegistration do
     context "when started_on falls within an older contract period than current" do
       let(:started_on) { Date.new(2024, 9, 5) }
 
-      it "returns the current registration contract period" do
+      it "returns the current contract period" do
         expect(resolver.call).to eq(contract_2025)
       end
     end
@@ -40,7 +40,7 @@ RSpec.describe ContractPeriods::ForECTRegistration do
     context "when started_on is exactly the start date of the current contract period" do
       let(:started_on) { Date.new(2025, 9, 1) }
 
-      it "returns the matching contract period" do
+      it "returns the current contract period" do
         expect(resolver.call).to eq(contract_2025)
       end
     end
@@ -48,7 +48,7 @@ RSpec.describe ContractPeriods::ForECTRegistration do
     context "when started_on is the last included date of an older contract period" do
       let(:started_on) { Date.new(2025, 8, 31) }
 
-      it "returns the current registration contract period" do
+      it "returns the current contract period" do
         expect(resolver.call).to eq(contract_2025)
       end
     end
@@ -72,7 +72,6 @@ RSpec.describe ContractPeriods::ForECTRegistration do
     context "when the training period should be reassigned" do
       let(:started_on) { Date.new(2025, 9, 1) }
       let(:previous_training_period) { instance_double(TrainingPeriod) }
-
       let(:reassignment) do
         instance_double(
           ContractPeriods::Reassignment,
@@ -89,7 +88,6 @@ RSpec.describe ContractPeriods::ForECTRegistration do
     context "when the training period should not be reassigned" do
       let(:started_on) { Date.new(2025, 9, 1) }
       let(:previous_training_period) { instance_double(TrainingPeriod) }
-
       let(:reassignment) do
         instance_double(
           ContractPeriods::Reassignment,
@@ -97,7 +95,7 @@ RSpec.describe ContractPeriods::ForECTRegistration do
         )
       end
 
-      it "returns the normal registration contract period" do
+      it "returns the current contract period" do
         expect(resolver.call).to eq(contract_2025)
       end
     end
