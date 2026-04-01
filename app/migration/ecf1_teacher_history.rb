@@ -140,7 +140,7 @@ class ECF1TeacherHistory
   end
 
   def self.build_school_mentors(participant_profile:)
-    participant_profile.school_mentors.order(:created_at).map do |school_mentor|
+    participant_profile.school_mentors.joins(:school).merge(Migration::School.currently_open).order(:created_at).map do |school_mentor|
       ECF1TeacherHistory::SchoolMentor.new(
         school: build_school_data(school_mentor.school),
         preferred_identity_email: school_mentor.preferred_identity.email,
