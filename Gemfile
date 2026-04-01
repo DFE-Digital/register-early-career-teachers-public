@@ -70,7 +70,6 @@ group :development do
   gem "better_errors"
   gem "binding_of_caller"
   gem "pg_query"
-  gem "prosopite"
 end
 
 group :test do
@@ -87,6 +86,7 @@ group :development, :test do
   gem "debug", platforms: %i[mri windows]
   gem "herb"
   gem "knapsack"
+  gem "prosopite"
   gem "rswag-specs"
   gem "rubocop-factory_bot", require: false
   gem "rubocop-govuk", require: false

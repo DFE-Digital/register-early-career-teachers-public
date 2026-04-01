@@ -121,8 +121,12 @@ class API::TeacherSerializer < Blueprinter::Base
     field(:api_updated_at, name: :updated_at)
 
     association :ecf_enrolments, blueprint: TrainingPeriodSerializer do |teacher, options|
-      metadata = ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)
-      [[metadata.latest_ect_training_period, teacher, metadata], [metadata.latest_mentor_training_period, teacher, metadata]].reject { |period, _| period.nil? }
+      metadata ||= {}
+      metadata[teacher.id] ||= ::API::TeacherSerializer.lead_provider_metadata(teacher:, options:)
+
+      [[metadata[teacher.id].latest_ect_training_period, teacher, metadata[teacher.id]],
+       [metadata[teacher.id].latest_mentor_training_period, teacher, metadata[teacher.id]]]
+        .reject { |period, _| period.nil? }
     end
 
     association :teacher_id_changes, blueprint: TeacherIdChangeSerializer, name: :participant_id_changes

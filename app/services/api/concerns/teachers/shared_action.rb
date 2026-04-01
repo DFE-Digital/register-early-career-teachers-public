@@ -60,7 +60,41 @@ module API::Concerns::Teachers
     end
 
     def metadata
-      @metadata ||= teacher.lead_provider_metadata.find_by(lead_provider_id:) if teacher && lead_provider
+      if teacher && lead_provider
+        @metadata ||= teacher
+        .lead_provider_metadata
+        .includes(
+          latest_ect_training_period: {
+            school_partnership: [
+              { school: :school_funding_eligibilities },
+              { lead_provider_delivery_partnership: :delivery_partner }
+            ],
+            ect_at_school_period: {
+              school: [],
+              teacher: { finished_induction_period: [], ect_at_school_periods: [] }
+            },
+            schedule: :contract_period,
+            contract_period: [],
+            lead_provider: [],
+          },
+          latest_ect_contract_period: [],
+          latest_mentor_training_period: {
+            school_partnership: [
+              { school: :school_funding_eligibilities },
+              { lead_provider_delivery_partnership: :delivery_partner }
+            ],
+            mentor_at_school_period: {
+              school: [],
+              teacher: { mentor_at_school_periods: [] }
+            },
+            schedule: :contract_period,
+            contract_period: [],
+            lead_provider: [],
+          },
+          latest_mentor_contract_period: []
+        )
+        .find_by(lead_provider_id:)
+      end
     end
 
     def training_period
