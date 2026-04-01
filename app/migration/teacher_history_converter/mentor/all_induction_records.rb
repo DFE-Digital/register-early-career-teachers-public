@@ -2,15 +2,16 @@ class TeacherHistoryConverter::Mentor::AllInductionRecords
   include TeacherHistoryConverter::CalculatedAttributes
   include TeacherHistoryConverter::SetFinishedOn
 
-  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods, :mentor_completion_date
+  attr_reader :trn, :profile_id, :induction_records, :states, :transfers, :exclude_training_periods, :mentor_completion_date, :school_mentors
 
-  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, mentor_completion_date: nil, exclude_training_periods: false)
+  def initialize(trn:, profile_id:, induction_records:, states:, transfers:, school_mentors:, mentor_completion_date: nil, exclude_training_periods: false)
     @trn = trn
     @profile_id = profile_id
     @induction_records = induction_records
     @states = states
     @transfers = transfers
     @mentor_completion_date = mentor_completion_date
+    @school_mentors = school_mentors
     @exclude_training_periods = exclude_training_periods
   end
 
@@ -34,7 +35,18 @@ private
       end
     end
 
-    @school_periods
+    @school_periods += pooled_mentor_at_school_periods(excluded_schools: @school_periods.map(&:school).map(&:urn))
+  end
+
+  def pooled_mentor_at_school_periods(excluded_schools:)
+    school_mentors.reject { excluded_schools.include?(it.school[:urn]) }.map do |school_mentor|
+      ECF2TeacherHistory::MentorAtSchoolPeriod.new(
+        started_on: school_mentor.created_at.to_date,
+        finished_on: nil,
+        school: school_mentor.school,
+        email: school_mentor.preferred_identity_email
+      )
+    end
   end
 
   def add_school_period(induction_record:)
