@@ -2,6 +2,15 @@ FactoryBot.define do
   factory(:delivery_partner_lead_provider_metadata, class: "Metadata::DeliveryPartnerLeadProvider") do
     association :delivery_partner
     association :lead_provider
+
+    to_create do |instance|
+      Metadata::Base.bypass_update_restrictions { instance.save! }
+    end
+
+    initialize_with do
+      Metadata::DeliveryPartnerLeadProvider.find_or_create_by(delivery_partner:, lead_provider:)
+    end
+
     contract_period_years do
       years = (2021..Time.current.year).to_a
       random_years = years.shuffle.take(rand(1..years.size))

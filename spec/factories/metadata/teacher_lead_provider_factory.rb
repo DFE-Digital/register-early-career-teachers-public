@@ -3,6 +3,14 @@ FactoryBot.define do
     association :teacher
     association :lead_provider
 
+    to_create do |instance|
+      Metadata::Base.bypass_update_restrictions { instance.save! }
+    end
+
+    initialize_with do
+      Metadata::TeacherLeadProvider.find_or_create_by(teacher:, lead_provider:)
+    end
+
     transient do
       ect_teacher_type { false }
       mentor_teacher_type { false }
