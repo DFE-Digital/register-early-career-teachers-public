@@ -11,6 +11,8 @@ module API::Schools
 
       or_where_school_partnership_exists(contract_period_year)
       where_contract_period_exists(contract_period_year)
+      where_lead_provider_is(lead_provider_id)
+      where_contract_period_metadata_exists(contract_period_year)
       where_urn_is(urn)
       where_updated_since(updated_since)
       set_sort_by(sort)
@@ -68,6 +70,25 @@ module API::Schools
       Metadata::SchoolContractPeriod
         .where(contract_period_year:, in_partnership: true)
         .select(:school_id)
+    end
+
+    def where_lead_provider_is(lead_provider_id)
+      return if ignore?(filter: lead_provider_id)
+
+      conditions = { lead_provider_id: }
+      conditions[:contract_period_year] = contract_period_year unless ignore?(filter: contract_period_year)
+
+      @scope = scope
+        .joins(:lead_provider_contract_period_metadata)
+        .where(metadata_schools_lead_providers_contract_periods: conditions)
+    end
+
+    def where_contract_period_metadata_exists(contract_period_year)
+      return if ignore?(filter: contract_period_year)
+
+      @scope = scope
+        .joins(:contract_period_metadata)
+        .where(metadata_schools_contract_periods: { contract_period_year: })
     end
 
     def where_urn_is(urn)

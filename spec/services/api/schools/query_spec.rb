@@ -2,7 +2,8 @@ RSpec.describe API::Schools::Query, :with_metadata do
   before { FactoryBot.create(:lead_provider) } # Needed for metadata.
 
   it_behaves_like "a query that avoids includes" do
-    let(:params) { { contract_period_year: FactoryBot.create(:contract_period).year } }
+    let!(:contract_period) { FactoryBot.create(:contract_period) }
+    let(:params) { { contract_period_year: contract_period.year } }
 
     before { FactoryBot.create(:school, :eligible) }
   end
