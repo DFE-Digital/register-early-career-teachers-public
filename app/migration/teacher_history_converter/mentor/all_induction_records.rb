@@ -60,7 +60,10 @@ private
   def extend_school_period(induction_record:)
     return if exclude_training_periods
 
-    @current_school_period.finished_on = induction_record.end_date
+    started_on = induction_record.start_date
+    finished_on = induction_record.end_date
+
+    @current_school_period.finished_on = finished_on
     @current_school_period.email = induction_record.preferred_identity_email
 
     if changes_training_period?(induction_record:)
