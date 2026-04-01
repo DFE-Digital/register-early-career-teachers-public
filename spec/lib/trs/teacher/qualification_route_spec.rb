@@ -66,7 +66,7 @@ RSpec.describe TRS::Teacher::QualificationRoute do
 
     it {
       expect(subject).to contain_exactly(
-        "Holds QTS from 11 Nov 2023 via PGCE ITT",
+        "Holds QTS from 11 Nov 2023 via Postgrad Certificate in Education",
         "Holds EYTS from 03 Sep 2021 via Assessment Only"
       )
     }
@@ -80,13 +80,13 @@ RSpec.describe TRS::Teacher::QualificationRoute do
     context "when holding QTS via PCGE ITT" do
       let(:qualification_route) { qts_via_pcge }
 
-      it { is_expected.to eq "Holds QTS from 11 Nov 2023 via PGCE ITT" }
+      it { is_expected.to eq "Holds QTS from 11 Nov 2023 via Postgrad Certificate in Education" }
     end
 
     context "when holding QTS via HEI Historic" do
       let(:qualification_route) { qts_via_hei_historic }
 
-      it { is_expected.to eq "Holds QTS from 03 Nov 2021 via HEI - Historic" }
+      it { is_expected.to eq "Holds QTS from 03 Nov 2021 via Higher Education Institution (Historic)" }
     end
 
     context "when holding EYTS via Assessment Only" do
@@ -98,7 +98,7 @@ RSpec.describe TRS::Teacher::QualificationRoute do
     context "when status is Failed and holdsFrom is absent" do
       let(:qualification_route) { failed_qts_via_high_potential_itt }
 
-      it { is_expected.to eq "Failed QTS via High Potential ITT" }
+      it { is_expected.to eq "Failed QTS via High Potential Initial Teacher Training" }
     end
   end
 end
