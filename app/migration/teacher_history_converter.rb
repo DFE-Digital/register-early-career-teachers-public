@@ -74,12 +74,11 @@ private
     exclude_training_periods = exclude_ero_training_periods?
     transfers = ecf1_teacher_history.mentor.transfers
     mentor_completion_date = ecf1_teacher_history.mentor.mentor_completion_date
-
+    school_mentors = ecf1_teacher_history.mentor.school_mentors
     induction_records = TeacherHistoryConverter::Cleaner.new(raw_induction_records, participant_type: :mentor, states:, migration_mode:).induction_records
+    kwargs = { trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods:, mentor_completion_date:, school_mentors: }
 
-    kwargs = { trn:, profile_id:, induction_records:, states:, transfers:, exclude_training_periods:, mentor_completion_date: }
-
-    economy_mode? ? economy_mentor_migrator(**kwargs) : premium_mentor_migrator(**kwargs)
+    economy_mode? ? economy_mentor_migrator(**kwargs.except(:school_mentors)) : premium_mentor_migrator(**kwargs)
   end
 
   # in ECF1 we use the participant profile `created_at`, but as
@@ -106,9 +105,9 @@ private
       .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.ect.created_at) }
   end
 
-  def premium_mentor_migrator(trn:, profile_id:, induction_records:, states:, exclude_training_periods:, mentor_completion_date:, transfers:)
+  def premium_mentor_migrator(trn:, profile_id:, induction_records:, states:, exclude_training_periods:, mentor_completion_date:, transfers:, school_mentors:)
     TeacherHistoryConverter::Mentor::AllInductionRecords
-      .new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:, mentor_completion_date:, transfers:)
+      .new(trn:, profile_id:, induction_records:, states:, exclude_training_periods:, mentor_completion_date:, transfers:, school_mentors:)
       .mentor_at_school_periods
       .then { |at_school_periods| override_first_at_school_period_created_at(at_school_periods, ecf1_teacher_history.mentor.created_at) }
   end
