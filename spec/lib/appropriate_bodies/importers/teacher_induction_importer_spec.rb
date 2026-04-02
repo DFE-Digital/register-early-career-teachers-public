@@ -55,7 +55,7 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
     before do
       # unchanged since first import
       FactoryBot.create(:teacher, trn: "1234567", trs_first_name: "Faye", trs_induction_status: "RequiredToComplete")
-      # failed since firdst import
+      # failed since first import
       FactoryBot.create(:teacher, trn: "2345678", trs_first_name: "Lisa", trs_induction_status: "Failed")
     end
 
@@ -66,9 +66,9 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
 
       expect(Teacher.count).to eq(5) # 2 already + 3 imported
       expect(InductionPeriod.ongoing.count).to be_zero
-      expect(Teacher.passed.count).to eq(1)
-      expect(Teacher.failed.count).to eq(2) # 1 already + 1 imported
-      expect(Teacher.failed_in_wales.count).to eq(1)
+      expect(Teacher.induction_status_passed.count).to eq(1)
+      expect(Teacher.induction_status_failed.count).to eq(2) # 1 already + 1 imported
+      expect(Teacher.induction_status_failed_in_wales.count).to eq(1)
       expect(InductionPeriod.count).to eq(4)
 
       # Lisa was InProgress and imported in the first round but has since failed
@@ -110,20 +110,20 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
       expect { induction_importer.import! }.not_to raise_error
 
       expect(Teacher.count).to eq(589_839) # On prod where some already exist we will see 588_533 imported (1_306 delta)
-      expect(Teacher.in_progress.count).to be_zero
-      expect(Teacher.required_to_complete.count).to be_zero
-      expect(Teacher.failed.count).to eq(308)
-      expect(Teacher.failed_in_wales.count).to eq(2)
-      expect(Teacher.passed.count).to eq(589_222)
-      expect(Teacher.exempt.count).to eq(302)
+      expect(Teacher.induction_status_in_progress.count).to be_zero
+      expect(Teacher.induction_status_required_to_complete.count).to be_zero
+      expect(Teacher.induction_status_failed.count).to eq(308)
+      expect(Teacher.induction_status_failed_in_wales.count).to eq(2)
+      expect(Teacher.induction_status_passed.count).to eq(589_222)
+      expect(Teacher.induction_status_exempt.count).to eq(302)
 
       expect(InductionPeriod.ongoing.count).to be_zero
       expect(InductionPeriod.count).to eq(634_213)
       expect(InductionPeriod.finished.count).to eq(InductionPeriod.count)
       expect(InductionPeriod.released.count).to eq(44_681)
 
-      expect(InductionPeriod.failed.count).to eq(Teacher.failed.count + Teacher.failed_in_wales.count)
-      expect(InductionPeriod.passed.count).to eq(Teacher.passed.count)
+      expect(InductionPeriod.failed.count).to eq(Teacher.induction_status_failed.count + Teacher.induction_status_failed_in_wales.count)
+      expect(InductionPeriod.passed.count).to eq(Teacher.induction_status_passed.count)
 
       expect(
         InductionPeriod.released.count + InductionPeriod.failed.count + InductionPeriod.passed.count

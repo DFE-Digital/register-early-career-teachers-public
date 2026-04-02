@@ -47,21 +47,9 @@ module AppropriateBodies::Importers
       @unwanted_statuses = %w[RequiredToComplete InProgress].to_set
 
       data = data_csv.to_s.ends_with?("teachers.csv") ? File.readlines(data_csv) : data_csv.scan(/.*\n/)
-      data.delete_at(0)
-      sorted_trns = trns_with_induction_periods.compact.sort
-      wanted_lines = []
-      trn = sorted_trns.shift
-
-      data.sort.each do |line|
-        next unless line.start_with?(trn)
-
-        wanted_lines << line
-        break if sorted_trns.empty?
-
-        trn = sorted_trns.shift
-      end
-
-      @csv_rows = CSV.parse(wanted_lines.join, headers: HEADERS)
+      all_rows = CSV.parse(data.join, headers: HEADERS)
+      target_trns = trns_with_induction_periods.compact.to_set
+      @csv_rows = all_rows.select { |row| target_trns.include?(row["trn"]) }
 
       File.open(PARSER_ERROR_LOG, "w") { |f| f.truncate(0) }
       @logger = logger || Logger.new(PARSER_ERROR_LOG, File::CREAT)
@@ -136,6 +124,8 @@ module AppropriateBodies::Importers
         when "Months" then value / 3.0
         when "Weeks" then value / 13.0
         when "Days" then value / 65.0
+        else
+          0.0
         end
 
       converted_value.round(1)
