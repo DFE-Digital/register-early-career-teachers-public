@@ -8,6 +8,10 @@ module Migrators
 
     SPECIAL_DECLARATIONS_PATH = "app/migration/migrators/special_declarations.csv"
 
+    class ActiveLeadProviderNotFoundError < StandardError; end
+    class LeadProviderDeliveryPartnershipNotFoundError < StandardError; end
+    class SchoolPartnershipNotFoundError < StandardError; end
+
     def self.record_count
       participant_declarations.count
     end
@@ -122,15 +126,16 @@ module Migrators
       find_delivery_partner_by_api_id!(delivery_partner.id) if delivery_partner
     end
 
-    def find_or_create_school_partnership(school:, lead_provider:, delivery_partner_id:, contract_period_year:)
+    def school_partnership_for(school:, lead_provider:, delivery_partner_id:, contract_period_year:, participant_declaration_id:)
       active_lead_provider_id = find_active_lead_provider_id!(lead_provider_id: lead_provider.id, contract_period_year:)
-      raise "Lead Provider (#{lead_provider.name}) no active on #{contract_period_year}. Can't build school partnership to migrate declaration" unless active_lead_provider_id
+      raise(ActiveLeadProviderNotFoundError, "Lead Provider (#{lead_provider.name}) no active on #{contract_period_year}. Can't migrate declaration #{participant_declaration_id}") unless active_lead_provider_id
 
       lpdp_id = cache_manager.find_lead_provider_delivery_partnership_by_key(active_lead_provider_id:, delivery_partner_id:)&.id
-      lpdp_id ||= ::LeadProviderDeliveryPartnership.create!(active_lead_provider_id:, delivery_partner_id:).id
+      raise(LeadProviderDeliveryPartnershipNotFoundError, "Lead Provider Delivery Partnership not found for Lead Provider #{lead_provider.name} and Delivery Partner id #{delivery_partner_id} on #{contract_period_year}. Can't migrate declaration #{participant_declaration_id}") unless lpdp_id
 
-      cache_manager.find_school_partnership(lead_provider_delivery_partnership_id: lpdp_id, school_id: school.id) ||
-        school.school_partnerships.create!(lead_provider_delivery_partnership_id: lpdp_id)
+      cache_manager.find_school_partnership(lead_provider_delivery_partnership_id: lpdp_id, school_id: school.id).tap do |school_partnership|
+        raise(SchoolPartnershipNotFoundError, "School Partnership not found for Lead Provider #{lead_provider.name}, Delivery Partner id #{delivery_partner_id} at School #{school.urn} on #{contract_period_year}. Can't migrate declaration #{participant_declaration_id}") unless school_partnership
+      end
     end
 
     # For the participant declaration, find teacher TP matching exactly lead_provider, delivery_partner, school and contract_period
@@ -161,7 +166,7 @@ module Migrators
                          updated_at: participant_declaration.participant_profile.created_at)
         end
       end
-      school_partnership = find_or_create_school_partnership(school:, lead_provider:, delivery_partner_id:, contract_period_year:)
+      school_partnership = school_partnership_for(school:, lead_provider:, delivery_partner_id:, contract_period_year:, participant_declaration_id: participant_declaration.id)
 
       create_training_period(at_school_period:, school_partnership:, started_on:, finished_on:)
     end
