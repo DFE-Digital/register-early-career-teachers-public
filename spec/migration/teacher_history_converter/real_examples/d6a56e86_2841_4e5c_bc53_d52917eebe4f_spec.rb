@@ -137,43 +137,14 @@ describe "Real data check for user d6a56e86-2841-4e5c-bc53-d52917eebe4f" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:converter) { TeacherHistoryConverter.new(ecf1_teacher_history:) }
+  let(:ecf2_teacher_history) { converter.convert_to_ecf2! }
 
-  context "when using the economy migrator" do
-    let(:migration_mode) { :latest_induction_records }
+  context "choosing a migration strategy" do
+    let(:migration_mode) { nil }
 
-    let(:expected_output) do
-      {
-        teacher: hash_including(
-          trn: "1111111",
-          ect_at_school_periods: array_including(
-
-          )
-        )
-      }
-    end
-
-    it "matches the expected output" do
-      expect(actual_output).to include(expected_output)
-    end
-  end
-
-  context "when using the premium migrator" do
-    let(:migration_mode) { :all_induction_records }
-
-    let(:expected_output) do
-      {
-        teacher: hash_including(
-          trn: "1111111",
-          ect_at_school_periods: array_including(
-
-          )
-        )
-      }
-    end
-
-    it "matches the expected output" do
-      expect(actual_output).to include(expected_output)
+    it "chooses premium" do
+      expect(converter.migration_mode).to be(:all_induction_records)
     end
   end
 end
