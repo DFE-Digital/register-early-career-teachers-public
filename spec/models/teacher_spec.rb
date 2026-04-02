@@ -10,18 +10,32 @@ describe Teacher do
     let(:instance) { FactoryBot.create(:teacher) }
     let(:target) { instance }
 
-    it_behaves_like "a declarative touch model", when_changing: %i[api_id
-                                                                   trs_first_name
-                                                                   trs_last_name
-                                                                   trn
-                                                                   api_ect_training_record_id
-                                                                   api_mentor_training_record_id
-                                                                   mentor_became_ineligible_for_funding_on
-                                                                   mentor_became_ineligible_for_funding_reason
-                                                                   ect_first_became_eligible_for_training_at
-                                                                   mentor_first_became_eligible_for_training_at
-                                                                   ect_payments_frozen_year
-                                                                   mentor_payments_frozen_year], timestamp_attribute: :api_updated_at
+    it_behaves_like "a declarative touch model",
+                    when_changing: %i[
+                      api_id
+                      trs_first_name
+                      trs_last_name
+                      corrected_name
+                      trn
+                      api_ect_training_record_id
+                      api_mentor_training_record_id
+                      mentor_became_ineligible_for_funding_on
+                      mentor_became_ineligible_for_funding_reason
+                      ect_first_became_eligible_for_training_at
+                      mentor_first_became_eligible_for_training_at
+                      ect_payments_frozen_year
+                      mentor_payments_frozen_year
+                    ],
+                    timestamp_attribute: :api_updated_at
+
+    it_behaves_like "a declarative touch model",
+                    when_changing: %i[
+                      trs_first_name
+                      trs_last_name
+                      corrected_name
+                      trn
+                    ],
+                    timestamp_attribute: :api_unfunded_mentor_updated_at
   end
 
   describe "associations" do
