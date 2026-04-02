@@ -56,7 +56,7 @@ module Schools
       # lead_provider_name
       delegate :name, to: :lead_provider, prefix: true, allow_nil: true
 
-      def register!(school, author:, store: nil)
+      def register!(school, author:)
         Schools::RegisterECT.new(school_reported_appropriate_body: appropriate_body,
                                  corrected_name:,
                                  email:,
@@ -69,7 +69,7 @@ module Schools
                                  trs_last_name:,
                                  working_pattern:,
                                  author:,
-                                 store:)
+                                 store: self)
                             .register!
       end
 

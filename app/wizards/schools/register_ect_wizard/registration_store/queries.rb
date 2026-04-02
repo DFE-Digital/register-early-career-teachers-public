@@ -54,10 +54,17 @@ module Schools
         end
 
         def previous_ect_at_school_period
-          @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
-            .new(order: :started_on)
-            .ect_periods(trn: registration_store.trn)
-            .last
+          @previous_ect_at_school_period ||= begin
+            periods = ECTAtSchoolPeriods::Search
+              .new(order: :started_on)
+              .ect_periods(trn: registration_store.trn)
+
+            if ect_at_school_period
+              periods = periods.where.not(id: ect_at_school_period.id)
+            end
+
+            periods.last
+          end
         end
 
         def previous_school

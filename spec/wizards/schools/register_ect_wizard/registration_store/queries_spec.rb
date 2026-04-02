@@ -613,4 +613,124 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       expect(queries.previous_school).to eq(previous_school)
     end
   end
+
+  context "when the current ect_at_school_period_id is present" do
+    let!(:historical_ect_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        started_on: Date.new(2021, 9, 1),
+        finished_on: Date.new(2022, 7, 31)
+      )
+    end
+
+    let!(:historical_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        ect_at_school_period: historical_ect_period,
+        started_on: historical_ect_period.started_on,
+        finished_on: historical_ect_period.finished_on
+      )
+    end
+
+    let!(:current_ect_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        started_on: Date.new(2025, 9, 1),
+        finished_on: nil
+      )
+    end
+
+    let!(:current_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        ect_at_school_period: current_ect_period,
+        started_on: current_ect_period.started_on,
+        finished_on: nil
+      )
+    end
+
+    let(:ect_at_school_period_id) { current_ect_period.id }
+
+    it "returns the historical ect period rather than the current ect period" do
+      expect(queries.previous_ect_at_school_period).to eq(historical_ect_period)
+      expect(queries.previous_ect_at_school_period).not_to eq(current_ect_period)
+    end
+
+    it "returns the historical training period" do
+      expect(queries.previous_training_period).to eq(historical_training_period)
+    end
+  end
+
+  context "when the current ect_at_school_period_id is present and the historical training period is provider-led in closed 2021" do
+    let!(:contract_period_2021) { create_contract_period(year: 2021, payments_frozen: true) }
+    let!(:contract_period_2024) { create_contract_period(year: 2024, payments_frozen: true) }
+    let!(:contract_period_2025) { create_contract_period(year: 2025) }
+
+    let(:start_date) { contract_period_2025.started_on.to_s }
+    let!(:gias_school) { FactoryBot.create(:gias_school, urn: 9_001_001) }
+    let!(:historical_school) do
+      School.create!(
+        urn: gias_school.urn,
+        induction_tutor_name: "Test Tutor",
+        induction_tutor_email: "test@example.com"
+      )
+    end
+    let!(:historical_ect_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        school: historical_school,
+        started_on: Date.new(2021, 9, 1),
+        finished_on: Date.new(2022, 7, 31)
+      )
+    end
+
+    let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let!(:school_partnership_2021) { create_school_partnership(year: 2021, school: historical_school, lead_provider:) }
+
+    let!(:historical_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        :provider_led,
+        ect_at_school_period: historical_ect_period,
+        started_on: historical_ect_period.started_on,
+        finished_on: historical_ect_period.finished_on,
+        school_partnership: school_partnership_2021
+      )
+    end
+
+    let!(:current_ect_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        school: historical_school,
+        started_on: Date.new(2025, 9, 1),
+        finished_on: nil
+      )
+    end
+
+    let!(:current_training_period) do
+      FactoryBot.create(
+        :training_period,
+        :for_ect,
+        :provider_led,
+        ect_at_school_period: current_ect_period,
+        started_on: current_ect_period.started_on,
+        finished_on: nil
+      )
+    end
+
+    let(:ect_at_school_period_id) { current_ect_period.id }
+
+    it "resolves the registration contract period using the historical ect period" do
+      expect(queries.previous_ect_at_school_period).to eq(historical_ect_period)
+      expect(queries.previous_training_period).to eq(historical_training_period)
+      expect(queries.registration_contract_period).to eq(contract_period_2024)
+    end
+  end
 end
