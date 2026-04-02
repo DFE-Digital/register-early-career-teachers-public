@@ -112,7 +112,7 @@ module AppropriateBodies::Importers
 
     def import_teacher_rows
       ActiveRecord::Base.transaction do
-        teachers.rows.map(&:to_h).each_slice(BATCH_SIZE).map do |batch|
+        teachers.rows.map(&:to_h).each_slice(BATCH_SIZE).each do |batch|
           teacher_result = Teacher.insert_all!(batch)
           logger.info("Teachers inserted: #{teacher_result.count}")
         end
@@ -121,7 +121,7 @@ module AppropriateBodies::Importers
 
     def import_induction_periods_rows
       ActiveRecord::Base.transaction do
-        finalised_rows.each_slice(BATCH_SIZE).map do |batch|
+        finalised_rows.each_slice(BATCH_SIZE).each do |batch|
           induction_period_data = batch.map(&:to_record)
           induction_period_result = InductionPeriod.insert_all!(induction_period_data, returning: [:id])
 

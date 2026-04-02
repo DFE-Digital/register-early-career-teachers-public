@@ -180,11 +180,12 @@ module AppropriateBodies::Importers
 
       # @return [ReleaseEvent, PassEvent, FailEvent, nil]
       def result_event
-        case
-        when released? then ReleaseEvent.new(happened_at: finished_on, **common_event_values)
-        when passed? then PassEvent.new(happened_at: finished_on, **common_event_values)
-        when failed? then FailEvent.new(happened_at: finished_on, **common_event_values)
-        end
+        event_type = if released? then ReleaseEvent
+                     elsif passed? then PassEvent
+                     elsif failed? then FailEvent
+                     end
+
+        event_type&.new(happened_at: finished_on, **common_event_values)
       end
 
       # @return [ImportEvent]
@@ -394,7 +395,7 @@ module AppropriateBodies::Importers
                       data: { originals: [original_sibling, original_current], combined: sibling.to_h }
                     }
 
-                  when !sibling.range.cover?(current.started_on) && sibling.range.cover(current.finished_on)
+                  when !sibling.range.cover?(current.started_on) && sibling.range.cover?(current.finished_on)
                     #               ┌──────────────────────────────────────┐
                     #   CURRENT     │              DISCARD                 │
                     #               └──────────────────────────────────────┘
@@ -471,6 +472,8 @@ module AppropriateBodies::Importers
                       data: { originals: [original_sibling, original_current] }
                     }
                     keep << current
+                  else
+                    fail
                   end
 
                 end

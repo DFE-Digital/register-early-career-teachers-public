@@ -78,10 +78,6 @@ class InductionPeriod < ApplicationRecord
     super
   end
 
-  def finished?
-    finished_on.present?
-  end
-
 private
 
   # Ensure admin users inserting new induction periods include end dates.
