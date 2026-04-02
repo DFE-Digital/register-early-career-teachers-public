@@ -71,7 +71,7 @@ private
     return false if induction_records.blank?
 
     induction_records
-      .map { it.start_date..it.end_date }
+      .map { it.start_date...it.end_date }
       .each_cons(2)
       .any? { |a, b| a.overlap?(b) }
   end
