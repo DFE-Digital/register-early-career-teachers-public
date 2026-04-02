@@ -56,6 +56,7 @@ class Teacher < ApplicationRecord
           api_id
           trs_first_name
           trs_last_name
+          corrected_name
           trn
           api_ect_training_record_id
           api_mentor_training_record_id
@@ -73,6 +74,7 @@ class Teacher < ApplicationRecord
         when_changing: %i[
           trs_first_name
           trs_last_name
+          corrected_name
           trn
         ]
 
