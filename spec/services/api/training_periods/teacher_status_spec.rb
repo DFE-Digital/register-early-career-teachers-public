@@ -75,5 +75,36 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
       it { expect(service).not_to be_leaving }
       it { expect(service).to be_left }
     end
+
+    context "when the mentor had left and completes the training afterwards" do
+      let(:training_period) { FactoryBot.create(:training_period, :finished) }
+
+      before do
+        teacher.update!(
+          mentor_became_ineligible_for_funding_on: training_period.finished_on + 1.week,
+          mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
+        )
+      end
+
+      it { is_expected.to eq(:left) }
+      it { expect(service).not_to be_active }
+      it { expect(service).not_to be_joining }
+      it { expect(service).not_to be_leaving }
+      it { expect(service).to be_left }
+    end
+
+    context "when the ECT had left and passes/fails induction afterwards" do
+      let(:training_period) { FactoryBot.build(:training_period, started_on: 12.months.ago, finished_on: 2.months.ago) }
+
+      before do
+        FactoryBot.create(:induction_period, :pass, teacher:, started_on: 1.month.ago, finished_on: 1.week.ago)
+      end
+
+      it { is_expected.to eq(:left) }
+      it { expect(service).not_to be_active }
+      it { expect(service).not_to be_joining }
+      it { expect(service).not_to be_leaving }
+      it { expect(service).to be_left }
+    end
   end
 end
