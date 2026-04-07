@@ -3,11 +3,11 @@ class TeacherHistoryConverter::PostInductionCompletionComboCheck
 
   attr_reader :profile_id, :lead_provider_id, :cohort_year, :csv_path
 
-  def initialize(profile_id:, lead_provider_id:, cohort_year:, csv_path: nil)
+  def initialize(profile_id:, lead_provider_id:, cohort_year:, csv_path: CSV_DATA_PATH)
     @profile_id = profile_id
     @lead_provider_id = lead_provider_id
     @cohort_year = cohort_year
-    @csv_path = csv_path || CSV_DATA_PATH
+    @csv_path = csv_path
   end
 
   def keep?
