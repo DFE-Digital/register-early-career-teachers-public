@@ -93,33 +93,9 @@ describe "One induction record (end to end, new teacher)" do
       expect(teacher.migration_mode).to eq "all_induction_records"
     end
 
-    it "creates a single ect_at_school_period linked to the teacher at the right school" do
-      ect_at_school_periods = teacher.ect_at_school_periods
-      ect_at_school_period = ect_at_school_periods.first
-
-      aggregate_failures do
-        expect(ect_at_school_periods.count).to be(1)
-
-        expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
-      end
-    end
-
-    it "creates a single training_period for the teacher linked to the right schedule and school partnership" do
-      training_periods = teacher.ect_at_school_periods.first.training_periods
-      training_period = training_periods.first
-
-      aggregate_failures do
-        expect(training_periods.count).to be(1)
-
-        expect(training_period.school_partnership.contract_period.year).to eql(ecf1_induction_programme.partnership.cohort.start_year)
-        expect(training_period.school_partnership.lead_provider.name).to eql(ecf1_induction_programme.partnership.lead_provider.name)
-        expect(training_period.school_partnership.delivery_partner.name).to eql(ecf1_induction_programme.partnership.delivery_partner.name)
-
-        expect(training_period.schedule.identifier).to eql(ecf1_induction_record.schedule.schedule_identifier)
-        expect(training_period.schedule.contract_period_year).to eql(ecf1_induction_record.schedule.cohort.start_year)
-
-        expect(training_period.created_at).to eql(ecf1_induction_record.created_at)
-      end
+    # in premium we do not create periods for induction records if the start_date > induction_completion_date
+    it "does not create any ect_at_school_periods" do
+      expect(teacher.ect_at_school_periods).to be_empty
     end
   end
 end
