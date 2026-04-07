@@ -871,7 +871,6 @@ DEPENDENCIES
   bootsnap
   brakeman
   capybara
-  connection_pool (< 3)
   cssbundling-rails
   csv
   debug
