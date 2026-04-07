@@ -1,145 +1,103 @@
 RSpec.shared_examples "a started on step" do |current_step:|
-  subject(:step) { described_class.new(wizard:, started_on:) }
+  subject(:step) { described_class.new(wizard:, started_on: started_on_params) }
 
-  let(:wizard) { FactoryBot.build(:register_mentor_wizard, current_step:, store:) }
-  let(:store) do
-    FactoryBot.build(:session_repository,
-                     previous_school_mentor_at_school_periods: [])
+  let(:wizard) do
+    FactoryBot.build(:register_mentor_wizard, current_step:, store:)
+  end
+  let(:store) { FactoryBot.build(:session_repository) }
+  let(:contract_period) do
+    FactoryBot.create(:contract_period, year: 2025, enabled: true)
   end
 
-  let(:started_on) { { "day" => "1", "month" => "6", "year" => "2025" } }
-  let(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
-  let(:currently_mentor_at_another_school) { false }
-  let(:today) { Date.new(2025, 6, 3) }
+  let(:started_on) { Date.new(2025, 6, 1) }
+  let(:started_on_params) do
+    {
+      "day" => started_on.day.to_s,
+      "month" => started_on.month.to_s,
+      "year" => started_on.year.to_s
+    }
+  end
+
+  let(:previous_school_mentor_at_school_periods) { [] }
+
+  describe ".permitted_params" do
+    subject(:permitted_params) { wizard.permitted_params }
+
+    it { is_expected.to contain_exactly(:started_on) }
+  end
 
   describe "validations" do
-    around do |example|
-      travel_to(today) { example.run }
+    before do
+      allow(wizard.mentor).to receive_messages(
+        currently_mentor_at_another_school?: currently_mentor_at_another_school,
+        previous_school_mentor_at_school_periods:
+      )
     end
 
-    context "when the start_date is invalid" do
-      let(:started_on) { { "day" => "30", "month" => "2", "year" => "2025" } }
+    context "when the mentor is not currently mentoring at another school" do
       let(:currently_mentor_at_another_school) { false }
+      let(:previous_school_mentor_at_school_periods) { [] }
 
-      before do
-        allow(wizard.mentor).to receive(:currently_mentor_at_another_school?).and_return(currently_mentor_at_another_school)
+      context "and the start_date is invalid" do
+        let(:started_on_params) { { "day" => "30", "month" => "2", "year" => "2025" } }
+
+        it { is_expected.to have_error(:started_on, "Enter the date in the correct format, for example 12 03 1998") }
       end
 
-      it "is invalid with the correct error message" do
-        expect(subject).not_to be_valid
-        expect(subject.errors[:started_on]).to include("Enter the date in the correct format, for example 12 03 1998")
-      end
-    end
-
-    context "when start date is in the future" do
-      let(:started_on) { { "day" => "1", "month" => "11", "year" => "2025" } }
-
-      before do
-        allow(wizard.mentor).to receive(:currently_mentor_at_another_school?).and_return(currently_mentor_at_another_school)
-      end
-
-      context "and the mentor is not currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { false }
+      context "and the start date is more than 4 months in the future" do
+        let(:started_on) { 4.months.from_now.advance(days: 1) }
 
         it { is_expected.to be_valid }
       end
 
-      context "and the mentor is currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { true }
-        let(:latest_valid_started_on) { 4.months.from_now.to_date }
-
-        it "is valid up to 4 months from today" do
-          subject.started_on = latest_valid_started_on
-          expect(subject).to be_valid
-        end
-
-        it "is invalid over 4 months from today" do
-          subject.started_on = latest_valid_started_on + 1.day
-          expect(subject).not_to be_valid
-          expect(subject.errors[:started_on]).to include("Start date must be before 4 October 2025")
-        end
-      end
-    end
-
-    context "when start date is today" do
-      let(:started_on) { { "day" => "3", "month" => "6", "year" => "2025" } }
-
-      context "and the mentor is not currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { false }
+      context "and the start date is 4 months in the future" do
+        let(:started_on) { 4.months.from_now }
 
         it { is_expected.to be_valid }
       end
 
-      context "and the mentor is currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { true }
-        let(:started_on) { Date.new(2024, 12, 1) }
+      context "and the start date is less than 4 months in the future" do
+        let(:started_on) { 4.months.from_now.advance(days: -1) }
 
         it { is_expected.to be_valid }
       end
     end
 
-    context "when start date is in the past" do
-      let(:started_on) { { "day" => "1", "month" => "6", "year" => "2025" } }
+    context "when the mentor is currently mentoring at another school" do
+      let(:currently_mentor_at_another_school) { true }
+      let(:previous_school_mentor_at_school_periods) do
+        [FactoryBot.build_stubbed(:mentor_at_school_period, started_on: 2.months.ago)]
+      end
 
-      context "and the mentor is not currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { false }
+      context "and the start_date is invalid" do
+        let(:started_on_params) { { "day" => "30", "month" => "2", "year" => "2025" } }
+
+        it { is_expected.to have_error(:started_on, "Enter the date in the correct format, for example 12 03 1998") }
+      end
+
+      context "and the start date is more than 4 months in the future" do
+        let(:started_on) { 4.months.from_now.advance(days: 1) }
+
+        it { is_expected.to have_error(:started_on, "Start date must be before #{4.months.from_now.to_date.next_day.to_formatted_s(:govuk)}") }
+      end
+
+      context "and the start date is 4 months in the future" do
+        let(:started_on) { 4.months.from_now }
 
         it { is_expected.to be_valid }
       end
 
-      context "and the mentor is currently mentoring at another school" do
-        let(:currently_mentor_at_another_school) { true }
-        let(:started_on) { Date.new(2024, 12, 1) }
+      context "and the start date is less than 4 months in the future" do
+        let(:started_on) { 1.month.from_now }
 
         it { is_expected.to be_valid }
       end
-    end
-  end
 
-  describe "#next_step" do
-    around do |example|
-      travel_to(Date.new(2025, 6, 3)) { example.run }
-    end
+      context "and the start date is before the previous school mentor at school period" do
+        let(:started_on) { 3.months.ago }
 
-    context "when start date is in the future" do
-      let(:started_on) { { "day" => "1", "month" => "7", "year" => "2025" } }
-
-      context "when contract period is enabled" do
-        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
-
-        it { expect(step.next_step).to eq(:check_answers) }
+        it { is_expected.to have_error(:started_on, "was registered as a mentor at their last school starting on the #{2.months.ago.to_date.to_formatted_s(:govuk)}. Enter a later date.") }
       end
-
-      context "when contract period is disabled" do
-        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: false) }
-
-        it { expect(step.next_step).to eq(:cannot_register_mentor_yet) }
-      end
-
-      context "when there is no matching contract period" do
-        it { expect(step.next_step).to eq(:cannot_register_mentor_yet) }
-      end
-
-      context "when the start date is the last day of the current contract period" do
-        let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025, enabled: true) }
-        let(:started_on) { contract_period.finished_on }
-        let(:today) { contract_period.finished_on - 1.day }
-
-        it { expect(step.next_step).to eq(:check_answers) }
-      end
-    end
-
-    context "when start date is today" do
-      let(:started_on) { { "day" => "3", "month" => "6", "year" => "2025" } }
-
-      it { expect(step.next_step).to eq(:check_answers) }
-    end
-
-    context "when start date is in the past" do
-      let(:started_on) { { "day" => "1", "month" => "6", "year" => "2025" } }
-      let(:contract_period) { nil }
-
-      it { expect(step.next_step).to eq(:check_answers) }
     end
   end
 end
