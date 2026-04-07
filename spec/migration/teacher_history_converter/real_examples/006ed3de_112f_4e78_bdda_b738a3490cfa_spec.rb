@@ -205,7 +205,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
       {
         teacher: hash_including(
           trn: "1111111",
-          ect_at_school_periods: array_including(
+          ect_at_school_periods: [
             hash_including(
               school: hash_including(urn: "100001", name: "School 1"),
               started_on: Date.new(2022, 9, 1),
@@ -227,23 +227,8 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
                 )
               )
             ),
-            hash_including(
-              # NOTE: not handling completions in premium mode yet
-              school: hash_including(urn: "100002", name: "School 2"),
-              started_on: Date.new(2024, 8, 20),
-              finished_on: nil,
-              mentorship_periods: [],
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2024, 8, 20),
-                  finished_on: nil,
-                  lead_provider_info: hash_including(name: "Ambition Institute"),
-                  delivery_partner_info: hash_including(name: "Delivery partner 2"),
-                  contract_period_year: 2022
-                )
-              )
-            )
-          )
+            # NOTE: 2nd induction record starts after the induction completion date so not migrated
+          ]
         )
       }
     end
