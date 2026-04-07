@@ -21,6 +21,25 @@
 #
 #     **bold** and _italic_ text
 
+- title: Stephen has joined the API team - this is a demo
+  date: 2026-04-07
+  tags:
+    - sandbox-release
+  body: |
+    We've now fixed how uplift fees are shown for early career teachers and mentors.
+    
+    ## What's changed
+    
+    Nothing this is a demo.
+  
+    ## Why we've made this change    
+    
+    This is a demo.
+    
+    ## Impact on lead providers
+    
+    None at all.
+
 - title: Uplift fees for early career teachers (ECTs) and mentors are now fixed
   date: 2026-02-23
   tags:
