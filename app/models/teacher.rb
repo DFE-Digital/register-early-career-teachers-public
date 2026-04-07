@@ -60,6 +60,7 @@ class Teacher < ApplicationRecord
           trn
           api_ect_training_record_id
           api_mentor_training_record_id
+          ect_became_ineligible_for_funding_on
           mentor_became_ineligible_for_funding_on
           mentor_became_ineligible_for_funding_reason
           ect_first_became_eligible_for_training_at
