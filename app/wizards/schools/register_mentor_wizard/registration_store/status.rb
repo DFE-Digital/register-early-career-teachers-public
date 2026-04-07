@@ -52,15 +52,15 @@ module Schools
         end
 
         def previous_school_closed_mentor_at_school_periods?
-          queries.previous_school_mentor_at_school_periods.where.not(finished_on: nil).exists?
+          queries.previous_school_mentor_at_school_periods.finished.exists?
         end
 
         def mentorship_status
           mentor_at_school_periods = queries.mentor_at_school_periods
 
-          if mentor_at_school_periods.any?(&:ongoing?)
+          if mentor_at_school_periods.ongoing_today.exists?
             :currently_a_mentor
-          elsif mentor_at_school_periods.any?
+          elsif mentor_at_school_periods.exists?
             :previously_a_mentor
           else
             raise MentorStatusError, "No mentor_at_school_periods found for a previously registered mentor"
