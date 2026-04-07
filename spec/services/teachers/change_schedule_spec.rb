@@ -228,6 +228,68 @@ RSpec.describe Teachers::ChangeSchedule do
             expect(training_period.contract_period).to eq(new_contract_period)
             expect(training_period.expression_of_interest).to eq(new_school_partnership.active_lead_provider)
           end
+
+          context "when a future training period exists for the same lead provider" do
+            let(:school_period_finished_on) { nil }
+            let(:training_period_finished_on) { 1.month.from_now.to_date }
+            let(:future_training_period_started_on) { training_period_finished_on }
+            let!(:future_school_partnership) { FactoryBot.create(:school_partnership, :for_year, school: at_school_period.school, lead_provider:, year: new_contract_period.year) }
+            let!(:future_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :"for_#{trainee_type}",
+                "#{trainee_type}_at_school_period": at_school_period,
+                started_on: future_training_period_started_on,
+                finished_on: nil,
+                school_partnership: future_school_partnership
+              )
+            end
+
+            it "also updates the future training period's schedule" do
+              service.change_schedule
+
+              future_training_period.reload
+              expect(future_training_period.schedule).to eq(new_schedule)
+            end
+          end
+
+          context "when a future training period exists for the same lead provider at a different school" do
+            let(:school_period_finished_on) { 1.month.from_now.to_date }
+            let(:future_training_period_started_on) { school_period_finished_on + 1.day }
+            let(:different_school_period) do
+              FactoryBot.create(
+                :"#{trainee_type}_at_school_period",
+                :ongoing,
+                teacher:,
+                started_on: future_training_period_started_on
+              )
+            end
+            let!(:future_school_partnership) { FactoryBot.create(:school_partnership, :for_year, school: different_school_period.school, lead_provider:, year: new_contract_period.year) }
+            let!(:future_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :"for_#{trainee_type}",
+                "#{trainee_type}_at_school_period": different_school_period,
+                started_on: future_training_period_started_on,
+                finished_on: nil,
+                school_partnership: future_school_partnership
+              )
+            end
+
+            it "also updates the future training period's schedule" do
+              service.change_schedule
+
+              future_training_period.reload
+              expect(future_training_period.schedule).to eq(new_schedule)
+            end
+
+            it "keeps the future training period's school_partnership" do
+              service.change_schedule
+
+              future_training_period.reload
+              expect(future_training_period.school_partnership).to eq(future_school_partnership)
+            end
+          end
         end
       end
     end

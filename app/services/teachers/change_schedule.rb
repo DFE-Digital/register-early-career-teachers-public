@@ -17,15 +17,15 @@ module Teachers
         track_payments_frozen_year!
 
         new_training_period = if training_period.started_on.past?
-                                new_training_period = create_new_training_period!
-                                if future_training_period_for_same_lead_provider
-                                  update_training_period_in_place!(future_training_period_for_same_lead_provider)
-                                end
-                                new_training_period
+                                create_new_training_period!
                               else
                                 update_training_period_in_place!(training_period)
                                 training_period
                               end
+
+        if future_training_period_for_same_lead_provider
+          update_training_period_in_place!(future_training_period_for_same_lead_provider)
+        end
 
         record_change_schedule_event!(original_training_period: training_period, original_schedule:, new_training_period:)
       end
