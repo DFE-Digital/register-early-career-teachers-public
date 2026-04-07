@@ -209,19 +209,57 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          context "when `eligible_for_funding` is true" do
-            let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: Time.zone.now) }
+          describe "`eligible_for_funding`" do
+            context "when `ect_first_became_eligible_for_training_at` is nil and `ect_became_ineligible_for_funding_on` is nil" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  ect_first_became_eligible_for_training_at: nil,
+                                  ect_became_ineligible_for_funding_on: nil)
+              end
 
-            it "serializes `eligible_for_funding`" do
-              expect(ect_enrolment["eligible_for_funding"]).to be(true)
+              it "serializes `eligible_for_funding` as nil" do
+                expect(ect_enrolment["eligible_for_funding"]).to be_nil
+              end
             end
-          end
 
-          context "when `eligible_for_funding` is false" do
-            let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: nil) }
+            context "when only `ect_first_became_eligible_for_training_at` is set" do
+              let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: Time.zone.now) }
 
-            it "serializes `eligible_for_funding`" do
-              expect(ect_enrolment["eligible_for_funding"]).to be(false)
+              it "serializes `eligible_for_funding` as true" do
+                expect(ect_enrolment["eligible_for_funding"]).to be(true)
+              end
+            end
+
+            context "when only `ect_became_ineligible_for_funding_on` is set" do
+              let(:teacher) { FactoryBot.create(:teacher, ect_became_ineligible_for_funding_on: Date.current) }
+
+              it "serializes `eligible_for_funding` as false" do
+                expect(ect_enrolment["eligible_for_funding"]).to be(false)
+              end
+            end
+
+            context "when `ect_first_became_eligible_for_training_at` is before `ect_became_ineligible_for_funding_on`" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  ect_first_became_eligible_for_training_at: 2.days.ago,
+                                  ect_became_ineligible_for_funding_on: Date.current)
+              end
+
+              it "serializes `eligible_for_funding` as true" do
+                expect(ect_enrolment["eligible_for_funding"]).to be(true)
+              end
+            end
+
+            context "when `ect_became_ineligible_for_funding_on` is before `ect_first_became_eligible_for_training_at`" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  ect_became_ineligible_for_funding_on: 2.days.ago.to_date,
+                                  ect_first_became_eligible_for_training_at: Time.current)
+              end
+
+              it "serializes `eligible_for_funding` as false" do
+                expect(ect_enrolment["eligible_for_funding"]).to be(false)
+              end
             end
           end
 
@@ -348,19 +386,69 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          context "when `eligible_for_funding` is true" do
-            let(:teacher) { FactoryBot.create(:teacher, mentor_first_became_eligible_for_training_at: Time.zone.now) }
+          describe "`eligible_for_funding`" do
+            context "when `mentor_first_became_eligible_for_training_at` is nil and `mentor_became_ineligible_for_funding_on` is nil" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  mentor_first_became_eligible_for_training_at: nil,
+                                  mentor_became_ineligible_for_funding_on: nil,
+                                  mentor_became_ineligible_for_funding_reason: nil)
+              end
 
-            it "serializes `eligible_for_funding`" do
-              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
+              it "serializes `eligible_for_funding` as nil" do
+                expect(mentor_enrolment["eligible_for_funding"]).to be_nil
+              end
             end
-          end
 
-          context "when `eligible_for_funding` is false" do
-            let(:teacher) { FactoryBot.create(:teacher, mentor_first_became_eligible_for_training_at: nil) }
+            context "when only `mentor_first_became_eligible_for_training_at` is set" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  mentor_first_became_eligible_for_training_at: Time.zone.now,
+                                  mentor_became_ineligible_for_funding_on: nil,
+                                  mentor_became_ineligible_for_funding_reason: nil)
+              end
 
-            it "serializes `eligible_for_funding`" do
-              expect(mentor_enrolment["eligible_for_funding"]).to be(false)
+              it "serializes `eligible_for_funding` as true" do
+                expect(mentor_enrolment["eligible_for_funding"]).to be(true)
+              end
+            end
+
+            context "when only `mentor_became_ineligible_for_funding_on` is set" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  mentor_became_ineligible_for_funding_on: Date.current,
+                                  mentor_became_ineligible_for_funding_reason: "started_not_completed")
+              end
+
+              it "serializes `eligible_for_funding` as false" do
+                expect(mentor_enrolment["eligible_for_funding"]).to be(false)
+              end
+            end
+
+            context "when `mentor_first_became_eligible_for_training_at` is before `mentor_became_ineligible_for_funding_on`" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  mentor_first_became_eligible_for_training_at: 2.days.ago,
+                                  mentor_became_ineligible_for_funding_on: Date.current,
+                                  mentor_became_ineligible_for_funding_reason: "completed_declaration_received")
+              end
+
+              it "serializes `eligible_for_funding` as true" do
+                expect(mentor_enrolment["eligible_for_funding"]).to be(true)
+              end
+            end
+
+            context "when `mentor_became_ineligible_for_funding_on` is before `mentor_first_became_eligible_for_training_at`" do
+              let(:teacher) do
+                FactoryBot.create(:teacher,
+                                  mentor_became_ineligible_for_funding_on: 2.days.ago.to_date,
+                                  mentor_became_ineligible_for_funding_reason: "completed_during_early_roll_out",
+                                  mentor_first_became_eligible_for_training_at: Time.current)
+              end
+
+              it "serializes `eligible_for_funding` as false" do
+                expect(mentor_enrolment["eligible_for_funding"]).to be(false)
+              end
             end
           end
 
