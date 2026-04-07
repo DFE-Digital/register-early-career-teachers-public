@@ -24,8 +24,8 @@ RSpec.describe PaymentCalculator::Banded::Outputs do
   end
 
   describe "#declaration_type_outputs" do
-    it "returns outputs for declaration types present in the data" do
-      expect(outputs.declaration_type_outputs.map(&:declaration_type).uniq).to match_array(%w[started])
+    it "returns outputs for all declaration types" do
+      expect(outputs.declaration_type_outputs.map(&:declaration_type).uniq).to match_array(Declaration.declaration_types.keys)
     end
   end
 
