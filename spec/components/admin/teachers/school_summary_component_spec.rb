@@ -126,8 +126,8 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
           newer_name = Teachers::Name.new(newer_mentor_period.teacher).full_name
           older_name = Teachers::Name.new(older_mentor_period.teacher).full_name
 
-          expect(rendered).to have_link(newer_name, href: admin_teacher_induction_path(newer_mentor_period.teacher))
-          expect(rendered).to have_link(older_name, href: admin_teacher_induction_path(older_mentor_period.teacher))
+          expect(rendered).to have_link(newer_name, href: admin_teacher_path(newer_mentor_period.teacher))
+          expect(rendered).to have_link(older_name, href: admin_teacher_path(older_mentor_period.teacher))
           html = rendered.to_html
           expect(html.index(newer_name)).to be > html.index(older_name)
         end
@@ -270,8 +270,8 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
           newer_name = Teachers::Name.new(newer_ect_period.teacher).full_name
           older_name = Teachers::Name.new(older_ect_period.teacher).full_name
 
-          expect(rendered).to have_link(newer_name, href: admin_teacher_induction_path(newer_ect_period.teacher))
-          expect(rendered).to have_link(older_name, href: admin_teacher_induction_path(older_ect_period.teacher))
+          expect(rendered).to have_link(newer_name, href: admin_teacher_path(newer_ect_period.teacher))
+          expect(rendered).to have_link(older_name, href: admin_teacher_path(older_ect_period.teacher))
           html = rendered.to_html
           expect(html.index(newer_name)).to be > html.index(older_name)
         end
