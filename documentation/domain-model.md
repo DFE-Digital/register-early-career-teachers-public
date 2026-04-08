@@ -212,6 +212,7 @@ erDiagram
     datetime api_unfunded_mentor_updated_at
     enum migration_mode
     boolean trs_not_found
+    date ect_became_ineligible_for_funding_on
   }
   PendingInductionSubmission {
     integer id

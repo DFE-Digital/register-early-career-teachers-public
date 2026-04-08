@@ -236,6 +236,57 @@ RSpec.describe Teachers::Manage do
       end
     end
 
+    context "when the new induction status is Exempt" do
+      it "sets ect_became_ineligible_for_funding_on to today's date" do
+        freeze_time do
+          expect(teacher.ect_became_ineligible_for_funding_on).to be_nil
+
+          service.update_trs_induction_status!(
+            trs_induction_status: "Exempt",
+            trs_induction_completed_date: nil,
+            trs_induction_start_date: nil
+          )
+          teacher.reload
+
+          expect(teacher.ect_became_ineligible_for_funding_on).to eq(Date.current)
+        end
+      end
+
+      context "when ect_became_ineligible_for_funding_on is already set" do
+        let(:teacher) do
+          FactoryBot.create(:teacher,
+                            trs_first_name: "Barry",
+                            trs_last_name: "Allen",
+                            trs_induction_status: "InProgress",
+                            ect_became_ineligible_for_funding_on: Date.new(2025, 1, 1))
+        end
+
+        it "does not overwrite the existing date" do
+          service.update_trs_induction_status!(
+            trs_induction_status: "Exempt",
+            trs_induction_completed_date: nil,
+            trs_induction_start_date: nil
+          )
+          teacher.reload
+
+          expect(teacher.ect_became_ineligible_for_funding_on).to eq(Date.new(2025, 1, 1))
+        end
+      end
+    end
+
+    context "when the new induction status is not Exempt" do
+      it "does not set ect_became_ineligible_for_funding_on" do
+        service.update_trs_induction_status!(
+          trs_induction_status: "Passed",
+          trs_induction_completed_date: nil,
+          trs_induction_start_date: nil
+        )
+        teacher.reload
+
+        expect(teacher.ect_became_ineligible_for_funding_on).to be_nil
+      end
+    end
+
     context "when the new induction status is the same" do
       it "does not records an event" do
         service.update_trs_induction_status!(
