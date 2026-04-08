@@ -2,15 +2,13 @@ class ApplicationWizardStep < DfE::Wizard::Step
   include ActiveModel::Attributes
   include ActiveRecord::AttributeAssignment
 
-  class StoreEmptyError < StandardError; end
-
-  STORE_EMPTY_FLASH_MESSAGE = "Your session has expired or was started in another tab. Please start again."
+  class EmptyStoreError < StandardError; end
 
   # Guard against submitting check-answers with an empty session store due to
   # concurrent tabs/windows or back/forward navigation.
   RejectEmptyStoreOnCheckAnswers = Module.new do
     def save!
-      raise StoreEmptyError if step_name == "CheckAnswers" && store.empty?
+      raise EmptyStoreError if step_name == "CheckAnswers" && store.empty?
 
       super
     end

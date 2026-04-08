@@ -65,8 +65,8 @@ RSpec.describe ApplicationWizardStep, type: :model do
     context "when the step is a CheckAnswers step and the store is empty" do
       let(:step_name) { "CheckAnswers" }
 
-      it "raises StoreEmptyError instead of calling save!" do
-        expect { step.save! }.to raise_error(ApplicationWizardStep::StoreEmptyError)
+      it "raises EmptyStoreError instead of calling save!" do
+        expect { step.save! }.to raise_error(ApplicationWizardStep::EmptyStoreError)
       end
     end
 
