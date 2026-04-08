@@ -173,6 +173,34 @@ module ECTAtSchoolPeriods
           change_lead_provider
         end
       end
+
+      context "when the training period is in a closed contract period" do
+        let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
+        let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+        let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
+
+        let(:contract_period) { contract_period_2021 }
+
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            started_on: Date.new(2021, 9, 1)
+          )
+        end
+
+        it "creates a new training period with an extended september schedule in 2024" do
+          change_lead_provider
+
+          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          expect(new_training_period.schedule.identifier).to eq("ecf-extended-september")
+          expect(new_training_period.schedule.contract_period_year).to eq(2024)
+        end
+
+        it "sets the ECT's payments frozen year to 2021" do
+          expect { change_lead_provider }.to change(ect_at_school_period.teacher, :ect_payments_frozen_year).from(nil).to(2021)
+        end
+      end
     end
 
     context "when there is no existing school partnership" do
@@ -265,6 +293,50 @@ module ECTAtSchoolPeriods
             )
 
           change_lead_provider
+        end
+      end
+
+      context "when the training period is in a closed contract period" do
+        let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
+        let!(:current_contract_period) { FactoryBot.create(:contract_period, :current, :with_schedules) }
+        let(:contract_period) { contract_period_2021 }
+        let(:new_active_lead_provider) do
+          FactoryBot.create(
+            :active_lead_provider,
+            lead_provider: old_lead_provider,
+            contract_period: current_contract_period
+          )
+        end
+
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            started_on: Date.new(2021, 9, 1)
+          )
+        end
+
+        it "destroys the existing training period" do
+          freeze_time
+
+          change_lead_provider
+
+          expect { training_period.reload }
+            .to raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        it "creates a new training period in the current contract period" do
+          change_lead_provider
+
+          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          expect(new_training_period.started_on).to eq(Date.current)
+          expect(new_training_period.expression_of_interest.lead_provider)
+            .to eq(lead_provider)
+          expect(new_training_period.schedule.contract_period).to eq(current_contract_period)
+        end
+
+        it "does not sets the ECT's payments frozen year" do
+          expect { change_lead_provider }.not_to change(ect_at_school_period.teacher, :ect_payments_frozen_year)
         end
       end
 

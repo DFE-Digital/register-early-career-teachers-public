@@ -24,5 +24,35 @@ module ECTAtSchoolPeriods
         author:
       ).finish!
     end
+
+    def track_payments_frozen_year!
+      return unless contract_period_reassignment_required? && training_period_confirmed?
+
+      teacher.update!(ect_payments_frozen_year: previous_contract_period.year)
+    end
+
+    def existing_schedule
+      training_period&.schedule
+    end
+
+    def previous_contract_period = contract_period_reassignment.assigned_contract_period
+
+    def contract_period_reassignment_required?
+      @contract_period_reassignment_required ||= contract_period_reassignment.required?
+    end
+
+    def contract_period_at_transition
+      @contract_period_at_transition ||= if contract_period_reassignment_required? && training_period_confirmed?
+                                           successor_contract_period
+                                         else
+                                           super
+                                         end
+    end
+
+    def contract_period_reassignment
+      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period:)
+    end
+
+    delegate :successor_contract_period, to: :contract_period_reassignment
   end
 end
