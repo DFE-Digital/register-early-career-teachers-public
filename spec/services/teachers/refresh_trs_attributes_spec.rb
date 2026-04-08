@@ -80,7 +80,8 @@ describe Teachers::RefreshTRSAttributes do
               trs_initial_teacher_training_end_date: "2021-04-05",
               trs_initial_teacher_training_provider_name: "Example Provider Ltd.",
               trs_qts_awarded_on: 3.years.ago.to_date.to_s,
-              trs_qts_status_description: "QualifiedTeacherStatus"
+              trs_qts_status_description: "QualifiedTeacherStatus",
+              trs_routes_to_professional_status_summaries: ["Holds QTS from 01 Jan 2022 via "]
             })
             expect(fake_manage).to have_received(:update_trs_induction_status!).once.with(
               trs_induction_status: "Passed",
