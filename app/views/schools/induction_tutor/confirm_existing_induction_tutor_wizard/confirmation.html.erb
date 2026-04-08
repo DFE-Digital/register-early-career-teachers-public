@@ -12,7 +12,7 @@
 <% end %>
 
 <% if @wizard.store.are_these_details_correct %>
-  <p class="govuk-body">You do not need to do anything else to confirm your school's induction tutor.</p>
+  <p class="govuk-body">You do not need to do anything else to confirm your school’s induction tutor.</p>
 <% else %>
   <h2 class="govuk-heading-m">What happens next</h2>
   <p class="govuk-body">We’ll send an email to <%= @wizard.school.induction_tutor_name %> at <%= @wizard.school.induction_tutor_email %> to let them know.</p>
