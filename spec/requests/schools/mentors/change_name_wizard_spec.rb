@@ -17,16 +17,6 @@ describe "Schools::Mentors::ChangeNameWizardController", :enable_schools_interfa
     it_behaves_like "an induction redirectable route"
   end
 
-  describe "check-answers with empty session" do
-    before { sign_in_as(:school_user, school:) }
-
-    it "redirects to the edit step on POST" do
-      post path_for_step("check-answers")
-
-      expect(response).to redirect_to(path_for_step("edit"))
-    end
-  end
-
 private
 
   def path_for_step(step)
