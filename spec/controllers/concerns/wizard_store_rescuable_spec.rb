@@ -5,7 +5,7 @@ RSpec.describe WizardStoreRescuable, type: :controller do
     before_action :assign_wizard
 
     def index
-      raise ApplicationWizardStep::StoreEmptyError
+      raise ApplicationWizardStep::EmptyStoreError
     end
 
   private
@@ -23,7 +23,7 @@ RSpec.describe WizardStoreRescuable, type: :controller do
     routes.draw { get "index" => "anonymous#index" }
   end
 
-  it "rescues StoreEmptyError and redirects to the wizard's first step" do
+  it "rescues EmptyStoreError and redirects to the wizard's first step" do
     get :index
 
     expect(response).to redirect_to("/wizard/start")
@@ -32,7 +32,7 @@ RSpec.describe WizardStoreRescuable, type: :controller do
   it "sets the empty-store flash alert" do
     get :index
 
-    expect(flash[:alert]).to eq(ApplicationWizardStep::STORE_EMPTY_FLASH_MESSAGE)
+    expect(flash[:notice]).to eq(WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE)
   end
 
   it "lets unrelated exceptions propagate" do
