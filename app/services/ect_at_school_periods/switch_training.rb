@@ -100,7 +100,7 @@ module ECTAtSchoolPeriods
     end
 
     def existing_schedule
-      latest_provider_led_training_period&.schedule
+      last_provider_led_training_period&.schedule
     end
 
     def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
@@ -198,10 +198,6 @@ module ECTAtSchoolPeriods
       return false unless @mentor_at_school_period
 
       @mentor_at_school_period.training_periods.any?(&:provider_led_training_programme?)
-    end
-
-    def latest_provider_led_training_period
-      @ect_at_school_period.training_periods.provider_led_training_programme.latest_first.first
     end
 
     def mentor_ineligible_for_funding?
