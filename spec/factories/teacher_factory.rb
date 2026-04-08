@@ -70,6 +70,10 @@ FactoryBot.define do
       trs_induction_status { "InProgress" }
     end
 
+    trait :induction_required_to_complete do
+      trs_induction_status { "RequiredToComplete" }
+    end
+
     trait :induction_passed do
       induction_completed
       trs_induction_status { "Passed" }
@@ -78,6 +82,15 @@ FactoryBot.define do
     trait :induction_failed do
       induction_completed
       trs_induction_status { "Failed" }
+    end
+
+    trait :induction_failed_in_wales do
+      induction_completed
+      trs_induction_status { "FailedInWales" }
+    end
+
+    trait :induction_exempt do
+      trs_induction_status { "Exempt" }
     end
   end
 end
