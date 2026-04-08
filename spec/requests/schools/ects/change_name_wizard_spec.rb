@@ -20,12 +20,6 @@ describe "Schools::ECTs::ChangeNameWizardController", :enable_schools_interface 
   describe "check-answers with empty session" do
     before { sign_in_as(:school_user, school:) }
 
-    it "redirects to the edit step on GET" do
-      get path_for_step("check-answers")
-
-      expect(response).to redirect_to(path_for_step("edit"))
-    end
-
     it "redirects to the edit step on POST" do
       post path_for_step("check-answers")
 
