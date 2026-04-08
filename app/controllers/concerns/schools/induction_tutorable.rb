@@ -3,6 +3,8 @@ module Schools
     extend ActiveSupport::Concern
 
     included do
+      include WizardStoreRescuable
+
       before_action :set_school
       before_action :initialize_wizard
       before_action :check_allowed_step
