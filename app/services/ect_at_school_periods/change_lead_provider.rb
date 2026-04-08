@@ -25,10 +25,14 @@ module ECTAtSchoolPeriods
       ).finish!
     end
 
-    def track_payments_frozen_year! = set_ect_payments_frozen_year!
+    def track_payments_frozen_year!
+      return unless contract_period_reassignment_required? && training_period_confirmed?
 
-    def set_ect_payments_frozen_year!
       teacher.update!(ect_payments_frozen_year: previous_contract_period.year)
+    end
+
+    def existing_schedule
+      training_period&.schedule
     end
 
     def previous_contract_period = contract_period_reassignment.assigned_contract_period
@@ -38,7 +42,7 @@ module ECTAtSchoolPeriods
     end
 
     def contract_period_at_transition
-      @contract_period_at_transition ||= if contract_period_reassignment_required?
+      @contract_period_at_transition ||= if contract_period_reassignment_required? && training_period_confirmed?
                                            successor_contract_period
                                          else
                                            super
