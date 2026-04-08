@@ -65,7 +65,6 @@ module API::Declarations
       @training_period ||= training_periods
                              .includes(:lead_provider)
                              .where(active_lead_providers: { lead_provider_id: })
-                             .started_on_or_before(Date.current)
                              .latest_first
                              .first
     end
