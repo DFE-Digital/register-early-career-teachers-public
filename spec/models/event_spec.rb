@@ -37,6 +37,19 @@ describe Event do
         expect(Event.latest_first.to_sql).to include('ORDER BY "events"."happened_at" DESC')
       end
     end
+
+    describe ".with_event_type" do
+      before do
+        FactoryBot.create(:event, author_type: "system", event_type: :import_from_dqt)
+        FactoryBot.create(:event, author_type: "system", event_type: :dfe_user_created)
+      end
+
+      it "filters by event_type" do
+        expect(Event.with_event_type(:import_from_dqt).count).to eq(1)
+        expect(Event.with_event_type(:dfe_user_created).count).to eq(1)
+        expect(Event.with_event_type(:school_user_signs_in).count).to eq(0)
+      end
+    end
   end
 
   describe "validations" do
