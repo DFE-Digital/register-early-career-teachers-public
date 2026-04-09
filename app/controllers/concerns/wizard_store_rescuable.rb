@@ -1,7 +1,7 @@
 module WizardStoreRescuable
   extend ActiveSupport::Concern
 
-  EMPTY_STORE_FLASH_MESSAGE = <<~TXT
+  EMPTY_STORE_FLASH_MESSAGE = <<~TXT.squish
     There was a problem saving your changes. Please close any other tabs or
     windows for this service, and try again. If the problem persists, please
     contact support.
