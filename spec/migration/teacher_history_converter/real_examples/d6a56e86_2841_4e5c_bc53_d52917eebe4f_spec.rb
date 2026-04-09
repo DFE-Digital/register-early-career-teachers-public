@@ -114,12 +114,14 @@ describe "Real data check for user d6a56e86-2841-4e5c-bc53-d52917eebe4f" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 6, 30, 13, 55, 34)
+            created_at: Time.zone.local(2022, 6, 30, 13, 55, 34),
+            cpd_lead_provider_id: :ignore
           },
           {
             state: "withdrawn",
             reason: "switched-to-school-led",
-            created_at: Time.zone.local(2024, 1, 8, 15, 40, 39)
+            created_at: Time.zone.local(2024, 1, 8, 15, 40, 39),
+            cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
           }
         ],
         school_mentors: [

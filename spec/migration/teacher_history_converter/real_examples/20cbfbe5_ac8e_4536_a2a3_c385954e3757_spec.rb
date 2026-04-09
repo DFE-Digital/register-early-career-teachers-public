@@ -21,7 +21,8 @@ describe "Real data check for user 20cbfbe5-ac8e-4536-a2a3-c385954e3757" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2024, 12, 18, 16, 0, 27)
+            created_at: Time.zone.local(2024, 12, 18, 16, 0, 27),
+            cpd_lead_provider_id: :ignore
           }
         ],
         induction_records: [
