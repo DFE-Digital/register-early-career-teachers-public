@@ -108,7 +108,6 @@ class Event < ApplicationRecord
   validates :event_type, presence: true, inclusion: { in: EVENT_TYPES }
 
   validate :check_author_present
-  validate :event_happened_in_the_past
 
   scope :earliest_first, -> { order(happened_at: "asc") }
   scope :latest_first, -> { order(happened_at: "desc") }
@@ -123,12 +122,5 @@ private
     return if author_id.present? || author_email.present?
 
     errors.add(:base, "Author is missing")
-  end
-
-  def event_happened_in_the_past
-    return if happened_at.blank?
-    return if happened_at <= Time.zone.now
-
-    errors.add(:happened_at, "Event must have already happened")
   end
 end
