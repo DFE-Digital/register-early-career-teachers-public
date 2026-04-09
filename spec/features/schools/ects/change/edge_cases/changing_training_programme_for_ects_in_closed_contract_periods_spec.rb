@@ -197,7 +197,7 @@ private
   def then_i_see_the_provider_led_confirmation_message
     success_panel = page.locator(".govuk-panel")
     expect(success_panel).to have_text(
-      "You have changed John Doe’s training programme to provider-led with Other Lead Provider"
+      "You’ve changed John Doe’s training programme to provider-led with Other Lead Provider"
     )
   end
 
