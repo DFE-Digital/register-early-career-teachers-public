@@ -26,9 +26,23 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "an index endpoint"
     it_behaves_like "a paginated endpoint"
-    it_behaves_like "a sortable endpoint"
+    it_behaves_like "a sortable endpoint" do
+      def set_updated_at(resource:, value:)
+        resource.contract_period_metadata.update_all(api_updated_at: value)
+      end
+
+      def sort_resources(resources, sort_attribute)
+        return resources.sort_by!(&:"#{sort_attribute}") unless /updated_at/.match?(sort_attribute)
+
+        resources.sort_by! { it.contract_period_metadata.map(&:"#{sort_attribute}") }
+      end
+    end
     it_behaves_like "a filter by a single cohort (contract_period year) endpoint"
-    it_behaves_like "a filter by updated_since endpoint"
+    it_behaves_like "a filter by updated_since endpoint" do
+      def set_updated_at(resource:, value:)
+        resource.contract_period_metadata.update_all(api_updated_at: value)
+      end
+    end
     it_behaves_like "a filter validatable endpoint", %i[cohort]
     it_behaves_like "a filter by urn endpoint"
   end
@@ -40,6 +54,10 @@ RSpec.describe "Schools API", :with_metadata, type: :request do
 
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
-    it_behaves_like "a does not filter by updated_since endpoint"
+    it_behaves_like "a does not filter by updated_since endpoint" do
+      def get_updated_at(resource:)
+        resource.contract_period_metadata.map(&:api_updated_at).max
+      end
+    end
   end
 end

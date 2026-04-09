@@ -7,6 +7,7 @@ module Metadata
     belongs_to :school
     belongs_to :lead_provider
     belongs_to :contract_period, foreign_key: :contract_period_year
+    has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", through: :school
 
     validates :school, presence: true
     validates :lead_provider, presence: true
@@ -14,6 +15,6 @@ module Metadata
     validates :expression_of_interest_or_school_partnership, inclusion: { in: [true, false] }
     validates :school_id, uniqueness: { scope: %i[lead_provider_id contract_period_year] }
 
-    touch -> { school }, on_event: :update, when_changing: %i[expression_of_interest_or_school_partnership], timestamp_attribute: :api_updated_at
+    touch -> { contract_period_metadata }, on_event: :update, when_changing: %i[expression_of_interest_or_school_partnership], timestamp_attribute: :api_updated_at
   end
 end

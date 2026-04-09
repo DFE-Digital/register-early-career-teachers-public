@@ -6,8 +6,8 @@ describe API::SchoolSerializer, type: :serializer do
 
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let(:contract_period) { FactoryBot.create(:contract_period) }
-  let(:school) { FactoryBot.create(:school, :with_induction_tutor, created_at:, api_updated_at:) }
-  let!(:contract_period_metadata) { FactoryBot.create(:school_contract_period_metadata, school:, contract_period:) }
+  let(:school) { FactoryBot.create(:school, :with_induction_tutor, created_at:) }
+  let!(:contract_period_metadata) { FactoryBot.create(:school_contract_period_metadata, school:, contract_period:, api_updated_at:) }
   let!(:lead_provider_contract_period_metadata) do
     FactoryBot.create(:school_lead_provider_contract_period_metadata,
                       school:,
@@ -49,7 +49,7 @@ describe API::SchoolSerializer, type: :serializer do
       expect(attributes["induction_tutor_email"]).not_to be_nil
       expect(attributes["induction_tutor_email"]).to eq(school.induction_tutor_email)
       expect(attributes["created_at"]).to eq(school.created_at.utc.rfc3339)
-      expect(attributes["updated_at"]).to eq(school.api_updated_at.utc.rfc3339)
+      expect(attributes["updated_at"]).to eq(contract_period_metadata.api_updated_at.utc.rfc3339)
     end
   end
 end

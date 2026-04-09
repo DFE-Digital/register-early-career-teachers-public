@@ -13,8 +13,10 @@ RSpec.describe School do
       FactoryBot.create(:gias_school, urn: new_value) if attribute_to_change == :urn
     end
 
-    context "target school" do
-      let(:target) { instance }
+    context "target contract_period_metadata" do
+      let(:target) { instance.contract_period_metadata }
+
+      before { Metadata::Handlers::School.new(instance).refresh_metadata! }
 
       it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_updated_at
     end

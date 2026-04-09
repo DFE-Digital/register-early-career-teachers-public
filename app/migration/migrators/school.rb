@@ -13,7 +13,7 @@ module Migrators
 
     MISMATCH_FIELD_MESSAGE = ->(school, field, gias_value, ecf_value) { ":#{field} - School #{school.urn} (#{school.name}) mismatch value on field named '#{field}': '#{ecf_value}' on ECF whilst '#{gias_value}' expected on RECT!" }
 
-    def self.dependencies = %i[gias_import gias_childrens_centres]
+    def self.dependencies = %i[contract_period gias_import gias_childrens_centres]
 
     def self.model = :school
 
@@ -64,6 +64,7 @@ module Migrators
         [
           compare_fields(gias_school:, ecf_school:),
           update_school!(school: gias_school.school, ecf_school:),
+          create_or_update_contract_period_metadata!(school: gias_school.school, ecf_school:),
         ].all?
       end
     end
@@ -121,10 +122,20 @@ module Migrators
         api_id: ecf_school.id,
         induction_tutor_name: induction_coordinator&.full_name,
         induction_tutor_email: induction_coordinator&.email,
-        created_at: ecf_school.created_at,
-        api_updated_at: ecf_school.updated_at
+        created_at: ecf_school.created_at
       }
+
       school.update_columns(attrs)
+    end
+
+    def create_or_update_contract_period_metadata!(school:, ecf_school:)
+      Metadata::Manager.new.refresh_metadata!(school)
+
+      ecf_school.school_cohorts.map { |school_cohort|
+        contract_period_year = school_cohort.cohort.start_year
+        metadata = school.contract_period_metadata.find { it.contract_period_year == contract_period_year }
+        metadata.update!(api_updated_at: [school.updated_at, school_cohort.updated_at].max)
+      }.all?
     end
   end
 end

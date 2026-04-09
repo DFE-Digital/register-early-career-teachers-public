@@ -133,7 +133,6 @@ erDiagram
     integer last_chosen_appropriate_body_id
     integer last_chosen_lead_provider_id
     enum last_chosen_training_programme
-    datetime api_updated_at
     string induction_tutor_name
     citext induction_tutor_email
     uuid api_id
@@ -580,6 +579,7 @@ erDiagram
     enum induction_programme_choice
     datetime created_at
     datetime updated_at
+    datetime api_updated_at
   }
   Metadata_SchoolContractPeriod }o--|| School : belongs_to
   Metadata_SchoolContractPeriod }o--|| ContractPeriod : belongs_to

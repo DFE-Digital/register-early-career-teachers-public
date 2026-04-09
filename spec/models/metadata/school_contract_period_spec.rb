@@ -2,14 +2,14 @@ describe Metadata::SchoolContractPeriod do
   include_context "restricts updates to the Metadata namespace", :school_contract_period_metadata
 
   describe "declarative touch" do
-    let(:instance) { FactoryBot.create(:school_contract_period_metadata, school: target) }
-    let(:target) { FactoryBot.create(:school) }
+    let(:instance) { FactoryBot.create(:school_contract_period_metadata) }
+    let(:target) { instance }
 
     around do |example|
       Metadata::SchoolContractPeriod.bypass_update_restrictions { example.run }
     end
 
-    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[in_partnership induction_programme_choice], timestamp_attribute: :api_updated_at, target_optional: false
+    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[in_partnership induction_programme_choice], timestamp_attribute: :api_updated_at
   end
 
   describe "enums" do

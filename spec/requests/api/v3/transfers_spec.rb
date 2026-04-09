@@ -26,9 +26,9 @@ RSpec.describe "Participant transfers API", type: :request do
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "an index endpoint"
     it_behaves_like "a paginated endpoint"
-    it_behaves_like "a filter by updated_since endpoint", updated_at_column: :api_transfer_updated_at do
-      def set_updated_at(resource:, updated_at_column:, value:)
-        resource.ect_training_periods.each { it.update_columns("#{updated_at_column}": value) }
+    it_behaves_like "a filter by updated_since endpoint" do
+      def set_updated_at(resource:, value:)
+        resource.ect_training_periods.each { it.update_columns(api_transfer_updated_at: value) }
       end
     end
   end

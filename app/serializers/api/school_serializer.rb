@@ -29,8 +29,8 @@ class API::SchoolSerializer < Blueprinter::Base
     field :created_at do |data|
       data[:school].created_at
     end
-    field(:updated_at) do |data|
-      data[:school].api_updated_at
+    field(:updated_at) do |data, options|
+      contract_period_metadata(school: data[:school], options:).api_updated_at
     end
 
     class << self
