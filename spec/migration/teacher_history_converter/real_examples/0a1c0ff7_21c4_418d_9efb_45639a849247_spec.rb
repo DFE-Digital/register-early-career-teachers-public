@@ -191,7 +191,7 @@ describe "Real data check for user 0a1c0ff7-21c4-418d-9efb-45639a849247 (ERO men
           ect_at_school_periods: [],
           mentor_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2022, 9, 30),
+              started_on: Date.new(2021, 9, 1),
               finished_on: nil,
               school: hash_including(urn: "100001", name: "School 1"),
               email: "a.teacher@example.com",
@@ -200,7 +200,7 @@ describe "Real data check for user 0a1c0ff7-21c4-418d-9efb-45639a849247 (ERO men
                 #       has this combo (participant_profile_id, lead_provider_id and cohort) in the combo check
                 #       list so we don't discard it.
                 hash_including(
-                  started_on: Date.new(2022, 9, 30),
+                  started_on: Date.new(2021, 9, 1),
                   finished_on: Date.new(2022, 10, 1),
                   training_programme: "provider_led",
                   lead_provider_info: {

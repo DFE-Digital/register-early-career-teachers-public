@@ -268,35 +268,23 @@ describe "Real data check for user a0b929e7-658b-4a50-89f4-63f89023b9c0" do
           ect_at_school_periods: [],
           mentor_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2023, 7, 31),
-              finished_on: Date.new(2023, 11, 28),
+              started_on: Date.new(2021, 9, 1),
+              finished_on: nil,
               school: hash_including(urn: "100001", name: "School 1"),
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2023, 7, 31),
-                  finished_on: Date.new(2023, 11, 28),
+                  started_on: Date.new(2021, 9, 1),
+                  # one day added to the finished date because the induction record's
+                  # start date is the same as the mentor_completion_date
+                  finished_on: Date.new(2023, 8, 1),
                   training_programme: "provider_led",
                   lead_provider_info: { ecf1_id: "c3bc3cee-a636-42d6-8324-c033a6c38d31", name: "Ambition Institute" },
                   delivery_partner_info: { ecf1_id: "e41816f8-849e-40dd-a360-4a5bf5496fcd", name: "Delivery partner 1" },
                   contract_period_year: 2021
                 )
               )
-            ),
-            hash_including(
-              started_on: Date.new(2025, 1, 30),
-              finished_on: nil,
-              school: { urn: "100001", name: "School 1", school_type_name: nil },
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2025, 1, 30),
-                  finished_on: Date.new(2025, 1, 31),
-                  training_programme: "provider_led",
-                  lead_provider_info: { ecf1_id: "da470c27-05a6-4f5b-b9a9-58b04bfcc408", name: "Best Practice Network" },
-                  delivery_partner_info: { ecf1_id: "a8b923cf-377f-4707-9014-6598f00d38d7", name: "Delivery partner 2" },
-                  contract_period_year: 2021
-                )
-              )
             )
+            # no further training periods created as the mentor completion date is now in the past
           )
         )
       }
