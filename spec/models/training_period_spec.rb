@@ -355,6 +355,130 @@ describe TrainingPeriod do
       end
     end
 
+    describe "concurrent ongoing periods" do
+      subject(:save_concurrent_ongoing_period!) do
+        concurrent_ongoing_period.save!
+      end
+
+      before { freeze_time }
+
+      context "for ECT training" do
+        let(:teacher) { FactoryBot.create(:teacher) }
+
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.from_now
+          )
+        end
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.from_now
+          )
+        end
+
+        let(:next_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            teacher:,
+            started_on: ect_at_school_period.finished_on.advance(days: 1)
+          )
+        end
+        let!(:ongoing_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :for_ect,
+            :provider_led,
+            ect_at_school_period: next_ect_at_school_period,
+            started_on: next_ect_at_school_period.started_on
+          )
+        end
+
+        let(:concurrent_ongoing_period) do
+          FactoryBot.build(
+            :training_period,
+            :ongoing,
+            :for_ect,
+            :provider_led,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.finished_on
+          )
+        end
+
+        it do
+          expect { save_concurrent_ongoing_period! }
+            .to raise_error(ActiveRecord::RecordInvalid)
+        end
+      end
+
+      context "for mentor training" do
+        let(:teacher) { FactoryBot.create(:teacher) }
+
+        let(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            teacher:,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.from_now
+          )
+        end
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_mentor,
+            :provider_led,
+            mentor_at_school_period:,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.from_now
+          )
+        end
+
+        let(:next_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            teacher:,
+            started_on: mentor_at_school_period.finished_on.advance(days: 1)
+          )
+        end
+        let!(:ongoing_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :ongoing,
+            :for_mentor,
+            :provider_led,
+            mentor_at_school_period: next_mentor_at_school_period,
+            started_on: next_mentor_at_school_period.started_on
+          )
+        end
+
+        let(:concurrent_ongoing_period) do
+          FactoryBot.build(
+            :training_period,
+            :ongoing,
+            :for_mentor,
+            :provider_led,
+            mentor_at_school_period: next_mentor_at_school_period,
+            started_on: next_mentor_at_school_period.finished_on
+          )
+        end
+
+        it do
+          expect { save_concurrent_ongoing_period! }
+            .to raise_error(ActiveRecord::RecordInvalid)
+        end
+      end
+    end
+
     describe "only allows provider-led mentor training" do
       context "for mentor training" do
         subject { FactoryBot.build(:training_period, :for_mentor) }
@@ -927,31 +1051,69 @@ describe TrainingPeriod do
   end
 
   describe "#siblings" do
-    subject { training_period_1.siblings }
+    subject(:siblings) { training_period.siblings }
 
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01") }
-    let!(:training_period_1) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: "2022-01-01", finished_on: "2022-06-01") }
-    let!(:training_period_2) { FactoryBot.create(:training_period, ect_at_school_period:, started_on: "2022-06-01", finished_on: "2023-01-01") }
+    let(:teacher) { FactoryBot.create(:teacher) }
+
+    let!(:ect_at_school_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        teacher:,
+        started_on: "2021-01-01",
+        finished_on: "2023-01-01"
+      )
+    end
+    let!(:training_period) do
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period:,
+        started_on: "2022-01-01",
+        finished_on: "2022-06-01"
+      )
+    end
+    let!(:sibling_training_period) do
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period:,
+        started_on: "2022-06-01",
+        finished_on: "2023-01-01"
+      )
+    end
+
+    let!(:other_ect_at_school_period) do
+      FactoryBot.create(
+        :ect_at_school_period,
+        :ongoing,
+        teacher:,
+        started_on: "2023-01-02"
+      )
+    end
+    let!(:other_sibling_training_period) do
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period: other_ect_at_school_period,
+        started_on: "2023-01-02",
+        finished_on: "2023-06-01"
+      )
+    end
 
     let!(:unrelated_ect_at_school_period) do
-      FactoryBot.create(:ect_at_school_period, :ongoing, started_on: "2021-01-01")
+      FactoryBot.create(
+        :ect_at_school_period,
+        :ongoing,
+        started_on: "2021-01-01"
+      )
     end
-
     let!(:unrelated_training_period) do
-      FactoryBot.create(:training_period, ect_at_school_period: unrelated_ect_at_school_period, started_on: "2022-06-01", finished_on: "2023-01-01")
+      FactoryBot.create(
+        :training_period,
+        ect_at_school_period: unrelated_ect_at_school_period,
+        started_on: "2022-06-01",
+        finished_on: "2023-01-01"
+      )
     end
 
-    it "only returns records that belong to the same trainee" do
-      expect(subject).to include(training_period_2)
-    end
-
-    it "doesn't include itself" do
-      expect(subject).not_to include(training_period_1)
-    end
-
-    it "doesn't include periods that belong to other trainee" do
-      expect(subject).not_to include(unrelated_training_period)
-    end
+    it { is_expected.to contain_exactly(sibling_training_period, other_sibling_training_period) }
   end
 
   describe "#teacher_completed_training?" do

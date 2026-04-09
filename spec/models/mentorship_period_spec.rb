@@ -93,6 +93,167 @@ describe MentorshipPeriod do
       end
     end
 
+    describe "concurrent ongoing periods" do
+      subject(:save_concurrent_ongoing_period!) do
+        concurrent_ongoing_period.save!
+      end
+
+      before { freeze_time }
+
+      context "for mentees" do
+        let(:mentee_teacher) { FactoryBot.create(:teacher) }
+
+        # Mentor mentoring mentee
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher: mentee_teacher,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.from_now
+          )
+        end
+        let(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            school: ect_at_school_period.school,
+            started_on: 1.year.ago
+          )
+        end
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.ago
+          )
+        end
+
+        # Mentee transferring to a new school and being mentored by a different teacher
+        let(:next_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            teacher: mentee_teacher,
+            started_on: ect_at_school_period.finished_on.advance(days: 1)
+          )
+        end
+        let(:next_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            school: next_ect_at_school_period.school,
+            started_on: 1.year.ago
+          )
+        end
+        let!(:ongoing_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :ongoing,
+            mentee: next_ect_at_school_period,
+            mentor: next_mentor_at_school_period,
+            started_on: next_ect_at_school_period.started_on
+          )
+        end
+
+        # Mentee being mentored by the original mentor at the old school
+        let(:concurrent_ongoing_period) do
+          FactoryBot.build(
+            :mentorship_period,
+            :ongoing,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: mentorship_period.finished_on
+          )
+        end
+
+        it do
+          expect { save_concurrent_ongoing_period! }
+            .to raise_error(ActiveRecord::RecordInvalid)
+        end
+      end
+
+      context "for mentors" do
+        let(:mentor_teacher) { FactoryBot.create(:teacher) }
+
+        # Mentor mentoring mentee at one school
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            started_on: 1.year.ago
+          )
+        end
+        let(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            school: ect_at_school_period.school,
+            teacher: mentor_teacher,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.from_now
+          )
+        end
+        let!(:mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentor: mentor_at_school_period,
+            mentee: ect_at_school_period,
+            started_on: 1.year.ago,
+            finished_on: 2.weeks.from_now
+          )
+        end
+
+        # Mentor tranferring to another school and mentoring another mentee
+        let(:next_mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            :ongoing,
+            school: next_ect_at_school_period.school,
+            teacher: mentor_teacher,
+            started_on: mentor_at_school_period.finished_on.advance(days: 1)
+          )
+        end
+        let(:next_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            started_on: mentor_at_school_period.finished_on.advance(days: 1)
+          )
+        end
+        let!(:ongoing_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            :ongoing,
+            mentor: next_mentor_at_school_period,
+            mentee: next_ect_at_school_period,
+            started_on: next_mentor_at_school_period.started_on
+          )
+        end
+
+        # Mentor mentoring another mentee concurrently at that same school
+        let(:other_next_ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            school: next_ect_at_school_period.school,
+            started_on: next_mentor_at_school_period.started_on.advance(weeks: 1)
+          )
+        end
+        let(:concurrent_ongoing_period) do
+          FactoryBot.build(
+            :mentorship_period,
+            :ongoing,
+            mentor: next_mentor_at_school_period,
+            mentee: other_next_ect_at_school_period,
+            started_on: other_next_ect_at_school_period.started_on
+          )
+        end
+
+        it { expect { save_concurrent_ongoing_period! }.not_to raise_error }
+      end
+    end
+
     describe "period containment" do
       describe "#enveloped_by_ect_at_school_period" do
         context "when the ECT at school period contains the mentorship period" do
