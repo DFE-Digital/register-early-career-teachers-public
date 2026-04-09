@@ -66,8 +66,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, induction_records: ect_induction_records, induction_completion_date: 2.months.ago.to_date) }
       let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
 
@@ -145,8 +145,8 @@ describe TeacherHistoryConverter::MigrationStrategy do
       let(:ect_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
       let(:mentor_induction_records) { FactoryBot.build_list(:ecf1_teacher_history_induction_record_row, 2) }
 
-      it "does not meet the criteria for premium" do
-        expect(subject.strategy).to eq(:latest_induction_records)
+      it "meets the criteria for premium" do
+        expect(subject.strategy).to eq(:all_induction_records)
       end
     end
 
