@@ -184,7 +184,7 @@ private
   def then_i_see_the_confirmation_message
     success_panel = page.locator(".govuk-panel")
     expect(success_panel).to have_text(
-      "You have chosen #{@selected_lead_provider_name} as the new lead provider for John Doe"
+      "You’ve chosen #{@selected_lead_provider_name} as the new lead provider for John Doe"
     )
   end
 
