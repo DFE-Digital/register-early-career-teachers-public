@@ -29,10 +29,10 @@ RSpec.describe WizardStoreRescuable, type: :controller do
     expect(response).to redirect_to("/wizard/start")
   end
 
-  it "sets the empty-store flash alert" do
+  it "sets the empty-store flash error" do
     get :index
 
-    expect(flash[:notice]).to eq(WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE)
+    expect(flash[:error]).to eq(WizardStoreRescuable::EMPTY_STORE_FLASH_MESSAGE)
   end
 
   it "lets unrelated exceptions propagate" do
