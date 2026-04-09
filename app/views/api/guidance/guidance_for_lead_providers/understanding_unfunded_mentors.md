@@ -26,7 +26,6 @@ For example, if a lead provider used to provide mentor training for a mentor nam
 
 The lead provider was previously funded for her training, so she would not appear via the 'GET /unfunded-mentors' endpoint. Lead providers could identify Sarah as the mentor for ECTs they were training by using the 'mentor_id' for those ECTs in 'GET /participants'.
 
-
 ## View all unfunded mentors
 
 `GET /api/v3/unfunded-mentors`
