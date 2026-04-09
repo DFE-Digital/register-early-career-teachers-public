@@ -77,18 +77,36 @@ module ECTAtSchoolPeriods
       @training_period.started_on.today? || date_of_transition.future?
     end
 
-    def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
-
     def contract_period
-      @contract_period ||= contract_period_reassignment_required? ? successor_contract_period : contract_period_on_date_of_transition
+      if contract_period_reassignment_required?
+        successor_contract_period
+      elsif reuse_existing_schedule?
+        existing_schedule.contract_period
+      else
+        contract_period_at_transition
+      end
     end
+
+    def schedule
+      existing_schedule if reuse_existing_schedule?
+    end
+
+    def reuse_existing_schedule?
+      return false unless @ect_at_school_period.school_led_training_programme?
+      return false unless existing_schedule
+      return false if contract_period_reassignment_required?
+
+      existing_schedule.contract_period != contract_period_at_transition
+    end
+
+    def existing_schedule
+      last_provider_led_training_period&.schedule
+    end
+
+    def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
 
     def contract_period_reassignment_required?
       @ect_at_school_period.school_led_training_programme? && contract_period_reassignment.required?
-    end
-
-    def contract_period_on_date_of_transition
-      ContractPeriod.containing_date(date_of_transition)
     end
 
     def contract_period_reassignment
@@ -107,6 +125,10 @@ module ECTAtSchoolPeriods
       @ect_at_school_period
         .teacher
         .update!(ect_payments_frozen_year: contract_period_reassignment.assigned_contract_period.year)
+    end
+
+    def contract_period_at_transition
+      @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
     end
 
     def finish_training_period!
@@ -131,7 +153,8 @@ module ECTAtSchoolPeriods
         started_on: date_of_transition,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:,
-        author: @author
+        author: @author,
+        schedule:
       ).call
     end
 
