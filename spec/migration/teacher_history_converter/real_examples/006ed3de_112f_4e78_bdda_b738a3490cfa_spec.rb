@@ -38,13 +38,17 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2023, 9, 4, 20, 3, 42)
+            created_at: Time.zone.local(2023, 9, 4, 20, 3, 42),
+            cpd_lead_provider_id: :ignore
           }
         ],
         induction_records: [
           {
+            induction_record_id: "786360a5-c3e8-428a-8c54-e7d022022b8d",
             start_date: Date.new(2022, 9, 1),
             end_date: Date.new(2023, 9, 1),
+            created_at: Time.zone.local(2022, 8, 11, 11, 29, 20),
+            updated_at: Time.zone.local(2023, 9, 4, 20, 3, 42),
             training_programme: "full_induction_programme",
             cohort_year: 2022,
             school: {
@@ -61,7 +65,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
                 name: "Education Development Trust"
               },
               delivery_partner: {
-                ecf1_id: "47123e23-0c9f-49dc-ae4a-e2527b9fe4f8",
+                ecf1_id: "bed7d1dc-a723-49f5-8236-711448e1011f",
                 name: "Delivery partner 1"
               },
               cohort_year: 2022
@@ -74,8 +78,79 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
             }
           },
           {
+            induction_record_id: "c39361d7-0232-434e-aef6-a8a5860f2b5b",
+            start_date: Date.new(2023, 9, 1),
+            end_date: Date.new(2023, 9, 14),
+            created_at: Time.zone.local(2023, 9, 4, 20, 3, 42),
+            updated_at: Time.zone.local(2023, 9, 14, 10, 51, 50),
+            training_programme: "full_induction_programme",
+            cohort_year: 2022,
+            school: {
+              urn: "100002",
+              name: "School 2"
+            },
+            induction_status: "changed",
+            training_status: "active",
+            preferred_identity_email: "a.teacher@example.com",
+            mentor_profile_id: :ignore,
+            training_provider_info: {
+              lead_provider: {
+                ecf1_id: "c3bc3cee-a636-42d6-8324-c033a6c38d31",
+                name: "Ambition Institute"
+              },
+              delivery_partner: {
+                ecf1_id: "f9108038-3a90-46f0-a780-737d2838b5c9",
+                name: "Delivery partner 2"
+              },
+              cohort_year: 2022
+            },
+            schedule_info: {
+              schedule_id: "c4d6a996-b0fe-495e-be2e-11cb064253c2",
+              identifier: "ecf-standard-september",
+              name: "ECF Standard September",
+              cohort_year: 2022
+            }
+          },
+          {
+            induction_record_id: "8484ae2d-0197-424d-9acb-f55f4008a9da",
+            start_date: Date.new(2023, 9, 14),
+            end_date: Date.new(2024, 8, 20),
+            created_at: Time.zone.local(2023, 9, 14, 10, 51, 50),
+            updated_at: Time.zone.local(2024, 8, 20, 3, 50, 29),
+            training_programme: "full_induction_programme",
+            cohort_year: 2022,
+            school: {
+              urn: "100002",
+              name: "School 2"
+            },
+            induction_status: "changed",
+            training_status: "active",
+            preferred_identity_email: "a.teacher@example.com",
+            mentor_profile_id: "160bdffd-ff0d-42ec-9270-febd9f594155",
+            training_provider_info: {
+              lead_provider: {
+                ecf1_id: "c3bc3cee-a636-42d6-8324-c033a6c38d31",
+                name: "Ambition Institute"
+              },
+              delivery_partner: {
+                ecf1_id: "f9108038-3a90-46f0-a780-737d2838b5c9",
+                name: "Delivery partner 2"
+              },
+              cohort_year: 2022
+            },
+            schedule_info: {
+              schedule_id: "c4d6a996-b0fe-495e-be2e-11cb064253c2",
+              identifier: "ecf-standard-september",
+              name: "ECF Standard September",
+              cohort_year: 2022
+            }
+          },
+          {
+            induction_record_id: "f9fe7321-7afc-42c5-ade3-8082c2fec88e",
             start_date: Date.new(2024, 8, 20),
             end_date: :ignore,
+            created_at: Time.zone.local(2024, 8, 20, 3, 50, 29),
+            updated_at: Time.zone.local(2024, 8, 20, 3, 50, 29),
             training_programme: "full_induction_programme",
             cohort_year: 2022,
             school: {
@@ -92,7 +167,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
                 name: "Ambition Institute"
               },
               delivery_partner: {
-                ecf1_id: "aeed99d7-0d79-49ee-840d-34d52910364b",
+                ecf1_id: "f9108038-3a90-46f0-a780-737d2838b5c9",
                 name: "Delivery partner 2"
               },
               cohort_year: 2022
@@ -105,7 +180,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
             }
           }
         ],
-        mentor_at_school_periods:,
+        mentor_at_school_periods:
       }
     }
   end
@@ -142,12 +217,12 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
           ect_at_school_periods: array_including(
             hash_including(
               school: hash_including(urn: "100001", name: "School 1"),
-              started_on: Date.new(2022, 9, 1),
+              started_on: Date.new(2022, 8, 11),
               finished_on: Date.new(2023, 9, 1),
               mentorship_periods: [],
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2022, 9, 1),
+                  started_on: Date.new(2022, 8, 11),
                   finished_on: Date.new(2023, 9, 1),
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
@@ -205,30 +280,43 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
       {
         teacher: hash_including(
           trn: "1111111",
-          ect_at_school_periods: [
+          ect_at_school_periods: array_including(
             hash_including(
-              school: hash_including(urn: "100001", name: "School 1"),
               started_on: Date.new(2022, 9, 1),
-              finished_on: Date.new(2023, 9, 1),
+              finished_on: Date.new(2023, 8, 31),
+              school: hash_including(urn: "100001", name: "School 1"),
               mentorship_periods: array_including(
                 hash_including(
                   started_on: Date.new(2022, 9, 1),
-                  finished_on: Date.new(2023, 9, 1),
+                  finished_on: Date.new(2023, 8, 31),
                   mentor_at_school_period_id: 1
                 )
               ),
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2022, 9, 1),
-                  finished_on: Date.new(2023, 9, 1),
+                  finished_on: Date.new(2023, 8, 31),
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   contract_period_year: 2022
                 )
               )
             ),
-            # NOTE: 2nd induction record starts after the induction completion date so not migrated
-          ]
+            hash_including(
+              started_on: Date.new(2023, 9, 1),
+              finished_on: Date.new(2024, 8, 20),
+              school: hash_including(urn: "100002", name: "School 2"),
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2023, 9, 1),
+                  finished_on: Date.new(2024, 8, 20), # FIXME: I think this should be the date of the induction completion date (2024, 7, 22)
+                  lead_provider_info: hash_including(name: "Ambition Institute"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 2"),
+                  contract_period_year: 2022
+                )
+              )
+            )
+          )
         )
       }
     end

@@ -7,28 +7,65 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
       full_name: "A Teacher",
       user_id: "924dd86e-416d-4d2e-aba3-6e72a8c3c8c5",
       created_at: Time.zone.local(2026, 1, 19, 22, 50, 43),
-      updated_at: Time.zone.local(2026, 1, 19, 22, 50, 44),
+      updated_at: Time.zone.local(2026, 3, 10, 1, 58, 25),
       ect: {
         participant_profile_id: "b308530d-d9ec-4313-acf7-c2dae15b2bc6",
         created_at: Time.zone.local(2026, 1, 19, 22, 50, 43),
-        updated_at: Time.zone.local(2026, 1, 19, 22, 50, 43),
-        induction_start_date: Date.new(2026, 1, 13),
-        induction_completion_date: nil,
+        updated_at: Time.zone.local(2026, 3, 10, 1, 58, 25),
+        induction_start_date: Date.new(2006, 9, 1),
+        induction_completion_date: :ignore,
         pupil_premium_uplift: false,
         sparsity_uplift: false,
-        payments_frozen_cohort_start_year: nil,
+        payments_frozen_cohort_start_year: :ignore,
         states: [
           {
             state: "active",
-            reason: nil,
+            reason: :ignore,
             created_at: Time.zone.local(2026, 1, 19, 22, 50, 43),
             cpd_lead_provider_id: "51ff9a95-3f48-4117-8466-4cd5b91fcd5c"
           }
         ],
         induction_records: [
           {
+            induction_record_id: "2d040ff7-49e0-4692-a064-6a7bc427ef17",
             start_date: Date.new(2025, 6, 1),
+            end_date: Date.new(2026, 2, 2),
+            created_at: Time.zone.local(2026, 1, 19, 22, 50, 43),
+            updated_at: Time.zone.local(2026, 2, 2, 16, 4, 32),
+            training_programme: "full_induction_programme",
+            cohort_year: 2025,
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            induction_status: "changed",
+            training_status: "active",
+            preferred_identity_email: "a.teacher@example.com",
+            mentor_profile_id: "e18870e3-45b8-4251-962d-3c00adf9c46b",
+            training_provider_info: {
+              lead_provider: {
+                ecf1_id: "82bfbad3-349f-44fb-bb60-621eab1b349b",
+                name: "National Institute of Teaching"
+              },
+              delivery_partner: {
+                ecf1_id: "1c174ddd-96a8-4d85-a215-41633a24b02b",
+                name: "Delivery partner 1"
+              },
+              cohort_year: 2025
+            },
+            schedule_info: {
+              schedule_id: "34508584-78cb-4e41-80ba-fcbec57da03f",
+              identifier: "ecf-standard-september",
+              name: "ECF Standard September",
+              cohort_year: 2025
+            }
+          },
+          {
+            induction_record_id: "022063cb-66c9-48a6-858d-9bf06e9e8442",
+            start_date: Date.new(2026, 2, 2),
             end_date: :ignore,
+            created_at: Time.zone.local(2026, 2, 2, 16, 4, 33),
+            updated_at: Time.zone.local(2026, 2, 2, 16, 4, 33),
             training_programme: "full_induction_programme",
             cohort_year: 2025,
             school: {
@@ -45,19 +82,20 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
                 name: "National Institute of Teaching"
               },
               delivery_partner: {
-                ecf1_id: "1c888aea-a34e-4184-9452-bd2cb7b78747",
+                ecf1_id: "1c174ddd-96a8-4d85-a215-41633a24b02b",
                 name: "Delivery partner 1"
               },
               cohort_year: 2025
             },
             schedule_info: {
-              schedule_id: "34508584-78cb-4e41-80ba-fcbec57da03f",
-              identifier: "ecf-standard-september",
-              name: "ECF Standard September",
+              schedule_id: "45fcb5db-6b41-44ed-ae86-6ef888cb2c9e",
+              identifier: "ecf-standard-january",
+              name: "ECF Standard January",
               cohort_year: 2025
             }
           }
-        ]
+        ],
+        mentor_at_school_periods: []
       }
     }
   end
@@ -74,11 +112,11 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
           trn: "1111111",
           ect_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2025, 6, 1),
+              started_on: Date.new(2026, 2, 2),
               finished_on: nil,
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2025, 6, 1),
+                  started_on: Date.new(2026, 2, 2),
                   finished_on: nil
                 )
               )
@@ -104,7 +142,7 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
       {
         teacher: hash_including(
           trn: "1111111",
-          trs_induction_start_date: Date.new(2026, 1, 13),
+          trs_induction_start_date: Date.new(2006, 9, 1),
           trs_induction_completed_date: nil,
           ect_at_school_periods: array_including(
             hash_including(
