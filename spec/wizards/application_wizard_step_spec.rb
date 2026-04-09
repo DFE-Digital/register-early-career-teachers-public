@@ -87,5 +87,40 @@ RSpec.describe ApplicationWizardStep, type: :model do
         expect(step.save!).to eq(:saved)
       end
     end
+
+    context "when the subclass declares expected_store_keys" do
+      let(:step_name) { "CheckAnswers" }
+
+      let(:subclass) do
+        Class.new(ApplicationWizardStep) do
+          attr_accessor :step_name
+
+          self.expected_store_keys = %i[trn]
+
+          def self.permitted_params = []
+
+          def pre_populate_attributes
+          end
+
+          def save! = :saved
+        end
+      end
+
+      context "when an expected key is missing" do
+        before { store[:something_else] = "present" }
+
+        it "raises EmptyStoreError" do
+          expect { step.save! }.to raise_error(ApplicationWizardStep::EmptyStoreError)
+        end
+      end
+
+      context "when all expected keys are present" do
+        before { store[:trn] = "1234567" }
+
+        it "calls the underlying save!" do
+          expect(step.save!).to eq(:saved)
+        end
+      end
+    end
   end
 end
