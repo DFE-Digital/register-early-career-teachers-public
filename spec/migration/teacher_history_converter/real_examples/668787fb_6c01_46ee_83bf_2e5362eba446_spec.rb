@@ -270,17 +270,20 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2024, 7, 11, 10, 20, 40)
+            created_at: Time.zone.local(2024, 7, 11, 10, 20, 40),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           },
           {
             state: "deferred",
             reason: "other",
-            created_at: Time.zone.local(2025, 1, 14, 9, 30, 12)
+            created_at: Time.zone.local(2025, 1, 14, 9, 30, 12),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2025, 5, 8, 14, 47, 37)
+            created_at: Time.zone.local(2025, 5, 8, 14, 47, 37),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           }
         ],
         school_mentors: [

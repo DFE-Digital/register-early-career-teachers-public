@@ -176,17 +176,30 @@ describe "Real data check for user a0b929e7-658b-4a50-89f4-63f89023b9c0" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 7, 19, 15, 23, 53)
+            created_at: Time.zone.local(2022, 7, 19, 15, 23, 53),
+            cpd_lead_provider_id: "22727fdc-816a-4a3c-9675-030e724bbf89"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 7, 19, 15, 23, 53)
+            created_at: Time.zone.local(2022, 7, 19, 15, 23, 53),
+            cpd_lead_provider_id: "22727fdc-816a-4a3c-9675-030e724bbf89"
           },
           {
             state: "withdrawn",
             reason: "mentor-no-longer-being-mentor",
-            created_at: Time.zone.local(2025, 1, 30, 16, 0, 17)
+            created_at: Time.zone.local(2025, 1, 30, 16, 0, 17),
+            cpd_lead_provider_id: "dfad2a9c-527d-4d71-ae9a-492ab307e6c3"
+          }
+        ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2022, 7, 19, 15, 23, 53)
           }
         ]
       }

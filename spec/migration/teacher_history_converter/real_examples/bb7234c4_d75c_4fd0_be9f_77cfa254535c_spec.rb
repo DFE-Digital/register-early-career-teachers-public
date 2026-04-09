@@ -103,12 +103,14 @@ describe "Real data check for user bb7234c4-d75c-4fd0-be9f-77cfa254535c (one ECT
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 7, 12, 16, 59, 38)
+            created_at: Time.zone.local(2022, 7, 12, 16, 59, 38),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 7, 12, 16, 59, 38)
+            created_at: Time.zone.local(2022, 7, 12, 16, 59, 38),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           }
         ],
         school_mentors: [
