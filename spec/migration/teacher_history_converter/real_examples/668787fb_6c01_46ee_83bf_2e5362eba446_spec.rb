@@ -298,7 +298,7 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
