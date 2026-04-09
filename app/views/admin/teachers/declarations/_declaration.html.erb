@@ -1,7 +1,7 @@
 <%= govuk_details do |details| %>
   <% details.with_summary_html do %>
     <span class="govuk-details__summary-text govuk-!-margin-right-2"><%= declaration.declaration_type %></span>
-    <span class="govuk-body app-mono"><%= declaration.api_id %></span>
+    <span class="govuk-body"><%= format_uuid(declaration.api_id) %></span>
     <%= declaration_state_tag(declaration) %>
   <% end %>
 
@@ -9,7 +9,7 @@
     govuk_summary_list(actions: false, classes: "govuk-!-margin-bottom-0") do |summary_list|
       summary_list.with_row do |row|
         row.with_key { "Declaration ID" }
-        row.with_value { tag.span(declaration.api_id, class: "govuk-!-margin-0 app-mono") }
+        row.with_value { format_uuid(declaration.api_id) }
       end
 
       summary_list.with_row do |row|

@@ -92,4 +92,8 @@ module ApplicationHelper
   def govuk_html_element(&block)
     tag.html(lang: "en", class: %w[govuk-template govuk-template--rebranded], &block)
   end
+
+  def format_uuid(uuid)
+    tag.code(uuid, class: "govuk-!-margin-0")
+  end
 end

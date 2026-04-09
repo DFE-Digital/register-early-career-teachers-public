@@ -1,7 +1,8 @@
 <%
   page_data(
     title: @organisation.name,
-    caption: "DFE Sign-In Organisation ID: #{@organisation.uuid}"
+    # caption: safe_join(["DFE Sign-In Organisation ID: ", format_uuid(@organisation.uuid)])
+    caption: "DFE Sign-In Organisation ID: #{format_uuid(@organisation.uuid)}"
   )
 %>
 
