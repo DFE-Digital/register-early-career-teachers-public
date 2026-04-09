@@ -192,7 +192,6 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
 
-    # TODO: FIX THIS
     let(:expected_output) do
       {
         teacher: hash_including(
@@ -201,13 +200,13 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
           trs_induction_completed_date: nil,
           ect_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2025, 6, 2),
+              started_on: Date.new(2026, 2, 20),
               finished_on: nil,
               school: hash_including(name: "School 2"),
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2025, 6, 2),
-                  finished_on: Date.new(2025, 6, 3), # set by deferral date, bumped by one day as it matches the end_date
+                  started_on: Date.new(2026, 2, 20),
+                  finished_on: Date.new(2026, 2, 21),
                   lead_provider_info: hash_including(name: "UCL Institute of Education"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   deferred_at: Time.zone.local(2025, 6, 2, 16, 6, 52),

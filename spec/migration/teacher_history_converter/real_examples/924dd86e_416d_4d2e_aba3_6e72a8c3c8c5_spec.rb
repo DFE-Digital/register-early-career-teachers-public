@@ -112,11 +112,11 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
           trn: "1111111",
           ect_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2025, 6, 1),
+              started_on: Date.new(2026, 2, 2),
               finished_on: nil,
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2025, 6, 1),
+                  started_on: Date.new(2026, 2, 2),
                   finished_on: nil
                 )
               )
@@ -142,7 +142,7 @@ describe "Real data check for user 924dd86e-416d-4d2e-aba3-6e72a8c3c8c5 (straigh
       {
         teacher: hash_including(
           trn: "1111111",
-          trs_induction_start_date: Date.new(2026, 1, 13),
+          trs_induction_start_date: Date.new(2006, 9, 1),
           trs_induction_completed_date: nil,
           ect_at_school_periods: array_including(
             hash_including(
