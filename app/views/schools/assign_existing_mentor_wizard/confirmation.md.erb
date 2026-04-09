@@ -9,11 +9,8 @@ for
 <strong><%= @wizard.context.ect_teacher_full_name %></strong>
 <% end %>
 
-You have successfully registered <%= @wizard.context.ect_teacher_full_name %> for training.
+This completes <%= @wizard.context.ect_teacher_full_name %>’s registration for ECT training at your school.
 
-They do not need to provide us with any further details.
-
-We'll pass on their details to <%= @wizard.context.user_selected_lead_provider&.name || @wizard.context.ect_lead_provider&.name %> 
-who will contact them to arrange mentor training.
+You do not need to give us any more information.
 
 <%= govuk_link_to 'Back to your ECTs', schools_ects_home_path %>

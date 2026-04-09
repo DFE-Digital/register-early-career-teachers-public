@@ -5,14 +5,10 @@
 
 <%= govuk_panel(
       title_text: <<~TXT
-        You have changed #{@wizard.teacher_full_name}’s mentor to
+        You’ve changed #{@wizard.teacher_full_name}’s mentor to
         #{@wizard.current_step.current_mentor_name}
       TXT
     ) %>
-
-<h2 class="govuk-heading-m">
- What happens next?
-</h2>
 
 <p class="govuk-body">
   <%= @wizard.current_step.current_mentor_name %> is now responsible for mentoring
