@@ -9,19 +9,19 @@ for
 <strong><%= @ect_name %></strong>
 <% end %>
 
-You have successfully registered <%= @ect_name %> for training.
+This completes <%= @ect_name %>’s registration for ECT training at your school.
+
+You do not need to give us any more information.
 
 <% unless @mentor.already_active_at_school %>
 ### What happens next
 
-We'll email <%= @mentor.full_name %> to confirm you have registered them.
+We’ll email <%= @mentor.full_name %> to confirm that you’ve registered them as a mentor.
 <% end %>
-
-They do not need to provide us with any further details.
 
 <% if @wizard.ect.provider_led_training_programme? %>
 <% if @mentor.eligible_for_funding? %>
-  We'll pass on their details to <%= @mentor.lead_provider&.name || @mentor.ect_lead_provider&.name %> who will contact them to arrange mentor training.
+  We’ll pass on their details to <%= @mentor.lead_provider&.name || @mentor.ect_lead_provider&.name %> who will contact them to arrange mentor training.
 <% else %>
 They cannot do mentor training according to our records.
 This could be because they've undertaken it before.
