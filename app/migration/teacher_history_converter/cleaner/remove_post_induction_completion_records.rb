@@ -27,8 +27,10 @@ private
     lead_provider_id = induction_record.training_provider_info&.lead_provider_info&.ecf1_id
     return false if lead_provider_id.blank?
 
-    TeacherHistoryConverter::PostInductionCompletionComboCheck.new(profile_id:,
-                                                                   lead_provider_id:,
-                                                                   cohort_year: induction_record.cohort_year).keep?
+    combo_checker.keep?(profile_id:, lead_provider_id:, cohort_year: induction_record.cohort_year)
+  end
+
+  def combo_checker
+    @combo_checker ||= TeacherHistoryConverter::PostInductionCompletionComboCheck.new
   end
 end

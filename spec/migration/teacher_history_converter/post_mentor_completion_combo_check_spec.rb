@@ -1,9 +1,9 @@
-describe TeacherHistoryConverter::PostInductionCompletionComboCheck do
+describe TeacherHistoryConverter::PostMentorCompletionComboCheck do
   subject(:combo_check) { described_class.new.keep?(profile_id:, lead_provider_id:, cohort_year:) }
 
-  let(:profile_id) { "0060d02a-72da-45d1-863c-2bd71e79809f" }
-  let(:lead_provider_id) { "da470c27-05a6-4f5b-b9a9-58b04bfcc408" }
-  let(:cohort_year) { 2023 }
+  let(:profile_id) { "3349a615-cd08-426b-8688-71df763d326a" }
+  let(:lead_provider_id) { "3d7d8c90-a5a3-4838-84b2-563092bf87ee" }
+  let(:cohort_year) { 2021 }
 
   describe "#keep?" do
     context "when combo matches an entry in the keep list" do
@@ -13,7 +13,7 @@ describe TeacherHistoryConverter::PostInductionCompletionComboCheck do
     end
 
     context "when the participant_profile_id doesn't match the rest of the combo" do
-      let(:profile_id) { "068fa196-6e64-494c-b9ef-419b068ee088" }
+      let(:profile_id) { "eecdaeca-801f-497e-87aa-b19f34ffb30d" }
 
       it "returns false" do
         expect(combo_check).to be_falsy
@@ -21,7 +21,7 @@ describe TeacherHistoryConverter::PostInductionCompletionComboCheck do
     end
 
     context "when the lead_provider_id doesn't match the rest of the combo" do
-      let(:lead_provider_id) { "068fa196-6e64-494c-b9ef-419b068ee088" }
+      let(:lead_provider_id) { "99317668-2942-4292-a895-fdb075af067b" }
 
       it "returns false" do
         expect(combo_check).to be_falsy
