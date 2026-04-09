@@ -104,12 +104,14 @@ describe "Real data check for user f38e67d0-d01b-41ff-a197-ef58b4080a47" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 7, 22, 17, 34, 50)
+            created_at: Time.zone.local(2022, 7, 22, 17, 34, 50),
+            cpd_lead_provider_id: "bd152c5a-5ef4-4584-9c63-c32877dbba07"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 7, 22, 17, 34, 50)
+            created_at: Time.zone.local(2022, 7, 22, 17, 34, 50),
+            cpd_lead_provider_id: "bd152c5a-5ef4-4584-9c63-c32877dbba07"
           }
         ],
         school_mentors: [

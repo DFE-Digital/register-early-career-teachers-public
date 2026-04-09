@@ -21,17 +21,20 @@ describe "Real data check for user 653c0693-e8ad-4487-8a4a-0d48f678ba70" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 6, 14, 15, 1, 43)
+            created_at: Time.zone.local(2022, 6, 14, 15, 1, 43),
+            cpd_lead_provider_id: :ignore
           },
           {
             state: "deferred",
             reason: "other",
-            created_at: Time.zone.local(2023, 10, 6, 11, 18, 35)
+            created_at: Time.zone.local(2023, 10, 6, 11, 18, 35),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2023, 11, 2, 17, 12, 31)
+            created_at: Time.zone.local(2023, 11, 2, 17, 12, 31),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           }
         ],
         induction_records: [
