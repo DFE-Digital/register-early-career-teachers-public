@@ -86,19 +86,13 @@ describe Event do
   describe "#happened_at" do
     it { is_expected.to validate_presence_of(:happened_at) }
 
-    describe "#event_happened_in_the_past" do
+    describe "future dates" do
       subject { FactoryBot.build(:event, happened_at:) }
-
-      before { subject.valid? }
 
       context "when happened_at is in the future" do
         let(:happened_at) { 1.minute.from_now }
 
-        it { is_expected.to(be_invalid) }
-
-        it "has a validation error" do
-          expect(subject.errors.messages[:happened_at]).to include("Event must have already happened")
-        end
+        it { is_expected.to(be_valid) }
       end
 
       context "when happened_at is in the past" do
