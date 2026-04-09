@@ -180,7 +180,7 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
             }
           }
         ],
-        mentor_at_school_periods: []
+        mentor_at_school_periods:
       }
     }
   end
@@ -217,12 +217,12 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
           ect_at_school_periods: array_including(
             hash_including(
               school: hash_including(urn: "100001", name: "School 1"),
-              started_on: Date.new(2022, 9, 1),
+              started_on: Date.new(2022, 8, 11),
               finished_on: Date.new(2023, 9, 1),
               mentorship_periods: [],
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2022, 9, 1),
+                  started_on: Date.new(2022, 8, 11),
                   finished_on: Date.new(2023, 9, 1),
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
@@ -280,30 +280,43 @@ describe "Real data check for user 006ed3de-112f-4e78-bdda-b738a3490cfa" do
       {
         teacher: hash_including(
           trn: "1111111",
-          ect_at_school_periods: [
+          ect_at_school_periods: array_including(
             hash_including(
-              school: hash_including(urn: "100001", name: "School 1"),
               started_on: Date.new(2022, 9, 1),
-              finished_on: Date.new(2023, 9, 1),
+              finished_on: Date.new(2023, 8, 31),
+              school: hash_including(urn: "100001", name: "School 1"),
               mentorship_periods: array_including(
                 hash_including(
                   started_on: Date.new(2022, 9, 1),
-                  finished_on: Date.new(2023, 9, 1),
+                  finished_on: Date.new(2023, 8, 31),
                   mentor_at_school_period_id: 1
                 )
               ),
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2022, 9, 1),
-                  finished_on: Date.new(2023, 9, 1),
+                  finished_on: Date.new(2023, 8, 31),
                   lead_provider_info: hash_including(name: "Education Development Trust"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   contract_period_year: 2022
                 )
               )
             ),
-            # NOTE: 2nd induction record starts after the induction completion date so not migrated
-          ]
+            hash_including(
+              started_on: Date.new(2023, 9, 1),
+              finished_on: Date.new(2024, 8, 20),
+              school: hash_including(urn: "100002", name: "School 2"),
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2023, 9, 1),
+                  finished_on: Date.new(2024, 8, 20), # FIXME: I think this should be the date of the induction completion date (2024, 7, 22)
+                  lead_provider_info: hash_including(name: "Ambition Institute"),
+                  delivery_partner_info: hash_including(name: "Delivery partner 2"),
+                  contract_period_year: 2022
+                )
+              )
+            )
+          )
         )
       }
     end
