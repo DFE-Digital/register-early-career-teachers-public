@@ -132,7 +132,7 @@ describe "Real data check for user 0a1c0ff7-21c4-418d-9efb-45639a849247 (ERO men
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
