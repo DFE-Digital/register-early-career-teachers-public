@@ -4,7 +4,7 @@ class GIAS::School < ApplicationRecord
 
   include DeclarativeUpdates
 
-  touch -> { school }, when_changing: %i[name], timestamp_attribute: :api_updated_at
+  touch -> { contract_period_metadata }, when_changing: %i[name], timestamp_attribute: :api_updated_at
 
   # Enums
   enum :status,
@@ -18,6 +18,7 @@ class GIAS::School < ApplicationRecord
   # Associations
   has_one :school, foreign_key: :urn, primary_key: :urn, inverse_of: :gias_school
   has_many :gias_school_links, class_name: "GIAS::SchoolLink", foreign_key: :urn, dependent: :destroy, inverse_of: :from_gias_school
+  has_many :contract_period_metadata, class_name: "Metadata::SchoolContractPeriod", through: :school
 
   # Validations
   validates :establishment_number,

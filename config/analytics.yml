@@ -135,7 +135,6 @@ shared:
     - id
     - created_at
     - updated_at
-    - api_updated_at
     - urn
     - induction_tutor_last_nominated_in
     - induction_tutor_name

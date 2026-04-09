@@ -12,6 +12,7 @@ describe Migrators::School do
                       school_type_name: "Academy converter").tap do |ecf_school|
       FactoryBot.create(:ecf_migration_school_local_authority, school: ecf_school)
       FactoryBot.create(:migration_induction_coordinator_profile, schools: [ecf_school])
+      FactoryBot.create(:migration_school_cohort, school: ecf_school)
     end
   end
 
@@ -29,16 +30,46 @@ describe Migrators::School do
                       ukprn: ecf_school.ukprn)
   end
 
-  it_behaves_like "a migrator", :school, %i[gias_import gias_childrens_centres] do
+  around do |example|
+    Metadata::SchoolContractPeriod.bypass_update_restrictions { example.run }
+  end
+
+  it_behaves_like "a migrator", :school, %i[contract_period gias_import gias_childrens_centres], creates_metadata: true do
     def create_migration_resource = create_ecf_school
 
-    def create_resource(migration_resource) = create_gias_school(migration_resource)
+    def create_resource(migration_resource)
+      migration_resource.school_cohorts.each do |school_cohort|
+        FactoryBot.create(:contract_period, year: school_cohort.cohort.start_year)
+      end
+
+      create_gias_school(migration_resource)
+    end
 
     def setup_failure_state
       ecf_school = create_migration_resource
       gias_school = create_resource(ecf_school)
 
       gias_school.update!(section_41_approved: !ecf_school.section_41_approved)
+    end
+
+    it "creates the correct metadata" do
+      instance.migrate!
+
+      ecf_schools = [migration_resource1, migration_resource2]
+      schools_by_urn = School.where(urn: ecf_schools.map(&:urn)).index_by(&:urn)
+      metadata_by_school_and_year = Metadata::SchoolContractPeriod.where(school: schools_by_urn.values).index_by do |metadata|
+        [metadata.school_id, metadata.contract_period_year]
+      end
+
+      ecf_schools.each do |ecf_school|
+        school = schools_by_urn[ecf_school.urn.to_i]
+        ecf_school.school_cohorts.each do |school_cohort|
+          metadata = metadata_by_school_and_year[[school.id, school_cohort.cohort.start_year]]
+          expect(metadata.contract_period_year).to eq(school_cohort.cohort.start_year)
+          expect(metadata.api_updated_at).to eq([school.updated_at, school_cohort.updated_at].max)
+          expect(metadata.school).to eq(school)
+        end
+      end
     end
   end
 
@@ -64,6 +95,7 @@ describe Migrators::School do
       context "when the school is closed and with induction records" do
         let!(:induction_record) { FactoryBot.create(:migration_induction_record) }
         let!(:ecf_school) { induction_record.school }
+        let!(:contract_period) { FactoryBot.create(:contract_period, year: ecf_school.school_cohorts.first.cohort.start_year) }
         let(:rect_school) { School.find_by_urn(ecf_school.urn) }
 
         before do
@@ -231,7 +263,6 @@ describe Migrators::School do
         expect(data_migration.reload.failure_count).to eq(0)
         gias_school.reload
         expect(gias_school.school.created_at).to eq(ecf_school.created_at)
-        expect(gias_school.school.api_updated_at).to eq(ecf_school.updated_at)
       end
 
       it "syncs the induction coordinator details" do

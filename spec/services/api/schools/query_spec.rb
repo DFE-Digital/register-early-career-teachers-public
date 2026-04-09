@@ -182,8 +182,10 @@ RSpec.describe API::Schools::Query, :with_metadata do
         end
 
         before do
-          school1.update!(api_updated_at: 2.days.ago)
-          school2.update!(api_updated_at: 10.minutes.ago)
+          Metadata::SchoolContractPeriod.bypass_update_restrictions do
+            school1.contract_period_metadata.find_by(contract_period:).update!(api_updated_at: 2.days.ago)
+            school2.contract_period_metadata.find_by(contract_period:).update!(api_updated_at: 10.minutes.ago)
+          end
         end
 
         it "filters by `updated_since`" do
