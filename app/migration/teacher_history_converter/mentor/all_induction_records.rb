@@ -56,7 +56,7 @@ private
     # check any previous school period, training and mentorship period for overlapping dates
     check_and_fix_all_overlaps(started_on)
 
-    @current_training_period = build_training_period(induction_record, started_on:, finished_on:) unless exclude_training_periods
+    @current_training_period = build_training_period(induction_record, started_on:, finished_on:)
 
     @current_school_period = ECF2TeacherHistory::MentorAtSchoolPeriod.new(
       started_on:,
@@ -70,8 +70,6 @@ private
   end
 
   def extend_school_period(induction_record:)
-    return if exclude_training_periods
-
     started_on = induction_record.start_date
     finished_on = induction_record.end_date
 
@@ -119,18 +117,17 @@ private
   end
 
   def build_training_period(induction_record, overrides = {})
-    # do not add training periods after the mentor completion date
-    return if mentor_completion_date.present? && induction_record.start_date > mentor_completion_date
+    # do not add training periods
+    # - when not provider_led
+    # - when provider info is missing
+    # - starting after the mentor completion date unless in the exceptions list
+    return unless permit_training_period?(induction_record:)
 
     training_programme = convert_training_programme_name(induction_record.training_programme)
-    return if training_programme != "provider_led"
-
     training_provider_info = induction_record.training_provider_info
 
-    raise(StandardError, "No training provider info for #{induction_record.induction_record_id}") if training_provider_info.nil?
-
     state_changed_at = induction_record.end_date
-    lead_provider_id = induction_record.training_provider_info.lead_provider_info&.ecf1_id
+    lead_provider_id = induction_record.training_provider_info.lead_provider_info.ecf1_id
     withdrawal_data = withdrawal_data(state_changed_at:, lead_provider_id:)
     deferral_data = deferral_data(state_changed_at:, lead_provider_id:)
 
@@ -150,9 +147,9 @@ private
       created_at: induction_record.created_at,
       school: induction_record.school,
       training_programme:,
-      lead_provider_info: training_provider_info&.lead_provider_info,
-      delivery_partner_info: training_provider_info&.delivery_partner_info,
-      contract_period_year: training_provider_info&.cohort_year || induction_record.cohort_year,
+      lead_provider_info: training_provider_info.lead_provider_info,
+      delivery_partner_info: training_provider_info.delivery_partner_info,
+      contract_period_year: training_provider_info.cohort_year || induction_record.cohort_year,
       is_ect: false,
       ecf_start_induction_record_id: induction_record.induction_record_id,
       schedule_info: induction_record.schedule_info,
@@ -253,5 +250,27 @@ private
 
   def deferral_data(state_changed_at:, lead_provider_id:)
     TeacherHistoryConverter::PremiumDeferralData.new(state_changed_at:, states:, lead_provider_id:).deferral_data
+  end
+
+  def permit_training_period?(induction_record:)
+    training_programme = convert_training_programme_name(induction_record.training_programme)
+    return false if training_programme != "provider_led"
+
+    lead_provider = induction_record.training_provider_info&.lead_provider_info
+    return false if lead_provider.blank?
+
+    if mentor_completion_date.present? && induction_record.start_date >= mentor_completion_date
+      combo_checker.keep?(profile_id:,
+                          lead_provider_id: lead_provider.ecf1_id,
+                          cohort_year: induction_record.cohort_year)
+    else
+      # exclude_training_periods is true when ERO mentor without declarations
+      # some of those do not have a mentor_completion_date
+      !exclude_training_periods
+    end
+  end
+
+  def combo_checker
+    @combo_checker ||= TeacherHistoryConverter::PostMentorCompletionComboCheck.new
   end
 end

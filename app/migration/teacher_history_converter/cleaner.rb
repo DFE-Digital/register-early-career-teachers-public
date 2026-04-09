@@ -30,7 +30,7 @@ private
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
       .then { remove_provider_led_ect_without_partnerships(it) }
-      .then { snip_ongoing_records_to_induction_completion_date(it, induction_completion_date:) }
+      .then { snip_ongoing_records_to_induction_completion_date(it) }
       .then { fix_service_start_dates(it) }
       .then { fix_corrupted_dates(it) }
       .then { fix_zero_day_periods(it) }
@@ -85,7 +85,7 @@ private
     TeacherHistoryConverter::Cleaner::OverrideFirstStartDateForInductionRecordIntroduction.new(induction_records).induction_records
   end
 
-  def snip_ongoing_records_to_induction_completion_date(induction_records, induction_completion_date:)
+  def snip_ongoing_records_to_induction_completion_date(induction_records)
     TeacherHistoryConverter::Cleaner::SnipOngoingRecordsToInductionCompletionDate.new(induction_records, induction_completion_date:).induction_records
   end
 
