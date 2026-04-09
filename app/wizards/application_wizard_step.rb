@@ -4,13 +4,28 @@ class ApplicationWizardStep < DfE::Wizard::Step
 
   class EmptyStoreError < StandardError; end
 
+  # Subclasses with seeded stores can declare which keys must be present in
+  # the store for a CheckAnswers submission to be considered valid. Defaults
+  # to nil, which falls back to a `store.empty?` check.
+  class_attribute :expected_store_keys, instance_accessor: false
+
   # Guard against submitting check-answers with an empty session store due to
   # concurrent tabs/windows or back/forward navigation.
   RejectEmptyStoreOnCheckAnswers = Module.new do
     def save!
-      raise EmptyStoreError if step_name == "CheckAnswers" && store.empty?
+      raise EmptyStoreError if step_name == "CheckAnswers" && store_missing_data?
 
       super
+    end
+
+  private
+
+    def store_missing_data?
+      if self.class.expected_store_keys
+        self.class.expected_store_keys.any? { |key| store[key].blank? }
+      else
+        store.empty?
+      end
     end
   end
 

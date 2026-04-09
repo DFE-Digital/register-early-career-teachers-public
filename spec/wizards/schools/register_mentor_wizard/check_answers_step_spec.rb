@@ -94,7 +94,7 @@ describe Schools::RegisterMentorWizard::CheckAnswersStep, type: :model do
     let(:ect) { FactoryBot.create(:ect_at_school_period) }
     let(:ect_id) { ect.id }
 
-    before { store[:wizard_started] = true }
+    before { store[:trn] = "1234567" }
 
     context "when the step is not valid" do
       before do

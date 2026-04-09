@@ -1,6 +1,8 @@
 module Schools
   module RegisterMentorWizard
     class CheckAnswersStep < Step
+      self.expected_store_keys = %i[trn]
+
       def next_step
         :confirmation
       end
