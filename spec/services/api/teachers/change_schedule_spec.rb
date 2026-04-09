@@ -83,14 +83,19 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
           end
 
-          context "when the training period has not started yet" do
+          context "when the LP is changing the schedule on their own future training period" do
             before { training_period.update!(started_on: 1.week.from_now, finished_on: nil) }
 
-            context "when no other lead provider has an ongoing training period" do
-              it { is_expected.to be_valid }
+            context "and no other lead provider is training the participant" do
+              # An LP should be able to change the schedule on their own future training period
+              # when they're the only LP on the participant. The change is applied in place on the
+              # future TP.
+              it "allows the change" do
+                expect(instance).to be_valid
+              end
             end
 
-            context "when another lead provider has an ongoing training period" do
+            context "and a different lead provider is actively training the participant" do
               before do
                 other_school_partnership = FactoryBot.create(:school_partnership, school: at_school_period.school)
                 FactoryBot.create(
@@ -104,22 +109,32 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
                 )
               end
 
-              it { is_expected.to have_one_error_per_attribute }
-              it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
+              # An LP whose only training period is in the future should still be allowed to change
+              # its schedule even if a different LP is currently training the participant. The
+              # change is applied in place on the future TP and doesn't touch the other LP's
+              # ongoing TP.
+              it "allows the change" do
+                expect(instance).to be_valid
+              end
             end
           end
 
-          context "when there are future training periods with a different lead provider (for the same teacher)" do
+          context "when a different lead provider has a future training period for the same participant" do
             before do
               other_school_partnership = FactoryBot.create(:school_partnership, school: at_school_period.school)
               FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period, school_partnership: other_school_partnership)
             end
 
-            it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.") }
+            # When a different LP is due to start training the participant in the future, the
+            # current LP should not be able to change the schedule — otherwise they could disrupt
+            # the incoming LP's planned training.
+            it "blocks the current LP from changing the schedule" do
+              expect(instance).to have_one_error_per_attribute
+              expect(instance).to have_error(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.")
+            end
           end
 
-          context "when there are future training periods with the same lead provider (for the same teacher)" do
+          context "when the same lead provider has a future training period in addition to the ongoing one" do
             before do
               # Skip metadata refresh so latest_training_period still points to the current (started)
               # period rather than the newly created future one
@@ -129,7 +144,12 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               end
             end
 
-            it { is_expected.to be_valid }
+            # An LP can still change the schedule if they're the only LP on the participant — even
+            # when they have both an ongoing TP and a future TP (e.g. the participant is due to
+            # move schools with the same LP).
+            it "allows the change" do
+              expect(instance).to be_valid
+            end
           end
 
           context "when the metadata selects a future training period but an ongoing training period exists for the same lead provider" do

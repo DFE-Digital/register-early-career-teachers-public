@@ -16,7 +16,6 @@ module API::Teachers
     validate :school_partnership_exists_if_changing_contract_period
     validate :trainee_not_completed
     validate :training_period_not_finished
-    validate :future_training_period_not_blocked_by_another_lead_provider
     validate :no_future_training_periods_with_different_lead_provider
     validate :can_move_to_frozen_contract_period
     validate :schedule_does_not_invalidate_declarations
@@ -140,23 +139,6 @@ module API::Teachers
       return if ongoing_training_period
 
       errors.add(:teacher_api_id, SCHEDULE_CHANGE_NOT_ALLOWED)
-    end
-
-    # Prevents schedule changes on future training periods when another LP is actively training the participant.
-    # When no other LP is involved (e.g. a new ECT with a single future TP), the change is allowed.
-    def future_training_period_not_blocked_by_another_lead_provider
-      return if errors[:teacher_api_id].any?
-      return unless future_training_period
-      return unless ongoing_training_period_with_different_lead_provider?
-
-      errors.add(:teacher_api_id, SCHEDULE_CHANGE_NOT_ALLOWED)
-    end
-
-    def ongoing_training_period_with_different_lead_provider?
-      with_lead_provider_join(training_periods_for_teacher)
-        .where.not(lead_providers: { id: lead_provider.id })
-        .ongoing_today
-        .exists?
     end
 
     def no_future_training_periods_with_different_lead_provider
