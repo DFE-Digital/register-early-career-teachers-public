@@ -56,7 +56,7 @@ private
     # check any previous school period, training and mentorship period for overlapping dates
     check_and_fix_all_overlaps(started_on)
 
-    @current_training_period = build_training_period(induction_record, started_on:, finished_on:) unless exclude_training_periods
+    @current_training_period = build_training_period(induction_record, started_on:, finished_on:)
 
     @current_school_period = ECF2TeacherHistory::MentorAtSchoolPeriod.new(
       started_on:,
@@ -70,8 +70,6 @@ private
   end
 
   def extend_school_period(induction_record:)
-    return if exclude_training_periods
-
     started_on = induction_record.start_date
     finished_on = induction_record.end_date
 
@@ -261,12 +259,15 @@ private
     lead_provider = induction_record.training_provider_info&.lead_provider_info
     return false if lead_provider.blank?
 
-    return true if mentor_completion_date.blank?
-    return true if induction_record.start_date < mentor_completion_date
-
-    combo_checker.keep?(profile_id:,
-                        lead_provider_id: lead_provider.ecf1_id,
-                        cohort_year: induction_record.cohort_year)
+    if mentor_completion_date.present? && induction_record.start_date >= mentor_completion_date
+      combo_checker.keep?(profile_id:,
+                          lead_provider_id: lead_provider.ecf1_id,
+                          cohort_year: induction_record.cohort_year)
+    else
+      # exclude_training_periods is true when ERO mentor without declarations
+      # some of those do not have a mentor_completion_date
+      !exclude_training_periods
+    end
   end
 
   def combo_checker
