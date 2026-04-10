@@ -159,7 +159,9 @@ describe ECF2TeacherHistory do
             trs_first_name: "Old First Name",
             trs_last_name: "Old Last Name",
             trs_induction_start_date: Date.current,
-            corrected_name: nil
+            corrected_name: nil,
+            ect_first_became_eligible_for_training_at: 1.year.ago,
+            mentor_first_became_eligible_for_training_at: 6.months.ago
           )
         end
 
@@ -176,13 +178,15 @@ describe ECF2TeacherHistory do
           end
         end
 
-        it "does not overwrite the trs_first_name, trs_last_name or trs_induction_start_date fields" do
+        it "does not overwrite the trs_first_name, trs_last_name, trs_induction_start_date, ect_first_became_eligible_for_training_at or mentor_first_became_eligible_for_training_at fields" do
           teacher = subject.save_all_ect_data!
 
           aggregate_failures do
             expect(teacher.trs_first_name).to eql("Old First Name")
             expect(teacher.trs_last_name).to eql("Old Last Name")
             expect(teacher.trs_induction_start_date).to eql(Date.current)
+            expect(teacher.ect_first_became_eligible_for_training_at).to eql(existing_teacher.ect_first_became_eligible_for_training_at)
+            expect(teacher.mentor_first_became_eligible_for_training_at).to eql(existing_teacher.mentor_first_became_eligible_for_training_at)
           end
         end
 
