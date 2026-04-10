@@ -19,7 +19,7 @@ Laura's details are shown to the lead provider via the API so they can set her u
 ### What an unfunded mentor isn't
 An unfunded mentor is not:
 
-- a mentor who lead a provider is currently training
+- a mentor who a lead provider is currently training
 - a mentor who a lead provider used to train but is no longer training
 For example, if a lead provider used to provide mentor training for a mentor named Sarah, and she completed training but was still actively mentoring ECTs, she would:
 
