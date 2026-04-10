@@ -111,7 +111,11 @@ module Schools
       end
 
       def payments_frozen_reassignment?
-        ect.previous_training_period&.contract_period&.payments_frozen_at.present?
+        previous_period = ect.previous_training_period
+        return false unless previous_period
+
+        assigned_period = previous_period.contract_period || previous_period.expression_of_interest_contract_period
+        assigned_period&.payments_frozen_at.present?
       end
 
       def choices
