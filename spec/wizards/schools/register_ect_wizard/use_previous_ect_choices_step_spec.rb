@@ -449,6 +449,49 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
         expect(step.allowed?).to be(false)
       end
     end
+
+    context "and the ECT has no previous training period but the school has a recent provider-led EOI training period for the LP" do
+      let!(:lead_provider) { FactoryBot.create(:lead_provider) }
+
+      let!(:active_lead_provider_2025) do
+        FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: current_contract_period)
+      end
+
+      let!(:ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          school:,
+          started_on: Date.new(2025, 9, 1),
+          finished_on: nil
+        )
+      end
+
+      before do
+        stub_provider_led_school_choice(school:, lead_provider:)
+
+        FactoryBot.create(
+          :training_period,
+          ect_at_school_period:,
+          training_programme: "provider_led",
+          expression_of_interest: active_lead_provider_2025,
+          school_partnership: nil,
+          started_on: Date.new(2025, 9, 1),
+          finished_on: nil
+        )
+      end
+
+      it "is allowed" do
+        expect(step.allowed?).to be(true)
+      end
+
+      it "has no reusable partnership id" do
+        expect(step.reusable_partnership_id).to be_nil
+      end
+
+      it "treats reuse as available via school EOI" do
+        expect(step.reusable_available?).to be(true)
+      end
+    end
   end
 
   describe "#next_step" do

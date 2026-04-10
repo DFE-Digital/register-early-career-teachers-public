@@ -150,6 +150,14 @@ module Schools
       def most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
         return unless contract_period
 
+        if payments_frozen_reassignment?
+          previous_eoi_training_period_for_reassignment(contract_period)
+        else
+          most_recent_school_eoi_training_period(contract_period)
+        end
+      end
+
+      def previous_eoi_training_period_for_reassignment(contract_period)
         training_period = ect.previous_training_period
         return unless training_period
         return unless training_period.training_programme == "provider_led"
@@ -157,6 +165,16 @@ module Schools
         return if training_period.started_on > contract_period.finished_on
 
         training_period
+      end
+
+      def most_recent_school_eoi_training_period(contract_period)
+        TrainingPeriod
+          .at_school(school)
+          .where(training_programme: "provider_led")
+          .where.not(expression_of_interest_id: nil)
+          .where("training_periods.started_on <= ?", contract_period.finished_on)
+          .order(started_on: :desc, id: :desc)
+          .first
       end
     end
   end
