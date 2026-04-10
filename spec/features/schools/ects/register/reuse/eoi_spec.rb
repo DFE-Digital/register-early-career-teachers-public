@@ -75,10 +75,10 @@ RSpec.describe "Registering an ECT - reuse previous EOI", :enable_schools_interf
 
     previous_ect_at_school_period = FactoryBot.create(
       :ect_at_school_period,
-      school: @previous_school,
+      school: @current_school,
       teacher: @teacher,
       started_on: Date.new(2024, 9, 1),
-      finished_on: Date.new(2025, 7, 31)
+      finished_on: Date.new(2025, 6, 30)
     )
 
     FactoryBot.create(
@@ -88,7 +88,7 @@ RSpec.describe "Registering an ECT - reuse previous EOI", :enable_schools_interf
       expression_of_interest: previous_year_active_lead_provider,
       school_partnership: nil,
       started_on: Date.new(2024, 9, 1),
-      finished_on: Date.new(2025, 7, 31)
+      finished_on: Date.new(2025, 6, 30)
     )
 
     sign_in_as_school_user(school: @current_school)
