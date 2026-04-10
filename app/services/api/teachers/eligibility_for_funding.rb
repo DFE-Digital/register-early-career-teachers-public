@@ -7,10 +7,8 @@ class API::Teachers::EligibilityForFunding
   end
 
   def eligible?
-    return nil if eligible_on.nil? && ineligible_on.nil?
-    return true if eligible_on.present? && (ineligible_on.nil? || eligible_on.before?(ineligible_on))
-
-    false
+    earliest = [eligible_on, ineligible_on].compact.min
+    earliest && earliest == eligible_on
   end
 
 private
