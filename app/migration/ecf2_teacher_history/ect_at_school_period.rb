@@ -28,7 +28,7 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
       finished_on:,
       school: real_school,
       email:,
-      school_reported_appropriate_body: real_appropriate_body,
+      school_reported_appropriate_body_id: appropriate_body&.ecf2_id,
     }
   end
 
@@ -39,7 +39,7 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
       finished_on:,
       school: school.to_h,
       email:,
-      school_reported_appropriate_body: appropriate_body,
+      school_reported_appropriate_body_id: appropriate_body&.ecf2_id,
       mentorship_periods: mentorship_periods.map(&:to_h),
       training_periods: training_periods.map(&:to_h),
     }
@@ -58,10 +58,6 @@ class ECF2TeacherHistory::ECTAtSchoolPeriod
 
   def real_school
     GIAS::School.find_by!(urn: school.urn).school
-  end
-
-  def real_appropriate_body
-    # AppropriateBodyPeriod.find(appropriate_body.id)
   end
 
   def dates
