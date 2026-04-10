@@ -7,7 +7,7 @@ RSpec.describe "admin/teachers/timeline/show.html.erb" do
     render
   end
 
-  it "includes a back link to the teacher induction page" do
+  it "includes a back link to the teacher page" do
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Back", href: admin_teacher_path(teacher))
   end
 end
