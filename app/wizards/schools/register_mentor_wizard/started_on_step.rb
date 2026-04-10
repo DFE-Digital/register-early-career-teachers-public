@@ -61,13 +61,14 @@ module Schools
 
       def started_on_within_4_months
         return if errors.any?
+        return if registrations_closed_for_contract_period?
 
         earliest_invalid_started_on = 4.months.from_now.to_date.next_day
 
         unless started_on_as_date.before?(earliest_invalid_started_on)
           errors.add(
             :started_on,
-            "Start date must be before #{earliest_invalid_started_on.to_formatted_s(:govuk)}"
+            "Start date must be before #{earliest_invalid_started_on.to_formatted_s(:govuk)}. You cannot register the mentor this far in advance."
           )
         end
       end

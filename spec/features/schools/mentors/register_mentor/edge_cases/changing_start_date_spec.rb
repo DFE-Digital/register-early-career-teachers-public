@@ -99,7 +99,7 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   end
 
   def when_i_enter_a_date_in_a_closed_contract_period
-    mentor_start_date = Date.new(2025, 7, 1)
+    mentor_start_date = Date.new(2026, 7, 1)
     page.get_by_label("Day").fill(mentor_start_date.day.to_s)
     page.get_by_label("Month").fill(mentor_start_date.month.to_s)
     page.get_by_label("Year").fill(mentor_start_date.year.to_s)
@@ -125,7 +125,6 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
   end
 
   def then_i_see_a_validation_error_message
-    page.screenshot(path: "tmp/validation_error_message.png")
     expect(page.locator(".govuk-error-summary")).to have_text("There is a problem")
     expect(page.locator(".govuk-error-summary a").and(page.get_by_text("Start date must be before 1 October 2025"))).to be_visible
   end
@@ -140,7 +139,8 @@ RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
 
   def and_the_next_contract_period_is_closed
     @contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2024, enabled: true)
-    FactoryBot.create(:contract_period, :with_schedules, year: 2025, enabled: false)
+    FactoryBot.create(:contract_period, :with_schedules, year: 2025, enabled: true)
+    FactoryBot.create(:contract_period, :with_schedules, year: 2026, enabled: false)
   end
 
   def and_there_is_an_ect_with_no_mentor_registered_at_the_school
