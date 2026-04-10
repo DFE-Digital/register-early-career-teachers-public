@@ -138,7 +138,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       render
 
       expect(rendered).not_to have_content("What happens next")
-      expect(rendered).not_to have_content("We’ll email #{mentor.full_name} to confirm you’ve registered them.")
+      expect(rendered).not_to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
     end
   end
 
@@ -153,7 +153,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
       render
 
       expect(rendered).to have_content("What happens next")
-      expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm you’ve registered them.")
+      expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
     end
   end
 end
