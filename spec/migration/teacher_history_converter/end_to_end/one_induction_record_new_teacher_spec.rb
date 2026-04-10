@@ -7,9 +7,10 @@ describe "One induction record (end to end, new teacher)" do
   let(:induction_completion_date) { Date.new(2024, 2, 3) }
 
   # ECF1 data
+  let(:ecf1_appropriate_body) { FactoryBot.create(:migration_appropriate_body, id: "1d20b3b8-f98d-454d-8119-fc2c98135be2") } # Durham LA
   let(:ecf1_participant_profile) { FactoryBot.create(:migration_participant_profile, :ect, induction_start_date:, induction_completion_date:) }
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round, participant_profile: ecf1_participant_profile) }
+  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, appropriate_body: ecf1_appropriate_body, created_at: 18.hours.ago.round, participant_profile: ecf1_participant_profile) }
   let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
   let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
 
@@ -21,6 +22,7 @@ describe "One induction record (end to end, new teacher)" do
   let(:ecf2_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: ecf2_lead_provider, contract_period: ecf2_contract_period) }
   let(:ecf2_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: ecf2_active_lead_provider, delivery_partner: ecf2_delivery_partner) }
 
+  let!(:ecf2_appropriate_body) { FactoryBot.create(:appropriate_body_period, id: 90) }
   let!(:ecf2_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: ecf1_urn) }
   let!(:ecf2_schedule) { FactoryBot.create(:schedule, contract_period: ecf2_contract_period, identifier: ecf1_induction_record.schedule.schedule_identifier) }
   let!(:ecf2_school_partnership) { FactoryBot.create(:school_partnership, school: ecf2_school, lead_provider_delivery_partnership: ecf2_lead_provider_delivery_partnership) }
@@ -55,7 +57,7 @@ describe "One induction record (end to end, new teacher)" do
       expect(teacher.created_at).to eql(user_created_at)
     end
 
-    it "creates a single ect_at_school_period linked to the teacher at the right school" do
+    it "creates a single ect_at_school_period linked to the teacher at the right school with the right appropriate body" do
       ect_at_school_periods = teacher.ect_at_school_periods
       ect_at_school_period = ect_at_school_periods.first
 
@@ -63,6 +65,7 @@ describe "One induction record (end to end, new teacher)" do
         expect(ect_at_school_periods.count).to be(1)
 
         expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+        expect(ect_at_school_period.school_reported_appropriate_body).to eql(ecf2_appropriate_body)
       end
     end
 

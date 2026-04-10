@@ -237,6 +237,7 @@ private
         training_status: ir.training_status,
         preferred_identity_email: ir.preferred_identity_email,
         mentor_profile_id: ir.mentor_profile_id,
+        appropriate_body_info: ir.appropriate_body.to_h,
         training_provider_info: ir.training_provider_info.then do |tpi|
           if ir.training_programme == "full_induction_programme" && tpi.present?
             {

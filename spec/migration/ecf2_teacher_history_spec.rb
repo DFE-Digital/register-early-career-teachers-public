@@ -204,17 +204,17 @@ describe ECF2TeacherHistory do
         let(:other_arguments) { { ect_at_school_periods: } }
         let(:teacher) { subject.save_all_ect_data! }
 
-        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period) }
-        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period) }
+        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period, id: 6) }
+        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period, id: 396) }
         let(:appropriate_body_a_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_a.id,
+          Types::AppropriateBodyData.new(
+            ecf1_id: "f8ab3d0e-8b2f-4156-ab18-267c3b651a1d",
             name: appropriate_body_a.name
           )
         end
         let(:appropriate_body_b_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_b.id,
+          Types::AppropriateBodyData.new(
+            ecf1_id: "9bb3b070-00b9-4881-a118-7c5d71f412de",
             name: appropriate_body_b.name
           )
         end
@@ -633,17 +633,17 @@ describe ECF2TeacherHistory do
         let(:other_arguments) { { mentor_at_school_periods: } }
         let(:teacher) { subject.save_all_mentor_data! }
 
-        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period) }
-        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period) }
+        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period, id: 347) }
+        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period, id: 388) }
         let(:appropriate_body_a_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_a.id,
+          Types::AppropriateBodyData.new(
+            ecf1: "710e9278-b3fe-4bf6-8b26-e118647ae80a",
             name: appropriate_body_a.name
           )
         end
         let(:appropriate_body_b_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_b.id,
+          Types::AppropriateBodyData.new(
+            ecf1: "d4d9529e-aca5-41ff-881b-267a8570aaac",
             name: appropriate_body_b.name
           )
         end
