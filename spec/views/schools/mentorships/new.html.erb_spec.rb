@@ -14,7 +14,7 @@ RSpec.describe "schools/mentorships/new.html.erb" do
     assign(:mentor_form, mentor_form)
   end
 
-  it "sets the page title to 'You've assigned <mentor name> as a mentor'" do
+  it "sets the page title to 'You’ve assigned <mentor name> as a mentor'" do
     render
 
     expect(sanitize(view.content_for(:page_title))).to eql(sanitize(title))
