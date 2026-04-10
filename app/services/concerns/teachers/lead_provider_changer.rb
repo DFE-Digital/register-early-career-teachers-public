@@ -110,7 +110,11 @@ module Teachers
     end
 
     def existing_schedule
-      training_period&.schedule
+      last_provider_led_training_period&.schedule
+    end
+
+    def last_provider_led_training_period
+      @last_provider_led_training_period ||= period.training_periods.provider_led_training_programme.latest_first.first
     end
 
     def school_partnership
