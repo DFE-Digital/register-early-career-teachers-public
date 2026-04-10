@@ -93,8 +93,8 @@ RSpec.describe "Registering an ECT - closed contract period", :enable_schools_in
     @previous_school_name = "Previous Test School"
     FactoryBot.create(:gias_school, school: @previous_school, name: @previous_school_name)
 
-    @closed_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2022)
-    @open_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2024)
+    @closed_contract_period = FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2022)
+    @open_contract_period = FactoryBot.create(:contract_period, :with_extended_schedule, year: 2024)
 
     @lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
     @delivery_partner = FactoryBot.create(:delivery_partner, name: "Jaskolski College Delivery Partner 1")
