@@ -96,6 +96,12 @@ module Schools
           previous_training_period&.lead_provider
         end
 
+        def confirmed_delivery_partner_for_contract_period(school:)
+          lead_provider_partnerships_for_contract_period(school:)
+          .first
+          &.delivery_partner
+        end
+
       private
 
         attr_reader :registration_store
