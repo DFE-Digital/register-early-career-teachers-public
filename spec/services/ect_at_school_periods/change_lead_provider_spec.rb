@@ -74,7 +74,7 @@ module ECTAtSchoolPeriods
         end
       end
 
-      context "when the training period started in the past with a confirmed partnership" do
+      context "when the training period started in the past" do
         it "finishes the existing training period" do
           freeze_time
 
@@ -114,7 +114,7 @@ module ECTAtSchoolPeriods
         end
       end
 
-      context "when the training period starts today with EOI only" do
+      context "when the training period starts today" do
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
@@ -201,6 +201,100 @@ module ECTAtSchoolPeriods
           expect { change_lead_provider }.to change(ect_at_school_period.teacher, :ect_payments_frozen_year).from(nil).to(2021)
         end
       end
+
+      context "when the training period is deferred" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :deferred,
+            :provider_led,
+            :with_school_partnership,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on,
+            school_partnership:,
+            
+          )
+        end
+
+        it "creates a new training period with the new lead provider with the original schedule" do
+          change_lead_provider
+
+          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          expect(new_training_period.started_on).to eq(Date.current)
+          expect(new_training_period.expression_of_interest.lead_provider)
+            .to eq(lead_provider)
+          expect(new_training_period.schedule.contract_period).to eq(training_period.schedule.contract_period)
+          expect(new_training_period.schedule).to eq(training_period.schedule)
+        end
+
+        it "records a `teacher_training_lead_provider_updated` event" do
+          freeze_time
+          old_lead_provider = training_period.lead_provider
+
+          expect(Events::Record)
+            .to receive(:record_teacher_training_lead_provider_updated_event!)
+            .with(
+              old_lead_provider_name: old_lead_provider.name,
+              new_lead_provider_name: lead_provider.name,
+              author:,
+              ect_at_school_period:,
+              mentor_at_school_period: nil,
+              school: ect_at_school_period.school,
+              teacher: ect_at_school_period.teacher,
+              happened_at: Time.current
+            )
+
+          change_lead_provider
+        end
+      end
+
+      context "when the training period is withdrawn" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :withdrawn,
+            :provider_led,
+            :with_school_partnership,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on,
+            school_partnership:,
+            
+          )
+        end
+
+        it "creates a new training period with the new lead provider with the original schedule" do
+          change_lead_provider
+
+          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          expect(new_training_period.started_on).to eq(Date.current)
+          expect(new_training_period.expression_of_interest.lead_provider)
+            .to eq(lead_provider)
+          expect(new_training_period.schedule.contract_period).to eq(training_period.schedule.contract_period)
+          expect(new_training_period.schedule).to eq(training_period.schedule)
+        end
+
+        it "records a `teacher_training_lead_provider_updated` event" do
+          freeze_time
+          old_lead_provider = training_period.lead_provider
+
+          expect(Events::Record)
+            .to receive(:record_teacher_training_lead_provider_updated_event!)
+            .with(
+              old_lead_provider_name: old_lead_provider.name,
+              new_lead_provider_name: lead_provider.name,
+              author:,
+              ect_at_school_period:,
+              mentor_at_school_period: nil,
+              school: ect_at_school_period.school,
+              teacher: ect_at_school_period.teacher,
+              happened_at: Time.current
+            )
+
+          change_lead_provider
+        end
+      end
+
+
     end
 
     context "when there is no existing school partnership" do
@@ -216,7 +310,7 @@ module ECTAtSchoolPeriods
         )
       end
 
-      context "when the training period started in the past with EOI only" do
+      context "when the training period started in the past" do
         it "destroys the existing training period" do
           freeze_time
 
@@ -256,7 +350,7 @@ module ECTAtSchoolPeriods
         end
       end
 
-      context "when the training period starts in the future with EOI only" do
+      context "when the training period starts in the future" do
         let(:ect_at_school_period) do
           FactoryBot.create(
             :ect_at_school_period,
@@ -300,6 +394,9 @@ module ECTAtSchoolPeriods
         let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
         let!(:current_contract_period) { FactoryBot.create(:contract_period, :current, :with_schedules) }
         let(:contract_period) { contract_period_2021 }
+        let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+        let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
+        
         let(:new_active_lead_provider) do
           FactoryBot.create(
             :active_lead_provider,
@@ -339,6 +436,97 @@ module ECTAtSchoolPeriods
           expect { change_lead_provider }.not_to change(ect_at_school_period.teacher, :ect_payments_frozen_year)
         end
       end
+
+      context "when the training period is deferred" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :deferred,
+            :provider_led,
+            :with_only_expression_of_interest,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on,
+            expression_of_interest: current_active_lead_provider
+          )
+        end
+
+        it "creates a new training period" do
+          change_lead_provider
+
+          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          expect(new_training_period.started_on).to eq(Date.current)
+          expect(new_training_period.expression_of_interest.lead_provider)
+            .to eq(lead_provider)
+          expect(new_training_period.schedule.contract_period).to eq(training_period.schedule.contract_period)
+          expect(new_training_period.schedule).to eq(training_period.schedule)
+        end
+
+        it "records a `teacher_training_lead_provider_updated` event" do
+          freeze_time
+          old_lead_provider = training_period.expression_of_interest.lead_provider
+
+          expect(Events::Record)
+            .to receive(:record_teacher_training_lead_provider_updated_event!)
+            .with(
+              old_lead_provider_name: old_lead_provider.name,
+              new_lead_provider_name: lead_provider.name,
+              author:,
+              ect_at_school_period:,
+              mentor_at_school_period: nil,
+              school: ect_at_school_period.school,
+              teacher: ect_at_school_period.teacher,
+              happened_at: Time.current
+            )
+
+          change_lead_provider
+        end
+      end
+
+      context "when the training period is withdrawn" do
+        let!(:training_period) do
+          FactoryBot.create(
+            :training_period,
+            :withdrawn,
+            :provider_led,
+            :with_only_expression_of_interest,
+            ect_at_school_period:,
+            started_on: ect_at_school_period.started_on,
+            expression_of_interest: current_active_lead_provider
+          )
+        end
+
+        it "creates a new training period" do
+          change_lead_provider
+
+          new_training_period = ect_at_school_period.reload.current_or_next_training_period
+          expect(new_training_period.started_on).to eq(Date.current)
+          expect(new_training_period.expression_of_interest.lead_provider)
+            .to eq(lead_provider)
+          expect(new_training_period.schedule.contract_period).to eq(training_period.schedule.contract_period)
+          expect(new_training_period.schedule).to eq(training_period.schedule)
+        end
+
+        it "records a `teacher_training_lead_provider_updated` event" do
+          freeze_time
+          old_lead_provider = training_period.expression_of_interest.lead_provider
+
+          expect(Events::Record)
+            .to receive(:record_teacher_training_lead_provider_updated_event!)
+            .with(
+              old_lead_provider_name: old_lead_provider.name,
+              new_lead_provider_name: lead_provider.name,
+              author:,
+              ect_at_school_period:,
+              mentor_at_school_period: nil,
+              school: ect_at_school_period.school,
+              teacher: ect_at_school_period.teacher,
+              happened_at: Time.current
+            )
+
+          change_lead_provider
+        end
+      end
+
 
       context "when the ECT is on a school-led programme" do
         let!(:training_period) do
