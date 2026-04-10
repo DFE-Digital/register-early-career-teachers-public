@@ -1,7 +1,5 @@
 module Mappers
   class AppropriateBodyMapper
-    class NoMatchingECF1AppropriateBodyID < StandardError; end
-
     attr_accessor :mapping_data, :indexed_by_ecf1_id
 
     def initialize(yaml_file = Rails.root.join("app/migration/mappers/appropriate_body_mapping_data.yaml"))
@@ -10,13 +8,9 @@ module Mappers
     end
 
     def get_ecf2_id(ecf1_id)
-      begin
-        match = indexed_by_ecf1_id.fetch(ecf1_id)
-      rescue KeyError
-        raise NoMatchingECF1AppropriateBodyID, "ecf1_id: #{ecf1_id}"
-      end
+      match = indexed_by_ecf1_id[ecf1_id]
 
-      match.fetch(:ecf2_id)
+      match[:ecf2_id]
     end
   end
 end
