@@ -318,7 +318,7 @@ private
   def then_i_see_the_confirmation_message
     success_panel = page.locator(".govuk-panel")
     expect(success_panel).to have_text(
-      "You have changed John Doe’s mentor to Jane Smith"
+      "You’ve changed John Doe’s mentor to Jane Smith"
     )
   end
 
