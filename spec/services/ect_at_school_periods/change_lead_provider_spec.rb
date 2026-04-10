@@ -211,8 +211,7 @@ module ECTAtSchoolPeriods
             :with_school_partnership,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on,
-            school_partnership:,
-            
+            school_partnership:
           )
         end
 
@@ -257,8 +256,7 @@ module ECTAtSchoolPeriods
             :with_school_partnership,
             ect_at_school_period:,
             started_on: ect_at_school_period.started_on,
-            school_partnership:,
-            
+            school_partnership:
           )
         end
 
@@ -293,8 +291,6 @@ module ECTAtSchoolPeriods
           change_lead_provider
         end
       end
-
-
     end
 
     context "when there is no existing school partnership" do
@@ -396,7 +392,7 @@ module ECTAtSchoolPeriods
         let(:contract_period) { contract_period_2021 }
         let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
         let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
-        
+
         let(:new_active_lead_provider) do
           FactoryBot.create(
             :active_lead_provider,
@@ -526,7 +522,6 @@ module ECTAtSchoolPeriods
           change_lead_provider
         end
       end
-
 
       context "when the ECT is on a school-led programme" do
         let!(:training_period) do
