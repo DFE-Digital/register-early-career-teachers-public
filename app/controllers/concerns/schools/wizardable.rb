@@ -13,6 +13,8 @@ module Schools
     end
 
     included do
+      include WizardStoreRescuable
+
       class_attribute :wizardable_type
 
       before_action :set_steps,
