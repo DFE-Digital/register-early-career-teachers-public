@@ -48,8 +48,7 @@ RSpec.describe Schools::RegisterECT do
       end
 
       context "when we log a teacher to start on the last day of the current contract period" do
-        let(:travel_date) { Date.new(2026, 5, 31) }
-        let(:started_on) { travel_date }
+        let(:started_on) { contract_period.finished_on }
 
         it "creates a new Teacher record" do
           expect { service.register! }.to change(Teacher, :count).by(1)
@@ -67,28 +66,96 @@ RSpec.describe Schools::RegisterECT do
         end
       end
 
-      context "when provider-led" do
-        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+      context "when an ActiveLeadProvider exists for the contract_period" do
+        let!(:active_lead_provider) do
+          FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
+        end
         let!(:teacher) { FactoryBot.create(:teacher, trn:) }
 
-        context "when a Teacher record with the same TRN exists but has no ect records" do
+        it "creates an associated ECTAtSchoolPeriod record" do
+          expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+
+          expect(ect_at_school_period).to have_attributes(
+            teacher_id: Teacher.find_by(trn:).id,
+            started_on:,
+            working_pattern:,
+            email:,
+            school_reported_appropriate_body_id: school_reported_appropriate_body.id
+          )
+        end
+
+        it "sends a provider-led confirmation email to the early career teacher" do
+          expect { service.register! }
+            .to have_enqueued_mail(Schools::ECTRegistrationMailer, :provider_led_confirmation)
+        end
+
+        it "records a teacher_registered_as_ect event" do
+          allow(Events::Record)
+            .to receive(:record_teacher_registered_as_ect_event!)
+            .with(any_args)
+            .and_call_original
+
+          service.register!
+
+          expect(Events::Record)
+            .to have_received(:record_teacher_registered_as_ect_event!)
+            .with(
+              hash_including(author:, ect_at_school_period:, teacher:, school:)
+            )
+        end
+
+        it "sets appropriate body and provider choices for the school" do
+          expect { service.register! }
+            .to change(school, :last_chosen_appropriate_body_id)
+              .to(school_reported_appropriate_body.id)
+            .and change(school, :last_chosen_training_programme)
+              .to(training_programme)
+            .and change(school, :last_chosen_lead_provider_id)
+              .to(lead_provider.id)
+        end
+
+        it "calls `Teachers::SetFundingEligibility` service with correct params" do
+          allow(Teachers::SetFundingEligibility).to receive(:new).and_call_original
+
+          service.register!
+
+          expect(Teachers::SetFundingEligibility).to have_received(:new).with(teacher:, author:)
+        end
+
+        context "when a Teacher has no ECT periods" do
           it "doesn't create a new Teacher record" do
             expect { service.register! }.not_to change(Teacher, :count)
           end
         end
 
-        context "when a Teacher record with the same TRN exists and has ect records at a different school" do
+        context "when a Teacher has an ECT period at a different school" do
           let(:other_school) { FactoryBot.create(:school) }
 
-          before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school: other_school, started_on: Date.new(2024, 1, 1)) }
+          before do
+            FactoryBot.create(
+              :ect_at_school_period,
+              :ongoing,
+              teacher:,
+              school: other_school,
+              started_on: Date.new(2024, 1, 1)
+            )
+          end
 
           it "allows registration (school transfer)" do
             expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
           end
         end
 
-        context "when a Teacher record with the same TRN exists and has ect records at the same school" do
-          before { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, school:, started_on: Date.new(2024, 1, 1)) }
+        context "when a Teacher has an ongoing ECT period at the current school" do
+          before do
+            FactoryBot.create(
+              :ect_at_school_period,
+              :ongoing,
+              teacher:,
+              school:,
+              started_on: Date.new(2024, 1, 1)
+            )
+          end
 
           it "raises an exception" do
             expect { service.register! }.to raise_error(ActiveRecord::RecordInvalid)
@@ -103,28 +170,26 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
-        context "when a Teacher record with the same TRN exists and has multiple ect records at different schools" do
+        context "when a Teacher has multiple ECT periods at different schools" do
           let(:school_one) { FactoryBot.create(:school) }
           let(:school_two) { FactoryBot.create(:school) }
-          let(:started_on) { Date.current + 1.day }
-          let!(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: started_on.year) }
-          let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
+          let(:started_on) { 1.day.from_now }
 
           before do
             # Create finished periods at two different schools with non-overlapping dates
-            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: school_one, started_on: Date.current - 2.years, finished_on: Date.current - 18.months)
-            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: school_two, started_on: Date.current - 12.months, finished_on: Date.current - 6.months)
+            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: school_one, started_on: 2.years.ago, finished_on: 18.months.ago)
+            FactoryBot.create(:ect_at_school_period, :finished, teacher:, school: school_two, started_on: 12.months.ago, finished_on: 6.months.ago)
           end
 
           it "allows registration at a third school (multiple transfers)" do
             expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
 
-            expect(teacher.ect_at_school_periods.count).to eq(3) # 2 existing + 1 new
+            expect(teacher.ect_at_school_periods.count).to eq(3)
           end
 
           context "on the last day of the current contract period" do
-            let(:travel_date) { Date.new(2026, 5, 31) }
-            let(:started_on) { travel_date }
+            let(:overridden_current_date) { contract_period.finished_on }
+            let(:started_on) { overridden_current_date }
 
             it "allows registration at a third school (multiple transfers)" do
               expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
@@ -132,7 +197,7 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
-        context "when a Teacher record with the same TRN has an ongoing period at different school and finished period at current school" do
+        context "when a Teacher has an ongoing ECT period at a different school and a finished ECT period at the current school" do
           let(:other_school) { FactoryBot.create(:school) }
 
           before do
@@ -155,16 +220,15 @@ RSpec.describe Schools::RegisterECT do
           end
 
           context "on the last day of the current contract period" do
-            let(:travel_date) { Date.new(2026, 5, 31) }
-            let(:started_on) { travel_date }
+            let(:started_on) { contract_period.finished_on }
 
-            it "registers the teach with the correct contrat period" do
+            it "allows registration at the current school" do
               expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
             end
           end
         end
 
-        context "when a Teacher record with the same TRN has a future period at different school" do
+        context "when a Teacher has a future ECT period at a different school" do
           let(:other_school) { FactoryBot.create(:school) }
           let(:started_on) { Date.new(2025, 8, 1) + 1.year }
           let!(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: started_on.year) }
@@ -172,48 +236,18 @@ RSpec.describe Schools::RegisterECT do
 
           before do
             # Future period at other school
-            FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: Date.current + 1.month, finished_on: Date.current + 2.months)
+            FactoryBot.create(
+              :ect_at_school_period,
+              teacher:,
+              school: other_school,
+              started_on: 1.month.from_now,
+              finished_on: 6.months.from_now
+            )
           end
 
           it "allows registration with non-overlapping future date" do
             expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
           end
-        end
-
-        it "creates an associated ECTAtSchoolPeriod record" do
-          expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
-
-          expect(ect_at_school_period.teacher_id).to eq(Teacher.find_by(trn:).id)
-          expect(ect_at_school_period.started_on).to eq(started_on)
-          expect(ect_at_school_period.working_pattern).to eq(working_pattern)
-          expect(ect_at_school_period.email).to eq(email)
-          expect(ect_at_school_period.school_reported_appropriate_body_id).to eq(school_reported_appropriate_body.id)
-        end
-
-        it "sends a provider-led confirmation email to the early career teacher" do
-          expect { service.register! }
-            .to have_enqueued_mail(Schools::ECTRegistrationMailer, :provider_led_confirmation)
-        end
-
-        describe "recording an event" do
-          before { allow(Events::Record).to receive(:record_teacher_registered_as_ect_event!).with(any_args).and_call_original }
-
-          it "records a teacher_registered_as_ect event with the expected attributes" do
-            service.register!
-
-            expect(Events::Record).to have_received(:record_teacher_registered_as_ect_event!).with(
-              hash_including(author:, ect_at_school_period:, teacher:, school:)
-            )
-          end
-        end
-
-        it "sets ab and provider choices for the school" do
-          expect { service.register! }
-            .to change(school, :last_chosen_appropriate_body_id)
-                  .to(school_reported_appropriate_body.id)
-                  .and change(school, :last_chosen_training_programme)
-                        .to(training_programme)
-                        .and change(school, :last_chosen_lead_provider_id).to(lead_provider.id)
         end
 
         context "when no SchoolPartnerships exist" do
@@ -231,8 +265,38 @@ RSpec.describe Schools::RegisterECT do
           end
 
           context "on the last day of the contract period" do
-            let(:travel_date) { Date.new(2026, 5, 31) }
-            let(:started_on) { travel_date }
+            let(:overridden_current_date) { contract_period.finished_on }
+            let(:started_on) { overridden_current_date }
+
+            it "finds the correct contract period and schedule" do
+              expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+              training_period = TrainingPeriod.find_by!(started_on:)
+
+              expect(training_period.started_on).to eq(started_on)
+              expect(training_period.schedule.identifier).to eql("ecf-standard-april")
+              expect(training_period.schedule.contract_period_year).to be(2025)
+            end
+          end
+        end
+
+        context "when a SchoolPartnership exists" do
+          let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+          let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
+          let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
+
+          it "creates a TrainingPeriod with a school_partnership and no expression_of_interest" do
+            expect { service.register! }.to change(TrainingPeriod, :count).by(1)
+
+            training_period = TrainingPeriod.find_by!(started_on:)
+
+            expect(training_period.expression_of_interest).to be_nil
+            expect(training_period.school_partnership).to eq(school_partnership)
+          end
+
+          context "on the last day of the contract period" do
+            let(:overridden_current_date) { contract_period.finished_on }
+            let(:started_on) { overridden_current_date }
 
             it "finds the correct contract period and schedule" do
               expect { service.register! }.to change(TrainingPeriod, :count).by(1)
@@ -259,44 +323,6 @@ RSpec.describe Schools::RegisterECT do
             expect(training_period.schedule.contract_period_year).to eq(contract_period.year)
             expect(training_period.started_on).not_to eq(ect_at_school_period.started_on)
           end
-        end
-
-        context "when a SchoolPartnership exists" do
-          let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
-          let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-          let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
-
-          it "creates a TrainingPeriod with a school_partnership and no expression_of_interest" do
-            expect { service.register! }.to change(TrainingPeriod, :count).by(1)
-
-            training_period = TrainingPeriod.find_by!(started_on:)
-
-            expect(training_period.expression_of_interest).to be_nil
-            expect(training_period.school_partnership).to eq(school_partnership)
-          end
-
-          context "on the last day of the contract period" do
-            let(:travel_date) { Date.new(2026, 5, 31) }
-            let(:started_on) { travel_date }
-
-            it "finds the correct contract period and schedule" do
-              expect { service.register! }.to change(TrainingPeriod, :count).by(1)
-
-              training_period = TrainingPeriod.find_by!(started_on:)
-
-              expect(training_period.started_on).to eq(started_on)
-              expect(training_period.schedule.identifier).to eql("ecf-standard-april")
-              expect(training_period.schedule.contract_period_year).to be(2025)
-            end
-          end
-        end
-
-        it "calls `Teachers::SetFundingEligibility` service with correct params" do
-          allow(Teachers::SetFundingEligibility).to receive(:new).and_call_original
-
-          service.register!
-
-          expect(Teachers::SetFundingEligibility).to have_received(:new).with(teacher:, author:)
         end
       end
     end

@@ -245,7 +245,7 @@ module ECTAtSchoolPeriods
         end
 
         context "on the last day of the contract period" do
-          let(:travel_date) { Date.new(2026, 5, 31) }
+          let(:overridden_current_date) { contract_period.finished_on }
 
           it "assigns a mentor" do
             expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
