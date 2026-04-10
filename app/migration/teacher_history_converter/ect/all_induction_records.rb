@@ -52,13 +52,18 @@ private
           school: induction_record.school,
           email: induction_record.preferred_identity_email,
           mentorship_periods: [last_mentorship_period].compact,
-          training_periods: [last_training_period].compact
+          training_periods: [last_training_period].compact,
+          appropriate_body: induction_record.appropriate_body
         )
         school_periods << last_school_period
       else
         # extend school period
         last_school_period.finished_on = finished_on
         last_school_period.email = induction_record.preferred_identity_email
+
+        if induction_record.appropriate_body.present?
+          last_school_period.appropriate_body = induction_record.appropriate_body
+        end
 
         if training_period_changed?(last_training_period, induction_record)
           # ignore if this induction_record is withdrawn or deferred and ongoing
