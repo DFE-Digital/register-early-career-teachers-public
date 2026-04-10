@@ -174,8 +174,8 @@ RSpec.describe Schools::RegisterMentor do
         end
 
         context "on the last day of the contract period" do
-          let(:travel_date) { Date.new(2026, 5, 31) }
-          let(:started_on) { travel_date }
+          let(:overridden_current_date) { contract_period.finished_on }
+          let(:started_on) { overridden_current_date }
 
           it "finds the correct contract period and schedule" do
             expect { service.register! }.to change(Teacher, :count).from(0).to(1)
@@ -183,7 +183,7 @@ RSpec.describe Schools::RegisterMentor do
             training_period = TrainingPeriod.find_by!(started_on:)
 
             expect(training_period.schedule.identifier).to eql("ecf-standard-april")
-            expect(training_period.schedule.contract_period_year).to be(2025)
+            expect(training_period.schedule.contract_period_year).to be(contract_period.year)
           end
         end
       end
@@ -212,8 +212,8 @@ RSpec.describe Schools::RegisterMentor do
         end
 
         context "on the last day of the contract period" do
-          let(:travel_date) { Date.new(2026, 5, 31) }
-          let(:started_on) { travel_date }
+          let(:overridden_current_date) { contract_period.finished_on }
+          let(:started_on) { overridden_current_date }
 
           it "finds the correct contract period and schedule" do
             expect { service.register! }.to change(Teacher, :count).from(0).to(1)
@@ -221,7 +221,7 @@ RSpec.describe Schools::RegisterMentor do
             training_period = TrainingPeriod.find_by!(started_on:)
 
             expect(training_period.schedule.identifier).to eql("ecf-standard-april")
-            expect(training_period.schedule.contract_period_year).to be(2025)
+            expect(training_period.schedule.contract_period_year).to be(contract_period.year)
           end
         end
       end
