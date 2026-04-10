@@ -2,6 +2,8 @@ module Schedules
   class Find
     attr_accessor :period, :training_programme, :started_on, :period_type_key, :mentee
 
+    include Schedules::Reuse
+
     def initialize(period:, training_programme:, started_on:, period_type_key:, mentee:)
       @period = period
       @training_programme = training_programme
@@ -39,17 +41,11 @@ module Schedules
       teacher.mentor_training_periods if teacher.mentor_at_school_periods.exists?
     end
 
-    def most_recent_provider_led_period
-      training_periods&.provider_led_training_programme&.latest_first&.first
-    end
-
     def most_recent_schedule
       @most_recent_schedule ||= most_recent_provider_led_period&.schedule
     end
 
-    def latest_start_date
-      [started_on, Time.zone.today].max
-    end
+    alias_method :latest_start_date, :date_of_transition
 
     def schedule_month
       return "september" if extended_schedule?
@@ -106,20 +102,10 @@ module Schedules
       previous_mentor_started_training?
     end
 
-    def extended_schedule?
-      return false unless period_type_key == :ect_at_school_period
-
-      contract_period_reassignment.required?
-    end
-
-    def contract_period_reassignment
-      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period: most_recent_provider_led_period)
-    end
+    alias_method :extended_schedule?, :contract_period_reassignment_required?
 
     def extended_schedule
       successor_contract_period.schedules.find_by!(identifier:)
     end
-
-    delegate :successor_contract_period, to: :contract_period_reassignment
   end
 end

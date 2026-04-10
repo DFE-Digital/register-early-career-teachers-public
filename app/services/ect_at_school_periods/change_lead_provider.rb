@@ -31,8 +31,6 @@ module ECTAtSchoolPeriods
       teacher.update!(ect_payments_frozen_year: previous_contract_period.year)
     end
 
-    def previous_contract_period = contract_period_reassignment.assigned_contract_period
-
     def contract_period_reassignment_required?
       @contract_period_reassignment_required ||= contract_period_reassignment.required?
     end
@@ -44,11 +42,5 @@ module ECTAtSchoolPeriods
                                            super
                                          end
     end
-
-    def contract_period_reassignment
-      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period: last_provider_led_training_period)
-    end
-
-    delegate :successor_contract_period, to: :contract_period_reassignment
   end
 end

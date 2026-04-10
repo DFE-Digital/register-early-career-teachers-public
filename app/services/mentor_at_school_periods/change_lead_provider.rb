@@ -18,5 +18,7 @@ module MentorAtSchoolPeriods
         author:
       ).finish!
     end
+
+    def contract_period_reassignment_required? = false
   end
 end

@@ -5,6 +5,7 @@ module Teachers
     extend ActiveSupport::Concern
 
     include TrainingPeriodSources
+    include Schedules::Reuse
 
     class_methods do
       def call(*args, **kwargs)
@@ -84,39 +85,6 @@ module Teachers
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
     end
 
-    def contract_period
-      if reuse_existing_schedule?
-        existing_schedule.contract_period
-      else
-        contract_period_at_transition
-      end
-    end
-
-    def schedule
-      existing_schedule if reuse_existing_schedule?
-    end
-
-    def reuse_existing_schedule?
-      return false unless existing_schedule
-      return false if contract_period_reassignment_required?
-
-      existing_schedule.contract_period != contract_period_at_transition
-    end
-
-    def contract_period_reassignment_required? = false
-
-    def contract_period_at_transition
-      @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
-    end
-
-    def existing_schedule
-      last_provider_led_training_period&.schedule
-    end
-
-    def last_provider_led_training_period
-      @last_provider_led_training_period ||= period.training_periods.provider_led_training_programme.latest_first.first
-    end
-
     def school_partnership
       earliest_matching_school_partnership
     end
@@ -138,9 +106,8 @@ module Teachers
     def date_of_transition
       return training_period.started_on if current_or_future_training_period?
 
-      [period.started_on, Date.current].max
+      super
     end
-    alias_method :started_on, :date_of_transition
 
     def training_period
       @training_period ||= period.current_or_next_training_period
