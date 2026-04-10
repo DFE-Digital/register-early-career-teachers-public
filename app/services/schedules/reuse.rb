@@ -1,7 +1,9 @@
 module Schedules
   module Reuse
     def contract_period
-      if reuse_existing_schedule?
+      if contract_period_reassignment_required? && current_training_period_confirmed?
+        successor_contract_period
+      elsif reuse_existing_schedule?
         existing_schedule.contract_period
       else
         contract_period_at_transition
@@ -40,6 +42,14 @@ module Schedules
     end
 
     delegate :training_periods, to: :period
+
+    def current_training_period_confirmed?
+      current_or_next_training_period.school_partnership.present?
+    end
+
+    def current_or_next_training_period
+      @current_or_next_training_period ||= period.current_or_next_training_period
+    end
 
     def existing_schedule
       most_recent_provider_led_period&.schedule
