@@ -34,13 +34,5 @@ module ECTAtSchoolPeriods
     def contract_period_reassignment_required?
       @contract_period_reassignment_required ||= contract_period_reassignment.required?
     end
-
-    def contract_period_at_transition
-      @contract_period_at_transition ||= if contract_period_reassignment_required? && training_period_confirmed?
-                                           successor_contract_period
-                                         else
-                                           super
-                                         end
-    end
   end
 end

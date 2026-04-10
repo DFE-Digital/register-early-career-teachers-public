@@ -63,39 +63,27 @@ module ECTAtSchoolPeriods
     def handle_training_period_for_switch!
       return if @training_period.blank?
 
-      if training_not_started? || current_provider_led_training_not_confirmed?
+      if training_not_started? || !keep_existing_training_period?
         @training_period.destroy!
       else
         finish_training_period!
       end
     end
 
-    def current_provider_led_training_not_confirmed?
-      @ect_at_school_period.provider_led_training_programme? && @training_period.school_partnership.blank?
+    def keep_existing_training_period?
+      @ect_at_school_period.school_led_training_programme? || @training_period.school_partnership.present?
     end
+
+    def current_training_period_confirmed? = keep_existing_training_period?
 
     def training_not_started?
       @training_period.started_on.today? || date_of_transition.future?
-    end
-
-    def contract_period
-      if contract_period_reassignment_required?
-        successor_contract_period
-      elsif reuse_existing_schedule?
-        existing_schedule.contract_period
-      else
-        contract_period_at_transition
-      end
     end
 
     def reuse_existing_schedule?
       return false unless @ect_at_school_period.school_led_training_programme?
 
       super
-    end
-
-    def contract_period_reassignment_required?
-      @ect_at_school_period.school_led_training_programme? && super
     end
 
     def set_ect_payments_frozen_year!
