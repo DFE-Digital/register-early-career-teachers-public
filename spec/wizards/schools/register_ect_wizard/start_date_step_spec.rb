@@ -90,7 +90,20 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
           it "is invalid over 4 months from today" do
             expect(subject).not_to be_valid
-            expect(subject.errors[:start_date]).to include("Start date must be before 2 May 2025")
+            expect(subject.errors[:start_date]).to include("Start date must be before 2 May 2025. You cannot register the ECT this far in advance.")
+          end
+
+          context "and the start date falls in a contract period that is not yet open" do
+            before do
+              FactoryBot.create(:contract_period, year: 2024, enabled: true, started_on: Date.new(2024, 6, 1), finished_on: Date.new(2025, 5, 31))
+              FactoryBot.create(:contract_period, year: 2025, enabled: false, started_on: Date.new(2025, 6, 1), finished_on: Date.new(2026, 5, 31))
+            end
+
+            let(:start_date) { Date.new(2025, 9, 1) }
+
+            it "does not add the 4-month error so the wizard can route to cannot_register_ect_yet" do
+              expect(subject).to be_valid
+            end
           end
         end
       end
