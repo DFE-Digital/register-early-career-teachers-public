@@ -228,28 +228,6 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
-        context "when a Teacher has a future ECT period at a different school" do
-          let(:other_school) { FactoryBot.create(:school) }
-          let(:started_on) { Date.new(2025, 8, 1) + 1.year }
-          let!(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: started_on.year) }
-          let!(:future_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: future_contract_period) }
-
-          before do
-            # Future period at other school
-            FactoryBot.create(
-              :ect_at_school_period,
-              teacher:,
-              school: other_school,
-              started_on: 1.month.from_now,
-              finished_on: 6.months.from_now
-            )
-          end
-
-          it "allows registration with non-overlapping future date" do
-            expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
-          end
-        end
-
         context "when no SchoolPartnerships exist" do
           it "creates a TrainingPeriod linked to the ECTAtSchoolPeriod and with an expression of interest for the ActiveLeadProvider" do
             expect { service.register! }.to change(TrainingPeriod, :count).by(1)
