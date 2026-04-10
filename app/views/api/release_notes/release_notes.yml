@@ -21,6 +21,15 @@
 #
 #     **bold** and _italic_ text
 
+- title: Register early career teachers service launched
+  date: 2026-04-28
+  tags:
+     - production-release
+     - breaking-change
+     - data-update
+  body: |
+    We're launching the Register early career teachers service to schools on 28 April 2026.
+
 - title: Schedule and cohort changes now allowed for ECTs and mentors transferring to you from another provider
   date: 2026-04-15
   tags:
@@ -50,14 +59,14 @@
     - production-release
   body: |
     We've now fixed how uplift fees are shown for early career teachers and mentors.
-    
+
     ## What's changed
-    
+
     ECTs and mentors in the 2024 or earlier cohorts, who are at schools eligible for uplifts, will show the following on `GET participants`:
-    
+
     - `sparsity_uplift: true`
     - `pupil_premium_uplift: true`
-  
+
     Previously, we had said we would always show mentors as false in the Register ECTs API, but this was incorrect.
 
     Started declarations for these participants will also show as `uplift_paid: true` when their declaration has been paid. It will stay true if the declaration is later clawed back.
@@ -72,61 +81,61 @@
     This is because uplift fees are no longer paid from the 2025 cohort onwards.
 
     If mentors are on a replacement mentor schedule in the 2024 or earlier cohorts, they are also not eligible for uplift payments on their started declarations. However, this is handled manually by DfE through adjustments to financial statements, and they will still appear over the API like other mentors eligible for uplift payments.
-    
-    ## Why we've made this change    
-    
+
+    ## Why we've made this change
+
     This aims to make it clearer when participants actually have the uplift fees applied, and when they are paid out for declarations.
 
     It also fixes an error we made in the register early career teachers API specification stating that mentors would always show as false for uplift fees.
-    
+
     ## Impact on lead providers
-    
+
     This should have a minimal impact. In the existing API for the manage training for ECTs service, uplifts were still only paid for started declarations for 2024 and earlier cohort participants.
-    
+
 - title: Delivery partner now recorded on declaration submission
   date: 2026-02-16
   tags:
     - sandbox-release
   body: |
     We've changed how delivery partner information is recorded on declarations in the register early career teachers (RECT) API. It now works the same way as the manage training for early career teachers service.
-    
+
     ## What's changed
-    
+
     When you submit a declaration, the system now records which delivery partner was assigned at that time. This information will not change, even if you later update the delivery partner through `PUT /partnerships/{id}`.
-    
+
     The delivery partner shown on a declaration is now the delivery partner that was assigned when the declaration was submitted.
-    
+
     ## Why we've made this change
-    
+
     This change ensures that you have a consistent record of which delivery partner was responsible for each declaration at the time it was made.
-    
+
     This is particularly important when:
-    
+
     * correcting errors in partnership records using `PUT /partnerships/{id}`
     * understanding how declarations are paid out
-    
+
     ## Impact on lead providers
-    
+
     You don't need to make any changes to your integration. The only change comes in the approach to updating a delivery partner:
-    
+
     ### When correcting a mistakenly entered delivery partner
-    
-    Use the `PUT /partnerships/{id}` endpoint to correct the `delivery_partner_id`. 
-    
+
+    Use the `PUT /partnerships/{id}` endpoint to correct the `delivery_partner_id`.
+
     For example, if you made an error when creating the partnership and need to fix it.
-    
+
     When you update a partnership, the new delivery partner ID will apply to all future declarations linked to that partnership. Any historic declarations will still use the `delivery_partner_id` that was in place before it was corrected.
-    
+
     ### When the delivery partner has genuinely changed
-    
+
     Contact DfE to create a new partnership record, via your Teams channel or email.
-    
+
     This new record will use a new partnership ID, enabling us to better understand which delivery partner the school was training with, and when.
-    
+
     Historic declarations remain linked to the original `delivery_partner_id`, while future declarations use the new partnership record.
-    
+
     Read the [partnerships guidance](/api/guidance/guidance-for-lead-providers/create-view-and-update-partnerships) for more information on creating, viewing, and updating partnerships.
-    
+
 - title: Declaration endpoints added, completing the RECT API in sandbox
   date: 2026-01-19
   tags:
@@ -173,11 +182,11 @@
 
     ### Only the current lead provider can update a participant’s schedule or cohort
     Lead providers can now only update schedules or cohorts when they are the current lead provider training the participant. If you are not the current lead provider, the request will return a validation error.
-    
+
     If a participant has a future start date with a different lead provider, the current lead provider will no longer be able to change the schedule or cohort.
-    
+
     The new lead provider will not be able to change the schedule or cohort until the participant has started training with them (their start date has elapsed).
-    
+
     Previously, any lead provider could update a schedule or cohort as long as there were no billable declarations.
 
     ### You can now change schedules or cohorts even when there are billable declarations
@@ -195,7 +204,7 @@
 
     ## Impact on lead providers
     These changes may affect how you manage schedules and cohorts in some scenarios:
-    
+
     * you will not be able to update schedules or cohorts for participants you are no longer training
     * you have more flexibility to move participants even when billable declarations exist
     * you may need to wait until the next day to make further cohort changes if you submit a declaration on the same day
@@ -238,9 +247,9 @@
 
     ### No changes to endpoint behaviour
     The unfunded mentors endpoint works in the same way as it does in the current service. It returns mentors who are not trained by the lead provider but who need access to that provider’s learning platform because they mentor an ECT trained by the provider.
-    
+
     While the endpoint behaviour is unchanged, some results returned in the production environment may differ from the existing service due to known data issues.
-    
+
     ### We are not going ahead with the change proposed in the draft API specification
     Section 18.1 of the draft specification proposed expanding the unfunded mentors endpoint to include more mentors who currently appear in the participants endpoint. We are not making this change.
 
@@ -251,7 +260,7 @@
 
     ## Impact on lead providers
     These changes should have minimal impact:
-    
+
     * you should test this endpoint in the Register ECTs sandbox
     * no changes are needed to existing integrations
 
@@ -344,229 +353,229 @@
 
     They ensure that participant status and training status stay consistent when lead providers carry out withdraw, defer or resume actions.
 
-- title: GET participants endpoints added to sandbox   
+- title: GET participants endpoints added to sandbox
   date: 2025-11-07
-  tags: 
-    - sandbox-release 
-    - new-field 
+  tags:
+    - sandbox-release
+    - new-field
     - removed-field
   body: |
     We’ve added the `GET /participants` endpoints to the ‘Register early career teachers’ API sandbox:
-    
+
     * `GET /participants` to retrieve data for multiple participants 
     * `GET /participants/{id}` to get information about a single participant 
-    
-    ## What’s changed from the existing ‘Manage training for early career teachers’ API?  
-    
+
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API? 
+
     ### New induction start date field
-    
+
     We’ve introduced the `overall_induction_start_date` field to show when an early career teacher (ECT) officially began their induction, as recorded by their appropriate body. Each ECT will only ever have one induction start date. 
     This field will not be populated over the API until the appropriate body has submitted the induction start date. This may sometimes be after an ECT would be expected to start training. 
-    
+
     #### Why we’ve made this change 
-    
+
     Lead providers requested this field to help:
-    
+
     * confirm when induction has officially started
     * improve onboarding and schedule accuracy
     * identify transfers or ECTs with previous training history 
-   
+
     ### TRN validated field removed
-    
+
     The `trn_validated` field is no longer needed because every participant now needs a validated TRN checked with our records to be registered on the ‘Register ECTs’ service.
 
     ### Default schedule logic updated
-    
-    We’ve introduced a new approach for setting default schedules for participants. 
-    
+
+    We’ve introduced a new approach for setting default schedules for participants.
+
     For ECTs, default schedules will be based on school-provided start dates or when they were registered.
-    
-    For mentors, the logic will relate to: 
-    
-    * when we expect the mentor to start 
-    * if they’re identified by the service as a replacement mentor 
-    
-    Existing records migrated from ‘Manage training for early career teachers’ will keep their current schedules. 
-    
+
+    For mentors, the logic will relate to:
+
+    * when we expect the mentor to start
+    * if they’re identified by the service as a replacement mentor
+
+    Existing records migrated from ‘Manage training for early career teachers’ will keep their current schedules.
+
     #### Why we’ve made this change
-    
+
     Lead providers requested this change to help:
-    
+
     * reduce manual scheduling effort
     * automatically align new participants with realistic start times
-    
+
     ### Additional participant status logic
-    
+
     We’ve expanded how the `participant_status` field behaves so that is now shows providers:
-    
+
     * if a participant has been reassigned to a different lead provider
     * if a participant has had their programme type changed to `school-led`
-    
-    If either value changes after a partnership has been formed, the participant will appear as `left` in the `GET /participants` and `GET /participants/{id}` responses. 
+
+    If either value changes after a partnership has been formed, the participant will appear as `left` in the `GET /participants` and `GET /participants/{id}` responses.
     This ensures they no longer disappear unexpectedly.
-    
+
     #### Why we’ve made this change
-    
+
     Previously, changing lead provider or programme type caused participants to vanish from the API. 
-    
+
     This update improves data continuity and helps providers offboard correctly.
-    
+
     ### Participant visibility updated 
     We’ve changed the logic for which participants are shown to lead providers. 
-    
+
     Providers will now see any participant where both:
-    
+
     * a school has stated at some point they’re the lead provider for that participant
     * a lead provider has either submitted a partnership or it’s been rolled over from a previous cohort by the school 
-    
+
     This includes participants who later:
-    
+
     * change lead provider or programme type
     * leave the school
-    
+
     #### Why we’ve made this change
-    
+
     Previously participants could disappear when partnerships changed.
-    
+
     This update:
-    
+
     * improves visibility and offboarding processes
-    * ensures data security when multiple partnerships exist for the same school   
+    * ensures data security when multiple partnerships exist for the same school 
 
     ### We’ve removed the `withdrawn` attribute from `participant_status`   
-    
+
     To simplify the data model and remove confusion, we’ve decided not to support the `withdrawn` attribute in the `participant_status` field. 
-    
+
     Participants marked as `withdrawn` with no declarations will have their induction records removed. This allows them to be registered correctly at another school.
-    
+
     Participants marked as `withdrawn` with declarations will be corrected to `left` to reflect valid, billable records.
-    
+
     In some cases, participants that were previously visible to lead providers will be removed. These records were created in error and should not have been shared.
-    
+
     We’ll contact affected providers in advance when we make these changes. 
-    
+
     Going forward, if a school reports a participant was registered in error:
-    
+
     * we'll remove the record
-    * providers will be notified so they understand why the participant no longer appears in their data  
-    
+    * providers will be notified so they understand why the participant no longer appears in their data 
+
     #### Why we’ve made this change
-    
+
     The withdrawn status was rarely used correctly and often caused confusion for lead providers and schools.
-    
+
     Removing it improves:
-    
+
     * data quality by ensuring only valid participant records are visible
     * clarity by replacing ambiguous `withdrawn` statuses with more accurate `left` records
     * future consistency by making sure new registrations and API responses are cleaner and easier to interpret 
-    
+
     ### ECTs yet to start at a school shown as `joining`
-    
+
     The `participant_status` field will show as `joining` for ECTs whose school start date is in the future, regardless of whether it's their first school or not.
-    
+
     #### Why we’ve made this change
-    
+
     We’ve made this change to give lead providers more accurate, easier-to-understand data through the API.
-    
+
     ### Updated sparsity uplift and pupil premium attributes
-    
+
     Sparsity uplift and pupil premium for mentors will now just show as `false`, rather than a mix of `true` or `false`.  
-    
+
     #### Why we’ve made this change
-    
+
     This uplift is no longer applied to mentors. 
-    
+
     ### More filter options
-    
+
     `GET /participants` can now be filtered by multiple cohorts at once, not just one.
-    
+
     #### Why we’ve made this change
-    
+
     It has the dual benefit of giving more functionality for lead providers and simplifying the endpoint build for us.  
 
-- title: Partnerships endpoints now in sandbox for testing   
+- title: Partnerships endpoints now in sandbox for testing
   date: 2025-09-26
-  tags: 
-    - sandbox-release 
-    - new-field 
+  tags:
+    - sandbox-release
+    - new-field
     - removed-field
   body: |
     We’ve added the partnerships endpoints to the [‘Register early career teachers’ API sandbox](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3):
-    
+
     * `GET /partnerships` to retrieve multiple partnerships
     * `GET /partnerships/{id}` to retrieve an individual partnership
     * `POST /partnerships` to create a partnership
     * `PUT /partnerships/{id}` to update a partnership
-    
+
     Read our [partnerships guidance](/api/guidance/guidance-for-lead-providers/create-view-and-update-partnerships) for more detailed information.
 
-    ## What’s changed from the existing ‘Manage training for early career teachers’ API?  
-    
-    ### Challenge fields removed 
-    
-    Because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership, we’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses. 
+    ## What’s changed from the existing ‘Manage training for early career teachers’ API?
 
-    ### Providers can now see the number of ECTs or mentors currently training with them for a given partnership 
-    
-    We’ve added the numeric `participants_currently_training` field in the `GET /partnerships` endpoint. It shows lead providers whether any ECTs or mentors are currently training with them in a partnership.  
-    
-    ### New expression of interest field 
-    
+    ### Challenge fields removed
+
+    Because schools now make changes at an individual participant level (for example, moving an ECT to a different provider) rather than challenging a school-wide partnership, we’ve removed challenge fields (`challenged_reason`, `challenged_at`, `status`) from partnership responses.
+
+    ### Providers can now see the number of ECTs or mentors currently training with them for a given partnership
+
+    We’ve added the numeric `participants_currently_training` field in the `GET /partnerships` endpoint. It shows lead providers whether any ECTs or mentors are currently training with them in a partnership.
+
+    ### New expression of interest field
+
     We’ve introduced the `expression_of_interest` field in the `GET /schools` and `GET /schools/{id}` endpoints to show lead providers whether a school has any participants registered with them for that cohort. This should help lead providers create partnerships with schools that have stated they're training with them.
-    
-    The attribute holds one of 2 possible response values, `true` or `false`. 
+
+    The attribute holds one of 2 possible response values, `true` or `false`.
 
     If a school has expressed interest but no partnership exists, creating one lets the lead provider see the school’s registered participants in the API.
-    
-    ### Multiple partnerships may appear 
-    
-    Previously, schools had a default partnership with a single lead provider for each cohort. 
-    
-    We’ve changed this to reflect that some schools need to set up partnerships with more than one lead provider. 
-    
-    In the API: 
-    
-    * `GET /partnerships` may return more than one partnership for the same school and cohort 
-    * the `in_partnership` field will state `true` if any partnership exists and `false` if none exist 
-    
-    ### Earlier partnership submissions allowed 
-    
-    Lead providers can create a partnership even if the school hasn’t registered participants. The only exceptions are when the cohort has not opened, or the school is doing school-led training. 
+
+    ### Multiple partnerships may appear
+
+    Previously, schools had a default partnership with a single lead provider for each cohort.
+
+    We’ve changed this to reflect that some schools need to set up partnerships with more than one lead provider.
+
+    In the API:
+
+    * `GET /partnerships` may return more than one partnership for the same school and cohort
+    * the `in_partnership` field will state `true` if any partnership exists and `false` if none exist
+
+    ### Earlier partnership submissions allowed
+
+    Lead providers can create a partnership even if the school hasn’t registered participants. The only exceptions are when the cohort has not opened, or the school is doing school-led training.
 
 
-- title: Schools endpoints now in sandbox for testing  
+- title: Schools endpoints now in sandbox for testing
   date: 2025-08-13
   tags:
     - sandbox-release
   body: |
-    We’ve added the `GET /api/v3/schools` and `GET /api/v3/schools/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3). 
+    We’ve added the `GET /api/v3/schools` and `GET /api/v3/schools/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
 
-    ### New `expression_of_interest` field 
+    ### New `expression_of_interest` field
 
-    Shows as `true` when at least one participant for that cohort is registered with you as the lead provider. Once a partnership is confirmed, it remains `true` even if all participants later leave that school, change lead provider or change to `school-led` training. 
+    Shows as `true` when at least one participant for that cohort is registered with you as the lead provider. Once a partnership is confirmed, it remains `true` even if all participants later leave that school, change lead provider or change to `school-led` training.
 
-    ### Updated `induction_programme_choice` logic 
+    ### Updated `induction_programme_choice` logic
 
-    Now shows `provider-led` if any participant in the cohort is on provider-led training. Shows `school-led` if all participants for that cohort are registered for `school-led` training for the school. Shows `not_yet_known` if no participants have been registered by the school yet. 
+    Now shows `provider-led` if any participant in the cohort is on provider-led training. Shows `school-led` if all participants for that cohort are registered for `school-led` training for the school. Shows `not_yet_known` if no participants have been registered by the school yet.
 
-    ### Updated `in_partnership` logic 
+    ### Updated `in_partnership` logic
 
-    Now `true` when at least one partnership exists for the school and cohort, and `false` when none exist. We also now allow multiple partnerships per cohort between different lead providers. However, we'll only allow a lead provider to create one partnership per cohort with a school each for our initial release. 
+    Now `true` when at least one partnership exists for the school and cohort, and `false` when none exist. We also now allow multiple partnerships per cohort between different lead providers. However, we'll only allow a lead provider to create one partnership per cohort with a school each for our initial release.
 
-- title: Delivery partner details available in API sandbox 
+- title: Delivery partner details available in API sandbox
   date: 2025-08-12
   tags:
     - sandbox-release
   body: |
    Lead providers can now view delivery partner details for their schools via `GET /api/v3/delivery-partners` and `GET /api/v3/delivery-partners/{id}` endpoints in the ['Register early career teachers' v3 API test (sandbox) environment](https://sandbox.register-early-career-teachers.education.gov.uk/api/docs/v3).
-  
+
    There are no changes to the functionality compared to the delivery partner endpoints in the ‘Manage training for early career teachers’ API.
-  
-   Note that: 
-  
+
+   Note that:
+
    * lead providers will only see delivery partners who they’ve got a partnership with
-   * updates, name changes, or removals from a cohort appear in the endpoints 
-   * delivery partner IDs follow the ECF1 format 
+   * updates, name changes, or removals from a cohort appear in the endpoints
+   * delivery partner IDs follow the ECF1 format
 
 - title: View financial statements in test environment
   date: 2025-06-23
