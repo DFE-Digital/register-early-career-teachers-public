@@ -94,6 +94,7 @@ module ApplicationHelper
   end
 
   def format_uuid(uuid)
-    tag.code(uuid, class: "govuk-!-margin-0")
+    # tag.code(uuid, class: "app-code")
+    content_tag(:code, uuid, class: "app-code") }
   end
 end

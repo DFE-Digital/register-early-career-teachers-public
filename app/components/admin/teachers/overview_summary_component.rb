@@ -71,7 +71,8 @@ module Admin
       end
 
       def api_participant_id_row
-        { key: "API participant ID", value: content_tag(:code, teacher.api_participant_id, class: "app-code") }
+        # { key: "API participant ID", value: content_tag(:code, teacher.api_participant_id, class: "app-code") }
+        { key: "API participant ID", value: format_uuid(teacher.api_participant_id) }
       end
 
       def current_school_value
