@@ -1,10 +1,9 @@
 class ECF2TeacherHistory::ECTAtSchoolPeriod
   attr_reader :school,
-              :appropriate_body,
               :mentorship_periods,
               :training_periods
 
-  attr_accessor :created_at, :email, :started_on, :finished_on
+  attr_accessor :created_at, :email, :started_on, :finished_on, :appropriate_body
 
   def initialize(started_on:,
                  finished_on:,
