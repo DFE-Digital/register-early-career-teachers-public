@@ -1,6 +1,7 @@
 module Schools
   class RegisterECTWizardController < SchoolsController
     include Schools::InductionRedirectable
+    include WizardStoreRescuable
 
     before_action :redirect_if_blocked_from_registering_new_ects
     before_action :initialize_wizard, only: %i[new create]
