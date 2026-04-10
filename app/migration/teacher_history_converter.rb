@@ -138,7 +138,9 @@ private
       trs_induction_completed_date: ecf1_teacher_history.ect&.induction_completion_date,
       created_at: ecf1_teacher_history.user.created_at,
       updated_at: ecf1_teacher_history.user.updated_at,
-      api_unfunded_mentor_updated_at: ecf1_teacher_history.user.updated_at
+      api_unfunded_mentor_updated_at: ecf1_teacher_history.user.updated_at,
+      ect_first_became_eligible_for_training_at: ecf1_teacher_history.ect&.created_at,
+      mentor_first_became_eligible_for_training_at: ecf1_teacher_history.mentor&.created_at
     )
   end
 
