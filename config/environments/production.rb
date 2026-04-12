@@ -44,7 +44,19 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
-  config.ssl_options = { redirect: { exclude: ->(request) { request.path.include?("/healthcheck") } } }
+  config.ssl_options = {
+    hsts: {
+      preload: false,
+      expires: 3.hours
+      # FIXME: when we're happy everything's working correctly, replace the setings above
+      #        with the ones below
+      # preload: true,
+      # expires: 1.year
+    },
+    redirect: {
+      exclude: ->(request) { request.path.start_with?("/healthcheck") },
+    },
+  }
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new($stdout)
