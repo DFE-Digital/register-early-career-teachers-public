@@ -126,12 +126,10 @@ module Schools
         contract_period = registration_contract_period
         return false unless contract_period
 
-        training_period =
-          most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
+        training_period = most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
         return false unless training_period
 
-        active_lead_provider =
-          ActiveLeadProvider.find_by(id: training_period.expression_of_interest_id)
+        active_lead_provider = ActiveLeadProvider.find_by(id: training_period.expression_of_interest_id)
         return false unless active_lead_provider
 
         ActiveLeadProvider.exists?(
@@ -165,10 +163,11 @@ module Schools
         training_period = ect.previous_training_period
         return unless training_period
         return unless training_period.training_programme == "provider_led"
-        return if training_period.expression_of_interest_id.blank?
         return if training_period.started_on > contract_period.finished_on
 
-        training_period
+        return training_period if training_period.expression_of_interest_id.present?
+
+        most_recent_school_eoi_training_period(contract_period)
       end
 
       def most_recent_school_eoi_training_period(contract_period)
