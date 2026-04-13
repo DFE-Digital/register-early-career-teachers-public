@@ -98,8 +98,8 @@ module Schools
 
         def confirmed_delivery_partner_for_contract_period(school:)
           lead_provider_partnerships_for_contract_period(school:)
-          .first
-          &.delivery_partner
+            .first
+            &.delivery_partner
         end
 
       private
