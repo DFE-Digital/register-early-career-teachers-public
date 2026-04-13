@@ -135,7 +135,11 @@ private
     return true if training_period.withdrawn_at.present?
     return true if training_period.deferred_at.present?
 
-    training_period.training_programme != convert_training_programme_name(induction_record.training_programme) ||
+    training_programme = convert_training_programme_name(induction_record.training_programme)
+
+    return false if training_programme == "school_led" && training_period.training_programme == training_programme
+
+    training_period.training_programme != training_programme ||
       training_period&.lead_provider_info != induction_record&.training_provider_info&.lead_provider_info ||
       training_period&.delivery_partner_info != induction_record&.training_provider_info&.delivery_partner_info ||
       training_period.contract_period_year != induction_record&.training_provider_info&.cohort_year
