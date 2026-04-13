@@ -74,7 +74,7 @@ module ECTAtSchoolPeriods
       @ect_at_school_period.school_led_training_programme? || @training_period.school_partnership.present?
     end
 
-    def current_training_period_confirmed? = keep_existing_training_period?
+    def current_or_next_training_period_confirmed? = keep_existing_training_period?
 
     def training_not_started?
       @training_period.started_on.today? || date_of_transition.future?

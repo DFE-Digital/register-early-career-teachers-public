@@ -34,16 +34,9 @@ module Schools
           self.lead_provider_id = store.lead_provider_id
         end
 
-        def contract_period
-          if contract_period_reassignment_required?
-            successor_contract_period
-          else
-            super
-          end
-        end
-
         def period = ect_at_school_period
         def reuse_existing_schedule? = false
+        def current_or_next_training_period_confirmed? = true
         def date_of_transition = period.started_on
       end
     end
