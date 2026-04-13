@@ -1,45 +1,45 @@
 production:
-  send_entity_table_checks_to_bigquery:
-    class: DfE::Analytics::EntityTableCheckJob
-    queue: dfe_analytics
-    schedule: Every day at 00:30
+  # send_entity_table_checks_to_bigquery:
+  #   class: DfE::Analytics::EntityTableCheckJob
+  #   queue: dfe_analytics
+  #   schedule: Every day at 00:30
 
-  purge_pending_induction_submissions:
-    class: PurgePendingInductionSubmissionsJob
-    queue: default
-    schedule: Every hour
+  # purge_pending_induction_submissions:
+  #   class: PurgePendingInductionSubmissionsJob
+  #   queue: default
+  #   schedule: Every hour
 
-  schedule_trs_sync:
-    class: Teachers::ScheduleTRSSyncJob
-    queue: default
-    schedule: Every minute
+  # schedule_trs_sync:
+  #   class: Teachers::ScheduleTRSSyncJob
+  #   queue: default
+  #   schedule: Every minute
 
-  clear_solid_queue_finished_jobs:
-    command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
-    schedule: every hour at minute 12
+  # clear_solid_queue_finished_jobs:
+  #   command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
+  #   schedule: every hour at minute 12
 
-  refresh_all_metadata_job:
-    class: RefreshAllMetadataJob
-    queue: metadata
-    schedule: every day at 1am
+  # refresh_all_metadata_job:
+  #   class: RefreshAllMetadataJob
+  #   queue: metadata
+  #   schedule: every day at 1am
 
-  mark_statements_as_payable:
-    class: Statements::MarkAsPayableJob
-    queue: default
-    schedule: every day at 12am
+  # mark_statements_as_payable:
+  #   class: Statements::MarkAsPayableJob
+  #   queue: default
+  #   schedule: every day at 12am
 
-  gias_import:
-    class: GIASImportJob
-    queue: default
-    schedule: every day at 3am
+  # gias_import:
+  #   class: GIASImportJob
+  #   queue: default
+  #   schedule: every day at 3am
 
-  blazer_run_checks_1_day:
-    command: "Blazer.run_checks(schedule: '1 day')"
-    schedule: every day at 7:30am
+  # blazer_run_checks_1_day:
+  #   command: "Blazer.run_checks(schedule: '1 day')"
+  #   schedule: every day at 7:30am
 
-  blazer_send_failing_checks:
-    command: Blazer.send_failing_checks
-    schedule: every day at 8am
+  # blazer_send_failing_checks:
+  #   command: Blazer.send_failing_checks
+  #   schedule: every day at 8am
 
 sandbox:
   clear_solid_queue_finished_jobs:
