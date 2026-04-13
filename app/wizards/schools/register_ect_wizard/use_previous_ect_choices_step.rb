@@ -171,6 +171,23 @@ module Schools
       end
 
       def most_recent_school_eoi_training_period(contract_period)
+        return school_eoi_training_period_for_contract_year(contract_period) if payments_frozen_reassignment?
+
+        school_eoi_training_period_up_to(contract_period)
+      end
+
+      def school_eoi_training_period_for_contract_year(contract_period)
+        TrainingPeriod
+          .at_school(school)
+          .where(training_programme: "provider_led")
+          .where.not(expression_of_interest_id: nil)
+          .joins("INNER JOIN active_lead_providers ON active_lead_providers.id = training_periods.expression_of_interest_id")
+          .where(active_lead_providers: { contract_period_year: contract_period.year })
+          .order(started_on: :desc, id: :desc)
+          .first
+      end
+
+      def school_eoi_training_period_up_to(contract_period)
         TrainingPeriod
           .at_school(school)
           .where(training_programme: "provider_led")
