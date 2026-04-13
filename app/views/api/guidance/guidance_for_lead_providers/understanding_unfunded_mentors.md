@@ -8,7 +8,7 @@ This guidance explains:
 - how to identify an unfunded mentor
 
 ## What is an unfunded mentor?
-Unfunded mentors are mentors who are mentoring ECTs that a lead provider trains, but are not eligible for funded training through that lead provider. This is typically because they have already completed mentor training, or are currently doing so, with a different lead provider.
+Unfunded mentors are mentors who are mentoring ECTs that a lead provider trains, but whose mentor training is or was not funded through that lead provider. This is typically because they have already completed mentor training, or are currently doing so, with a different lead provider.
 
 Lead providers will be funded to give these mentors access to learning materials and platforms so that they can support ECTs they are mentoring.
 
