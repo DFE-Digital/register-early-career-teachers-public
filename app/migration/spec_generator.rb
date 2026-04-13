@@ -39,7 +39,7 @@ class SpecGenerator
         end
 
         let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-        let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+        let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
         context "when using the economy migrator" do
           let(:migration_mode) { :latest_induction_records }
@@ -237,7 +237,7 @@ private
         training_status: ir.training_status,
         preferred_identity_email: ir.preferred_identity_email,
         mentor_profile_id: ir.mentor_profile_id,
-        appropriate_body_info: ir.appropriate_body.to_h,
+        appropriate_body: ir.appropriate_body.to_h,
         training_provider_info: ir.training_provider_info.then do |tpi|
           if ir.training_programme == "full_induction_programme" && tpi.present?
             {
