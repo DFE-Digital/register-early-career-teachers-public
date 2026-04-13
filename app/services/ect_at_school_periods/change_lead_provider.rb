@@ -26,13 +26,9 @@ module ECTAtSchoolPeriods
     end
 
     def track_payments_frozen_year!
-      return unless contract_period_reassignment_required? && training_period_confirmed?
+      return unless confirmed_training_reassignment_required?
 
       teacher.update!(ect_payments_frozen_year: previous_contract_period.year)
-    end
-
-    def contract_period_reassignment_required?
-      @contract_period_reassignment_required ||= contract_period_reassignment.required?
     end
   end
 end
