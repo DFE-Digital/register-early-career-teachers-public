@@ -124,11 +124,11 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
     describe "teacher rows" do
       it "lists linked ECTs with links" do
-        expect(rendered).to have_link(Teachers::Name.new(ect_period.teacher).full_name, href: admin_teacher_induction_path(ect_period.teacher))
+        expect(rendered).to have_link(Teachers::Name.new(ect_period.teacher).full_name, href: admin_teacher_path(ect_period.teacher))
       end
 
       it "lists linked mentors with links" do
-        expect(rendered).to have_link(Teachers::Name.new(mentor_period.teacher).full_name, href: admin_teacher_induction_path(mentor_period.teacher))
+        expect(rendered).to have_link(Teachers::Name.new(mentor_period.teacher).full_name, href: admin_teacher_path(mentor_period.teacher))
       end
 
       it "lists teachers alphabetically" do
@@ -154,8 +154,8 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
         finished_name = Teachers::Name.new(finished_ect_period.teacher).full_name
         future_name = Teachers::Name.new(future_mentor_period.teacher).full_name
 
-        expect(rendered).not_to have_link(finished_name, href: admin_teacher_induction_path(finished_ect_period.teacher))
-        expect(rendered).not_to have_link(future_name, href: admin_teacher_induction_path(future_mentor_period.teacher))
+        expect(rendered).not_to have_link(finished_name, href: admin_teacher_path(finished_ect_period.teacher))
+        expect(rendered).not_to have_link(future_name, href: admin_teacher_path(future_mentor_period.teacher))
       end
 
       it "shows fallbacks when no teachers are linked" do

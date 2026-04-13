@@ -115,7 +115,7 @@ module Admin
         return unless teacher
 
         [
-          govuk_link_to(teacher_full_name(teacher), admin_teacher_induction_path(teacher)),
+          govuk_link_to(teacher_full_name(teacher), admin_teacher_path(teacher)),
           mentorship_period.started_on.to_fs(:govuk),
           mentorship_end_date_text(mentorship_period)
         ]
