@@ -1,0 +1,4 @@
+participant_profile_id,induction_record_id,start_date,end_date,created_at,updated_at,cohort_year,school_urn,schedule_id,email,mentor_profile_id,training_status,induction_status,training_programme,lead_provider_id,lead_provider_name,delivery_partner_id,delivery_partner_name,appropriate_body_id,school_transfer,state_type,state_reason,state_cpd_lead_provider_id,state_created_at
+"91f69d37-deec-473e-a150-b939c0b9fd97","89b2626c-ee4c-49a9-af8e-2fd933e5d3f0","2024-09-01",,,,,,,,,,,,,,,,,,,,,
+"bf0415d1-948a-444f-a5f9-23661f8db6ce",,,,,,,,,,,,,,,,,,,,,,,
+"8237fd2e-2c3c-4daa-a5d7-2bab689e66a7",,,,,,,,,,,,,,,,,,,,,,,
