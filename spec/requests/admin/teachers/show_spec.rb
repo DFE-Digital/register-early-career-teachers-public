@@ -70,6 +70,20 @@ RSpec.describe "Admin::Teachers#show", type: :request do
   end
 
   describe "GET /admin/teachers/:id" do
+    it "redirects to sign in path" do
+      get admin_teacher_path(teacher)
+      expect(response).to redirect_to(sign_in_path)
+    end
+
+    context "with an authenticated non-DfE user" do
+      include_context "sign in as non-DfE user"
+
+      it "requires authorisation" do
+        get admin_teacher_path(teacher)
+        expect(response.status).to eq(401)
+      end
+    end
+
     context "with an authenticated DfE user" do
       include_context "sign in as DfE user"
 
