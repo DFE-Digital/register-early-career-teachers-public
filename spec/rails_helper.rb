@@ -39,9 +39,15 @@ RSpec.configure do |config|
     allow(Rails.application.config).to receive(:enable_schools_interface).and_return(true)
   end
 
-  # RIAB: new data model
   config.before do
+    # RIAB: new data model
     allow(Rails.application.config).to receive(:enable_teaching_school_hubs).and_return(true)
+
+    # Banners
+    allow(Rails.application.config).to receive_messages(
+      enable_maintenance_banner: false,
+      enable_incident_banner: false
+    )
   end
 
   config.around do |example|
