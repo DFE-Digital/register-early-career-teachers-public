@@ -368,6 +368,50 @@ RSpec.describe Schools::RegisterECTWizard::UsePreviousECTChoicesStep, type: :mod
             expect(step.reusable_partnership_id).to be_nil
           end
         end
+
+        context "and the previous training period used a confirmed partnership and the school has a recent EOI in the reassigned contract period with a start date outside the contract period range" do
+          let!(:active_lead_provider_2024) do
+            FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: reassigned_contract_period)
+          end
+
+          let!(:ect_at_school_period) do
+            FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2025, 9, 1), finished_on: nil)
+          end
+
+          let(:previous_training_period) do
+            reassignable_provider_led_training_period(
+              step,
+              contract_period: frozen_contract_period,
+              expression_of_interest_id: nil
+            )
+          end
+
+          before do
+            FactoryBot.create(
+              :training_period,
+              ect_at_school_period:,
+              training_programme: "provider_led",
+              expression_of_interest: active_lead_provider_2024,
+              school_partnership: nil,
+              started_on: Date.new(2025, 9, 1),
+              finished_on: nil
+            )
+
+            reassigned_registration_contract_period(
+              step,
+              contract_period: reassigned_contract_period,
+              previous_training_period:
+            )
+          end
+
+          it "is allowed via school EOI fallback" do
+            expect(step.allowed?).to be(true)
+          end
+
+          it "has no reusable partnership id" do
+            expect(step.reusable_partnership_id).to be_nil
+          end
+        end
       end
 
       context "and no partnership is reusable but a previous EOI exists and the LP is available in the registration contract period" do
