@@ -182,7 +182,7 @@ module Schools
           .where(training_programme: "provider_led")
           .where.not(expression_of_interest_id: nil)
           .joins("INNER JOIN active_lead_providers ON active_lead_providers.id = training_periods.expression_of_interest_id")
-          .where(active_lead_providers: { contract_period_year: contract_period.year })
+          .where(active_lead_providers: { contract_period_year: contract_period.year, lead_provider: school.last_chosen_lead_provider })
           .order(started_on: :desc, id: :desc)
           .first
       end
@@ -193,6 +193,8 @@ module Schools
           .where(training_programme: "provider_led")
           .where.not(expression_of_interest_id: nil)
           .where("training_periods.started_on <= ?", contract_period.finished_on)
+          .joins("INNER JOIN active_lead_providers ON active_lead_providers.id = training_periods.expression_of_interest_id")
+          .where(active_lead_providers: { lead_provider: school.last_chosen_lead_provider })
           .order(started_on: :desc, id: :desc)
           .first
       end
