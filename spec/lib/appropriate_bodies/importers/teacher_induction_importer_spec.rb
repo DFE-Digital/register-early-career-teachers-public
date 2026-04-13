@@ -1,8 +1,4 @@
 RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
-  def ci?
-    ActiveModel::Type::Boolean.new.cast(ENV.fetch("CI", false))
-  end
-
   subject(:induction_importer) do
     described_class.new(
       teachers_csv:,
@@ -101,7 +97,7 @@ RSpec.describe AppropriateBodies::Importers::TeacherInductionImporter do
     let(:induction_period_csv) { Rails.root.join("tmp/import/inductionperiods.csv") }
 
     it "imports expected data", :aggregate_failures do
-      skip "Skip testing CSVs in the pipeline" if ci?
+      skip "Skip acceptance test without CSVs" if Rails.root.join("tmp/import").existence.nil?
 
       expect { ab_importer.import! }.not_to raise_error
 
