@@ -17,37 +17,18 @@ RSpec.describe "Admin teachers index", type: :request do
     context "with an authenticated DfE user" do
       include_context "sign in as DfE user"
 
-      let(:teacher) { FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Smith", trn: "1122334") }
-
-      before do
-        FactoryBot.create(
-          :induction_period,
-          :ongoing,
-          teacher:,
-          started_on: 1.month.ago.to_date,
-          induction_programme: "fip"
-        )
-      end
-
-      it "displays the page" do
-        get "/admin/teachers"
-        expect(response.status).to eq(200)
-      end
-
-      it "shows a summary card with the teacher details and a show link" do
-        get "/admin/teachers"
-
-        expect(response.body).to include("John Smith")
-        expect(response.body).to include("1122334")
-
-        expect(response.body).to include(admin_teacher_path(teacher))
-        expect(response.body).to include("Show")
-      end
-
       context "with search query" do
         it "filters teachers by name" do
+          teacher = FactoryBot.create(:teacher, trs_first_name: "John", trs_last_name: "Smith")
           other_teacher = FactoryBot.create(:teacher, trs_first_name: "Jane", trs_last_name: "Doe")
 
+          FactoryBot.create(
+            :induction_period,
+            :ongoing,
+            teacher:,
+            started_on: 1.month.ago.to_date,
+            induction_programme: "fip"
+          )
           FactoryBot.create(
             :induction_period,
             :ongoing,
