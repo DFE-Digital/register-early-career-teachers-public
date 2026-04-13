@@ -39,7 +39,7 @@ module Admin
         period_type = role == :ect ? :ect_at_school_period : :mentor_at_school_period
 
         teachers_for(school_partnership.training_periods, period_type)
-          .map { |teacher| govuk_link_to(teacher_full_name(teacher), admin_teacher_path(teacher)) }
+          .map { |teacher| govuk_link_to(teacher_full_name(teacher), admin_teacher_induction_path(teacher)) }
       end
 
       def teachers_for(training_periods, period_type)
