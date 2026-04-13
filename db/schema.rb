@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_07_110223) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -650,6 +650,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_07_110223) do
     t.datetime "updated_at", null: false
     t.bigint "endpoint_id"
     t.enum "state", default: "pending", null: false, enum_type: "parity_check_request_states"
+    t.decimal "rect_performance_gain_ratio", precision: 6, scale: 1
     t.index ["endpoint_id"], name: "index_parity_check_requests_on_endpoint_id"
     t.index ["lead_provider_id"], name: "index_parity_check_requests_on_lead_provider_id"
     t.index ["run_id"], name: "index_parity_check_requests_on_run_id"
@@ -670,6 +671,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_07_110223) do
     t.string "rect_request_uri"
     t.jsonb "request_body"
     t.integer "match_rate", default: 0, null: false
+    t.decimal "rect_performance_gain_ratio", precision: 6, scale: 1
     t.index ["request_id", "page"], name: "index_parity_check_responses_on_request_id_and_page", unique: true
     t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
   end

@@ -8,6 +8,7 @@ module ParityCheck
 
     before_validation :clear_bodies, if: :bodies_matching?
     before_validation :calculate_match_rate
+    before_validation :calculate_rect_performance_gain_ratio
 
     validates :request, presence: true
     validates :ecf_status_code, inclusion: { in: 100..599 }
@@ -23,14 +24,6 @@ module ParityCheck
     scope :matching, -> { status_codes_matching.bodies_matching }
     scope :different, -> { status_codes_different.or(bodies_different) }
     scope :ordered_by_page, -> { order(:page) }
-
-    def rect_performance_gain_ratio
-      return unless ecf_time_ms && rect_time_ms
-
-      ratio = ecf_time_ms.to_f / rect_time_ms
-
-      (ratio < 1 ? -(1 / ratio) : ratio).round(1)
-    end
 
     def matching?
       !different?
@@ -118,6 +111,14 @@ module ParityCheck
 
       self.match_rate =
         (100 * (1 - diff_lines.to_f / total_lines)).floor
+    end
+
+    def calculate_rect_performance_gain_ratio
+      return unless ecf_time_ms && rect_time_ms
+
+      ratio = ecf_time_ms.to_f / rect_time_ms
+
+      self.rect_performance_gain_ratio = (ratio < 1 ? -(1 / ratio) : ratio).round(1)
     end
 
     def format_body(body)
