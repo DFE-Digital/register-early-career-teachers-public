@@ -64,7 +64,7 @@ RSpec.describe Admin::Schools::TeachersTableComponent, type: :component do
     shared_examples "row" do |contract_period_year|
       subject { page.find "tr", text: teacher.trn }
 
-      it { is_expected.to have_link(Teachers::Name.new(teacher).full_name, href: admin_teacher_path(teacher)) }
+      it { is_expected.to have_link(Teachers::Name.new(teacher).full_name, href: admin_teacher_induction_path(teacher)) }
       it { is_expected.to have_css("td", text: Teachers::Role.new(teacher:).to_s) }
       it { is_expected.to have_css("td", text: contract_period_year) }
     end
