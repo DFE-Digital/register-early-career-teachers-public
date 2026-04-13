@@ -212,6 +212,23 @@ RSpec.describe Statements::DeclarationSelection do
     end
   end
 
+  context "when the statement contains voided declarations" do
+    let!(:voided_declaration) do
+      FactoryBot.create(
+        :declaration,
+        **default_declaration_attrs.merge(
+          payment_statement: statement,
+          payment_status: :voided
+        ),
+        training_period: FactoryBot.create(:training_period, :for_ect, :ongoing, **default_training_period_attrs)
+      )
+    end
+
+    it "includes voided declarations counted on this statement" do
+      expect(selected_declaration_ids).to include(voided_declaration.id)
+    end
+  end
+
   context "when resolver returns a flat rate calculator" do
     let(:flat_rate_calculator) do
       PaymentCalculator::FlatRate.new(
@@ -288,12 +305,25 @@ RSpec.describe Statements::DeclarationSelection do
         training_period: FactoryBot.create(:training_period, :for_ect, :ongoing, **default_training_period_attrs)
       )
     end
+    let!(:voided_declaration) do
+      FactoryBot.create(
+        :declaration,
+        **default_declaration_attrs.merge(
+          payment_statement: statement,
+          payment_status: :voided,
+          declaration_date: base_declaration_date + 4.days,
+          created_at: base_declaration_date + 4.days
+        ),
+        training_period: FactoryBot.create(:training_period, :for_ect, :ongoing, **default_training_period_attrs)
+      )
+    end
 
     it "includes only started/completed declarations across current billable and current refundable sets in order" do
       expect(selected_declaration_ids).to eq([
         started_billable_declaration.id,
         completed_billable_declaration.id,
         started_refundable_declaration.id,
+        voided_declaration.id,
       ])
     end
   end
