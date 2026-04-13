@@ -272,3 +272,7 @@ shared:
     - milestone_date
     - created_at
     - updated_at
+  :contracts:
+    - id
+    - contract_type
+    - active_lead_provider_id
