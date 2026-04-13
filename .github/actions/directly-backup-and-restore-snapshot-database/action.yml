@@ -81,7 +81,10 @@ runs:
 
     - name: Restore snapshot database
       shell: bash
-      run: bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 cpd-ec2-${{ inputs.environment }}-web -- psql
+      run: |
+        bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -t 360 -x ${{ inputs.app-name }} -- psql -c "drop schema public cascade; create schema public;"
+
+        bin/konduit.sh -n ${{ env.NAMESPACE }} -d s189p01-cpdec2-pd-pg-snapshot -k s189p01-cpdec2-pd-inf-kv -i backup-${{ inputs.environment }}.sql.gz -c -t 7200 -x ${{ inputs.app-name }} -- psql
 
     - name: Summary
       if: success()
