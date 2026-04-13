@@ -1,6 +1,10 @@
 describe "ECT with multiple withdrawals" do
   subject(:teacher) { Teacher.find_by(trn:) }
 
+  around do |example|
+    travel_to(Date.new(2026, 4, 12)) { example.run }
+  end
+
   # ECF1 data
 
   let(:ecf1_cohort) { FactoryBot.create(:migration_cohort, start_year: 2024) }
