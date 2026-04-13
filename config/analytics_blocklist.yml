@@ -468,10 +468,7 @@
   - created_at
   - updated_at
   :contracts:
-  - id
-  - contract_type
   - vat_rate
-  - active_lead_provider_id
   - flat_rate_fee_structure_id
   - banded_fee_structure_id
   - ecf_contract_version
