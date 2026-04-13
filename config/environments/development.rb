@@ -32,6 +32,16 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+  config.session_store(
+    :redis_session_store,
+    serializer: :json,
+    redis: {
+      expire_after: ENV.fetch("MAX_SESSION_IDLE_TIME", 7200.seconds).to_i,
+      key_prefix: "_ecf2_session:",
+      url: ENV.fetch("REDIS_CACHE_URL")
+    }
+  )
+
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
