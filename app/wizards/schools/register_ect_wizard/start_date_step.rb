@@ -5,6 +5,7 @@ module Schools
 
       validates :start_date, ect_start_date: true
       validate :start_date_not_before_previous_school
+      validate :start_date_not_before_last_training_period
       validate :start_date_within_4_months, if: :currently_ect_at_another_school?
 
       def self.permitted_params
@@ -26,18 +27,36 @@ module Schools
     private
 
       def start_date_not_before_previous_school
+        start_date_before(previous_period, "teaching")
+      end
+
+      def start_date_not_before_last_training_period
+        start_date_before(latest_training_period, "their latest training")
+      end
+
+      def start_date_before(period, description)
         return if skip_start_date_validation?
 
-        previous_period = ect.previous_ect_at_school_period
-        return unless previous_start_date_invalid?(previous_period)
+        return unless previous_start_date_invalid?(period)
 
-        if start_date_as_date <= previous_period.started_on
-          add_start_date_too_early_error(previous_period)
+        if start_date_as_date <= period.started_on
+          errors.add(
+          :start_date,
+          "Our records show that #{wizard.ect.full_name} started #{description} at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
+        )
         end
       end
 
       def currently_ect_at_another_school?
-        ect.previously_registered? && ect.previous_ect_at_school_period.ongoing?
+        ect.previously_registered? && previous_period.ongoing?
+      end
+
+      def previous_period
+        ect.previous_ect_at_school_period
+      end
+
+      def latest_training_period
+        previous_period&.training_periods&.latest_first&.first
       end
 
       def start_date_within_4_months
@@ -62,12 +81,12 @@ module Schools
         period&.started_on.present?
       end
 
-      def add_start_date_too_early_error(period)
-        errors.add(
-          :start_date,
-          "Our records show that #{wizard.ect.full_name} started teaching at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
-        )
-      end
+      # def add_start_date_too_early_error(period, message)
+      #   errors.add(
+      #     :start_date,
+      #     "Our records show that #{wizard.ect.full_name} started #{message} at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
+      #   )
+      # end
 
       def skip_start_date_validation?
         start_date.blank? || errors[:start_date].any?
