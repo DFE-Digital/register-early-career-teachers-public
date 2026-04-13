@@ -1,14 +1,8 @@
-RSpec.describe "errors/internal_server_error.html.erb" do
-  before { render }
-
-  it "displays both support contact links" do
-    expect(rendered).to have_link(
-      "teacher.induction@education.gov.uk",
-      href: "mailto:teacher.induction@education.gov.uk",
-    )
-    expect(rendered).to have_link(
-      "continuing-professional-development@digital.education.gov.uk",
-      href: "mailto:continuing-professional-development@digital.education.gov.uk",
-    )
-  end
+it "displays support email" do
+  expect(rendered).to have_link(
+    "teacher.induction@education.gov.uk", href: "mailto:teacher.induction@education.gov.uk"
+  )
+  expect(rendered).to have_link(
+    "continuing-professional-development@digital.education.gov.uk", href: "mailto:continuing-professional-development@digital.education.gov.uk",
+  )
 end
