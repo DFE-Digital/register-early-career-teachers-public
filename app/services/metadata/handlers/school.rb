@@ -20,7 +20,7 @@ module Metadata::Handlers
   private
 
     def upsert_contract_period_metadata!
-      changes_to_upsert = contract_period_years.each_with_object({}) do |contract_period_year, hash|
+      contract_period_years.each do |contract_period_year|
         metadata = existing_contract_period_metadata[contract_period_year] ||
           Metadata::SchoolContractPeriod.new(school:, contract_period_year:)
 
@@ -31,14 +31,12 @@ module Metadata::Handlers
           induction_programme_choice: school.training_programme_for(contract_period_year)
         }
 
-        hash[metadata] = changes if changes?(metadata, changes)
+        commit_changes!(metadata, changes)
       end
-
-      upsert_all(model: Metadata::SchoolContractPeriod, changes_to_upsert:, unique_by: %i[school_id contract_period_year])
     end
 
     def upsert_lead_provider_contract_period_metadata!
-      changes_to_upsert = lead_provider_id_contract_period_years.each_with_object({}) do |(lead_provider_id, contract_period_year), hash|
+      lead_provider_id_contract_period_years.each do |lead_provider_id, contract_period_year|
         metadata = existing_lead_provider_contract_period_metadata[[lead_provider_id, contract_period_year]] ||
           Metadata::SchoolLeadProviderContractPeriod.new(school:, lead_provider_id:, contract_period_year:)
 
@@ -51,10 +49,8 @@ module Metadata::Handlers
           expression_of_interest_or_school_partnership:
         }
 
-        hash[metadata] = changes if changes?(metadata, changes)
+        commit_changes!(metadata, changes)
       end
-
-      upsert_all(model: Metadata::SchoolLeadProviderContractPeriod, changes_to_upsert:, unique_by: %i[school_id lead_provider_id contract_period_year])
     end
 
     def expression_of_interest_or_school_partnership_pairings
