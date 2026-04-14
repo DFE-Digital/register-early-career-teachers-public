@@ -67,6 +67,7 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
 
     it_behaves_like "a token authenticated endpoint", :post
     it_behaves_like "an API create endpoint"
+    it_behaves_like "an endpoint that refreshes metadata", :post
   end
 
   describe "#update" do
@@ -98,5 +99,6 @@ RSpec.describe "Partnerships API", :with_touches, type: :request do
 
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
+    it_behaves_like "an endpoint that refreshes metadata", :put
   end
 end
