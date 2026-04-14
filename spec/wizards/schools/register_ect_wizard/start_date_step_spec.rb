@@ -162,6 +162,63 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         it { is_expected.to have_error(:start_date, "Enter the date the ECT started or will start teaching at your school") }
       end
     end
+
+    describe "start date must be after previous training period started_on date" do
+      let(:school) do
+        FactoryBot.create(:school).tap do |school|
+          school.gias_school.update!(name: "Springfield Primary")
+        end
+      end
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      let!(:previous_period) do
+        FactoryBot.create(:ect_at_school_period,
+                          teacher:,
+                          school:,
+                          started_on: Date.new(2024, 9, 1))
+      end
+
+      let!(:training_period) do
+        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: previous_period, started_on: Date.new(2024, 10, 1))
+      end
+
+      let(:wizard) do
+        FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:).tap do |instance|
+          allow(instance).to receive(:ect).and_return(
+            Schools::RegisterECTWizard::RegistrationStore.new(store).tap do |registration_store|
+              allow(registration_store).to receive_messages(trs_first_name: "Johnnie", trs_last_name: "Walker")
+            end
+          )
+        end
+      end
+
+      let(:start_date_too_early_message) { "Our records show that Johnnie Walker started their latest training at Springfield Primary on 1 October 2024. Enter a later start date." }
+
+      context "when the start_date is before the previous training period started_on date" do
+        let(:start_date) { training_period.started_on - 1.day }
+
+        it { is_expected.to have_error(:start_date, start_date_too_early_message) }
+      end
+
+      context "when the start_date is on the previous training period started_on date" do
+        let(:start_date) { training_period.started_on }
+
+        it { is_expected.to have_error(:start_date, start_date_too_early_message) }
+      end
+
+      context "when the start_date is after the previous training period started_on date" do
+        let(:start_date) { training_period.started_on + 1.day }
+
+        it { is_expected.not_to have_error(:start_date) }
+      end
+
+      context "when the start_date is blank" do
+        let(:start_date) { nil }
+
+        it { is_expected.to have_error(:start_date, "Enter the date the ECT started or will start teaching at your school") }
+      end
+    end
   end
 
   describe "#next_step" do

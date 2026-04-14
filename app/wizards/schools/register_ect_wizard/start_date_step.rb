@@ -41,9 +41,9 @@ module Schools
 
         if start_date_as_date <= period.started_on
           errors.add(
-          :start_date,
-          "Our records show that #{wizard.ect.full_name} started #{description} at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
-        )
+            :start_date,
+            "Our records show that #{wizard.ect.full_name} started #{description} at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
+          )
         end
       end
 
