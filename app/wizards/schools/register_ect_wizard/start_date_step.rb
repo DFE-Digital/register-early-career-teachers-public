@@ -81,13 +81,6 @@ module Schools
         period&.started_on.present?
       end
 
-      # def add_start_date_too_early_error(period, message)
-      #   errors.add(
-      #     :start_date,
-      #     "Our records show that #{wizard.ect.full_name} started #{message} at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
-      #   )
-      # end
-
       def skip_start_date_validation?
         start_date.blank? || errors[:start_date].any?
       end
