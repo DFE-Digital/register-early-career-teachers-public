@@ -47,10 +47,17 @@ module Metadata::Handlers
       return unless @alert_on_changes
 
       changes.each do |metadata, changed_attributes|
+        changed_attributes_with_history = changed_attributes.transform_values.with_index do |new_value, key|
+          {
+            old: metadata.attributes[key],
+            new: new_value
+          }
+        end
+
         attrs = {
           class: metadata.class.name,
           id: metadata.id,
-          changed_attributes:,
+          changed_attributes: changed_attributes_with_history,
         }
 
         Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
