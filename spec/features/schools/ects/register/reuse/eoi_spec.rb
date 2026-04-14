@@ -2,12 +2,10 @@ RSpec.describe "Registering an ECT - reuse previous EOI", :enable_schools_interf
   include_context "test TRS API returns a teacher"
   include ReusablePartnershipHelpers
 
-  around do |example|
-    travel_to(Date.new(2025, 9, 1)) { example.run }
-  end
+  before { travel_to Date.new(2025, 9, 1) }
 
-  scenario "reuses previous choices when only a previous EOI exists" do
-    given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
+  scenario "reuses previous choices when the school has a previous EOI for the last chosen LP" do
+    given_i_am_logged_in_as_a_state_funded_school_user_whose_school_has_a_previous_eoi_for_the_last_chosen_lp
     and_i_am_on_the_schools_ects_index_page
     and_i_start_adding_an_ect
     and_i_click_continue
@@ -40,9 +38,8 @@ RSpec.describe "Registering an ECT - reuse previous EOI", :enable_schools_interf
     then_i_am_on_the_confirmation_page
   end
 
-  def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
+  def given_i_am_logged_in_as_a_state_funded_school_user_whose_school_has_a_previous_eoi_for_the_last_chosen_lp
     @teacher = Teacher.find_or_create_by!(trn: "9876543")
-    @previous_school = FactoryBot.create(:school)
 
     @current_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2025)
     previous_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2024)
@@ -73,7 +70,7 @@ RSpec.describe "Registering an ECT - reuse previous EOI", :enable_schools_interf
     FactoryBot.create(:appropriate_body_period, name: @appropriate_body_name)
     FactoryBot.create(:appropriate_body_period, name: "Umber Teaching Hub")
 
-    previous_ect_at_school_period = FactoryBot.create(
+    earlier_registration_at_current_school = FactoryBot.create(
       :ect_at_school_period,
       school: @current_school,
       teacher: @teacher,
@@ -83,7 +80,7 @@ RSpec.describe "Registering an ECT - reuse previous EOI", :enable_schools_interf
 
     FactoryBot.create(
       :training_period,
-      ect_at_school_period: previous_ect_at_school_period,
+      ect_at_school_period: earlier_registration_at_current_school,
       training_programme: "provider_led",
       expression_of_interest: previous_year_active_lead_provider,
       school_partnership: nil,

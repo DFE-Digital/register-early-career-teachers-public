@@ -1,9 +1,7 @@
 RSpec.describe "Registering an ECT - closed contract period", :enable_schools_interface do
   include_context "test TRS API returns a teacher"
 
-  around do |example|
-    travel_to(Date.new(2024, 9, 1)) { example.run }
-  end
+  before { travel_to Date.new(2024, 9, 1) }
 
   scenario "reassigns a previously registered provider-led ECT from a closed contract period to 2024 using a confirmed partnership" do
     given_i_am_logged_in_as_a_state_funded_school_user_registering_an_ect_from_a_closed_contract_period
@@ -135,26 +133,14 @@ RSpec.describe "Registering an ECT - closed contract period", :enable_schools_in
   end
 
   def and_the_previous_training_period_used_a_confirmed_partnership
-    @closed_delivery_partnership = FactoryBot.create(
-      :lead_provider_delivery_partnership,
-      active_lead_provider: @closed_active_lead_provider,
-      delivery_partner: @delivery_partner
-    )
-
-    @previous_school_partnership = FactoryBot.create(
-      :school_partnership,
-      school: @previous_school,
-      lead_provider_delivery_partnership: @closed_delivery_partnership
-    )
-
     @previous_training_period = FactoryBot.create(
       :training_period,
+      :with_active_lead_provider,
       ect_at_school_period: @previous_ect_at_school_period,
       training_programme: "provider_led",
       started_on: Date.new(2022, 9, 1),
       finished_on: Date.new(2023, 7, 31),
-      school_partnership: @previous_school_partnership,
-      expression_of_interest: nil
+      active_lead_provider: @closed_active_lead_provider
     )
   end
 
