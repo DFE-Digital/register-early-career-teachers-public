@@ -36,36 +36,37 @@ module Metadata::Handlers
       metadata.attributes.slice(*changes.keys) != changes
     end
 
-    def upsert_all(model:, changes_to_upsert:, unique_by:)
-      return if changes_to_upsert.empty?
+    def commit_changes!(metadata, changes)
+      return unless changes?(metadata, changes)
 
-      model.upsert_all(changes_to_upsert.values, unique_by:)
-      alert_on_changes(changes: changes_to_upsert)
+      # As we touch other models when metadata is updated via ActiveRecord callbacks,
+      # we need to ensure this remains a method that will trigger those callbacks
+      # (rather than using something like upsert_all which would otherwise be quicker).
+      metadata.update!(changes)
+      alert_on_changes(metadata, changes)
     end
 
-    def alert_on_changes(changes:)
+    def alert_on_changes(metadata, changes)
       return unless @alert_on_changes
 
-      changes.each do |metadata, changed_attributes|
-        changed_attributes_with_history = changed_attributes.transform_values.with_index do |new_value, key|
-          {
-            old: metadata.attributes[key],
-            new: new_value
-          }
-        end
-
-        attrs = {
-          class: metadata.class.name,
-          id: metadata.id,
-          changed_attributes: changed_attributes_with_history,
+      changed_attributes_with_history = changes.transform_values.with_index do |new_value, key|
+        {
+          old: metadata.attributes[key],
+          new: new_value
         }
+      end
 
-        Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
+      attrs = {
+        class: metadata.class.name,
+        id: metadata.id,
+        changed_attributes: changed_attributes_with_history,
+      }
 
-        Sentry.with_scope do |scope|
-          scope.set_context("metadata_changes", attrs) if scope
-          Sentry.capture_message("[Metadata] #{metadata.class.name} change")
-        end
+      Rails.logger.warn("[Metadata] #{metadata.class.name} change: #{attrs.inspect}")
+
+      Sentry.with_scope do |scope|
+        scope.set_context("metadata_changes", attrs) if scope
+        Sentry.capture_message("[Metadata] #{metadata.class.name} change")
       end
     end
   end

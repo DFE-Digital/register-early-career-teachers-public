@@ -19,7 +19,7 @@ module Metadata::Handlers
   private
 
     def upsert_lead_provider_metadata!
-      changes_to_upsert = lead_provider_ids.each_with_object({}) do |lead_provider_id, hash|
+      lead_provider_ids.each do |lead_provider_id|
         metadata = existing_lead_provider_metadata[lead_provider_id] ||
           Metadata::DeliveryPartnerLeadProvider.new(delivery_partner:, lead_provider_id:)
 
@@ -29,12 +29,8 @@ module Metadata::Handlers
           contract_period_years: contract_period_years_by_lead_provider[lead_provider_id] || []
         }
 
-        next unless changes?(metadata, changes)
-
-        hash[metadata] = changes if changes?(metadata, changes)
+        commit_changes!(metadata, changes)
       end
-
-      upsert_all(model: Metadata::DeliveryPartnerLeadProvider, changes_to_upsert:, unique_by: %i[delivery_partner_id lead_provider_id])
     end
 
     def existing_lead_provider_metadata
