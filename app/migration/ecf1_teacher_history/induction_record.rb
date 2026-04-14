@@ -17,6 +17,7 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
   :start_timestamp,
   :end_timestamp,
   :school_transfer,
+  :ignore_training,
   keyword_init: true
 ) do
   using Migration::CompactWithIgnore
@@ -72,5 +73,11 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
     return true if ongoing?
 
     start_date < end_date
+  end
+
+  # special case for patching where we want to ignore any training on this record
+  # when building periods later in the pipeline
+  def ignore_training?
+    ignore_training == true
   end
 end
