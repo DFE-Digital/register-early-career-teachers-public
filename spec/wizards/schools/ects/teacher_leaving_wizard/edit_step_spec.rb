@@ -97,7 +97,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
         expect(step.errors[:leaving_on].map(&:squish)).to include(
-          "Our records show that #{teacher_name} started their latest training period at your school on 2 January 2025. Enter a later date."
+          "Our records show that #{teacher_name} started their latest training at your school on 2 January 2025. Enter a later date."
         )
       end
     end
@@ -112,7 +112,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
         expect(step.errors[:leaving_on].map(&:squish)).to include(
-          "Our records show that #{teacher_name} started their latest training period at your school on 3 January 2025. Enter a later date."
+          "Our records show that #{teacher_name} started their latest training at your school on 3 January 2025. Enter a later date."
         )
       end
     end

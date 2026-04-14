@@ -50,7 +50,7 @@ module Schools
         end
 
         def leaving_after_training_started
-          leaving_on_before(latest_training_period, "their latest training period")
+          leaving_on_before(latest_training_period, "their latest training")
         end
 
         def leaving_on_before(period, description)
