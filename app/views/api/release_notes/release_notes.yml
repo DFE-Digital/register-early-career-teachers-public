@@ -50,9 +50,10 @@
 
     Providers should also:
 
-    - update their systems to ensure they're no longer calling data from the old ECF1 service. That’ll include changing base URLs and making use of the new RECT API tokens
-    - check downstream processes to make sure none are are broken or have been impacted by the migration or changes to the service. Ensure that all data flows and integrations continue to work as expected
-    - test their internal processes to verify that data is being handled appropriately
+    - update their systems to ensure they're no longer calling data from the old ECF1 service - This will include changing base URLs and making use of the new RECT API tokens
+    - check downstream processes to make sure none are broken or have been impacted by the migration or changes to the service
+    - ensure that all data flows and integrations continue to work as expected
+    - test their internal processes to ensure that data is being handled appropriately
     - conduct full data syncs in the window allocated as agreed with the DfE, ensuring that data is up to date and accurate following the migration
 
 
