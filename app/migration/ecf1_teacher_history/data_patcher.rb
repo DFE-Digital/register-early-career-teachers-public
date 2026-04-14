@@ -1,5 +1,5 @@
 class ECF1TeacherHistory::DataPatcher
-  PATCHES_PATH=Rails.root.join("app/migration/ecf1_teacher_history/data_patches.csv")
+  PATCHES_PATH = Rails.root.join("app/migration/ecf1_teacher_history/data_patches.csv")
 
   attr_reader :data_patches
 
@@ -9,7 +9,7 @@ class ECF1TeacherHistory::DataPatcher
 
   def apply_patches_to(ecf1_teacher_history)
     return ecf1_teacher_history unless has_patches?(ecf1_teacher_history)
-    
+
     apply_profile_patches(ecf1_teacher_history.ect)
     apply_profile_patches(ecf1_teacher_history.mentor)
 
@@ -57,7 +57,6 @@ private
     ).compact
 
     return {} if attrs.empty?
-
 
     if attrs[:email].present?
       attrs[:preferred_identity_email] = attrs[:email]

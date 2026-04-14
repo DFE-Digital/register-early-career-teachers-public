@@ -9,7 +9,6 @@ class ECF1TeacherHistory::ECT
               :pupil_premium_uplift,
               :sparsity_uplift,
               :payments_frozen_cohort_start_year,
-              :states,
               :transfers
 
   attr_accessor :induction_records, :mentor_at_school_periods, :states

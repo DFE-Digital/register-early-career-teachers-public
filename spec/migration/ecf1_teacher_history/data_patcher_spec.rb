@@ -2,7 +2,7 @@ describe ECF1TeacherHistory::DataPatcher do
   subject(:patcher) { described_class.new(data_patches:) }
 
   let(:headers) do
-    %i(
+    %i[
       participant_profile_id
       induction_record_id
       start_date
@@ -19,7 +19,7 @@ describe ECF1TeacherHistory::DataPatcher do
       state_cpd_lead_provider_id
       state_created_at
       ignore_training
-    )
+    ]
   end
 
   let(:data_patches) do
@@ -45,6 +45,8 @@ describe ECF1TeacherHistory::DataPatcher do
     end
 
     context "changes to an induction record" do
+      subject(:patched_result) { described_class.new(data_patches:).apply_patches_to(ecf1_teacher_history) }
+
       let(:new_email) { "scoob@example.com" }
       let(:mentor_profile_id) { "1fce1a06-d889-4527-a1a1-cbedda7f5194" }
 
@@ -59,8 +61,6 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       let(:induction_records) { [induction_record_1, induction_record_2] }
-
-      subject(:patched_result) { described_class.new(data_patches:).apply_patches_to(ecf1_teacher_history) }
 
       context "start_date has a value" do
         let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},2024-9-1,,,,,,,,,,,,,) }
@@ -138,7 +138,7 @@ describe ECF1TeacherHistory::DataPatcher do
         let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,"true",,,,,) }
 
         it "changes the school_transfer to match the value in the CSV" do
-          expect(patched_result.ect.induction_records.first.school_transfer).to eq(true)
+          expect(patched_result.ect.induction_records.first.school_transfer).to be(true)
         end
       end
 
@@ -160,10 +160,9 @@ describe ECF1TeacherHistory::DataPatcher do
     end
 
     context "adding a state" do
-      let(:row_data) { %("8237fd2e-2c3c-4daa-a5d7-2bab689e66a7",,,,,,,,,,,"withdrawn","switched-to-school-led","22727fdc-816a-4a3c-9675-030e724bbf89","2024-10-01 12:15:01",) }
-
       subject(:patched_result) { described_class.new(data_patches:).apply_patches_to(ecf1_teacher_history) }
 
+      let(:row_data) { %("8237fd2e-2c3c-4daa-a5d7-2bab689e66a7",,,,,,,,,,,"withdrawn","switched-to-school-led","22727fdc-816a-4a3c-9675-030e724bbf89","2024-10-01 12:15:01",) }
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, participant_profile_id: data_patch_ect_with_state_id) }
 
       it "adds a new state with the details from the CSV" do
@@ -180,7 +179,7 @@ describe ECF1TeacherHistory::DataPatcher do
   describe "#has_patches?" do
     context "when the history has neither profile" do
       it "returns false" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_falsey
+        expect(patcher).not_to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -189,7 +188,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, participant_profile_id: data_patch_ect_id) }
 
       it "returns true" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_truthy
+        expect(patcher).to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -197,7 +196,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect) }
 
       it "returns false" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_falsey
+        expect(patcher).not_to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -206,7 +205,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, participant_profile_id: data_patch_mentor_id) }
 
       it "returns true" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_truthy
+        expect(patcher).to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -214,7 +213,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor) }
 
       it "returns false" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_falsey
+        expect(patcher).not_to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -225,7 +224,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, participant_profile_id: data_patch_mentor_id) }
 
       it "returns true" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_truthy
+        expect(patcher).to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -235,7 +234,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor) }
 
       it "returns true" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_truthy
+        expect(patcher).to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -246,7 +245,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, participant_profile_id: data_patch_mentor_id) }
 
       it "returns true" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_truthy
+        expect(patcher).to have_patches(ecf1_teacher_history)
       end
     end
 
@@ -255,7 +254,7 @@ describe ECF1TeacherHistory::DataPatcher do
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor) }
 
       it "returns false" do
-        expect(patcher.has_patches?(ecf1_teacher_history)).to be_falsey
+        expect(patcher).not_to have_patches(ecf1_teacher_history)
       end
     end
   end
