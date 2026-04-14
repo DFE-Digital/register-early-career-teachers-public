@@ -171,7 +171,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
         it "only shows the error about the previous ECTAtSchoolPeriod and not the training period" do
           subject.valid?
-          
+
           expect(subject.errors[:start_date]).to include(start_date_too_early_message)
           expect(subject.errors[:start_date]).not_to include(start_date_before_training_period_message)
         end

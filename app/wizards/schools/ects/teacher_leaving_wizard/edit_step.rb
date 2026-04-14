@@ -6,6 +6,7 @@ module Schools
 
         validate :leaving_on_valid
         validate :leaving_after_start_date
+        validate :leaving_after_training_started
 
         def self.permitted_params
           %i[
@@ -40,15 +41,38 @@ module Schools
           errors.add(:leaving_on, leaving_on_input.error_message)
         end
 
+        def skip_leaving_on_validation?
+          errors[:leaving_on].any?
+        end
+
         def leaving_after_start_date
-          return unless leaving_on_input.valid?
-          return if leaving_on_input.value_as_date > ect_at_school_period.started_on
+          leaving_on_before(ect_at_school_period, "teaching")
+        end
+
+        def leaving_after_training_started
+          leaving_on_before(latest_training_period, "their latest training period")
+        end
+
+        def leaving_on_before(period, description)
+          return if skip_leaving_on_validation?
+
+          return unless previous_start_date_invalid?(period)
+
+          return if leaving_on_input.value_as_date > period.started_on
 
           errors.add(
             :leaving_on,
-            "Our records show that #{name_for(ect_at_school_period.teacher)} started teaching at your school on
-            #{ect_at_school_period.started_on.to_formatted_s(:govuk)}. Enter a later date."
+            "Our records show that #{name_for(ect_at_school_period.teacher)} started #{description} at your school on
+            #{period.started_on.to_formatted_s(:govuk)}. Enter a later date."
           )
+        end
+
+        def previous_start_date_invalid?(period)
+          period&.started_on.present?
+        end
+
+        def latest_training_period
+          ect_at_school_period&.training_periods&.latest_first&.first
         end
 
         def leaving_on_input

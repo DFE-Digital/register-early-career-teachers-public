@@ -2,7 +2,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
   subject(:step) { described_class.new(wizard:, leaving_on:) }
 
   let(:wizard) { instance_double(Schools::ECTs::TeacherLeavingWizard::Wizard, store:, ect_at_school_period:) }
-  let(:ect_at_school_period) { FactoryBot.build_stubbed(:ect_at_school_period, started_on: Date.new(2025, 1, 1)) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1)) }
   let(:teacher_name) { Teachers::Name.new(ect_at_school_period.teacher).full_name }
   let(:store) { FactoryBot.build(:session_repository, form_key: :teacher_leaving_wizard) }
   let(:leaving_on) { { "day" => "1", "month" => "3", "year" => "2025" } }
@@ -70,6 +70,49 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
         expect(step).not_to be_valid
         expect(step.errors[:leaving_on].map(&:squish)).to include(
           "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a later date."
+        )
+      end
+
+      context "when there is also training period that started after the leaving date" do
+        let!(:training_period) do
+          FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2025, 1, 1))
+        end
+
+        it "is invalid with an error message about the start date" do
+          expect(step).not_to be_valid
+          expect(step.errors[:leaving_on].map(&:squish)).to include(
+            "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a later date."
+          )
+        end
+      end
+    end
+
+    context "when there is a training period that started on the leaving date" do
+      let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 2 } }
+
+      let!(:training_period) do
+        FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2025, 1, 2))
+      end
+
+      it "is invalid with the correct error message" do
+        expect(step).not_to be_valid
+        expect(step.errors[:leaving_on].map(&:squish)).to include(
+          "Our records show that #{teacher_name} started their latest training period at your school on 2 January 2025. Enter a later date."
+        )
+      end
+    end
+
+    context "when there is a training period that started after the leaving date" do
+      let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 2 } }
+
+      let!(:training_period) do
+        FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2025, 1, 3))
+      end
+
+      it "is invalid with the correct error message" do
+        expect(step).not_to be_valid
+        expect(step.errors[:leaving_on].map(&:squish)).to include(
+          "Our records show that #{teacher_name} started their latest training period at your school on 3 January 2025. Enter a later date."
         )
       end
     end
