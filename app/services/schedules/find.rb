@@ -45,7 +45,9 @@ module Schedules
       @most_recent_schedule ||= most_recent_provider_led_period&.schedule
     end
 
-    alias_method :latest_start_date, :date_of_transition
+    def latest_start_date
+      [started_on, Time.zone.today].max
+    end
 
     def schedule_month
       return "september" if extended_schedule?
