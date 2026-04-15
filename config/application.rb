@@ -56,6 +56,7 @@ module RegisterEarlyCareerTeachers
     config.enable_otp_school_sign_in = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_OTP_SCHOOL_SIGN_IN", false))
     config.enable_teaching_school_hubs = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_HUBS", false))
     config.enable_incident_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_INCIDENT_BANNER", false))
+    config.enable_maintenance_banner = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_MAINTENANCE_BANNER", false))
     config.enable_appropriate_body_records_to_review = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_APPROPRIATE_BODY_RECORDS_TO_REVIEW", false))
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))

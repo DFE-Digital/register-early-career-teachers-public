@@ -145,6 +145,40 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
               name: "ECF Standard September",
               cohort_year: 2023
             }
+          },
+          {
+            induction_record_id: "136f16a1-d099-4baa-b930-2da71bad2fb2",
+            start_date: Date.new(2026, 2, 20),
+            end_date: :ignore,
+            created_at: Time.zone.local(2026, 2, 20, 13, 51, 1),
+            updated_at: Time.zone.local(2026, 2, 20, 13, 51, 1),
+            training_programme: "full_induction_programme",
+            cohort_year: 2023,
+            school: {
+              urn: "100002",
+              name: "School 2"
+            },
+            induction_status: "active",
+            training_status: "deferred",
+            preferred_identity_email: "a.teacher@example.com",
+            mentor_profile_id: "0e4dc9f1-6d22-456b-af62-e2a995246390",
+            training_provider_info: {
+              lead_provider: {
+                ecf1_id: "3d7d8c90-a5a3-4838-84b2-563092bf87ee",
+                name: "UCL Institute of Education"
+              },
+              delivery_partner: {
+                ecf1_id: "d877b90d-3559-4f30-b4b9-7acdb0b980b9",
+                name: "Delivery partner 1"
+              },
+              cohort_year: 2023
+            },
+            schedule_info: {
+              schedule_id: "d224dce4-1352-4647-b967-81b5b14514f8",
+              identifier: "ecf-extended-september",
+              name: "ECF Extended September",
+              cohort_year: 2023
+            }
           }
         ],
         mentor_at_school_periods: []
@@ -166,13 +200,13 @@ describe "Real data check for user ebc97a2d-6ecf-42bb-874d-152cf6e324f9 (setting
           trs_induction_completed_date: nil,
           ect_at_school_periods: array_including(
             hash_including(
-              started_on: Date.new(2025, 6, 2),
+              started_on: Date.new(2026, 2, 20),
               finished_on: nil,
               school: hash_including(name: "School 2"),
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2025, 6, 2),
-                  finished_on: Date.new(2025, 6, 3), # set by deferral date, bumped by one day as it matches the end_date
+                  started_on: Date.new(2026, 2, 20),
+                  finished_on: Date.new(2026, 2, 21),
                   lead_provider_info: hash_including(name: "UCL Institute of Education"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
                   deferred_at: Time.zone.local(2025, 6, 2, 16, 6, 52),

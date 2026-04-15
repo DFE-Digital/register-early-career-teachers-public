@@ -40,4 +40,87 @@ RSpec.describe ApplicationWizardStep, type: :model do
       expect { instance.send(:pre_populate_attributes) }.to raise_error(NotImplementedError)
     end
   end
+
+  describe "empty store guard on save!" do
+    let(:store) { FactoryBot.build(:session_repository) }
+    let(:wizard) { instance_double(ApplicationWizard, store:) }
+
+    # Build a fresh subclass of ApplicationWizardStep so that the inherited
+    # hook re-prepends the guard module on it.
+    let(:subclass) do
+      Class.new(ApplicationWizardStep) do
+        attr_accessor :step_name
+
+        def self.permitted_params = []
+
+        def pre_populate_attributes
+        end
+
+        def save! = :saved
+      end
+    end
+
+    let(:step) { subclass.new(wizard:).tap { |s| s.step_name = step_name } }
+
+    context "when the step is a CheckAnswers step and the store is empty" do
+      let(:step_name) { "CheckAnswers" }
+
+      it "raises EmptyStoreError instead of calling save!" do
+        expect { step.save! }.to raise_error(ApplicationWizardStep::EmptyStoreError)
+      end
+    end
+
+    context "when the step is a CheckAnswers step and the store has data" do
+      let(:step_name) { "CheckAnswers" }
+
+      before { store[:something] = "present" }
+
+      it "calls the underlying save!" do
+        expect(step.save!).to eq(:saved)
+      end
+    end
+
+    context "when the step is not a CheckAnswers step" do
+      let(:step_name) { "Edit" }
+
+      it "calls the underlying save! even when the store is empty" do
+        expect(step.save!).to eq(:saved)
+      end
+    end
+
+    context "when the subclass declares expected_store_keys" do
+      let(:step_name) { "CheckAnswers" }
+
+      let(:subclass) do
+        Class.new(ApplicationWizardStep) do
+          attr_accessor :step_name
+
+          self.expected_store_keys = %i[trn]
+
+          def self.permitted_params = []
+
+          def pre_populate_attributes
+          end
+
+          def save! = :saved
+        end
+      end
+
+      context "when an expected key is missing" do
+        before { store[:something_else] = "present" }
+
+        it "raises EmptyStoreError" do
+          expect { step.save! }.to raise_error(ApplicationWizardStep::EmptyStoreError)
+        end
+      end
+
+      context "when all expected keys are present" do
+        before { store[:trn] = "1234567" }
+
+        it "calls the underlying save!" do
+          expect(step.save!).to eq(:saved)
+        end
+      end
+    end
+  end
 end

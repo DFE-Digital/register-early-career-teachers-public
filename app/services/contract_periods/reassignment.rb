@@ -20,10 +20,8 @@ module ContractPeriods
       @successor_contract_period ||= ContractPeriod.find_by!(year: SUCCESSOR_CONTRACT_YEAR)
     end
 
-  private
-
     def assigned_contract_period
-      training_period.contract_period || training_period.expression_of_interest_contract_period
+      training_period&.contract_period || training_period&.expression_of_interest_contract_period
     end
   end
 end

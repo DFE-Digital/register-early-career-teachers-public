@@ -11,14 +11,12 @@ module API::TrainingPeriods
     end
 
     def status
-      if mentor_became_ineligible_for_funding_on || finished_induction_period&.finished_on
-        :active
+      if finished_on.present?
+        finished_on.future? ? :leaving : :left
       elsif started_on.future?
         :joining
-      elsif finished_on.nil?
+      elsif mentor_became_ineligible_for_funding_on || finished_induction_period&.finished_on || finished_on.nil?
         :active
-      elsif finished_on.future?
-        :leaving
       else
         :left
       end

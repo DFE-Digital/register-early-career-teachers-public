@@ -56,9 +56,11 @@ class Teacher < ApplicationRecord
           api_id
           trs_first_name
           trs_last_name
+          corrected_name
           trn
           api_ect_training_record_id
           api_mentor_training_record_id
+          ect_became_ineligible_for_funding_on
           mentor_became_ineligible_for_funding_on
           mentor_became_ineligible_for_funding_reason
           ect_first_became_eligible_for_training_at
@@ -73,6 +75,7 @@ class Teacher < ApplicationRecord
         when_changing: %i[
           trs_first_name
           trs_last_name
+          corrected_name
           trn
         ]
 
@@ -121,9 +124,16 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
   scope :not_found_in_trs, -> { where(trs_not_found: true) } # TRS returned either 404 or 308
   scope :found_in_trs, -> { where(trs_not_found: false) }
-  scope :not_failed, -> { where.not(trs_induction_status: "Failed").or(where(trs_induction_status: nil)) }
-  scope :not_passed, -> { where.not(trs_induction_status: "Passed").or(where(trs_induction_status: nil)) }
   scope :without_qts_award, -> { where(trs_qts_awarded_on: nil) }
+  scope :induction_status_missing, -> { where(trs_induction_status: nil) }
+  scope :induction_status_passed, -> { where(trs_induction_status: "Passed") }
+  scope :induction_status_failed, -> { where(trs_induction_status: "Failed") }
+  scope :induction_status_failed_in_wales, -> { where(trs_induction_status: "FailedInWales") }
+  scope :induction_status_exempt, -> { where(trs_induction_status: "Exempt") }
+  scope :induction_status_in_progress, -> { where(trs_induction_status: "InProgress") }
+  scope :induction_status_required_to_complete, -> { where(trs_induction_status: "RequiredToComplete") }
+  scope :not_failed, -> { where.not(trs_induction_status: %w[Failed FailedInWales]).or(induction_status_missing) }
+  scope :not_passed, -> { where.not(trs_induction_status: "Passed").or(induction_status_missing) }
 
   normalizes :corrected_name, with: -> { it.squish }
 

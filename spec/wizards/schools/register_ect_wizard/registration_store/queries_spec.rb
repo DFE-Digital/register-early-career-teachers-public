@@ -157,6 +157,41 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
   end
 
+  describe "#confirmed_delivery_partner_for_contract_period" do
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+    let(:start_date) { (contract_period.started_on + 1.day) }
+    let(:school) { FactoryBot.create(:school) }
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:school_partnership) do
+      FactoryBot.create(:school_partnership,
+                        :for_year,
+                        year: contract_period.year,
+                        school:,
+                        lead_provider:)
+    end
+    let(:ect_at_school_period) do
+      FactoryBot.create(:ect_at_school_period,
+                        teacher:,
+                        school:)
+    end
+    let!(:training_period) do
+      FactoryBot.create(:training_period,
+                        :for_ect,
+                        ect_at_school_period:,
+                        school_partnership:)
+    end
+
+    it "returns the delivery partner from the confirmed partnership" do
+      expected = school_partnership.delivery_partner
+      expect(queries.confirmed_delivery_partner_for_contract_period(school:)).to eq(expected)
+    end
+
+    it "returns nil when there is no confirmed partnership for the school" do
+      other_school = FactoryBot.create(:school)
+      expect(queries.confirmed_delivery_partner_for_contract_period(school: other_school)).to be_nil
+    end
+  end
+
   describe "previous registration queries" do
     let!(:previous_ect_period) do
       FactoryBot.create(:ect_at_school_period,

@@ -6,13 +6,12 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
   let(:school) { FactoryBot.create(:school) }
   let(:store) { {} }
   let(:registration_store) do
-    Struct.new(:trn, :school_urn, :lead_provider_id, :started_on, :start_date, :store)
-          .new(trn, school_urn, lead_provider_id, started_on, start_date, store)
+    Struct.new(:trn, :school_urn, :lead_provider_id, :started_on, :store)
+          .new(trn, school_urn, lead_provider_id, started_on, store)
   end
   let(:school_urn) { school.urn }
   let(:lead_provider_id) { nil }
   let(:started_on) { nil }
-  let(:start_date) { nil }
 
   describe "#active_record_at_school" do
     let!(:ongoing_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school:) }
@@ -125,7 +124,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
                         started_on: 2.years.ago,
                         finished_on: 1.month.from_now)
     end
-    let(:start_date) { 1.year.ago }
+    let(:started_on) { 1.year.ago }
 
     it "returns mentor periods from other schools that are ongoing or recently finished" do
       expect(queries.previous_school_mentor_at_school_periods).to contain_exactly(ongoing_other_school, finished_recently)

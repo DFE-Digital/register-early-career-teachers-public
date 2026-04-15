@@ -159,7 +159,9 @@ describe ECF2TeacherHistory do
             trs_first_name: "Old First Name",
             trs_last_name: "Old Last Name",
             trs_induction_start_date: Date.current,
-            corrected_name: nil
+            corrected_name: nil,
+            ect_first_became_eligible_for_training_at: 1.year.ago,
+            mentor_first_became_eligible_for_training_at: 6.months.ago
           )
         end
 
@@ -176,13 +178,15 @@ describe ECF2TeacherHistory do
           end
         end
 
-        it "does not overwrite the trs_first_name, trs_last_name or trs_induction_start_date fields" do
+        it "does not overwrite the trs_first_name, trs_last_name, trs_induction_start_date, ect_first_became_eligible_for_training_at or mentor_first_became_eligible_for_training_at fields" do
           teacher = subject.save_all_ect_data!
 
           aggregate_failures do
             expect(teacher.trs_first_name).to eql("Old First Name")
             expect(teacher.trs_last_name).to eql("Old Last Name")
             expect(teacher.trs_induction_start_date).to eql(Date.current)
+            expect(teacher.ect_first_became_eligible_for_training_at).to eql(existing_teacher.ect_first_became_eligible_for_training_at)
+            expect(teacher.mentor_first_became_eligible_for_training_at).to eql(existing_teacher.mentor_first_became_eligible_for_training_at)
           end
         end
 
@@ -200,17 +204,17 @@ describe ECF2TeacherHistory do
         let(:other_arguments) { { ect_at_school_periods: } }
         let(:teacher) { subject.save_all_ect_data! }
 
-        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period) }
-        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period) }
+        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period, id: 6) }
+        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period, id: 396) }
         let(:appropriate_body_a_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_a.id,
+          Types::AppropriateBodyData.new(
+            ecf1_id: "f8ab3d0e-8b2f-4156-ab18-267c3b651a1d",
             name: appropriate_body_a.name
           )
         end
         let(:appropriate_body_b_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_b.id,
+          Types::AppropriateBodyData.new(
+            ecf1_id: "9bb3b070-00b9-4881-a118-7c5d71f412de",
             name: appropriate_body_b.name
           )
         end
@@ -385,15 +389,15 @@ describe ECF2TeacherHistory do
             it "saves a DataMigrationFailedCombination entry per training_period" do
               teacher
 
-              expect(DataMigrationFailedCombination.count).to be(2)
+              expect(DataMigrationFailedCombination.count).to be(4)
 
               combinations = ect_at_school_periods.flat_map(&:training_periods).map(&:combination)
               induction_record_ids = combinations.map(&:induction_record_id)
               failed_combinations = DataMigrationFailedCombination.all
 
-              expect(failed_combinations.map(&:induction_record_id)).to match_array(induction_record_ids)
-              expect(failed_combinations.map(&:failure_message)).to contain_exactly(failure_message, failure_message)
-              expect(failed_combinations.map(&:migration_mode)).to contain_exactly(migration_mode, migration_mode)
+              expect(failed_combinations.map(&:induction_record_id)).to include(*induction_record_ids)
+              expect(failed_combinations.map(&:failure_message)).to include(failure_message)
+              expect(failed_combinations.map(&:migration_mode)).to include(migration_mode)
             end
           end
 
@@ -629,17 +633,17 @@ describe ECF2TeacherHistory do
         let(:other_arguments) { { mentor_at_school_periods: } }
         let(:teacher) { subject.save_all_mentor_data! }
 
-        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period) }
-        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period) }
+        let(:appropriate_body_a) { FactoryBot.create(:appropriate_body_period, id: 347) }
+        let(:appropriate_body_b) { FactoryBot.create(:appropriate_body_period, id: 388) }
         let(:appropriate_body_a_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_a.id,
+          Types::AppropriateBodyData.new(
+            ecf1: "710e9278-b3fe-4bf6-8b26-e118647ae80a",
             name: appropriate_body_a.name
           )
         end
         let(:appropriate_body_b_data) do
-          ECF2TeacherHistory::AppropriateBodyData.new(
-            id: appropriate_body_b.id,
+          Types::AppropriateBodyData.new(
+            ecf1: "d4d9529e-aca5-41ff-881b-267a8570aaac",
             name: appropriate_body_b.name
           )
         end

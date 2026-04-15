@@ -299,12 +299,21 @@ describe Teachers::Search do
 
       describe "in_progress filtering" do
         let(:failed_teacher) { FactoryBot.create(:teacher, :induction_failed) }
+        let(:failed_in_wales_teacher) { FactoryBot.create(:teacher, :induction_failed_in_wales) }
         let(:passed_teacher) { FactoryBot.create(:teacher, :induction_passed) }
         let(:teacher1) { FactoryBot.create(:teacher, :induction_in_progress) }
-        let(:teacher2) { FactoryBot.create(:teacher, trs_induction_status: "FailedInWales") }
+        let(:teacher2) { FactoryBot.create(:teacher, :induction_required_to_complete) }
+        let(:teacher3) { FactoryBot.create(:teacher, trs_induction_status: nil) }
 
         it "is not enabled by default" do
-          expect(Teachers::Search.new.search).to contain_exactly(passed_teacher, failed_teacher, teacher1, teacher2, teacher3)
+          expect(Teachers::Search.new.search).to contain_exactly(
+            passed_teacher,
+            failed_teacher,
+            failed_in_wales_teacher,
+            teacher1,
+            teacher2,
+            teacher3
+          )
         end
 
         context "when it is enabled" do

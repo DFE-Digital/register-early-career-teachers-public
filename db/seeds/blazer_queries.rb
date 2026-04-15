@@ -48,6 +48,21 @@ end
     statement: "SELECT * FROM appropriate_body_periods;",
     description: "old data model decommisioning and moving fields to other tables",
   },
+  {
+    name: "TRS name changes",
+    statement: "SELECT teacher_id, heading FROM events WHERE event_type='teacher_name_updated_by_trs'",
+    description: "TRS syncing has updated our teacher records"
+  },
+  {
+    name: "TRS not found",
+    statement: "SELECT id AS teacher_id, trs_not_found FROM teachers WHERE trs_not_found=true",
+    description: "TRS syncing has flagged missing records"
+  },
+  {
+    name: "TRS deactivated",
+    statement: "SELECT id AS teacher_id, trs_deactivated FROM teachers WHERE trs_deactivated=true",
+    description: "TRS syncing has flagged deactivated records"
+  }
 ].each do |query|
   create_query(creator: user_manager, **query)
 end

@@ -22,10 +22,11 @@ RSpec.describe PaymentCalculator::Banded::BandAllocator do
 
   describe "#band_allocations_by_declaration_type" do
     context "with no declarations" do
-      it "returns empty allocations" do
+      it "returns allocations with zero counts for all declaration types" do
         allocations = allocator.band_allocations_by_declaration_type
 
-        expect(allocations).to be_empty
+        expect(allocations.map(&:declaration_type).uniq).to match_array(Declaration.declaration_types.keys)
+        expect(allocations).to all(have_attributes(billable_count: 0, refundable_count: 0))
       end
     end
 

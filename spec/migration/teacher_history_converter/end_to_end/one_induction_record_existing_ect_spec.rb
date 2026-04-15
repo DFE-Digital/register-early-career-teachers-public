@@ -7,7 +7,8 @@ describe "One induction record (end to end, existing ECT)" do
 
   # ECF1 data
   let(:ecf1_induction_programme) { FactoryBot.create(:migration_induction_programme, :provider_led) }
-  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, created_at: 18.hours.ago.round) }
+  let(:ecf1_appropriate_body) { FactoryBot.create(:migration_appropriate_body, id: "71513a6a-69ba-4a80-9559-b5e60fcd07e4") } # Westminster LA
+  let(:ecf1_induction_record) { FactoryBot.create(:migration_induction_record, induction_programme: ecf1_induction_programme, appropriate_body: ecf1_appropriate_body, created_at: 18.hours.ago.round) }
   let(:ecf1_teacher_profile) { ecf1_induction_record.participant_profile.teacher_profile }
   let(:ecf1_urn) { ecf1_induction_programme.school_cohort.school.urn.to_i }
 
@@ -19,6 +20,7 @@ describe "One induction record (end to end, existing ECT)" do
   let(:ecf2_active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider: ecf2_lead_provider, contract_period: ecf2_contract_period) }
   let(:ecf2_lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: ecf2_active_lead_provider, delivery_partner: ecf2_delivery_partner) }
 
+  let!(:ecf2_appropriate_body) { FactoryBot.create(:appropriate_body_period, id: 144) }
   let!(:ecf2_teacher) { FactoryBot.create(:teacher, trn: ecf1_teacher_profile.trn, created_at: original_teacher_created_at, trs_first_name: "Janet", trs_last_name: "Fielding") }
   let!(:ecf2_gias_school) { FactoryBot.create(:gias_school, :with_school, urn: ecf1_urn) }
   let!(:ecf2_schedule) { FactoryBot.create(:schedule, contract_period: ecf2_contract_period, identifier: ecf1_induction_record.schedule.schedule_identifier) }
@@ -52,7 +54,7 @@ describe "One induction record (end to end, existing ECT)" do
       expect(teacher.trs_last_name).to eql("Fielding")
     end
 
-    it "creates a single ect_at_school_period linked to the teacher at the right school" do
+    it "creates a single ect_at_school_period linked to the teacher at the right school with the right appropriate body" do
       ect_at_school_periods = teacher.ect_at_school_periods
       ect_at_school_period = ect_at_school_periods.first
 
@@ -60,6 +62,7 @@ describe "One induction record (end to end, existing ECT)" do
         expect(ect_at_school_periods.count).to be(1)
 
         expect(ect_at_school_period.school.urn).to eql(ecf1_urn)
+        expect(ect_at_school_period.school_reported_appropriate_body).to eql(ecf2_appropriate_body)
       end
     end
 

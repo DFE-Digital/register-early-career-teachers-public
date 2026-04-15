@@ -37,6 +37,19 @@ describe Event do
         expect(Event.latest_first.to_sql).to include('ORDER BY "events"."happened_at" DESC')
       end
     end
+
+    describe ".with_event_type" do
+      before do
+        FactoryBot.create(:event, author_type: "system", event_type: :import_from_dqt)
+        FactoryBot.create(:event, author_type: "system", event_type: :dfe_user_created)
+      end
+
+      it "filters by event_type" do
+        expect(Event.with_event_type(:import_from_dqt).count).to eq(1)
+        expect(Event.with_event_type(:dfe_user_created).count).to eq(1)
+        expect(Event.with_event_type(:school_user_signs_in).count).to eq(0)
+      end
+    end
   end
 
   describe "validations" do
@@ -73,19 +86,13 @@ describe Event do
   describe "#happened_at" do
     it { is_expected.to validate_presence_of(:happened_at) }
 
-    describe "#event_happened_in_the_past" do
+    describe "future dates" do
       subject { FactoryBot.build(:event, happened_at:) }
-
-      before { subject.valid? }
 
       context "when happened_at is in the future" do
         let(:happened_at) { 1.minute.from_now }
 
-        it { is_expected.to(be_invalid) }
-
-        it "has a validation error" do
-          expect(subject.errors.messages[:happened_at]).to include("Event must have already happened")
-        end
+        it { is_expected.to(be_valid) }
       end
 
       context "when happened_at is in the past" do
