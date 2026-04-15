@@ -11,6 +11,10 @@ FactoryBot.define do
       identifier { "ecf-replacement-september" }
     end
 
+    trait :extended_september do
+      identifier { "ecf-extended-september" }
+    end
+
     trait :with_milestones do
       after(:build) do |schedule|
         year = schedule.contract_period.year

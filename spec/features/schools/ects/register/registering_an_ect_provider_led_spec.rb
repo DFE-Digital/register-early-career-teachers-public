@@ -2,9 +2,7 @@ RSpec.describe "Registering an ECT with provider-led training", :enable_schools_
   include_context "test TRS API returns a teacher"
   include ReusablePartnershipHelpers
 
-  around do |example|
-    travel_to(Date.new(2025, 9, 1)) { example.run }
-  end
+  before { travel_to Date.new(2025, 9, 1) }
 
   scenario "selecting provider-led training and a lead provider" do
     given_i_have_reached_the_training_programme_step
