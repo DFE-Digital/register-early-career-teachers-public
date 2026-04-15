@@ -48,6 +48,6 @@ The sandbox environment is used to test API integrations without affecting real 
 
 `https://sandbox.register-early-career-teachers.education.gov.uk/api`
 
-There are some custom API headers that can only be used in the sandbox, such as `X-With-Server-Date`, which allows for [testing the ability to submit declarations in the sandbox ahead of time](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
+There are some custom API headers that can only be used in the sandbox, such as `X-With-Server-Date`, which allows for [testing the ability to submit declarations in the sandbox ahead of time](/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
-Visit our [API testing guidance](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively) for further information on testing the API.
+Visit our [API testing guidance](/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively) for further information on testing the API.
