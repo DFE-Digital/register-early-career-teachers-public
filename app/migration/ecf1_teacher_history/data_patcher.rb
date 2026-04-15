@@ -62,6 +62,10 @@ private
       attrs[:preferred_identity_email] = attrs[:email]
     end
 
+    if attrs[:delete_record].present?
+      attrs[:delete_record] = ActiveModel::Type::Boolean.new.cast(attrs[:delete_record])
+    end
+
     if attrs[:school_transfer].present?
       attrs[:school_transfer] = ActiveModel::Type::Boolean.new.cast(attrs[:school_transfer])
     end
@@ -103,7 +107,12 @@ private
 
       if induction_record_id.present?
         original_induction_record = profile.induction_records.find { |ir| ir.induction_record_id == induction_record_id }
-        patch_induction_record(original_induction_record, induction_record_changes)
+
+        if induction_record_changes[:delete_record] == true
+          profile.induction_records.reject! { |ir| ir.induction_record_id == induction_record_id }
+        else
+          patch_induction_record(original_induction_record, induction_record_changes)
+        end
       end
     end
 
@@ -117,7 +126,7 @@ private
   def patch_induction_record(induction_record, changes)
     return if induction_record.blank?
 
-    changes.except(:induction_record_id).each do |name, value|
+    changes.except(:induction_record_id, :delete_record).each do |name, value|
       value = nil if value == ":null"
       induction_record.send("#{name}=", value)
     end
