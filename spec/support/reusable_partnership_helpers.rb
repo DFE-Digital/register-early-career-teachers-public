@@ -3,6 +3,7 @@ module ReusablePartnershipHelpers
     :school,
     :current_contract_period,
     :previous_school_partnership,
+    :current_school_partnership,
     :last_chosen_lead_provider,
     :previous_year_delivery_partner,
     keyword_init: true
@@ -25,7 +26,7 @@ module ReusablePartnershipHelpers
       contract_period: previous_contract_period
     )
 
-    FactoryBot.create(
+    current_year_active_lead_provider = FactoryBot.create(
       :active_lead_provider,
       lead_provider:,
       contract_period: current_contract_period
@@ -34,6 +35,12 @@ module ReusablePartnershipHelpers
     previous_year_delivery_partnership = FactoryBot.create(
       :lead_provider_delivery_partnership,
       active_lead_provider: previous_year_active_lead_provider,
+      delivery_partner:
+    )
+
+    current_year_delivery_partnership = FactoryBot.create(
+      :lead_provider_delivery_partnership,
+      active_lead_provider: current_year_active_lead_provider,
       delivery_partner:
     )
 
@@ -51,10 +58,17 @@ module ReusablePartnershipHelpers
       lead_provider_delivery_partnership: previous_year_delivery_partnership
     )
 
+    current_school_partnership = FactoryBot.create(
+      :school_partnership,
+      school:,
+      lead_provider_delivery_partnership: current_year_delivery_partnership
+    )
+
     ReusablePartnershipContext.new(
       school:,
       current_contract_period:,
       previous_school_partnership:,
+      current_school_partnership:,
       last_chosen_lead_provider: lead_provider,
       previous_year_delivery_partner: delivery_partner
     )
