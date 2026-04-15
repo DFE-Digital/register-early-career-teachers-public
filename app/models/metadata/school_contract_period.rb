@@ -19,7 +19,6 @@ module Metadata
     validates :induction_programme_choice, inclusion: { in: induction_programme_choices.keys }
     validates :school_id, uniqueness: { scope: %i[contract_period_year] }
 
-    touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
     touch -> { school }, on_event: :update, when_changing: %i[in_partnership induction_programme_choice], timestamp_attribute: :api_updated_at
   end
 end
