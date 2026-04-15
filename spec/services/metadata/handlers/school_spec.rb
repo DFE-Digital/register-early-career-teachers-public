@@ -74,7 +74,9 @@ RSpec.describe Metadata::Handlers::School do
         end
 
         it "does not update the metadata if no changes are made" do
-          expect { refresh_metadata }.not_to(change { metadata.reload.attributes })
+          instance.track_changes!
+          expect(Sentry).not_to receive(:capture_message).with(/SchoolContractPeriod/)
+          expect { refresh_metadata }.not_to(change { metadata.reload.updated_at })
         end
       end
     end
@@ -131,6 +133,8 @@ RSpec.describe Metadata::Handlers::School do
         end
 
         it "does not update the metadata if no changes are made" do
+          instance.track_changes!
+          expect(Sentry).not_to receive(:capture_message).with(/SchoolLeadProviderContractPeriod/)
           expect { refresh_metadata }.not_to(change { metadata.reload.attributes })
         end
       end
