@@ -2,9 +2,6 @@
 title: Connect to the RECT API
 sidebar_position: 14
 ---
-
-## Connect to the RECT API
-
 A unique API token is needed to connect to the register early career teachers API.
 
 Each token is associated with a single provider and will give lead providers access to information about ECTs and mentors they are training, or have trained.
@@ -29,7 +26,7 @@ Unauthenticated requests will receive an UnauthorizedResponse with a 401 error c
 
 Provider development teams can also access the OpenAPI spec in YAML format:
 
-'https://cpd-ec2-sandbox-web.teacherservices.cloud/api/docs/v3/swagger.yaml'
+`https://cpd-ec2-sandbox-web.teacherservices.cloud/api/docs/v3/swagger.yaml`
 
 Providers can use API testing tools such as [Postman](https://www.postman.com) to make test API calls. Providers can import the API as a collection by using Postman's import feature and copying in the YAML URL of the API spec.
 
@@ -37,24 +34,20 @@ Providers can use API testing tools such as [Postman](https://www.postman.com) t
 
 The API is available via production (live) and sandbox (testing) environments.
 
-## Production environment
+### Production environment
 
 The production environment is the live environment which processes real data.
 
 Do not perform testing in the production environment as real participant and payment data may be affected.
 
-`API v3: [PLACEHOLDER]`
+`[PLACEHOLDER]`
 
-## Sandbox environment
+### Sandbox environment
 
 The sandbox environment is used to test API integrations without affecting real data.
 
-`API v3: https://sandbox.register-early-career-teachers.education.gov.uk/api`
+`https://sandbox.register-early-career-teachers.education.gov.uk/api`
 
-Note, there are some custom API headers that can only be used in the sandbox.
+There are some custom API headers that can only be used in the sandbox, such as `X-With-Server-Date`, which allows for [testing the ability to submit declarations in the sandbox ahead of time](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively#test-declaration-submissions-using-x-with-server-date).
 
-[Test the ability to submit declarations in the sandbox ahead of time](#)
-
-## Rate limits
-
-Providers are limited to 1,000 requests per 5 minutes when using the API in the production environment. If the limit is exceeded, providers will see a 429 HTTP status code.
+Visit our [API testing guidance](https://sandbox.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/how-to-test-the-api-effectively) for further information on testing the API.
