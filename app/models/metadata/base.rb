@@ -19,6 +19,7 @@ module Metadata
     def ensure_metadata_namespace
       return if Thread.current[:bypass_update_restrictions]
 
+      # FIXME: broken by more Metadata:: paths being in the caller stack
       allowed = caller.reject { it.include?(self.class.name) }.any? { it.include?("Metadata::") }
       raise UpdateRestrictedError, "Updates to #{self.class.name} are only allowed from the Metadata namespace" unless allowed
     end
