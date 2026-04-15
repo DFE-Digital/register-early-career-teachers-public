@@ -12,7 +12,9 @@ class ECF1TeacherHistory
     @participant_identity_updated_ats = participant_identity_updated_ats
   end
 
-  def self.build(teacher_profile:)
+  # NOTE: when building histories for real_examples specs we don't want to apply patches until we run the specs
+  # so you need to pass `apply_patches: false` when building a history for the spec generator
+  def self.build(teacher_profile:, apply_patches: true)
     user_record = teacher_profile.user
     ect_profile = teacher_profile.participant_profiles.detect(&:ect?)
     mentor_profile = teacher_profile.participant_profiles.detect(&:mentor?)
@@ -33,7 +35,12 @@ class ECF1TeacherHistory
     participant_identity_updated_ats = user_record.participant_identities.map(&:updated_at)
 
     history = new(user:, ect:, mentor:, participant_identity_updated_ats:)
-    ECF1TeacherHistory::DataPatcher.new.apply_patches_to(history)
+
+    if apply_patches
+      ECF1TeacherHistory::DataPatcher.new.apply_patches_to(history)
+    else
+      history
+    end
   end
 
   def self.build_appropriate_body(induction_record:)

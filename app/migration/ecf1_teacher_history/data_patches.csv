@@ -1,3 +1,4 @@
 participant_profile_id,induction_record_id,start_date,end_date,created_at,updated_at,email,mentor_profile_id,training_status,induction_status,school_transfer,state_type,state_reason,state_cpd_lead_provider_id,state_created_at,ignore_training
 "a10a57fc-a7dd-4329-868e-c1811704c7a0","925502e4-4e77-4ace-9745-ae8853191d3e",,,,,,,,,,,,,,true
 "d620fb7c-722b-49e7-b254-2f479aeb1a56","602ff46c-7a77-48aa-b30e-6a9137a0f20d",,,,,,,,,,,,,,true
+"837ed9fe-82a9-43e7-a594-02c7b1ec4abe","ec755769-29be-4050-b4d6-f8d3edd2eb28","2025-09-01",,,,,,,,,,,,,
