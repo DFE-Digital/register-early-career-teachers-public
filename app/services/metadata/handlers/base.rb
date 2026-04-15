@@ -49,9 +49,13 @@ module Metadata::Handlers
     def alert_on_changes(metadata, changes)
       return unless @alert_on_changes
 
-      changed_attributes_with_history = changes.transform_values.with_index do |new_value, key|
-        {
-          old: metadata.attributes[key],
+      changed_attributes_with_history = changes.each_with_object({}) do |(key, new_value), hash|
+        old_value = metadata.attributes[key]
+
+        next if old_value == new_value
+
+        hash[key] = {
+          old: old_value,
           new: new_value
         }
       end
