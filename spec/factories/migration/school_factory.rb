@@ -6,5 +6,7 @@ FactoryBot.define do
     postcode { Faker::Address.postcode }
     ukprn { Faker::Number.unique.number(digits: 5).to_s }
     school_status_code { 1 }
+    school_type_code { 1 }
+    school_type_name { "Community school" }
   end
 end
