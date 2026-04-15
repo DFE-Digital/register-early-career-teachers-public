@@ -96,6 +96,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
         it_behaves_like "a token authenticated endpoint", :post
         it_behaves_like "an API create endpoint"
+        it_behaves_like "an endpoint that refreshes metadata", :post
 
         context "when the `declaration_type` is invalid" do
           let(:declaration_type) { "invalid" }
@@ -132,6 +133,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
         it_behaves_like "a token authenticated endpoint", :put
         it_behaves_like "an API update endpoint", accepts_request_body: false
+        it_behaves_like "an endpoint that refreshes metadata", :put
       end
     end
 
@@ -141,6 +143,7 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
       it_behaves_like "a token authenticated endpoint", :put
       it_behaves_like "an API update endpoint", accepts_request_body: false
+      it_behaves_like "an endpoint that refreshes metadata", :put
     end
 
     context "when the declaration is in `voided` status" do
