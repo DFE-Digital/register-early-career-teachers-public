@@ -34,9 +34,9 @@
 
     The base URL for the API is:
 
-    - https://register-early-career-teachers.education.gov.uk/
+    - https://register-early-career-teachers.education.gov.uk/api/v3
 
-    Providers can add the required API version and endpoint depending on what they want to do. For example, they’d add `/api/v3/participants/ecf` to the base URL if they wanted to retrieve data for multiple participants.
+    Providers can add the required API version and endpoint depending on what they want to do. For example, they’d add `/api/v3/participants/` to the base URL if they wanted to retrieve data for multiple participants.
 
     ## API documentation
 
@@ -44,7 +44,7 @@
 
     ## What providers need to do
 
-    On 28 April, providers must point their integrations to the RECT base URL and use RECT API bearer token (these would have been shared before launch).  
+    On 28 April, providers must point their integrations to the RECT base URL and use the RECT API bearer token that was shared before launch by Galaxkey.  
 
     We recommend that providers perform full syncs with the new RECT API for all endpoints. This will ensure all the data is up to date after the migration. 
 
