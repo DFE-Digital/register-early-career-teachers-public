@@ -17,7 +17,6 @@ You do not need to give us any more information.
 ### What happens next
 
 We’ll email <%= @mentor.full_name %> to confirm that you’ve registered them as a mentor.
-<% end %>
 
 <% if @wizard.ect.provider_led_training_programme? %>
 <% if @mentor.eligible_for_funding? %>
@@ -25,6 +24,7 @@ We’ll email <%= @mentor.full_name %> to confirm that you’ve registered them 
 <% else %>
 They cannot do mentor training according to our records.
 This could be because they’ve undertaken it before.
+<% end %>
 <% end %>
 <% end %>
 
