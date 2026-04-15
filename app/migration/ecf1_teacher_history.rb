@@ -32,7 +32,8 @@ class ECF1TeacherHistory
     # Capture participant_identities updated_at timestamps for api_updated_at calculation
     participant_identity_updated_ats = user_record.participant_identities.map(&:updated_at)
 
-    new(user:, ect:, mentor:, participant_identity_updated_ats:)
+    history = new(user:, ect:, mentor:, participant_identity_updated_ats:)
+    ECF1TeacherHistory::DataPatcher.new.apply_patches_to(history)
   end
 
   def self.build_appropriate_body(induction_record:)
@@ -184,6 +185,7 @@ class ECF1TeacherHistory
 
     participant_identity_updated_ats = []
 
-    new(user:, ect:, mentor:, participant_identity_updated_ats:)
+    history = new(user:, ect:, mentor:, participant_identity_updated_ats:)
+    ECF1TeacherHistory::DataPatcher.new.apply_patches_to(history)
   end
 end
