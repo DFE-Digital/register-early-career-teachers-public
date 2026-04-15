@@ -16,6 +16,7 @@ class SpecGenerator
     induction_blocks = induction_records.map do |induction_record|
       <<~IR.chomp
         hash_including(
+          induction_record_id: "#{induction_record.id}",
           started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
           finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'},
           training_periods: array_including(
@@ -313,6 +314,7 @@ private
   def ecf1_mentor_induction_records
     ecf1_teacher_history.mentor.induction_records.map do |ir|
       {
+        induction_record_id: ir.induction_record_id,
         start_date: ir.start_date,
         end_date: ir.end_date,
         training_programme: ir.training_programme,
