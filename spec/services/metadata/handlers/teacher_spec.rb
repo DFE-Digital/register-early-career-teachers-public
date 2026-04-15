@@ -360,5 +360,47 @@ RSpec.describe Metadata::Handlers::Teacher do
         end
       end
     end
+
+    context "when metadata already exists for a teacher and lead provider" do
+      let!(:metadata) do
+        FactoryBot.create(
+          :teacher_lead_provider_metadata,
+          teacher: teacher1,
+          lead_provider: lead_provider1,
+          latest_ect_training_period_id: nil,
+          latest_mentor_training_period_id: nil,
+          latest_ect_contract_period_year: nil,
+          latest_mentor_contract_period_year: nil,
+          api_mentor_id: nil,
+          involved_in_school_transfer: false
+        )
+      end
+
+      it "does not create metadata" do
+        expect { refresh_metadata }.not_to change(Metadata::TeacherLeadProvider, :count)
+      end
+
+      it "updates the metadata when the latest_ect_training_period_id changes" do
+        ect_at_school_period = FactoryBot.create(
+          :ect_at_school_period,
+          school: school1,
+          teacher: teacher1
+        )
+        training_period = FactoryBot.create(
+          :training_period,
+          :for_ect,
+          ect_at_school_period:,
+          school_partnership: school_partnership1
+        )
+
+        expect { refresh_metadata }.to change { metadata.reload.latest_ect_training_period_id }.from(nil).to(training_period.id)
+      end
+
+      it "does not update the metadata if no changes are made" do
+        instance.track_changes!
+        expect(Sentry).not_to receive(:capture_message).with(/TeacherLeadProvider/)
+        expect { refresh_metadata }.not_to(change { metadata.reload.attributes })
+      end
+    end
   end
 end
