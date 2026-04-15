@@ -88,6 +88,10 @@ module Schools
         Teachers::Name.new(self).full_name_in_trs
       end
 
+      def delivery_partner_name(school:)
+        queries.confirmed_delivery_partner_for_contract_period(school:)&.name
+      end
+
       def normalized_start_date
         return store[:start_date_as_date] if store[:start_date_as_date].present?
 

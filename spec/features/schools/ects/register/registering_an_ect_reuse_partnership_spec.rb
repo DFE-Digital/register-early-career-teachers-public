@@ -14,6 +14,8 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     and_i_submit_the_find_ect_form
     and_i_choose_that_the_details_are_correct
     and_i_click_confirm_and_continue
+    then_i_am_on_the_registered_before_page
+    and_i_click_continue
     then_i_am_on_the_email_address_page
 
     and_i_enter_the_ect_email_address
@@ -45,6 +47,8 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     and_i_submit_the_find_ect_form
     and_i_choose_that_the_details_are_correct
     and_i_click_confirm_and_continue
+    then_i_am_on_the_registered_before_page
+    and_i_click_continue
     then_i_am_on_the_email_address_page
 
     and_i_enter_the_ect_email_address
@@ -110,8 +114,26 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     @current_school = context.school
     @current_contract_period = context.current_contract_period
     @previous_school_partnership = context.previous_school_partnership
+    @current_school_partnership = context.current_school_partnership
     @last_chosen_lead_provider = context.last_chosen_lead_provider
     @previous_year_delivery_partner = context.previous_year_delivery_partner
+
+    teacher = FactoryBot.create(:teacher, trn: "9876543")
+    previous_ect_at_school_period = FactoryBot.create(
+      :ect_at_school_period,
+      teacher:,
+      school: @current_school,
+      started_on: 2.years.ago,
+      finished_on: 1.year.ago
+    )
+    FactoryBot.create(
+      :training_period,
+      :for_ect,
+      ect_at_school_period: previous_ect_at_school_period,
+      school_partnership: @previous_school_partnership,
+      started_on: previous_ect_at_school_period.started_on,
+      finished_on: previous_ect_at_school_period.finished_on
+    )
 
     @appropriate_body_name = "Golden Leaf Teaching Hub"
     FactoryBot.create(:appropriate_body_period, name: @appropriate_body_name)
@@ -237,6 +259,10 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     end
   end
 
+  def then_i_am_on_the_registered_before_page
+    expect(page).to have_path("/school/register-ect/registered-before")
+  end
+
   def then_i_am_on_the_start_date_page
     expect(page).to have_path("/school/register-ect/start-date")
   end
@@ -297,6 +323,11 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
     if page.get_by_text(@appropriate_body_name).count.positive?
       expect(page.get_by_text(@appropriate_body_name)).to be_visible
+    end
+
+    if @previous_year_delivery_partner
+      expect(page.get_by_text("Delivery partner").first).to be_visible
+      expect(page.get_by_text(@previous_year_delivery_partner.name)).to be_visible
     end
   end
 
