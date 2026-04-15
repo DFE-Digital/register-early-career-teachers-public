@@ -78,7 +78,23 @@ RSpec.shared_examples "a started on step" do |current_step:|
       context "and the start date is more than 4 months in the future" do
         let(:started_on) { 4.months.from_now.advance(days: 1) }
 
-        it { is_expected.to have_error(:started_on, "Start date must be before #{4.months.from_now.to_date.next_day.to_formatted_s(:govuk)}") }
+        context "and the start date is in an open contract period" do
+          before do
+            allow(step).to receive(:registrations_closed_for_contract_period?).and_return(false)
+          end
+
+          it { is_expected.to have_error(:started_on, "Start date must be before #{4.months.from_now.to_date.next_day.to_formatted_s(:govuk)}. You cannot register the mentor this far in advance.") }
+        end
+
+        context "and the start date falls in a contract period that is not yet open" do
+          before do
+            allow(step).to receive(:registrations_closed_for_contract_period?).and_return(true)
+          end
+
+          it "does not add the 4-month error so the wizard can route to cannot_register_mentor_yet" do
+            expect(step).to be_valid
+          end
+        end
       end
 
       context "and the start date is 4 months in the future" do
