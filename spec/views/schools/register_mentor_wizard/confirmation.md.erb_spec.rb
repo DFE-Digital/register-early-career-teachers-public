@@ -129,31 +129,45 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   context "when the mentor is already active at the school" do
     let(:already_active_at_school) { true }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
 
-    it "does not mention an email sent to the mentor" do
+    before do
       assign(:wizard, wizard)
       assign(:mentor, mentor)
       assign(:ect_name, "Michale Dixon")
 
       render
+    end
 
+    it "does not mention an email sent to the mentor" do
       expect(rendered).not_to have_content("What happens next")
       expect(rendered).not_to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
+    end
+
+    it "does not mention passing on details to the lead provider for mentor training" do
+      expect(rendered).not_to have_content("We’ll pass on their details to")
     end
   end
 
   context "when the mentor is not active at the school" do
     let(:already_active_at_school) { false }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
 
-    it "mentions an email sent to the mentor" do
+    before do
       assign(:wizard, wizard)
       assign(:mentor, mentor)
       assign(:ect_name, "Michale Dixon")
 
       render
+    end
 
+    it "mentions an email sent to the mentor" do
       expect(rendered).to have_content("What happens next")
       expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
+    end
+
+    it "mentions passing on details to the lead provider for mentor training" do
+      expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
     end
   end
 end
