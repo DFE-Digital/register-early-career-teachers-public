@@ -280,7 +280,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       it "returns lead providers for the 2024 contract period" do
         names = queries.lead_providers_within_contract_period.map(&:name)
 
-        expect(names).to include("LP 2024")
+        expect(names).to contain_exactly("LP 2024")
         expect(names).not_to include("LP 2025")
       end
     end

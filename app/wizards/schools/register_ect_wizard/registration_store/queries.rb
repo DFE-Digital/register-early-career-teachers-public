@@ -60,7 +60,7 @@ module Schools
               .ect_periods(trn: registration_store.trn)
 
             if ect_at_school_period
-              periods = periods.where.not(id: ect_at_school_period.id)
+              periods = periods.without(ect_at_school_period)
             end
 
             periods.last
