@@ -138,18 +138,21 @@ module API::Declarations
     def where_teacher_is(teacher_api_ids)
       return if ignore?(filter: teacher_api_ids, ignore_empty_array: false)
 
-      ect_join = scope.left_outer_joins(:ect_teacher, :mentor_teacher).where(ect_teacher: { api_id: teacher_api_ids })
-      mentor_join = scope.left_outer_joins(:ect_teacher, :mentor_teacher).where(mentor_teacher: { api_id: teacher_api_ids })
+      teacher_ids = Teacher.where(api_id: teacher_api_ids).ids
 
-      @scope = ect_join.or(mentor_join)
+      @scope = scope
+        .left_joins(training_period: %i[ect_at_school_period mentor_at_school_period])
+        .where(
+          "ect_at_school_periods.teacher_id IN (:ids) OR mentor_at_school_periods.teacher_id IN (:ids)",
+          ids: teacher_ids
+        )
     end
 
     def where_delivery_partner_is(delivery_partner_api_ids)
       return if ignore?(filter: delivery_partner_api_ids, ignore_empty_array: false)
 
-      @scope = scope
-        .joins(:delivery_partner_when_created)
-        .where(delivery_partner_when_created: { api_id: delivery_partner_api_ids })
+      delivery_partner_ids = DeliveryPartner.where(api_id: delivery_partner_api_ids).ids
+      @scope = scope.where(delivery_partner_when_created_id: delivery_partner_ids)
     end
 
     def where_updated_since(updated_since)
