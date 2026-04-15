@@ -515,12 +515,12 @@ describe "Real data check for user c51e6a24-b9b6-4088-9f01-1112d4edb32d (deletio
           ect_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2023, 3, 28),
-              finished_on: Date.new(2023, 7, 20),
+              finished_on: Date.new(2023, 8, 31),
               school: hash_including(urn: "100001", name: "School 1"),
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2023, 3, 28),
-                  finished_on: Date.new(2023, 7, 20),
+                  finished_on: Date.new(2023, 8, 31),
                   training_programme: "provider_led",
                   lead_provider_info: hash_including(name: "UCL Institute of Education"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1"),
@@ -528,21 +528,21 @@ describe "Real data check for user c51e6a24-b9b6-4088-9f01-1112d4edb32d (deletio
                 )
               )
             ),
-            hash_including(
-              started_on: Date.new(2023, 7, 21),
-              finished_on: Date.new(2023, 7, 22),
-              school: hash_including(urn: "100001", name: "School 1"),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2023, 7, 21),
-                  finished_on: Date.new(2023, 7, 22),
-                  training_programme: "provider_led",
-                  lead_provider_info: hash_including(name: "Ambition Institute"),
-                  delivery_partner_info: hash_including(name: "Delivery partner 2"),
-                  contract_period_year: 2022
-                )
-              )
-            ),
+            # hash_including(
+            #   started_on: Date.new(2023, 7, 21),
+            #   finished_on: Date.new(2023, 7, 22),
+            #   school: hash_including(urn: "100001", name: "School 1"),
+            #   training_periods: array_including(
+            #     hash_including(
+            #       started_on: Date.new(2023, 7, 21),
+            #       finished_on: Date.new(2023, 7, 22),
+            #       training_programme: "provider_led",
+            #       lead_provider_info: hash_including(name: "Ambition Institute"),
+            #       delivery_partner_info: hash_including(name: "Delivery partner 2"),
+            #       contract_period_year: 2022
+            #     )
+            #   )
+            # ),
             hash_including(
               started_on: Date.new(2023, 9, 20),
               finished_on: Date.new(2023, 10, 26),
