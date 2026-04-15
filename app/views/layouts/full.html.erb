@@ -9,7 +9,7 @@
 
     <div class="govuk-width-container">
       <div class="govuk-!-display-none-print">
-        <%= environment_specific_phase_banner %>
+        <%= render partial: "layouts/shared/banners" %>
         <%= render Admin::ImpersonationBannerComponent.new(user: current_user, school: @school) %>
         <%= yield(:backlink_or_breadcrumb) %>
       </div>
