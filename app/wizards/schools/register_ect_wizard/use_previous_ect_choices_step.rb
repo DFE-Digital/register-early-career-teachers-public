@@ -162,7 +162,7 @@ module Schools
       def previous_eoi_training_period_for_reassignment(contract_period)
         training_period = ect.previous_training_period
         return unless training_period
-        return unless training_period.training_programme == "provider_led"
+        return unless training_period.provider_led_training_programme?
         return if training_period.started_on > contract_period.finished_on
 
         return training_period if training_period.expression_of_interest_id.present?
