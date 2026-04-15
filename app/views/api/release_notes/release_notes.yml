@@ -36,7 +36,7 @@
 
     - https://register-early-career-teachers.education.gov.uk/api/v3
 
-    Providers can add the required API version and endpoint depending on what they want to do. For example, they’d add `/api/v3/participants/` to the base URL if they wanted to retrieve data for multiple participants.
+    Providers can add the required API version and endpoint depending on what they want to do. For example, they’d add `/participants/` to the base URL if they wanted to retrieve data for multiple participants.
 
     ## API documentation
 
@@ -46,16 +46,14 @@
 
     On 28 April, providers must point their integrations to the RECT base URL and use the RECT API bearer token that was shared before launch by Galaxkey.  
 
-    We recommend that providers perform full syncs with the new RECT API for all endpoints, and that they do this within the time window agreed. This will ensure all the data is up to date after the migration. 
+    We recommend that providers perform full syncs with the new RECT API for all endpoints, and that they do this within the time window agreed with DfE. This will ensure all the data is up to date after the migration. 
 
     Providers should also:
 
     - update their systems to ensure they're no longer calling data from the old ECF1 service - This will include changing base URLs and making use of the new RECT API tokens
     - check downstream processes to make sure none are broken or have been impacted by the migration or changes to the service
     - ensure that all data flows and integrations continue to work as expected
-    - test their internal processes to ensure that data is being handled appropriately
-    - conduct full data syncs in the window allocated as agreed with the DfE, ensuring that data is up to date and accurate following the migration
-
+    - test their internal processes to ensure that data is being handled appropriately    
 
 - title: Schedule and cohort changes now allowed for ECTs and mentors transferring to you from another provider
   date: 2026-04-15
