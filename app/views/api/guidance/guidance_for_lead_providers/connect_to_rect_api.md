@@ -40,7 +40,7 @@ The production environment is the live environment which processes real data.
 
 Do not perform testing in the production environment as real participant and payment data may be affected.
 
-`[PLACEHOLDER]`
+`https://register-early-career-teachers.education.gov.uk/api/v3`
 
 ### Sandbox environment
 
