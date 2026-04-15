@@ -19,7 +19,7 @@ module Metadata::Handlers
   private
 
     def upsert_lead_provider_metadata!
-      changes_to_upsert = lead_provider_ids.each_with_object({}) do |lead_provider_id, hash|
+      lead_provider_ids.each do |lead_provider_id|
         metadata = existing_lead_provider_metadata[lead_provider_id] ||
           Metadata::TeacherLeadProvider.new(teacher:, lead_provider_id:)
 
@@ -42,10 +42,8 @@ module Metadata::Handlers
           involved_in_school_transfer:
         }
 
-        hash[metadata] = changes if changes?(metadata, changes)
+        commit_changes!(metadata, changes)
       end
-
-      upsert_all(model: Metadata::TeacherLeadProvider, changes_to_upsert:, unique_by: %i[teacher_id lead_provider_id])
     end
 
     def existing_lead_provider_metadata
