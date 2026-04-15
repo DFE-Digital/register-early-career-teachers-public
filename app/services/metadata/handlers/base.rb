@@ -33,11 +33,12 @@ module Metadata::Handlers
     end
 
     def changes?(metadata, changes)
+      changes.stringify_keys!
       metadata.attributes.slice(*changes.keys) != changes
     end
 
     def commit_changes!(metadata, changes)
-      return unless changes?(metadata, changes)
+      return unless metadata.new_record? || changes?(metadata, changes)
 
       # As we touch other models when metadata is updated via ActiveRecord callbacks,
       # we need to ensure this remains a method that will trigger those callbacks
