@@ -1,5 +1,5 @@
 ---
-title: Understanding unfunded mentors
+title: Using the unfunded mentors endpoint
 sidebar_position: 12
 ---
 This guidance explains:
