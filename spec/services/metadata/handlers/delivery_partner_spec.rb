@@ -67,6 +67,8 @@ RSpec.describe Metadata::Handlers::DeliveryPartner do
         end
 
         it "does not update the metadata if no changes are made" do
+          instance.track_changes!
+          expect(Sentry).not_to receive(:capture_message).with(/DeliveryPartnerLeadProvider/)
           expect { refresh_metadata }.not_to(change { metadata.reload.attributes })
         end
       end
