@@ -52,26 +52,16 @@ RSpec.describe "Registering an ECT - no reuse", :enable_schools_interface do
     @current_school = context.school
     @current_contract_period = context.current_contract_period
     @previous_school_partnership = context.previous_school_partnership
-    @current_school_partnership = context.current_school_partnership
     @last_chosen_lead_provider = context.last_chosen_lead_provider
     @previous_year_delivery_partner = context.previous_year_delivery_partner
     @teacher = Teacher.find_or_create_by!(trn: "9876543")
 
-    teacher = FactoryBot.create(:teacher, trn: "9876543")
-    previous_ect_at_school_period = FactoryBot.create(
-      :ect_at_school_period,
-      teacher:,
-      school: @current_school,
-      started_on: 2.years.ago,
-      finished_on: 1.year.ago
-    )
+    previous_school = FactoryBot.create(:school)
     FactoryBot.create(
-      :training_period,
-      :for_ect,
-      ect_at_school_period: previous_ect_at_school_period,
-      school_partnership: @previous_school_partnership,
-      started_on: previous_ect_at_school_period.started_on,
-      finished_on: previous_ect_at_school_period.finished_on
+      :ect_at_school_period,
+      :finished,
+      teacher: @teacher,
+      school: previous_school
     )
 
     @appropriate_body_name = "Golden Leaf Teaching Hub"
@@ -134,6 +124,10 @@ RSpec.describe "Registering an ECT - no reuse", :enable_schools_interface do
     end
   end
 
+  def then_i_am_on_the_registered_before_page
+    expect(page).to have_path("/school/register-ect/registered-before")
+  end
+
   def then_i_am_on_the_email_address_page
     expect(page).to have_path("/school/register-ect/email-address")
   end
@@ -144,10 +138,6 @@ RSpec.describe "Registering an ECT - no reuse", :enable_schools_interface do
     else
       page.get_by_label(/email address/i).fill("example@example.com")
     end
-  end
-
-  def then_i_am_on_the_registered_before_page
-    expect(page).to have_path("/school/register-ect/registered-before")
   end
 
   def then_i_am_on_the_start_date_page
