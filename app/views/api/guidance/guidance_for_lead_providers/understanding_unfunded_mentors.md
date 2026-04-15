@@ -4,13 +4,16 @@ sidebar_position: 12
 ---
 This guidance explains:
 
-- what an unfunded mentor is
-- how to identify an unfunded mentor
+
+- what an unfunded mentor response is on the API
+- how to identify an unfunded mentor on the API
 
 ## What is an unfunded mentor?
 Unfunded mentors are mentors who are mentoring ECTs that a lead provider trains, but whose mentor training is or was not funded through that lead provider. This is typically because they have already completed mentor training, or are currently doing so, with a different lead provider.
 
-Lead providers will be funded to give these mentors access to learning materials and platforms so that they can support ECTs they are mentoring.
+Lead providers will be funded to give these mentors access to learning materials and platforms so that they can support ECTs they are mentoring in cohorts before 2025.
+
+From 2025, the funding is included as part of the fee for training ECTs.
 
 For example, a lead provider might be training an ECT named Bob. Bob is assigned Laura as a mentor. Laura has already completed training with a different lead provider. As a result, she would appear as an unfunded mentor to the lead provider via the API, because they would not be funded for providing her with mentor training.
 
@@ -27,7 +30,10 @@ For example, if a lead provider used to provide mentor training for a mentor nam
 - no longer be eligible for any more funded training
 - still require access to learning platforms or systems to support any ECTs the lead provider was training that she continued to mentor
 
-The lead provider was previously funded for her training, so she would not appear via the 'GET /unfunded-mentors' endpoint. Lead providers could identify Sarah as the mentor for ECTs they were training by using the 'mentor_id' for those ECTs in 'GET /participants'.
+The lead provider was previously funded for her training, so she would not appear via the 'GET /unfunded-mentors' endpoint. She would still appear in the 'GET /participants' endpoint.
+
+
+Lead providers could identify Sarah as the mentor for ECTs they were training by using the 'mentor_id' for those ECTs in 'GET /participants'.
 
 ## View all unfunded mentors
 
