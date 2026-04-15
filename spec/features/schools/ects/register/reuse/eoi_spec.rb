@@ -1,24 +1,27 @@
-RSpec.describe "Registering an ECT - backdated start date", :enable_schools_interface do
+RSpec.describe "Registering an ECT - reuse previous EOI", :enable_schools_interface do
   include_context "test TRS API returns a teacher"
   include ReusablePartnershipHelpers
 
   before { travel_to Date.new(2025, 9, 1) }
 
-  scenario "allows a backdated start date and reaches confirmation" do
-    given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
+  scenario "reuses previous choices when the school has a previous EOI for the last chosen LP" do
+    given_i_am_logged_in_as_a_state_funded_school_user_whose_school_has_a_previous_eoi_for_the_last_chosen_lp
     and_i_am_on_the_schools_ects_index_page
     and_i_start_adding_an_ect
     and_i_click_continue
     and_i_submit_the_find_ect_form
     and_i_choose_that_the_details_are_correct
     and_i_click_confirm_and_continue
+    then_i_am_on_the_registered_before_page
+
+    and_i_click_continue
     then_i_am_on_the_email_address_page
 
     and_i_enter_the_ect_email_address
     and_i_click_continue
     then_i_am_on_the_start_date_page
 
-    and_i_enter_a_backdated_start_date
+    and_i_enter_a_valid_start_date
     and_i_click_continue
     then_i_am_on_the_working_pattern_page
 
@@ -29,37 +32,63 @@ RSpec.describe "Registering an ECT - backdated start date", :enable_schools_inte
     and_i_choose_to_reuse_previous_choices
     and_i_click_continue
     then_i_am_on_the_check_answers_page
+    and_i_see_previous_programme_choices_summary_when_reusing
 
     and_i_click_confirm_details
     then_i_am_on_the_confirmation_page
-    and_the_training_period_is_created_in_the_registration_contract_period
   end
 
-  def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
-    context = build_school_with_reusable_provider_led_partnership
+  def given_i_am_logged_in_as_a_state_funded_school_user_whose_school_has_a_previous_eoi_for_the_last_chosen_lp
+    @teacher = Teacher.find_or_create_by!(trn: "9876543")
 
-    @current_school = context.school
-    @current_contract_period = context.current_contract_period
-    @previous_school_partnership = context.previous_school_partnership
-    @last_chosen_lead_provider = context.last_chosen_lead_provider
-    @previous_year_delivery_partner = context.previous_year_delivery_partner
+    @current_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2025)
+    previous_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: 2024)
+
+    @last_chosen_lead_provider = FactoryBot.create(:lead_provider, name: "Orange Institute")
+
+    previous_year_active_lead_provider = FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @last_chosen_lead_provider,
+      contract_period: previous_contract_period
+    )
+
+    FactoryBot.create(
+      :active_lead_provider,
+      lead_provider: @last_chosen_lead_provider,
+      contract_period: @current_contract_period
+    )
+
+    @current_school = FactoryBot.create(
+      :school,
+      :state_funded,
+      :provider_led_last_chosen,
+      :teaching_school_hub_ab_last_chosen,
+      last_chosen_lead_provider: @last_chosen_lead_provider
+    )
 
     @appropriate_body_name = "Golden Leaf Teaching Hub"
     FactoryBot.create(:appropriate_body_period, name: @appropriate_body_name)
+    FactoryBot.create(:appropriate_body_period, name: "Umber Teaching Hub")
 
-    stub_reuse_finder_to_return(@previous_school_partnership)
+    earlier_registration_at_current_school = FactoryBot.create(
+      :ect_at_school_period,
+      school: @current_school,
+      teacher: @teacher,
+      started_on: Date.new(2024, 9, 1),
+      finished_on: Date.new(2025, 6, 30)
+    )
+
+    FactoryBot.create(
+      :training_period,
+      ect_at_school_period: earlier_registration_at_current_school,
+      training_programme: "provider_led",
+      expression_of_interest: previous_year_active_lead_provider,
+      school_partnership: nil,
+      started_on: Date.new(2024, 9, 1),
+      finished_on: Date.new(2025, 6, 30)
+    )
 
     sign_in_as_school_user(school: @current_school)
-  end
-
-  def stub_reuse_finder_to_return(previous_partnership)
-    reuse_finder = instance_double(SchoolPartnerships::FindReusablePartnership)
-
-    allow(SchoolPartnerships::FindReusablePartnership).to receive(:new)
-      .and_return(reuse_finder)
-
-    allow(reuse_finder).to receive(:call)
-      .and_return(previous_partnership)
   end
 
   def and_i_am_on_the_schools_ects_index_page
@@ -103,6 +132,10 @@ RSpec.describe "Registering an ECT - backdated start date", :enable_schools_inte
     end
   end
 
+  def then_i_am_on_the_registered_before_page
+    expect(page).to have_path("/school/register-ect/registered-before")
+  end
+
   def then_i_am_on_the_email_address_page
     expect(page).to have_path("/school/register-ect/email-address")
   end
@@ -119,8 +152,8 @@ RSpec.describe "Registering an ECT - backdated start date", :enable_schools_inte
     expect(page).to have_path("/school/register-ect/start-date")
   end
 
-  def and_i_enter_a_backdated_start_date
-    @entered_start_date = @current_contract_period.started_on - 9.months
+  def and_i_enter_a_valid_start_date
+    @entered_start_date = @current_contract_period.started_on + 1.month
     page.get_by_label("day").fill(@entered_start_date.day.to_s)
     page.get_by_label("month").fill(@entered_start_date.month.to_s)
     page.get_by_label("year").fill(@entered_start_date.year.to_s)
@@ -146,22 +179,17 @@ RSpec.describe "Registering an ECT - backdated start date", :enable_schools_inte
     expect(page).to have_path("/school/register-ect/check-answers")
   end
 
+  def and_i_see_previous_programme_choices_summary_when_reusing
+    expect(page.get_by_text("Choices used by your school previously").first).to be_visible
+    expect(page.get_by_text("Provider-led")).to be_visible
+    expect(page.get_by_text(@last_chosen_lead_provider.name)).to be_visible
+  end
+
   def and_i_click_confirm_details
     page.get_by_role("button", name: "Confirm details").click
   end
 
   def then_i_am_on_the_confirmation_page
     expect(page).to have_path("/school/register-ect/confirmation")
-  end
-
-  def and_the_training_period_is_created_in_the_registration_contract_period
-    teacher = Teacher.find_by!(trn: "9876543")
-    ect_at_school_period = teacher.ect_at_school_periods.order(:created_at).last
-    training_period = ect_at_school_period.training_periods.order(:created_at).last
-
-    expect(ect_at_school_period.started_on).to eq(@entered_start_date)
-    expect(training_period.started_on).to eq(@current_contract_period.started_on)
-    expect(training_period.schedule.contract_period_year).to eq(@current_contract_period.year)
-    expect(ect_at_school_period.started_on).not_to eq(training_period.started_on)
   end
 end
