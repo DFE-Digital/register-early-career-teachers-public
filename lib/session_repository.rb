@@ -12,6 +12,8 @@ class SessionRepository
     store[key.to_s] = value.is_a?(Hash) ? value.deep_stringify_keys : value
   end
 
+  delegate :empty?, to: :store
+
   def reset
     @session.delete(@form_key)
   end

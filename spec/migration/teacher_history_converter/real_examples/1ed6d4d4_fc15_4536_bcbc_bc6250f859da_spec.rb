@@ -21,12 +21,14 @@ describe "Real data check for user 1ed6d4d4-fc15-4536-bcbc-bc6250f859da (with a 
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2023, 7, 20, 12, 30, 12)
+            created_at: Time.zone.local(2023, 7, 20, 12, 30, 12),
+            cpd_lead_provider_id: :ignore
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2023, 7, 20, 12, 30, 12)
+            created_at: Time.zone.local(2023, 7, 20, 12, 30, 12),
+            cpd_lead_provider_id: :ignore
           },
           {
             state: "withdrawn",

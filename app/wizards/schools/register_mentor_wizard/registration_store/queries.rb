@@ -49,7 +49,8 @@ module Schools
         end
 
         def previous_school_mentor_at_school_periods
-          finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(registration_store.start_date)
+          finished_on_or_after_date = registration_store.started_on.presence || Date.current
+          finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(finished_on_or_after_date)
           scope = ::MentorAtSchoolPeriod.ongoing.or(finishes_in_the_future_scope)
           mentor_at_school_periods.where.not(school:).merge(scope)
         end

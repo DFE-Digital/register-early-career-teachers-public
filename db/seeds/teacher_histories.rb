@@ -180,6 +180,13 @@ teach_first_artisan_abbey_grove_2022 = find_or_create_school_partnership!(
   contract_period: cp_2022
 )
 
+ambition_artisan_abbey_grove_2024 = find_or_create_school_partnership!(
+  school: abbey_grove_school,
+  lead_provider: ambition_institute,
+  delivery_partner: artisan_education_group,
+  contract_period: cp_2024
+)
+
 ambition_artisan_abbey_grove_2025 = find_or_create_school_partnership!(
   school: abbey_grove_school,
   lead_provider: ambition_institute,
@@ -1059,7 +1066,7 @@ FactoryBot.create(:training_period,
                   ect_at_school_period: jane_smith_ect_at_abbey_grove_school,
                   started_on: jane_smith_started_date,
                   finished_on: nil,
-                  school_partnership: ambition_artisan_abbey_grove_2025,
+                  school_partnership: ambition_artisan_abbey_grove_2024,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Adding mentorships:")

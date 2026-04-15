@@ -50,6 +50,7 @@ shared:
     - api_mentor_training_record_id
     - mentor_became_ineligible_for_funding_on
     - mentor_became_ineligible_for_funding_reason
+    - ect_became_ineligible_for_funding_on
     - ect_payments_frozen_year
     - mentor_payments_frozen_year
     - ect_first_became_eligible_for_training_at
@@ -271,3 +272,7 @@ shared:
     - milestone_date
     - created_at
     - updated_at
+  :contracts:
+    - id
+    - contract_type
+    - active_lead_provider_id

@@ -99,9 +99,10 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
 
   describe "#lead_providers_for_select" do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, started_on:) }
-    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
-    let!(:other_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2025) }
-    let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: 2026) }
+    let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year:) }
+    let!(:other_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year:) }
+    let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: year + 1) }
+    let(:year) { 2025 }
 
     context "when there are no active lead providers in contract period containing the ect's start date" do
       let(:started_on) { Date.new(2024, 6, 1) }
@@ -124,6 +125,30 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
         it "returns the active lead providers in the contract period" do
           expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
         end
+      end
+    end
+
+    context "when the ect started provider-led training in a closed contract period" do
+      let(:started_on) { Date.new(2021, 9, 1) }
+      let(:year) { 2024 }
+
+      let(:school_partnership) do
+        FactoryBot.create(
+          :school_partnership,
+          :for_year,
+          year: 2021,
+          school: ect_at_school_period.school
+        )
+      end
+
+      before do
+        FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021)
+        old_training_period = FactoryBot.create(:training_period, :for_ect, :finished, :provider_led, ect_at_school_period:, school_partnership:, started_on:)
+        FactoryBot.create(:training_period, :for_ect, :ongoing, :school_led, ect_at_school_period:, started_on: old_training_period.finished_on + 1.day)
+      end
+
+      it "returns the active lead providers in the successor contract period" do
+        expect(current_step.lead_providers_for_select).to contain_exactly(active_lead_provider.lead_provider, other_lead_provider.lead_provider)
       end
     end
   end

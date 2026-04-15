@@ -39,13 +39,17 @@ module Statements
     end
 
     def selected_ids_for_flat_rate(calculator)
-      filtered_declarations = calculator.declaration_selector.call(current_billable_declarations.or(current_refundable_declarations))
+      declarations_to_filter = current_billable_declarations
+        .or(current_refundable_declarations)
+        .or(current_voided_declarations)
+      filtered_declarations = calculator.declaration_selector.call(declarations_to_filter)
       ordered(filtered_declarations).ids
     end
 
     def selected_ids_for_banded(calculator)
       filtered_current_billable = ordered(calculator.declaration_selector.call(current_billable_declarations))
       filtered_current_refundable = ordered(calculator.declaration_selector.call(current_refundable_declarations))
+      filtered_current_voided = ordered(calculator.declaration_selector.call(current_voided_declarations))
       filtered_previous_billable = calculator.declaration_selector.call(previous_billable_declarations)
       filtered_previous_refundable = calculator.declaration_selector.call(previous_refundable_declarations)
 
@@ -61,7 +65,8 @@ module Statements
       refundable_selection_limits = allocations.group_by(&:declaration_type).transform_values { |rows| rows.sum(&:refundable_count) }
 
       select_ids_by_type(filtered_current_billable, billable_selection_limits) +
-        select_ids_by_type(filtered_current_refundable, refundable_selection_limits)
+        select_ids_by_type(filtered_current_refundable, refundable_selection_limits) +
+        filtered_current_voided.ids
     end
 
     def select_ids_by_type(declarations, selection_limits_by_declaration_type)
@@ -78,6 +83,10 @@ module Statements
 
     def current_refundable_declarations
       @current_refundable_declarations ||= Declaration.where(clawback_statement: statement).refundable
+    end
+
+    def current_voided_declarations
+      @current_voided_declarations ||= Declaration.where(payment_statement: statement).payment_status_voided
     end
 
     def previous_billable_declarations

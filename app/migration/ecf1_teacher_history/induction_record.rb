@@ -38,6 +38,12 @@ ECF1TeacherHistory::InductionRecord = Struct.new(
                              :ignore
                            end
 
+    hash[:appropriate_body] = if (appropriate_body_info = hash[:appropriate_body]) && appropriate_body_info.present?
+                                Types::AppropriateBodyData.new(**appropriate_body_info)
+                              else
+                                :ignore
+                              end
+
     hash.compact_with_ignore!
 
     if (school = hash[:school])

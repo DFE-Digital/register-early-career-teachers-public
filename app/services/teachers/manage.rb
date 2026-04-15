@@ -64,6 +64,10 @@ class Teachers::Manage
       )
       new_induction_status = teacher.trs_induction_status
 
+      if new_induction_status == "Exempt"
+        teacher.ect_became_ineligible_for_funding_on ||= Date.current
+      end
+
       record_induction_status_change_event(old_induction_status, new_induction_status)
       teacher.save!
     end

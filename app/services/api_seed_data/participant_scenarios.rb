@@ -466,11 +466,11 @@ module APISeedData
                 :"for_#{type}",
                 :provider_led,
                 :active,
+                :ongoing,
                 "#{type}_at_school_period" => school_period,
                 school_partnership:,
                 schedule:,
-                started_on: start_date,
-                finished_on: finished_date
+                started_on: start_date
               )
 
               log_participant_created(

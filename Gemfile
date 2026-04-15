@@ -4,9 +4,6 @@ ruby "3.4.8"
 
 gem "rails", "~> 8.0.4"
 
-# temporary, see https://github.com/mperham/connection_pool/issues/212#issuecomment-3637733716
-gem "connection_pool", "< 3"
-
 gem "blazer"
 gem "bootsnap", require: false
 gem "cssbundling-rails"
@@ -22,8 +19,8 @@ gem "rack-attack"
 gem "redis"
 gem "tzinfo-data", platforms: %i[windows jruby]
 
-gem "govuk-components", "6.0.0"
-gem "govuk_design_system_formbuilder", "6.0.0"
+gem "govuk-components", "6.1.0"
+gem "govuk_design_system_formbuilder", "6.1.0"
 gem "govuk_markdown"
 
 gem "mail-notify"

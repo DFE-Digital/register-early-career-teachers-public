@@ -41,6 +41,10 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
             training_status: "active",
             preferred_identity_email: "a.teacher@example.com",
             mentor_profile_id: :ignore,
+            appropriate_body: {
+              ecf1_id: "658c4468-30d9-4563-8581-0d20c075220f",
+              name: "Teach West London (Twyford Church of England High School)"
+            },
             training_provider_info: {
               lead_provider: {
                 ecf1_id: "3d7d8c90-a5a3-4838-84b2-563092bf87ee",
@@ -75,6 +79,10 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
             training_status: "active",
             preferred_identity_email: "a.teacher@example.com",
             mentor_profile_id: :ignore,
+            appropriate_body: {
+              ecf1_id: "658c4468-30d9-4563-8581-0d20c075220f",
+              name: "Teach West London (Twyford Church of England High School)"
+            },
             training_provider_info: {
               lead_provider: {
                 ecf1_id: "3d7d8c90-a5a3-4838-84b2-563092bf87ee",
@@ -109,6 +117,10 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
             training_status: "active",
             preferred_identity_email: "a.teacher@example.com",
             mentor_profile_id: "fbe5e836-7f0e-49cd-8d5b-1f7bd2320a8d",
+            appropriate_body: {
+              ecf1_id: "658c4468-30d9-4563-8581-0d20c075220f",
+              name: "Teach West London (Twyford Church of England High School)"
+            },
             training_provider_info: {
               lead_provider: {
                 ecf1_id: "3d7d8c90-a5a3-4838-84b2-563092bf87ee",
@@ -143,6 +155,10 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
             training_status: "active",
             preferred_identity_email: "a.teacher@example.com",
             mentor_profile_id: :ignore,
+            appropriate_body: {
+              ecf1_id: "658c4468-30d9-4563-8581-0d20c075220f",
+              name: "Teach West London (Twyford Church of England High School)"
+            },
             training_provider_info: {
               lead_provider: {
                 ecf1_id: "3d7d8c90-a5a3-4838-84b2-563092bf87ee",
@@ -270,17 +286,20 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2024, 7, 11, 10, 20, 40)
+            created_at: Time.zone.local(2024, 7, 11, 10, 20, 40),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           },
           {
             state: "deferred",
             reason: "other",
-            created_at: Time.zone.local(2025, 1, 14, 9, 30, 12)
+            created_at: Time.zone.local(2025, 1, 14, 9, 30, 12),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2025, 5, 8, 14, 47, 37)
+            created_at: Time.zone.local(2025, 5, 8, 14, 47, 37),
+            cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
           }
         ],
         school_mentors: [
@@ -298,7 +317,7 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
@@ -315,6 +334,7 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
               #       the induction_completion_date is before the start's end date
               started_on: Date.new(2025, 4, 4),
               finished_on: Date.new(2025, 4, 5),
+              school_reported_appropriate_body_id: 390,
               training_periods: array_including(
                 hash_including(
                   started_on: Date.new(2025, 4, 4),
@@ -347,6 +367,12 @@ describe "Real data check for user 668787fb-6c01-46ee-83bf-2e5362eba446" do
 
     it "matches the expected output" do
       expect(actual_output).to include(expected_output)
+    end
+
+    it "sets the appropriate body" do
+      id = actual_output.dig(:teacher, :ect_at_school_periods, 0, :school_reported_appropriate_body_id)
+
+      expect(id).to eq(390)
     end
   end
 

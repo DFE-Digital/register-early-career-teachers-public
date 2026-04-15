@@ -37,6 +37,8 @@ module Teachers
       raise LeadProviderNotChangedError unless lead_provider_changed?
 
       ActiveRecord::Base.transaction do
+        track_payments_frozen_year!
+
         if current_or_future_training_period?
           update_training_period_in_place!
         else
@@ -74,6 +76,10 @@ module Teachers
       )
     end
 
+    def track_payments_frozen_year!
+      # Do nothing
+    end
+
     def active_lead_provider
       ActiveLeadProvider.find_or_create_by!(lead_provider:, contract_period:)
     end
@@ -92,9 +98,12 @@ module Teachers
 
     def reuse_existing_schedule?
       return false unless existing_schedule
+      return false if contract_period_reassignment_required?
 
       existing_schedule.contract_period != contract_period_at_transition
     end
+
+    def contract_period_reassignment_required? = false
 
     def contract_period_at_transition
       @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
@@ -130,7 +139,7 @@ module Teachers
     alias_method :started_on, :date_of_transition
 
     def training_period
-      period.current_or_next_training_period
+      @training_period ||= period.current_or_next_training_period
     end
 
     def current_or_future_training_period?

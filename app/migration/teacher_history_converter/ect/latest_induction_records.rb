@@ -60,7 +60,8 @@ private
         school: induction_record.school,
         email: induction_record.preferred_identity_email,
         mentorship_periods: [mentorship_period].compact,
-        training_periods: [training_period].compact
+        training_periods: [training_period].compact,
+        appropriate_body: induction_record.appropriate_body
       )
     )
   end

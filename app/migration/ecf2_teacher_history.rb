@@ -16,7 +16,6 @@ class ECF2TeacherHistory
 
   MIGRATION_ITEM_TYPE = "Migration::InductionRecord"
 
-  AppropriateBodyData = Data.define(:id, :name)
   MentorData = Data.define(:trn, :urn, :started_on, :finished_on)
 
   attr_reader :teacher,
@@ -40,7 +39,7 @@ class ECF2TeacherHistory
   end
 
   def save_all_ect_data!
-    find_or_create_teacher!.tap do |teacher|
+    find_or_create_teacher!(profile_type: "ect").tap do |teacher|
       save_ect_combination_and_mentorship_summaries!
       save_ect_periods!(teacher)
       update_ect_combination_and_mentorship_summaries!
@@ -48,7 +47,7 @@ class ECF2TeacherHistory
   end
 
   def save_all_mentor_data!
-    find_or_create_teacher!.tap do |teacher|
+    find_or_create_teacher!(profile_type: "mentor").tap do |teacher|
       save_mentor_combination_summaries!
       save_mentor_periods!(teacher)
       update_mentor_combination_summaries!
@@ -122,10 +121,20 @@ class ECF2TeacherHistory
     migration_mode.to_s == "all_induction_records"
   end
 
-  def record_failure!(teacher:, model:, message:, migration_item_id:)
-    record_failed_combinations(at_school_period: model, message:) if model.respond_to?(:training_periods)
+  def record_failure!(teacher:, model:, message:, migration_item_id:, profile_type:)
+    # teacher or at_school_period failed getting persisted
+    if model.is_a?(::Teacher) || model.respond_to?(:training_periods)
+      at_school_periods = profile_type == "ect" ? ect_at_school_periods : mentor_at_school_periods
+      training_periods = at_school_periods.map(&:training_periods).flatten
+      record_failed_combinations(training_periods:, message:)
+    end
+
+    # training_period failed getting persisted
     record_failed_combination(combination: model.combination, message:) if model.respond_to?(:combination)
+
+    # mentorship period failed getting persisted
     record_failed_mentorship(mentorship: model, message:) if model.is_a?(ECF2TeacherHistory::MentorshipPeriod)
+
     model_identifier = model.is_a?(Symbol) ? model : model.class.name.demodulize.underscore
 
     ::TeacherMigrationFailure.create!(
@@ -144,7 +153,7 @@ private
     @data_migration_teacher_combinations ||= DataMigrationTeacherCombination.find_or_initialize_by(api_id: teacher.api_id)
   end
 
-  def find_or_create_teacher!
+  def find_or_create_teacher!(profile_type:)
     found_teacher = if teacher.trn.present?
                       ::Teacher.find_by(trn: teacher.trn)
                     else
@@ -152,16 +161,23 @@ private
                     end
 
     if found_teacher.present?
-      with_failure_recording(teacher: found_teacher, model: :teacher, migration_item_id: teacher.api_id) do
-        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name, :trs_last_name, :trs_induction_start_date, :api_updated_at))
+      with_failure_recording(teacher: found_teacher, model: found_teacher, migration_item_id: teacher.api_id, profile_type:) do
+        found_teacher.assign_attributes(**teacher.to_hash.except(:trs_first_name,
+                                                                 :trs_last_name,
+                                                                 :trs_induction_start_date,
+                                                                 :api_updated_at,
+                                                                 :ect_first_became_eligible_for_training_at,
+                                                                 :mentor_first_became_eligible_for_training_at))
         found_teacher.trs_induction_start_date ||= teacher.trs_induction_start_date
+        found_teacher.ect_first_became_eligible_for_training_at ||= teacher.ect_first_became_eligible_for_training_at
+        found_teacher.mentor_first_became_eligible_for_training_at ||= teacher.mentor_first_became_eligible_for_training_at
         found_teacher.api_updated_at = [found_teacher.api_updated_at, teacher.api_updated_at].compact.max
         found_teacher.save!
         found_teacher
       end
     else
       new_teacher = ::Teacher.new
-      with_failure_recording(teacher: new_teacher, model: :teacher, migration_item_id: teacher.api_id) do
+      with_failure_recording(teacher: new_teacher, model: new_teacher, migration_item_id: teacher.api_id, profile_type:) do
         new_teacher.assign_attributes(**teacher.to_hash)
         new_teacher.save!
         new_teacher
@@ -173,8 +189,8 @@ private
     Rails.application.config.raise_migration_errors
   end
 
-  def record_failed_combinations(at_school_period:, message:)
-    at_school_period.training_periods.map(&:combination).each do |combination|
+  def record_failed_combinations(training_periods:, message:)
+    training_periods.map(&:combination).each do |combination|
       record_failed_combination(combination:, message:)
     end
   end
@@ -206,13 +222,15 @@ private
     ect_at_school_periods.each do |ect_at_school_period|
       with_failure_recording(teacher: found_teacher,
                              model: ect_at_school_period,
-                             migration_item_id: ect_at_school_period.training_periods.first&.ecf_start_induction_record_id) do
+                             migration_item_id: ect_at_school_period.training_periods.first&.ecf_start_induction_record_id,
+                             profile_type: "ect") do
         created_ect_at_school_period = ::ECTAtSchoolPeriod.create!(teacher: found_teacher, **ect_at_school_period)
 
         ect_at_school_period.training_periods.each do |training_period|
           with_failure_recording(teacher: found_teacher,
                                  model: training_period,
-                                 migration_item_id: training_period.ecf_start_induction_record_id) do
+                                 migration_item_id: training_period.ecf_start_induction_record_id,
+                                 profile_type: "ect") do
             ::TrainingPeriod.create!(ect_at_school_period: created_ect_at_school_period,
                                      **school_partnership_for(training_period),
                                      **training_period)
@@ -221,7 +239,11 @@ private
         end
 
         ect_at_school_period.mentorship_periods.each do |mentorship_period|
-          with_failure_recording(teacher: found_teacher, model: mentorship_period, migration_item_id: mentorship_period.ecf_start_induction_record_id, acceptable: true) do
+          with_failure_recording(teacher: found_teacher,
+                                 model: mentorship_period,
+                                 migration_item_id: mentorship_period.ecf_start_induction_record_id,
+                                 profile_type: "ect",
+                                 acceptable: true) do
             ::MentorshipPeriod.create!(mentee: created_ect_at_school_period, **mentorship_period.to_h)
             ecf2_mentorship_summaries << mentorship_period.summary
           end
@@ -234,13 +256,15 @@ private
     mentor_at_school_periods.each do |mentor_at_school_period|
       with_failure_recording(teacher: found_teacher,
                              model: mentor_at_school_period,
-                             migration_item_id: mentor_at_school_period.training_periods.first&.ecf_start_induction_record_id) do
+                             migration_item_id: mentor_at_school_period.training_periods.first&.ecf_start_induction_record_id,
+                             profile_type: "mentor") do
         created_mentor_at_school_period = ::MentorAtSchoolPeriod.create!(teacher: found_teacher, **mentor_at_school_period)
 
         mentor_at_school_period.training_periods.each do |training_period|
           with_failure_recording(teacher: found_teacher,
                                  model: training_period,
-                                 migration_item_id: training_period.ecf_start_induction_record_id) do
+                                 migration_item_id: training_period.ecf_start_induction_record_id,
+                                 profile_type: "mentor") do
             ::TrainingPeriod.create!(
               mentor_at_school_period: created_mentor_at_school_period,
               **school_partnership_for(training_period),
@@ -273,7 +297,7 @@ private
     )
   end
 
-  def with_failure_recording(teacher:, model:, migration_item_id:, acceptable: false)
+  def with_failure_recording(teacher:, model:, migration_item_id:, profile_type:, acceptable: false)
     yield
   rescue StandardError => e
     @failed = true unless acceptable
@@ -281,6 +305,6 @@ private
       raise(SaveError.new(teacher:, model:, message: e.message, migration_item_id:))
     end
 
-    record_failure!(teacher:, model:, message: e.message, migration_item_id:)
+    record_failure!(teacher:, model:, message: e.message, migration_item_id:, profile_type:)
   end
 end

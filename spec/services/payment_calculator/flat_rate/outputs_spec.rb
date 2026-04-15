@@ -93,8 +93,9 @@ RSpec.describe PaymentCalculator::FlatRate::Outputs do
       expect(outputs.total_net_amount).to eq(0.0)
     end
 
-    it "returns empty declaration type outputs" do
-      expect(outputs.declaration_type_outputs).to be_empty
+    it "returns declaration type outputs with zero counts" do
+      expect(outputs.declaration_type_outputs.map(&:declaration_type)).to match_array(%w[started completed])
+      expect(outputs.declaration_type_outputs).to all(have_attributes(billable_count: 0, refundable_count: 0))
     end
   end
 end

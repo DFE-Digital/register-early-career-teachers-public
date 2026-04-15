@@ -559,12 +559,14 @@ describe "Real data check for user 62025249-8b6f-4fa3-9113-076b329aafde (mentor 
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 9, 20, 11, 55, 26)
+            created_at: Time.zone.local(2022, 9, 20, 11, 55, 26),
+            cpd_lead_provider_id: :ignore
           },
           {
             state: "active",
             reason: :ignore,
-            created_at: Time.zone.local(2022, 9, 20, 11, 55, 26)
+            created_at: Time.zone.local(2022, 9, 20, 11, 55, 26),
+            cpd_lead_provider_id: :ignore
           }
         ],
         school_mentors: [

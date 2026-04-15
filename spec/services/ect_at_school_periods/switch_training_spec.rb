@@ -413,6 +413,314 @@ module ECTAtSchoolPeriods
         end
       end
 
+      context "when there are previous provider-led training periods in an earlier contract periods" do
+        let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+        let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
+        let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
+
+        let(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :ongoing, started_on:)
+        end
+
+        context "when there is a confirmed school partnership" do
+          let(:school_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              :for_year,
+              year: contract_period.year,
+              school: ect_at_school_period.school
+            )
+          end
+
+          let!(:previous_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :provider_led,
+              ect_at_school_period:,
+              school_partnership:,
+              started_on:,
+              finished_on: previous_training_period_finished_on
+            )
+          end
+
+          let!(:training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :ongoing,
+              :school_led,
+              ect_at_school_period:,
+              started_on: previous_training_period_finished_on + 1.day
+            )
+          end
+
+          context "when there is one previous provider-led training period" do
+            context "when the earlier contract period is open" do
+              let(:started_on) { Date.new(2024, 6, 1) }
+              let(:previous_training_period_finished_on) { 2.months.ago }
+              let(:contract_period) { contract_period_2024 }
+
+              it "finishes the existing training period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                expect { training_period.reload }.not_to raise_error
+                expect(training_period.finished_on).to eq(Date.current)
+              end
+
+              it "retains the previous schedule and contract period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = ect_at_school_period.reload.training_periods.last
+                schedule = new_training_period.schedule
+                expect(schedule).to eq(previous_training_period.schedule)
+                expect(schedule.contract_period).to eq(contract_period_2024)
+              end
+
+              it "does not set the ECT's payments frozen year" do
+                expect {
+                  SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+                }.not_to change(ect_at_school_period.teacher, :ect_payments_frozen_year)
+              end
+            end
+
+            context "when the earlier contract period is closed" do
+              let(:started_on) { Date.new(2021, 9, 1) }
+              let(:previous_training_period_finished_on) { Date.new(2021, 10, 31) }
+              let(:contract_period) { contract_period_2021 }
+
+              before do
+                FactoryBot.create(:active_lead_provider, :for_year, year: 2024, lead_provider:)
+              end
+
+              it "finishes the existing training period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                expect { training_period.reload }.not_to raise_error
+                expect(training_period.finished_on).to eq(Date.current)
+              end
+
+              it "moves to the successor contract period with an extended schedule" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                expect(ect_at_school_period.reload).to be_provider_led_training_programme
+                new_training_period = ect_at_school_period.reload.training_periods.last
+                schedule = new_training_period.schedule
+                expect(schedule.contract_period).to eq(contract_period_2024)
+                expect(schedule.identifier).to eq("ecf-extended-september")
+              end
+
+              it "sets the ECT's payments frozen year to 2021" do
+                expect {
+                  SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+                }.to change(ect_at_school_period.teacher, :ect_payments_frozen_year).from(nil).to(2021)
+              end
+            end
+          end
+
+          context "when there are two previous provider-led training periods" do
+            # This scenario is to assert that it only looks at the last provider-led period
+            # If both periods are in closed contract periods we cannot test the ordering because the outcome is the same
+            # Thus we test only when there are two periods - one in an open contract period - one in a closed period
+            # And the period in a closed contract period must be before the period in the open contract period
+
+            let(:started_on) { Date.new(2021, 9, 1) }
+            let(:previous_training_period_finished_on) { Date.new(2024, 9, 1) }
+            let(:second_training_period_finished_on) { 1.month.ago }
+            let(:contract_period) { contract_period_2021 }
+            let(:school_partnership_2024) { FactoryBot.create(:school_partnership, :for_year, year: 2024, lead_provider:, school: ect_at_school_period.school) }
+
+            let!(:second_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_ect,
+                :provider_led,
+                ect_at_school_period:,
+                school_partnership: school_partnership_2024,
+                started_on: previous_training_period_finished_on + 1.day,
+                finished_on: second_training_period_finished_on
+              )
+            end
+
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_ect,
+                :ongoing,
+                :school_led,
+                ect_at_school_period:,
+                started_on: second_training_period_finished_on + 1.day
+              )
+            end
+
+            it "finishes the existing training period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              expect { training_period.reload }.not_to raise_error
+              expect(training_period.finished_on).to eq(Date.current)
+            end
+
+            it "retains the schedule from the open contract period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = ect_at_school_period.reload.training_periods.last
+              schedule = new_training_period.schedule
+              expect(schedule).to eq(second_training_period.schedule)
+              expect(schedule.contract_period).to eq(contract_period_2024)
+            end
+
+            it "does not set the ECT's payments frozen year" do
+              expect {
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+              }.not_to change(ect_at_school_period.teacher, :ect_payments_frozen_year)
+            end
+          end
+        end
+
+        context "when there is no confirmed school partnership" do
+          let!(:previous_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :provider_led,
+              :with_only_expression_of_interest,
+              ect_at_school_period:,
+              expression_of_interest: active_lead_provider,
+              started_on:,
+              finished_on: previous_training_period_finished_on
+            )
+          end
+
+          let!(:training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :ongoing,
+              :school_led,
+              ect_at_school_period:,
+              started_on: previous_training_period_finished_on + 1.day
+            )
+          end
+
+          context "when there is one previous provider-led training period" do
+            context "when the earlier contract period is open" do
+              let(:started_on) { Date.new(2024, 6, 1) }
+              let(:contract_period) { contract_period_2024 }
+              let(:previous_training_period_finished_on) { 2.months.ago }
+
+              it "finishes the existing training period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                expect { training_period.reload }.not_to raise_error
+                expect(training_period.finished_on).to eq(Date.current)
+              end
+
+              it "retains the previous schedule and contract period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                new_training_period = ect_at_school_period.reload.training_periods.last
+                schedule = new_training_period.schedule
+                expect(schedule).to eq(previous_training_period.schedule)
+                expect(schedule.contract_period).to eq(contract_period_2024)
+              end
+
+              it "does not set the ECT's payments frozen year" do
+                expect {
+                  SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+                }.not_to change(ect_at_school_period.teacher, :ect_payments_frozen_year)
+              end
+            end
+
+            context "when the earlier contract period is closed" do
+              let(:started_on) { Date.new(2021, 9, 1) }
+              let(:previous_training_period_finished_on) { Date.new(2021, 10, 31) }
+              let(:contract_period) { contract_period_2021 }
+
+              before do
+                FactoryBot.create(:active_lead_provider, :for_year, year: 2024, lead_provider:)
+              end
+
+              it "finishes the existing training period" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                expect { training_period.reload }.not_to raise_error
+                expect(training_period.finished_on).to eq(Date.current)
+              end
+
+              it "moves to the successor contract period with an extended schedule" do
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+                expect(ect_at_school_period.reload).to be_provider_led_training_programme
+                new_training_period = ect_at_school_period.reload.training_periods.last
+                schedule = new_training_period.schedule
+                expect(schedule.contract_period).to eq(contract_period_2024)
+                expect(schedule.identifier).to eq("ecf-extended-september")
+              end
+
+              it "sets the ECT's payments frozen year to 2021" do
+                expect {
+                  SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+                }.to change(ect_at_school_period.teacher, :ect_payments_frozen_year).from(nil).to(2021)
+              end
+            end
+          end
+
+          context "when there are two previous provider-led training periods" do
+            let(:started_on) { Date.new(2021, 9, 1) }
+            let(:previous_training_period_finished_on) { Date.new(2024, 9, 1) }
+            let(:second_training_period_finished_on) { 1.month.ago }
+            let(:contract_period) { contract_period_2021 }
+            let(:expression_of_interest) { FactoryBot.create(:active_lead_provider, :for_year, year: 2024, lead_provider:) }
+
+            let!(:second_training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_ect,
+                :provider_led,
+                :with_only_expression_of_interest,
+                ect_at_school_period:,
+                expression_of_interest:,
+                started_on: previous_training_period_finished_on + 1.day,
+                finished_on: second_training_period_finished_on
+              )
+            end
+
+            let!(:training_period) do
+              FactoryBot.create(
+                :training_period,
+                :for_ect,
+                :ongoing,
+                :school_led,
+                ect_at_school_period:,
+                started_on: second_training_period_finished_on + 1.day
+              )
+            end
+
+            it "finishes the existing training period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              expect { training_period.reload }.not_to raise_error
+              expect(training_period.finished_on).to eq(Date.current)
+            end
+
+            it "retains the schedule from the open contract period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = ect_at_school_period.reload.training_periods.last
+              schedule = new_training_period.schedule
+              expect(schedule).to eq(second_training_period.schedule)
+              expect(schedule.contract_period).to eq(contract_period_2024)
+            end
+
+            it "does not set the ECT's payments frozen year" do
+              expect {
+                SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+              }.not_to change(ect_at_school_period.teacher, :ect_payments_frozen_year)
+            end
+          end
+        end
+      end
+
       context "when there is no `current_or_next_training_period`" do
         before do
           allow(ect_at_school_period).to receive(:current_or_next_training_period).and_return(nil)

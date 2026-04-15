@@ -119,6 +119,27 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
           expect(new_training_period.schedule).to eq(training_period.schedule)
         end
       end
+
+      context "when the existing training_period is in a closed contract period" do
+        let!(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
+        let(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+        let!(:extended_schedule) { FactoryBot.create(:schedule, contract_period: contract_period_2024, identifier: "ecf-extended-september") }
+
+        let(:contract_period) { contract_period_2021 }
+        let(:started_on) { Date.new(2021, 9, 1) }
+
+        it "does not reassign the contract period and leaves it in the closed contract period" do
+          subject
+
+          new_training_period = mentor_at_school_period.training_periods.ongoing.first
+          expect(new_training_period.schedule.identifier).not_to include("extended")
+          expect(new_training_period.schedule.contract_period_year).to eq(2021)
+        end
+
+        it "does not mark the mentor's payments as frozen" do
+          expect { subject }.not_to change(teacher, :ect_payments_frozen_year)
+        end
+      end
     end
 
     context "when there is no school partnership with the old lead provider" do

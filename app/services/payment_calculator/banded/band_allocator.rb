@@ -34,12 +34,7 @@ module PaymentCalculator
   private
 
     def declaration_types
-      [
-        previous_billable_declarations,
-        previous_refundable_declarations,
-        billable_declarations,
-        refundable_declarations,
-      ].flat_map { |set| set.pluck(:declaration_type) }.uniq
+      Declaration.declaration_types.keys
     end
 
     def build_band_allocations_by_declaration_type

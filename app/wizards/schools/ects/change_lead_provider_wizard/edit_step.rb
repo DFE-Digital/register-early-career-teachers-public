@@ -37,8 +37,21 @@ module Schools
         end
 
         def contract_period
-          @contract_period ||= ContractPeriod
-            .containing_date(ect_at_school_period.started_on)
+          @contract_period ||= contract_period_reassignment.required? ? successor_contract_period : contract_period_on_start_date
+        end
+
+        def contract_period_on_start_date
+          ContractPeriod.containing_date(ect_at_school_period.started_on)
+        end
+
+        def contract_period_reassignment
+          @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period:)
+        end
+
+        delegate :successor_contract_period, to: :contract_period_reassignment
+
+        def training_period
+          @training_period ||= ect_at_school_period.latest_training_period
         end
 
         def current_lead_provider

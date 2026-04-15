@@ -174,9 +174,9 @@ describe Migrators::Declaration do
         let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
         let!(:payment_statement) { FactoryBot.create(:statement, :payable, api_id: participant_declaration.payment_statement.id, contract_period:) }
         let!(:clawback_statement) { FactoryBot.create(:statement, :payable, api_id: participant_declaration.clawback_statement.id, contract_period:) }
+        let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
         context "there is a training period matching pp, lp, dp, cohort and contains the declaration date" do
-          let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
           let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: participant_declaration.declaration_date) }
           let!(:training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership:, ect_at_school_period:) }
 
@@ -202,7 +202,6 @@ describe Migrators::Declaration do
         end
 
         context "there is a training period matching pp, lp, dp, cohort but doesn't contain the declaration date" do
-          let!(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
           let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: participant_declaration.declaration_date - 2.years) }
           let!(:training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership:, ect_at_school_period:) }
 
@@ -228,9 +227,8 @@ describe Migrators::Declaration do
         end
 
         context "otherwise" do
-          let!(:school_partnership) { FactoryBot.create(:school_partnership) }
           let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: started_on + 2.days) }
-          let!(:training_period) { FactoryBot.create(:training_period, :for_ect, school_partnership:, ect_at_school_period:) }
+          let!(:training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:) }
           let(:started_on) { Date.new(contract_period.year, 8, 30) }
 
           it "build ASP and TP and create a declaration with the expected attributes associated to them" do
@@ -250,7 +248,7 @@ describe Migrators::Declaration do
               expect(declaration.training_period_id).not_to eq(training_period.id)
               expect(declaration.training_period.started_on).to eq(started_on)
               expect(declaration.training_period.finished_on).to eq(started_on + 1.day)
-              expect(declaration.training_period.school_partnership).not_to eq(school_partnership)
+              expect(declaration.training_period.school_partnership).to eq(school_partnership)
               expect(declaration.voided_by_user_at).to eq(participant_declaration.voided_at)
             end
           end
@@ -271,8 +269,6 @@ describe Migrators::Declaration do
           end
 
           context "when a school partnerships for the new training period already exists" do
-            let!(:school_partnership) { FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:) }
-
             it "reuses that school partnership" do
               instance.migrate!
 
@@ -280,6 +276,20 @@ describe Migrators::Declaration do
               training_period = declaration.training_period
 
               expect(training_period.school_partnership).to eq(school_partnership)
+            end
+          end
+
+          context "when a school partnership for the new training period doesn't exist" do
+            let!(:school_partnership) {}
+
+            it "do not migrate the declaration and log a migration failure" do
+              instance.migrate!
+
+              declaration = Declaration.find_by(api_id: participant_declaration.id)
+              migration_failure = MigrationFailure.first
+
+              expect(declaration).to be_nil
+              expect(migration_failure.failure_message).to match("Can't migrate declaration #{participant_declaration.id}")
             end
           end
         end

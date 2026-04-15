@@ -28,7 +28,7 @@ module ECTAtSchoolPeriods
         @ect_at_school_period.school_led_training_programme?
 
       ActiveRecord::Base.transaction do
-        handle_training_period_for_school_led_switch!
+        handle_training_period_for_switch!
 
         create_school_led_training_period!
       end
@@ -41,7 +41,9 @@ module ECTAtSchoolPeriods
       raise NoTrainingPeriodError if @lead_provider.blank?
 
       ActiveRecord::Base.transaction do
-        handle_training_period_for_provider_led_switch!
+        set_ect_payments_frozen_year!
+
+        handle_training_period_for_switch!
 
         create_provider_led_training_period_for_ect_at_school_period!
         @new_training_period_for_mentor = create_provider_led_training_period_for_mentor_at_school_period!
@@ -57,30 +59,76 @@ module ECTAtSchoolPeriods
       @ect_at_school_period.current_or_next_training_period || @ect_at_school_period.latest_training_period
     end
 
-    def handle_training_period_for_school_led_switch!
+    def handle_training_period_for_switch!
       return if @training_period.blank?
 
-      if @training_period.started_on.today? || date_of_transition.future? || @training_period.school_partnership.blank?
+      if training_not_started? || current_provider_led_training_not_confirmed?
         @training_period.destroy!
       else
         finish_training_period!
       end
     end
 
-    def handle_training_period_for_provider_led_switch!
-      return if @training_period.blank?
+    def current_provider_led_training_not_confirmed?
+      @ect_at_school_period.provider_led_training_programme? && @training_period.school_partnership.blank?
+    end
 
-      if @training_period.started_on.today? || date_of_transition.future?
-        @training_period.destroy!
+    def training_not_started?
+      @training_period.started_on.today? || date_of_transition.future?
+    end
+
+    def contract_period
+      if contract_period_reassignment_required?
+        successor_contract_period
+      elsif reuse_existing_schedule?
+        existing_schedule.contract_period
       else
-        finish_training_period!
+        contract_period_at_transition
       end
+    end
+
+    def schedule
+      existing_schedule if reuse_existing_schedule?
+    end
+
+    def reuse_existing_schedule?
+      return false unless @ect_at_school_period.school_led_training_programme?
+      return false unless existing_schedule
+      return false if contract_period_reassignment_required?
+
+      existing_schedule.contract_period != contract_period_at_transition
+    end
+
+    def existing_schedule
+      last_provider_led_training_period&.schedule
     end
 
     def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
 
-    def contract_period
-      @contract_period ||= ContractPeriod.containing_date(date_of_transition)
+    def contract_period_reassignment_required?
+      @ect_at_school_period.school_led_training_programme? && contract_period_reassignment.required?
+    end
+
+    def contract_period_reassignment
+      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period: last_provider_led_training_period)
+    end
+
+    def last_provider_led_training_period
+      @last_provider_led_training_period ||= @ect_at_school_period.training_periods.provider_led_training_programme.latest_first.first
+    end
+
+    delegate :successor_contract_period, to: :contract_period_reassignment
+
+    def set_ect_payments_frozen_year!
+      return unless contract_period_reassignment_required?
+
+      @ect_at_school_period
+        .teacher
+        .update!(ect_payments_frozen_year: contract_period_reassignment.assigned_contract_period.year)
+    end
+
+    def contract_period_at_transition
+      @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
     end
 
     def finish_training_period!
@@ -105,7 +153,8 @@ module ECTAtSchoolPeriods
         started_on: date_of_transition,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:,
-        author: @author
+        author: @author,
+        schedule:
       ).call
     end
 

@@ -270,6 +270,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             state: "active",
             reason: :ignore,
             created_at: Time.zone.local(2022, 5, 24, 18, 38, 42),
+            cpd_lead_provider_id: :ignore
           },
           {
             state: "deferred",
@@ -288,6 +289,16 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             reason: "other",
             created_at: Time.zone.local(2023, 11, 1, 16, 31, 32),
             cpd_lead_provider_id: "fb9c56b2-252b-41fe-b6b2-ebf208999df9"
+          }
+        ],
+        school_mentors: [
+          {
+            school: {
+              urn: "100001",
+              name: "School 1"
+            },
+            preferred_identity_email: "a.teacher@example.com",
+            created_at: Time.zone.local(2022, 5, 24, 18, 38, 42)
           }
         ]
       }

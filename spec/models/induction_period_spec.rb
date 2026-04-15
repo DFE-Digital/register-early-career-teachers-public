@@ -360,15 +360,62 @@ RSpec.describe InductionPeriod do
   end
 
   describe "scopes" do
+    let!(:ongoing) { FactoryBot.create(:induction_period, :ongoing) }
+    let!(:released) { FactoryBot.create(:induction_period) }
+    let!(:passed) { FactoryBot.create(:induction_period, :pass) }
+    let!(:failed) { FactoryBot.create(:induction_period, :fail) }
+
+    describe ".with_outcome" do
+      it "returns induction periods with an outcome" do
+        expect(described_class.with_outcome).to contain_exactly(passed, failed)
+      end
+    end
+
+    describe ".without_outcome" do
+      it "returns induction periods with no outcome" do
+        expect(described_class.without_outcome).to contain_exactly(ongoing, released)
+      end
+    end
+
+    describe ".ongoing" do
+      it "returns unfinished induction periods" do
+        expect(described_class.ongoing).to contain_exactly(ongoing)
+      end
+    end
+
+    describe ".finished" do
+      it "returns finished induction periods" do
+        expect(described_class.finished).to contain_exactly(released, passed, failed)
+      end
+    end
+
+    describe ".released" do
+      it "returns finished induction periods with no outcome" do
+        expect(described_class.released).to contain_exactly(released)
+      end
+    end
+
+    describe ".passed" do
+      it "returns finished induction periods with a 'pass' outcome" do
+        expect(described_class.passed).to contain_exactly(passed)
+      end
+    end
+
+    describe ".failed" do
+      it "returns finished induction periods with a 'fail' outcome" do
+        expect(described_class.failed).to contain_exactly(failed)
+      end
+    end
+
     describe ".for_teacher" do
       it "returns induction periods only for the specified ect at school period" do
-        expect(InductionPeriod.for_teacher(123).to_sql).to end_with(%(WHERE "induction_periods"."teacher_id" = 123))
+        expect(described_class.for_teacher(123).to_sql).to end_with(%(WHERE "induction_periods"."teacher_id" = 123))
       end
     end
 
     describe ".for_appropriate_body_period" do
       it "returns induction periods only for the specified appropriate body period" do
-        expect(InductionPeriod.for_appropriate_body_period(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_period_id" = 456))
+        expect(described_class.for_appropriate_body_period(456).to_sql).to end_with(%( WHERE "induction_periods"."appropriate_body_period_id" = 456))
       end
     end
   end

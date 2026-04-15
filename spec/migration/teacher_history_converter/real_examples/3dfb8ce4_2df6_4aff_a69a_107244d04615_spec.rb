@@ -29,6 +29,12 @@ describe "Real data check for user 3dfb8ce4-2df6-4aff-a69a-107244d04615", skip: 
             reason: "other",
             created_at: Time.zone.local(2025, 6, 6, 10, 5, 40),
             cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
+          },
+          {
+            state: "withdrawn",
+            reason: "other",
+            created_at: Time.zone.local(2026, 2, 26, 17, 6, 57),
+            cpd_lead_provider_id: "af89cf02-bbe0-423b-b2f6-bb2dbb97d141"
           }
         ],
         induction_records: [
