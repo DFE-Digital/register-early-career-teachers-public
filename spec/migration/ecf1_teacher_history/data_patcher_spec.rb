@@ -5,6 +5,7 @@ describe ECF1TeacherHistory::DataPatcher do
     %i[
       participant_profile_id
       induction_record_id
+      delete_record
       start_date
       end_date
       created_at
@@ -62,8 +63,16 @@ describe ECF1TeacherHistory::DataPatcher do
 
       let(:induction_records) { [induction_record_1, induction_record_2] }
 
+      context "delete_record is set" do
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},true,,,,,,,,,,,,,,) }
+
+        it "removes the induction record from the profile" do
+          expect(patched_result.ect.induction_records.find { |ir| ir.induction_record_id == data_patch_ect_ir_id }).to be_nil
+        end
+      end
+
       context "start_date has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},2024-9-1,,,,,,,,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,2024-9-1,,,,,,,,,,,,,) }
 
         it "changes the start_date to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.start_date).to eq(Date.new(2024, 9, 1))
@@ -71,7 +80,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "end_date has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,2025-11-10,,,,,,,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,2025-11-10,,,,,,,,,,,,) }
 
         it "changes the end_date to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.end_date).to eq(Date.new(2025, 11, 10))
@@ -79,7 +88,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "end_date has a :null value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,:null,,,,,,,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,:null,,,,,,,,,,,,) }
 
         it "changes the end_date to be nil" do
           expect(patched_result.ect.induction_records.first.end_date).to be_nil
@@ -87,7 +96,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "created_at has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,"2024-09-01 12:22:54",,,,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,"2024-09-01 12:22:54",,,,,,,,,) }
 
         it "changes the created_at to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.created_at).to eq(Time.zone.local(2024, 9, 1, 12, 22, 54))
@@ -95,7 +104,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "updated_at has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,"2024-09-06 21:42:54",,,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,"2024-09-06 21:42:54",,,,,,,,) }
 
         it "changes the updated_at to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.updated_at).to eq(Time.zone.local(2024, 9, 6, 21, 42, 54))
@@ -103,7 +112,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "email has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,"#{new_email}",,,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,"#{new_email}",,,,,,,,) }
 
         it "changes the email to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.preferred_identity_email).to eq(new_email)
@@ -111,7 +120,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "mentor_profile_id has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,"#{mentor_profile_id}",,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,"#{mentor_profile_id}",,,,,,,) }
 
         it "changes the mentor_profile_id to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.mentor_profile_id).to eq(mentor_profile_id)
@@ -119,7 +128,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "training_status has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,"deferred",,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,"deferred",,,,,,) }
 
         it "changes the training_status to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.training_status).to eq("deferred")
@@ -127,7 +136,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "induction_status has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,"withdrawn",,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,"withdrawn",,,,,) }
 
         it "changes the induction_status to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.induction_status).to eq("withdrawn")
@@ -135,7 +144,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "school_transfer has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,"true",,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,,"true",,,,,) }
 
         it "changes the school_transfer to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first.school_transfer).to be(true)
@@ -143,7 +152,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "ignore_training is not set" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,,,,,,) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,,,,,,,) }
 
         it "does not set the ignore_training flag in the record" do
           expect(patched_result.ect.induction_records.first).not_to be_ignore_training
@@ -151,7 +160,7 @@ describe ECF1TeacherHistory::DataPatcher do
       end
 
       context "ignore_training has a value" do
-        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,,,,,,true) }
+        let(:row_data) { %("#{data_patch_ect_id}",#{data_patch_ect_ir_id},,,,,,,,,,,,,,,true) }
 
         it "changes the ignore_training flag to match the value in the CSV" do
           expect(patched_result.ect.induction_records.first).to be_ignore_training
@@ -162,7 +171,7 @@ describe ECF1TeacherHistory::DataPatcher do
     context "adding a state" do
       subject(:patched_result) { described_class.new(data_patches:).apply_patches_to(ecf1_teacher_history) }
 
-      let(:row_data) { %("8237fd2e-2c3c-4daa-a5d7-2bab689e66a7",,,,,,,,,,,"withdrawn","switched-to-school-led","22727fdc-816a-4a3c-9675-030e724bbf89","2024-10-01 12:15:01",) }
+      let(:row_data) { %("8237fd2e-2c3c-4daa-a5d7-2bab689e66a7",,,,,,,,,,,,"withdrawn","switched-to-school-led","22727fdc-816a-4a3c-9675-030e724bbf89","2024-10-01 12:15:01",) }
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, participant_profile_id: data_patch_ect_with_state_id) }
 
       it "adds a new state with the details from the CSV" do
@@ -184,7 +193,7 @@ describe ECF1TeacherHistory::DataPatcher do
     end
 
     context "when the history has an ect profile that matches rows in the CSV" do
-      let(:row_data) { %("#{data_patch_ect_id}",,,,,,,,,,,,,,,) }
+      let(:row_data) { %("#{data_patch_ect_id}",,,,,,,,,,,,,,,,) }
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, participant_profile_id: data_patch_ect_id) }
 
       it "returns true" do
@@ -201,7 +210,7 @@ describe ECF1TeacherHistory::DataPatcher do
     end
 
     context "when the history has a mentor profile that matches rows in the CSV" do
-      let(:row_data) { %("#{data_patch_mentor_id}",,,,,,,,,,,,,,,) }
+      let(:row_data) { %("#{data_patch_mentor_id}",,,,,,,,,,,,,,,,) }
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, participant_profile_id: data_patch_mentor_id) }
 
       it "returns true" do
@@ -218,7 +227,7 @@ describe ECF1TeacherHistory::DataPatcher do
     end
 
     context "when the history has ect and mentor profile that both match rows in the CSV" do
-      let(:row_data) { %("#{data_patch_ect_id}",,,,,,,,,,,,,,,\n"#{data_patch_mentor_id}",,,,,,,,,,,,,,,) }
+      let(:row_data) { %("#{data_patch_ect_id}",,,,,,,,,,,,,,,,\n"#{data_patch_mentor_id}",,,,,,,,,,,,,,,,) }
 
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, participant_profile_id: data_patch_ect_id) }
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, participant_profile_id: data_patch_mentor_id) }
@@ -229,7 +238,7 @@ describe ECF1TeacherHistory::DataPatcher do
     end
 
     context "when the history has ect and mentor profile and the ect matches rows in the CSV" do
-      let(:row_data) { %("#{data_patch_ect_id}",,,,,,,,,,,,,,,) }
+      let(:row_data) { %("#{data_patch_ect_id}",,,,,,,,,,,,,,,,) }
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect, participant_profile_id: data_patch_ect_id) }
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor) }
 
@@ -239,7 +248,7 @@ describe ECF1TeacherHistory::DataPatcher do
     end
 
     context "when the history has ect and mentor profiles and the mentor matches rows in the CSV" do
-      let(:row_data) { %("#{data_patch_mentor_id}",,,,,,,,,,,,,,,) }
+      let(:row_data) { %("#{data_patch_mentor_id}",,,,,,,,,,,,,,,,) }
 
       let(:ect) { FactoryBot.build(:ecf1_teacher_history_ect) }
       let(:mentor) { FactoryBot.build(:ecf1_teacher_history_mentor, participant_profile_id: data_patch_mentor_id) }
