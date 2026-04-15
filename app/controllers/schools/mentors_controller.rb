@@ -11,10 +11,9 @@ module Schools
     before_action :set_ects, only: :show
 
     def index
-      search = Teachers::Search.new(mentor_at_school: school, query_string: params[:q])
-
+      @number_of_mentors = Teachers::Search.new(mentor_at_school: school).count
+      search                   = Teachers::Search.new(mentor_at_school: school, query_string: params[:q])
       @pagy, @filtered_mentors = pagy_array(search.search, limit: 20)
-      @number_of_mentors       = search.count
     end
 
     def show
