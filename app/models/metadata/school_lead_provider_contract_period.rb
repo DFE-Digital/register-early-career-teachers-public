@@ -14,7 +14,6 @@ module Metadata
     validates :expression_of_interest_or_school_partnership, inclusion: { in: [true, false] }
     validates :school_id, uniqueness: { scope: %i[lead_provider_id contract_period_year] }
 
-    touch -> { school }, on_event: %i[create destroy], timestamp_attribute: :api_updated_at
     touch -> { school }, on_event: :update, when_changing: %i[expression_of_interest_or_school_partnership], timestamp_attribute: :api_updated_at
   end
 end

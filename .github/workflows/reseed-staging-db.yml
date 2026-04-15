@@ -17,7 +17,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - uses: Azure/login@v2
+    - uses: Azure/login@v3
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

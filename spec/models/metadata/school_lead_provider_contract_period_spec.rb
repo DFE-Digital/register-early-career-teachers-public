@@ -9,7 +9,6 @@ describe Metadata::SchoolLeadProviderContractPeriod do
       Metadata::SchoolLeadProviderContractPeriod.bypass_update_restrictions { example.run }
     end
 
-    it_behaves_like "a declarative touch model", on_event: %i[create destroy], timestamp_attribute: :api_updated_at
     it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[expression_of_interest_or_school_partnership], timestamp_attribute: :api_updated_at, target_optional: false
   end
 
