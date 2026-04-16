@@ -27,22 +27,21 @@
     - sandbox-release
     - production-release
   body: |
+    In API specification point 19.1, we told you that only the current lead provider could update a schedule or cohort during a transfer.
 
-In API specification point 19.1, we told you that only the current lead provider could update a schedule or cohort during a transfer.
+    We said that as the future lead provider, you would receive a validation error if you tried to do this. This was because we thought we would be unable to support the participant having a different schedule or cohort with two different lead providers at the same time.
 
-We said that as the future lead provider, you would receive a validation error if you tried to do this. This was because we thought we would be unable to support the participant having a different schedule or cohort with two different lead providers at the same time.
+    ## What's changed
 
-## What's changed
+    You can now make cohort or schedule changes to an ECT or mentor with a `participant_status` of `joining`, before they have officially started training with you. This includes when they are currently or have previously been training with a different lead provider.
 
-You can now make cohort or schedule changes to an ECT or mentor with a `participant_status` of `joining`, before they have officially started training with you. This includes when they are currently or have previously been training with a different lead provider.
+    This change does not affect:
+    - the cohort or schedule set by the current lead provider
+    - the current lead provider's ability to submit declarations
 
-This change does not affect:
-- the cohort or schedule set by the current lead provider
-- the current lead provider's ability to submit declarations
+    This restriction was removed after we fixed some functionality, making it no longer necessary. We believe this gives lead providers greater flexibility when managing transfers.
 
-This restriction was removed after we fixed some functionality, making it no longer necessary. We believe this gives lead providers greater flexibility when managing transfers.
-
-Once a participant has been reported as starting with a new lead provider, the previous lead provider will still be unable to change their schedule or cohort.
+    Once a participant has been reported as starting with a new lead provider, the previous lead provider will still be unable to change their schedule or cohort.
 
 - title: Uplift fees for early career teachers (ECTs) and mentors are now fixed
   date: 2026-02-23
