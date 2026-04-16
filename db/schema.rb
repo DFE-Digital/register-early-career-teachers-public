@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -48,9 +48,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   create_enum "working_pattern", ["part_time", "full_time"]
 
   create_table "active_lead_providers", force: :cascade do |t|
-    t.bigint "lead_provider_id", null: false
     t.bigint "contract_period_year", null: false
     t.datetime "created_at", null: false
+    t.bigint "lead_provider_id", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "index_active_lead_providers_on_contract_period_year"
     t.index ["lead_provider_id", "contract_period_year"], name: "idx_on_lead_provider_id_contract_period_year_e442ca2260", unique: true
@@ -58,243 +58,243 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "api_tokens", force: :cascade do |t|
-    t.bigint "lead_provider_id"
-    t.string "token", null: false
+    t.datetime "created_at", null: false
     t.string "description", null: false
     t.datetime "last_used_at"
-    t.datetime "created_at", null: false
+    t.bigint "lead_provider_id"
+    t.string "token", null: false
     t.datetime "updated_at", null: false
     t.index ["lead_provider_id"], name: "index_api_tokens_on_lead_provider_id"
     t.index ["token"], name: "index_api_tokens_on_token", unique: true
   end
 
   create_table "appropriate_bodies", force: :cascade do |t|
-    t.string "name", null: false
-    t.bigint "dfe_sign_in_organisation_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "dfe_sign_in_organisation_id", null: false
+    t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_bodies_on_dfe_sign_in_organisation_id"
   end
 
   create_table "appropriate_body_periods", force: :cascade do |t|
-    t.string "name", null: false
+    t.bigint "appropriate_body_id"
+    t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.uuid "dfe_sign_in_organisation_id"
     t.uuid "dqt_id"
-    t.enum "body_type", default: "teaching_school_hub", enum_type: "appropriate_body_type"
-    t.bigint "appropriate_body_id"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
     t.index ["appropriate_body_id"], name: "index_appropriate_body_periods_on_appropriate_body_id"
     t.index ["dfe_sign_in_organisation_id"], name: "index_appropriate_body_periods_on_dfe_sign_in_organisation_id", unique: true
   end
 
   create_table "blazer_audits", force: :cascade do |t|
-    t.bigint "user_id"
+    t.datetime "created_at"
+    t.string "data_source"
     t.bigint "query_id"
     t.text "statement"
-    t.string "data_source"
-    t.datetime "created_at"
+    t.bigint "user_id"
     t.index ["query_id"], name: "index_blazer_audits_on_query_id"
     t.index ["user_id"], name: "index_blazer_audits_on_user_id"
   end
 
   create_table "blazer_checks", force: :cascade do |t|
-    t.bigint "creator_id"
-    t.bigint "query_id"
-    t.string "state"
-    t.string "schedule"
-    t.text "emails"
-    t.text "slack_channels"
     t.string "check_type"
-    t.text "message"
-    t.datetime "last_run_at"
     t.datetime "created_at", null: false
+    t.bigint "creator_id"
+    t.text "emails"
+    t.datetime "last_run_at"
+    t.text "message"
+    t.bigint "query_id"
+    t.string "schedule"
+    t.text "slack_channels"
+    t.string "state"
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_checks_on_creator_id"
     t.index ["query_id"], name: "index_blazer_checks_on_query_id"
   end
 
   create_table "blazer_dashboard_queries", force: :cascade do |t|
-    t.bigint "dashboard_id"
-    t.bigint "query_id"
-    t.integer "position"
     t.datetime "created_at", null: false
+    t.bigint "dashboard_id"
+    t.integer "position"
+    t.bigint "query_id"
     t.datetime "updated_at", null: false
     t.index ["dashboard_id"], name: "index_blazer_dashboard_queries_on_dashboard_id"
     t.index ["query_id"], name: "index_blazer_dashboard_queries_on_query_id"
   end
 
   create_table "blazer_dashboards", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.bigint "creator_id"
     t.string "name"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_dashboards_on_creator_id"
   end
 
   create_table "blazer_queries", force: :cascade do |t|
-    t.bigint "creator_id"
-    t.string "name"
-    t.text "description"
-    t.text "statement"
-    t.string "data_source"
-    t.string "status"
     t.datetime "created_at", null: false
+    t.bigint "creator_id"
+    t.string "data_source"
+    t.text "description"
+    t.string "name"
+    t.text "statement"
+    t.string "status"
     t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_blazer_queries_on_creator_id"
   end
 
   create_table "contract_banded_fee_structure_bands", force: :cascade do |t|
     t.bigint "banded_fee_structure_id", null: false
-    t.integer "min_declarations", default: 1, null: false
-    t.integer "max_declarations", null: false
+    t.datetime "created_at", null: false
     t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
+    t.integer "max_declarations", null: false
+    t.integer "min_declarations", default: 1, null: false
     t.decimal "output_fee_ratio", precision: 3, scale: 2, null: false
     t.decimal "service_fee_ratio", precision: 3, scale: 2, null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["banded_fee_structure_id"], name: "idx_on_banded_fee_structure_id_49a33a0bd5"
   end
 
   create_table "contract_banded_fee_structures", force: :cascade do |t|
-    t.integer "recruitment_target", null: false
-    t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
-    t.decimal "monthly_service_fee", precision: 12, scale: 2
-    t.decimal "setup_fee", precision: 12, scale: 2, null: false
     t.datetime "created_at", null: false
+    t.decimal "monthly_service_fee", precision: 12, scale: 2
+    t.integer "recruitment_target", null: false
+    t.decimal "setup_fee", precision: 12, scale: 2, null: false
     t.datetime "updated_at", null: false
+    t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
   end
 
   create_table "contract_flat_rate_fee_structures", force: :cascade do |t|
-    t.integer "recruitment_target", null: false
-    t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
     t.datetime "created_at", null: false
+    t.decimal "fee_per_declaration", precision: 12, scale: 2, null: false
+    t.integer "recruitment_target", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "contract_periods", primary_key: "year", id: :serial, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.date "started_on"
-    t.date "finished_on"
-    t.boolean "enabled", default: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.datetime "payments_frozen_at"
-    t.boolean "mentor_funding_enabled", default: false, null: false
     t.boolean "detailed_evidence_types_enabled", default: false, null: false
+    t.boolean "enabled", default: false
+    t.date "finished_on"
+    t.boolean "mentor_funding_enabled", default: false, null: false
+    t.datetime "payments_frozen_at"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.date "started_on"
+    t.datetime "updated_at", null: false
     t.boolean "uplift_fees_enabled", default: true, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
     t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
   end
 
   create_table "contracts", force: :cascade do |t|
-    t.enum "contract_type", null: false, enum_type: "contract_types"
-    t.bigint "flat_rate_fee_structure_id"
-    t.bigint "banded_fee_structure_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
     t.bigint "active_lead_provider_id", null: false
+    t.bigint "banded_fee_structure_id"
+    t.enum "contract_type", null: false, enum_type: "contract_types"
+    t.datetime "created_at", null: false
     t.string "ecf_contract_version", default: "1.0.0", null: false
     t.string "ecf_mentor_contract_version"
+    t.bigint "flat_rate_fee_structure_id"
+    t.datetime "updated_at", null: false
+    t.decimal "vat_rate", precision: 3, scale: 2, default: "0.2", null: false
     t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"
     t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true, where: "(banded_fee_structure_id IS NOT NULL)"
     t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true, where: "(flat_rate_fee_structure_id IS NOT NULL)"
   end
 
   create_table "data_migration_failed_combinations", force: :cascade do |t|
-    t.string "trn"
+    t.integer "cohort_year"
+    t.datetime "created_at", null: false
+    t.string "delivery_partner_name"
+    t.datetime "end_date"
+    t.text "failure_message"
+    t.uuid "induction_record_id"
+    t.string "induction_status"
+    t.string "lead_provider_name"
+    t.uuid "mentor_profile_id"
+    t.string "migration_mode"
+    t.string "preferred_identity_email"
     t.uuid "profile_id"
     t.string "profile_type"
-    t.uuid "induction_record_id"
-    t.string "training_programme"
-    t.string "school_urn"
-    t.integer "cohort_year"
-    t.string "lead_provider_name"
-    t.string "delivery_partner_name"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.string "induction_status"
-    t.string "training_status"
-    t.uuid "mentor_profile_id"
+    t.integer "schedule_cohort_year"
     t.uuid "schedule_id"
     t.string "schedule_identifier"
     t.string "schedule_name"
-    t.integer "schedule_cohort_year"
-    t.string "preferred_identity_email"
-    t.text "failure_message"
-    t.string "migration_mode"
-    t.datetime "created_at", null: false
+    t.string "school_urn"
+    t.datetime "start_date"
+    t.string "training_programme"
+    t.string "training_status"
+    t.string "trn"
     t.datetime "updated_at", null: false
   end
 
   create_table "data_migration_failed_mentorships", force: :cascade do |t|
-    t.uuid "ect_participant_profile_id"
-    t.uuid "mentor_participant_profile_id"
-    t.date "started_on"
-    t.date "finished_on"
-    t.uuid "ecf_start_induction_record_id"
-    t.uuid "ecf_end_induction_record_id"
-    t.text "failure_message"
-    t.string "migration_mode"
     t.datetime "created_at", null: false
+    t.uuid "ecf_end_induction_record_id"
+    t.uuid "ecf_start_induction_record_id"
+    t.uuid "ect_participant_profile_id"
+    t.text "failure_message"
+    t.date "finished_on"
+    t.uuid "mentor_participant_profile_id"
+    t.string "migration_mode"
+    t.date "started_on"
     t.datetime "updated_at", null: false
   end
 
   create_table "data_migration_teacher_combinations", force: :cascade do |t|
-    t.uuid "ecf1_ect_profile_id"
-    t.uuid "ecf1_mentor_profile_id"
-    t.jsonb "ecf1_ect_combinations", default: [], null: false
-    t.jsonb "ecf1_mentor_combinations", default: [], null: false
-    t.jsonb "ecf2_ect_combinations", default: [], null: false
-    t.jsonb "ecf2_mentor_combinations", default: [], null: false
-    t.virtual "ecf1_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_ect_combinations)", stored: true
-    t.virtual "ecf1_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_mentor_combinations)", stored: true
-    t.virtual "ecf2_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_ect_combinations)", stored: true
-    t.virtual "ecf2_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_mentor_combinations)", stored: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.jsonb "ecf1_mentorships", default: [], null: false
-    t.jsonb "ecf2_mentorships", default: [], null: false
-    t.virtual "ecf1_mentorships_count", type: :integer, as: "jsonb_array_length(ecf1_mentorships)", stored: true
-    t.virtual "ecf2_mentorships_count", type: :integer, as: "jsonb_array_length(ecf2_mentorships)", stored: true
     t.uuid "api_id"
+    t.datetime "created_at", null: false
+    t.jsonb "ecf1_ect_combinations", default: [], null: false
+    t.virtual "ecf1_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_ect_combinations)", stored: true
+    t.uuid "ecf1_ect_profile_id"
+    t.jsonb "ecf1_mentor_combinations", default: [], null: false
+    t.virtual "ecf1_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_mentor_combinations)", stored: true
+    t.uuid "ecf1_mentor_profile_id"
+    t.jsonb "ecf1_mentorships", default: [], null: false
+    t.virtual "ecf1_mentorships_count", type: :integer, as: "jsonb_array_length(ecf1_mentorships)", stored: true
+    t.jsonb "ecf2_ect_combinations", default: [], null: false
+    t.virtual "ecf2_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_ect_combinations)", stored: true
+    t.jsonb "ecf2_mentor_combinations", default: [], null: false
+    t.virtual "ecf2_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_mentor_combinations)", stored: true
+    t.jsonb "ecf2_mentorships", default: [], null: false
+    t.virtual "ecf2_mentorships_count", type: :integer, as: "jsonb_array_length(ecf2_mentorships)", stored: true
     t.string "migration_mode"
+    t.datetime "updated_at", null: false
   end
 
   create_table "data_migrations", force: :cascade do |t|
+    t.json "cache_stats"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "failure_count", default: 0, null: false
     t.string "model", null: false
     t.integer "processed_count", default: 0, null: false
-    t.integer "failure_count", default: 0, null: false
-    t.datetime "started_at"
-    t.datetime "completed_at"
-    t.integer "total_count"
     t.datetime "queued_at"
-    t.integer "worker"
-    t.datetime "created_at", null: false
+    t.datetime "started_at"
+    t.integer "total_count"
     t.datetime "updated_at", null: false
-    t.json "cache_stats"
+    t.integer "worker"
   end
 
   create_table "declarations", force: :cascade do |t|
-    t.bigint "training_period_id"
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.bigint "clawback_statement_id"
+    t.enum "clawback_status", default: "no_clawback", null: false, enum_type: "declaration_clawback_statuses"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "voided_by_user_id"
+    t.datetime "declaration_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.enum "declaration_type", default: "started", null: false, enum_type: "declaration_types"
+    t.bigint "delivery_partner_when_created_id", null: false
+    t.enum "evidence_type", enum_type: "evidence_types"
     t.bigint "mentorship_period_id"
     t.bigint "payment_statement_id"
-    t.bigint "clawback_statement_id"
-    t.datetime "voided_by_user_at"
-    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.datetime "declaration_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.enum "evidence_type", enum_type: "evidence_types"
-    t.enum "clawback_status", default: "no_clawback", null: false, enum_type: "declaration_clawback_statuses"
-    t.enum "declaration_type", default: "started", null: false, enum_type: "declaration_types"
-    t.boolean "sparsity_uplift", default: false, null: false
-    t.boolean "pupil_premium_uplift", default: false, null: false
-    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.enum "payment_status", default: "no_payment", null: false, enum_type: "declaration_payment_statuses"
-    t.bigint "delivery_partner_when_created_id", null: false
+    t.boolean "pupil_premium_uplift", default: false, null: false
+    t.boolean "sparsity_uplift", default: false, null: false
+    t.bigint "training_period_id"
+    t.datetime "updated_at", null: false
+    t.datetime "voided_by_user_at"
+    t.bigint "voided_by_user_id"
     t.index ["api_id"], name: "index_declarations_on_api_id", unique: true
     t.index ["clawback_statement_id"], name: "index_declarations_on_clawback_statement_id"
     t.index ["delivery_partner_when_created_id"], name: "index_declarations_on_delivery_partner_when_created_id"
@@ -306,47 +306,47 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "delivery_partners", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
     t.index ["api_id"], name: "index_delivery_partners_on_api_id", unique: true
     t.index ["name"], name: "index_delivery_partners_on_name", unique: true
   end
 
   create_table "dfe_sign_in_organisations", force: :cascade do |t|
-    t.string "name", null: false
-    t.uuid "uuid", null: false
-    t.string "urn"
     t.string "address"
-    t.string "company_registration_number"
     t.string "category"
-    t.string "organisation_type"
-    t.string "status"
+    t.string "company_registration_number"
+    t.datetime "created_at", null: false
     t.datetime "first_authenticated_at"
     t.datetime "last_authenticated_at"
-    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "organisation_type"
+    t.string "status"
     t.datetime "updated_at", null: false
+    t.string "urn"
+    t.uuid "uuid", null: false
     t.index ["name"], name: "index_dfe_sign_in_organisations_on_name", unique: true
     t.index ["urn"], name: "index_dfe_sign_in_organisations_on_urn", unique: true
     t.index ["uuid"], name: "index_dfe_sign_in_organisations_on_uuid", unique: true
   end
 
   create_table "ect_at_school_periods", force: :cascade do |t|
-    t.bigint "school_id", null: false
-    t.bigint "teacher_id", null: false
-    t.date "started_on", null: false
-    t.date "finished_on"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
-    t.enum "working_pattern", enum_type: "working_pattern"
+    t.uuid "ecf_start_induction_record_id"
     t.citext "email"
-    t.bigint "school_reported_appropriate_body_id"
-    t.bigint "reported_leaving_by_school_id"
+    t.date "finished_on"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
+    t.bigint "reported_leaving_by_school_id"
+    t.bigint "school_id", null: false
+    t.bigint "school_reported_appropriate_body_id"
+    t.date "started_on", null: false
+    t.bigint "teacher_id", null: false
+    t.datetime "updated_at", null: false
+    t.enum "working_pattern", enum_type: "working_pattern"
     t.index "teacher_id, ((finished_on IS NULL))", name: "index_ect_at_school_periods_on_teacher_id_finished_on_IS_NULL", unique: true, where: "(finished_on IS NULL)"
     t.index ["reported_leaving_by_school_id"], name: "index_ect_at_school_periods_on_reported_leaving_by_school_id"
     t.index ["school_id", "teacher_id", "started_on"], name: "index_ect_at_school_periods_on_school_id_teacher_id_started_on", unique: true
@@ -358,39 +358,39 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.text "heading"
-    t.text "body"
-    t.text "event_type"
-    t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }
-    t.integer "teacher_id"
+    t.bigint "active_lead_provider_id"
     t.integer "appropriate_body_period_id"
-    t.integer "induction_period_id"
-    t.integer "induction_extension_id"
-    t.integer "school_id"
-    t.integer "ect_at_school_period_id"
-    t.integer "mentor_at_school_period_id"
-    t.integer "training_period_id"
-    t.integer "mentorship_period_id"
-    t.integer "school_partnership_id"
-    t.integer "lead_provider_id"
-    t.integer "delivery_partner_id"
-    t.integer "user_id"
-    t.enum "author_type", null: false, enum_type: "event_author_types"
+    t.citext "author_email"
     t.integer "author_id"
     t.text "author_name"
-    t.citext "author_email"
+    t.enum "author_type", null: false, enum_type: "event_author_types"
+    t.text "body"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "declaration_id"
+    t.integer "delivery_partner_id"
+    t.integer "ect_at_school_period_id"
+    t.text "event_type"
+    t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.text "heading"
+    t.integer "induction_extension_id"
+    t.integer "induction_period_id"
+    t.bigint "lead_provider_delivery_partnership_id"
+    t.integer "lead_provider_id"
+    t.integer "mentor_at_school_period_id"
+    t.integer "mentorship_period_id"
     t.jsonb "metadata"
     t.string "modifications", array: true
-    t.bigint "active_lead_provider_id"
-    t.bigint "lead_provider_delivery_partnership_id"
     t.bigint "pending_induction_submission_batch_id"
-    t.bigint "statement_id"
-    t.bigint "statement_adjustment_id"
-    t.integer "zendesk_ticket_id"
     t.bigint "schedule_id"
-    t.bigint "declaration_id"
+    t.integer "school_id"
+    t.integer "school_partnership_id"
+    t.bigint "statement_adjustment_id"
+    t.bigint "statement_id"
+    t.integer "teacher_id"
+    t.integer "training_period_id"
+    t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.integer "zendesk_ticket_id"
     t.index ["active_lead_provider_id"], name: "index_events_on_active_lead_provider_id"
     t.index ["appropriate_body_period_id"], name: "index_events_on_appropriate_body_period_id"
     t.index ["author_email"], name: "index_events_on_author_email"
@@ -415,66 +415,66 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "gias_school_links", force: :cascade do |t|
-    t.integer "urn", null: false
-    t.integer "link_urn", null: false
-    t.string "link_type", null: false
-    t.date "link_date"
     t.datetime "created_at", null: false
+    t.date "link_date"
+    t.string "link_type", null: false
+    t.integer "link_urn", null: false
     t.datetime "updated_at", null: false
+    t.integer "urn", null: false
     t.index ["urn"], name: "index_gias_school_links_on_urn"
   end
 
   create_table "gias_schools", primary_key: "urn", force: :cascade do |t|
-    t.string "name", null: false
-    t.enum "status", default: "open", null: false, enum_type: "gias_school_statuses"
     t.string "address_line1"
     t.string "address_line2"
     t.string "address_line3"
-    t.string "postcode"
-    t.string "primary_contact_email"
-    t.string "secondary_contact_email"
-    t.date "opened_on"
+    t.string "administrative_district_name"
     t.date "closed_on"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "administrative_district_name"
+    t.boolean "eligible", default: false, null: false
+    t.integer "establishment_number"
+    t.boolean "in_england", null: false
     t.integer "local_authority_code", null: false
     t.string "local_authority_name"
-    t.integer "establishment_number"
+    t.string "name", null: false
+    t.date "opened_on"
     t.string "phase_name"
+    t.string "postcode"
+    t.string "primary_contact_email"
+    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((postcode)::text, ''::text)) || ' '::text) || COALESCE((urn)::text, ''::text)))", stored: true
+    t.string "secondary_contact_email"
     t.boolean "section_41_approved", null: false
+    t.enum "status", default: "open", null: false, enum_type: "gias_school_statuses"
     t.string "type_name", null: false
     t.integer "ukprn"
+    t.datetime "updated_at", null: false
     t.string "website"
-    t.boolean "in_england", null: false
-    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((postcode)::text, ''::text)) || ' '::text) || COALESCE((urn)::text, ''::text)))", stored: true
-    t.boolean "eligible", default: false, null: false
     t.index ["name"], name: "index_gias_schools_on_name"
     t.index ["search"], name: "index_gias_schools_on_search", using: :gin
     t.index ["ukprn"], name: "index_gias_schools_on_ukprn", unique: true
   end
 
   create_table "induction_extensions", force: :cascade do |t|
-    t.bigint "teacher_id", null: false
-    t.float "number_of_terms", null: false
     t.datetime "created_at", null: false
+    t.float "number_of_terms", null: false
+    t.bigint "teacher_id", null: false
     t.datetime "updated_at", null: false
     t.index ["teacher_id"], name: "index_induction_extensions_on_teacher_id"
   end
 
   create_table "induction_periods", force: :cascade do |t|
     t.bigint "appropriate_body_period_id", null: false
-    t.date "started_on", null: false
-    t.date "finished_on"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.date "fail_confirmation_sent_on"
+    t.date "finished_on"
     t.enum "induction_programme", null: false, enum_type: "induction_programme"
     t.float "number_of_terms"
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.bigint "teacher_id"
     t.enum "outcome", enum_type: "induction_outcomes"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.date "started_on", null: false
+    t.bigint "teacher_id"
     t.enum "training_programme", enum_type: "training_programme"
-    t.date "fail_confirmation_sent_on"
+    t.datetime "updated_at", null: false
     t.index ["appropriate_body_period_id"], name: "index_induction_periods_on_appropriate_body_period_id"
     t.index ["teacher_id"], name: "index_induction_periods_on_teacher_id"
     t.index ["teacher_id"], name: "index_induction_periods_one_outcome_per_teacher", unique: true, where: "(outcome IS NOT NULL)"
@@ -483,10 +483,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
 
   create_table "lead_provider_delivery_partnerships", force: :cascade do |t|
     t.bigint "active_lead_provider_id", null: false
-    t.bigint "delivery_partner_id", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "delivery_partner_id", null: false
     t.uuid "ecf_id"
+    t.datetime "updated_at", null: false
     t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
     t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
@@ -494,22 +494,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "lead_providers", force: :cascade do |t|
-    t.string "name", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "ecf_id"
-    t.boolean "vat_registered", default: true, null: false
     t.uuid "ecf_cpd_lead_provider_id"
+    t.uuid "ecf_id"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "vat_registered", default: true, null: false
     t.index ["ecf_id"], name: "index_lead_providers_on_ecf_id", unique: true
     t.index ["name"], name: "index_lead_providers_on_name", unique: true
   end
 
   create_table "legacy_appropriate_bodies", force: :cascade do |t|
+    t.bigint "appropriate_body_period_id", null: false
+    t.enum "body_type", null: false, enum_type: "appropriate_body_type"
+    t.datetime "created_at", null: false
     t.uuid "dqt_id", null: false
     t.string "name", null: false
-    t.enum "body_type", null: false, enum_type: "appropriate_body_type"
-    t.bigint "appropriate_body_period_id", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["appropriate_body_period_id"], name: "index_legacy_appropriate_bodies_on_appropriate_body_period_id", unique: true
     t.index ["dqt_id"], name: "index_legacy_appropriate_bodies_on_dqt_id", unique: true
@@ -517,17 +517,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "mentor_at_school_periods", force: :cascade do |t|
-    t.bigint "school_id", null: false
-    t.bigint "teacher_id", null: false
-    t.date "started_on", null: false
-    t.date "finished_on"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
+    t.uuid "ecf_start_induction_record_id"
     t.citext "email"
+    t.date "finished_on"
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
     t.bigint "reported_leaving_by_school_id"
+    t.bigint "school_id", null: false
+    t.date "started_on", null: false
+    t.bigint "teacher_id", null: false
+    t.datetime "updated_at", null: false
     t.index "school_id, teacher_id, ((finished_on IS NULL))", name: "idx_on_school_id_teacher_id_finished_on_IS_NULL_dd7ee16a28", unique: true, where: "(finished_on IS NULL)"
     t.index ["reported_leaving_by_school_id"], name: "idx_on_reported_leaving_by_school_id_6c1d88c6d0"
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
@@ -537,15 +537,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "mentorship_periods", force: :cascade do |t|
-    t.bigint "ect_at_school_period_id", null: false
-    t.bigint "mentor_at_school_period_id", null: false
-    t.date "started_on", null: false
-    t.date "finished_on"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.uuid "ecf_start_induction_record_id"
     t.uuid "ecf_end_induction_record_id"
+    t.uuid "ecf_start_induction_record_id"
+    t.bigint "ect_at_school_period_id", null: false
+    t.date "finished_on"
+    t.bigint "mentor_at_school_period_id", null: false
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.date "started_on", null: false
+    t.datetime "updated_at", null: false
     t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "(finished_on IS NULL)"
     t.index ["ect_at_school_period_id", "started_on"], name: "index_mentorship_periods_on_ect_at_school_period_id_started_on", unique: true
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
@@ -555,10 +555,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "metadata_delivery_partners_lead_providers", force: :cascade do |t|
-    t.bigint "delivery_partner_id", null: false
-    t.bigint "lead_provider_id", null: false
     t.integer "contract_period_years", default: [], null: false, array: true
     t.datetime "created_at", null: false
+    t.bigint "delivery_partner_id", null: false
+    t.bigint "lead_provider_id", null: false
     t.datetime "updated_at", null: false
     t.index ["delivery_partner_id", "lead_provider_id"], name: "idx_on_delivery_partner_id_lead_provider_id_a83df5ed0c", unique: true
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_d734fa500e"
@@ -566,11 +566,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "metadata_schools_contract_periods", force: :cascade do |t|
-    t.bigint "school_id", null: false
     t.integer "contract_period_year"
+    t.datetime "created_at", null: false
     t.boolean "in_partnership", null: false
     t.enum "induction_programme_choice", null: false, enum_type: "induction_programme_choice"
-    t.datetime "created_at", null: false
+    t.bigint "school_id", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_e703aaa45a"
     t.index ["school_id", "contract_period_year"], name: "idx_on_school_id_contract_period_year_0dae2d65f6", unique: true
@@ -578,11 +578,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "metadata_schools_lead_providers_contract_periods", force: :cascade do |t|
-    t.bigint "school_id", null: false
-    t.bigint "lead_provider_id", null: false
     t.integer "contract_period_year"
-    t.boolean "expression_of_interest_or_school_partnership", null: false
     t.datetime "created_at", null: false
+    t.boolean "expression_of_interest_or_school_partnership", null: false
+    t.bigint "lead_provider_id", null: false
+    t.bigint "school_id", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_f5913b27f2"
     t.index ["lead_provider_id"], name: "idx_on_lead_provider_id_bb46a39503"
@@ -591,16 +591,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "metadata_teachers_lead_providers", force: :cascade do |t|
-    t.bigint "teacher_id"
-    t.bigint "lead_provider_id"
-    t.bigint "latest_ect_training_period_id"
-    t.bigint "latest_mentor_training_period_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.uuid "api_mentor_id"
-    t.integer "latest_ect_contract_period_year"
-    t.integer "latest_mentor_contract_period_year"
+    t.datetime "created_at", null: false
     t.boolean "involved_in_school_transfer"
+    t.integer "latest_ect_contract_period_year"
+    t.bigint "latest_ect_training_period_id"
+    t.integer "latest_mentor_contract_period_year"
+    t.bigint "latest_mentor_training_period_id"
+    t.bigint "lead_provider_id"
+    t.bigint "teacher_id"
+    t.datetime "updated_at", null: false
     t.index ["latest_ect_training_period_id"], name: "idx_on_latest_ect_training_period_id_2d0632b258"
     t.index ["latest_mentor_training_period_id"], name: "idx_on_latest_mentor_training_period_id_862127afaf"
     t.index ["lead_provider_id", "teacher_id"], name: "idx_on_lead_provider_id_teacher_id_74c7a13188", where: "((latest_ect_training_period_id IS NOT NULL) OR (latest_mentor_training_period_id IS NOT NULL))"
@@ -610,143 +610,143 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "migration_failures", force: :cascade do |t|
-    t.bigint "data_migration_id", null: false
-    t.json "item", null: false
-    t.string "failure_message"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "data_migration_id", null: false
+    t.string "failure_message"
+    t.json "item", null: false
+    t.string "migration_mode"
     t.integer "parent_id"
     t.string "parent_type"
-    t.string "migration_mode"
+    t.datetime "updated_at", null: false
     t.index ["data_migration_id"], name: "index_migration_failures_on_data_migration_id"
     t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
   create_table "milestones", force: :cascade do |t|
-    t.bigint "schedule_id"
-    t.enum "declaration_type", null: false, enum_type: "declaration_types"
-    t.date "start_date", null: false
-    t.date "milestone_date"
     t.datetime "created_at", null: false
+    t.enum "declaration_type", null: false, enum_type: "declaration_types"
+    t.date "milestone_date"
+    t.bigint "schedule_id"
+    t.date "start_date", null: false
     t.datetime "updated_at", null: false
     t.index ["schedule_id", "declaration_type"], name: "index_milestones_on_schedule_id_and_declaration_type", unique: true
     t.index ["schedule_id"], name: "index_milestones_on_schedule_id"
   end
 
   create_table "parity_check_endpoints", force: :cascade do |t|
-    t.string "path", null: false
+    t.datetime "created_at", null: false
     t.enum "method", null: false, enum_type: "request_method_types"
     t.jsonb "options", default: {}, null: false
-    t.datetime "created_at", null: false
+    t.string "path", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "parity_check_requests", force: :cascade do |t|
-    t.bigint "run_id", null: false
-    t.bigint "lead_provider_id", null: false
-    t.datetime "started_at"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.bigint "endpoint_id"
+    t.bigint "lead_provider_id", null: false
+    t.bigint "run_id", null: false
+    t.datetime "started_at"
     t.enum "state", default: "pending", null: false, enum_type: "parity_check_request_states"
+    t.datetime "updated_at", null: false
     t.index ["endpoint_id"], name: "index_parity_check_requests_on_endpoint_id"
     t.index ["lead_provider_id"], name: "index_parity_check_requests_on_lead_provider_id"
     t.index ["run_id"], name: "index_parity_check_requests_on_run_id"
   end
 
   create_table "parity_check_responses", force: :cascade do |t|
-    t.bigint "request_id", null: false
-    t.integer "ecf_status_code", null: false
-    t.integer "rect_status_code", null: false
-    t.string "ecf_body"
-    t.string "rect_body"
-    t.integer "ecf_time_ms", null: false
-    t.integer "rect_time_ms", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "page"
+    t.string "ecf_body"
     t.string "ecf_request_uri"
-    t.string "rect_request_uri"
-    t.jsonb "request_body"
+    t.integer "ecf_status_code", null: false
+    t.integer "ecf_time_ms", null: false
     t.integer "match_rate", default: 0, null: false
+    t.integer "page"
+    t.string "rect_body"
     t.decimal "rect_performance_gain_ratio", precision: 6, scale: 1
+    t.string "rect_request_uri"
+    t.integer "rect_status_code", null: false
+    t.integer "rect_time_ms", null: false
+    t.jsonb "request_body"
+    t.bigint "request_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["request_id", "page"], name: "index_parity_check_responses_on_request_id_and_page", unique: true
     t.index ["request_id"], name: "index_parity_check_responses_on_request_id"
   end
 
   create_table "parity_check_runs", force: :cascade do |t|
-    t.datetime "started_at"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.enum "state", default: "pending", null: false, enum_type: "parity_check_run_states"
     t.enum "mode", default: "concurrent", null: false, enum_type: "parity_check_run_modes"
+    t.datetime "started_at"
+    t.enum "state", default: "pending", null: false, enum_type: "parity_check_run_states"
+    t.datetime "updated_at", null: false
     t.index ["state"], name: "index_parity_check_runs_on_state", unique: true, where: "(state = 'in_progress'::parity_check_run_states)"
   end
 
   create_table "pending_induction_submission_batches", force: :cascade do |t|
     t.bigint "appropriate_body_period_id", null: false
-    t.enum "batch_type", null: false, enum_type: "batch_type"
     t.enum "batch_status", default: "pending", null: false, enum_type: "batch_status"
-    t.string "error_message"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.jsonb "data"
-    t.string "file_name"
-    t.integer "uploaded_count"
-    t.integer "processed_count"
-    t.integer "errored_count"
-    t.integer "released_count"
-    t.integer "passed_count"
+    t.enum "batch_type", null: false, enum_type: "batch_type"
     t.integer "claimed_count"
+    t.datetime "created_at", null: false
+    t.jsonb "data"
+    t.string "error_message"
+    t.integer "errored_count"
+    t.string "file_name"
     t.integer "file_size"
     t.string "file_type"
+    t.integer "passed_count"
+    t.integer "processed_count"
+    t.integer "released_count"
+    t.datetime "updated_at", null: false
+    t.integer "uploaded_count"
     t.index ["appropriate_body_period_id"], name: "idx_on_appropriate_body_period_id_6d39c36e05"
   end
 
   create_table "pending_induction_submissions", force: :cascade do |t|
     t.bigint "appropriate_body_period_id"
-    t.string "establishment_id", limit: 8
-    t.string "trn", limit: 7, null: false
-    t.string "trs_first_name", limit: 80
-    t.string "trs_last_name", limit: 80
-    t.date "date_of_birth"
-    t.string "trs_induction_status"
-    t.enum "induction_programme", enum_type: "induction_programme"
-    t.date "started_on"
-    t.date "finished_on"
-    t.float "number_of_terms"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.datetime "confirmed_at"
-    t.citext "trs_email_address"
+    t.datetime "created_at", null: false
+    t.date "date_of_birth"
+    t.datetime "delete_at", precision: nil
+    t.string "error_messages", default: [], array: true
+    t.string "establishment_id", limit: 8
+    t.date "fail_confirmation_sent_on"
+    t.date "finished_on"
+    t.enum "induction_programme", enum_type: "induction_programme"
+    t.float "number_of_terms"
+    t.enum "outcome", enum_type: "induction_outcomes"
+    t.bigint "pending_induction_submission_batch_id"
+    t.date "started_on"
+    t.enum "training_programme", enum_type: "training_programme"
+    t.string "trn", limit: 7, null: false
     t.jsonb "trs_alerts"
+    t.date "trs_date_of_birth"
+    t.citext "trs_email_address"
+    t.string "trs_first_name", limit: 80
+    t.date "trs_induction_completed_date"
     t.date "trs_induction_start_date"
-    t.string "trs_qts_status_description"
+    t.string "trs_induction_status"
     t.date "trs_initial_teacher_training_end_date"
     t.string "trs_initial_teacher_training_provider_name"
-    t.enum "outcome", enum_type: "induction_outcomes"
-    t.date "trs_qts_awarded_on"
-    t.datetime "delete_at", precision: nil
-    t.bigint "pending_induction_submission_batch_id"
-    t.string "error_messages", default: [], array: true
-    t.enum "training_programme", enum_type: "training_programme"
+    t.string "trs_last_name", limit: 80
     t.boolean "trs_prohibited_from_teaching"
-    t.date "trs_induction_completed_date"
-    t.date "trs_date_of_birth"
-    t.date "fail_confirmation_sent_on"
+    t.date "trs_qts_awarded_on"
+    t.string "trs_qts_status_description"
+    t.datetime "updated_at", null: false
     t.index ["appropriate_body_period_id"], name: "idx_on_appropriate_body_period_id_b868757d9f"
     t.index ["pending_induction_submission_batch_id"], name: "idx_on_pending_induction_submission_batch_id_bb4509358d"
     t.index ["trn"], name: "index_pending_induction_submissions_on_trn"
   end
 
   create_table "regions", force: :cascade do |t|
-    t.string "code", null: false
-    t.string "districts", null: false, array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.bigint "appropriate_body_id"
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "districts", null: false, array: true
+    t.datetime "updated_at", null: false
     t.index ["appropriate_body_id"], name: "index_regions_on_appropriate_body_id"
     t.index ["code"], name: "index_regions_on_code", unique: true
     t.index ["districts"], name: "index_regions_on_districts", using: :gin
@@ -754,48 +754,48 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
 
   create_table "schedules", force: :cascade do |t|
     t.integer "contract_period_year", null: false
-    t.enum "identifier", null: false, enum_type: "schedule_identifiers"
     t.datetime "created_at", null: false
+    t.enum "identifier", null: false, enum_type: "schedule_identifiers"
     t.datetime "updated_at", null: false
     t.index ["contract_period_year", "identifier"], name: "index_schedules_on_contract_period_year_and_identifier", unique: true
   end
 
   create_table "school_funding_eligibilities", force: :cascade do |t|
-    t.bigint "school_urn", null: false
     t.integer "contract_period_year", null: false
-    t.boolean "pupil_premium_uplift", default: false, null: false
-    t.boolean "sparsity_uplift", default: false, null: false
     t.datetime "created_at", null: false
+    t.boolean "pupil_premium_uplift", default: false, null: false
+    t.bigint "school_urn", null: false
+    t.boolean "sparsity_uplift", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["contract_period_year"], name: "index_school_funding_eligibilities_on_contract_period_year"
     t.index ["school_urn"], name: "index_school_funding_eligibilities_on_school_urn"
   end
 
   create_table "school_partnerships", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "lead_provider_delivery_partnership_id", null: false
-    t.bigint "school_id", null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "created_at", null: false
+    t.bigint "lead_provider_delivery_partnership_id", null: false
+    t.bigint "school_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["api_id"], name: "index_school_partnerships_on_api_id", unique: true
     t.index ["lead_provider_delivery_partnership_id"], name: "idx_on_lead_provider_delivery_partnership_id_628487f752"
     t.index ["school_id", "lead_provider_delivery_partnership_id"], name: "idx_on_school_id_lead_provider_delivery_partnership_7b2d6a6684", unique: true
   end
 
   create_table "schools", force: :cascade do |t|
-    t.integer "urn", null: false
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.citext "induction_tutor_email"
+    t.integer "induction_tutor_last_nominated_in"
+    t.string "induction_tutor_name"
     t.bigint "last_chosen_appropriate_body_id"
     t.bigint "last_chosen_lead_provider_id"
     t.enum "last_chosen_training_programme", enum_type: "training_programme"
-    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
-    t.string "induction_tutor_name"
-    t.citext "induction_tutor_email"
-    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.integer "induction_tutor_last_nominated_in"
     t.boolean "marked_as_eligible", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.integer "urn", null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
     t.index ["api_updated_at"], name: "index_schools_on_api_updated_at"
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
@@ -804,42 +804,42 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.string "queue_name", null: false
-    t.integer "priority", default: 0, null: false
     t.string "concurrency_key", null: false
-    t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
     t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
     t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
     t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
   end
 
   create_table "solid_queue_claimed_executions", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.bigint "job_id", null: false
     t.bigint "process_id"
-    t.datetime "created_at", null: false
     t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
     t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
   end
 
   create_table "solid_queue_failed_executions", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.text "error"
     t.datetime "created_at", null: false
+    t.text "error"
+    t.bigint "job_id", null: false
     t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
   end
 
   create_table "solid_queue_jobs", force: :cascade do |t|
-    t.string "queue_name", null: false
-    t.string "class_name", null: false
-    t.text "arguments"
-    t.integer "priority", default: 0, null: false
     t.string "active_job_id"
-    t.datetime "scheduled_at"
-    t.datetime "finished_at"
+    t.text "arguments"
+    t.string "class_name", null: false
     t.string "concurrency_key"
     t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at"
     t.datetime "updated_at", null: false
     t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
     t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
@@ -849,87 +849,87 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "solid_queue_pauses", force: :cascade do |t|
-    t.string "queue_name", null: false
     t.datetime "created_at", null: false
+    t.string "queue_name", null: false
     t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
   end
 
   create_table "solid_queue_processes", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "hostname"
     t.string "kind", null: false
     t.datetime "last_heartbeat_at", null: false
-    t.bigint "supervisor_id"
-    t.integer "pid", null: false
-    t.string "hostname"
     t.text "metadata"
-    t.datetime "created_at", null: false
     t.string "name", null: false
+    t.integer "pid", null: false
+    t.bigint "supervisor_id"
     t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
     t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
     t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
   end
 
   create_table "solid_queue_ready_executions", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.string "queue_name", null: false
-    t.integer "priority", default: 0, null: false
     t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
     t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
     t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
     t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
   end
 
   create_table "solid_queue_recurring_executions", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.string "task_key", null: false
-    t.datetime "run_at", null: false
     t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.datetime "run_at", null: false
+    t.string "task_key", null: false
     t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
     t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
   end
 
   create_table "solid_queue_recurring_tasks", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "schedule", null: false
-    t.string "command", limit: 2048
-    t.string "class_name"
     t.text "arguments"
-    t.string "queue_name"
-    t.integer "priority", default: 0
-    t.boolean "static", default: true, null: false
-    t.text "description"
+    t.string "class_name"
+    t.string "command", limit: 2048
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key", null: false
+    t.integer "priority", default: 0
+    t.string "queue_name"
+    t.string "schedule", null: false
+    t.boolean "static", default: true, null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
     t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
   end
 
   create_table "solid_queue_scheduled_executions", force: :cascade do |t|
-    t.bigint "job_id", null: false
-    t.string "queue_name", null: false
-    t.integer "priority", default: 0, null: false
-    t.datetime "scheduled_at", null: false
     t.datetime "created_at", null: false
+    t.bigint "job_id", null: false
+    t.integer "priority", default: 0, null: false
+    t.string "queue_name", null: false
+    t.datetime "scheduled_at", null: false
     t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
     t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
   end
 
   create_table "solid_queue_semaphores", force: :cascade do |t|
-    t.string "key", null: false
-    t.integer "value", default: 1, null: false
-    t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "key", null: false
     t.datetime "updated_at", null: false
+    t.integer "value", default: 1, null: false
     t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
     t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
   create_table "statement_adjustments", force: :cascade do |t|
-    t.bigint "statement_id", null: false
-    t.uuid "ecf_id"
-    t.string "payment_type", null: false
     t.decimal "amount", null: false
     t.datetime "created_at", null: false
+    t.uuid "ecf_id"
+    t.string "payment_type", null: false
+    t.bigint "statement_id", null: false
     t.datetime "updated_at", null: false
     t.index ["ecf_id"], name: "index_statement_adjustments_on_ecf_id", unique: true
     t.index ["statement_id"], name: "index_statement_adjustments_on_statement_id"
@@ -937,39 +937,39 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
 
   create_table "statements", force: :cascade do |t|
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.integer "month", null: false
-    t.integer "year", null: false
-    t.date "deadline_date", null: false
-    t.date "payment_date", null: false
-    t.datetime "marked_as_paid_at"
-    t.enum "status", default: "open", null: false, enum_type: "statement_statuses"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.bigint "contract_id", null: false
+    t.datetime "created_at", null: false
+    t.date "deadline_date", null: false
+    t.enum "fee_type", default: "output", null: false, enum_type: "fee_types"
+    t.datetime "marked_as_paid_at"
+    t.integer "month", null: false
+    t.date "payment_date", null: false
+    t.enum "status", default: "open", null: false, enum_type: "statement_statuses"
+    t.datetime "updated_at", null: false
+    t.integer "year", null: false
     t.index ["contract_id"], name: "index_statements_on_contract_id"
     t.index ["payment_date"], name: "index_statements_on_payment_date"
   end
 
   create_table "support_queries", force: :cascade do |t|
-    t.string "state", default: "pending", null: false
-    t.integer "zendesk_id"
-    t.string "name", null: false
+    t.datetime "created_at", null: false
     t.string "email", null: false
+    t.text "message", null: false
+    t.string "name", null: false
     t.string "school_name", null: false
     t.integer "school_urn", null: false
-    t.text "message", null: false
-    t.datetime "created_at", null: false
+    t.string "state", default: "pending", null: false
     t.datetime "updated_at", null: false
+    t.integer "zendesk_id"
   end
 
   create_table "teacher_id_changes", force: :cascade do |t|
-    t.bigint "teacher_id", null: false
     t.uuid "api_from_teacher_id", null: false
     t.uuid "api_to_teacher_id", null: false
-    t.uuid "ecf_id"
     t.datetime "created_at", null: false
+    t.uuid "ecf_id"
+    t.bigint "teacher_id", null: false
     t.datetime "updated_at", null: false
     t.index ["api_from_teacher_id"], name: "index_teacher_id_changes_on_api_from_teacher_id"
     t.index ["api_to_teacher_id"], name: "index_teacher_id_changes_on_api_to_teacher_id"
@@ -978,50 +978,50 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "teacher_migration_failures", force: :cascade do |t|
-    t.bigint "teacher_id"
+    t.datetime "created_at", null: false
     t.string "message", null: false
     t.uuid "migration_item_id"
     t.string "migration_item_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "model", default: "teacher", null: false
     t.string "migration_mode"
+    t.string "model", default: "teacher", null: false
+    t.bigint "teacher_id"
+    t.datetime "updated_at", null: false
     t.index ["model"], name: "index_teacher_migration_failures_on_model"
     t.index ["teacher_id"], name: "index_teacher_migration_failures_on_teacher_id"
   end
 
   create_table "teachers", force: :cascade do |t|
+    t.uuid "api_ect_training_record_id"
+    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "api_mentor_training_record_id"
+    t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.string "corrected_name"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "trn"
-    t.string "trs_first_name"
-    t.string "trs_last_name"
-    t.date "trs_qts_awarded_on"
-    t.string "trs_qts_status_description"
-    t.string "trs_induction_status", limit: 18
-    t.string "trs_initial_teacher_training_provider_name"
-    t.date "trs_initial_teacher_training_end_date"
-    t.datetime "trs_data_last_refreshed_at", precision: nil
+    t.date "ect_became_ineligible_for_funding_on"
+    t.datetime "ect_first_became_eligible_for_training_at"
+    t.integer "ect_payments_frozen_year"
     t.date "mentor_became_ineligible_for_funding_on"
     t.enum "mentor_became_ineligible_for_funding_reason", enum_type: "mentor_became_ineligible_for_funding_reason"
-    t.boolean "trs_deactivated", default: false
-    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
-    t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.uuid "api_ect_training_record_id"
-    t.uuid "api_mentor_training_record_id"
-    t.integer "ect_payments_frozen_year"
-    t.integer "mentor_payments_frozen_year"
-    t.date "trs_induction_start_date"
-    t.date "trs_induction_completed_date"
-    t.datetime "ect_first_became_eligible_for_training_at"
     t.datetime "mentor_first_became_eligible_for_training_at"
-    t.boolean "trnless", default: false, null: false
-    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
-    t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.integer "mentor_payments_frozen_year"
     t.enum "migration_mode", default: "not_migrated", enum_type: "participant_migration_mode"
+    t.virtual "search", type: :tsvector, as: "to_tsvector('unaccented'::regconfig, (((((COALESCE(trs_first_name, ''::character varying))::text || ' '::text) || (COALESCE(trs_last_name, ''::character varying))::text) || ' '::text) || (COALESCE(corrected_name, ''::character varying))::text))", stored: true
+    t.string "trn"
+    t.boolean "trnless", default: false, null: false
+    t.datetime "trs_data_last_refreshed_at", precision: nil
+    t.boolean "trs_deactivated", default: false
+    t.string "trs_first_name"
+    t.date "trs_induction_completed_date"
+    t.date "trs_induction_start_date"
+    t.string "trs_induction_status", limit: 18
+    t.date "trs_initial_teacher_training_end_date"
+    t.string "trs_initial_teacher_training_provider_name"
+    t.string "trs_last_name"
     t.boolean "trs_not_found", default: false
-    t.date "ect_became_ineligible_for_funding_on"
+    t.date "trs_qts_awarded_on"
+    t.string "trs_qts_status_description"
+    t.datetime "updated_at", null: false
     t.index ["api_ect_training_record_id"], name: "index_teachers_on_api_ect_training_record_id", unique: true
     t.index ["api_id"], name: "index_teachers_on_api_id", unique: true
     t.index ["api_mentor_training_record_id"], name: "index_teachers_on_api_mentor_training_record_id", unique: true
@@ -1036,24 +1036,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "training_periods", force: :cascade do |t|
-    t.bigint "school_partnership_id"
-    t.date "started_on", null: false
-    t.date "finished_on"
+    t.datetime "api_transfer_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.enum "deferral_reason", enum_type: "deferral_reasons"
+    t.datetime "deferred_at"
+    t.uuid "ecf_end_induction_record_id"
+    t.uuid "ecf_start_induction_record_id"
     t.bigint "ect_at_school_period_id"
+    t.bigint "expression_of_interest_id"
+    t.date "finished_on"
     t.bigint "mentor_at_school_period_id"
     t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
-    t.uuid "ecf_start_induction_record_id"
-    t.uuid "ecf_end_induction_record_id"
-    t.bigint "expression_of_interest_id"
-    t.enum "training_programme", null: false, enum_type: "training_programme"
-    t.datetime "deferred_at"
-    t.enum "deferral_reason", enum_type: "deferral_reasons"
-    t.datetime "withdrawn_at"
-    t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
     t.bigint "schedule_id"
-    t.datetime "api_transfer_updated_at", default: -> { "CURRENT_TIMESTAMP" }
+    t.bigint "school_partnership_id"
+    t.date "started_on", null: false
+    t.enum "training_programme", null: false, enum_type: "training_programme"
+    t.datetime "updated_at", null: false
+    t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
+    t.datetime "withdrawn_at"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
     t.index ["api_transfer_updated_at"], name: "index_training_periods_on_api_transfer_updated_at"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
@@ -1067,14 +1067,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_13_164213) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name", null: false
+    t.datetime "created_at", null: false
     t.citext "email", null: false
+    t.string "name", null: false
+    t.integer "otp_school_urn"
     t.string "otp_secret"
     t.datetime "otp_verified_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.enum "role", default: "admin", null: false, enum_type: "dfe_role_type"
-    t.integer "otp_school_urn"
+    t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
