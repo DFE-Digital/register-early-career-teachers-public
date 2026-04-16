@@ -19,7 +19,13 @@ module Metadata
     def ensure_metadata_namespace
       return if Thread.current[:bypass_update_restrictions]
 
-      allowed = caller.reject { it.include?(self.class.name) }.any? { it.include?("Metadata::") }
+      # The current class/base class will always be in the call stack
+      # and so should be ignored.
+      ignored_callers = [self.class.name, self.class.superclass.name]
+
+      allowed = caller
+        .reject { |c| ignored_callers.any? { c.include?(it) } }
+        .any? { |c| c.include?("Metadata::") }
       raise UpdateRestrictedError, "Updates to #{self.class.name} are only allowed from the Metadata namespace" unless allowed
     end
   end

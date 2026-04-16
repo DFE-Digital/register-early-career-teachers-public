@@ -14,7 +14,7 @@ Bundler.require(*Rails.groups)
 
 module RegisterEarlyCareerTeachers
   class Application < Rails::Application
-    config.load_defaults 8.0
+    config.load_defaults 8.1
     config.autoload_lib(ignore: %w[assets tasks])
     config.assets.paths << Rails.root.join("node_modules/govuk-frontend/dist/govuk")
     config.exceptions_app = routes

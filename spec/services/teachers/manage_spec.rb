@@ -140,12 +140,12 @@ RSpec.describe Teachers::Manage do
               trs_qts_awarded_on: [nil, 3.years.ago.to_date],
               trs_qts_status_description: [nil, "QTS status description"]
             }.with_indifferent_access,
-            modifications: [
-              "TRS qts awarded on set to '#{3.years.ago.to_date.to_fs(:govuk_short)}'",
-              "TRS qts status description set to 'QTS status description'",
-              "TRS initial teacher training provider name set to 'ITT provider'",
+            modifications: contain_exactly(
               "TRS initial teacher training end date set to '#{2.years.ago.to_date.to_fs(:govuk_short)}'",
-            ]
+              "TRS initial teacher training provider name set to 'ITT provider'",
+              "TRS qts awarded on set to '#{3.years.ago.to_date.to_fs(:govuk_short)}'",
+              "TRS qts status description set to 'QTS status description'"
+            )
           )
         end
       end
