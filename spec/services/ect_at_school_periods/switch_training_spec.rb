@@ -179,6 +179,37 @@ module ECTAtSchoolPeriods
         end
       end
 
+      context "when the `ECTAtSchoolPeriod` has a `finished_on` date" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            started_on: 2.weeks.ago,
+            finished_on: 6.months.from_now
+          )
+        end
+
+        it "creates a training period that finishes on the same date" do
+          SwitchTraining.to_school_led(ect_at_school_period, author:)
+
+          new_training_period = ect_at_school_period.reload.latest_training_period
+          expect(new_training_period).not_to be_ongoing
+          expect(new_training_period.finished_on).to eq(ect_at_school_period.finished_on)
+        end
+      end
+
+      context "when the `ECTAtSchoolPeriod` does not have a `finished_on` date" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :ongoing)
+        end
+
+        it "creates an ongoing training period" do
+          SwitchTraining.to_school_led(ect_at_school_period, author:)
+
+          new_training_period = ect_at_school_period.reload.latest_training_period
+          expect(new_training_period).to be_ongoing
+        end
+      end
+
       context "when the record is not a `ECTAtSchoolPeriod`" do
         let(:ect_at_school_period) do
           FactoryBot.create(:mentor_at_school_period, :ongoing)
@@ -752,6 +783,37 @@ module ECTAtSchoolPeriods
         end
       end
 
+      context "when the `ECTAtSchoolPeriod` has a `finished_on` date" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            started_on: 2.weeks.ago,
+            finished_on: 6.months.from_now
+          )
+        end
+
+        it "creates a training period that finishes on the same date" do
+          SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+          new_training_period = ect_at_school_period.reload.latest_training_period
+          expect(new_training_period).not_to be_ongoing
+          expect(new_training_period.finished_on).to eq(ect_at_school_period.finished_on)
+        end
+      end
+
+      context "when the `ECTAtSchoolPeriod` does not have a `finished_on` date" do
+        let(:ect_at_school_period) do
+          FactoryBot.create(:ect_at_school_period, :ongoing)
+        end
+
+        it "creates an ongoing training period" do
+          SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+          new_training_period = ect_at_school_period.reload.latest_training_period
+          expect(new_training_period).to be_ongoing
+        end
+      end
+
       context "when the record is not a `ECTAtSchoolPeriod`" do
         let(:ect_at_school_period) do
           FactoryBot.create(:mentor_at_school_period, :ongoing)
@@ -923,6 +985,24 @@ module ECTAtSchoolPeriods
                 expect(new_training_period.schedule.identifier).to eq("ecf-standard-april")
                 expect(new_training_period.schedule.contract_period.year).to eq(2025)
               end
+            end
+          end
+
+          context "when the mentor is leaving the school" do
+            let(:mentor_at_school_period) do
+              FactoryBot.create(
+                :mentor_at_school_period,
+                started_on: ect_at_school_period.started_on,
+                finished_on: ect_at_school_period.started_on.advance(years: 1),
+                school: ect_at_school_period.school
+              )
+            end
+
+            it "assigns a `finished_on` date for the training period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              new_training_period = mentor_at_school_period.training_periods.last
+              expect(new_training_period.finished_on).to eq(mentor_at_school_period.finished_on)
             end
           end
         end
