@@ -1,5 +1,6 @@
 RSpec.describe Schools::RegisterECT do
   include ActiveJob::TestHelper
+  let(:store) { nil }
   subject(:service) do
     described_class.new(school_reported_appropriate_body:,
                         corrected_name:,
@@ -12,7 +13,8 @@ RSpec.describe Schools::RegisterECT do
                         trs_first_name:,
                         trs_last_name:,
                         working_pattern:,
-                        author:)
+                        author:,
+                        store:)
   end
 
   include_context "safe_schedules"
@@ -22,7 +24,7 @@ RSpec.describe Schools::RegisterECT do
   let(:corrected_name) { "Randy Marsh" }
   let(:email) { "randy@tegridyfarms.com" }
   let(:school) { FactoryBot.create(:school) }
-  let(:started_on) { mid_year - 1.day }
+  let(:started_on) { mid_year }
   let(:trn) { "3002586" }
   let(:trs_first_name) { "Dusty" }
   let(:trs_last_name) { "Rhodes" }
@@ -249,13 +251,13 @@ RSpec.describe Schools::RegisterECT do
         context "when the ECT start date is backdated before the registration contract period" do
           let(:started_on) { contract_period.started_on - 1.day }
 
-          it "keeps the ECTAtSchoolPeriod started_on backdated, but normalises TrainingPeriod started_on to the registration contract period start" do
+          it "keeps the ECTAtSchoolPeriod started_on backdated, but uses the registration date for the TrainingPeriod started_on" do
             expect { service.register! }.to change(TrainingPeriod, :count).by(1)
 
             training_period = ect_at_school_period.training_periods.order(:created_at).last
 
             expect(ect_at_school_period.started_on).to eq(started_on)
-            expect(training_period.started_on).to eq(contract_period.started_on)
+            expect(training_period.started_on).to eq(Date.current)
             expect(training_period.schedule.contract_period_year).to eq(contract_period.year)
             expect(training_period.started_on).not_to eq(ect_at_school_period.started_on)
           end
@@ -297,6 +299,46 @@ RSpec.describe Schools::RegisterECT do
           service.register!
 
           expect(Teachers::SetFundingEligibility).to have_received(:new).with(teacher:, author:)
+        end
+      end
+
+      context "when contract period reassignment is required" do
+        let(:started_on) { Date.new(2024, 1, 1) }
+        let!(:frozen_cp) { FactoryBot.create(:contract_period, :with_payments_frozen, year: 2022) }
+        let!(:successor_cp) { FactoryBot.create(:contract_period, :with_schedules, :with_extended_schedule, year: 2024) }
+        let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: successor_cp) }
+        let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+
+        let(:previous_school) { FactoryBot.create(:school) }
+        let!(:previous_ect_period) do
+          FactoryBot.create(:ect_at_school_period,
+                            teacher:,
+                            school: previous_school,
+                            started_on: Date.new(2022, 9, 1),
+                            finished_on: Date.new(2023, 8, 31))
+        end
+
+        let!(:previous_training_period) do
+          FactoryBot.create(:training_period,
+                            ect_at_school_period: previous_ect_period,
+                            mentor_at_school_period: nil,
+                            training_programme: "provider_led",
+                            school_partnership: FactoryBot.create(:school_partnership, :for_year, year: 2022, school: previous_school),
+                            schedule: FactoryBot.create(:schedule, contract_period: frozen_cp, identifier: "ecf-standard-september"),
+                            started_on: Date.new(2022, 9, 1),
+                            finished_on: Date.new(2023, 8, 31))
+        end
+
+        let(:store) { double("store", previous_training_period:, school_partnership_to_reuse_id: nil) }
+
+        it "uses the reassigned contract period start date, not the registration date" do
+          service.register!
+
+          new_ect_period = service.ect_at_school_period
+          training_period = new_ect_period.training_periods.order(:created_at).last
+
+          expect(training_period.started_on).to eq(successor_cp.started_on)
+          expect(training_period.started_on).not_to eq(Date.current)
         end
       end
     end
