@@ -344,6 +344,62 @@ describe ECTAtSchoolPeriod do
         end
       end
     end
+
+    describe "concurrent ongoing periods" do
+      subject(:save_concurrent_ongoing_period!) do
+        concurrent_ongoing_period.save!
+      end
+
+      before { freeze_time }
+
+      let(:teacher) { FactoryBot.create(:teacher) }
+      let(:school) { FactoryBot.create(:school) }
+
+      let!(:ongoing_ect_at_school_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          :ongoing,
+          teacher:,
+          school:,
+          started_on: 1.year.ago
+        )
+      end
+
+      context "at different schools" do
+        let(:other_school) { FactoryBot.create(:school) }
+        let(:concurrent_ongoing_period) do
+          FactoryBot.build(
+            :ect_at_school_period,
+            :ongoing,
+            teacher:,
+            school: other_school,
+            started_on: 1.week.from_now
+          )
+        end
+
+        it do
+          expect { save_concurrent_ongoing_period! }
+            .to raise_error(ActiveRecord::RecordInvalid)
+        end
+      end
+
+      context "at the same school" do
+        let(:concurrent_ongoing_period) do
+          FactoryBot.build(
+            :ect_at_school_period,
+            :ongoing,
+            teacher:,
+            school:,
+            started_on: 1.week.from_now
+          )
+        end
+
+        it do
+          expect { save_concurrent_ongoing_period! }
+            .to raise_error(ActiveRecord::RecordInvalid)
+        end
+      end
+    end
   end
 
   describe "check constraints" do
