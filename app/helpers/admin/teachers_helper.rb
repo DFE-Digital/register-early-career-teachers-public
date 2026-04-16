@@ -1,6 +1,10 @@
 module Admin::TeachersHelper
   FilterOption = Data.define(:value, :name)
 
+  def admin_teacher_index_params
+    params.permit(:page, :q, :role, :contract_period)
+  end
+
   def teacher_role_filter_options
     Admin::Teachers::Search::ROLE_NAMES.map do |value, name|
       FilterOption.new(value:, name:)
