@@ -191,9 +191,11 @@ module Schools
     end
 
     def training_period_started_on
-      # If an ECT is backdated before the start of the registration CP,
-      # we still register them in the registration CP for programme/schedule purposes
-      [ect_at_school_period.started_on, registration_contract_period.started_on].max
+      if ContractPeriods::Reassignment.new(training_period: previous_training_period).required?
+        [ect_at_school_period.started_on, registration_contract_period.started_on].max
+      else
+        [ect_at_school_period.started_on, Date.current].max
+      end
     end
 
     def contract_period
