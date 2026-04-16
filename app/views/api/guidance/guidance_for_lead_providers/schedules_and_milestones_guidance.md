@@ -29,7 +29,7 @@ This table defines terms used throughout this guidance. For other contractual te
 | Extended schedule | A non-standard training schedule for ECTs who expect to complete their induction over a period greater than 2 years.<br><br>Examples include part-time ECTs, or ECTs whose induction period is extended by their appropriate body.<br><br>Mentors can also be assigned extended schedules if they deferred their training and came back later, or they’re doing the training part-time. However, mentors can't receive extended declarations. |
 | Reduced schedule | A non-standard training schedule for ECTs who expect to complete their induction over a period less than 2 years. An example is an ECT with previous experience teaching.<br><br>Mentors should not be placed on a reduced schedule. |
 | Replacement schedule | A non-standard training schedule for mentors that are replacing a previous mentor for an ECT that is part way through their training.<br><br>The mentor must be completely new to provider-led mentor training. |
-| Standard schedule | The default training schedule for ECTs completing a standard 2 year induction, or mentors completing a standard training for their cohort, starting in September, January or April. (Check we include mentors do 2 years for 2024 and earlier, 1 year later.) |
+| Standard schedule | The default training schedule for ECTs completing a standard 2 year induction, or mentors completing standard training for their cohort, starting in September, January or April. Mentors in pre-2025 cohorts would typically do 2 years of training, whilst after this they would do 1 year of training. |
 
 ## How the service assigns standard schedules
 
@@ -94,7 +94,7 @@ Providers must:
 
 ## Milestone and payment date guidance
 
-DfE pays lead providers based on agreed contractual schedules and training delivery criteria. Payments relate to the engagement criteria given to lead provider in their contracts. 
+DfE pays lead providers based on agreed contractual schedules and training delivery criteria. Payments relate to the engagement criteria given to lead providers in their contracts. 
 
 Output payments are based on valid declarations submitted by the declaration deadline for each milestone or declaration window. These dates correspond to each participant's schedule.
 
