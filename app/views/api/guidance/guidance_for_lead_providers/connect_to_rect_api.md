@@ -6,11 +6,10 @@ A unique API token is needed to connect to the register early career teachers AP
 
 Each token is associated with a single provider and will give lead providers access to information about ECTs and mentors they are training, or have trained.
 
-Authentication tokens do not expire. However, if you need to change your API token for any reason, please let us know via email or your Teams channel.
 
 ## Request an API token
 
-Lead providers must contact us via email or their Teams channel to request a token for production and sandbox environments. API tokens are distributed via Galaxkey.
+Lead providers must contact us via email or their Teams channel to request a new token for production and sandbox environments. API tokens are distributed via Galaxkey and do not expire.
 
 Providers must not share tokens in publicly accessible documents or repositories.
 
