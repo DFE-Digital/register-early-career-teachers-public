@@ -92,6 +92,10 @@ Providers must:
 * update any schedules that are not appropriate
 * confirm that every participant is on the correct schedule for their circumstances
 
+Lead providers should not change the schedule for a participant before it is confirmed they will definitely be moving to that schedule. For example, if a participant is deferred, they should not be changed to an extended schedule until it is confirmed they are returning to training and you have resumed them over the API. This is so we have accurate data for which schedule a participant is currently on. 
+
+In Register ECTs, it will not be possible to update a participant's schedule after their participant_status has changed to 'left' for any reason. This is because it would lead to data issues about the date of the change. If this is an issue, contact DfE by Teams or email.
+
 ## Milestone and payment date guidance
 
 DfE pays lead providers based on agreed contractual schedules and training delivery criteria. Payments relate to the engagement criteria given to lead providers in their contracts. 
