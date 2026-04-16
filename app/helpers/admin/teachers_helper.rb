@@ -2,10 +2,9 @@ module Admin::TeachersHelper
   FilterOption = Data.define(:value, :name)
 
   def teacher_role_filter_options
-    [
-      FilterOption.new(value: "ect", name: "Early career teacher"),
-      FilterOption.new(value: "mentor", name: "Mentor"),
-    ]
+    Admin::Teachers::Search::ROLE_NAMES.map do |value, name|
+      FilterOption.new(value:, name:)
+    end
   end
 
   def teacher_contract_period_filter_options
@@ -15,6 +14,6 @@ module Admin::TeachersHelper
       FilterOption.new(value: year, name: year)
     end
 
-    filter_options + [FilterOption.new(value: "not_available", name: "Not available")]
+    filter_options + [FilterOption.new(value: Admin::Teachers::Search::CONTRACT_PERIOD_NOT_AVAILABLE, name: "Not available")]
   end
 end
