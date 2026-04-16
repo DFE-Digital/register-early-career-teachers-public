@@ -60,7 +60,7 @@ module Interval
 
     if siblings.any? { |s| s.range.include?(started_on) }
       errors.add(:started_on, "Start date cannot overlap another #{name} period")
-    elsif siblings.any? { |s| s.range.include?(finished_on) }
+    elsif siblings.any? { |s| s.range.include?(finished_on) } || finished_on.nil?
       errors.add(:finished_on, "End date cannot overlap another #{name} period")
     end
   end

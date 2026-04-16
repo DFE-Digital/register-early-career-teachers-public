@@ -138,7 +138,11 @@ class TrainingPeriod < ApplicationRecord
   def siblings
     return TrainingPeriod.none unless at_school_period
 
-    at_school_period.training_periods.excluding(self)
+    training_periods_for_teacher = TrainingPeriod
+      .includes(at_school_period.model_name.element.to_sym)
+      .where(at_school_period.model_name.element => { teacher: })
+
+    training_periods_for_teacher.excluding(self)
   end
 
   def only_expression_of_interest?
