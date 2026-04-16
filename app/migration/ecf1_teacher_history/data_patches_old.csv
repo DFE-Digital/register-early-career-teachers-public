@@ -1,0 +1,14 @@
+participant_profile_id,induction_record_id,delete_record,start_date,end_date,created_at,updated_at,email,mentor_profile_id,training_status,induction_status,school_transfer,state_type,state_reason,state_cpd_lead_provider_id,state_created_at,ignore_training
+"a10a57fc-a7dd-4329-868e-c1811704c7a0","925502e4-4e77-4ace-9745-ae8853191d3e",,,,,,,,,,,,,,,true
+"d620fb7c-722b-49e7-b254-2f479aeb1a56","602ff46c-7a77-48aa-b30e-6a9137a0f20d",,,,,,,,,,,,,,,true
+"837ed9fe-82a9-43e7-a594-02c7b1ec4abe","ec755769-29be-4050-b4d6-f8d3edd2eb28",,"2025-09-01",,,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","dda9c2ae-716f-42a9-9985-e5583295a1de",,,"2022-12-11",,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","68d48bc8-f540-49f7-a86f-17f6df89aaaf",,,"2023-03-27",,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","5853db0f-1490-40b0-b90b-87704320c23a",,,"2023-08-31",,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","e262935c-9911-4cc1-a98d-b10f7b4cfe2e",true,,,,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","451e9135-8363-4dc3-83c9-d46da1853dc8",true,,,,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","54306581-0c86-442a-baa9-eac23e17b85b",true,,,,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","e8e82e42-8696-4e12-84de-0948192e7000",true,,,,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","b28269a3-a640-43cc-87c0-6b755a43986b",true,,,,,,,,,,,,,,
+"1d91b084-030e-485d-996e-92fbf2e46f51","e5951453-9ccd-4de6-85f8-b511c52c3046",true,,,,,,,,,,,,,,
+"b45b769f-8f11-46da-af8a-e63c4734d454","9a49e372-066e-4f2f-9f16-fae528cb68ef",,,,,,,,active,,,,,,,
