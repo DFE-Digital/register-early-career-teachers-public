@@ -1,5 +1,6 @@
 RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
   let(:already_active_at_school) { false }
+  let(:mentoring_at_new_school_only) { nil }
 
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "FraggleRock") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
@@ -18,6 +19,7 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
                      change_name: "no",
                      corrected_name: nil,
                      already_active_at_school:,
+                     mentoring_at_new_school_only:,
                      eligible_for_mentor_funding?: true,
                      ect_id: ect.id)
   end
@@ -129,31 +131,81 @@ RSpec.describe "schools/register_mentor_wizard/confirmation.md.erb" do
 
   context "when the mentor is already active at the school" do
     let(:already_active_at_school) { true }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
 
-    it "does not mention an email sent to the mentor" do
+    before do
       assign(:wizard, wizard)
       assign(:mentor, mentor)
       assign(:ect_name, "Michale Dixon")
 
       render
+    end
 
+    it "does not mention an email sent to the mentor" do
       expect(rendered).not_to have_content("What happens next")
       expect(rendered).not_to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
+    end
+
+    it "does not mention passing on details to the lead provider for mentor training" do
+      expect(rendered).not_to have_content("We’ll pass on their details to")
     end
   end
 
   context "when the mentor is not active at the school" do
     let(:already_active_at_school) { false }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+
+    before do
+      assign(:wizard, wizard)
+      assign(:mentor, mentor)
+      assign(:ect_name, "Michale Dixon")
+
+      render
+    end
 
     it "mentions an email sent to the mentor" do
+      expect(rendered).to have_content("What happens next")
+      expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
+    end
+
+    it "mentions passing on details to the lead provider for mentor training" do
+      expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
+    end
+  end
+
+  context "when the mentor is continuing to mentor at another school" do
+    let(:mentoring_at_new_school_only) { "no" }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+
+    before do
+      assign(:wizard, wizard)
+      assign(:mentor, mentor)
+      assign(:ect_name, "Michale Dixon")
+
+      render
+    end
+
+    it "does not mention passing on details to the lead provider for mentor training" do
+      expect(rendered).not_to have_content("We’ll pass on their details to")
+    end
+
+    it "does not mention ineligibility for mentor training" do
+      expect(rendered).not_to have_content("They cannot do mentor training according to our records.")
+    end
+  end
+
+  context "when the mentor is mentoring at the new school only" do
+    let(:mentoring_at_new_school_only) { "yes" }
+    let!(:training_period) { FactoryBot.create(:training_period, :provider_led, :ongoing, ect_at_school_period: ect, school_partnership:) }
+
+    it "mentions passing on details to the lead provider for mentor training" do
       assign(:wizard, wizard)
       assign(:mentor, mentor)
       assign(:ect_name, "Michale Dixon")
 
       render
 
-      expect(rendered).to have_content("What happens next")
-      expect(rendered).to have_content("We’ll email #{mentor.full_name} to confirm that you’ve registered them as a mentor.")
+      expect(rendered).to have_content("We’ll pass on their details to FraggleRock")
     end
   end
 end
