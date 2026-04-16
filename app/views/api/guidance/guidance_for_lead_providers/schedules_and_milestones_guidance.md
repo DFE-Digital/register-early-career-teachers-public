@@ -64,7 +64,7 @@ For participants who started their training on or before 31 December 2024, refer
 
 If a school registers a replacement mentor for an ECT, we'll assign a replacement mentor schedule based on when they're first registered as the ECT's mentor (`replacement-september`, `replacement-january` or `replacement-april`).
 
-It will be up to providers to check these automatically assigned replacement schedules. If a newly assigned replacement mentor later supports a new ECT doing provider-led training as their first mentor before the end of their first term of training, and before the mentor's first started declaration is due, providers must update the mentor's schedule to a standard one.
+It will be up to providers to check these automatically assigned replacement schedules. If a replacement mentor is later assigned as a first mentor to a new ECT doing provider-led training, providers must update the mentor's schedule to a standard one. This must be done before the end of the ECT's first term of training and before the mentor's first started declaration is due.
 
 ### Extended schedules
 
