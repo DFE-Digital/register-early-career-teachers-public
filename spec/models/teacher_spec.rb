@@ -187,6 +187,53 @@ describe Teacher do
       end
     end
 
+    describe ".current_or_next_mentor_at_school_period" do
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it { is_expected.to have_one(:current_or_next_mentor_at_school_period).class_name("MentorAtSchoolPeriod") }
+
+      context "when there is a current period" do
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+        let!(:finished_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 10.years.ago, finished_on: 8.years.ago, teacher:) }
+
+        it "returns the current mentor_at_school_period" do
+          expect(teacher.current_or_next_mentor_at_school_period).to eql(mentor_at_school_period)
+        end
+      end
+
+      context "when there is a current period and a future period" do
+        let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 1.year.ago, finished_on: 1.week.from_now, teacher:) }
+        let!(:future_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 2.weeks.from_now, finished_on: nil, teacher:) }
+
+        it "returns the current mentor_at_school_period" do
+          expect(teacher.current_or_next_mentor_at_school_period).to eql(mentor_at_school_period)
+        end
+      end
+
+      context "when there is no current period and there is a future period" do
+        let!(:future_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 2.weeks.from_now, finished_on: nil, teacher:) }
+
+        it "returns the future mentor_at_school_period" do
+          expect(teacher.current_or_next_mentor_at_school_period).to eql(future_mentor_at_school_period)
+        end
+      end
+
+      context "when there is no current or future period" do
+        let!(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            started_on: 2.years.ago,
+            finished_on: 1.year.ago,
+            teacher:
+          )
+        end
+
+        it "returns nil" do
+          expect(teacher.current_or_next_mentor_at_school_period).to be_nil
+        end
+      end
+    end
+
     it "returns the appropriate body period from the ongoing induction period" do
       teacher = FactoryBot.create(:teacher)
       other_appropriate_body_period = FactoryBot.create(:appropriate_body_period)
