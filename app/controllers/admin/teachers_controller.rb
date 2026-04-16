@@ -25,13 +25,9 @@ module Admin
 
     def teacher_breadcrumbs
       {
-        "Teachers" => admin_teachers_path(index_params),
+        "Teachers" => admin_teachers_path(helpers.admin_teacher_index_params),
         @teacher.full_name => nil
       }
-    end
-
-    def index_params
-      params.permit(:page, :q, :role, :contract_period)
     end
   end
 end
