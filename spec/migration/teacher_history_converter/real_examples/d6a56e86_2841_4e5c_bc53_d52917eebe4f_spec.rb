@@ -139,7 +139,7 @@ describe "Real data check for user d6a56e86-2841-4e5c-bc53-d52917eebe4f" do
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:converter) { TeacherHistoryConverter.new(ecf1_teacher_history:) }
+  let(:converter) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:) }
   let(:ecf2_teacher_history) { converter.convert_to_ecf2! }
 
   context "choosing a migration strategy" do

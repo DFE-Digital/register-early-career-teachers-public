@@ -6,15 +6,25 @@ RSpec.describe "schools/register_ect_wizard/registered_before.html.erb" do
   let(:lead_provider) { FactoryBot.create(:lead_provider, name: "Confirmed LP") }
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
   let(:lead_provider_delivery_partnership) { FactoryBot.create(:lead_provider_delivery_partnership, delivery_partner:, active_lead_provider:) }
-  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school: ect_at_school_period.school) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, lead_provider_delivery_partnership:, school:) }
 
-  let(:ect_at_school_period) do
+  let(:previous_ect_at_school_period) do
     FactoryBot.create(
       :ect_at_school_period,
-      finished_on: nil,
       school:,
       teacher:,
-      started_on: Date.new(2023, 9, 1)
+      started_on: Date.new(2023, 9, 1),
+      finished_on: Date.new(2024, 7, 31)
+    )
+  end
+
+  let(:current_ect_at_school_period) do
+    FactoryBot.create(
+      :ect_at_school_period,
+      school:,
+      teacher:,
+      started_on: Date.new(2024, 9, 1),
+      finished_on: nil
     )
   end
 
@@ -23,7 +33,7 @@ RSpec.describe "schools/register_ect_wizard/registered_before.html.erb" do
       :session_repository,
       trs_first_name: "Konohamaru",
       trs_last_name: "Sarutobi",
-      ect_at_school_period_id: ect_at_school_period.id,
+      ect_at_school_period_id: current_ect_at_school_period.id,
       trn: teacher.trn
     )
   end
@@ -44,7 +54,7 @@ RSpec.describe "schools/register_ect_wizard/registered_before.html.erb" do
       FactoryBot.create(
         :training_period,
         :provider_led,
-        ect_at_school_period:,
+        ect_at_school_period: previous_ect_at_school_period,
         started_on: Date.new(2023, 9, 1),
         finished_on: Date.new(2024, 7, 31),
         school_partnership:
@@ -106,7 +116,7 @@ RSpec.describe "schools/register_ect_wizard/registered_before.html.erb" do
       FactoryBot.create(
         :training_period,
         :school_led,
-        ect_at_school_period:,
+        ect_at_school_period: previous_ect_at_school_period,
         started_on: Date.new(2023, 9, 1),
         finished_on: Date.new(2024, 7, 31)
       )

@@ -76,7 +76,7 @@ private
             last_training_period = build_training_period(induction_record:, started_on:, finished_on:)
             last_school_period.training_periods << last_training_period if last_training_period.present?
           end
-        elsif last_training_period.present?
+        elsif last_training_period.present? && !induction_record.ignore_training?
           # extend training period
 
           # we should check for withdrawn here and ensure we close it or not overwrite the finished_at
@@ -131,6 +131,7 @@ private
   end
 
   def training_period_changed?(training_period, induction_record)
+    return false if induction_record.ignore_training?
     return true if training_period.blank?
     return true if training_period.withdrawn_at.present?
     return true if training_period.deferred_at.present?
@@ -205,6 +206,8 @@ private
   end
 
   def build_training_period(induction_record:, **overrides)
+    return if induction_record.ignore_training?
+
     training_programme = convert_training_programme_name(induction_record.training_programme)
 
     training_provider_info = induction_record.training_provider_info

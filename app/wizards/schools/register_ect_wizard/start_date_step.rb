@@ -42,15 +42,20 @@ module Schools
 
       def start_date_within_4_months
         return if skip_start_date_validation?
+        return if registrations_closed_for_contract_period?
 
         earliest_invalid_start_date = (4.months + 1.day).from_now.to_date
 
         if start_date_as_date >= earliest_invalid_start_date
           errors.add(
             :start_date,
-            "Start date must be before #{earliest_invalid_start_date.to_formatted_s(:govuk)}"
+            "Start date must be before #{earliest_invalid_start_date.to_formatted_s(:govuk)}. You cannot register the ECT this far in advance."
           )
         end
+      end
+
+      def registrations_closed_for_contract_period?
+        start_date_as_date.future? && !start_date_contract_period&.enabled?
       end
 
       def previous_start_date_invalid?(period)

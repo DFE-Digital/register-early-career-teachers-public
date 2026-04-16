@@ -75,7 +75,7 @@ describe "Real data check for user 3289df21-ce22-45c8-b7a2-b31db3bc8f88 (ERO men
   end
 
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:).convert_to_ecf2! }
+  let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
   context "when using the economy migrator" do
     let(:migration_mode) { :latest_induction_records }
@@ -89,7 +89,12 @@ describe "Real data check for user 3289df21-ce22-45c8-b7a2-b31db3bc8f88 (ERO men
               started_on: Date.new(2021, 9, 1),
               finished_on: nil,
               school: hash_including(urn: "100001", name: "School 1"),
-              training_periods: []
+              training_periods: array_including(
+                hash_including(
+                  started_on: Date.new(2021, 9, 1),
+                  finished_on: Date.new(2021, 9, 2)
+                )
+              )
             )
           ],
           mentor_became_ineligible_for_funding_on: Date.new(2021, 4, 19),

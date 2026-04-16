@@ -1,45 +1,10 @@
-RSpec.describe "Registering an ECT - reuse previous partnership", :enable_schools_interface do
+RSpec.describe "Registering an ECT - no reuse", :enable_schools_interface do
   include_context "test TRS API returns a teacher"
   include ReusablePartnershipHelpers
 
-  around do |example|
-    travel_to(Date.new(2025, 9, 1)) { example.run }
-  end
+  before { travel_to Date.new(2025, 9, 1) }
 
-  scenario "reuses a previous partnership (provider-led)" do
-    given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
-    and_i_am_on_the_schools_ects_index_page
-    and_i_start_adding_an_ect
-    and_i_click_continue
-    and_i_submit_the_find_ect_form
-    and_i_choose_that_the_details_are_correct
-    and_i_click_confirm_and_continue
-    then_i_am_on_the_registered_before_page
-    and_i_click_continue
-    then_i_am_on_the_email_address_page
-
-    and_i_enter_the_ect_email_address
-    and_i_click_continue
-    then_i_am_on_the_start_date_page
-
-    and_i_enter_a_valid_start_date
-    and_i_click_continue
-    then_i_am_on_the_working_pattern_page
-
-    and_i_select_full_time
-    and_i_click_continue
-    then_i_am_on_the_use_previous_choices_page
-
-    and_i_choose_to_reuse_previous_choices
-    and_i_click_continue
-    then_i_am_on_the_check_answers_page
-    and_i_see_previous_programme_choices_summary_when_reusing
-
-    and_i_click_confirm_details
-    then_i_am_on_the_confirmation_page
-  end
-
-  scenario "can't reuse—pairing not active this year" do
+  scenario "does not reuse previous choices and continues with manual selections" do
     given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
     and_i_am_on_the_schools_ects_index_page
     and_i_start_adding_an_ect
@@ -69,7 +34,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
     and_i_select_an_appropriate_body
     and_i_click_continue
-    then_i_am_on_the_training_programmme_page
+    then_i_am_on_the_training_programme_page
 
     and_i_select_school_led
     and_i_click_continue
@@ -78,34 +43,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
     and_i_click_confirm_details
     then_i_am_on_the_confirmation_page
-  end
-
-  scenario "reuses previous choices when no partnership exists but a previous EOI exists (provider-led)" do
-    given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
-    and_i_am_on_the_schools_ects_index_page
-    and_i_start_adding_an_ect
-    and_i_click_continue
-    and_i_submit_the_find_ect_form
-    and_i_choose_that_the_details_are_correct
-    and_i_click_confirm_and_continue
-    then_i_am_on_the_email_address_page
-
-    and_i_enter_the_ect_email_address
-    and_i_click_continue
-    then_i_am_on_the_start_date_page
-
-    and_i_enter_a_valid_start_date
-    and_i_click_continue
-    then_i_am_on_the_working_pattern_page
-
-    and_i_select_full_time
-    and_i_click_continue
-    then_i_am_on_the_use_previous_choices_page
-
-    and_i_choose_to_reuse_previous_choices
-    and_i_click_continue
-    then_i_am_on_the_check_answers_page
-    and_i_see_previous_programme_choices_summary_when_reusing
+    and_the_new_training_period_uses_manual_choices
   end
 
   def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices
@@ -114,25 +52,16 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     @current_school = context.school
     @current_contract_period = context.current_contract_period
     @previous_school_partnership = context.previous_school_partnership
-    @current_school_partnership = context.current_school_partnership
     @last_chosen_lead_provider = context.last_chosen_lead_provider
     @previous_year_delivery_partner = context.previous_year_delivery_partner
+    @teacher = Teacher.find_or_create_by!(trn: "9876543")
 
-    teacher = FactoryBot.create(:teacher, trn: "9876543")
-    previous_ect_at_school_period = FactoryBot.create(
-      :ect_at_school_period,
-      teacher:,
-      school: @current_school,
-      started_on: 2.years.ago,
-      finished_on: 1.year.ago
-    )
+    previous_school = FactoryBot.create(:school)
     FactoryBot.create(
-      :training_period,
-      :for_ect,
-      ect_at_school_period: previous_ect_at_school_period,
-      school_partnership: @previous_school_partnership,
-      started_on: previous_ect_at_school_period.started_on,
-      finished_on: previous_ect_at_school_period.finished_on
+      :ect_at_school_period,
+      :finished,
+      teacher: @teacher,
+      school: previous_school
     )
 
     @appropriate_body_name = "Golden Leaf Teaching Hub"
@@ -142,58 +71,6 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     stub_reuse_finder_to_return(@previous_school_partnership)
 
     sign_in_as_school_user(school: @current_school)
-  end
-
-  def given_i_am_logged_in_as_a_state_funded_school_user_with_previous_choices_but_only_eoi
-    context = build_school_with_reusable_provider_led_partnership
-
-    @current_school = context.school
-    @current_contract_period = context.current_contract_period
-    @last_chosen_lead_provider = context.last_chosen_lead_provider
-
-    @appropriate_body_name = "Golden Leaf Teaching Hub"
-    FactoryBot.create(:appropriate_body, name: @appropriate_body_name)
-
-    stub_reuse_finder_to_return(nil)
-
-    create_previous_provider_led_eoi_at_school!(previous_year: 2024)
-
-    sign_in_as_school_user(school: @current_school)
-  end
-
-  def create_previous_provider_led_eoi_at_school!(previous_year: 2024)
-    previous_contract_period = FactoryBot.create(:contract_period, year: previous_year)
-
-    previous_year_active_lead_provider =
-      FactoryBot.create(
-        :active_lead_provider,
-        lead_provider: @last_chosen_lead_provider,
-        contract_period: previous_contract_period
-      )
-
-    FactoryBot.create(
-      :active_lead_provider,
-      lead_provider: @last_chosen_lead_provider,
-      contract_period: @current_contract_period
-    )
-
-    previous_ect_at_school_period =
-      FactoryBot.create(
-        :ect_at_school_period,
-        school: @current_school,
-        started_on: Date.new(previous_year, 9, 1),
-        finished_on: nil
-      )
-
-    FactoryBot.create(
-      :training_period,
-      ect_at_school_period: previous_ect_at_school_period,
-      training_programme: "provider_led",
-      expression_of_interest: previous_year_active_lead_provider,
-      school_partnership: nil,
-      started_on: Date.new(previous_year, 9, 1),
-      finished_on: nil
-    )
   end
 
   def stub_reuse_finder_to_return(previous_partnership)
@@ -247,6 +124,10 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     end
   end
 
+  def then_i_am_on_the_registered_before_page
+    expect(page).to have_path("/school/register-ect/registered-before")
+  end
+
   def then_i_am_on_the_email_address_page
     expect(page).to have_path("/school/register-ect/email-address")
   end
@@ -257,10 +138,6 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     else
       page.get_by_label(/email address/i).fill("example@example.com")
     end
-  end
-
-  def then_i_am_on_the_registered_before_page
-    expect(page).to have_path("/school/register-ect/registered-before")
   end
 
   def then_i_am_on_the_start_date_page
@@ -286,10 +163,6 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
     expect(page).to have_path("/school/register-ect/use-previous-ect-choices")
   end
 
-  def and_i_choose_to_reuse_previous_choices
-    page.get_by_label("Yes").check
-  end
-
   def and_i_choose_not_to_reuse_previous_choices
     page.get_by_label("No").check
   end
@@ -304,7 +177,7 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
         .select_option(value: @appropriate_body_name)
   end
 
-  def then_i_am_on_the_training_programmme_page
+  def then_i_am_on_the_training_programme_page
     expect(page).to have_path("/school/register-ect/training-programme")
   end
 
@@ -314,21 +187,6 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
   def then_i_am_on_the_check_answers_page
     expect(page).to have_path("/school/register-ect/check-answers")
-  end
-
-  def and_i_see_previous_programme_choices_summary_when_reusing
-    expect(page.get_by_text("Choices used by your school previously").first).to be_visible
-    expect(page.get_by_text("Provider-led")).to be_visible
-    expect(page.get_by_text(@last_chosen_lead_provider.name)).to be_visible
-
-    if page.get_by_text(@appropriate_body_name).count.positive?
-      expect(page.get_by_text(@appropriate_body_name)).to be_visible
-    end
-
-    if @previous_year_delivery_partner
-      expect(page.get_by_text("Delivery partner").first).to be_visible
-      expect(page.get_by_text(@previous_year_delivery_partner.name)).to be_visible
-    end
   end
 
   def and_i_see_check_answers_when_not_reusing_previous_choices
@@ -347,5 +205,16 @@ RSpec.describe "Registering an ECT - reuse previous partnership", :enable_school
 
   def then_i_am_on_the_confirmation_page
     expect(page).to have_path("/school/register-ect/confirmation")
+  end
+
+  def and_the_new_training_period_uses_manual_choices
+    ect_at_school_period = ECTAtSchoolPeriod.where(school: @current_school, teacher: @teacher).order(:created_at).last
+    expect(ect_at_school_period).to be_present
+
+    training_period = ect_at_school_period.training_periods.order(:created_at).last
+    expect(training_period).to be_present
+    expect(training_period.training_programme).to eq("school_led")
+    expect(training_period.school_partnership).to be_nil
+    expect(training_period.expression_of_interest).to be_nil
   end
 end

@@ -68,7 +68,7 @@ module ParityCheck
     end
 
     def rect_performance_gain_ratio
-      ratios = responses.map(&:rect_performance_gain_ratio).compact
+      ratios = responses.pluck(:rect_performance_gain_ratio).compact
 
       return if ratios.empty?
 
