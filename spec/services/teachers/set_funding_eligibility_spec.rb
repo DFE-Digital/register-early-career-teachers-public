@@ -65,6 +65,22 @@ RSpec.describe Teachers::SetFundingEligibility do
       end
     end
 
+    context "when teacher has an ongoing induction but only a finished ECT at school period" do
+      before do
+        FactoryBot.create(:induction_period, :ongoing, teacher:)
+        FactoryBot.create(:ect_at_school_period,
+                          teacher:,
+                          started_on: 6.months.ago,
+                          finished_on: 1.month.ago)
+      end
+
+      it "sets `ect_first_became_eligible_for_training_at`" do
+        freeze_time do
+          expect { service.set! }.to change(teacher, :ect_first_became_eligible_for_training_at).from(nil).to(Time.zone.now)
+        end
+      end
+    end
+
     context "when teacher has an ongoing induction but no ECT at school periods" do
       before do
         FactoryBot.create(:induction_period, :ongoing, teacher:)
