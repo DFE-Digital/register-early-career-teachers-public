@@ -2,7 +2,12 @@ module Admin::TeachersHelper
   FilterOption = Data.define(:value, :name)
 
   def admin_teacher_index_params
-    params.permit(:page, :q, :role, :contract_period)
+    {
+      page: params[:page],
+      q: params[:q],
+      role: params[:role],
+      contract_period: params[:contract_period]
+    }.compact
   end
 
   def teacher_role_filter_options
