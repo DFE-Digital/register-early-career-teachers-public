@@ -337,6 +337,7 @@
   - page
   - created_at
   - updated_at
+  - rect_performance_gain_ratio
   :parity_check_endpoints:
   - id
   - path

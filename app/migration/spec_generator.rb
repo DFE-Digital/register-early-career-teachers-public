@@ -313,6 +313,7 @@ private
   def ecf1_mentor_induction_records
     ecf1_teacher_history.mentor.induction_records.map do |ir|
       {
+        induction_record_id: ir.induction_record_id,
         start_date: ir.start_date,
         end_date: ir.end_date,
         training_programme: ir.training_programme,

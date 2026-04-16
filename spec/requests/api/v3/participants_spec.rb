@@ -94,6 +94,7 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
 
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
+    it_behaves_like "an endpoint that refreshes metadata", :put
   end
 
   describe "#defer" do
@@ -125,6 +126,7 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
 
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
+    it_behaves_like "an endpoint that refreshes metadata", :put
   end
 
   describe "#resume" do
@@ -153,6 +155,7 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
 
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
+    it_behaves_like "an endpoint that refreshes metadata", :put
   end
 
   describe "#withdraw" do
@@ -184,5 +187,6 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
 
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
+    it_behaves_like "an endpoint that refreshes metadata", :put
   end
 end

@@ -54,7 +54,10 @@ module Schools
         start_date = ect.normalized_start_date
         return unless start_date
 
-        ContractPeriod.for_registration_start_date(start_date)
+        ContractPeriods::ForECTRegistration.new(
+          started_on: start_date,
+          previous_training_period: ect.previous_training_period
+        ).call
       end
 
     private
@@ -83,14 +86,36 @@ module Schools
         contract_period = registration_contract_period
         return unless contract_period
 
-        SchoolPartnerships::FindReusablePartnership
-          .new(
-            school:,
-            lead_provider: school.last_chosen_lead_provider,
-            contract_period:
-          )
-          .call
-          &.id
+        partnership =
+          SchoolPartnerships::FindReusablePartnership
+            .new(
+              school:,
+              lead_provider: school.last_chosen_lead_provider,
+              contract_period:
+            )
+            .call
+
+        return unless reusable_partnership_allowed_for_registration_contract_period?(partnership, contract_period)
+
+        partnership.id
+      end
+
+      def reusable_partnership_allowed_for_registration_contract_period?(partnership, contract_period)
+        return false unless partnership
+        return true unless payments_frozen_reassignment?
+
+        partnership
+          .lead_provider_delivery_partnership
+          .active_lead_provider
+          .contract_period_year == contract_period.year
+      end
+
+      def payments_frozen_reassignment?
+        previous_period = ect.previous_training_period
+        return false unless previous_period
+
+        assigned_period = previous_period.contract_period || previous_period.expression_of_interest_contract_period
+        assigned_period&.payments_frozen_at.present?
       end
 
       def choices
@@ -101,12 +126,10 @@ module Schools
         contract_period = registration_contract_period
         return false unless contract_period
 
-        training_period =
-          most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
+        training_period = most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
         return false unless training_period
 
-        active_lead_provider =
-          ActiveLeadProvider.find_by(id: training_period.expression_of_interest_id)
+        active_lead_provider = ActiveLeadProvider.find_by(id: training_period.expression_of_interest_id)
         return false unless active_lead_provider
 
         ActiveLeadProvider.exists?(
@@ -129,11 +152,49 @@ module Schools
       def most_recent_provider_led_expression_of_interest_training_period_up_to(contract_period)
         return unless contract_period
 
+        if payments_frozen_reassignment?
+          previous_eoi_training_period_for_reassignment(contract_period)
+        else
+          most_recent_school_eoi_training_period(contract_period)
+        end
+      end
+
+      def previous_eoi_training_period_for_reassignment(contract_period)
+        training_period = ect.previous_training_period
+        return unless training_period
+        return unless training_period.provider_led_training_programme?
+        return if training_period.started_on > contract_period.finished_on
+
+        return training_period if training_period.expression_of_interest_id.present?
+
+        most_recent_school_eoi_training_period(contract_period)
+      end
+
+      def most_recent_school_eoi_training_period(contract_period)
+        return school_eoi_training_period_for_contract_year(contract_period) if payments_frozen_reassignment?
+
+        school_eoi_training_period_up_to(contract_period)
+      end
+
+      def school_eoi_training_period_for_contract_year(contract_period)
+        TrainingPeriod
+          .at_school(school)
+          .where(training_programme: "provider_led")
+          .where.not(expression_of_interest_id: nil)
+          .joins("INNER JOIN active_lead_providers ON active_lead_providers.id = training_periods.expression_of_interest_id")
+          .where(active_lead_providers: { contract_period_year: contract_period.year, lead_provider: school.last_chosen_lead_provider })
+          .order(started_on: :desc, id: :desc)
+          .first
+      end
+
+      def school_eoi_training_period_up_to(contract_period)
         TrainingPeriod
           .at_school(school)
           .where(training_programme: "provider_led")
           .where.not(expression_of_interest_id: nil)
           .where("training_periods.started_on <= ?", contract_period.finished_on)
+          .joins("INNER JOIN active_lead_providers ON active_lead_providers.id = training_periods.expression_of_interest_id")
+          .where(active_lead_providers: { lead_provider: school.last_chosen_lead_provider })
           .order(started_on: :desc, id: :desc)
           .first
       end

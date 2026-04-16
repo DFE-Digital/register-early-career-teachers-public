@@ -178,6 +178,7 @@ module Schools
 
     def reuse_old_partnership
       previous_id = @store&.school_partnership_to_reuse_id
+
       return nil if previous_id.blank?
 
       SchoolPartnerships::CreateFromPrevious
@@ -200,7 +201,14 @@ module Schools
     end
 
     def registration_contract_period
-      @registration_contract_period ||= ContractPeriod.current
+      @registration_contract_period ||= ContractPeriods::ForECTRegistration.new(
+        started_on:,
+        previous_training_period:
+      ).call
+    end
+
+    def previous_training_period
+      store&.previous_training_period
     end
   end
 end

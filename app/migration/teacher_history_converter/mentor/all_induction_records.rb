@@ -89,7 +89,7 @@ private
         @current_training_period = build_training_period(induction_record, started_on:, finished_on:)
         @current_school_period.training_periods << @current_training_period if @current_training_period.present?
       end
-    elsif @current_training_period.present? && not_withdrawn_or_deferred?
+    elsif @current_training_period.present? && not_withdrawn_or_deferred? && !induction_record.ignore_training?
       state_changed_at = induction_record.end_date
       lead_provider_id = induction_record.training_provider_info&.lead_provider_info&.ecf1_id
 
@@ -121,6 +121,7 @@ private
     # - when not provider_led
     # - when provider info is missing
     # - starting after the mentor completion date unless in the exceptions list
+    # - when the patcher has set ignore_training
     return unless permit_training_period?(induction_record:)
 
     training_programme = convert_training_programme_name(induction_record.training_programme)
@@ -171,6 +172,8 @@ private
   end
 
   def changes_training_period?(induction_record:)
+    return false if induction_record.ignore_training?
+
     return true if @current_training_period.blank?
 
     return false if continuation_of_withdrawn_or_deferred_state?(induction_record:)
@@ -253,6 +256,8 @@ private
   end
 
   def permit_training_period?(induction_record:)
+    return false if induction_record.ignore_training?
+
     training_programme = convert_training_programme_name(induction_record.training_programme)
     return false if training_programme != "provider_led"
 

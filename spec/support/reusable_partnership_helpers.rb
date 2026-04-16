@@ -14,11 +14,27 @@ module ReusablePartnershipHelpers
   )
     previous_year = current_year - 1
 
-    current_contract_period  = FactoryBot.create(:contract_period, :with_schedules, year: current_year)
-    previous_contract_period = FactoryBot.create(:contract_period, :with_schedules, year: previous_year)
+    current_contract_period = FactoryBot.create(
+      :contract_period,
+      :with_schedules,
+      year: current_year
+    )
 
-    lead_provider    = FactoryBot.create(:lead_provider, name: "Orange Institute")
-    delivery_partner = FactoryBot.create(:delivery_partner, name: "Jaskolski College Delivery Partner 1")
+    previous_contract_period = FactoryBot.create(
+      :contract_period,
+      :with_schedules,
+      year: previous_year
+    )
+
+    lead_provider = FactoryBot.create(
+      :lead_provider,
+      name: "Orange Institute"
+    )
+
+    delivery_partner = FactoryBot.create(
+      :delivery_partner,
+      name: "Jaskolski College Delivery Partner 1"
+    )
 
     previous_year_active_lead_provider = FactoryBot.create(
       :active_lead_provider,

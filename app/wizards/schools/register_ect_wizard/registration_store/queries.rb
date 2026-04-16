@@ -30,11 +30,14 @@ module Schools
           start_date = registration_store.start_date&.to_date
           return nil unless start_date
 
-          @registration_contract_period ||= ContractPeriod.for_registration_start_date(start_date)
+          @registration_contract_period ||= ContractPeriods::ForECTRegistration.new(
+            started_on: start_date,
+            previous_training_period:
+          ).call
         end
 
         def lead_provider_partnerships_for_contract_period(school:)
-          contract_period = contract_start_date
+          contract_period = registration_contract_period
 
           return SchoolPartnership.none unless previous_lead_provider && contract_period && school
 
@@ -51,10 +54,17 @@ module Schools
         end
 
         def previous_ect_at_school_period
-          @previous_ect_at_school_period ||= ECTAtSchoolPeriods::Search
-            .new(order: :started_on)
-            .ect_periods(trn: registration_store.trn)
-            .last
+          @previous_ect_at_school_period ||= begin
+            periods = ECTAtSchoolPeriods::Search
+              .new(order: :started_on)
+              .ect_periods(trn: registration_store.trn)
+
+            if ect_at_school_period
+              periods = periods.without(ect_at_school_period)
+            end
+
+            periods.last
+          end
         end
 
         def previous_school
