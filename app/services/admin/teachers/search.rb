@@ -53,10 +53,10 @@ module Admin
       def teacher_scope
         matching(Teacher.all).preload(
           :induction_periods,
-          { current_or_next_ect_at_school_period: %i[current_or_next_training_period latest_training_period] },
-          { latest_ect_at_school_period: %i[current_or_next_training_period latest_training_period] },
-          { current_or_next_mentor_at_school_period: %i[current_or_next_training_period latest_training_period] },
-          { latest_mentor_at_school_period: %i[current_or_next_training_period latest_training_period] }
+          { current_or_next_ect_at_school_period: training_period_preload },
+          { latest_ect_at_school_period: training_period_preload },
+          { current_or_next_mentor_at_school_period: training_period_preload },
+          { latest_mentor_at_school_period: training_period_preload }
         )
       end
 
@@ -127,13 +127,18 @@ module Admin
         return if training_period.blank?
         return CONTRACT_PERIOD_NOT_AVAILABLE if training_period.for_ect? && training_period.school_led_training_programme?
 
-        contract_period_year = training_period.contract_period&.year || training_period.expression_of_interest_contract_period&.year
-
-        contract_period_year&.to_s
+        training_period.schedule&.contract_period_year&.to_s
       end
 
       def training_period_for(role_period)
         role_period&.current_or_next_training_period || role_period&.latest_training_period
+      end
+
+      def training_period_preload
+        {
+          current_or_next_training_period: :schedule,
+          latest_training_period: :schedule
+        }
       end
 
       def filter_by_role(rows)
