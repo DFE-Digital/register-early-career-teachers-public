@@ -209,19 +209,16 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          context "when `eligible_for_funding` is true" do
-            let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: Time.zone.now) }
+          describe "`eligible_for_funding`" do
+            let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible?: true) }
 
-            it "serializes `eligible_for_funding`" do
-              expect(ect_enrolment["eligible_for_funding"]).to be(true)
+            before do
+              allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
             end
-          end
 
-          context "when `eligible_for_funding` is false" do
-            let(:teacher) { FactoryBot.create(:teacher, ect_first_became_eligible_for_training_at: nil) }
-
-            it "serializes `eligible_for_funding`" do
-              expect(ect_enrolment["eligible_for_funding"]).to be(false)
+            it "delegates to API::Teachers::EligibilityForFunding" do
+              expect(ect_enrolment["eligible_for_funding"]).to be(true)
+              expect(API::Teachers::EligibilityForFunding).to have_received(:new).with(teacher:, teacher_type: :ect)
             end
           end
 
@@ -408,19 +405,16 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             end
           end
 
-          context "when `eligible_for_funding` is true" do
-            let(:teacher) { FactoryBot.create(:teacher, mentor_first_became_eligible_for_training_at: Time.zone.now) }
+          describe "`eligible_for_funding`" do
+            let(:eligibility_service) { instance_double(API::Teachers::EligibilityForFunding, eligible?: true) }
 
-            it "serializes `eligible_for_funding`" do
-              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
+            before do
+              allow(API::Teachers::EligibilityForFunding).to receive(:new).and_return(eligibility_service)
             end
-          end
 
-          context "when `eligible_for_funding` is false" do
-            let(:teacher) { FactoryBot.create(:teacher, mentor_first_became_eligible_for_training_at: nil) }
-
-            it "serializes `eligible_for_funding`" do
-              expect(mentor_enrolment["eligible_for_funding"]).to be(false)
+            it "delegates to API::Teachers::EligibilityForFunding" do
+              expect(mentor_enrolment["eligible_for_funding"]).to be(true)
+              expect(API::Teachers::EligibilityForFunding).to have_received(:new).with(teacher:, teacher_type: :mentor)
             end
           end
 
