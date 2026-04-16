@@ -116,6 +116,15 @@ RSpec.describe "Admin teachers index", type: :request do
             expect(response.body).to include("Teachers")
           end
         end
+
+        context "when the search returns no teachers" do
+          it "renders an empty state message" do
+            get "/admin/teachers", params: { q: "No matches here" }
+
+            expect(response.status).to eq(200)
+            expect(response.body).to include("There are no teachers that match your search.")
+          end
+        end
       end
     end
   end

@@ -30,31 +30,35 @@
   <%= f.govuk_submit "Search", secondary: true %>
 <% end %>
 
-<%= govuk_table do |table| %>
-  <% table.with_head do |head| %>
-    <% head.with_row do |row| %>
-      <% row.with_cell(text: "Name") %>
-      <% row.with_cell(text: "TRN") %>
-      <% row.with_cell(text: "Role") %>
-      <% row.with_cell(text: "Contract period") %>
+<% if @teacher_rows.any? %>
+  <%= govuk_table do |table| %>
+    <% table.with_head do |head| %>
+      <% head.with_row do |row| %>
+        <% row.with_cell(text: "Name") %>
+        <% row.with_cell(text: "TRN") %>
+        <% row.with_cell(text: "Role") %>
+        <% row.with_cell(text: "Contract period") %>
+      <% end %>
     <% end %>
-  <% end %>
 
-  <% table.with_body do |body| %>
-    <% @teacher_rows.each do |teacher_row| %>
-      <% body.with_row do |row| %>
-        <% row.with_cell do %>
-          <%= govuk_link_to(
-                teacher_row.name,
-                admin_teacher_path(teacher_row.teacher, admin_teacher_index_params)
-              ) %>
+    <% table.with_body do |body| %>
+      <% @teacher_rows.each do |teacher_row| %>
+        <% body.with_row do |row| %>
+          <% row.with_cell do %>
+            <%= govuk_link_to(
+                  teacher_row.name,
+                  admin_teacher_path(teacher_row.teacher, admin_teacher_index_params)
+                ) %>
+          <% end %>
+          <% row.with_cell(text: teacher_row.trn) %>
+          <% row.with_cell(text: teacher_row.role_name) %>
+          <% row.with_cell(text: teacher_row.contract_period_name) %>
         <% end %>
-        <% row.with_cell(text: teacher_row.trn) %>
-        <% row.with_cell(text: teacher_row.role_name) %>
-        <% row.with_cell(text: teacher_row.contract_period_name) %>
       <% end %>
     <% end %>
   <% end %>
+<% else %>
+  <p class="govuk-body">There are no teachers that match your search.</p>
 <% end %>
 
 
