@@ -37,3 +37,6 @@ INDUCTION_OUTCOMES = {
   pass: "Passed",
   fail: "Failed"
 }.freeze
+
+# Migration patch data, remove once RECT migration is done
+DATA_PATCHES = CSV.table("app/migration/ecf1_teacher_history/data_patches.csv")
