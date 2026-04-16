@@ -30,11 +30,7 @@ describe Migrators::School do
                       ukprn: ecf_school.ukprn)
   end
 
-  around do |example|
-    Metadata::SchoolContractPeriod.bypass_update_restrictions { example.run }
-  end
-
-  it_behaves_like "a migrator", :school, %i[contract_period gias_import gias_childrens_centres], creates_metadata: true do
+  it_behaves_like "a migrator", :school, %i[contract_period gias_import gias_childrens_centres] do
     def create_migration_resource = create_ecf_school
 
     def create_resource(migration_resource)
@@ -50,26 +46,6 @@ describe Migrators::School do
       gias_school = create_resource(ecf_school)
 
       gias_school.update!(section_41_approved: !ecf_school.section_41_approved)
-    end
-
-    it "creates the correct metadata" do
-      instance.migrate!
-
-      ecf_schools = [migration_resource1, migration_resource2]
-      schools_by_urn = School.where(urn: ecf_schools.map(&:urn)).index_by(&:urn)
-      metadata_by_school_and_year = Metadata::SchoolContractPeriod.where(school: schools_by_urn.values).index_by do |metadata|
-        [metadata.school_id, metadata.contract_period_year]
-      end
-
-      ecf_schools.each do |ecf_school|
-        school = schools_by_urn[ecf_school.urn.to_i]
-        ecf_school.school_cohorts.each do |school_cohort|
-          metadata = metadata_by_school_and_year[[school.id, school_cohort.cohort.start_year]]
-          expect(metadata.contract_period_year).to eq(school_cohort.cohort.start_year)
-          expect(metadata.api_updated_at).to eq([school.updated_at, school_cohort.updated_at].max)
-          expect(metadata.school).to eq(school)
-        end
-      end
     end
   end
 

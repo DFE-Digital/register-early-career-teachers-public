@@ -89,6 +89,22 @@ RSpec.describe Metadata::Manager do
         refresh_all_metadata
       end
     end
+
+    context "when `excluding_handlers` is provided" do
+      subject(:refresh_all_metadata) { described_class.refresh_all_metadata!(async: true, excluding_handlers: [Metadata::Handlers::School]) }
+
+      it "does not call refresh_metadata! for the excluded handlers" do
+        Metadata::Resolver.all_handlers.each do |handler|
+          if handler == Metadata::Handlers::School
+            expect(handler).not_to receive(:refresh_all_metadata!)
+          else
+            expect(handler).to receive(:refresh_all_metadata!).with(async: true, track_changes: false)
+          end
+        end
+
+        refresh_all_metadata
+      end
+    end
   end
 
   describe ".destroy_all_metadata!" do

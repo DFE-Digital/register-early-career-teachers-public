@@ -1,4 +1,4 @@
-RSpec.shared_examples "a migrator" do |model, dependencies, multiple_workers: true, creates_metadata: false|
+RSpec.shared_examples "a migrator" do |model, dependencies, multiple_workers: true|
   let(:worker) { 0 }
   let(:instance) { described_class.new(worker:) }
   let(:data_migration) { FactoryBot.create(:data_migration, model:, worker: 0) }
@@ -159,34 +159,21 @@ RSpec.shared_examples "a migrator" do |model, dependencies, multiple_workers: tr
       migrate!
     end
 
-    if creates_metadata
-      it "creates metadata" do
-        dump_metadata_database_state = -> {
-          ActiveRecord::Base.connection.tables.select { it.start_with?("metadata_") }.to_h do |table|
-            rows = ActiveRecord::Base.connection.execute("SELECT * FROM #{table}").to_a
-            [table, rows]
-          end
-        }
+    it "does not create any metadata" do
+      dump_metadata_database_state = -> {
+        ActiveRecord::Base.connection.tables.select { it.start_with?("metadata_") }.to_h do |table|
+          rows = ActiveRecord::Base.connection.execute("SELECT * FROM #{table}").to_a
+          [table, rows]
+        end
+      }
 
-        expect { migrate! }.to(change { dump_metadata_database_state.call })
-      end
-    else
-      it "does not create any metadata" do
-        dump_metadata_database_state = -> {
-          ActiveRecord::Base.connection.tables.select { it.start_with?("metadata_") }.to_h do |table|
-            rows = ActiveRecord::Base.connection.execute("SELECT * FROM #{table}").to_a
-            [table, rows]
-          end
-        }
+      # Clear any metadata created via factories.
+      Metadata::Manager.destroy_all_metadata!
 
-        # Clear any metadata created via factories.
-        Metadata::Manager.destroy_all_metadata!
+      migrate!
 
-        migrate!
-
-        # Ensure the database state doesn't change when we clear all metadata (as there should be none).
-        expect { Metadata::Manager.destroy_all_metadata! }.not_to(change { dump_metadata_database_state.call })
-      end
+      # Ensure the database state doesn't change when we clear all metadata (as there should be none).
+      expect { Metadata::Manager.destroy_all_metadata! }.not_to(change { dump_metadata_database_state.call })
     end
 
     context "when retrying a migration" do

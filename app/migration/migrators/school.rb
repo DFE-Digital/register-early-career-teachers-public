@@ -63,8 +63,7 @@ module Migrators
 
         [
           compare_fields(gias_school:, ecf_school:),
-          update_school!(school: gias_school.school, ecf_school:),
-          create_or_update_contract_period_metadata!(school: gias_school.school, ecf_school:),
+          update_school!(school: gias_school.school, ecf_school:)
         ].all?
       end
     end
@@ -126,16 +125,6 @@ module Migrators
       }
 
       school.update_columns(attrs)
-    end
-
-    def create_or_update_contract_period_metadata!(school:, ecf_school:)
-      Metadata::Manager.new.refresh_metadata!(school)
-
-      ecf_school.school_cohorts.map { |school_cohort|
-        contract_period_year = school_cohort.cohort.start_year
-        metadata = school.contract_period_metadata.find { it.contract_period_year == contract_period_year }
-        metadata.update!(api_updated_at: [school.updated_at, school_cohort.updated_at].max)
-      }.all?
     end
   end
 end

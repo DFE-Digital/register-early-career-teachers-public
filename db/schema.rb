@@ -786,7 +786,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
 
   create_table "schools", force: :cascade do |t|
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "created_at", null: false
     t.citext "induction_tutor_email"
     t.integer "induction_tutor_last_nominated_in"

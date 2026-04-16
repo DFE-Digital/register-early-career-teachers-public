@@ -9,8 +9,9 @@ module Metadata
     end
 
     class << self
-      def refresh_all_metadata!(async: false, track_changes: false)
-        Resolver.all_handlers.each { it.refresh_all_metadata!(async:, track_changes:) }
+      def refresh_all_metadata!(async: false, track_changes: false, excluding_handlers: [])
+        handlers = Resolver.all_handlers.reject { |handler| handler.in?(excluding_handlers) }
+        handlers.each { it.refresh_all_metadata!(async:, track_changes:) }
       end
 
       def destroy_all_metadata!
