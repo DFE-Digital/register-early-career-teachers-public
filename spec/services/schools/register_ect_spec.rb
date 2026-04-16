@@ -228,6 +228,47 @@ RSpec.describe Schools::RegisterECT do
           end
         end
 
+        context "when a Teacher has an ECT period finishing in future at a different school (reported leaving)" do
+          let(:other_school) { FactoryBot.create(:school) }
+          let(:started_on) { Date.new(2025, 8, 1) + 1.year }
+
+          before do
+            FactoryBot.create(
+              :ect_at_school_period,
+              teacher:,
+              school: other_school,
+              started_on: 6.months.ago,
+              finished_on: 6.months.from_now
+            )
+          end
+
+          it "allows registration with non-overlapping future date" do
+            expect { service.register! }.to change(ECTAtSchoolPeriod, :count).by(1)
+          end
+        end
+
+        context "when a Teacher already has an ongoing ECT period starting in future at a different school (reported joining)" do
+          let(:other_school) { FactoryBot.create(:school) }
+          let(:started_on) { Date.new(2025, 8, 1) + 1.year }
+
+          before do
+            FactoryBot.create(
+              :ect_at_school_period,
+              :ongoing,
+              teacher:,
+              school: other_school,
+              started_on: started_on.advance(weeks: 2)
+            )
+          end
+
+          it "raises an error" do
+            expect { service.register! }.to raise_error(
+              ActiveRecord::RecordInvalid,
+              "Validation failed: Finished on End date cannot overlap another Teacher ECT period"
+            )
+          end
+        end
+
         context "when no SchoolPartnerships exist" do
           it "creates a TrainingPeriod linked to the ECTAtSchoolPeriod and with an expression of interest for the ActiveLeadProvider" do
             expect { service.register! }.to change(TrainingPeriod, :count).by(1)

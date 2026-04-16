@@ -106,7 +106,8 @@ module ECTAtSchoolPeriods
     def create_school_led_training_period!
       TrainingPeriods::Create.school_led(
         period: @ect_at_school_period,
-        started_on: date_of_transition
+        started_on: date_of_transition,
+        finished_on: @ect_at_school_period.finished_on
       ).call
     end
 
@@ -114,6 +115,7 @@ module ECTAtSchoolPeriods
       TrainingPeriods::Create.provider_led(
         period: @ect_at_school_period,
         started_on: date_of_transition,
+        finished_on: @ect_at_school_period.finished_on,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:,
         author: @author,
@@ -129,6 +131,7 @@ module ECTAtSchoolPeriods
       TrainingPeriods::Create.provider_led(
         period: @mentor_at_school_period,
         started_on: date_of_transition,
+        finished_on: @mentor_at_school_period.finished_on,
         school_partnership: earliest_matching_school_partnership,
         expression_of_interest:,
         author: @author
