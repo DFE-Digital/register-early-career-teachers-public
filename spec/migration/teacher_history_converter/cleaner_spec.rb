@@ -54,6 +54,7 @@ describe TeacherHistoryConverter::Cleaner do
         TeacherHistoryConverter::Cleaner::RemovePostInductionCompletionRecords,
         TeacherHistoryConverter::Cleaner::CloseOngoingRecordsAfterInductionCompletion,
         TeacherHistoryConverter::Cleaner::RemoveRecordsWithMatchingWithdrawnAndDeferredStates,
+        TeacherHistoryConverter::Cleaner::RemoveECTInductionRecordsStartingLaterThanCohortClosure,
       ]
     end
 
