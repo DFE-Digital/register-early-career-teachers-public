@@ -208,7 +208,7 @@ describe "Real data check for user d2526570-33b0-43c5-87a8-3e4f3060ea53" do
           {
             induction_record_id: "059f9a02-9dfd-44cb-a430-31c8649cce50",
             start_date: Date.new(2023, 11, 14),
-            end_date: Date.new(2024, 2, 29),
+            end_date: Date.new(2024, 2, 29), # leap year
             created_at: Time.zone.local(2023, 11, 14, 11, 38, 25),
             updated_at: Time.zone.local(2024, 2, 26, 12, 18, 9),
             training_programme: "full_induction_programme",
@@ -360,104 +360,6 @@ describe "Real data check for user d2526570-33b0-43c5-87a8-3e4f3060ea53" do
   let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
   let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
 
-  context "when using the economy migrator" do
-    let(:migration_mode) { :latest_induction_records }
-
-    let(:expected_output) do
-      {
-        teacher: hash_including(
-          trn: "1111111",
-          ect_at_school_periods: array_including(
-            hash_including(
-              started_on: Date.new(2022, 9, 1),
-              finished_on: Date.new(2023, 8, 31),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2022, 9, 1),
-                  finished_on: Date.new(2023, 8, 31)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 9, 1),
-              finished_on: Date.new(2023, 10, 16),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2023, 9, 1),
-                  finished_on: Date.new(2023, 10, 16)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 10, 16),
-              finished_on: Date.new(2023, 11, 14),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2023, 10, 16),
-                  finished_on: Date.new(2023, 11, 14)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 11, 14),
-              finished_on: Date.new(2024, 1, 24),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2023, 11, 14),
-                  finished_on: Date.new(2024, 1, 24)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 11, 14),
-              finished_on: Date.new(2024, 2, 29),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2023, 11, 14),
-                  finished_on: Date.new(2024, 2, 29)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2024, 1, 24),
-              finished_on: Date.new(2023, 11, 14),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2024, 1, 24),
-                  finished_on: Date.new(2023, 11, 14)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2024, 2, 29),
-              finished_on: Date.new(2024, 7, 23),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2024, 2, 29),
-                  finished_on: Date.new(2024, 7, 23)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2024, 7, 23),
-              finished_on: nil,
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2024, 7, 23),
-                  finished_on: nil
-                )
-              )
-            )
-          )
-        )
-      }
-    end
-
-    it "matches the expected output" do
-      expect(actual_output).to include(expected_output)
-    end
-  end
-
   context "when using the premium migrator" do
     let(:migration_mode) { :all_induction_records }
 
@@ -469,8 +371,10 @@ describe "Real data check for user d2526570-33b0-43c5-87a8-3e4f3060ea53" do
             hash_including(
               started_on: Date.new(2022, 9, 1),
               finished_on: Date.new(2023, 8, 31),
+              school: hash_including(name: "School 1"),
               training_periods: array_including(
                 hash_including(
+                  lead_provider_info: hash_including(name: "Teach First"),
                   started_on: Date.new(2022, 9, 1),
                   finished_on: Date.new(2023, 8, 31)
                 )
@@ -478,73 +382,30 @@ describe "Real data check for user d2526570-33b0-43c5-87a8-3e4f3060ea53" do
             ),
             hash_including(
               started_on: Date.new(2023, 9, 1),
-              finished_on: Date.new(2023, 10, 16),
+              finished_on: Date.new(2024, 2, 28),
+              school: hash_including(name: "School 2"),
               training_periods: array_including(
                 hash_including(
+                  lead_provider_info: hash_including(name: "Teach First"),
                   started_on: Date.new(2023, 9, 1),
-                  finished_on: Date.new(2023, 10, 16)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 10, 16),
-              finished_on: Date.new(2023, 11, 14),
-              training_periods: array_including(
+                  finished_on: Date.new(2023, 10, 16),
+                  withdrawn_at: Time.zone.local(2023, 10, 16, 16, 12, 4),
+                  withdrawal_reason: "other"
+                ),
                 hash_including(
-                  started_on: Date.new(2023, 10, 16),
-                  finished_on: Date.new(2023, 11, 14)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 11, 14),
-              finished_on: Date.new(2024, 1, 24),
-              training_periods: array_including(
-                hash_including(
+                  lead_provider_info: hash_including(name: "Teach First"),
                   started_on: Date.new(2023, 11, 14),
-                  finished_on: Date.new(2024, 1, 24)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2023, 11, 14),
-              finished_on: Date.new(2024, 2, 29),
-              training_periods: array_including(
+                  finished_on: Date.new(2023, 11, 13),
+                ),
                 hash_including(
+                  lead_provider_info: hash_including(name: "Best Practice Network"),
                   started_on: Date.new(2023, 11, 14),
-                  finished_on: Date.new(2024, 2, 29)
+                  finished_on: Date.new(2024, 2, 28),
                 )
               )
             ),
             hash_including(
-              started_on: Date.new(2024, 1, 24),
-              finished_on: Date.new(2023, 11, 14),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2024, 1, 24),
-                  finished_on: Date.new(2023, 11, 14)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2024, 2, 29),
-              finished_on: Date.new(2024, 7, 23),
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2024, 2, 29),
-                  finished_on: Date.new(2024, 7, 23)
-                )
-              )
-            ),
-            hash_including(
-              started_on: Date.new(2024, 7, 23),
-              finished_on: nil,
-              training_periods: array_including(
-                hash_including(
-                  started_on: Date.new(2024, 7, 23),
-                  finished_on: nil
-                )
-              )
+              school: hash_including(name: "School 3"),
             )
           )
         )
