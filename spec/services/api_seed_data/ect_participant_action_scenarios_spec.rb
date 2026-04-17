@@ -41,10 +41,9 @@ RSpec.describe APISeedData::ECTParticipantActionScenarios do
     end
 
     it "creates a resumable 2024 participant for the lead provider" do
-      plant
+      results = plant
 
-      # The first training period/teacher created is for the first scenario for the first LP.
-      training_period = TrainingPeriod.first
+      training_period = results[:resumable_training_periods].first
       teacher = training_period.teacher
 
       Metadata::Manager.new.refresh_metadata!(teacher)
@@ -66,11 +65,9 @@ RSpec.describe APISeedData::ECTParticipantActionScenarios do
     end
 
     it "creates a 2024 participant that has started with another lead provider" do
-      plant
+      results = plant
 
-      # A training period is created for the first scenario for each LP
-      # so this is the first training period/teacher of the second scenario.
-      training_period = TrainingPeriod.all[LeadProvider.count]
+      training_period = results[:started_with_another_lead_provider_training_periods].first
       teacher = training_period.teacher
 
       Metadata::Manager.refresh_all_metadata!
@@ -93,10 +90,9 @@ RSpec.describe APISeedData::ECTParticipantActionScenarios do
     end
 
     it "creates a 2024 participant with a billable declaration that can have their contract period and schedule changed" do
-      plant
+      results = plant
 
-      # The last training period/teacher created is for this scenario.
-      training_period = TrainingPeriod.joins(:declarations).first
+      training_period = results[:billable_declaration_training_periods].first
       teacher = training_period.teacher
 
       Metadata::Manager.refresh_all_metadata!
