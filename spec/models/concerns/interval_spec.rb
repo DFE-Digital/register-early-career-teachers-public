@@ -1,7 +1,8 @@
 FakePeriod = Struct.new(:started_on, :finished_on)
 
 describe Interval do
-  let(:school_id) { FactoryBot.create(:school, urn: "1234567").id }
+  let(:school) { FactoryBot.create(:school, urn: "1234567") }
+  let(:school_id) { school.id }
   let(:teacher_id) { FactoryBot.create(:teacher, trs_first_name: "Teacher", trs_last_name: "One").id }
 
   describe "validations" do
@@ -13,6 +14,30 @@ describe Interval do
 
         it "adds an error" do
           expect(subject.errors.messages).to include(finished_on: ["The end date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
+        end
+      end
+    end
+
+    describe "sibling overlap checks" do
+      subject { FactoryBot.build(:ect_at_school_period, school:, teacher: sibling.teacher, started_on: 1.day.ago, finished_on:) }
+
+      before { subject.valid? }
+
+      let(:sibling) { FactoryBot.create(:ect_at_school_period, started_on: 3.weeks.ago, finished_on: 2.weeks.ago) }
+
+      context "when finished_on is before started_on" do
+        let(:finished_on) { 2.days.ago }
+
+        it "doesn't cause an exception when the dates are the wrong way round" do
+          expect(subject.errors.messages.keys).to contain_exactly(:finished_on)
+        end
+      end
+
+      context "when finished_on is nil" do
+        let(:finished_on) { nil }
+
+        it "doesn't cause an exception when the dates are the wrong way round" do
+          expect(subject.errors.messages.keys).to be_empty
         end
       end
     end
