@@ -58,7 +58,14 @@ module API::Declarations
     def where_lead_provider_is(lead_provider_id)
       return if ignore?(filter: lead_provider_id)
 
-      @scope = scope
+      @scope = scope.where(id: declarations_matching_lead_provider(lead_provider_id).select(:id))
+    end
+
+    # Keeps the lead-provider join chain in a sub-relation so the outer scope
+    # is filtered via WHERE id IN (subquery). This makes pagination COUNT(*)
+    # cheaper and lets other filters compose against a clean outer scope.
+    def declarations_matching_lead_provider(lead_provider_id)
+      Declaration
         # Join the lead provider for the declaration.
         .joins(
           training_period: {
