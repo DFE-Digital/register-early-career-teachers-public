@@ -101,6 +101,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
     before do
       FactoryBot.create(
         :statement,
+        deadline_date: declaration.declaration_date + 1.month,
         active_lead_provider: declaration.training_period.active_lead_provider
       )
     end

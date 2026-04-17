@@ -17,7 +17,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
     # of the school partnerships.
     school_partnerships.each do |school_partnership|
       schedule = FactoryBot.create(:schedule, contract_period: school_partnership.contract_period)
-      other_identifier = Schedule.excluding_replacement_schedules.identifiers.keys.excluding(schedule.identifier).sample
+      other_identifier = Schedule.identifiers.keys.excluding(Schedule::REPLACEMENT_SCHEDULE_IDENTIFIERS).excluding(schedule.identifier).sample
       FactoryBot.create(:schedule, contract_period: school_partnership.contract_period, identifier: other_identifier)
     end
   end
@@ -134,7 +134,7 @@ RSpec.describe APISeedData::TeachersWithHistories do
         school_partnerships.each do |school_partnership|
           school = school_partnership.school
           contract_period = school_partnership.contract_period
-          started_on = Date.new(contract_period.year, 9, 15)
+          started_on = Date.new(contract_period.year, 9, 30)
           # finished_on must be before the mentor's finished_on which is started_on + 200..300 days
           FactoryBot.create(:ect_at_school_period, school:, started_on:, finished_on: started_on + 150.days)
         end

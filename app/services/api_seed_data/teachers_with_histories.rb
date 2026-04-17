@@ -337,7 +337,12 @@ module APISeedData
       return unless rand_boolean(ASSIGN_ECT_TO_MENTOR_RATIO)
 
       # Assign an ECT to the mentor for the same period excluding ECTs who are already mentees
-      ect_at_school_period = school.ect_at_school_periods.where.not(teacher_id: teacher.id).where.not(id: MentorshipPeriod.distinct.pluck(:ect_at_school_period_id)).started_on_or_after(mentor_at_school_period_record.started_on).finished_before(mentor_at_school_period_record.finished_on).last
+      ect_at_school_period = school.ect_at_school_periods
+        .where.not(teacher_id: teacher.id)
+        .where.not(id: MentorshipPeriod.distinct.pluck(:ect_at_school_period_id))
+        .started_on_or_after(mentor_at_school_period_record.started_on)
+        .finished_before(mentor_at_school_period_record.finished_on)
+        .last
 
       return if ect_at_school_period.blank?
 
