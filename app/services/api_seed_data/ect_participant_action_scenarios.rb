@@ -7,21 +7,27 @@ module APISeedData
 
       log_plant_info("api testing 2024 ECT participant seed scenarios")
 
+      results = { resumable_training_periods: [], started_with_another_lead_provider_training_periods: [], billable_declaration_training_periods: [] }
+
       NUMBER_OF_RECORDS_PER_SCENARIO.times do
         # Allowing lead providers to resume a participant without errors
-        seed_resumable_participants
+        results[:resumable_training_periods] += seed_resumable_participants
 
         # Preventing lead providers from resuming a participant as the participant has started with another lead provider
-        seed_participants_started_with_another_lead_provider
+        results[:started_with_another_lead_provider_training_periods] += seed_participants_started_with_another_lead_provider
 
         # Participant with billable declaration that can have their contract period and schedule identifier changed
-        seed_participant_with_billable_declaration_that_can_have_contract_period_and_schedule_changed
+        results[:billable_declaration_training_periods] += seed_participant_with_billable_declaration_that_can_have_contract_period_and_schedule_changed
       end
+
+      results
     end
 
   private
 
     def seed_resumable_participants
+      training_periods = []
+
       active_lead_providers.find_each do |active_lead_provider|
         # Withdrawn training period at ongoing school period, with ongoing induction period
         school_partnership = school_partnerships(active_lead_provider:).sample
@@ -30,14 +36,18 @@ module APISeedData
         teacher = create_teacher(school_time_period:)
         ect_at_school_period = create_at_school_period(school_time_period:, teacher:, school:)
         training_time_period = { started_on: school_time_period[:started_on], finished_on: school_time_period[:started_on] + rand(50..100).days }
-        create_training_period(ect_at_school_period:, school_partnership:, training_time_period:, traits: [:withdrawn])
+        training_periods << create_training_period(ect_at_school_period:, school_partnership:, training_time_period:, traits: [:withdrawn])
         create_ongoing_induction_period(teacher:, school_time_period:)
 
         log_plant_info("Created resumable participant for #{school_partnership.active_lead_provider.lead_provider.name}")
       end
+
+      training_periods
     end
 
     def seed_participants_started_with_another_lead_provider
+      training_periods = []
+
       active_lead_providers.find_each do |active_lead_provider|
         # Withdrawn training period at ongoing school period, with ongoing induction period
         # Where the school has a partnership with another active lead provider in the same year
@@ -51,6 +61,7 @@ module APISeedData
         ect_at_school_period = create_at_school_period(school_time_period:, teacher:, school:)
         training_time_period = { started_on: school_time_period[:started_on], finished_on: school_time_period[:started_on] + rand(50..100).days }
         training_period_at_first_school = create_training_period(ect_at_school_period:, school_partnership:, training_time_period:, traits: [:withdrawn])
+        training_periods << training_period_at_first_school
         create_ongoing_induction_period(teacher:, school_time_period:)
 
         # Active training period at the same school but with a different lead provider
@@ -60,9 +71,13 @@ module APISeedData
 
         log_plant_info("Created participant started with another lead provider for #{school_partnership.active_lead_provider.lead_provider.name}")
       end
+
+      training_periods
     end
 
     def seed_participant_with_billable_declaration_that_can_have_contract_period_and_schedule_changed
+      training_periods = []
+
       active_lead_providers.find_each do |active_lead_provider|
         # Ongoing training period/school period/induction period at a school where the lead provider
         # has a school partnership with the same school in a different contract period.
@@ -75,6 +90,7 @@ module APISeedData
         ect_at_school_period = create_at_school_period(school_time_period:, teacher:, school:)
         training_time_period = { started_on: school_time_period[:started_on], finished_on: nil }
         training_period = create_training_period(ect_at_school_period:, school_partnership:, training_time_period:)
+        training_periods << training_period
         create_ongoing_induction_period(teacher:, school_time_period:)
 
         # Started, paid declaration for the training period.
@@ -82,6 +98,8 @@ module APISeedData
 
         log_plant_info("Created participant with declaration that can change contract period/schedule for #{school_partnership.active_lead_provider.lead_provider.name}")
       end
+
+      training_periods
     end
 
     def contract_period
