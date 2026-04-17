@@ -1,9 +1,7 @@
 class ECF1TeacherHistory::DataPatcher
-  PATCHES_PATH = Rails.root.join("app/migration/ecf1_teacher_history/data_patches.csv")
-
   attr_reader :data_patches
 
-  def initialize(data_patches: CSV.table(PATCHES_PATH))
+  def initialize(data_patches: DATA_PATCHES)
     @data_patches = data_patches
   end
 
