@@ -11,7 +11,7 @@ module Admin::TeachersHelper
   end
 
   def teacher_role_filter_options
-    Admin::Teachers::Search::ROLE_NAMES.map do |value, name|
+    Admin::Teachers::RowQuery::ROLE_NAMES.map do |value, name|
       FilterOption.new(value:, name:)
     end
   end
@@ -23,6 +23,6 @@ module Admin::TeachersHelper
       FilterOption.new(value: year, name: year)
     end
 
-    filter_options + [FilterOption.new(value: Admin::Teachers::Search::CONTRACT_PERIOD_NOT_AVAILABLE, name: "Not available")]
+    filter_options + [FilterOption.new(value: Admin::Teachers::RowQuery::CONTRACT_PERIOD_NOT_AVAILABLE, name: "Not available")]
   end
 end
