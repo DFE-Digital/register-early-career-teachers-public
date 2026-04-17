@@ -1,6 +1,5 @@
 RSpec.describe Schools::RegisterECT do
   include ActiveJob::TestHelper
-  let(:store) { nil }
   subject(:service) do
     described_class.new(school_reported_appropriate_body:,
                         corrected_name:,
@@ -17,8 +16,7 @@ RSpec.describe Schools::RegisterECT do
                         store:)
   end
 
-  include_context "safe_schedules"
-
+  let(:store) { nil }
   let(:author) { FactoryBot.create(:school_user, school_urn: school.urn) }
   let(:school_reported_appropriate_body) { FactoryBot.create(:appropriate_body_period) }
   let(:corrected_name) { "Randy Marsh" }
@@ -31,6 +29,8 @@ RSpec.describe Schools::RegisterECT do
   let(:working_pattern) { "full_time" }
   let(:ect_at_school_period) { subject.teacher.ect_at_school_periods.first }
   let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
+
+  include_context "safe_schedules"
 
   describe "#register!" do
     context "when a Teacher record with the same TRN does not exist" do
