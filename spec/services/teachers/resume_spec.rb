@@ -38,7 +38,7 @@ RSpec.describe Teachers::Resume do
           it "raises an error" do
             expect {
               service.resume
-            }.to raise_error(ActiveRecord::StatementInvalid, /range lower bound must be less than or equal to range upper bound/)
+            }.to raise_error(ActiveRecord::RecordInvalid, /The end date must be later than the start date/)
           end
         end
 
