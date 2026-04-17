@@ -42,7 +42,7 @@ private
   end
 
   def eligible_for_ect_training?
-    teacher.induction_periods.ongoing_today.any? && teacher.ect_at_school_periods.ongoing_today.any?
+    teacher.induction_periods.ongoing_today.any? && teacher.ect_at_school_periods.any?
   end
 
   def eligible_for_mentor_training?
