@@ -48,7 +48,7 @@ private
       .then { close_ongoing_records_after_induction_completion(it) }
       .then { remove_records_with_matching_withdrawn_and_deferred_states(it) }
       .then { remove_2021_and_2022_cohort_ect_records_starting_after_cohort_closure(it) }
-      .then { close_2021_and_2022_cohort_records_ongoing_or_ending_after_cohort_closure(it) }
+      .then { close_2021_and_2022_cohort_ect_records_ending_after_cohort_closure(it) }
   end
 
   def remove_british_schools_overseas(induction_records)
@@ -111,7 +111,7 @@ private
     TeacherHistoryConverter::Cleaner::RemoveECTInductionRecordsStartingLaterThanCohortClosure.new(induction_records, participant_type).induction_records
   end
 
-  def close_2021_and_2022_cohort_records_ongoing_or_ending_after_cohort_closure(induction_records)
-    induction_records
+  def close_2021_and_2022_cohort_ect_records_ending_after_cohort_closure(induction_records)
+    TeacherHistoryConverter::Cleaner::CloseECTInductionRecordsEndingLaterThanCohortClosure.new(induction_records, participant_type).induction_records
   end
 end

@@ -47,7 +47,6 @@ describe TeacherHistoryConverter::Cleaner::RemoveECTInductionRecordsStartingLate
       it "removes induction records that start after the cut off date" do
         expect(cleaner.induction_records).to contain_exactly(induction_record_1, induction_record_2)
       end
-
     end
 
     context "when the participant_type is a Mentor" do
