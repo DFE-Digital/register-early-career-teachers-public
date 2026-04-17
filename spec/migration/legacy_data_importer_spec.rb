@@ -37,56 +37,8 @@ RSpec.describe LegacyDataImporter, :with_metadata do
       it "initiates an async refresh of the metadata" do
         allow(Migrators::Base).to receive(:migrators).and_return([])
 
-        expect(Metadata::Manager).to receive(:refresh_all_metadata!).with(async: true, excluding_handlers: [Metadata::Handlers::School])
+        expect(Metadata::Manager).to receive(:refresh_all_metadata!).with(async: true)
         importer.migrate!
-      end
-
-      context "when we have to create school contract period metadata" do
-        let!(:migration_school_1) { FactoryBot.create(:ecf_migration_school) }
-        let!(:migration_school_cohort_1) { FactoryBot.create(:migration_school_cohort, school: migration_school_1) }
-        let!(:migrated_school_1) { FactoryBot.create(:school, urn: migration_school_1.urn) }
-        let!(:migration_school_2) { FactoryBot.create(:ecf_migration_school) }
-        let!(:migration_school_cohort_2) { FactoryBot.create(:migration_school_cohort, school: migration_school_2) }
-        let!(:migrated_school_2) { FactoryBot.create(:school, urn: migration_school_2.urn) }
-
-        around do |example|
-          Metadata::SchoolContractPeriod.bypass_update_restrictions { example.run }
-        end
-
-        before do
-          allow(Migrators::Base).to receive(:migrators).and_return([])
-          allow(Metadata::Manager).to receive(:refresh_all_metadata!).with(async: true, excluding_handlers: [Metadata::Handlers::School])
-        end
-
-        it "calls .refresh_metadata! on the `Metadata::Manager` for each school" do
-          manager = instance_double(Metadata::Manager, refresh_metadata!: nil)
-          allow(Metadata::Manager).to receive(:new) { manager }
-
-          importer.migrate!
-
-          expect(manager).to have_received(:refresh_metadata!).with(migrated_school_1)
-          expect(manager).to have_received(:refresh_metadata!).with(migrated_school_2)
-        end
-
-        it "creates the correct school contract period metadata" do
-          importer.migrate!
-
-          ecf_schools = [migration_school_1, migration_school_2]
-          schools_by_urn = School.where(urn: ecf_schools.map(&:urn)).index_by(&:urn)
-          metadata_by_school_and_year = Metadata::SchoolContractPeriod.where(school: schools_by_urn.values).index_by do |metadata|
-            [metadata.school_id, metadata.contract_period_year]
-          end
-
-          ecf_schools.each do |ecf_school|
-            school = schools_by_urn[ecf_school.urn.to_i]
-            ecf_school.school_cohorts.each do |school_cohort|
-              metadata = metadata_by_school_and_year[[school.id, school_cohort.cohort.start_year]]
-              expect(metadata.contract_period_year).to eq(school_cohort.cohort.start_year)
-              expect(metadata.api_updated_at).to eq([ecf_school.updated_at, school_cohort.updated_at].max)
-              expect(metadata.school).to eq(school)
-            end
-          end
-        end
       end
     end
   end
