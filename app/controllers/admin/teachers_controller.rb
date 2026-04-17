@@ -3,13 +3,17 @@ module Admin
     layout "full"
 
     def index
-      teachers = ::Admin::Teachers::Search.new(
-        query_string: params[:q],
+      teacher_search = ::Admin::Teachers::Search.new(
+        query_string: params[:q]
+      )
+      row_query = ::Admin::Teachers::RowQuery.new(
+        matching_teacher_scope: teacher_search.search,
         role: params[:role],
         contract_period: params[:contract_period]
       )
 
-      @pagy, @teacher_rows = pagy_array(teachers.search)
+      @pagy, paginated_teacher_rows = pagy(row_query.relation, count: row_query.count)
+      @teacher_rows = row_query.rows(paginated_teacher_rows)
     end
 
     def show

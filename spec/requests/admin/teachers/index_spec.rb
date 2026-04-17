@@ -101,19 +101,11 @@ RSpec.describe "Admin teachers index", type: :request do
 
         context "when the query generates an invalid tsquery" do
           it "returns successfully" do
-            search = Admin::Teachers::Search.new(query_string: "<?'", role: nil, contract_period: nil)
-            teacher_scope = instance_double(ActiveRecord::Relation)
-
-            allow(Admin::Teachers::Search).to receive(:new).and_return(search)
-            allow(search).to receive_messages(teacher_scope:, invalid_tsquery?: true)
-            allow(teacher_scope).to receive(:flat_map).and_raise(
-              ActiveRecord::StatementInvalid.new("syntax error in tsquery")
-            )
-
             get "/admin/teachers", params: { q: "<?'" }
 
             expect(response.status).to eq(200)
             expect(response.body).to include("Teachers")
+            expect(response.body).to include("There are no teachers that match your search.")
           end
         end
 

@@ -47,7 +47,7 @@
           <% row.with_cell do %>
             <%= govuk_link_to(
                   teacher_row.name,
-                  admin_teacher_path(teacher_row.teacher, admin_teacher_index_params)
+                  admin_teacher_path(teacher_row.teacher_id, admin_teacher_index_params)
                 ) %>
           <% end %>
           <% row.with_cell(text: teacher_row.trn) %>
