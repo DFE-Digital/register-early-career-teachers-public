@@ -56,6 +56,7 @@ module Interval
   end
 
   def overlap_validation(name:)
+    return unless valid_date_order?
     return unless has_overlap_with_siblings?
 
     if siblings.any? { |s| s.range.include?(started_on) }
