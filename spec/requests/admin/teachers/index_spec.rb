@@ -118,6 +118,73 @@ RSpec.describe "Admin teachers index", type: :request do
           end
         end
       end
+
+      context "when filtering by contract period" do
+        before do
+          non_matching_contract_period = FactoryBot.create(:contract_period, year: 2025)
+          matching_contract_period = FactoryBot.create(:contract_period, year: 2024)
+
+          20.times do |index|
+            teacher = FactoryBot.create(
+              :teacher,
+              trs_first_name: sprintf("Teacher%02d", index),
+              trs_last_name: "Alpha"
+            )
+
+            ect_at_school_period = FactoryBot.create(
+              :ect_at_school_period,
+              :ongoing,
+              teacher:
+            )
+
+            school_partnership = FactoryBot.create(
+              :school_partnership,
+              :with_active_lead_provider,
+              active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: non_matching_contract_period),
+              school: ect_at_school_period.school
+            )
+
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :ongoing,
+              ect_at_school_period:,
+              school_partnership:
+            )
+          end
+
+          matching_teacher = FactoryBot.create(:teacher, trs_first_name: "Zis", trs_last_name: "Matches")
+
+          matching_ect_at_school_period = FactoryBot.create(
+            :ect_at_school_period,
+            :ongoing,
+            teacher: matching_teacher
+          )
+
+          matching_school_partnership = FactoryBot.create(
+            :school_partnership,
+            :with_active_lead_provider,
+            active_lead_provider: FactoryBot.create(:active_lead_provider, contract_period: matching_contract_period),
+            school: matching_ect_at_school_period.school
+          )
+
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            :ongoing,
+            ect_at_school_period: matching_ect_at_school_period,
+            school_partnership: matching_school_partnership
+          )
+        end
+
+        it "filters across the whole dataset before pagination" do
+          get "/admin/teachers", params: { contract_period: "2024" }
+
+          expect(response.status).to eq(200)
+          expect(response.body).to include("Zis Matches")
+          expect(response.body).not_to include("Teacher00 Alpha")
+        end
+      end
     end
   end
 end

@@ -4,16 +4,17 @@ module Admin
 
     def index
       teacher_search = ::Admin::Teachers::Search.new(
-        query_string: params[:q]
+        query_string: params[:q],
+        role: params[:role],
+        contract_period: params[:contract_period]
       )
-      row_query = ::Admin::Teachers::RowQuery.new(
-        matching_teacher_scope: teacher_search.search,
+      rows = ::Admin::Teachers::Rows.new(
         role: params[:role],
         contract_period: params[:contract_period]
       )
 
-      @pagy, paginated_teacher_rows = pagy(row_query.relation, count: row_query.count)
-      @teacher_rows = row_query.rows(paginated_teacher_rows)
+      @pagy, teachers = pagy(teacher_search.teacher_scope)
+      @teacher_rows = rows.rows(teachers)
     end
 
     def show
