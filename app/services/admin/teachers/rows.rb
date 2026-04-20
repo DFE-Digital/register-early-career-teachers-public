@@ -57,10 +57,8 @@ module Admin
         rows = []
         rows << build_row(teacher:, role: "ect", role_period: role_period_for(teacher, "ect")) if ect?(teacher)
         rows << build_row(teacher:, role: "mentor", role_period: role_period_for(teacher, "mentor")) if mentor?(teacher)
-
-        return rows if rows.any?
-
-        [build_row(teacher:, role: NO_ROLE_ASSIGNED)]
+        rows << build_row(teacher:, role: NO_ROLE_ASSIGNED) if rows.none?
+        rows
       end
 
       def ect?(teacher)
