@@ -25,7 +25,9 @@ private
     destroy_unstarted_mentorship_periods!(period)
 
     period.mentorship_periods.ongoing_on(finished_on).each do |mentorship_period|
-      MentorshipPeriods::Finish.new(mentorship_period:, finished_on:, author:).finish!
+      effective_date = [finished_on, mentorship_period.mentee.finished_on].compact.min
+
+      MentorshipPeriods::Finish.new(mentorship_period:, finished_on: effective_date, author:).finish!
     end
   end
 
