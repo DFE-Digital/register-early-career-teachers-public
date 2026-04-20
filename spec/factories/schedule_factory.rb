@@ -36,7 +36,7 @@ FactoryBot.define do
           milestone = create(:milestone, schedule:, declaration_type:)
           milestone.update!(
             start_date: attrs[:start_date],
-            milestone_date: attrs[:milestone_date]
+            milestone_date: (year.in?([2025, 2026]) ? nil : attrs[:milestone_date])
           )
         end
       end
