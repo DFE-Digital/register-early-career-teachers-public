@@ -27,12 +27,8 @@ module APISeedData
 
   private
 
-    def ect_teachers
-      @ect_teachers ||= Teacher.where.missing(:ect_at_school_periods).order("RANDOM()")
-    end
-
-    def mentor_teachers
-      @mentor_teachers ||= Teacher.where.missing(:mentor_at_school_periods).order("RANDOM()")
+    def available_teachers
+      @available_teachers ||= Teacher.where.missing(:ect_at_school_periods, :mentor_at_school_periods).order("RANDOM()")
     end
 
     def select_different_lead_provider(excluding_lead_providers: [])
@@ -41,8 +37,7 @@ module APISeedData
     end
 
     def select_random_teacher(excluding_teachers: [], type: :ect)
-      teachers = type == :ect ? ect_teachers : mentor_teachers
-      teacher = (teachers - excluding_teachers).sample.presence ||
+      teacher = (available_teachers - excluding_teachers).sample.presence ||
         FactoryBot.create(:teacher, :with_realistic_name, trn: Helpers::TRNGenerator.next)
       teacher.tap { @transferred_teachers[type] << it }
     end
