@@ -51,7 +51,10 @@ private
       :state_type,
       :state_reason,
       :state_cpd_lead_provider_id,
-      :state_created_at
+      :state_created_at,
+      :date_added,
+      :added_by,
+      :reason
     ).compact
 
     return {} if attrs.empty?
