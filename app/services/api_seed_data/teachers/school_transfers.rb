@@ -11,7 +11,7 @@ module APISeedData
 
       log_plant_info("teacher school transfers")
 
-      @transferred_teachers = { ect: [], mentor: [] }
+      @transferred_teachers = []
 
       lead_providers.each do |from_lead_provider|
         log_seed_info("Processing Lead provider: #{from_lead_provider.name}")
@@ -36,11 +36,10 @@ module APISeedData
       (lead_providers - excluding_lead_providers).sample
     end
 
-    def select_random_teacher(excluding_teachers: [], type: :ect)
-      already_transferred = @transferred_teachers.values.flatten
-      teacher = (available_teachers - already_transferred - excluding_teachers).sample.presence ||
+    def select_random_teacher
+      teacher = (available_teachers - @transferred_teachers).sample.presence ||
         FactoryBot.create(:teacher, :with_realistic_name, trn: Helpers::TRNGenerator.next)
-      teacher.tap { @transferred_teachers[type] << it }
+      teacher.tap { @transferred_teachers << it }
     end
 
     def create_set_of_transfers_scenarios(from_lead_provider, to_lead_provider)
@@ -57,7 +56,7 @@ module APISeedData
 
     # Scenario 1: provider led -> unknown (incomplete transfer)
     def create_incomplete_transfer_scenario(from_lead_provider, to_lead_provider, type)
-      teacher = select_random_teacher(excluding_teachers: @transferred_teachers[type])
+      teacher = select_random_teacher
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 1.week.ago, type:)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
       add_training_period(school_period1, from: 2.years.ago, to: 1.year.ago, programme_type: :provider_led, with: from_lead_provider, transfer: true)
@@ -68,7 +67,7 @@ module APISeedData
 
     # Scenario 2: provider led -> provider led (same LP)
     def create_same_lp_transfer_scenario(from_lead_provider, to_lead_provider, type)
-      teacher = select_random_teacher(excluding_teachers: @transferred_teachers[type])
+      teacher = select_random_teacher
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago, type:)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
       school_period2 = create_school_period(teacher, from: 2.years.ago, type:, transfer: true)
@@ -80,7 +79,7 @@ module APISeedData
 
     # Scenario 3: provider led -> provider led (different LP)
     def create_different_lp_transfer_scenario(from_lead_provider, to_lead_provider, type)
-      teacher = select_random_teacher(excluding_teachers: @transferred_teachers[type])
+      teacher = select_random_teacher
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago, type:)
       @training_period1 = add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
       school_period2 = create_school_period(teacher, from: 2.years.ago, type:, transfer: true)
@@ -93,7 +92,7 @@ module APISeedData
 
     # Scenario 4: provider led -> school led (ects only)
     def create_provider_to_school_led_scenario(from_lead_provider)
-      teacher = select_random_teacher(excluding_teachers: @transferred_teachers[:ect])
+      teacher = select_random_teacher
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :provider_led, with: from_lead_provider)
       school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
@@ -104,7 +103,7 @@ module APISeedData
 
     # Scenario 5: school led (ects only) -> provider led
     def create_school_led_to_provider_scenario(from_lead_provider)
-      teacher = select_random_teacher(excluding_teachers: @transferred_teachers[:ect])
+      teacher = select_random_teacher
       school_period1 = create_school_period(teacher, from: 3.years.ago, to: 2.years.ago)
       add_training_period(school_period1, from: 3.years.ago, to: 2.years.ago, programme_type: :school_led)
       school_period2 = create_school_period(teacher, from: 2.years.ago, transfer: true)
