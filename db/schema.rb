@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_17_172602) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -488,6 +488,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
     t.uuid "ecf_id"
     t.datetime "updated_at", null: false
     t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
+    t.index ["active_lead_provider_id"], name: "idx_lpdps_active_lead_provider"
     t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
     t.index ["ecf_id"], name: "index_lead_provider_delivery_partnerships_on_ecf_id", unique: true
@@ -566,13 +567,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
   end
 
   create_table "metadata_schools_contract_periods", force: :cascade do |t|
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.integer "contract_period_year", null: false
     t.datetime "created_at", null: false
     t.boolean "in_partnership", null: false
     t.enum "induction_programme_choice", null: false, enum_type: "induction_programme_choice"
     t.bigint "school_id", null: false
     t.datetime "updated_at", null: false
-    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_e703aaa45a"
     t.index ["school_id", "contract_period_year"], name: "idx_on_school_id_contract_period_year_0dae2d65f6", unique: true
     t.index ["school_id"], name: "index_metadata_schools_contract_periods_on_school_id"
@@ -1054,6 +1055,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
     t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
     t.datetime "withdrawn_at"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
+    t.index ["api_transfer_updated_at", "ect_at_school_period_id"], name: "idx_training_periods_transfer_updated_ect", where: "(ect_at_school_period_id IS NOT NULL)"
+    t.index ["api_transfer_updated_at", "mentor_at_school_period_id"], name: "idx_training_periods_transfer_updated_mentor", where: "(mentor_at_school_period_id IS NOT NULL)"
     t.index ["api_transfer_updated_at"], name: "index_training_periods_on_api_transfer_updated_at"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
