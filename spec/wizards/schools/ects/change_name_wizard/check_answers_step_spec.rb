@@ -27,8 +27,14 @@ RSpec.describe Schools::ECTs::ChangeNameWizard::CheckAnswersStep, type: :model d
       expect { current_step.save! }.to change(wizard.ect_at_school_period.teacher, :corrected_name).from(nil).to("Terry Pratchett")
     end
 
-    it "records an event" do
-      expect { current_step.save! }.to have_enqueued_job(RecordEventJob)
+    it "records a teacher_name_updated_by_user event" do
+      expect(Events::Record).to receive(:teacher_name_updated_by_user_event!).with(
+        old_name: anything,
+        new_name: "Terry Pratchett",
+        author:,
+        teacher: ect_at_school_period.teacher
+      )
+      current_step.save!
     end
   end
 end
