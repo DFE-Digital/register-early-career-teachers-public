@@ -286,6 +286,8 @@ def schedule_and_milestone_data
     },
 
     # 2025
+    # The dates here are deliberately looser to allow for more permissive API validation for the 2025 cohort onwards.
+    # Please check in with the API squad before editing these dates as it impacts validation over the API for lead providers.
 
     ## Extended
 
