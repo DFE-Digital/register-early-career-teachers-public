@@ -9,7 +9,6 @@ module ContractPeriods
 
     def required?
       return false unless training_period&.provider_led_training_programme?
-      return false if training_period&.for_mentor?
 
       contract_period = assigned_contract_period
       return false unless contract_period

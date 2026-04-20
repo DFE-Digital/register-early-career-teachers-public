@@ -85,7 +85,6 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     instance_double(
       TrainingPeriod,
       provider_led_training_programme?: provider_led,
-      for_mentor?: false,
       contract_period:,
       expression_of_interest_contract_period: nil,
       lead_provider:

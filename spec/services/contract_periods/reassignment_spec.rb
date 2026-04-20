@@ -1,62 +1,84 @@
 RSpec.describe ContractPeriods::Reassignment do
-  let(:training_period) do
-    instance_double(
-      TrainingPeriod,
-      provider_led_training_programme?: provider_led_training_programme,
-      for_mentor?: for_mentor,
-      contract_period:,
-      expression_of_interest_contract_period:
-    )
-  end
-
-  let(:contract_period) { nil }
-  let(:expression_of_interest_contract_period) { nil }
-  let(:provider_led_training_programme) { true }
-  let(:for_mentor) { false }
-
   describe "#required?" do
     subject { described_class.new(training_period:).required? }
 
-    context "when the training period is provider-led in a payments-frozen contract period" do
+    context "when training period is provider-led in a payments-frozen contract period" do
       let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: true)
+      end
+
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          provider_led_training_programme?: true,
+          contract_period:,
+          expression_of_interest_contract_period: nil
+        )
       end
 
       it { is_expected.to be_truthy }
     end
 
-    context "when the training period is provider-led but contract period is not payments frozen" do
+    context "when training period is provider-led but contract period is not payments frozen" do
       let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: false)
+      end
+
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          provider_led_training_programme?: true,
+          contract_period:,
+          expression_of_interest_contract_period: nil
+        )
       end
 
       it { is_expected.to be_falsey }
     end
 
-    context "when the training period uses expression_of_interest_contract_period" do
-      let(:expression_of_interest_contract_period) do
+    context "when training period uses expression_of_interest_contract_period" do
+      let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: true)
+      end
+
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          provider_led_training_programme?: true,
+          contract_period: nil,
+          expression_of_interest_contract_period: contract_period
+        )
       end
 
       it { is_expected.to be_truthy }
     end
 
-    context "when the training period uses expression_of_interest_contract_period that is not payments frozen" do
-      let(:expression_of_interest_contract_period) do
+    context "when training period uses expression_of_interest_contract_period that is not payments frozen" do
+      let(:contract_period) do
         instance_double(ContractPeriod, payments_frozen?: false)
+      end
+
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          provider_led_training_programme?: true,
+          contract_period: nil,
+          expression_of_interest_contract_period: contract_period
+        )
       end
 
       it { is_expected.to be_falsey }
     end
 
-    context "when the training period is not provider-led" do
-      let(:provider_led_training_programme) { false }
-
-      it { is_expected.to be_falsey }
-    end
-
-    context "when the training period is for a mentor" do
-      let(:for_mentor) { true }
+    context "when training period is not provider-led" do
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          provider_led_training_programme?: false,
+          contract_period: nil,
+          expression_of_interest_contract_period: nil
+        )
+      end
 
       it { is_expected.to be_falsey }
     end
@@ -83,23 +105,53 @@ RSpec.describe ContractPeriods::Reassignment do
 
     context "when training period has a contract period" do
       let(:contract_period) { instance_double(ContractPeriod) }
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          contract_period:,
+          expression_of_interest_contract_period: nil
+        )
+      end
 
       it { is_expected.to eq(contract_period) }
     end
 
     context "when training period does not have a contract period but has an expression of interest contract period" do
       let(:expression_of_interest_contract_period) { instance_double(ContractPeriod) }
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          contract_period: nil,
+          expression_of_interest_contract_period:
+        )
+      end
 
       it { is_expected.to eq(expression_of_interest_contract_period) }
     end
 
     context "when training period does not have a contract period or an expression of interest contract period" do
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          contract_period: nil,
+          expression_of_interest_contract_period: nil
+        )
+      end
+
       it { is_expected.to be_nil }
     end
 
     context "when a training period has both a contract period and an expression of interest contract period" do
       let(:contract_period) { instance_double(ContractPeriod) }
       let(:expression_of_interest_contract_period) { instance_double(ContractPeriod) }
+
+      let(:training_period) do
+        instance_double(
+          TrainingPeriod,
+          contract_period:,
+          expression_of_interest_contract_period:
+        )
+      end
 
       it { is_expected.to eq(contract_period) }
     end

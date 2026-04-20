@@ -4,7 +4,6 @@ module ECTAtSchoolPeriods
 
   class SwitchTraining
     include TrainingPeriodSources
-    include Schedules::Reuse
 
     def self.to_school_led(...) = new(...).to_school_led
     def self.to_provider_led(...) = new(...).to_provider_led
@@ -63,28 +62,62 @@ module ECTAtSchoolPeriods
     def handle_training_period_for_switch!
       return if @training_period.blank?
 
-      if training_not_started? || !keep_existing_training_period?
+      if training_not_started? || current_provider_led_training_not_confirmed?
         @training_period.destroy!
       else
         finish_training_period!
       end
     end
 
-    def keep_existing_training_period?
-      @ect_at_school_period.school_led_training_programme? || @training_period.school_partnership.present?
+    def current_provider_led_training_not_confirmed?
+      @ect_at_school_period.provider_led_training_programme? && @training_period.school_partnership.blank?
     end
-
-    def current_or_next_training_period_confirmed? = keep_existing_training_period?
 
     def training_not_started?
       @training_period.started_on.today? || date_of_transition.future?
     end
 
+    def contract_period
+      if contract_period_reassignment_required?
+        successor_contract_period
+      elsif reuse_existing_schedule?
+        existing_schedule.contract_period
+      else
+        contract_period_at_transition
+      end
+    end
+
+    def schedule
+      existing_schedule if reuse_existing_schedule?
+    end
+
     def reuse_existing_schedule?
       return false unless @ect_at_school_period.school_led_training_programme?
+      return false unless existing_schedule
+      return false if contract_period_reassignment_required?
 
-      super
+      existing_schedule.contract_period != contract_period_at_transition
     end
+
+    def existing_schedule
+      last_provider_led_training_period&.schedule
+    end
+
+    def date_of_transition = [@ect_at_school_period.started_on, Date.current].max
+
+    def contract_period_reassignment_required?
+      @ect_at_school_period.school_led_training_programme? && contract_period_reassignment.required?
+    end
+
+    def contract_period_reassignment
+      @contract_period_reassignment ||= ContractPeriods::Reassignment.new(training_period: last_provider_led_training_period)
+    end
+
+    def last_provider_led_training_period
+      @last_provider_led_training_period ||= @ect_at_school_period.training_periods.provider_led_training_programme.latest_first.first
+    end
+
+    delegate :successor_contract_period, to: :contract_period_reassignment
 
     def set_ect_payments_frozen_year!
       return unless contract_period_reassignment_required?
@@ -92,6 +125,10 @@ module ECTAtSchoolPeriods
       @ect_at_school_period
         .teacher
         .update!(ect_payments_frozen_year: contract_period_reassignment.assigned_contract_period.year)
+    end
+
+    def contract_period_at_transition
+      @contract_period_at_transition ||= ContractPeriod.containing_date(date_of_transition)
     end
 
     def finish_training_period!
@@ -167,6 +204,6 @@ module ECTAtSchoolPeriods
       @mentor_at_school_period.teacher.mentor_became_ineligible_for_funding_on.present?
     end
 
-    def period = @ect_at_school_period
+    def started_on = date_of_transition
   end
 end

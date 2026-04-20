@@ -140,30 +140,6 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
           expect { subject }.not_to change(teacher, :ect_payments_frozen_year)
         end
       end
-
-      context "when the existing training_period is deferred" do
-        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :deferred, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
-
-        it "opens a new training period with the previous schedule" do
-          expect { subject }.to change(TrainingPeriod, :count).by(1)
-
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
-          expect(new_training_period.schedule).to eq(training_period.schedule)
-          expect(new_training_period.schedule.contract_period_year).to eq(training_period.schedule.contract_period_year)
-        end
-      end
-
-      context "when the existing training_period is withdrawn" do
-        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :withdrawn, mentor_at_school_period:, started_on:, school_partnership: old_school_partnership) }
-
-        it "opens a new training period with the previous schedule" do
-          expect { subject }.to change(TrainingPeriod, :count).by(1)
-
-          new_training_period = mentor_at_school_period.training_periods.ongoing.first
-          expect(new_training_period.schedule).to eq(training_period.schedule)
-          expect(new_training_period.schedule.contract_period_year).to eq(training_period.schedule.contract_period_year)
-        end
-      end
     end
 
     context "when there is no school partnership with the old lead provider" do
