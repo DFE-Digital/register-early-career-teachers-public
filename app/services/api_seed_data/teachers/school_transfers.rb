@@ -37,7 +37,8 @@ module APISeedData
     end
 
     def select_random_teacher(excluding_teachers: [], type: :ect)
-      teacher = (available_teachers - excluding_teachers).sample.presence ||
+      already_transferred = @transferred_teachers.values.flatten
+      teacher = (available_teachers - already_transferred - excluding_teachers).sample.presence ||
         FactoryBot.create(:teacher, :with_realistic_name, trn: Helpers::TRNGenerator.next)
       teacher.tap { @transferred_teachers[type] << it }
     end
