@@ -141,6 +141,14 @@ shared:
     - induction_tutor_email
     - api_id
     - marked_as_eligible
+  :school_funding_eligibilities:
+    - id
+    - school_urn
+    - contract_period_year
+    - pupil_premium_uplift
+    - sparsity_uplift
+    - created_at
+    - updated_at
   :school_partnerships:
     - id
     - created_at
