@@ -4,7 +4,7 @@ RSpec.shared_context "an API show endpoint documentation", :exceptions_app do |p
       tags params[:tag]
       consumes "application/json"
       produces "application/json"
-      security [api_key: []]
+      security [{ api_key: [] }]
 
       parameter name: :id,
                 in: :path,
