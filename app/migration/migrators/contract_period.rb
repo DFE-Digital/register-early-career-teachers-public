@@ -48,7 +48,7 @@ module Migrators
     def finished_on_for(cohort)
       next_cohort = cohort.next
 
-      return cohort.registration_start_date.next_year.prev_day if next_cohort.blank?
+      return cohort.registration_start_date.next_year.prev_month.end_of_month if next_cohort.blank?
 
       next_cohort.registration_start_date.prev_day
     end
