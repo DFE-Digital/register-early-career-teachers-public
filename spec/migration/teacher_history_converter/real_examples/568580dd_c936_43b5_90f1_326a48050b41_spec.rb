@@ -17,6 +17,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
         payments_frozen_cohort_start_year: :ignore,
         induction_records: [
           {
+            induction_record_id: "ed414099-7ecf-4188-882c-d7de83843d65",
             start_date: Date.new(2022, 6, 1),
             end_date: Date.new(2023, 11, 23),
             training_programme: "full_induction_programme",
@@ -35,7 +36,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "UCL Institute of Education"
               },
               delivery_partner: {
-                ecf1_id: "30fd608a-2411-4b72-8c89-ab932dc40ca5",
+                ecf1_id: "6ae866ae-7efd-46f1-a12d-26a81d1f350c",
                 name: "Delivery partner 1"
               },
               cohort_year: 2022
@@ -48,6 +49,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             }
           },
           {
+            induction_record_id: "ca9463cb-ab1a-44e7-b1ef-446b948b85db",
             start_date: Date.new(2023, 6, 6),
             end_date: Date.new(2023, 11, 23),
             training_programme: "full_induction_programme",
@@ -66,7 +68,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "UCL Institute of Education"
               },
               delivery_partner: {
-                ecf1_id: "30fd608a-2411-4b72-8c89-ab932dc40ca5",
+                ecf1_id: "6ae866ae-7efd-46f1-a12d-26a81d1f350c",
                 name: "Delivery partner 1"
               },
               cohort_year: 2022
@@ -79,6 +81,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             }
           },
           {
+            induction_record_id: "2a467a07-d87f-46d7-87f8-14d18fc65eac",
             start_date: Date.new(2023, 10, 16),
             end_date: Date.new(2023, 11, 23),
             training_programme: "full_induction_programme",
@@ -97,7 +100,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "UCL Institute of Education"
               },
               delivery_partner: {
-                ecf1_id: "30fd608a-2411-4b72-8c89-ab932dc40ca5",
+                ecf1_id: "6ae866ae-7efd-46f1-a12d-26a81d1f350c",
                 name: "Delivery partner 1"
               },
               cohort_year: 2022
@@ -110,6 +113,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             }
           },
           {
+            induction_record_id: "0ab8f5f2-7c86-4914-90c0-0d0aaf278f71",
             start_date: Date.new(2023, 11, 1),
             end_date: Date.new(2023, 11, 23),
             training_programme: "full_induction_programme",
@@ -128,7 +132,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "UCL Institute of Education"
               },
               delivery_partner: {
-                ecf1_id: "30fd608a-2411-4b72-8c89-ab932dc40ca5",
+                ecf1_id: "6ae866ae-7efd-46f1-a12d-26a81d1f350c",
                 name: "Delivery partner 1"
               },
               cohort_year: 2022
@@ -141,6 +145,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             }
           },
           {
+            induction_record_id: "26f6b6fd-4efb-4723-b199-f7f01b177cc2",
             start_date: Date.new(2023, 11, 23),
             end_date: Date.new(2023, 6, 6),
             training_programme: "full_induction_programme",
@@ -159,7 +164,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "Teach First"
               },
               delivery_partner: {
-                ecf1_id: "7e7fa020-6833-4d0f-b46a-b83a367eb87a",
+                ecf1_id: "26d5c2ec-c7f1-4d57-9dac-40c31a5f512c",
                 name: "Delivery partner 2"
               },
               cohort_year: 2022
@@ -172,6 +177,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             }
           },
           {
+            induction_record_id: "1b82dbab-7493-4f65-a317-216e962560f0",
             start_date: Date.new(2023, 11, 23),
             end_date: Date.new(2023, 10, 16),
             training_programme: "full_induction_programme",
@@ -190,7 +196,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "Teach First"
               },
               delivery_partner: {
-                ecf1_id: "7e7fa020-6833-4d0f-b46a-b83a367eb87a",
+                ecf1_id: "26d5c2ec-c7f1-4d57-9dac-40c31a5f512c",
                 name: "Delivery partner 2"
               },
               cohort_year: 2022
@@ -203,6 +209,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             }
           },
           {
+            induction_record_id: "538d8cc8-3b1d-40bd-95a7-f3987a36b1cb",
             start_date: Date.new(2023, 11, 23),
             end_date: Date.new(2023, 11, 1),
             training_programme: "full_induction_programme",
@@ -221,7 +228,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "Teach First"
               },
               delivery_partner: {
-                ecf1_id: "7e7fa020-6833-4d0f-b46a-b83a367eb87a",
+                ecf1_id: "26d5c2ec-c7f1-4d57-9dac-40c31a5f512c",
                 name: "Delivery partner 2"
               },
               cohort_year: 2022
@@ -234,6 +241,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             }
           },
           {
+            induction_record_id: "45f49c8d-22ac-4868-a564-fb033cc53220",
             start_date: Date.new(2023, 11, 23),
             end_date: :ignore,
             training_programme: "full_induction_programme",
@@ -252,7 +260,7 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                 name: "Teach First"
               },
               delivery_partner: {
-                ecf1_id: "7e7fa020-6833-4d0f-b46a-b83a367eb87a",
+                ecf1_id: "26d5c2ec-c7f1-4d57-9dac-40c31a5f512c",
                 name: "Delivery partner 2"
               },
               cohort_year: 2022
@@ -333,7 +341,8 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
             ),
             hash_including(
               started_on: Date.new(2023, 11, 23),
-              finished_on: nil,
+              # NOTE: patched date also used for school period
+              finished_on: Date.new(2025, 6, 16),
               school: hash_including(urn: "100001", name: "School 1"),
               training_periods: array_including(
                 hash_including(
@@ -366,7 +375,8 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
           mentor_at_school_periods: array_including(
             hash_including(
               started_on: Date.new(2022, 6, 1),
-              finished_on: nil,
+              # NOTE: patched date also used for school period
+              finished_on: Date.new(2025, 6, 16),
               school: hash_including(urn: "100001", name: "School 1"),
               training_periods: array_including(
                 hash_including(
@@ -374,11 +384,6 @@ describe "Real data check for user 568580dd-c936-43b5-90f1-326a48050b41" do
                   finished_on: Date.new(2023, 11, 22),
                   lead_provider_info: hash_including(name: "UCL Institute of Education"),
                   delivery_partner_info: hash_including(name: "Delivery partner 1")
-                  # no matching states were created on the same day, so no declaration data
-                  # here
-                  #
-                  # deferred_at: Time.zone.local(2023, 11, 1, 16, 31, 32),
-                  # deferral_reason: "other"
                 ),
                 hash_including(
                   started_on: Date.new(2023, 11, 23),

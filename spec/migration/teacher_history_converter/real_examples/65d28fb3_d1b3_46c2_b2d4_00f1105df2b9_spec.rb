@@ -502,12 +502,12 @@ describe "Real data check for user 65d28fb3-d1b3-46c2-b2d4-00f1105df2b9 (patched
           mentor_at_school_periods: array_including(
             hash_including(
               # NOTE: this is the patched date
-              started_on: Date.new(2025, 9, 1),
+              started_on: Date.new(2025, 9, 11),
               finished_on: nil,
               school: hash_including(urn: "100002", name: "School 2"),
               training_periods: array_including(
                 hash_including(
-                  started_on: Date.new(2025, 9, 1),
+                  started_on: Date.new(2025, 9, 11),
                   finished_on: nil,
                   lead_provider_info: hash_including(name: "Ambition Institute"),
                   delivery_partner_info: hash_including(name: "Delivery partner 2"),
