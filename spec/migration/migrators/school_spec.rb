@@ -12,6 +12,7 @@ describe Migrators::School do
                       school_type_name: "Academy converter").tap do |ecf_school|
       FactoryBot.create(:ecf_migration_school_local_authority, school: ecf_school)
       FactoryBot.create(:migration_induction_coordinator_profile, schools: [ecf_school])
+      FactoryBot.create(:migration_school_cohort, school: ecf_school)
     end
   end
 
@@ -29,10 +30,16 @@ describe Migrators::School do
                       ukprn: ecf_school.ukprn)
   end
 
-  it_behaves_like "a migrator", :school, %i[gias_import gias_childrens_centres] do
+  it_behaves_like "a migrator", :school, %i[contract_period gias_import gias_childrens_centres] do
     def create_migration_resource = create_ecf_school
 
-    def create_resource(migration_resource) = create_gias_school(migration_resource)
+    def create_resource(migration_resource)
+      migration_resource.school_cohorts.each do |school_cohort|
+        FactoryBot.create(:contract_period, year: school_cohort.cohort.start_year)
+      end
+
+      create_gias_school(migration_resource)
+    end
 
     def setup_failure_state
       ecf_school = create_migration_resource
@@ -64,6 +71,7 @@ describe Migrators::School do
       context "when the school is closed and with induction records" do
         let!(:induction_record) { FactoryBot.create(:migration_induction_record) }
         let!(:ecf_school) { induction_record.school }
+        let!(:contract_period) { FactoryBot.create(:contract_period, year: ecf_school.school_cohorts.first.cohort.start_year) }
         let(:rect_school) { School.find_by_urn(ecf_school.urn) }
 
         before do
@@ -231,7 +239,6 @@ describe Migrators::School do
         expect(data_migration.reload.failure_count).to eq(0)
         gias_school.reload
         expect(gias_school.school.created_at).to eq(ecf_school.created_at)
-        expect(gias_school.school.api_updated_at).to eq(ecf_school.updated_at)
       end
 
       it "syncs the induction coordinator details" do

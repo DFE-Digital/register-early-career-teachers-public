@@ -1,4 +1,4 @@
-RSpec.describe LegacyDataImporter do
+RSpec.describe LegacyDataImporter, :with_metadata do
   include ActiveJob::TestHelper
 
   subject(:importer) { described_class.new }

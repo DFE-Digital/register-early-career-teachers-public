@@ -566,12 +566,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
   end
 
   create_table "metadata_schools_contract_periods", force: :cascade do |t|
-    t.integer "contract_period_year"
+    t.integer "contract_period_year", null: false
     t.datetime "created_at", null: false
     t.boolean "in_partnership", null: false
     t.enum "induction_programme_choice", null: false, enum_type: "induction_programme_choice"
     t.bigint "school_id", null: false
     t.datetime "updated_at", null: false
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_e703aaa45a"
     t.index ["school_id", "contract_period_year"], name: "idx_on_school_id_contract_period_year_0dae2d65f6", unique: true
     t.index ["school_id"], name: "index_metadata_schools_contract_periods_on_school_id"
@@ -785,7 +786,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
 
   create_table "schools", force: :cascade do |t|
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "created_at", null: false
     t.citext "induction_tutor_email"
     t.integer "induction_tutor_last_nominated_in"
@@ -797,7 +797,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
     t.datetime "updated_at", null: false
     t.integer "urn", null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true
-    t.index ["api_updated_at"], name: "index_schools_on_api_updated_at"
     t.index ["last_chosen_appropriate_body_id"], name: "index_schools_on_last_chosen_appropriate_body_id"
     t.index ["last_chosen_lead_provider_id"], name: "index_schools_on_last_chosen_lead_provider_id"
     t.index ["urn"], name: "schools_unique_urn", unique: true
