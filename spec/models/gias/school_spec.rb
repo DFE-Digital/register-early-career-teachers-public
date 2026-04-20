@@ -33,8 +33,10 @@ describe GIAS::School do
   end
 
   describe "declarative touch" do
-    let(:instance) { target&.gias_school || FactoryBot.create(:gias_school) }
-    let(:target) { FactoryBot.create(:school, :independent) }
+    let(:instance) { FactoryBot.create(:gias_school, :with_school) }
+    let(:target) { instance.contract_period_metadata }
+
+    before { Metadata::Handlers::School.new(instance.school).refresh_metadata! }
 
     it_behaves_like "a declarative touch model", when_changing: %i[name], timestamp_attribute: :api_updated_at
   end
@@ -60,6 +62,7 @@ describe GIAS::School do
   describe "associations" do
     it { is_expected.to have_one(:school).with_primary_key(:urn).with_foreign_key(:urn).inverse_of(:gias_school) }
     it { is_expected.to have_many(:gias_school_links).with_foreign_key(:urn).dependent(:destroy).class_name("GIAS::SchoolLink").inverse_of(:from_gias_school) }
+    it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod").through(:school) }
   end
 
   describe "validations" do

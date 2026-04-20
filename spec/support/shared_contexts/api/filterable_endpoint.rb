@@ -57,18 +57,18 @@ RSpec.shared_examples "a filter by multiple cohorts (contract_period year) endpo
   end
 end
 
-RSpec.shared_examples "a filter by updated_since endpoint" do |updated_at_column: :api_updated_at|
+RSpec.shared_examples "a filter by updated_since endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
-  let!(:resource_updated_one_week_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, updated_at_column:, value: 1.week.ago) } }
-  let!(:resource_updated_one_month_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, updated_at_column:, value: 1.month.ago) } }
+  let!(:resource_updated_one_week_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, value: 1.week.ago) } }
+  let!(:resource_updated_one_month_ago) { create_resource(active_lead_provider:).tap { set_updated_at(resource: it, value: 1.month.ago) } }
 
   before do
     # Resource updated more than two months ago should not be included.
-    set_updated_at(resource: create_resource(active_lead_provider:), updated_at_column:, value: 3.months.ago)
+    set_updated_at(resource: create_resource(active_lead_provider:), value: 3.months.ago)
   end
 
-  def set_updated_at(resource:, updated_at_column:, value:)
-    resource.update_columns("#{updated_at_column}": value)
+  def set_updated_at(resource:, value:)
+    resource.update_columns(api_updated_at: value)
   end
 
   it "returns only resource that have been updated since the provided date" do
@@ -279,8 +279,12 @@ end
 RSpec.shared_examples "a does not filter by updated_since endpoint" do
   let(:options) { defined?(serializer_options) ? serializer_options : {} }
 
+  def get_updated_at(resource:)
+    resource.api_updated_at
+  end
+
   it "returns the resources, ignoring the `updated_since`" do
-    updated_since_after_resource_updated_at = (resource.api_updated_at + 1.day).utc.iso8601
+    updated_since_after_resource_updated_at = (get_updated_at(resource:) + 1.day).utc.iso8601
     authenticated_api_get(path, params: { filter: { updated_since: updated_since_after_resource_updated_at } })
 
     expect(response).to have_http_status(:ok)

@@ -43,7 +43,11 @@ module API
       end
 
       def sort
-        sort_order(sort: school_params[:sort], model: School, default: { created_at: :asc })
+        sort_order(sort: school_params[:sort], model: sort_model, default: { created_at: :asc })
+      end
+
+      def sort_model
+        school_params[:sort]&.include?("updated_at") ? Metadata::SchoolContractPeriod : School
       end
 
       def urn

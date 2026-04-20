@@ -2,8 +2,12 @@ describe Metadata::SchoolLeadProviderContractPeriod do
   include_context "restricts updates to the Metadata namespace", :school_lead_provider_contract_period_metadata
 
   describe "declarative touch" do
-    let(:instance) { FactoryBot.create(:school_lead_provider_contract_period_metadata, school: target) }
-    let(:target) { FactoryBot.create(:school) }
+    let(:target) { FactoryBot.create(:school_contract_period_metadata) }
+    let(:instance) do
+      FactoryBot.create(:school_lead_provider_contract_period_metadata,
+                        school: target.school,
+                        contract_period: target.contract_period)
+    end
 
     around do |example|
       Metadata::SchoolLeadProviderContractPeriod.bypass_update_restrictions { example.run }
@@ -16,6 +20,7 @@ describe Metadata::SchoolLeadProviderContractPeriod do
     it { is_expected.to belong_to(:school) }
     it { is_expected.to belong_to(:lead_provider) }
     it { is_expected.to belong_to(:contract_period).with_foreign_key(:contract_period_year) }
+    it { is_expected.to have_many(:contract_period_metadata).class_name("Metadata::SchoolContractPeriod").through(:school) }
   end
 
   describe "validations" do

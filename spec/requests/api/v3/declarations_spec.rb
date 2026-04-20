@@ -33,7 +33,11 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
     it_behaves_like "a filter by delivery_partner_id endpoint", :delivery_partner_when_created
     it_behaves_like "a filter by participant_id endpoint"
-    it_behaves_like "a filter by updated_since endpoint", updated_at_column: :updated_at
+    it_behaves_like "a filter by updated_since endpoint" do
+      def set_updated_at(resource:, value:)
+        resource.update_columns(updated_at: value)
+      end
+    end
   end
 
   describe "#show" do

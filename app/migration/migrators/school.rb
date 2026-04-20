@@ -13,7 +13,7 @@ module Migrators
 
     MISMATCH_FIELD_MESSAGE = ->(school, field, gias_value, ecf_value) { ":#{field} - School #{school.urn} (#{school.name}) mismatch value on field named '#{field}': '#{ecf_value}' on ECF whilst '#{gias_value}' expected on RECT!" }
 
-    def self.dependencies = %i[gias_import gias_childrens_centres]
+    def self.dependencies = %i[contract_period gias_import gias_childrens_centres]
 
     def self.model = :school
 
@@ -63,7 +63,7 @@ module Migrators
 
         [
           compare_fields(gias_school:, ecf_school:),
-          update_school!(school: gias_school.school, ecf_school:),
+          update_school!(school: gias_school.school, ecf_school:)
         ].all?
       end
     end
@@ -121,9 +121,9 @@ module Migrators
         api_id: ecf_school.id,
         induction_tutor_name: induction_coordinator&.full_name,
         induction_tutor_email: induction_coordinator&.email,
-        created_at: ecf_school.created_at,
-        api_updated_at: ecf_school.updated_at
+        created_at: ecf_school.created_at
       }
+
       school.update_columns(attrs)
     end
   end
