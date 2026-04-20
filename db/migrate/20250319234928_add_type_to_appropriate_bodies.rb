@@ -5,7 +5,7 @@ class AddTypeToAppropriateBodies < ActiveRecord::Migration[8.0]
 
     add_column :appropriate_bodies, :body_type, :appropriate_body_type, default: 'teaching_school_hub'
 
-    execute <<-SQL.squish
+    execute <<~SQL.squish
       UPDATE appropriate_bodies
       SET body_type =
         CASE
