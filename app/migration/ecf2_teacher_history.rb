@@ -137,14 +137,16 @@ class ECF2TeacherHistory
 
     model_identifier = model.is_a?(Symbol) ? model : model.class.name.demodulize.underscore
 
-    ::TeacherMigrationFailure.create!(
-      teacher:,
-      model: model_identifier,
-      message: message.presence || "FIXME: no message was set for this failure!",
-      migration_item_id:,
-      migration_item_type: MIGRATION_ITEM_TYPE,
-      migration_mode:
-    )
+    if teacher.persisted?
+      ::TeacherMigrationFailure.create!(
+        teacher:,
+        model: model_identifier,
+        message: message.presence || "FIXME: no message was set for this failure!",
+        migration_item_id:,
+        migration_item_type: MIGRATION_ITEM_TYPE,
+        migration_mode:
+      )
+    end
   end
 
 private
