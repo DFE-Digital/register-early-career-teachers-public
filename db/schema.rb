@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_06_131056) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_111109) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -415,6 +415,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_131056) do
     t.uuid "ecf_id"
     t.datetime "updated_at", null: false
     t.index ["active_lead_provider_id", "delivery_partner_id"], name: "idx_on_active_lead_provider_id_delivery_partner_id_3c66d9e812", unique: true
+    t.index ["active_lead_provider_id"], name: "idx_lpdps_active_lead_provider"
     t.index ["active_lead_provider_id"], name: "idx_on_active_lead_provider_id_2f96b67fbb"
     t.index ["delivery_partner_id"], name: "idx_on_delivery_partner_id_fcb95e8215"
     t.index ["ecf_id"], name: "index_lead_provider_delivery_partnerships_on_ecf_id", unique: true
@@ -905,10 +906,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_131056) do
     t.enum "withdrawal_reason", enum_type: "withdrawal_reasons"
     t.datetime "withdrawn_at"
     t.index "ect_at_school_period_id, mentor_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_mentor_at_school_per_42bce3bf48", unique: true, where: "(finished_on IS NULL)"
+    t.index ["api_transfer_updated_at", "ect_at_school_period_id"], name: "idx_training_periods_transfer_updated_ect", where: "(ect_at_school_period_id IS NOT NULL)"
+    t.index ["api_transfer_updated_at", "mentor_at_school_period_id"], name: "idx_training_periods_transfer_updated_mentor", where: "(mentor_at_school_period_id IS NOT NULL)"
+    t.index ["api_transfer_updated_at", "school_partnership_id"], name: "idx_training_periods_transfer_updated_partnership"
     t.index ["api_transfer_updated_at"], name: "index_training_periods_on_api_transfer_updated_at"
     t.index ["ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "idx_on_ect_at_school_period_id_mentor_at_school_per_70f2bb1a45", unique: true
+    t.index ["ect_at_school_period_id", "started_on"], name: "idx_training_periods_ect_started_on"
     t.index ["ect_at_school_period_id"], name: "index_training_periods_on_ect_at_school_period_id"
     t.index ["expression_of_interest_id"], name: "index_training_periods_on_expression_of_interest_id"
+    t.index ["mentor_at_school_period_id", "started_on"], name: "idx_training_periods_mentor_started_on"
     t.index ["mentor_at_school_period_id"], name: "index_training_periods_on_mentor_at_school_period_id"
     t.index ["schedule_id"], name: "index_training_periods_on_schedule_id"
     t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
