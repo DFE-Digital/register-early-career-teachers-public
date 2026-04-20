@@ -31,6 +31,14 @@ module Admin
 
           contract_period
         end
+
+        def sort_key
+          [
+            name.to_s.downcase,
+            Rows::ROLE_SORT_ORDER.fetch(role),
+            teacher.id
+          ]
+        end
       end
 
       def initialize(role: nil, contract_period: nil)
@@ -107,15 +115,7 @@ module Admin
       end
 
       def sort_rows(rows)
-        rows.sort_by { |row| row_sort_key(row) }
-      end
-
-      def row_sort_key(row)
-        [
-          row.name.to_s.downcase,
-          ROLE_SORT_ORDER.fetch(row.role),
-          row.teacher.id
-        ]
+        rows.sort_by(&:sort_key)
       end
     end
   end
