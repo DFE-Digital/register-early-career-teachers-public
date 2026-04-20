@@ -77,6 +77,50 @@ describe MentorAtSchoolPeriods::Finish do
       end
     end
 
+    context "when the mentor's leaving date is earlier than the ECT's leaving date" do
+      subject { MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: mentor_finished_on, author:, reported_by_school_id:) }
+
+      let(:mentor_finished_on) { finished_on + 1.month }
+      let(:ect_finished_on) { finished_on + 2.months }
+
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: mentor_at_school_period.school) }
+      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
+
+      before do
+        ect_at_school_period.update_column(:finished_on, ect_finished_on)
+      end
+
+      it "sets the mentorship period finished_on to the mentor's earlier leaving date" do
+        subject.finish_existing_at_school_periods!
+
+        expect(mentorship_period.reload.finished_on).to eq(mentor_finished_on)
+      end
+    end
+
+    context "when the ECT is already reported as leaving on an earlier date than the mentor's leaving date" do
+      subject { MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: mentor_finished_on, author:, reported_by_school_id:) }
+
+      let(:mentor_finished_on) { finished_on + 2.months }
+      let(:ect_finished_on) { finished_on + 1.month }
+
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: mentor_at_school_period.school) }
+      let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
+
+      before do
+        ect_at_school_period.update_column(:finished_on, ect_finished_on)
+      end
+
+      it "does not raise an error" do
+        expect { subject.finish_existing_at_school_periods! }.not_to raise_error
+      end
+
+      it "sets the mentorship period finished_on to the ECT's leaving date, not the mentor's" do
+        subject.finish_existing_at_school_periods!
+
+        expect(mentorship_period.reload.finished_on).to eq(ect_finished_on)
+      end
+    end
+
     it "finishes all the associated periods" do
       expect(training_period.finished_on).to be_nil
       expect(mentorship_period.finished_on).to be_nil
