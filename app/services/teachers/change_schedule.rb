@@ -23,7 +23,7 @@ module Teachers
         end
       end
 
-      teacher
+      API::Teachers::Query.new.teacher_by_id(teacher.id)
     end
 
   private

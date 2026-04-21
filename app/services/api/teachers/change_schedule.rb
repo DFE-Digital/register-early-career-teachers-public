@@ -42,7 +42,7 @@ module API::Teachers
     end
 
     def schedule
-      @schedule ||= Schedule.includes(:contract_period).find_by(contract_period_year: contract_period.year, identifier: schedule_identifier) if contract_period && schedule_identifier
+      @schedule ||= Schedule.find_by(contract_period_year: contract_period.year, identifier: schedule_identifier) if contract_period && schedule_identifier
     end
 
     def schedule_exists
@@ -85,12 +85,7 @@ module API::Teachers
 
     def school_partnership
       @school_partnership ||= SchoolPartnership
-        .includes(:lead_provider,
-                  :contract_period,
-                  :active_lead_provider,
-                  :delivery_partner,
-                  :lead_provider_delivery_partnership,
-                  :school)
+        .includes(:lead_provider, :contract_period)
         .joins(:lead_provider, :contract_period)
         .find_by(
           school: training_period.school_partnership.school,
