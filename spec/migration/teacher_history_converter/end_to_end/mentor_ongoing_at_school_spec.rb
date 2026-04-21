@@ -22,7 +22,7 @@ describe "Mentor at a school with a few induction records" do
 
   # ECF1 data
   let(:ecf1_school) { FactoryBot.create(:ecf_migration_school) }
-  let(:ecf1_cohort) { FactoryBot.create(:migration_cohort, start_year: 2022) }
+  let(:ecf1_cohort) { FactoryBot.create(:migration_cohort, start_year: 2023) }
   let(:ecf1_school_cohort) { FactoryBot.create(:migration_school_cohort, school: ecf1_school, cohort: ecf1_cohort) }
   let(:ecf1_schedule) { FactoryBot.create(:migration_schedule, cohort: ecf1_cohort, schedule_identifier: "ecf-standard-september") }
 
