@@ -1,0 +1,18 @@
+<% if Rails.application.config.enable_incident_banner %>
+  <%= govuk_notification_banner(
+        title_text: "There are intermittent issues accessing the service",
+        classes: "govuk-!-margin-top-4"
+      ) do %>
+    This is due to an issue with our service provider. We apologise for the
+    inconvenience and will let you know as soon as this is resolved.
+  <% end %>
+<% end %>
+
+<% if Rails.application.config.enable_maintenance_banner %>
+  <%= govuk_notification_banner(
+        title_text: "Important",
+        classes: "govuk-!-margin-top-4"
+      ) do %>
+    This service will be unavailable from midday on 27 April until 9am on 28 April.
+  <% end %>
+<% end %>
