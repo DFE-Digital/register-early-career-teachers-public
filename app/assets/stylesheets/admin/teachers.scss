@@ -14,3 +14,16 @@
   padding: 1em;
   box-sizing: border-box;
 }
+
+.app-teachers-filters {
+  @include govuk-media-query($from: tablet) {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: govuk-spacing(3);
+
+    > .app-teachers-filters__search {
+      flex: 2 1 22rem;
+    }
+  }
+}

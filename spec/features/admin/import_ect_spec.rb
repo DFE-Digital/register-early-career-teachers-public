@@ -150,11 +150,11 @@ private
   end
 
   def then_i_should_see_the_import_ect_button
-    expect(page.get_by_role("link", name: "Import TRS record")).to be_visible
+    expect(page.get_by_role("link", name: "Import a record from TRS")).to be_visible
   end
 
   def when_i_click_the_import_ect_button
-    page.get_by_role("link", name: "Import TRS record").click
+    page.get_by_role("link", name: "Import a record from TRS").click
   end
 
   def then_i_should_be_on_the_find_ect_page

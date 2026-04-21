@@ -15,6 +15,6 @@ RSpec.describe "Admin root" do
   end
 
   def then_i_should_see_the_admin_teacher_search_page
-    expect(page.get_by_text("Search by name or TRN")).to be_visible
+    expect(page.get_by_text("Search for teacher")).to be_visible
   end
 end

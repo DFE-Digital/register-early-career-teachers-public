@@ -3,17 +3,18 @@ module Admin
     layout "full"
 
     def index
-      @appropriate_bodies = AppropriateBodyPeriod.order(:name)
-      @pagy, @teachers = pagy(
-        ::Teachers::Search.new(
-          query_string: params[:q]
-        )
-        .search
-        .includes(
-          :induction_periods,
-          :current_appropriate_body_period
-        )
+      teacher_search = ::Admin::Teachers::Search.new(
+        query_string: params[:q],
+        role: params[:role],
+        contract_period: params[:contract_period]
       )
+      rows = ::Admin::Teachers::Rows.new(
+        role: params[:role],
+        contract_period: params[:contract_period]
+      )
+
+      @pagy, teachers = pagy(teacher_search.teacher_scope)
+      @teacher_rows = rows.rows(teachers)
     end
 
     def show
@@ -29,7 +30,7 @@ module Admin
 
     def teacher_breadcrumbs
       {
-        "Teachers" => admin_teachers_path(page: params[:page], q: params[:q]),
+        "Teachers" => admin_teachers_path(helpers.admin_teacher_index_params),
         @teacher.full_name => nil
       }
     end
