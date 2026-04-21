@@ -172,11 +172,13 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
 
       context "when the teacher has an existing induction period" do
         let!(:existing_teacher) { FactoryBot.create(:teacher, trn:) }
-        let!(:induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher, finished_on: Date.new(2025, 4, 21)) }
+        let(:finished_on) { 30.days.ago.to_date }
+        let(:started_on) { 1.year.ago.to_date }
+        let!(:induction_period) { FactoryBot.create(:induction_period, teacher: existing_teacher, started_on:, finished_on:) }
         let(:pending_induction_submission_params) do
           {
             induction_programme: "fip",
-            started_on: Date.new(2025, 4, 22), # One day after the existing induction period finished
+            started_on: finished_on.next_day, # One day after the existing induction period finished
             trn: "1234567",
             trs_first_name: "John",
             trs_last_name: "Doe",
