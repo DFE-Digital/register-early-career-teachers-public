@@ -56,7 +56,8 @@ module Teachers
     def create_training_period!
       TrainingPeriods::Create.provider_led(
         period:,
-        started_on:,
+        started_on: date_of_transition,
+        finished_on: period.finished_on,
         school_partnership:,
         expression_of_interest:,
         schedule:,

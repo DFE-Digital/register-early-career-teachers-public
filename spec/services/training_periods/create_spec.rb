@@ -176,9 +176,9 @@ RSpec.describe TrainingPeriods::Create do
     it "calls new with the school_led arguments" do
       allow(TrainingPeriods::Create).to receive(:new).and_return(true)
 
-      TrainingPeriods::Create.school_led(period:, started_on:)
+      TrainingPeriods::Create.school_led(period:, started_on:, finished_on:)
 
-      expect(TrainingPeriods::Create).to have_received(:new).with(period:, started_on:, training_programme: "school_led")
+      expect(TrainingPeriods::Create).to have_received(:new).with(period:, started_on:, finished_on:, training_programme: "school_led")
     end
 
     it "does not record an event" do

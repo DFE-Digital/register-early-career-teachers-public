@@ -56,6 +56,5 @@ module Schedules
     delegate :successor_contract_period, to: :contract_period_reassignment
     delegate :assigned_contract_period, to: :contract_period_reassignment
     alias_method :previous_contract_period, :assigned_contract_period
-    alias_method :started_on, :date_of_transition
   end
 end
