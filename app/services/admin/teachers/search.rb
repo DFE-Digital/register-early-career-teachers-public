@@ -84,7 +84,7 @@ module Admin
         scope.where(
           clauses.map { |clause| "(#{clause})" }.join(" OR "),
           contract_period:,
-          contract_period_not_available: Rows::CONTRACT_PERIOD_NOT_AVAILABLE
+          contract_period_not_available: Rows::CONTRACT_PERIOD_NOT_APPLICABLE
         )
       end
 
@@ -109,7 +109,7 @@ module Admin
       end
 
       def mentor_not_available_filter?
-        role == "mentor" && contract_period == Rows::CONTRACT_PERIOD_NOT_AVAILABLE
+        role == "mentor" && contract_period == Rows::CONTRACT_PERIOD_NOT_APPLICABLE
       end
 
       def contract_period_filter_clauses

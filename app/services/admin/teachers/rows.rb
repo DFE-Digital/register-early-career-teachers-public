@@ -1,7 +1,7 @@
 module Admin
   module Teachers
     class Rows
-      CONTRACT_PERIOD_NOT_AVAILABLE = "not_available"
+      CONTRACT_PERIOD_NOT_APPLICABLE = "not_available"
       NO_ROLE_ASSIGNED = "no_role_assigned"
 
       ROLE_NAMES = {
@@ -27,7 +27,7 @@ module Admin
 
         def contract_period_name
           return if contract_period.blank?
-          return "Not available" if contract_period == Rows::CONTRACT_PERIOD_NOT_AVAILABLE
+          return "Not applicable" if contract_period == Rows::CONTRACT_PERIOD_NOT_APPLICABLE
 
           contract_period
         end
@@ -93,7 +93,7 @@ module Admin
       def contract_period_for(role_period)
         training_period = training_period_for(role_period)
         return if training_period.blank?
-        return CONTRACT_PERIOD_NOT_AVAILABLE if training_period.for_ect? && training_period.school_led_training_programme?
+        return CONTRACT_PERIOD_NOT_APPLICABLE if training_period.for_ect? && training_period.school_led_training_programme?
 
         training_period.schedule&.contract_period_year&.to_s
       end

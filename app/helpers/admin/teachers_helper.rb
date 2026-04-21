@@ -23,6 +23,6 @@ module Admin::TeachersHelper
       FilterOption.new(value: year, name: year)
     end
 
-    filter_options + [FilterOption.new(value: Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_AVAILABLE, name: "Not available")]
+    filter_options + [FilterOption.new(value: Admin::Teachers::Rows::CONTRACT_PERIOD_NOT_APPLICABLE, name: "Not applicable")]
   end
 end
