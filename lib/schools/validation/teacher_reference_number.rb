@@ -23,7 +23,9 @@ module Schools
         only_digits = trn.to_s.gsub(/[^\d]/, "")
 
         @error_message = "Teacher reference number must include at least 5 digits" and return if only_digits.blank?
+
         @error_message = "Teacher reference number must include at least 5 digits" and return if only_digits.length < MIN_UNPADDED_TRN_LENGTH
+
         @error_message = "Teacher reference number cannot include more than 7 digits" and return if only_digits.length > PADDED_TRN_LENGTH
 
         only_digits.rjust(PADDED_TRN_LENGTH, "0")

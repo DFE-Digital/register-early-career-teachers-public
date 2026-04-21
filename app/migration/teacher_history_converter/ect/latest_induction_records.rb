@@ -24,7 +24,7 @@ class TeacherHistoryConverter::ECT::LatestInductionRecords
                                  .reverse
                                  .each_with_object([]) do |induction_record, periods|
                                    process(periods, induction_record)
-    end
+                                 end
   end
 
 private
