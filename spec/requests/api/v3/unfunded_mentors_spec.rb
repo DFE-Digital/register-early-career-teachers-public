@@ -62,6 +62,7 @@ RSpec.describe "Unfunded mentors API", type: :request do
         end
       end
     end
+    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#show" do
@@ -72,5 +73,6 @@ RSpec.describe "Unfunded mentors API", type: :request do
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
     it_behaves_like "a does not filter by updated_since endpoint"
+    it_behaves_like "a N+1 queries free endpoint", :get
   end
 end

@@ -1,6 +1,6 @@
 require "swagger_helper"
 
-describe "Participants endpoint", openapi_spec: "v3/swagger.yaml" do
+describe "Participants endpoint", :with_metadata, openapi_spec: "v3/swagger.yaml" do
   include_context "with authorization for api doc request"
 
   let(:lead_provider_delivery_partnership) do
@@ -34,10 +34,6 @@ describe "Participants endpoint", openapi_spec: "v3/swagger.yaml" do
   let(:teacher) { ect_at_school_period.teacher }
 
   let(:resource) { teacher }
-
-  before do
-    Metadata::Handlers::Teacher.new(teacher).refresh_metadata!
-  end
 
   it_behaves_like "an API index endpoint documentation",
                   {

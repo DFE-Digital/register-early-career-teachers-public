@@ -11,6 +11,10 @@ Rails.application.configure do
   config.after_initialize do
     Prosopite.rails_logger = true
     Prosopite.raise = true
+
+    # Allow N+1 from raised from Metadata refreshes
+    # as these are expected and not a problem in tests
+    Prosopite.allow_stack_paths = [/DeclarativeUpdates/]
   end
 
   # While tests run files are not watched, reloading is not necessary.
