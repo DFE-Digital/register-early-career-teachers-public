@@ -12545,7 +12545,11 @@ ce613cb3-3887-412f-b5a6-55818d1f1d98,c6864905-4871-4b84-8f47-8b8a44ce61c5,,,,,,,
 ce613cb3-3887-412f-b5a6-55818d1f1d98,6df807c0-c673-4745-bcad-0e82ed504bc5,,01/06/2023,,,,,,,,,,,,,TRUE,20/04/2026,NE/AC,Don't count for training. Let EDT know mentor will disappear
 ce613cb3-3887-412f-b5a6-55818d1f1d98,b5cb3cf6-99df-4f32-a0c6-1d08dfdf23b1,TRUE,,,,,,,,,,,,,,,20/04/2026,NE/AC,Ignore
 ce613cb3-3887-412f-b5a6-55818d1f1d98,b29158e9-747c-4ae5-bd46-2ddc53e39b62,,,,,,,,,,,,,,,TRUE,20/04/2026,NE/AC,Don't count for training. Let EDT know mentor will disappear
-ce613cb3-3887-412f-b5a6-55818d1f1d98,6306881c-ed07-401d-966d-45b330596a38,,,,,,,,active,,,withdrawn,other,Teach First,31/08/2025,,20/04/2026,NE/AC,Adding withdrawal event for TF
+ce613cb3-3887-412f-b5a6-55818d1f1d98,6306881c-ed07-401d-966d-45b330596a38,,,,,,,,active,,,withdrawn,other,bd152c5a-5ef4-4584-9c63-c32877dbba07,31/08/2025,,20/04/2026,NE/AC,Adding withdrawal event for TF
 0796ccdc-8dab-4de3-a99a-988d8a913ee1,9664d809-6c1c-4164-8f3f-26abfa9177be,,01/09/2021,31/05/2022,,,,,,,,,,,,,20/04/2026,NE/AC,updating IR dates to tidy up a set of 12 declarations from two LPs
 0796ccdc-8dab-4de3-a99a-988d8a913ee1,ea580509-c147-4f6c-8fd6-892f5ec6f835,,01/06/2022,31/08/2022,,,,,,,,,,,,,20/04/2026,NE/AC,updating IR dates to tidy up a set of 12 declarations from two LPs
 b6d092a2-82b9-4c17-9816-a0204e79d1c1,321fbe1b-0b28-4d99-a7b5-103b2ab2abbf,,09/02/2022,24/04/2023,,,,,,,,,,,,,20/04/2026,NE/AC,CHECK if TF withdrawal still transfers or if another state is needed & updated start date to remove overlap issues
+45c3f1df-dd7e-4d4c-8432-dfe3d23c71f2,b2d5bdd4-ffe2-48e2-9d37-7467a7929049,,01/09/2022,,,,,,,,,,,,,,21/04/2026,AB,Ticket #3821 - declaration failing
+d7c469e6-681a-45cf-acc7-aeff87705a69,cf94f866-7940-456c-b69c-ed8fa0331c4e,,,31/12/2022,,,,,,,,,,,,,21/04/2026,AB,Ticket #3821 - declaration failing
+d7c469e6-681a-45cf-acc7-aeff87705a69,aa01ee5f-b1ac-4c58-90cd-41436a8f744f,TRUE,,,,,,,,,,,,,,,21/04/2026,AB,Ticket #3821 - declaration failing
+d7c469e6-681a-45cf-acc7-aeff87705a69,e4849ffe-6f8d-447b-848c-1a9fc5d8a4aa,TRUE,,,,,,,,,,,,,,,21/04/2026,AB,Ticket #3821 - declaration failing
