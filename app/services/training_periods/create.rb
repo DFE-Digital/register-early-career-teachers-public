@@ -15,8 +15,8 @@ module TrainingPeriods
       @mentee = mentee
     end
 
-    def self.school_led(period:, started_on:)
-      new(period:, started_on:, training_programme: "school_led")
+    def self.school_led(period:, started_on:, finished_on: nil)
+      new(period:, started_on:, finished_on:, training_programme: "school_led")
     end
 
     def self.provider_led(period:, started_on:, school_partnership:, expression_of_interest:, finished_on: nil, schedule: nil, author: nil, mentee: nil)
