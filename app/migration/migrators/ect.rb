@@ -38,7 +38,7 @@ module Migrators
       # success, fall back to economy (latest_induction_records)
       return success if success || migration_mode == :latest_induction_records
 
-      migrate_one_second_attempt(teacher_profile)
+      migrate_one_second_attempt(teacher_profile).first
     end
 
   private
