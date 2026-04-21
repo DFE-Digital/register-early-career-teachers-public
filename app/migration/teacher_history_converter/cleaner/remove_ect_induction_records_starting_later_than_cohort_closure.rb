@@ -1,6 +1,4 @@
 class TeacherHistoryConverter::Cleaner::RemoveECTInductionRecordsStartingLaterThanCohortClosure
-  include TeacherHistoryConverter::Cleaner::CohortCutOffDates
-
   def initialize(raw_induction_records, participant_type)
     @raw_induction_records = raw_induction_records
     @participant_type = participant_type
@@ -20,8 +18,13 @@ private
 
   def remove_post_cohort_closure_records!
     @raw_induction_records.reject do |induction_record|
-      (induction_record.cohort_year == 2021 && induction_record.start_date >= COHORT_2021_CUTOFF_DATE) ||
-        (induction_record.cohort_year == 2022 && induction_record.start_date >= COHORT_2022_CUTOFF_DATE)
+      cut_off_date = cut_off_dates.cut_off_date_for(cohort_year: induction_record.cohort_year)
+
+      cut_off_date.present? && induction_record.start_date >= cut_off_date
     end
+  end
+
+  def cut_off_dates
+    @cut_off_dates ||= TeacherHistoryConverter::CohortCutOffDate.new
   end
 end
