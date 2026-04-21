@@ -68,54 +68,50 @@ module API::Teachers::SchoolTransfers
         )
     end
 
-    # def where_updated_since(updated_since, lead_provider_id)
-    #   return if ignore?(filter: updated_since)
-
-    #   # This includes a teacher’s first and last training periods, even if they aren't true transfers.
-    #   # Excluding them is complex, and this is still an improvement over ECF. As a result, some teachers
-    #   # may appear even if their transfer periods weren't necessarily updated — it's a best-effort approach.
-    #   @scope = scope
-    #       .left_joins(
-    #         ect_at_school_periods: {
-    #           earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-    #           latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-    #         },
-    #         mentor_at_school_periods: {
-    #           earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-    #           latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-    #         }
-    #       )
-    #       # On the joins below training_periods is the earliest ECT training periods it is not
-    #       # aliased like the others because it is the first join onto the training_periods table.
-    #       .where(
-    #         "(training_periods.id IS NOT NULL AND training_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers.lead_provider_id = :lead_provider_id) OR
-    #         (latest_training_periods_ect_at_school_periods.id IS NOT NULL AND latest_training_periods_ect_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships.lead_provider_id = :lead_provider_id) OR
-    #         (earliest_training_periods_mentor_at_school_periods.id IS NOT NULL AND earliest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_2.lead_provider_id = :lead_provider_id) OR
-    #         (latest_training_periods_mentor_at_school_periods.id IS NOT NULL AND latest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_3.lead_provider_id = :lead_provider_id)",
-    #         updated_since:, lead_provider_id:
-    #       )
-    # end
-
-    # Inverted query starting with the training period
     def where_updated_since(updated_since, lead_provider_id)
       return if ignore?(filter: updated_since)
 
-      training_periods =
-        TrainingPeriod
-          .where(active_lead_providers: { lead_provider_id: })
-          .where(api_transfer_updated_at: updated_since..)
+      # This includes a teacher’s first and last training periods, even if they aren't true transfers.
+      # Excluding them is complex, and this is still an improvement over ECF. As a result, some teachers
+      # may appear even if their transfer periods weren't necessarily updated — it's a best-effort approach.
+      @scope = scope
+          .left_joins(
+            ect_at_school_periods: {
+              earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+              latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+            },
+            mentor_at_school_periods: {
+              earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+              latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
+            }
+          )
+          # On the joins below training_periods is the earliest ECT training periods it is not
+          # aliased like the others because it is the first join onto the training_periods table.
+          .where(
+            "(training_periods.id IS NOT NULL AND training_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers.lead_provider_id = :lead_provider_id) OR
+            (latest_training_periods_ect_at_school_periods.id IS NOT NULL AND latest_training_periods_ect_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships.lead_provider_id = :lead_provider_id) OR
+            (earliest_training_periods_mentor_at_school_periods.id IS NOT NULL AND earliest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_2.lead_provider_id = :lead_provider_id) OR
+            (latest_training_periods_mentor_at_school_periods.id IS NOT NULL AND latest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_3.lead_provider_id = :lead_provider_id)",
+            updated_since:, lead_provider_id:
+          )
 
-      ect_ids = training_periods.joins(:ect_at_school_period,
-                                       school_partnership: {
-                                         lead_provider_delivery_partnership: :active_lead_provider
-                                       }).pluck("ect_at_school_periods.teacher_id")
+      # Inverted query starting with the training period
+      # training_periods =
+      #   TrainingPeriod
+      #     .where(active_lead_providers: { lead_provider_id: })
+      #     .where(api_transfer_updated_at: updated_since..)
 
-      mentor_ids = training_periods.joins(:mentor_at_school_period,
-                                          school_partnership: {
-                                            lead_provider_delivery_partnership: :active_lead_provider
-                                          }).pluck("mentor_at_school_periods.teacher_id")
+      # ect_ids = training_periods.joins(:ect_at_school_period,
+      #                                  school_partnership: {
+      #                                    lead_provider_delivery_partnership: :active_lead_provider
+      #                                  }).pluck("ect_at_school_periods.teacher_id")
 
-      @scope = scope.where(id: ect_ids | mentor_ids)
+      # mentor_ids = training_periods.joins(:mentor_at_school_period,
+      #                                     school_partnership: {
+      #                                       lead_provider_delivery_partnership: :active_lead_provider
+      #                                     }).pluck("mentor_at_school_periods.teacher_id")
+
+      # @scope = scope.where(id: ect_ids | mentor_ids)
     end
 
     def set_sort_by(sort)
