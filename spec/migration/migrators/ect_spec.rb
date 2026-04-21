@@ -61,12 +61,13 @@ RSpec.describe Migrators::ECT do
       FactoryBot.create(:migration_participant_profile, :ect, teacher_profile:, user: teacher_profile.user, participant_identity:)
 
       migrator = Migrators::ECT.new
-      migrator.migrate_one!(teacher_profile)
+      result = migrator.migrate_one!(teacher_profile)
 
       expect(TeacherHistoryConverter).to have_received(:new).twice
       expect(economy_fake_converter).to have_received(:convert_to_ecf2!).once
       expect(premium_fake_converter).to have_received(:convert_to_ecf2!).once
       expect(fake_ecf2_teacher_history).to have_received(:save_all_ect_data!).twice
+      expect(result).to be_falsey
     end
   end
 
