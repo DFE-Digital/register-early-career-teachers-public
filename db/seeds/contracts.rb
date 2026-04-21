@@ -24,4 +24,4 @@ ActiveLeadProvider
 
       describe_contracts(active_lead_provider, contracts)
     end
-end
+  end

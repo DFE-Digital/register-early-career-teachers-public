@@ -4,7 +4,7 @@ RSpec.shared_context "an API index endpoint documentation", :exceptions_app do |
       tags params[:tag]
       consumes "application/json"
       produces "application/json"
-      security [api_key: []]
+      security [{ api_key: [] }]
 
       if params[:filter_schema_ref]
         parameter name: :filter,

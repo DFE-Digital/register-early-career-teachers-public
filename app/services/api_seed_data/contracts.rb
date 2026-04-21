@@ -21,7 +21,7 @@ module APISeedData
 
             describe_contracts(active_lead_provider, contracts)
           end
-      end
+        end
     end
 
   private

@@ -87,7 +87,7 @@ private
     when :school
       participant_profile
         .induction_records
-        .eager_load(induction_programme: [school_cohort: :school])
+        .eager_load(induction_programme: [{ school_cohort: :school }])
         .order(:start_date, :created_at)
         .group_by { |ir| ir.induction_programme.school_cohort.school.urn }
     when :provider
@@ -99,7 +99,7 @@ private
     when :none
       participant_profile
         .induction_records
-        .eager_load(induction_programme: [school_cohort: :school])
+        .eager_load(induction_programme: [{ school_cohort: :school }])
         .order(:start_date, :created_at)
     else
       raise InductionRecordError, "invalid grouping specified [#{group_by}]"
