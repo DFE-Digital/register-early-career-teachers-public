@@ -279,7 +279,7 @@ RSpec.describe Admin::Teachers::Rows do
 
       it "returns only not available rows" do
         expect(rows_builder.rows(teachers).map(&:teacher)).to eq([school_led_teacher])
-        expect(rows_builder.rows(teachers).map(&:contract_period_name)).to eq(["Not available"])
+        expect(rows_builder.rows(teachers).map(&:contract_period_name)).to eq(["Not applicable"])
       end
     end
   end
