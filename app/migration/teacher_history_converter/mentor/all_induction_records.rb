@@ -106,13 +106,17 @@ private
         @current_training_period.deferral_reason = deferral_data[:deferral_reason]
       end
 
-      @current_training_period.finished_on = mentor_finished_on(
+      finished_on = mentor_finished_on(
         start_date: started_on,
         end_date: finished_on,
         withdrawal_date: withdrawal_data[:withdrawn_at]&.to_date,
         deferral_date: deferral_data[:deferred_at]&.to_date,
         mentor_completion_date:
       )
+
+      cohort_cut_off_date = cut_off_dates.cut_off_date_for(cohort_year: induction_record.cohort_year)
+
+      @current_training_period.finished_on = [finished_on, cohort_cut_off_date].compact.min
     end
   end
 
@@ -131,15 +135,17 @@ private
     lead_provider_id = induction_record.training_provider_info.lead_provider_info.ecf1_id
     withdrawal_data = withdrawal_data(state_changed_at:, lead_provider_id:)
     deferral_data = deferral_data(state_changed_at:, lead_provider_id:)
+    cohort_cut_off_date = cut_off_dates.cut_off_date_for(cohort_year: induction_record.cohort_year)
 
     if overrides[:finished_on].blank?
-      overrides[:finished_on] = mentor_finished_on(
+      finished_on = mentor_finished_on(
         start_date: induction_record.start_date,
         end_date: induction_record.end_date,
         withdrawal_date: withdrawal_data[:withdrawn_at]&.to_date,
         deferral_date: deferral_data[:deferred_at]&.to_date,
         mentor_completion_date:
       )
+      overrides[:finished_on] = [finished_on, cohort_cut_off_date].compact.min
     end
 
     training_attrs = {
@@ -264,6 +270,9 @@ private
     lead_provider = induction_record.training_provider_info&.lead_provider_info
     return false if lead_provider.blank?
 
+    cohort_cut_off_date = cut_off_dates.cut_off_date_for(cohort_year: induction_record.cohort_year)
+    return false if cohort_cut_off_date.present? && induction_record.start_date >= cohort_cut_off_date
+
     if mentor_completion_date.present? && induction_record.start_date >= mentor_completion_date
       combo_checker.keep?(profile_id:,
                           lead_provider_id: lead_provider.ecf1_id,
@@ -277,5 +286,9 @@ private
 
   def combo_checker
     @combo_checker ||= TeacherHistoryConverter::PostMentorCompletionComboCheck.new
+  end
+
+  def cut_off_dates
+    @cut_off_dates ||= TeacherHistoryConverter::CohortCutOffDate.new
   end
 end
