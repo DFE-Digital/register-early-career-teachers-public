@@ -1,5 +1,7 @@
 class TeacherHistoryConverter::Cleaner::CloseECTInductionRecordsEndingLaterThanCohortClosure
-  include TeacherHistoryConverter::Cleaner::CohortCutOffDates
+  # NOTE: this assumes that the `RemoveECTInductionRecordsStartingLaterThanCohortClosure` cleaner
+  # has been run before this one, so there are no induction_records present with a start_date
+  # later than the cohort closure date
 
   def initialize(raw_induction_records, participant_type)
     @raw_induction_records = raw_induction_records
@@ -20,15 +22,14 @@ private
 
   def close_post_cohort_closure_ending_records!
     @raw_induction_records.each do |induction_record|
-      if needs_end_date_change?(induction_record:, cohort_year: 2021, cutoff_date: COHORT_2021_CUTOFF_DATE)
-        induction_record.end_date = COHORT_2021_CUTOFF_DATE
-      elsif needs_end_date_change?(induction_record:, cohort_year: 2022, cutoff_date: COHORT_2022_CUTOFF_DATE)
-        induction_record.end_date = COHORT_2022_CUTOFF_DATE
-      end
+      cut_off_date = cut_off_dates.cut_off_date_for(cohort_year: induction_record.cohort_year)
+      next if cut_off_date.blank?
+
+      induction_record.end_date = cut_off_date if induction_record.end_date.blank? || induction_record.end_date > cut_off_date
     end
   end
 
-  def needs_end_date_change?(induction_record:, cohort_year:, cutoff_date:)
-    induction_record.cohort_year == cohort_year && (induction_record.end_date.blank? || induction_record.end_date > cutoff_date)
+  def cut_off_dates
+    @cut_off_dates ||= TeacherHistoryConverter::CohortCutOffDate.new
   end
 end
