@@ -17,6 +17,7 @@ gem "propshaft"
 gem "puma", ">= 5.0"
 gem "rack-attack"
 gem "redis"
+gem "redis-session-store"
 gem "tzinfo-data", platforms: %i[windows jruby]
 
 gem "govuk-components", "6.1.0"
