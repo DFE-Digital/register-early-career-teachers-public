@@ -1,9 +1,6 @@
 describe TeacherHistoryConverter::Cleaner::CloseECTInductionRecordsEndingLaterThanCohortClosure do
   subject(:cleaner) { described_class.new(raw_induction_records, participant_type) }
 
-  # let(:cohort_2021_cut_off) { TeacherHistoryConverter::CohortCutOffDates::COHORT_2021_CUTOFF_DATE }
-  # let(:cohort_2022_cut_off) { TeacherHistoryConverter::CohortCutOffDates::COHORT_2022_CUTOFF_DATE }
-
   describe "#induction_records" do
     let(:cut_off_date) { TeacherHistoryConverter::CohortCutOffDate.new.cut_off_date_for(cohort_year:) }
     let(:end_date) { cut_off_date + 1.week }
