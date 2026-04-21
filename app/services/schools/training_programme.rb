@@ -50,9 +50,11 @@ module Schools
     end
 
     def ect_training_programme(contract_period_year:)
-      ect_at_school_period_id = ((ect_expressions_of_interest_ids_by_contract_period_year[contract_period_year] || []) +
+      ect_at_school_period_id = (
+        (ect_expressions_of_interest_ids_by_contract_period_year[contract_period_year] || []) +
         (ect_at_school_period_ids_by_contract_period_year[contract_period_year] || []) +
-        school_led_ect_at_school_period_ids).compact
+        (school_led_ect_at_school_period_ids_by_contract_period_year[contract_period_year] || [])
+      ).compact
 
       training_programmes_by_ect_at_school_period_id&.slice(*ect_at_school_period_id)&.values&.first
     end
@@ -62,7 +64,7 @@ module Schools
         ect_at_school_period_id = (
           ect_expressions_of_interest_ids_by_contract_period_year.values.flatten +
           ect_at_school_period_ids_by_contract_period_year.values.flatten +
-          school_led_ect_at_school_period_ids
+          school_led_ect_at_school_period_ids_by_contract_period_year.values.flatten
         ).uniq
 
         TrainingPeriod
@@ -81,12 +83,22 @@ module Schools
       "provider_led"
     end
 
-    def school_led_ect_at_school_period_ids
-      @school_led_ect_at_school_period_ids ||= school.ect_at_school_periods.joins(:training_periods)
-        .where(training_periods: { training_programme: "school_led" })
-        .where(training_periods: { expression_of_interest_id: nil, school_partnership_id: nil })
-        .distinct
-        .ids
+    def school_led_ect_at_school_period_ids_by_contract_period_year
+      @school_led_ect_at_school_period_ids_by_contract_period_year ||= school
+        .ect_at_school_periods
+        .joins(:training_periods)
+        .joins("INNER JOIN contract_periods ON training_periods.started_on >= contract_periods.started_on AND training_periods.started_on <= contract_periods.finished_on")
+        .where(training_periods: {
+          training_programme: :school_led,
+          expression_of_interest_id: nil,
+          school_partnership_id: nil
+        })
+        .group("contract_periods.year")
+        .pluck(
+          "contract_periods.year",
+          Arel.sql("ARRAY_AGG(DISTINCT ect_at_school_periods.id)")
+        )
+        .to_h
     end
   end
 end
