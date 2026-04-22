@@ -63,7 +63,7 @@ The following table shows the filters providers can use within this endpoint.
  
 Providers can use the `GET /participants/{id}` endpoint to view individual records. 
 
-## Participant induction 
+### Participant induction 
 
 The API uses the following fields to describe a participant’s induction in the participant endpoints: 
 
@@ -80,7 +80,7 @@ The following table explains what the `eligible_for_funding` values mean.
 | `false` | Set for new ECTs who are exempt from induction. `false` will never be set for mentor records. |  
 | `null` | Set when ECT eligibility is not known. For example, before an induction is recorded by an appropriate body. `null` will never be set for mentor records. |  
 
-## Participant statuses 
+### Participant statuses 
 
 The API uses two different status fields to describe a participant’s journey in the participant endpoints: 
 
