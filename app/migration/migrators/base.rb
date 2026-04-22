@@ -20,10 +20,12 @@ module Migrators
       end
 
       def queue
-        DataMigration.where(model:).update!(queued_at: Time.zone.now)
+        data_migrations = DataMigration.where(model:).order(:worker)
 
-        number_of_workers.times do |worker|
-          MigratorJob.perform_later(migrator: self, worker:)
+        data_migrations.update!(queued_at: Time.zone.now)
+
+        data_migrations.each do |data_migration|
+          MigratorJob.perform_later(migrator: self, worker: data_migration.worker)
         end
       end
 
