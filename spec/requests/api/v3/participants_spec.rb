@@ -100,7 +100,21 @@ RSpec.describe "Participants API", :with_touches, type: :request do
     end
 
     it_behaves_like "a token authenticated endpoint", :put
-    it_behaves_like "an API update endpoint"
+    it_behaves_like "an API update endpoint" do
+      context "when the `schedule_identifier` is invalid" do
+        let(:schedule_identifier) { "invalid" }
+
+        it "returns `unprocessable_content`" do
+          authenticated_api_put(path, params:)
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(parsed_response[:errors]).to contain_exactly(
+            title: "schedule_identifier",
+            detail: "Enter a valid schedule identifier."
+          )
+        end
+      end
+    end
     it_behaves_like "an endpoint that refreshes metadata", :put
     it_behaves_like "a N+1 queries free endpoint", :put
   end
