@@ -8,6 +8,15 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  config.after_initialize do
+    Prosopite.rails_logger = true
+    Prosopite.raise = true
+
+    # Allow N+1 from raised from Metadata refreshes
+    # as these are expected and not a problem in tests
+    Prosopite.allow_stack_paths = [/DeclarativeUpdates/]
+  end
+
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
 

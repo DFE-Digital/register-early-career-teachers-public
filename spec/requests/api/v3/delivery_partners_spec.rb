@@ -21,6 +21,7 @@ RSpec.describe "Delivery partners API", :with_metadata, type: :request do
     it_behaves_like "a filter by multiple cohorts (contract_period year) endpoint"
     it_behaves_like "an index endpoint"
     it_behaves_like "a sortable endpoint"
+    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#show" do
@@ -31,5 +32,6 @@ RSpec.describe "Delivery partners API", :with_metadata, type: :request do
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
     it_behaves_like "a does not filter by cohort endpoint"
+    it_behaves_like "a N+1 queries free endpoint", :get
   end
 end
