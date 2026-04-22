@@ -240,7 +240,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       end
 
       context "when the training_period starts today" do
-        let(:training_period_start_date) { Date.today }
+        let(:training_period_start_date) { Time.zone.today }
 
         context "when the start_date is before the previous training period started_on date" do
           let(:start_date) { training_period_start_date - 1.day }
