@@ -28,6 +28,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           it { is_expected.to be_valid }
 
           it { is_expected.to validate_presence_of(:schedule_identifier).with_message("The property '#/schedule_identifier' must be present and correspond to a valid schedule.") }
+          it { is_expected.to validate_inclusion_of(:schedule_identifier).in_array(Schedule.identifiers.keys).with_message("Enter a valid schedule identifier.") }
 
           context "when schedule does not exist" do
             before do
