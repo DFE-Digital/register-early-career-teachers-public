@@ -37,7 +37,7 @@ class API::TeacherSerializer < Blueprinter::Base
         end
       end
       field(:training_status) { |(training_period, _, _)| API::TrainingPeriods::TrainingStatus.new(training_period:).status }
-      field(:participant_status) { |(training_period, teacher, _)| API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period, teacher:).status }
+      field(:participant_status) { |(training_period, _, _)| API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period).status }
       field(:eligible_for_funding) do |(training_period, teacher, _)|
         teacher_type = training_period.for_ect? ? :ect : :mentor
         API::Teachers::EligibilityForFunding.new(teacher:, teacher_type:).eligible?
