@@ -16,5 +16,8 @@ FactoryBot.define do
     trait :payments_frozen do
       payments_frozen_at { 2.months.ago }
     end
+
+    detailed_evidence_types { false }
+    mentor_funding { false }
   end
 end
