@@ -6,7 +6,10 @@ module API::Teachers
     attribute :schedule_identifier
 
     validates :schedule_identifier, presence: { message: "The property '#/schedule_identifier' must be present and correspond to a valid schedule." }
-
+    validates :schedule_identifier, inclusion: {
+      in: Schedule.identifiers.keys,
+      message: "Enter a valid schedule identifier."
+    }, allow_blank: true
     validate :schedule_exists
     validate :training_period_not_withdrawn
     validate :change_to_different_schedule
