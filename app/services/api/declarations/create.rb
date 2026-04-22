@@ -23,6 +23,7 @@ module API::Declarations
       in: Declaration.declaration_types.keys,
       message: "Enter a valid declaration type."
     }, allow_blank: true
+    validate :validates_billable_slot_available
     validates :declaration_date, presence: { message: "Enter a '#/declaration_date'." }
     validate :declaration_date_in_the_past
     validates :declaration_date,
@@ -33,7 +34,6 @@ module API::Declarations
     validate :validate_only_started_or_completed_if_mentor
     validate :teacher_not_withdrawn_before_declaration_date
     validate :validate_milestone_exists
-    validate :validates_billable_slot_available
     validate :payment_statement_available
     validate :declaration_in_sequence
     validate :not_eligible_in_frozen_contract_period
@@ -140,6 +140,7 @@ module API::Declarations
 
     def teacher_type_exists
       return if errors[:teacher_type].any?
+      return if errors[:teacher_api_id].any?
       return if training_period
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
