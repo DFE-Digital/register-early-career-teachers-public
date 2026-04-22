@@ -116,12 +116,12 @@ RSpec.describe Schools::RegisterECT do
               .to(lead_provider.id)
         end
 
-        it "calls `Teachers::SetFundingEligibility` service with correct params" do
-          allow(Teachers::SetFundingEligibility).to receive(:new).and_call_original
+        it "calls `Teachers::SetECTFundingEligibility` service with correct params" do
+          allow(Teachers::SetECTFundingEligibility).to receive(:new).and_call_original
 
           service.register!
 
-          expect(Teachers::SetFundingEligibility).to have_received(:new).with(teacher:, author:)
+          expect(Teachers::SetECTFundingEligibility).to have_received(:new).with(teacher:, author:)
         end
 
         context "when a Teacher has no ECT periods" do

@@ -105,8 +105,8 @@ describe InductionPeriods::CreateInductionPeriod do
           .with(trn: teacher.trn, start_date: started_on)
       end
 
-      it "calls `Teachers::SetFundingEligibility` service with correct params" do
-        expect(Teachers::SetFundingEligibility).to receive(:new)
+      it "calls `Teachers::SetECTFundingEligibility` service with correct params" do
+        expect(Teachers::SetECTFundingEligibility).to receive(:new)
           .with(teacher:, author:)
           .and_call_original
 
