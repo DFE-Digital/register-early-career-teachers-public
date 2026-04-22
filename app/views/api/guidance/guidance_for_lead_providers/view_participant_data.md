@@ -68,7 +68,7 @@ Providers can use the `GET /participants/{id}` endpoint to view individual recor
 The API uses the following fields to describe a participant’s induction in the participant endpoints: 
 
 * `eligible_for_funding`, shows if a participant is eligible for funding. Can be `true`, `false`, or `null`. 
-* `overal_induction_start_date`, the date an ECT officially began statutory induction as submitted by their appropriate body.
+* `overall_induction_start_date`, the date an ECT officially began statutory induction as submitted by their appropriate body.
 * `induction_end_date`, the date an ECT completed (passed or failed) their induction.
 * `teacher_reference_number`, the participant’s teacher reference number. If a TRN is missing, it means the participant’s registration predates validation, and we have no matching TRN in our records.
 
