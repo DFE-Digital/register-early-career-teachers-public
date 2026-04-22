@@ -46,7 +46,9 @@ private
   end
 
   def eligible_for_mentor_training?
-    teacher.mentor_became_ineligible_for_funding_on.blank? && teacher.mentor_became_ineligible_for_funding_reason.blank?
+    teacher.mentor_at_school_periods.any? &&
+      teacher.mentor_became_ineligible_for_funding_on.blank? &&
+      teacher.mentor_became_ineligible_for_funding_reason.blank?
   end
 
   def record_teacher_set_funding_eligibility_event!
