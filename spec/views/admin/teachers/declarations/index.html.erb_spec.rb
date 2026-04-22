@@ -42,11 +42,11 @@ RSpec.describe "admin/teachers/declarations/index.html.erb" do
     let(:mentor_declarations) { [] }
 
     it "displays the ECT empty state message" do
-      expect(rendered).to include("There are no ECT training declarations for Floella Benjamin")
+      expect(rendered).to include("There are no ECT training declarations for Floella Benjamin.")
     end
 
     it "displays the mentor empty state message" do
-      expect(rendered).to include("There are no mentor training declarations for Floella Benjamin")
+      expect(rendered).to include("There are no mentor training declarations for Floella Benjamin.")
     end
 
     it "displays the ECT training declarations heading" do
@@ -100,7 +100,7 @@ RSpec.describe "admin/teachers/declarations/index.html.erb" do
     let(:mentor_declarations) { [mentor_declaration] }
 
     it "displays the ECT empty state message" do
-      expect(rendered).to include("There are no ECT training declarations for Floella Benjamin")
+      expect(rendered).to include("There are no ECT training declarations for Floella Benjamin.")
     end
 
     it "does not display the mentor empty state message" do
