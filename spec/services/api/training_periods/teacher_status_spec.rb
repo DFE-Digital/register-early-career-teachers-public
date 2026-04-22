@@ -52,6 +52,12 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
       it { is_expected.to eq(:left) }
     end
 
+    context "when training period set to both start and finish in the future" do
+      let(:training_period) { FactoryBot.build(:training_period, started_on: 1.month.from_now, finished_on: 2.months.from_now) }
+
+      it { is_expected.to eq(:leaving) }
+    end
+
     context "when the mentor had left and completes the training afterwards" do
       let(:training_period) { FactoryBot.create(:training_period, :finished) }
 
