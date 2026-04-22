@@ -16,7 +16,7 @@
     <%= render "admin/teachers/declarations/declaration", declaration: declaration %>
   <% end %>
 <% else %>
-  <p class="govuk-body">There are no ECT training declarations for <%= teacher_full_name(@teacher) %></p>
+  <p class="govuk-body">There are no ECT training declarations for <%= teacher_full_name(@teacher) %>.</p>
 <% end %>
 
 <h3 class="govuk-heading-s">Mentor training declarations</h3>
@@ -26,5 +26,5 @@
     <%= render "admin/teachers/declarations/declaration", declaration: declaration %>
   <% end %>
 <% else %>
-  <p class="govuk-body">There are no mentor training declarations for <%= teacher_full_name(@teacher) %></p>
+  <p class="govuk-body">There are no mentor training declarations for <%= teacher_full_name(@teacher) %>.</p>
 <% end %>

@@ -103,7 +103,7 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
 
         it "shows the empty state message" do
           get admin_teacher_training_path(teacher)
-          expect(response.body).to include("There is no training history recorded for this teacher")
+          expect(response.body).to include("There is no training history recorded for this teacher.")
         end
       end
 
