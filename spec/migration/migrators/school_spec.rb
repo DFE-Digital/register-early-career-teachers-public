@@ -224,6 +224,7 @@ describe Migrators::School do
     context "when schools match" do
       let!(:ecf_school) { create_ecf_school }
       let!(:gias_school) { create_gias_school(ecf_school) }
+      let!(:induction_tutor_contract_period) { ContractPeriod.find_by(year: 2025) || FactoryBot.create(:contract_period, year: 2025) }
 
       before do
         described_class.new(worker: 0).migrate!
@@ -243,8 +244,10 @@ describe Migrators::School do
 
       it "syncs the induction coordinator details" do
         gias_school.reload
+
         expect(gias_school.school.induction_tutor_name).to eq(ecf_school.induction_coordinators.first.full_name)
         expect(gias_school.school.induction_tutor_email).to eq(ecf_school.induction_coordinators.first.email)
+        expect(gias_school.school.induction_tutor_last_nominated_in).to eq(induction_tutor_contract_period)
       end
     end
   end
