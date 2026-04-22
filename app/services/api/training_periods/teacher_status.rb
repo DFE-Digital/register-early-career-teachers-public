@@ -8,10 +8,10 @@ module API::TrainingPeriods
     end
 
     def status
-      return :joining if started_on&.future?
-
       if finished_on.present?
         finished_on.future? ? :leaving : :left
+      elsif started_on&.future?
+        :joining
       else
         :active # includes complete
       end
