@@ -94,6 +94,24 @@ module API::Teachers::SchoolTransfers
             (latest_training_periods_mentor_at_school_periods.id IS NOT NULL AND latest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_3.lead_provider_id = :lead_provider_id)",
             updated_since:, lead_provider_id:
           )
+
+      # Inverted query starting with the training period
+      # training_periods =
+      #   TrainingPeriod
+      #     .where(active_lead_providers: { lead_provider_id: })
+      #     .where(api_transfer_updated_at: updated_since..)
+
+      # ect_ids = training_periods.joins(:ect_at_school_period,
+      #                                  school_partnership: {
+      #                                    lead_provider_delivery_partnership: :active_lead_provider
+      #                                  }).pluck("ect_at_school_periods.teacher_id")
+
+      # mentor_ids = training_periods.joins(:mentor_at_school_period,
+      #                                     school_partnership: {
+      #                                       lead_provider_delivery_partnership: :active_lead_provider
+      #                                     }).pluck("mentor_at_school_periods.teacher_id")
+
+      # @scope = scope.where(id: ect_ids | mentor_ids)
     end
 
     def set_sort_by(sort)
