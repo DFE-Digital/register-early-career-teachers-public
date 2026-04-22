@@ -44,6 +44,7 @@ private
       .then { remove_british_schools_overseas(it) }
       .then { remove_school_funded_fip(it) }
       .then { remove_independent_non_section_41(it) }
+      .then { remove_provider_led_ect_without_partnerships(it) }
       .then { remove_post_induction_completion_records(it) }
       .then { close_ongoing_records_after_induction_completion(it) }
       .then { remove_records_with_matching_withdrawn_and_deferred_states(it) }
