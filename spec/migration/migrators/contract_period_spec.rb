@@ -40,7 +40,7 @@ describe Migrators::ContractPeriod do
         end
 
         context "when start year is 2024 or earlier" do
-          let(:start_year) { (2021..2024).to_a.sample }
+          let(:start_year) { (2020..2024).to_a.sample }
 
           it { expect(contract_period).to be_uplift_fees_enabled }
         end
