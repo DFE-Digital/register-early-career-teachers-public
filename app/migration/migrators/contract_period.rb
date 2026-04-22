@@ -35,7 +35,7 @@ module Migrators
         created_at: cohort.created_at,
         updated_at: cohort.updated_at,
         # flags
-        detailed_evidence_types_enabled: cohort.detailed_evidence_types_enabled,
+        detailed_evidence_types_enabled: cohort.detailed_evidence_types,
         mentor_funding_enabled: cohort.mentor_funding,
         uplift_fees_enabled: uplift_fees_enabled?(cohort),
         enabled: contract_period_enabled?(cohort)

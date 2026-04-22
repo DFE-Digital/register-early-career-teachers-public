@@ -24,14 +24,14 @@ describe Migrators::ContractPeriod do
         expect(contract_period).to have_attributes(migration_resource1.attributes.slice(
                                                      "created_at",
                                                      "updated_at",
-                                                     "payments_frozen_at",
-                                                     "detailed_evidence_types_enabled"
+                                                     "payments_frozen_at"
                                                    ))
         expect(contract_period.id).to eq(migration_resource1.start_year)
         expect(contract_period.started_on.to_date).to eq(migration_resource1.registration_start_date.to_date)
         expect(contract_period.finished_on).to eq(contract_period.started_on.next_year.prev_day)
         expect(contract_period.enabled).to be(true)
         expect(contract_period.mentor_funding_enabled).to eq(migration_resource1.mentor_funding)
+        expect(contract_period.detailed_evidence_types_enabled).to eq(migration_resource1.detailed_evidence_types)
       end
 
       describe "uplift fees" do
