@@ -26,8 +26,8 @@ module Migrators
     end
 
     def self.schools
-      # All RECT schools
-      rect_school_urns = ::School.pluck(:urn)
+      # All RECT schools (query GIASSchool as School records are created in another migrator).
+      rect_school_urns = ::GIAS::School.pluck(:urn)
 
       # All ECF schools that are returned by the API
       ecf_schools_with_partnerships = ::Migration::School
