@@ -46,7 +46,7 @@ private
   end
 
   def eligible_for_mentor_training?
-    teacher.mentor_at_school_periods.any? &&
+    teacher.mentor_training_periods.any? &&
       teacher.mentor_became_ineligible_for_funding_on.blank? &&
       teacher.mentor_became_ineligible_for_funding_reason.blank?
   end
