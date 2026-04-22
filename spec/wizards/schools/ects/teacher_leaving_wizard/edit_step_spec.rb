@@ -87,33 +87,87 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
       end
     end
 
-    context "when there is a training period that started on the leaving date" do
-      let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 2 } }
-
+    describe "leave date must be after previous training period started_on date" do
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 1)) }
+      let(:leaving_on) { { 1 => 2024, 2 => 12, 3 => 30 } }
       let!(:training_period) do
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2025, 1, 2))
+        FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: training_period_started_on)
       end
 
-      it "is invalid with the correct error message" do
-        expect(step).not_to be_valid
-        expect(step.errors[:leaving_on].map(&:squish)).to include(
-          "Our records show that #{teacher_name} started their latest training at your school on 2 January 2025. Enter a later date."
-        )
+      context "when the previous training_period started in the past" do
+        let(:training_period_started_on) { Date.new(2024, 12, 31) }
+
+        context "when the leave date is before the training period started_on date" do
+          let(:leaving_on) { { 1 => 2024, 2 => 12, 3 => 30 } }
+
+          it "is invalid with the correct error message" do
+            expect(step).not_to be_valid
+            expect(step.errors[:leaving_on].map(&:squish)).to include(
+              "Our records show that #{teacher_name} started their latest training at your school on 31 December 2024. Enter a later date."
+            )
+          end
+        end
+
+        context "when the leave date is the same as the training period started_on date" do
+          let(:leaving_on) { { 1 => 2024, 2 => 12, 3 => 31 } }
+
+          it "is invalid with the correct error message" do
+            expect(step).not_to be_valid
+            expect(step.errors[:leaving_on].map(&:squish)).to include(
+              "Our records show that #{teacher_name} started their latest training at your school on 31 December 2024. Enter a later date."
+            )
+          end
+        end
+
+        context "when the leave date is after the training period started_on date" do
+          let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 1 } }
+
+          it { is_expected.to be_valid }
+        end
       end
-    end
 
-    context "when there is a training period that started after the leaving date" do
-      let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 2 } }
+      context "when the previous training_period started today" do
+        let(:training_period_started_on) { Date.new(2025, 1, 1) }
 
-      let!(:training_period) do
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2025, 1, 3))
+        context "when the leave date is before the training period started_on date" do
+          let(:leaving_on) { { 1 => 2024, 2 => 12, 3 => 31 } }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when the leave date is the same as the training period started_on date" do
+          let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 1 } }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when the leave date is after the training period started_on date" do
+          let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 2 } }
+
+          it { is_expected.to be_valid }
+        end
       end
 
-      it "is invalid with the correct error message" do
-        expect(step).not_to be_valid
-        expect(step.errors[:leaving_on].map(&:squish)).to include(
-          "Our records show that #{teacher_name} started their latest training at your school on 3 January 2025. Enter a later date."
-        )
+      context "when the previous training_period started in the future" do
+        let(:training_period_started_on) { Date.new(2025, 1, 2) }
+
+        context "when the leave date is before the training period started_on date" do
+          let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 1 } }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when the leave date is the same as the training period started_on date" do
+          let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 2 } }
+
+          it { is_expected.to be_valid }
+        end
+
+        context "when the leave date is after the training period started_on date" do
+          let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 3 } }
+
+          it { is_expected.to be_valid }
+        end
       end
     end
 

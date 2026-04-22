@@ -50,7 +50,7 @@ module Schools
         end
 
         def leaving_after_training_started
-          leaving_on_before(latest_training_period, "their latest training")
+          leaving_on_before(latest_started_training_period, "their latest training")
         end
 
         def leaving_on_before(period, description)
@@ -71,8 +71,8 @@ module Schools
           period&.started_on.present?
         end
 
-        def latest_training_period
-          ect_at_school_period&.training_periods&.latest_first&.first
+        def latest_started_training_period
+          ect_at_school_period&.training_periods&.started_before(Time.zone.today)&.latest_first&.first
         end
 
         def leaving_on_input

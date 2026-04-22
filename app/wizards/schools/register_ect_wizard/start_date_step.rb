@@ -31,7 +31,7 @@ module Schools
       end
 
       def start_date_not_before_last_training_period
-        start_date_before(latest_training_period, "their latest training")
+        start_date_before(latest_started_training_period, "their latest training")
       end
 
       def start_date_before(period, description)
@@ -55,8 +55,8 @@ module Schools
         ect.previous_ect_at_school_period
       end
 
-      def latest_training_period
-        previous_period&.training_periods&.latest_first&.first
+      def latest_started_training_period
+        previous_period&.training_periods&.started_before(Time.zone.today)&.latest_first&.first
       end
 
       def start_date_within_4_months
