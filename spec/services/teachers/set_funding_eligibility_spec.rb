@@ -163,7 +163,7 @@ RSpec.describe Teachers::SetFundingEligibility do
       end
     end
 
-    context "when teacher has no mentor at school period" do
+    context "when teacher has no mentor training period" do
       it "does not set mentor_first_became_eligible_for_training_at" do
         expect { service.set! }.not_to change(teacher, :mentor_first_became_eligible_for_training_at)
       end
@@ -172,6 +172,16 @@ RSpec.describe Teachers::SetFundingEligibility do
         expect(Declarations::Actions::MarkDeclarationsEligible).not_to receive(:new)
 
         service.set!
+      end
+
+      context "when the teacher has a mentor at school period but no training period" do
+        before do
+          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:)
+        end
+
+        it "does not set mentor_first_became_eligible_for_training_at" do
+          expect { service.set! }.not_to change(teacher, :mentor_first_became_eligible_for_training_at)
+        end
       end
 
       context "when the teacher also has an ongoing induction period and an ECT at school period" do
@@ -189,7 +199,8 @@ RSpec.describe Teachers::SetFundingEligibility do
     context "when teacher attributes are changed" do
       it "records a teacher set funding eligibility event" do
         freeze_time do
-          FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:)
+          mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:)
+          FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:)
 
           expect(Events::Record).to receive(:record_teacher_set_funding_eligibility_event!)
             .with(author:,
