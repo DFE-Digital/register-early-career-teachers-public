@@ -45,7 +45,7 @@ describe InductionPeriods::CreateInductionPeriod do
 
         perform_enqueued_jobs
 
-        expect(Event.all.map(&:event_type)).to match_array(%w[induction_period_opened teacher_funding_eligibility_set])
+        expect(Event.all.map(&:event_type)).to match_array(%w[induction_period_opened])
       end
 
       it "creates the event with the expected values" do

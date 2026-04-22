@@ -41,10 +41,10 @@ RSpec.describe "Process batch events" do
       .with(pending_induction_submission_batch_id: PendingInductionSubmissionBatch.last.id)
     expect(AppropriateBodies::ProcessBatch::RegisterECTJob).to have_been_enqueued.twice
     expect(perform_enqueued_jobs).to be(3)
-    expect(RecordEventJob).to have_been_enqueued.exactly(10).times
+    expect(RecordEventJob).to have_been_enqueued.exactly(8).times
     expect(BeginECTInductionJob).to have_been_enqueued.twice
 
-    expect(perform_enqueued_jobs).to be(12)
+    expect(perform_enqueued_jobs).to be(10)
 
     expect(Event.all.map(&:heading)).to contain_exactly(
       "The Appropriate Body started a bulk claim",
@@ -53,11 +53,9 @@ RSpec.describe "Process batch events" do
       "Induction status set to 'InProgress'",
       "TRS attributes updated",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "TRS attributes updated"
     )
 
@@ -81,12 +79,10 @@ RSpec.describe "Process batch events" do
       "Induction status set to 'InProgress'",
       "TRS attributes updated",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       "TRS attributes updated",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "The Appropriate Body started a bulk action"
     )
 
@@ -108,12 +104,10 @@ RSpec.describe "Process batch events" do
       "Induction status set to 'InProgress'",
       "TRS attributes updated",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       "TRS attributes updated",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action"
     )
@@ -134,12 +128,10 @@ RSpec.describe "Process batch events" do
       "Induction status set to 'InProgress'",
       "TRS attributes updated",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "Imported from TRS",
       "Induction status set to 'InProgress'",
       "TRS attributes updated",
       /was claimed by The Appropriate Body/,
-      /funding eligibility was set/,
       "The Appropriate Body started a bulk action",
       "The Appropriate Body completed a bulk action",
       /passed induction/,
