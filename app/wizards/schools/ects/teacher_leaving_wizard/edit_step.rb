@@ -62,8 +62,7 @@ module Schools
 
           errors.add(
             :leaving_on,
-            "Our records show that #{name_for(ect_at_school_period.teacher)} started #{description} at your school on
-            #{period.started_on.to_formatted_s(:govuk)}. Enter a later date."
+            "Our records show that #{name_for(ect_at_school_period.teacher)} started #{description} at your school on #{period.started_on.to_formatted_s(:govuk)}. Enter a later date."
           )
         end
 

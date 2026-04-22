@@ -153,7 +153,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       context "when the start_date is after the previous ECTAtSchoolPeriod started_on date" do
         let(:start_date) { previous_period.started_on + 1.day }
 
-        it { is_expected.not_to have_error(:start_date) }
+        it { is_expected.to be_valid }
       end
 
       context "when the start_date is blank" do
@@ -179,7 +179,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     describe "start date must be after previous training period started_on date" do
-      let(:school) do
+      let(:previous_school) do
         FactoryBot.create(:school).tap do |school|
           school.gias_school.update!(name: "Springfield Primary")
         end
@@ -190,7 +190,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       let!(:previous_period) do
         FactoryBot.create(:ect_at_school_period,
                           teacher:,
-                          school:,
+                          school: previous_school,
                           started_on: Date.new(2024, 9, 1))
       end
 
@@ -235,7 +235,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         context "when the start_date is after the previous training period started_on date" do
           let(:start_date) { training_period_start_date + 1.day }
 
-          it { is_expected.not_to have_error(:start_date) }
+          it { is_expected.to be_valid }
         end
       end
 
@@ -245,19 +245,19 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         context "when the start_date is before the previous training period started_on date" do
           let(:start_date) { training_period_start_date - 1.day }
 
-          it { is_expected.not_to have_error(:start_date) }
+          it { is_expected.to be_valid }
         end
 
         context "when the start_date is on the previous training period started_on date" do
           let(:start_date) { training_period_start_date }
 
-          it { is_expected.not_to have_error(:start_date) }
+          it { is_expected.to be_valid }
         end
 
         context "when the start_date is after the previous training period started_on date" do
           let(:start_date) { training_period_start_date + 1.day }
 
-          it { is_expected.not_to have_error(:start_date) }
+          it { is_expected.to be_valid }
         end
       end
 
@@ -267,19 +267,19 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         context "when the start_date is before the previous training period started_on date" do
           let(:start_date) { training_period_start_date - 1.day }
 
-          it { is_expected.not_to have_error(:start_date) }
+          it { is_expected.to be_valid }
         end
 
         context "when the start_date is on the previous training period started_on date" do
           let(:start_date) { training_period_start_date }
 
-          it { is_expected.not_to have_error(:start_date) }
+          it { is_expected.to be_valid }
         end
 
         context "when the start_date is after the previous training period started_on date" do
           let(:start_date) { training_period_start_date + 1.day }
 
-          it { is_expected.not_to have_error(:start_date) }
+          it { is_expected.to be_valid }
         end
       end
     end
