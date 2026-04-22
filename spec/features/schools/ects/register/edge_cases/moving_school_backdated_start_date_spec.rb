@@ -32,7 +32,7 @@ RSpec.describe "Moving School - backdated start spec", :enable_schools_interface
     end
 
     context "when the first period has a back-dated start date" do
-      scenario "the training period at the first school is aligned to the current contract period" do
+      scenario "the training period at the first school starts on the registration date" do
         given_there_are_two_schools
         and_there_are_partnerships_at_the_schools
         and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_of_which_the_earliest_is_backdated
@@ -40,7 +40,7 @@ RSpec.describe "Moving School - backdated start spec", :enable_schools_interface
         given_a_school_has_registered_a_teacher
         and_another_school_has_registered_the_same_teacher_at_a_later_date
 
-        then_the_training_period_for_the_first_school_should_start_on_the_first_day_of_the_current_contract_period
+        then_the_training_period_for_the_first_school_should_start_on_the_registration_date
         and_the_training_period_for_the_second_school_should_start_on_the_date_entered_by_the_school
 
         and_the_training_period_for_the_first_school_should_finish_on_the_day_before_training_starts_at_the_second_school
@@ -113,13 +113,13 @@ RSpec.describe "Moving School - backdated start spec", :enable_schools_interface
   end
 
   def and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_which_are_not_backdated
-    @school_one_start_date = Date.new(2025, 6, 1)
-    @school_two_start_date = Date.new(2025, 6, 3)
+    @school_one_start_date = Date.new(2025, 6, 16)
+    @school_two_start_date = Date.new(2025, 6, 18)
   end
 
   def and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_of_which_the_earliest_is_backdated
     @school_one_start_date = Date.new(2025, 4, 1)
-    @school_two_start_date = Date.new(2025, 6, 3)
+    @school_two_start_date = Date.new(2025, 6, 18)
   end
 
   def and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_of_which_are_both_backdated
@@ -159,12 +159,12 @@ RSpec.describe "Moving School - backdated start spec", :enable_schools_interface
     expect(training_period.finished_on).to be_nil
   end
 
-  def then_the_training_period_for_the_first_school_should_start_on_the_first_day_of_the_current_contract_period
+  def then_the_training_period_for_the_first_school_should_start_on_the_registration_date
     ect_at_school_period = @school_one.ect_at_school_periods.first
 
     training_period = ect_at_school_period.training_periods.first
 
-    expect(training_period.started_on).to eq(Date.new(2025, 6, 1))
+    expect(training_period.started_on).to eq(Date.current)
   end
 
   def given_i_am_logged_in_as(school)
