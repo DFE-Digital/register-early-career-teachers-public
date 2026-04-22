@@ -58,7 +58,7 @@ module Migrators
       end
 
       def records_per_worker
-        3_000
+        1_000
       end
 
       def reset!
