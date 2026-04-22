@@ -566,13 +566,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_164213) do
   end
 
   create_table "metadata_schools_contract_periods", force: :cascade do |t|
+    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.integer "contract_period_year", null: false
     t.datetime "created_at", null: false
     t.boolean "in_partnership", null: false
     t.enum "induction_programme_choice", null: false, enum_type: "induction_programme_choice"
     t.bigint "school_id", null: false
     t.datetime "updated_at", null: false
-    t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.index ["contract_period_year"], name: "idx_on_contract_period_year_e703aaa45a"
     t.index ["school_id", "contract_period_year"], name: "idx_on_school_id_contract_period_year_0dae2d65f6", unique: true
     t.index ["school_id"], name: "index_metadata_schools_contract_periods_on_school_id"
