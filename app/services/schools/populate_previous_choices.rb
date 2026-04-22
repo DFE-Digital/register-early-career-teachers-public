@@ -11,7 +11,7 @@ module Schools
           next
         end
 
-        training_period = ect_period.training_periods.order(started_on: :desc).first
+        training_period = ect_period.latest_training_period
 
         if training_period.nil?
           counts[:schools_skipped] += 1
@@ -35,7 +35,7 @@ module Schools
       school
         .ect_at_school_periods
         .where.not(school_reported_appropriate_body_id: nil)
-        .order(started_on: :desc)
+        .latest_first
         .first
     end
 
