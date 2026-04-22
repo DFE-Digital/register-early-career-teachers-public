@@ -1,4 +1,4 @@
-RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request do
+RSpec.describe "Participants API", :with_touches, type: :request do
   let(:serializer) { API::TeacherSerializer }
   let(:serializer_options) { { lead_provider_id: lead_provider.id } }
   let(:query) { API::Teachers::Query }
@@ -24,6 +24,8 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
 
     teacher.tap do |teacher|
       FactoryBot.create(:teacher_id_change, teacher:, api_from_teacher_id: from_participant_id) if from_participant_id
+
+      Metadata::Handlers::Teacher.new(teacher).refresh_metadata!
     end
   end
 
@@ -42,6 +44,7 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a filter by training_status endpoint"
     it_behaves_like "a filter by updated_since endpoint"
     it_behaves_like "a sortable endpoint"
+    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#show" do
@@ -52,13 +55,14 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a token authenticated endpoint", :get
     it_behaves_like "a show endpoint"
     it_behaves_like "a does not filter by updated_since endpoint"
+    it_behaves_like "a N+1 queries free endpoint", :get
   end
 
   describe "#change_schedule" do
     let(:path) { change_schedule_api_v3_participant_path(resource.api_id) }
     let(:service) { API::Teachers::ChangeSchedule }
     let(:resource_type) { Teacher }
-    let(:resource) { travel_to(3.days.ago) { create_resource(active_lead_provider:) } }
+    let!(:resource) { create_resource(active_lead_provider:) }
     let(:schedule_identifier) { FactoryBot.create(:schedule, contract_period:).identifier }
     let(:contract_period) { FactoryBot.create(:contract_period) }
     let(:contract_period_year) { contract_period.year.to_s }
@@ -86,15 +90,19 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
     end
 
     before do
-      active_lead_provider = FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:)
-      lead_provider_delivery_partnership = FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
-      school = resource.ect_at_school_periods.last.training_periods.last.school_partnership.school
-      FactoryBot.create(:school_partnership, school:, lead_provider_delivery_partnership:)
+      FactoryBot.create(
+        :school_partnership,
+        :for_year,
+        year: contract_period.year,
+        school: School.first,
+        lead_provider:
+      )
     end
 
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
     it_behaves_like "an endpoint that refreshes metadata", :put
+    it_behaves_like "a N+1 queries free endpoint", :put
   end
 
   describe "#defer" do
@@ -127,6 +135,7 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
     it_behaves_like "an endpoint that refreshes metadata", :put
+    it_behaves_like "a N+1 queries free endpoint", :put
   end
 
   describe "#resume" do
@@ -156,6 +165,7 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
     it_behaves_like "an endpoint that refreshes metadata", :put
+    it_behaves_like "a N+1 queries free endpoint", :put
   end
 
   describe "#withdraw" do
@@ -188,5 +198,6 @@ RSpec.describe "Participants API", :with_metadata, :with_touches, type: :request
     it_behaves_like "a token authenticated endpoint", :put
     it_behaves_like "an API update endpoint"
     it_behaves_like "an endpoint that refreshes metadata", :put
+    it_behaves_like "a N+1 queries free endpoint", :put
   end
 end
