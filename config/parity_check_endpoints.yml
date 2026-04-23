@@ -385,6 +385,13 @@ get:
       exclude:
         - type
         - has_passed
+
+  - "/api/v3/participant-declarations":
+      paginate: false
+      exclude:
+        - type
+        - has_passed
+
   - "/api/v3/participant-declarations":
       paginate: true
       query:
