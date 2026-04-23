@@ -3,7 +3,6 @@ class ECF2TeacherHistory::TrainingPeriod
               :lead_provider_info,
               :delivery_partner_info,
               :contract_period_year,
-              :schedule_info,
               :created_at,
               :ecf_start_induction_record_id,
               :is_ect,
@@ -11,7 +10,7 @@ class ECF2TeacherHistory::TrainingPeriod
               :school,
               :combination
 
-  attr_accessor :started_on, :finished_on, :deferred_at, :deferral_reason, :withdrawn_at, :withdrawal_reason
+  attr_accessor :started_on, :finished_on, :deferred_at, :deferral_reason, :withdrawn_at, :withdrawal_reason, :schedule_info
 
   def initialize(started_on:,
                  finished_on:,
@@ -68,7 +67,7 @@ class ECF2TeacherHistory::TrainingPeriod
       started_on:,
       finished_on:,
       training_programme:,
-      schedule: schedule_info,
+      schedule: schedule_info.to_h,
       created_at:,
       ecf_start_induction_record_id:,
       lead_provider_info: lead_provider_info.to_h,
