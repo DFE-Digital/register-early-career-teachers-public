@@ -73,7 +73,7 @@ RSpec.describe APISeedData::ECTParticipantActionScenarios do
       Metadata::Manager.refresh_all_metadata!
 
       expect(API::TrainingPeriods::TrainingStatus.new(training_period:).status).to eq(:withdrawn)
-      expect(API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period, teacher:).status).to eq(:left)
+      expect(API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period).status).to eq(:left)
       expect(training_period.at_school_period).to be_ongoing
       expect(teacher.induction_periods).to be_present
       expect(teacher.finished_induction_period).to be_nil
@@ -98,7 +98,7 @@ RSpec.describe APISeedData::ECTParticipantActionScenarios do
       Metadata::Manager.refresh_all_metadata!
 
       expect(API::TrainingPeriods::TrainingStatus.new(training_period:).status).to eq(:active)
-      expect(API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period, teacher:).status).to eq(:active)
+      expect(API::TrainingPeriods::TeacherStatus.new(latest_training_period: training_period).status).to eq(:active)
       expect(training_period.at_school_period).to be_ongoing
       expect(teacher.induction_periods).to be_present
       expect(teacher.finished_induction_period).to be_nil

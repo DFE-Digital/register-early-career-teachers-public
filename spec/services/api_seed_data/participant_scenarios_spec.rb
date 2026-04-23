@@ -218,7 +218,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
           expect(ects_leaving.count + mentors_leaving.count).to eq(4)
 
           # make sure all created participants have 'leaving' status
-          expect((ects_leaving.map(&:ect_training_periods) + mentors_leaving.map(&:mentor_training_periods)).flatten.map { |tp| API::TrainingPeriods::TeacherStatus.new(latest_training_period: tp, teacher: tp.teacher).status }.uniq).to eq(%i[leaving])
+          expect((ects_leaving.map(&:ect_training_periods) + mentors_leaving.map(&:mentor_training_periods)).flatten.map { |tp| API::TrainingPeriods::TeacherStatus.new(latest_training_period: tp).status }.uniq).to eq(%i[leaving])
         end
       end
     end
@@ -261,15 +261,12 @@ RSpec.describe APISeedData::ParticipantScenarios do
             mentors_joining.map(&:mentor_training_periods)
           ).flatten
           participant_statuses = training_periods.map do
-            API::TrainingPeriods::TeacherStatus.new(
-              latest_training_period: it,
-              teacher: it.teacher
-            )
+            API::TrainingPeriods::TeacherStatus.new(latest_training_period: it)
           end
           training_statuses = training_periods.map do
             API::TrainingPeriods::TrainingStatus.new(training_period: it)
           end
-          expect(participant_statuses).to be_all(&:joining?)
+          expect(participant_statuses).to(be_all { |s| s.status == :joining })
           expect(training_statuses).to be_all(&:active?)
         end
       end
@@ -313,15 +310,12 @@ RSpec.describe APISeedData::ParticipantScenarios do
             mentors_leaving.map(&:mentor_training_periods)
           ).flatten
           participant_statuses = training_periods.map do
-            API::TrainingPeriods::TeacherStatus.new(
-              latest_training_period: it,
-              teacher: it.teacher
-            )
+            API::TrainingPeriods::TeacherStatus.new(latest_training_period: it)
           end
           training_statuses = training_periods.map do
             API::TrainingPeriods::TrainingStatus.new(training_period: it)
           end
-          expect(participant_statuses).to be_all(&:leaving?)
+          expect(participant_statuses).to(be_all { |s| s.status == :leaving })
           expect(training_statuses).to be_all(&:active?)
         end
       end
@@ -367,15 +361,12 @@ RSpec.describe APISeedData::ParticipantScenarios do
             withdrawn_mentors_left.map(&:mentor_training_periods)
           ).flatten
           participant_statuses = training_periods.map do
-            API::TrainingPeriods::TeacherStatus.new(
-              latest_training_period: it,
-              teacher: it.teacher
-            )
+            API::TrainingPeriods::TeacherStatus.new(latest_training_period: it)
           end
           training_statuses = training_periods.map do
             API::TrainingPeriods::TrainingStatus.new(training_period: it)
           end
-          expect(participant_statuses).to be_all(&:left?)
+          expect(participant_statuses).to(be_all { |s| s.status == :left })
           expect(training_statuses).to be_all(&:withdrawn?)
         end
       end
@@ -421,15 +412,12 @@ RSpec.describe APISeedData::ParticipantScenarios do
             active_mentors_left.map(&:mentor_training_periods)
           ).flatten
           participant_statuses = training_periods.map do
-            API::TrainingPeriods::TeacherStatus.new(
-              latest_training_period: it,
-              teacher: it.teacher
-            )
+            API::TrainingPeriods::TeacherStatus.new(latest_training_period: it)
           end
           training_statuses = training_periods.map do
             API::TrainingPeriods::TrainingStatus.new(training_period: it)
           end
-          expect(participant_statuses).to be_all(&:left?)
+          expect(participant_statuses).to(be_all { |s| s.status == :left })
           expect(training_statuses).to be_all(&:active?)
         end
       end
