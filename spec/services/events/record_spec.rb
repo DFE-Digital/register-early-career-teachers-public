@@ -390,7 +390,6 @@ RSpec.describe Events::Record do
         Events::Record.teacher_name_updated_by_user_event!(author:, teacher:, old_name:, new_name:)
         expect(RecordEventJob).to have_received(:perform_later).with(
           teacher:,
-          appropriate_body_period: nil,
           heading: "Name changed from 'Wilfred Bramble' to 'Willy Brambs'",
           event_type: :teacher_name_updated_by_user,
           happened_at: Time.zone.now,
