@@ -145,21 +145,20 @@ module API::Declarations
     def where_teacher_is(teacher_api_ids)
       return if ignore?(filter: teacher_api_ids, ignore_empty_array: false)
 
-      teacher_ids = Teacher.where(api_id: teacher_api_ids).ids
-
+      teacher_subquery = Teacher.where(api_id: teacher_api_ids).select(:id)
       @scope = scope
         .left_joins(training_period: %i[ect_at_school_period mentor_at_school_period])
         .where(
           "ect_at_school_periods.teacher_id IN (:ids) OR mentor_at_school_periods.teacher_id IN (:ids)",
-          ids: teacher_ids
+          ids: teacher_subquery
         )
     end
 
     def where_delivery_partner_is(delivery_partner_api_ids)
       return if ignore?(filter: delivery_partner_api_ids, ignore_empty_array: false)
 
-      delivery_partner_ids = DeliveryPartner.where(api_id: delivery_partner_api_ids).ids
-      @scope = scope.where(delivery_partner_when_created_id: delivery_partner_ids)
+      delivery_partner_subquery = DeliveryPartner.where(api_id: delivery_partner_api_ids).select(:id)
+      @scope = scope.where(delivery_partner_when_created_id: delivery_partner_subquery)
     end
 
     def where_updated_since(updated_since)
