@@ -46,9 +46,8 @@ module API::Teachers
     def training_for_at_least_one_day
       return if errors[:teacher_api_id].any?
       return unless training_period&.started_on&.today?
-      return if training_period.predecessors.any? { it.lead_provider.id == lead_provider_id }
 
-      errors.add(:teacher_api_id, "You cannot withdraw #/teacher_api_id. This is because they have not been training with you for at least one day.")
+      errors.add(:teacher_api_id, "You cannot defer or withdraw this participant today. You need to try again tomorrow as the training was recently changed for this participant.")
     end
   end
 end

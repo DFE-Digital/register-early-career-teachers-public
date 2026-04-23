@@ -83,41 +83,6 @@ RSpec.describe Teachers::Withdraw do
           end
         end
 
-        context "when training period starts today and there is a previous training period" do
-          let!(:previous_training_period) do
-            FactoryBot.create(
-              :training_period,
-              :"for_#{trainee_type}",
-              :deferred,
-              "#{trainee_type}_at_school_period": at_school_period,
-              school_partnership: training_period.school_partnership,
-              started_on: 5.months.ago,
-              finished_on: 1.month.ago
-            )
-          end
-          let!(:training_period) do
-            FactoryBot.create(
-              :training_period,
-              :"for_#{trainee_type}",
-              :ongoing,
-              "#{trainee_type}_at_school_period": at_school_period,
-              started_on: Time.zone.today
-            )
-          end
-
-          it "destroys the redundant training period and withdraws the previous one" do
-            freeze_time
-
-            expect(service.withdraw).not_to be(false)
-
-            expect(TrainingPeriod).not_to exist(training_period.id)
-
-            previous_training_period.reload
-            expect(previous_training_period.withdrawn_at).to eq(Time.zone.now)
-            expect(previous_training_period.withdrawal_reason.dasherize).to eq(reason)
-          end
-        end
-
         context "event recording" do
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :ongoing, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on) }
 
