@@ -42,11 +42,11 @@ module Schools
         period&.started_on.present?
       end
 
-      # Unstarted training periods (ie starting today or in the future) will be deleted and should not prevent a start date at a new school from being valid
+      # Unstarted training periods (ie starting in the future) will be deleted and should not prevent a start date at a new school from being valid
       def latest_started_training_period
         ect_at_school_period
           &.training_periods
-          &.started_before(Time.zone.today)
+          &.started_before(1.day.from_now)
           &.latest_first
           &.first
       end

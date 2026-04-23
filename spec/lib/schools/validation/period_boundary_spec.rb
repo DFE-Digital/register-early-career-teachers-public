@@ -1,25 +1,47 @@
-RSpec.shared_examples "it is only valid after" do |base_date_proc|
+RSpec.shared_examples "it is only valid two days after" do |base_date_proc|
   let(:base_date) { instance_exec(&base_date_proc) }
 
-  context "when the date is before the training period started_on date" do
-    let(:date) { base_date - 2.days }
+  context "when the date is before the period started" do
+    let(:date) { base_date - 1.days }
 
     it { is_expected.not_to be_valid }
   end
 
-  context "when the date is the same as the training period started_on date" do
+  context "when the date is the same as the period started" do
+    let(:date) { base_date  }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context "when the date is one day after the period started" do
+    let(:date) { base_date + 1.day }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context "when the date is more than one day after the period started" do
+    let(:date) { base_date + 2.days }
+
+    it { is_expected.to be_valid }
+  end
+end
+
+RSpec.shared_examples "all dates are valid" do |base_date_proc|
+  let(:base_date) { instance_exec(&base_date_proc) }
+
+  context "when the date is before the period started" do
     let(:date) { base_date - 1.day }
 
-    it { is_expected.not_to be_valid }
+    it { is_expected.to be_valid }
   end
 
-  context "when the date is one day after the training period started_on date" do
+  context "when the date is the same as the period started" do
     let(:date) { base_date }
 
-    it { is_expected.not_to be_valid }
+    it { is_expected.to be_valid }
   end
 
-  context "when the date is more than one day after the training period started_on date" do
+  context "when the date is after the period started" do
     let(:date) { base_date + 1.day }
 
     it { is_expected.to be_valid }
@@ -100,146 +122,89 @@ RSpec.describe Schools::Validation::PeriodBoundary do
           context "when the periods started in the past" do
             let(:ect_at_school_period_started_on) { 1.day.ago }
 
-            context "when the date is before the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on - 1.day }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is the same as the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is one day after the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on + 1.day }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is more than one day after the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on + 2.days }
-    
-              it { is_expected.to be_valid }
-            end
+            it_behaves_like "it is only valid two days after", -> { ect_at_school_period.started_on }
           end
 
           context "when the periods started today" do
             let(:ect_at_school_period_started_on) { Time.zone.today }
 
-            it_behaves_like "it is only valid after", -> { ect_at_school_period.started_on + 1.day }
-
-            context "when the date is before the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on - 1.day }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is the same as the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is one day after the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on + 1.day }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is more than one day after the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on + 2.days }
-    
-              it { is_expected.to be_valid }
-            end
+            it_behaves_like "it is only valid two days after", -> { ect_at_school_period.started_on }
           end
 
           context "when the periods start in the future" do
             let(:ect_at_school_period_started_on) { 1.day.from_now }
 
-            context "when the date is before the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on - 1.day }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is the same as the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is one day after the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on + 1.day }
-    
-              it { is_expected.not_to be_valid }
-            end
-    
-            context "when the date is more than one day after the ect_at_school_period started_on date" do
-              let(:date) { ect_at_school_period.started_on + 2.days }
-    
-              it { is_expected.to be_valid }
-            end
+            it_behaves_like "it is only valid two days after", -> { ect_at_school_period.started_on }
           end
         end
         
         context "when the training period has a different start date to the ect at school period" do
-          context "when the training period started in the past" do
-            let(:training_period_started_on) { 1.day.ago }
+          context "when the ect at school period started in the past" do
+            let(:ect_at_school_period_started_on) { Date.new(2024, 9, 1) }
 
-            it_behaves_like "it is only valid after", -> { Time.zone.today }
+            context "when the training period started in the past" do
+              let(:training_period_started_on) { 1.day.ago }
 
-            
-          end
-
-          context "when the training period started today" do
-            let(:training_period_started_on) { Time.zone.today }
-
-            context "when the date is before the training period started_on date" do
-              let(:date) { 1.day.ago }
-
-              it { is_expected.to be_valid }
+              it_behaves_like "it is only valid two days after", -> { training_period_started_on }
             end
 
-            context "when the date is the same as the training period started_on date" do
-              let(:date) { Time.zone.today }
+            context "when the training period started today" do
+              let(:training_period_started_on) { Time.zone.today }
 
-              it { is_expected.to be_valid }
+              it_behaves_like "it is only valid two days after", -> { training_period_started_on }
             end
 
-            context "when the date is after the training period started_on date" do
-              let(:date) { 1.day.from_now }
+            context "when the training period started in the future" do
+              let(:training_period_started_on) { 1.day.from_now }
 
-              it { is_expected.to be_valid }
+              it_behaves_like "all dates are valid", -> { training_period_started_on }
             end
           end
 
-          xcontext "when the training period started in the future" do
-            let(:training_period_started_on) { 1.day.from_now }
+          context "when the ect at school period starts in the future" do
+            # In this case the training period must start at least two days from now, 
+            # because it cannot start before the ECT period, or on the same day
+            # In which case it does not affect the validations
+            let(:ect_at_school_period_started_on) { 1.day.from_now }
 
-            context "when the date is before the training period started_on date" do
-              let(:date) { Time.zone.today }
+            context "when the training period starts one day after the ect at school period" do
+              let(:training_period_started_on) { 2.days.from_now }
 
-              it { is_expected.to be_valid }
+              it_behaves_like "it is only valid two days after", -> { ect_at_school_period.started_on }
             end
 
-            context "when the date is the same as the training period started_on date" do
-              let(:date) { 1.day.from_now }
+            context "when the training period starts two days after the ect at school period" do
+              let(:training_period_started_on) { 3.days.from_now }
 
-              it { is_expected.to be_valid }
-            end
-
-            context "when the date is after the training period started_on date" do
-              let(:date) { 2.days.from_now }
-
-              it { is_expected.to be_valid }
+              it_behaves_like "it is only valid two days after", -> { ect_at_school_period.started_on }
             end
           end
         end
       end
 
       context "when there are multiple training periods" do
+        let!(:first_training_period) do
+          FactoryBot.create(:training_period, 
+          :ongoing, 
+          ect_at_school_period:, 
+          started_on: first_training_period_started_on, 
+          finished_on: first_training_period_started_on + 1.day)
+        end
+
+        let!(:second_training_period) do
+          FactoryBot.create(:training_period, 
+          :ongoing, 
+          ect_at_school_period:, 
+          started_on: second_training_period_started_on)
+        end
+
+        let(:first_training_period_started_on) { Date.new(2024, 10, 1) }
+        let(:second_training_period_started_on) { Date.new(2024, 12, 31) }
+
+        context "the dates of the first training period do not affect the validation" do
+          it_behaves_like "it is only valid two days after", -> { second_training_period_started_on }
+        end
+
       end
     end
   end
