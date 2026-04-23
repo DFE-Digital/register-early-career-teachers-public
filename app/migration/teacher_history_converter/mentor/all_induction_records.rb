@@ -90,6 +90,10 @@ private
         @current_school_period.training_periods << @current_training_period if @current_training_period.present?
       end
     elsif @current_training_period.present? && not_withdrawn_or_deferred? && !induction_record.ignore_training?
+
+      # ensure the most recent schedule is used on the period
+      @current_training_period.schedule_info = induction_record.schedule_info
+
       state_changed_at = induction_record.end_date
       lead_provider_id = induction_record.training_provider_info&.lead_provider_info&.ecf1_id
 
