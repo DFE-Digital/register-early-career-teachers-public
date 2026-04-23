@@ -944,9 +944,18 @@ FactoryBot.create(:training_period,
                   :for_ect,
                   :with_schedule,
                   ect_at_school_period: terry_thomas_ect_at_abbey_grove_school,
-                  started_on: terry_thomas_started_date,
-                  finished_on: nil,
+                  started_on: terry_thomas_started_date + 1.month,
+                  finished_on: terry_thomas_started_date + 1.month + 2.days,
                   school_partnership: teach_first_grain_abbey_grove_2025,
+                  training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
+
+FactoryBot.create(:training_period,
+                  :for_ect,
+                  :with_schedule,
+                  ect_at_school_period: terry_thomas_ect_at_abbey_grove_school,
+                  started_on: terry_thomas_started_date + 1.month + 3.days,
+                  finished_on: nil,
+                  school_partnership: ambition_artisan_abbey_grove_2025,
                   training_programme: "provider_led").tap { |tp| describe_training_period(tp) }
 
 print_seed_info("Sid James (ECT) provider-led with schedule ecf-standard-september", indent: 2, colour: ECT_COLOUR)
