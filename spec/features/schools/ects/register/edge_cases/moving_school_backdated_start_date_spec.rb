@@ -49,29 +49,31 @@ RSpec.describe "Moving School - backdated start spec" do
     end
 
     context "when both periods have back-dated start dates" do
-      scenario "the training period at the first school which has not started is deleted" do
+      scenario "the schools are prevented from registering the ECTs on the same day" do
         given_there_are_two_schools
         and_there_are_partnerships_at_the_schools
         and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_of_which_are_both_backdated
 
         given_a_school_has_registered_a_teacher
-        and_another_school_has_registered_the_same_teacher_at_a_later_date
-
-        then_the_training_period_at_the_first_school_which_has_not_started_yet_should_be_deleted
-        and_the_training_period_for_the_second_school_should_be_ongoing
+        and_another_school_has_registered_the_same_teacher_on_the_same_day
+        then_the_second_school_cannot_register_the_same_teacher
       end
     end
   end
 
   def given_a_school_has_registered_a_teacher
-    register_ect(school: @school_one, start_date: @school_one_start_date, previously_registered: false)
+    register_ect(school: @school_one, start_date: @school_one_start_date, previously_registered: false, valid_start_date: true)
   end
 
   def and_another_school_has_registered_the_same_teacher_at_a_later_date
-    register_ect(school: @school_two, start_date: @school_two_start_date, previously_registered: true)
+    register_ect(school: @school_two, start_date: @school_two_start_date, previously_registered: true, valid_start_date: true)
   end
 
-  def register_ect(school:, start_date:, previously_registered:)
+  def and_another_school_has_registered_the_same_teacher_on_the_same_day
+    register_ect(school: @school_two, start_date: @school_two_start_date, previously_registered: true, valid_start_date: false)
+  end
+
+  def register_ect(school:, start_date:, previously_registered:, valid_start_date:)
     given_i_am_logged_in_as(school)
 
     and_i_am_on_the_schools_landing_page
@@ -89,27 +91,31 @@ RSpec.describe "Moving School - backdated start spec" do
       then_i_should_be_taken_to_the_registered_before_page
       and_i_click_continue
     end
+
     then_i_should_be_taken_to_the_email_address_page
 
     when_i_enter_the_ect_email_address
     and_i_click_continue
     then_i_should_be_taken_to_the_ect_start_date_page
 
-    when_i_enter_a_valid_start_date(start_date)
+    when_i_enter_a_start_date(start_date)
     and_i_click_continue
-    then_i_should_i_should_be_taken_to_the_working_pattern_page
 
-    when_i_select_full_time
-    and_i_click_continue
-    then_i_should_be_taken_to_the_use_previous_ect_choices_page
+    if valid_start_date
+      then_i_should_i_should_be_taken_to_the_working_pattern_page
 
-    when_i_choose_to_reuse_previous_choices
-    and_i_click_continue
-    then_i_should_be_taken_to_the_check_answers_page
-    and_i_should_see_all_the_ect_data_on_the_page(start_date)
+      when_i_select_full_time
+      and_i_click_continue
+      then_i_should_be_taken_to_the_use_previous_ect_choices_page
 
-    when_i_click_confirm_details
-    then_i_should_be_taken_to_the_confirmation_page
+      when_i_choose_to_reuse_previous_choices
+      and_i_click_continue
+      then_i_should_be_taken_to_the_check_answers_page
+      and_i_should_see_all_the_ect_data_on_the_page(start_date)
+
+      when_i_click_confirm_details
+      then_i_should_be_taken_to_the_confirmation_page
+    end
   end
 
   def and_the_two_schools_want_to_register_the_same_teacher_on_different_dates_which_are_not_backdated
@@ -145,12 +151,6 @@ RSpec.describe "Moving School - backdated start spec" do
     expect(training_period.finished_on).to eq(@school_two_start_date - 1.day)
   end
 
-  def then_the_training_period_at_the_first_school_which_has_not_started_yet_should_be_deleted
-    ect_at_school_period = ECTAtSchoolPeriod.first
-
-    expect(ect_at_school_period.training_periods.count).to eq(0)
-  end
-
   def and_the_training_period_for_the_second_school_should_be_ongoing
     ect_at_school_period = ECTAtSchoolPeriod.last
 
@@ -169,10 +169,6 @@ RSpec.describe "Moving School - backdated start spec" do
 
   def given_i_am_logged_in_as(school)
     sign_in_as_school_user(school:)
-  end
-
-  def when_i_click_sign_out
-    page.get_by_role("button", name: "Sign out").click
   end
 
   def and_i_am_on_the_schools_landing_page
@@ -228,14 +224,6 @@ RSpec.describe "Moving School - backdated start spec" do
     page.get_by_label("What is Kirk Van Houten’s email address?").fill("example@example.com")
   end
 
-  def then_i_should_be_taken_to_the_training_programme_page
-    expect(page).to have_path("/school/register-ect/training-programme")
-  end
-
-  def when_i_select_provider_led
-    page.get_by_label("Provider-led").check
-  end
-
   def when_i_select_full_time
     page.get_by_label("Full time").check
   end
@@ -248,7 +236,7 @@ RSpec.describe "Moving School - backdated start spec" do
     expect(page).to have_path("/school/register-ect/start-date")
   end
 
-  def when_i_enter_a_valid_start_date(start_date)
+  def when_i_enter_a_start_date(start_date)
     page.get_by_label("day").fill(start_date.day.to_s)
     page.get_by_label("month").fill(start_date.month.to_s)
     page.get_by_label("year").fill(start_date.year.to_s)
@@ -264,6 +252,12 @@ RSpec.describe "Moving School - backdated start spec" do
 
   def then_i_should_i_should_be_taken_to_the_working_pattern_page
     expect(page).to have_path("/school/register-ect/working-pattern")
+  end
+
+  def then_the_second_school_cannot_register_the_same_teacher
+    expect(page).to have_path("/school/register-ect/start-date")
+    expect(page.get_by_text("There is a problem")).to be_visible
+    expect(page.get_by_text("Our records show that Kirk Van Houten started their latest training at #{@school_one.name} on 16 June 2025. Enter a start date after 17 June 2025.").first).to be_visible
   end
 
   def then_i_should_be_taken_to_the_check_answers_page
