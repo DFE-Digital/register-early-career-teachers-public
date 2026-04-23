@@ -21,6 +21,32 @@
 #
 #     **bold** and _italic_ text
 
+- title: Updates to schedule and cohort changes for deferred and withdrawn participants
+  date: 2026-04-28
+  tags:
+    - sandbox-release
+    - production-release
+  body: |
+    In Register ECTs, you cannot change the schedule or cohort for a participant who has a participant_status of 'left'.  This is because making changes while a participant is not actively training would lead to inaccurate data. It also reflects changes in our data model, which separates active training from paused or ended training.
+
+    We have also updated the validation messages shown to make this clearer when it is attempted.
+
+    ## What's changed
+
+    You cannot change the schedule or cohort for a participant whose participant status is 'left'.
+
+    If their participant status is 'left' only because you have deferred or withdrawn them, you can resume them then change the schedule or cohort.
+
+    Lead providers should not change the schedule for a participant before it is confirmed they will definitely be moving to that schedule. For example, if a participant is deferred, they should not be changed to an extended schedule until it is confirmed they are returning to training and you have resumed them over the API. This is so we have accurate data for which schedule a participant is currently on.
+
+    ## What you need to do
+
+    Make sure to keep schedules and cohorts up to date for participants, so you don't need to update them later when they may have already left their school or training with you.
+
+    If you need to change the schedule or cohort for a deferred or withdrawn participant, resume them first and then submit the update. Don't update schedules or cohorts until you're certain they have returned to training.
+
+    If this becomes an issue, contact DfE by Teams or email.
+
 - title: Register early career teachers service launched
   date: 2026-04-28
   tags:

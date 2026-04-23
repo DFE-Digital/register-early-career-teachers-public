@@ -57,6 +57,7 @@ module API::Teachers
 
     def training_period_not_withdrawn
       return if errors[:teacher_api_id].any?
+      return unless training_period
       return unless training_status&.withdrawn?
 
       errors.add(:teacher_api_id, "Cannot perform actions on a withdrawn participant")
@@ -97,11 +98,21 @@ module API::Teachers
         )
     end
 
+    def participant_status
+      @participant_status ||= API::TrainingPeriods::TeacherStatus.new(
+        latest_training_period: training_period,
+        teacher:
+      )
+    end
+
     def lead_provider_is_currently_training_teacher
       return if errors[:teacher_api_id].any?
       return unless training_period
+      return if participant_status.active? || participant_status.leaving?
 
-      errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") unless training_period.ongoing_today?
+      if participant_status.left?
+        errors.add(:teacher_api_id, "You cannot change this participant’s schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.")
+      end
     end
 
     def no_future_training_periods_exist

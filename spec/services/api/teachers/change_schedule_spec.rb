@@ -77,11 +77,17 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") }
           end
 
-          context "when the training period is not ongoing today" do
+          context "when the participant is leaving" do
+            before { training_period.update!(finished_on: 1.day.from_now) }
+
+            it { is_expected.to be_valid }
+          end
+
+          context "when the participant has left" do
             before { training_period.update!(finished_on: 1.day.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant’s schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") }
           end
 
           context "when there are future training periods (for the same teacher)" do
