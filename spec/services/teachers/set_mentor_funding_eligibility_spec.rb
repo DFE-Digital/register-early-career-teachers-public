@@ -5,23 +5,8 @@ RSpec.describe Teachers::SetMentorFundingEligibility do
 
   describe "#set!" do
     context "when teacher is eligible for mentor training" do
-      before do
-        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period,
-                                                    teacher:,
-                                                    started_on: 2.months.ago,
-                                                    finished_on: nil)
-        training_period = FactoryBot.create(:training_period,
-                                            :for_mentor,
-                                            :ongoing,
-                                            mentor_at_school_period:)
-        FactoryBot.create(:declaration, training_period:)
-        FactoryBot.create(:statement, :open, :output_fee,
-                          active_lead_provider: training_period.active_lead_provider,
-                          month: 1.month.from_now.month,
-                          year: 1.month.from_now.year,
-                          deadline_date: 1.month.from_now.to_date,
-                          payment_date: 2.months.from_now.to_date)
-      end
+      let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:) }
+      let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
 
       context "when `mentor_first_became_eligible_for_training_at` is not already set" do
         it "sets `mentor_first_became_eligible_for_training_at`" do
@@ -41,10 +26,19 @@ RSpec.describe Teachers::SetMentorFundingEligibility do
         end
       end
 
-      it "calls `Declarations::Actions::MarkDeclarationsEligible` service" do
-        expect(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).with(declarations: teacher.mentor_declarations, author:).and_call_original
+      context "with no-payment and eligible mentor declarations" do
+        let!(:no_payment_declaration) { FactoryBot.create(:declaration, training_period:, declaration_type: "started") }
+        let!(:eligible_declaration) { FactoryBot.create(:declaration, :payable, training_period:, declaration_type: "completed") }
 
-        service.set!
+        it "only passes no_payment declarations to MarkDeclarationsEligible" do
+          mark_declarations = instance_double(Declarations::Actions::MarkDeclarationsEligible, mark: true)
+          allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).and_return(mark_declarations)
+
+          service.set!
+
+          expect(Declarations::Actions::MarkDeclarationsEligible).to have_received(:new)
+            .with(declarations: [no_payment_declaration], author:)
+        end
       end
     end
 
@@ -119,8 +113,9 @@ RSpec.describe Teachers::SetMentorFundingEligibility do
           expect(Events::Record).to receive(:record_teacher_set_funding_eligibility_event!)
             .with(author:,
                   teacher:,
+                  teacher_type: "Mentor",
                   happened_at: Time.zone.now,
-                  modifications: { "mentor_first_became_eligible_for_training_at" => [nil, Time.zone.now] })
+                  modifications: hash_including("mentor_first_became_eligible_for_training_at" => [nil, Time.zone.now]))
 
           service.set!
         end
@@ -145,7 +140,7 @@ RSpec.describe Teachers::SetMentorFundingEligibility do
         FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:)
         original_mentor_eligible_at = teacher.mentor_first_became_eligible_for_training_at
 
-        allow(teacher).to receive(:save!).and_raise(ActiveRecord::RecordInvalid)
+        allow(teacher).to receive(:touch).and_raise(ActiveRecord::RecordInvalid)
 
         expect { service.set! }.to raise_error(ActiveRecord::RecordInvalid)
         expect(teacher.reload.mentor_first_became_eligible_for_training_at).to eq(original_mentor_eligible_at)
