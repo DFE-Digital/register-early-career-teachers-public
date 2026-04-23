@@ -27,11 +27,6 @@ class Migration::MigrationsController < ::AdminController
     redirect_to migration_migrations_path
   end
 
-  def reset
-    LegacyDataImporter.new.reset!
-    redirect_to migration_migrations_path
-  end
-
   def cache_stats
     @data_migrations = DataMigration.complete.where.not(cache_stats: nil).order(:id)
 
