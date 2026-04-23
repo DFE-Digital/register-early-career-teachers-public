@@ -4,7 +4,6 @@ constraints -> { Rails.application.config.enable_migration_interface } do
       collection do
         get "cache_stats", action: :cache_stats, as: :cache_stats
         get "download_report/:model", action: :download_report, as: :download_report
-        post "reset", action: :reset, as: :reset
       end
     end
 
