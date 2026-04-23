@@ -12,7 +12,7 @@ module API::Declarations
       updated_since: :ignore
     )
       @lead_provider_id = lead_provider_id
-      @scope = Declaration.order(:created_at).distinct
+      @scope = Declaration.order(:created_at)
 
       where_lead_provider_is(lead_provider_id)
       where_contract_period_year_in(contract_period_years)
