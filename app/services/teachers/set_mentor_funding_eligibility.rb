@@ -9,24 +9,22 @@ class Teachers::SetMentorFundingEligibility
   def set!
     ActiveRecord::Base.transaction do
       set_eligibility!
-      make_declarations_eligible!
-      record_teacher_set_funding_eligibility_event!
     end
   end
 
 private
 
   def set_eligibility!
-    if eligible_for_mentor_training?
-      teacher.mentor_first_became_eligible_for_training_at ||= Time.zone.now
-    end
+    return unless eligible_for_mentor_training?
+    return if teacher.mentor_first_became_eligible_for_training_at
 
-    teacher.save!
+    teacher.touch(:mentor_first_became_eligible_for_training_at)
+
+    make_declarations_eligible!
+    record_teacher_set_funding_eligibility_event!
   end
 
   def make_declarations_eligible!
-    return unless teacher.mentor_first_became_eligible_for_training_at
-
     declarations = teacher.mentor_declarations.payment_status_no_payment
     return unless declarations.any?
 
@@ -43,11 +41,10 @@ private
   end
 
   def record_teacher_set_funding_eligibility_event!
-    return unless teacher.saved_changes?
-
     Events::Record.record_teacher_set_funding_eligibility_event!(
       author:,
       teacher:,
+      teacher_type: "Mentor",
       happened_at: Time.zone.now,
       modifications: teacher.saved_changes
     )

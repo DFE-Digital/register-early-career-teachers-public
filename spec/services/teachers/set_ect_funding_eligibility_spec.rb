@@ -7,21 +7,7 @@ RSpec.describe Teachers::SetECTFundingEligibility do
     context "when teacher is eligible for ECT training" do
       before do
         FactoryBot.create(:induction_period, :ongoing, teacher:)
-        ect_at_school_period = FactoryBot.create(:ect_at_school_period,
-                                                 teacher:,
-                                                 started_on: 2.months.ago,
-                                                 finished_on: nil)
-        training_period = FactoryBot.create(:training_period,
-                                            :for_ect,
-                                            :ongoing,
-                                            ect_at_school_period:)
-        FactoryBot.create(:declaration, training_period:)
-        FactoryBot.create(:statement, :open, :output_fee,
-                          active_lead_provider: training_period.active_lead_provider,
-                          month: 1.month.from_now.month,
-                          year: 1.month.from_now.year,
-                          deadline_date: 1.month.from_now.to_date,
-                          payment_date: 2.months.from_now.to_date)
+        FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
       end
 
       context "when `ect_first_became_eligible_for_training_at` is not already set" do
@@ -42,10 +28,21 @@ RSpec.describe Teachers::SetECTFundingEligibility do
         end
       end
 
-      it "calls `Declarations::Actions::MarkDeclarationsEligible` service" do
-        expect(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).with(declarations: teacher.ect_declarations, author:).and_call_original
+      context "with no-payment and eligible ECT declarations" do
+        let(:ect_at_school_period) { teacher.ect_at_school_periods.first }
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
+        let!(:no_payment_declaration) { FactoryBot.create(:declaration, training_period:, declaration_type: "started") }
+        let!(:eligible_declaration) { FactoryBot.create(:declaration, :payable, training_period:, declaration_type: "retained-1") }
 
-        service.set!
+        it "only passes no_payment declarations to MarkDeclarationsEligible" do
+          mark_declarations = instance_double(Declarations::Actions::MarkDeclarationsEligible, mark: true)
+          allow(Declarations::Actions::MarkDeclarationsEligible).to receive(:new).and_return(mark_declarations)
+
+          service.set!
+
+          expect(Declarations::Actions::MarkDeclarationsEligible).to have_received(:new)
+            .with(declarations: [no_payment_declaration], author:)
+        end
       end
     end
 
@@ -91,7 +88,7 @@ RSpec.describe Teachers::SetECTFundingEligibility do
       end
     end
 
-    context "when teacher is not eligible for ECT training" do
+    context "when the teacher has no induction periods or ECT at school periods" do
       it "does not set `ect_first_became_eligible_for_training_at`" do
         expect { service.set! }.not_to change(teacher, :ect_first_became_eligible_for_training_at)
       end
@@ -125,8 +122,9 @@ RSpec.describe Teachers::SetECTFundingEligibility do
           expect(Events::Record).to receive(:record_teacher_set_funding_eligibility_event!)
             .with(author:,
                   teacher:,
+                  teacher_type: "ECT",
                   happened_at: Time.zone.now,
-                  modifications: { "ect_first_became_eligible_for_training_at" => [nil, Time.zone.now] })
+                  modifications: hash_including("ect_first_became_eligible_for_training_at" => [nil, Time.zone.now]))
 
           service.set!
         end
@@ -146,15 +144,12 @@ RSpec.describe Teachers::SetECTFundingEligibility do
     end
 
     context "when an error is raised during the eligibility setting" do
-      before do
-        allow(teacher).to receive(:save!).and_raise(ActiveRecord::RecordInvalid)
-      end
-
       it "rolls back any changes" do
-        original_ect_eligible_at = teacher.ect_first_became_eligible_for_training_at
-
         FactoryBot.create(:induction_period, :ongoing, teacher:)
         FactoryBot.create(:ect_at_school_period, :ongoing, teacher:)
+        original_ect_eligible_at = teacher.ect_first_became_eligible_for_training_at
+
+        allow(teacher).to receive(:touch).and_raise(ActiveRecord::RecordInvalid)
 
         expect { service.set! }.to raise_error(ActiveRecord::RecordInvalid)
         expect(teacher.reload.ect_first_became_eligible_for_training_at).to eq(original_ect_eligible_at)

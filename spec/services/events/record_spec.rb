@@ -2013,14 +2013,14 @@ RSpec.describe Events::Record do
         teacher.mentor_first_became_eligible_for_training_at = Time.zone.now
         raw_modifications = teacher.changes
 
-        Events::Record.record_teacher_set_funding_eligibility_event!(author:, teacher:, happened_at:, modifications: raw_modifications)
+        Events::Record.record_teacher_set_funding_eligibility_event!(author:, teacher:, teacher_type: "Mentor", happened_at:, modifications: raw_modifications)
 
         expect(RecordEventJob).to have_received(:perform_later).with(
           hash_including(
             **author_params,
             event_type: :teacher_funding_eligibility_set,
             happened_at:,
-            heading: "Rhys Ifans's funding eligibility was set",
+            heading: "Rhys Ifans's Mentor funding eligibility was set",
             metadata: raw_modifications,
             modifications: ["Mentor first became eligible for training at set to '#{Time.zone.now}'"],
             teacher:
