@@ -46,30 +46,36 @@ module Schools
         end
 
         def leaving_after_start_date
-          leaving_on_before(ect_at_school_period, "teaching")
-        end
-
-        def leaving_after_training_started
-          leaving_on_before(latest_started_training_period, "their latest training")
-        end
-
-        def leaving_on_before(period, description)
           return if skip_leaving_on_validation?
-
-          return unless previous_start_date_invalid?(period)
-
-          return if leaving_on_input.value_as_date > period.started_on
+          return unless period_start_date_valid?(ect_at_school_period)
+          return if after_started_on(ect_at_school_period)
 
           errors.add(
             :leaving_on,
-            "Our records show that #{name_for(ect_at_school_period.teacher)} started #{description} at your school on #{period.started_on.to_formatted_s(:govuk)}. Enter a later date."
+            "Our records show that #{name_for(ect_at_school_period.teacher)} started teaching at your school on #{ect_at_school_period.started_on.to_formatted_s(:govuk)}. Enter a later date."
           )
         end
 
-        def previous_start_date_invalid?(period)
+        def leaving_after_training_started
+          return if skip_leaving_on_validation?
+          return unless period_start_date_valid?(latest_started_training_period)
+          return if after_started_on(latest_started_training_period)
+
+          errors.add(
+            :leaving_on,
+            "Our records show that #{name_for(ect_at_school_period.teacher)} started their latest training at your school on #{latest_started_training_period.started_on.to_formatted_s(:govuk)}. Enter a later date."
+          )
+        end
+
+        def after_started_on(period)
+          leaving_on_input.value_as_date > period.started_on
+        end
+
+        def period_start_date_valid?(period)
           period&.started_on.present?
         end
 
+        # Unstarted training periods (ie starting today or in the future) will be deleted and should not prevent the leaving date from being valid
         def latest_started_training_period
           ect_at_school_period&.training_periods&.started_before(Time.zone.today)&.latest_first&.first
         end

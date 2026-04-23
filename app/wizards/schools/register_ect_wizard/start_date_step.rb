@@ -27,24 +27,30 @@ module Schools
     private
 
       def start_date_not_before_previous_school
-        start_date_before(previous_period, "teaching")
+        return if skip_start_date_validation?
+
+        return unless period_start_date_valid?(previous_period)
+        return if start_date_after_period_starts?(previous_period)
+
+        errors.add(
+          :start_date,
+          "Our records show that #{wizard.ect.full_name} started teaching at #{previous_period.school&.name} on #{previous_period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
+        )
       end
 
       def start_date_not_before_last_training_period
-        start_date_before(latest_started_training_period, "their latest training")
+        return if skip_start_date_validation?
+        return unless period_start_date_valid?(latest_started_training_period)
+        return if start_date_after_period_starts?(latest_started_training_period)
+
+        errors.add(
+          :start_date,
+          "Our records show that #{wizard.ect.full_name} started their latest training at #{latest_started_training_period.school&.name} on #{latest_started_training_period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
+        )
       end
 
-      def start_date_before(period, description)
-        return if skip_start_date_validation?
-
-        return unless previous_start_date_invalid?(period)
-
-        if start_date_as_date <= period.started_on
-          errors.add(
-            :start_date,
-            "Our records show that #{wizard.ect.full_name} started #{description} at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
-          )
-        end
+      def start_date_after_period_starts?(period)
+        start_date_as_date > period.started_on
       end
 
       def currently_ect_at_another_school?
@@ -55,6 +61,7 @@ module Schools
         ect.previous_ect_at_school_period
       end
 
+      # Unstarted training periods (ie starting today or in the future) will be deleted and should not prevent a start date at a new school from being valid
       def latest_started_training_period
         previous_period&.training_periods&.started_before(Time.zone.today)&.latest_first&.first
       end
@@ -77,7 +84,7 @@ module Schools
         start_date_as_date.future? && !start_date_contract_period&.enabled?
       end
 
-      def previous_start_date_invalid?(period)
+      def period_start_date_valid?(period)
         period&.started_on.present?
       end
 
