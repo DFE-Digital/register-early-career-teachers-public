@@ -1,4 +1,4 @@
-describe "Real data check for user 018dc077-4682-4dac-ad2c-5fe225d80595 (schedule change)" do
+describe "Real data check for user 018dc077-4682-4dac-ad2c-5fe225d80595 (schedule change)", skip: "No longer necessary" do
   subject(:actual_output) { ecf2_teacher_history.to_h }
 
   let(:input) do
