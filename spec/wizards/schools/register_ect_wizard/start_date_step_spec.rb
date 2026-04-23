@@ -5,7 +5,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
   let(:provided_start_date) { { 1 => "2024", 2 => "12", 3 => "01" } }
   let(:school) { FactoryBot.build(:school) }
   let(:step_params) { {} }
-  let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date) }
+  let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date, trs_first_name: "Johnnie", trs_last_name: "Walker") }
   let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, school:, store:, step_params:) }
 
   describe "#initialize" do
@@ -30,6 +30,8 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
   describe "validations" do
     subject { described_class.new(start_date:, wizard:) }
+
+    let(:validator) { instance_double(Schools::Validation::PeriodBoundary) }
 
     context "when the start_date is not present" do
       let(:start_date) { nil }
@@ -109,7 +111,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       end
     end
 
-    describe "start date must be after previous ECTAtSchoolPeriod started_on date" do
+    context "when the date clashes with the ect at school period" do
       let(:previous_school) do
         FactoryBot.create(:school, :independent).tap do |school|
           school.gias_school.update!(name: "Springfield Primary")
@@ -118,7 +120,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      let!(:previous_period) do
+      let(:previous_period) do
         FactoryBot.create(:ect_at_school_period,
                           teacher:,
                           school: previous_school,
@@ -126,162 +128,75 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
                           finished_on: Date.new(2025, 3, 31))
       end
 
-      let(:wizard) do
-        FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:).tap do |instance|
-          allow(instance).to receive(:ect).and_return(
-            Schools::RegisterECTWizard::RegistrationStore.new(store).tap do |registration_store|
-              allow(registration_store).to receive_messages(trs_first_name: "Johnnie", trs_last_name: "Walker")
-            end
-          )
-        end
+      let(:start_date) { { 1 => "2024", 2 => "07", 3 => "01" } }
+
+      before do
+        allow(Schools::Validation::PeriodBoundary)
+          .to receive(:new)
+          .and_return(validator)
+
+        allow(validator).to receive_messages(
+          valid?: false,
+          invalid_period: previous_period,
+          type: "teaching",
+          started_on_formatted: "1 September 2024",
+          earliest_valid_input_date_formatted: "2 September 2024"
+        )
       end
 
-      let(:start_date_too_early_message) { "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a later start date." }
-
-      context "when the start_date is before the previous ECTAtSchoolPeriod started_on date" do
-        let(:start_date) { previous_period.started_on - 1.day }
-
-        it { is_expected.to have_error(:start_date, start_date_too_early_message) }
-      end
-
-      context "when the start_date is on the previous ECTAtSchoolPeriod started_on date" do
-        let(:start_date) { previous_period.started_on }
-
-        it { is_expected.to have_error(:start_date, start_date_too_early_message) }
-      end
-
-      context "when the start_date is after the previous ECTAtSchoolPeriod started_on date" do
-        let(:start_date) { previous_period.started_on + 1.day }
-
-        it { is_expected.to be_valid }
-      end
-
-      context "when the start_date is blank" do
-        let(:start_date) { nil }
-
-        it { is_expected.to have_error(:start_date, "Enter the date the ECT started or will start teaching at your school") }
-      end
-
-      context "when there is also a previous training period which starts after the new start date" do
-        let(:start_date) { previous_period.started_on }
-        let!(:training_period) do
-          FactoryBot.create(:training_period, :ongoing, ect_at_school_period: previous_period, started_on: Date.new(2024, 9, 1))
-        end
-        let(:start_date_before_training_period_message) { "Our records show that Johnnie Walker started their latest training at Springfield Primary on 1 October 2024. Enter a later start date." }
-
-        it "only shows the error about the previous ECTAtSchoolPeriod and not the training period" do
-          subject.valid?
-
-          expect(subject.errors[:start_date]).to include(start_date_too_early_message)
-          expect(subject.errors[:start_date]).not_to include(start_date_before_training_period_message)
-        end
-      end
+      it { is_expected.to have_error(:start_date, "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a start date after 2 September 2024.") }
     end
 
-    describe "start date must be after previous training period started_on date" do
+    context "when the date clashes with the latest training period" do
+      let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period: previous_period, started_on: Date.new(2024, 12, 31)) }
+
       let(:previous_school) do
-        FactoryBot.create(:school).tap do |school|
+        FactoryBot.create(:school, :independent).tap do |school|
           school.gias_school.update!(name: "Springfield Primary")
         end
       end
 
       let(:teacher) { FactoryBot.create(:teacher) }
 
-      let!(:previous_period) do
+      let(:previous_period) do
         FactoryBot.create(:ect_at_school_period,
                           teacher:,
                           school: previous_school,
-                          started_on: Date.new(2024, 9, 1))
+                          started_on: Date.new(2024, 9, 1),
+                          finished_on: Date.new(2025, 3, 31))
       end
 
-      let!(:training_period) do
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: previous_period, started_on: training_period_start_date)
+      let(:start_date) { { 1 => "2024", 2 => "12", 3 => "01" } }
+
+      before do
+        allow(Schools::Validation::PeriodBoundary)
+          .to receive(:new)
+          .and_return(validator)
+
+        allow(validator).to receive_messages(
+          valid?: false,
+          invalid_period: training_period,
+          type: "their latest training",
+          started_on_formatted: "31 December 2024",
+          earliest_valid_input_date_formatted: "1 January 2025"
+        )
       end
 
-      let(:wizard) do
-        FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:).tap do |instance|
-          allow(instance).to receive(:ect).and_return(
-            Schools::RegisterECTWizard::RegistrationStore.new(store).tap do |registration_store|
-              allow(registration_store).to receive_messages(trs_first_name: "Johnnie", trs_last_name: "Walker")
-            end
-          )
-        end
+      it { is_expected.to have_error(:start_date, "Our records show that Johnnie Walker started their latest training at Springfield Primary on 31 December 2024. Enter a start date after 1 January 2025.") }
+    end
+
+    context "when the date does not clash with any periods" do
+      let(:start_date) { { 1 => "2024", 2 => "01", 3 => "01" } }
+
+      before do
+        allow(Schools::Validation::PeriodBoundary)
+          .to receive(:new)
+          .and_return(validator)
+
+        allow(validator).to receive(:valid?).and_return(true)
       end
 
-      let(:start_date_before_training_period_message) { "Our records show that Johnnie Walker started their latest training at Springfield Primary on 1 October 2024. Enter a later start date." }
-      let(:training_period_start_date) { Date.new(2024, 10, 1) }
-
-      context "when the start_date is blank" do
-        let(:start_date) { nil }
-
-        it { is_expected.to have_error(:start_date, "Enter the date the ECT started or will start teaching at your school") }
-      end
-
-      context "when the previous training_period started in the past" do
-        let(:training_period_start_date) { Date.new(2024, 10, 1) }
-
-        context "when the start_date is before the previous training period started_on date" do
-          let(:start_date) { training_period_start_date - 1.day }
-
-          it { is_expected.to have_error(:start_date, start_date_before_training_period_message) }
-        end
-
-        context "when the start_date is on the previous training period started_on date" do
-          let(:start_date) { training_period_start_date }
-
-          it { is_expected.to have_error(:start_date, start_date_before_training_period_message) }
-        end
-
-        context "when the start_date is after the previous training period started_on date" do
-          let(:start_date) { training_period_start_date + 1.day }
-
-          it { is_expected.to be_valid }
-        end
-      end
-
-      context "when the training_period starts today" do
-        let(:training_period_start_date) { Time.zone.today }
-
-        context "when the start_date is before the previous training period started_on date" do
-          let(:start_date) { training_period_start_date - 1.day }
-
-          it { is_expected.to be_valid }
-        end
-
-        context "when the start_date is on the previous training period started_on date" do
-          let(:start_date) { training_period_start_date }
-
-          it { is_expected.to be_valid }
-        end
-
-        context "when the start_date is after the previous training period started_on date" do
-          let(:start_date) { training_period_start_date + 1.day }
-
-          it { is_expected.to be_valid }
-        end
-      end
-
-      context "when the previous training_period starts in the future" do
-        let(:training_period_start_date) { Date.tomorrow }
-
-        context "when the start_date is before the previous training period started_on date" do
-          let(:start_date) { training_period_start_date - 1.day }
-
-          it { is_expected.to be_valid }
-        end
-
-        context "when the start_date is on the previous training period started_on date" do
-          let(:start_date) { training_period_start_date }
-
-          it { is_expected.to be_valid }
-        end
-
-        context "when the start_date is after the previous training period started_on date" do
-          let(:start_date) { training_period_start_date + 1.day }
-
-          it { is_expected.to be_valid }
-        end
-      end
+      it { is_expected.to be_valid }
     end
   end
 
