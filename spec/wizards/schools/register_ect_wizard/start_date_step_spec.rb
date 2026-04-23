@@ -6,7 +6,16 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
   let(:school) { FactoryBot.build(:school) }
   let(:step_params) { {} }
   let(:store) { FactoryBot.build(:session_repository, start_date: prepopulated_start_date) }
-  let(:wizard) { FactoryBot.build(:register_ect_wizard, current_step: :start_date, school:, store:, step_params:) }
+
+  let(:wizard) do
+    FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:, step_params:).tap do |instance|
+      allow(instance).to receive(:ect).and_return(
+        Schools::RegisterECTWizard::RegistrationStore.new(store).tap do |registration_store|
+          allow(registration_store).to receive_messages(trs_first_name: "Johnnie", trs_last_name: "Walker")
+        end
+      )
+    end
+  end
 
   describe "#initialize" do
     subject { described_class.new(wizard:, **params) }
@@ -125,17 +134,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
                           started_on: Date.new(2024, 9, 1),
                           finished_on: Date.new(2025, 3, 31))
       end
-
-      let(:wizard) do
-        FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:).tap do |instance|
-          allow(instance).to receive(:ect).and_return(
-            Schools::RegisterECTWizard::RegistrationStore.new(store).tap do |registration_store|
-              allow(registration_store).to receive_messages(trs_first_name: "Johnnie", trs_last_name: "Walker")
-            end
-          )
-        end
-      end
-
+ 
       let(:start_date_too_early_message) { "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a later start date." }
 
       context "when the start_date is before the previous ECTAtSchoolPeriod started_on date" do
@@ -198,16 +197,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         FactoryBot.create(:training_period, :ongoing, ect_at_school_period: previous_period, started_on: training_period_start_date)
       end
 
-      let(:wizard) do
-        FactoryBot.build(:register_ect_wizard, current_step: :start_date, store:, school:).tap do |instance|
-          allow(instance).to receive(:ect).and_return(
-            Schools::RegisterECTWizard::RegistrationStore.new(store).tap do |registration_store|
-              allow(registration_store).to receive_messages(trs_first_name: "Johnnie", trs_last_name: "Walker")
-            end
-          )
-        end
-      end
-
+      
       let(:start_date_before_training_period_message) { "Our records show that Johnnie Walker started their latest training at Springfield Primary on 1 October 2024. Enter a later start date." }
       let(:training_period_start_date) { Date.new(2024, 10, 1) }
 

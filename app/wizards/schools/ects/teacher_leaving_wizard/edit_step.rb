@@ -5,8 +5,7 @@ module Schools
         attr_accessor :leaving_on
 
         validate :leaving_on_valid
-        validate :leaving_after_start_date
-        validate :leaving_after_training_started
+        validate :leaving_on_after_previous_school_or_training_period_start
 
         def self.permitted_params
           %i[
@@ -45,43 +44,23 @@ module Schools
           errors[:leaving_on].any?
         end
 
-        def leaving_after_start_date
+        def leaving_on_after_previous_school_or_training_period_start
           return if skip_leaving_on_validation?
-          return unless period_start_date_valid?(ect_at_school_period)
-          return if after_started_on(ect_at_school_period)
+          return if leaving_on_boundary_validator.valid?
 
-          errors.add(
-            :leaving_on,
-            "Our records show that #{name_for(ect_at_school_period.teacher)} started teaching at your school on #{ect_at_school_period.started_on.to_formatted_s(:govuk)}. Enter a later date."
-          )
-        end
-
-        def leaving_after_training_started
-          return if skip_leaving_on_validation?
-          return unless period_start_date_valid?(latest_started_training_period)
-          return if after_started_on(latest_started_training_period)
-
-          errors.add(
-            :leaving_on,
-            "Our records show that #{name_for(ect_at_school_period.teacher)} started their latest training at your school on #{latest_started_training_period.started_on.to_formatted_s(:govuk)}. Enter a later date."
-          )
-        end
-
-        def after_started_on(period)
-          leaving_on_input.value_as_date > period.started_on
-        end
-
-        def period_start_date_valid?(period)
-          period&.started_on.present?
-        end
-
-        # Unstarted training periods (ie starting today or in the future) will be deleted and should not prevent the leaving date from being valid
-        def latest_started_training_period
-          ect_at_school_period&.training_periods&.started_before(Time.zone.today)&.latest_first&.first
+          errors.add(:leaving_on, leaving_on_boundary_validator.error_message + " Enter a later date.")
         end
 
         def leaving_on_input
           @leaving_on_input ||= Schools::Validation::LeavingDate.new(date_as_hash: leaving_on)
+        end
+
+        def leaving_on_boundary_validator
+          @leaving_on_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
+            ect_at_school_period:,
+            full_name: name_for(ect_at_school_period.teacher),
+            date: leaving_on_input.value_as_date
+          )
         end
       end
     end
