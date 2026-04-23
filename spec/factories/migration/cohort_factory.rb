@@ -18,6 +18,6 @@ FactoryBot.define do
     end
 
     detailed_evidence_types { false }
-    mentor_funding { false }
+    mentor_funding { true }
   end
 end
