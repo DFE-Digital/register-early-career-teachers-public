@@ -79,6 +79,9 @@ private
         elsif last_training_period.present? && !induction_record.ignore_training?
           # extend training period
 
+          # ensure the most recent schedule is used on the period
+          last_training_period.schedule_info = induction_record.schedule_info
+
           # we should check for withdrawn here and ensure we close it or not overwrite the finished_at
           state_changed_at = induction_record.end_date
           lead_provider_id = induction_record.training_provider_info&.lead_provider_info&.ecf1_id
