@@ -99,10 +99,8 @@ module API::Teachers
     end
 
     def participant_status
-      @participant_status ||= API::TrainingPeriods::TeacherStatus.new(
-        latest_training_period: training_period,
-        teacher:
-      )
+      @participant_status ||= API::TrainingPeriods::TeacherStatus
+        .new(latest_training_period: training_period)
     end
 
     def lead_provider_is_currently_training_teacher
