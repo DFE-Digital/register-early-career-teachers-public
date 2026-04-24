@@ -68,6 +68,25 @@ RSpec.describe Schools::RegisterMentor do
           expect { service.register! }
             .to have_enqueued_mail(Schools::MentorRegistrationMailer, :confirmation)
         end
+
+        it "records a teacher_name_updated_by_user event when a corrected name is provided" do
+          expect(Events::Record).to receive(:teacher_name_updated_by_user_event!).with(
+            old_name: "#{trs_first_name} #{trs_last_name}",
+            new_name: "Randy Marsh",
+            author:,
+            teacher: anything
+          )
+          service.register!
+        end
+
+        context "when no corrected name is provided" do
+          let(:corrected_name) { nil }
+
+          it "does not record a teacher_name_updated_by_user event" do
+            expect(Events::Record).not_to receive(:teacher_name_updated_by_user_event!)
+            service.register!
+          end
+        end
       end
 
       context "when a Teacher record with the same trn exists" do
