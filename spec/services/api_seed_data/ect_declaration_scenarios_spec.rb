@@ -7,11 +7,7 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
 
   def setup_test_data(lead_provider:)
     school_partnership = FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, lead_provider:)
-    FactoryBot.create(:schedule, contract_period:, identifier: "ecf-standard-september").tap do |schedule|
-      Declaration.declaration_types.each_key do |declaration_type|
-        schedule.milestones.create!(declaration_type:, start_date: Date.new(2025, 6, 1))
-      end
-    end
+    FactoryBot.create(:schedule, :with_milestones, contract_period:, identifier: "ecf-standard-september")
 
     # API::Declarations::Create validates that an open output fee statement with a
     # future deadline exists for the lead provider's contract period
@@ -66,18 +62,23 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
       expect(teacher.finished_induction_period).to be_nil
 
       expect(teacher.ect_declarations.count).to eq(1)
-      expect(teacher.ect_declarations.first).to have_attributes(
+
+      retained_1_declaration = teacher.ect_declarations.first
+      milestone = training_period.schedule.milestones.find_by(declaration_type: :"retained-1")
+      expect(retained_1_declaration.declaration_date).to eq((milestone.start_date + 2.months).in_time_zone)
+
+      expect(retained_1_declaration).to have_attributes(
         declaration_type: "retained-1",
-        declaration_date: Date.new(2026, 1, 1).in_time_zone,
         overall_status: "paid"
       )
 
+      milestone = training_period.schedule.milestones.find_by(declaration_type: :started)
       service = API::Declarations::Create.new(
         lead_provider_id: lead_provider.id,
         teacher_api_id: teacher.api_id,
         teacher_type: :ect,
         evidence_type: "other",
-        declaration_date: "2025-11-21T08:46:29Z",
+        declaration_date: milestone.start_date.rfc3339,
         declaration_type: "started"
       )
 
@@ -109,15 +110,21 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
 
       expect(teacher.ect_declarations.count).to eq(2)
       started_declaration = teacher.ect_declarations.find_by(declaration_type: "started")
+
+      milestone = training_period.schedule.milestones.find_by(declaration_type: :started)
+      expect(started_declaration.declaration_date).to eq((milestone.start_date + 1.month).in_time_zone)
+
       expect(started_declaration).to have_attributes(
         declaration_type: "started",
-        declaration_date: Date.new(2025, 9, 1).in_time_zone,
         overall_status: "paid"
       )
+
       retained_2_declaration = teacher.ect_declarations.find_by(declaration_type: "retained-2")
+      milestone = training_period.schedule.milestones.find_by(declaration_type: :"retained-2")
+      expect(retained_2_declaration.declaration_date).to eq((milestone.start_date + 3.months).in_time_zone)
+
       expect(retained_2_declaration).to have_attributes(
         declaration_type: "retained-2",
-        declaration_date: Date.new(2025, 9, 2).in_time_zone,
         overall_status: "no_payment"
       )
 
@@ -134,7 +141,7 @@ RSpec.describe APISeedData::ECTDeclarationScenarios do
         teacher_api_id: teacher.api_id,
         teacher_type: :ect,
         evidence_type: "other",
-        declaration_date: "2025-09-02T08:46:29Z",
+        declaration_date: (retained_2_declaration.declaration_date - 1.day).rfc3339,
         declaration_type: "retained-1"
       )
 
