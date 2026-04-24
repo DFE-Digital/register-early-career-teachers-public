@@ -45,7 +45,7 @@ describe InductionPeriods::CreateInductionPeriod do
 
         perform_enqueued_jobs
 
-        expect(Event.all.map(&:event_type)).to match_array(%w[induction_period_opened teacher_funding_eligibility_set])
+        expect(Event.all.map(&:event_type)).to match_array(%w[induction_period_opened])
       end
 
       it "creates the event with the expected values" do
@@ -105,8 +105,8 @@ describe InductionPeriods::CreateInductionPeriod do
           .with(trn: teacher.trn, start_date: started_on)
       end
 
-      it "calls `Teachers::SetFundingEligibility` service with correct params" do
-        expect(Teachers::SetFundingEligibility).to receive(:new)
+      it "calls `Teachers::SetECTFundingEligibility` service with correct params" do
+        expect(Teachers::SetECTFundingEligibility).to receive(:new)
           .with(teacher:, author:)
           .and_call_original
 
