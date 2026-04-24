@@ -1,0 +1,18 @@
+<% page_data(
+    title: "What date do you want to travel to?",
+    error: @time_traveller.errors.any?,
+    backlink_href: backlink_with_fallback(fallback: root_path)
+  ) %>
+
+<%= form_with(model: @time_traveller, url: time_traveller_path) do |form| %>
+  <%= content_for(:error_summary) { form.govuk_error_summary } %>
+  <%= form.govuk_date_field(
+        :travel_to,
+        width: "two-thirds",
+        legend: { text: "Travel to date", size: "m", tag: "h3", hidden: true },
+        hint: { text: "For example, 17 9 #{Date.current.year.next}" }
+      ) %>
+  <%= form.govuk_submit "Back to the future!" do %>
+    <%= govuk_button_to "Back to the real world!", time_traveller_path, method: :delete, warning: true %>
+  <% end %>
+<% end %>

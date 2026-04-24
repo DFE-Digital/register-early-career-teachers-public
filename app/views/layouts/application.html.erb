@@ -7,6 +7,7 @@
 
     <div class="govuk-width-container">
       <%= render partial: "layouts/shared/banners" %>
+      <%= render TimeTravellerComponent.new(time_travelled_date: Current.time_travelled_date) %>
       <%= render Admin::ImpersonationBannerComponent.new(user: current_user, school: @school) %>
       <%= yield(:backlink_or_breadcrumb) %>
 
