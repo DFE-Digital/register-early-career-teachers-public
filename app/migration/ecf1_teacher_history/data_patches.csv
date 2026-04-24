@@ -6929,7 +6929,6 @@ ed6401ea-9a5f-4b9b-9e5e-8f4ed7e93b87,19d77f60-41eb-41cc-8306-8f4cc82cd068,TRUE,,
 725af363-a3c3-433a-9e0c-0db868985799,19f5bdf0-05a1-424e-92af-0591b3036d56,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 2480cece-32fd-48e7-b341-36b308dd38c6,1aa8f552-8c7e-4fbe-9264-76677cdbfe3a,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 60465297-beef-4017-9bf3-e7ab2ff3906a,1b9e57b7-be88-4982-89f2-83bc56faecb5,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
-4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,1c7369cc-1d76-441a-8975-31a75d116629,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 bd780930-2587-4dab-bcd4-603babc4c27d,21845ac2-882e-45b6-a2ea-190e838086c4,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 1046b56e-716b-4f17-9894-28a413cbfa39,23e4738f-4c79-440f-92b9-38e3bc7b1fe5,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 e8749a31-0fd1-41d4-8719-9401643ee02d,252994bb-7b09-4ba7-a762-97272173b6db,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
@@ -6970,7 +6969,7 @@ bc5df4bc-131b-4059-aa20-13e3858947a0,7c3b1572-69c5-4b1f-a78c-5f05368a407c,TRUE,,
 78d32732-4fcb-4c92-af73-3d987a93cf80,85dbd237-cefb-4d1b-9fda-55773ca4e4df,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 5d95995a-2c3f-45a8-9ede-8ec39c545e42,85e04884-57fc-4fd2-8495-9f4dd5965841,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 68826593-ee5c-43dc-9a3b-f6b09046da41,896c1d68-bb3f-4e25-af84-6c81599457de,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
-515f59ec-5953-49be-aba8-799ece3b4e5e,8a4e9f94-6b72-4587-a20c-f5d025438c84,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
+515f59ec-5953-49be-aba8-799ece3b4e5e,c9c867db-ed5e-4807-b2d0-3163255f8fb5,,02/06/2022,,,,,,,,,,,,,,24/04/2026,AB,Amending to allow declaration to be attached to previous IR
 87f76077-a7f4-4d2e-bf27-c273e2055a6f,8ba887ef-0d8c-4a15-ae95-581b61023f70,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 c6d22e64-8f0a-4f58-8db0-6a4a3489f6eb,931512e2-6d10-4145-9437-32fb659494b2,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
 301ffd30-105d-4e06-9e67-57df210a6932,9362ad50-b78d-47c5-8757-d9ded3b39b66,TRUE,,,,,,,,,,,,,,,21/04/2026,AC,#3803 - deleting due to unnecessary LP Change
@@ -10811,6 +10810,9 @@ fa0eac7a-f5e6-4f3a-9124-b13b1e9fb44a,2c1a51cd-a352-4b5d-b549-20d234aeb380,TRUE,,
 c3ada6e4-6f03-49dc-b437-02b445f7f990,2dd21888-0423-4640-a21e-40bc59a7f70c,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 a2d60584-40af-4b25-b4f9-02b9e1b87465,2f008ce7-694d-4741-ad08-c0bcab61da7f,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 105ae645-1db4-4d4b-b416-079d7c5b0fbc,2fda1031-94c6-4835-a04c-d7a9ac37eb7a,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
+105ae645-1db4-4d4b-b416-079d7c5b0fbc,d6b3c417-db3b-4af1-b6ad-38eb69781f78,TRUE,,,,,,,,,,,,,,,24/04/2026,AB / NE ,Amending to fit in period for declaration failure
+105ae645-1db4-4d4b-b416-079d7c5b0fbc,e918cfa9-5a78-43c4-ba96-cde78114b3e3,,,31/07/2022,,,,,,,,,,,,,24/04/2026,AB / NE ,Amending to fit in period for declaration failure
+105ae645-1db4-4d4b-b416-079d7c5b0fbc,d418703d-c9b7-446b-b1d7-dcbd5fec9517,,01/08/2022,31/08/2022,,,,,,,,withdrawn,other,bd152c5a-5ef4-4584-9c63-c32877dbba07,31/08/2022,,24/04/2026,AB / NE ,Amending to fit in period for declaration failure
 e52e04ca-a98f-4b02-bdf2-f4ad53b23db5,3107dd74-3a26-4b0e-a91c-9e13c87ad966,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 ddaa68a0-a4b3-48b8-bd26-7059c9410e9a,31138bcf-9ae2-4d83-bfb6-e6c2629bc2f4,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 2f30c05e-e08d-4b05-b9cc-c321f0e03ca0,3165b440-e1a4-473f-9388-b5d95caf2abd,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
@@ -11784,7 +11786,6 @@ e493fe34-34af-497d-a14d-e1703ed66ca4,1fcf8653-1b24-43d1-bae2-6643d4ee2299,TRUE,,
 93ca470e-7f00-4eec-ac85-44d8fd03d2d8,21660f6a-e0b1-4fcc-aa2d-5ad9ea074dd9,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 1c507dfc-4c03-42b0-8652-3c6128e29de8,21c096ce-f3b7-4d36-aef2-10c207e78c13,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 bb5471e2-f109-4294-adfb-d151948389f0,21ec95bb-4a81-4ac3-a809-99bc5e2eb0d7,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
-79d9f18f-b34b-480b-88eb-73f160655ce2,21ff95ed-8d01-4d15-b312-64824524bbff,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 d2d9cbe3-3e9a-4dcb-9298-d18571414457,22573624-b49d-4de9-81b2-2b37dc966bbe,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 9ffe3ccc-2fa6-465a-a570-c80f70f6b8b6,22924ca7-b34a-40d0-aa0a-757effabd981,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 c0b78379-6d92-405e-aaaa-d28866839b5c,22b211b3-c4ee-44fb-b6ee-34c8ddef069d,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
@@ -12250,7 +12251,7 @@ a495e273-87ff-4346-9f5e-1d728192d31f,876fd645-db68-46f4-ab39-d8a240acc514,TRUE,,
 3ec16fc9-2792-42ef-8ceb-bc59b1d7f510,8817daf7-cbdb-4854-8a68-8090a2e3fd83,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 26da207a-eb98-43c7-ab1e-6cac7dfd6acf,885d5251-82a8-4d12-bb9b-fa99cd4f33b3,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 358adbb0-8a61-4703-a26d-559fa3537f78,88718d50-c610-42b1-b873-2f6a1f449483,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
-ee5de9bc-9aa7-43dc-b15a-833931750736,888cf1c5-dfd0-44f0-8376-a7de7db3993c,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
+ee5de9bc-9aa7-43dc-b15a-833931750736,888cf1c5-dfd0-44f0-8376-a7de7db3993c,,,31/08/2022,,,,,active,,,withdrawn,other,22727fdc-816a-4a3c-9675-030e724bbf89,31/08/2022,,24/04/2026,AB,Amending to allow declarations to attach
 b505bd97-07ad-44db-bfad-cf297c9f7430,88dd2625-8d7c-4211-b341-5dd82bda893e,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 4550404e-126a-4ce1-b034-0340c95cf95c,88fcd972-ec3d-42ba-ab97-a894224bd1ac,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 f6adeffa-7283-4eb5-a2a3-24968966335d,892ad500-2ec9-466c-8291-6f181b25b9f3,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
@@ -12372,7 +12373,7 @@ edb76680-8760-433a-a1b0-c96153e72506,9f1c51ff-90ec-480a-b5b6-878cfdf2ee57,TRUE,,
 c0aebf91-4bff-460d-abc2-c4149cd30828,9f712007-2684-4ba6-b62c-bef101074e1d,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 a5cbe436-16fc-42f3-9d30-022eba4f9fe4,9f8fbe8a-d8bf-4064-a32e-7a3989430aa3,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 a8ca7b18-0d76-4fa6-9e14-ddfdb5657912,9fa9c830-0835-4270-a4cc-8e54786756fc,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
-cf25cf20-f5d8-4e43-a8bf-440d0218acd0,9fea44fb-cca5-4f51-9b5d-57d282d7dc02,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
+cf25cf20-f5d8-4e43-a8bf-440d0218acd0,9fea44fb-cca5-4f51-9b5d-57d282d7dc02,,,20/05/2022,,,,,active,,,withdrawn,other,bd152c5a-5ef4-4584-9c63-c32877dbba07,20/05/2022,,24/04/2026,AB,Amending to allow declarations to attach
 815257e1-f2e7-4e0d-b0ea-e0f040d7c79b,a03b1b52-9f79-46ad-a770-a1c604447191,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 b7ee09ed-9367-4b1d-89d9-0f3f63b979ff,a051181e-4737-4344-a87f-844039bbf8cf,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 635c20ab-b748-4c88-b197-7f89887b9999,a1235d5d-b141-4f93-a7fa-12f5502b29b0,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
@@ -12635,7 +12636,7 @@ c927d510-a9b1-486c-90bc-d4f417d0f603,d3eac799-b3af-4aae-82aa-83cd0b873905,TRUE,,
 92841046-5ab4-49a8-859d-8519228de143,d530f711-ff09-4a98-a68a-b1c877f4dac5,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 92d82c16-1ac6-410e-9b7a-949279c1989d,d5867487-a77d-4251-a9e9-b9100790990f,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 5f7ab0ba-0033-46b8-aebc-5f770d14886d,d5c75e31-9767-4c34-b852-345cec8341a9,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
-7d0f6964-3886-4957-88b6-6db67ff4aff2,d625ee6a-4951-4297-9aff-d885a6643981,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
+7d0f6964-3886-4957-88b6-6db67ff4aff2,d625ee6a-4951-4297-9aff-d885a6643981,,,30/11/2021,,,,,active,,,withdrawn,other,22727fdc-816a-4a3c-9675-030e724bbf89,30/11/2021,,24/04/2026,AB,Amending to allow declaration to attach
 031f9032-933e-47e6-99a3-a45b333f4cb2,d66ccb5d-ad13-42a7-98fe-ff78863d7e81,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 da348c67-2ffb-4b63-82d8-a2bbb35dcb3f,d6c7e875-9599-41bf-94d1-fb1db3955d31,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 60f33f20-57bd-4275-844b-4a7988004172,d6cec169-ac9b-4d7f-984b-3a9b5105e6b9,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
@@ -12747,7 +12748,8 @@ eed3f619-d056-4fcb-be4a-e1c70d80ac56,edd87a0c-740c-4e3a-bd90-7299bd05a311,TRUE,,
 b5681aeb-701e-408e-8c2f-a689b1463a65,ee97c74b-c7a0-4fd8-aee7-8dbbfc0ef6ed,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 a41bb1e7-d4d1-4406-b006-36c6f2097518,eea08986-b6aa-4948-b957-bf58b1cdc991,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 6fb052a4-4e95-44c3-b89e-1678a7610ef5,eeccc647-2286-4305-a94e-6cde709eb0aa,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
-3a4b7ce4-2a6d-4ea8-b98f-ab37a57708fe,ef077ecd-da8e-4576-b0c6-7f365966529e,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
+3a4b7ce4-2a6d-4ea8-b98f-ab37a57708fe,b9e2aa78-eb37-44df-a820-0e0198fbd376,TRUE,,,,,,,,,,,,,,,22/04/2026,AC/AB,Changed IR to be ignored as declarations attached
+3a4b7ce4-2a6d-4ea8-b98f-ab37a57708fe,a4238c1a-87b7-401f-aecd-30de48711b04,,,31/08/2022,,,,,,,,,,,,,24/04/2026,AB,Amending to allow a 1 day IR with declarations to be created
 df4fed5c-f2fe-499d-94bf-645fa3d24a72,efdd2594-885f-4aae-86a9-3df517b8c214,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 79a1ff2f-32e5-4180-81b9-5a1bd8861636,f045a79d-02cc-42e5-afb2-1e5d3b3037a7,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
 b854d0b1-ea2f-4eef-a83b-169ae2d3fc76,f0815f70-7088-4447-a30f-f0d4895ddf85,TRUE,,,,,,,,,,,,,,,22/04/2026,AC,Deleting to see what happens if we get rid of failing combos which are a single day
@@ -24978,10 +24980,37 @@ f721af88-3e43-4521-b5de-0e168caaf280,cffe8a3b-2c42-4191-a2df-e2d2a84a6d81,,,02/0
 157c9e98-5723-4d34-8830-2a7b6958d00a,e811f3e5-614c-413e-bf31-7626d4da02e5,,,02/09/2025,,,,,,,,,,,,,23/04/2026,AB,#3803 - remedial work for failing declarations
 21e05c46-d49d-4c27-abcb-1858413c4de6,ed8a50d5-18a5-42d7-83a7-eaca54e734e5,,,02/09/2025,,,,,,,,,,,,,23/04/2026,AB,#3803 - remedial work for failing declarations
 c07db768-3a8c-4e9c-beee-6ff0ebdb1faf,fa6e9e6f-b6d5-4945-90e8-32e00cbf9eb6,,,02/09/2025,,,,,,,,,,,,,23/04/2026,AB,#3803 - remedial work for failing declarations
-07face12-9d1e-4a1e-91c5-327e060b4e93,b6cd85bd-a291-4724-a0e4-20acb2b17c0d,,45900,,,,,,,,,withdrawn,other,bd152c5a-5ef4-4584-9c63-c32877dbba07,45900,,46135,NE,Aligning periods to allow declaration migration
-07face12-9d1e-4a1e-91c5-327e060b4e93,b793895e-052d-45ff-8568-c8e6bc461c86,,45901,,,,,,active,,,,,,,,46135,NE,Aligning periods to allow declaration migration
-07face12-9d1e-4a1e-91c5-327e060b4e93,5a6838a5-9f87-4fb0-b336-7225b2466a31,,,,,,,,active,,,,,,,,46135,NE,Aligning periods to allow declaration migration
-e58bad30-4338-4745-acac-6a54c316bee3,46c0d991-6936-4209-a436-f643de89f0a1,TRUE,,,,,,,,,,,,,,,46135,NE,Dates error blocking PREMIUM migration
-96d1de6b-d8d7-43be-b879-e4f9821633ca,d8e19146-0541-47ca-a5ba-ba56b6e40a04,TRUE,,,,,,,,,,,,,,,46135,NE,Incorrect cohort
-96d1de6b-d8d7-43be-b879-e4f9821633ca,7c3d34c2-09a4-43da-89cf-ca3434a4c2f5,TRUE,,,,,,,,,,,,,,,46135,NE,Incorrect cohort
-96d1de6b-d8d7-43be-b879-e4f9821633ca,b17d4ab9-1202-4edc-bf17-764d1edb886e,,45170,,,,,,,,,,,,,,46135,NE,Starting earlier to reflect training
+07face12-9d1e-4a1e-91c5-327e060b4e93,b6cd85bd-a291-4724-a0e4-20acb2b17c0d,,,31/08/2025,,,,,,,,withdrawn,other,bd152c5a-5ef4-4584-9c63-c32877dbba07,31/08/2025,,23/04/2026,NE,Aligning periods to allow declaration migration
+07face12-9d1e-4a1e-91c5-327e060b4e93,b793895e-052d-45ff-8568-c8e6bc461c86,,01/09/2025,,,,,,active,,,,,,,,23/04/2026,NE,Aligning periods to allow declaration migration
+07face12-9d1e-4a1e-91c5-327e060b4e93,5a6838a5-9f87-4fb0-b336-7225b2466a31,,,,,,,,active,,,,,,,,23/04/2026,NE,Aligning periods to allow declaration migration
+e58bad30-4338-4745-acac-6a54c316bee3,46c0d991-6936-4209-a436-f643de89f0a1,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Dates error blocking PREMIUM migration
+96d1de6b-d8d7-43be-b879-e4f9821633ca,d8e19146-0541-47ca-a5ba-ba56b6e40a04,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Incorrect cohort
+96d1de6b-d8d7-43be-b879-e4f9821633ca,7c3d34c2-09a4-43da-89cf-ca3434a4c2f5,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Incorrect cohort
+79cf630e-8618-41ba-b509-ab36957672f9,66ba3a62-41bb-4228-a5cc-7fd55b16194d,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Cohort errors
+79cf630e-8618-41ba-b509-ab36957672f9,5126d813-4b0c-4231-8f8e-408430d3d3e8,,01/09/2021,,,,,,,,,,,,,,23/04/2026,NE,Cohort errors
+79cf630e-8618-41ba-b509-ab36957672f9,c58443e9-0d7e-48b5-8574-d5dd1435e742,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Cohort errors
+79cf630e-8618-41ba-b509-ab36957672f9,f4522f7c-1bc5-4d20-898b-26a646b12e94,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Cohort errors
+79cf630e-8618-41ba-b509-ab36957672f9,0cb5b085-d1d6-405f-a27a-0a3b393ab48a,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Cohort errors
+79cf630e-8618-41ba-b509-ab36957672f9,d5385297-5059-40d2-a107-4e2cddee0871,TRUE,,,,,,,,,,,,,,,23/04/2026,NE,Cohort errors
+79cf630e-8618-41ba-b509-ab36957672f9,ef21db87-5c5d-4087-86ed-3ff09661e330,,01/09/2024,20/03/2026,,,,,active,,,withdrawn,other,22727fdc-816a-4a3c-9675-030e724bbf89,20/03/2026,,23/04/2026,NE,Cohort errors
+3763598c-1b9d-4d6c-97d9-8df63c50e0ee,8b335f0d-9f70-4a6c-9e01-b952e9a52394,,,19/02/2023,,,,,active,,,withdrawn,other,22727fdc-816a-4a3c-9675-030e724bbf89,19/02/2023,,24/04/2026,AB/NE,Declaration failures
+3763598c-1b9d-4d6c-97d9-8df63c50e0ee,543ee483-b32e-448f-9bf4-ca4ffba93d1c,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+3763598c-1b9d-4d6c-97d9-8df63c50e0ee,9ecb9141-eea3-445c-8ca4-920ab8695203,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+3763598c-1b9d-4d6c-97d9-8df63c50e0ee,d388b49e-2bdc-4e2f-821a-a07a63a8fcdf,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,2fec6bc7-e90b-428a-bc82-e3e06a6a4412,,31/08/2022,,,,,,active,,,withdrawn,other,22727fdc-816a-4a3c-9675-030e724bbf89,31/08/2022,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,ba88feef-d1ae-4bc3-a32a-9e3de3c62499,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,3d73d666-9a72-44bb-86e8-1d7805e0acd6,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,cb6d9235-e56a-49eb-832d-cfd16724d9c7,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,e23c373b-e69e-4d75-91ef-8117faec5173,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,f6c30329-4439-4a85-99dd-62608d462c06,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,669b8e79-46b2-45be-b675-38485a3787d2,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,02eae742-baa0-461b-975e-8e0a26c15b13,TRUE,,,,,,,,,,,,,,,24/04/2026,AB/NE,Declaration failures
+4f99d69e-e4f9-42c2-9ec2-374d8d7223f7,1c7369cc-1d76-441a-8975-31a75d116629,,01/09/2022,25/08/2023,,,,,active,,,withdrawn,other,bd152c5a-5ef4-4584-9c63-c32877dbba07,25/08/2023,,24/04/2026,AB/NE,Declaration failures
+938313d4-23b0-4997-b96d-6c36eca21266,3266ceeb-384f-48c9-8272-602ed6573c50,,,14/12/2023,,,,,,,,,,,,,24/04/2026,MD,#3764
+938313d4-23b0-4997-b96d-6c36eca21266,1757ef49-baf9-4214-9dc2-06e3533c21e5,TRUE,,,,,,,,,,,,,,,24/04/2026,MD,#3764
+938313d4-23b0-4997-b96d-6c36eca21266,16f4bc22-58cf-4009-9090-1c883985594f,TRUE,,,,,,,,,,,,,,,24/04/2026,MD,#3764
+938313d4-23b0-4997-b96d-6c36eca21266,564dfea8-c13c-460d-815b-a12160fe3698,TRUE,,,,,,,,,,,,,,,24/04/2026,MD,#3764
+9ecf3e9e-8cd7-4093-9985-517243c493d6,14806aef-b883-4c19-9c2a-31dae0049734,TRUE,,,,,,,,,,,,,,,24/04/2026,MD,#3764
+b4b926ef-eef1-4a6a-ae8b-4e9360659a20,1cb90eed-ccd1-4c05-b8cb-3a8a8fcc5bf9,TRUE,,,,,,,,,,,,,,,24/04/2026,MD,#3764
+bc279ca0-7ea0-4eb8-9b12-9c683d17970b,382999c2-5b0b-4839-bd68-6d170b5bd0cf,,,04/01/2026,,,,,,,,,,,,,24/04/2026,MD,#3764
+bc279ca0-7ea0-4eb8-9b12-9c683d17970b,6116e6e9-d23d-435f-b58a-29836a2af81e,TRUE,,,,,,,,,,,,,,,24/04/2026,MD,#3764
