@@ -8,7 +8,7 @@ module API
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids),
           sort:
         }
-        paginated_school_partnerships = partnerships_query(conditions:).school_partnerships { paginate(it) }
+        paginated_school_partnerships = paginate(partnerships_query(conditions:).school_partnerships)
 
         render json: to_json(paginated_school_partnerships)
       end
