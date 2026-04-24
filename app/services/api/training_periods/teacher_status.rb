@@ -29,7 +29,15 @@ module API::TrainingPeriods
     end
 
     def teacher_is_mentor_and_completed_training?
-      for_mentor? && mentor_became_ineligible_for_funding_on.present?
+      for_mentor? &&
+        mentor_became_ineligible_for_funding_on_or_before_training_period_finished?
+    end
+
+    def mentor_became_ineligible_for_funding_on_or_before_training_period_finished?
+      return false if mentor_became_ineligible_for_funding_on.blank?
+      return true if finished_on.blank?
+
+      !mentor_became_ineligible_for_funding_on.after?(finished_on)
     end
   end
 end
