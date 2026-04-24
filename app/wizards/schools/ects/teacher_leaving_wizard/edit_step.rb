@@ -48,7 +48,25 @@ module Schools
           return if skip_leaving_on_validation?
           return if leaving_on_boundary_validator.valid?
 
-          errors.add(:leaving_on, leaving_on_boundary_validator.error_message + " Enter a later date.")
+          errors.add(:leaving_on, invalid_period_error_message)
+        end
+
+        def invalid_period_error_message
+          "Our records show that #{name_for(ect_at_school_period.teacher)} started " \
+          "#{invalid_period_type} at your school on " \
+          "#{invalid_period_formatted_date}." \
+          " Enter a later date."
+        end
+
+        def invalid_period_type
+          case leaving_on_boundary_validator.invalid_period
+          when ECTAtSchoolPeriod then "teaching"
+          when TrainingPeriod    then "their latest training"
+          end
+        end
+
+        def invalid_period_formatted_date
+          leaving_on_boundary_validator.invalid_period.started_on.to_formatted_s(:govuk)
         end
 
         def leaving_on_input
@@ -58,7 +76,6 @@ module Schools
         def leaving_on_boundary_validator
           @leaving_on_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
             ect_at_school_period:,
-            full_name: name_for(ect_at_school_period.teacher),
             date: leaving_on_input.value_as_date
           )
         end
