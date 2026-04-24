@@ -1,5 +1,5 @@
 RSpec.describe API::TrainingPeriods::TeacherStatus do
-  let(:service) { described_class.new(latest_training_period: training_period) }
+  let(:service) { described_class.new(latest_training_period: training_period, teacher:) }
   let(:teacher) { training_period.teacher }
 
   describe "#status" do

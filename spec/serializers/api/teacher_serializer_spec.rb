@@ -94,11 +94,11 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
 
       before do
         if defined?(ect_training_period)
-          allow(API::TrainingPeriods::TeacherStatus).to receive(:new).with(latest_training_period: ect_training_period).and_return(mock_teacher_status)
+          allow(API::TrainingPeriods::TeacherStatus).to receive(:new).with(latest_training_period: ect_training_period, teacher:).and_return(mock_teacher_status)
         end
 
         if defined?(mentor_training_period)
-          allow(API::TrainingPeriods::TeacherStatus).to receive(:new).with(latest_training_period: mentor_training_period).and_return(mock_teacher_status)
+          allow(API::TrainingPeriods::TeacherStatus).to receive(:new).with(latest_training_period: mentor_training_period, teacher:).and_return(mock_teacher_status)
         end
       end
 
