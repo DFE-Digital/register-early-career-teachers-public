@@ -33,6 +33,7 @@ class Event < ApplicationRecord
     teacher_imported_from_trs
     teacher_induction_status_reset
     teacher_name_updated_by_trs
+    teacher_name_updated_by_user
     teacher_passes_induction
     teacher_registered_as_ect
     teacher_left_school_as_ect
