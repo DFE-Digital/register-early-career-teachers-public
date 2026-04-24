@@ -12,31 +12,31 @@ module API::Declarations
 
     validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
     validate :teacher_exists
-    validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }
+    validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }, if: -> { errors.empty? }
     validates :teacher_type, inclusion: {
       in: TEACHER_TYPES,
       message: "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again."
     }, allow_blank: true
+    validates :declaration_date, presence: { message: "Enter a '#/declaration_date'." }, if: -> { errors.empty? }
     validate :teacher_type_exists
-    validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }
+    validates :declaration_type, presence: { message: "Enter a '#/declaration_type'." }, if: -> { errors.empty? }
     validates :declaration_type, inclusion: {
       in: Declaration.declaration_types.keys,
       message: "Enter a valid declaration type."
-    }, allow_blank: true
+    }, allow_blank: true, if: -> { errors.empty? }
     validate :validates_billable_slot_available
-    validates :declaration_date, presence: { message: "Enter a '#/declaration_date'." }
     validate :declaration_date_in_the_past
     validates :declaration_date,
               declaration_date_within_milestone: true,
               api_date_time_format: true,
               allow_blank: true
-    validates :evidence_type, evidence_type: true
     validate :validate_only_started_or_completed_if_mentor
+    validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
     validate :teacher_not_withdrawn_before_declaration_date
-    validate :validate_milestone_exists
-    validate :payment_statement_available
-    validate :declaration_in_sequence
     validate :not_eligible_in_frozen_contract_period
+    validate :payment_statement_available
+    validate :validate_milestone_exists
+    validate :declaration_in_sequence
 
     def create
       return false unless valid?
@@ -125,6 +125,9 @@ module API::Declarations
 
     def declaration_date_in_the_past
       return if errors[:declaration_date].any?
+      return if errors[:declaration_type].any?
+      return if errors[:teacher_api_id].any?
+      return if errors[:teacher_type].any?
 
       if declaration_date && declaration_date > Time.zone.now
         errors.add(:declaration_date, "The '#/declaration_date' value cannot be a future date. Check the date and try again.")
@@ -133,6 +136,7 @@ module API::Declarations
 
     def teacher_exists
       return if errors[:teacher_api_id].any?
+      return if errors[:teacher_type].any?
       return if teacher
 
       errors.add(:teacher_api_id, "Your update cannot be made as the '#/teacher_api_id' is not recognised. Check participant details and try again.")
@@ -141,15 +145,21 @@ module API::Declarations
     def teacher_type_exists
       return if errors[:teacher_type].any?
       return if errors[:teacher_api_id].any?
+      return if errors[:lead_provider_id].any?
+      return if errors[:declaration_type].any?
+      return if errors[:declaration_date].any?
       return if training_period
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
     end
 
     def validate_milestone_exists
+      return if errors[:declaration_date].any?
       return if errors[:declaration_type].any?
       return if errors[:teacher_api_id].any?
       return if errors[:teacher_type].any?
+      return if errors[:lead_provider_id].any?
+      return if errors[:contract_period_year].any?
 
       if milestone.blank?
         errors.add(:declaration_type, "The property '#/declaration_type' does not exist for this schedule.")
@@ -166,6 +176,7 @@ module API::Declarations
 
     def validate_only_started_or_completed_if_mentor
       return if errors[:declaration_type].any?
+      return if errors[:contract_period_year].any?
       return if declaration_type&.in?(%w[started completed])
       return unless training_period&.for_mentor?
       return unless contract_period.mentor_funding_enabled?
@@ -175,6 +186,7 @@ module API::Declarations
 
     def validates_billable_slot_available
       return if errors[:declaration_type].any?
+      return if errors[:declaration_date].any?
       return unless training_period
       return unless existing_declarations.billable_or_changeable_for_declaration_type(declaration_type).exists?
 
@@ -183,6 +195,7 @@ module API::Declarations
 
     def payment_statement_available
       return if errors[:declaration_type].any?
+      return if errors[:contract_period_year].any?
       return unless training_period&.eligible_for_funding?
       return if payment_statement.present?
 
