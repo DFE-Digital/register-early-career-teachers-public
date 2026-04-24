@@ -6,7 +6,7 @@ on:
         description: Ruby version
         type: string
         required: false
-        default: "3.4.8"
+        default: "4.0.3"
 
 permissions:
   contents: read
