@@ -37,7 +37,25 @@ module Schools
         return if skip_start_date_validation?
         return if start_date_boundary_validator.valid?
 
-        errors.add(:start_date, start_date_boundary_validator.error_message + " Enter a later start date.")
+        errors.add(:start_date, invalid_period_error_message)
+      end
+
+      def invalid_period_error_message
+        "Our records show that #{wizard.ect.full_name} started " \
+        "#{invalid_period_type} at #{previous_period&.school&.name} on " \
+        "#{invalid_period_formatted_date}." \
+        " Enter a later start date."
+      end
+
+      def invalid_period_formatted_date
+        start_date_boundary_validator.invalid_period.started_on.to_formatted_s(:govuk)
+      end
+
+      def invalid_period_type
+        case start_date_boundary_validator.invalid_period
+        when ECTAtSchoolPeriod then "teaching"
+        when TrainingPeriod    then "their latest training"
+        end
       end
 
       def start_date_within_4_months
@@ -95,8 +113,6 @@ module Schools
       def start_date_boundary_validator
         @start_date_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
           ect_at_school_period: previous_period,
-          full_name: wizard.ect.full_name,
-          school_name: previous_period&.school&.name,
           date: start_date_as_date
         )
       end
