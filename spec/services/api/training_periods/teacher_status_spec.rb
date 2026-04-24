@@ -41,7 +41,9 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
         context "when completed induction (pass or fail are treated the same)" do
           before do
             # complete induction
-            FactoryBot.create(:induction_period, :pass, teacher:)
+            FactoryBot.create(:induction_period, :pass, teacher:,
+                                                        started_on: training_period.started_on,
+                                                        finished_on: training_period.finished_on)
           end
 
           it { is_expected.to eq(:active) }
@@ -57,7 +59,7 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
             )
           end
 
-          it { is_expected.to eq(:active) }
+          it { is_expected.to eq(:left) }
         end
       end
 

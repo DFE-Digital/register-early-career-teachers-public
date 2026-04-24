@@ -25,7 +25,7 @@ module API::TrainingPeriods
   private
 
     def teacher_is_ect_and_completed_induction?
-      for_ect? && API::Teachers::InductionStatus.new(teacher:).completed_induction?
+      for_ect? && teacher_completed_induction_on_or_before_training_period_finished?
     end
 
     def teacher_is_mentor_and_completed_training?
@@ -38,6 +38,14 @@ module API::TrainingPeriods
       return true if finished_on.blank?
 
       !mentor_became_ineligible_for_funding_on.after?(finished_on)
+    end
+
+    def teacher_completed_induction_on_or_before_training_period_finished?
+      induction_status = API::Teachers::InductionStatus.new(teacher:)
+      return false unless induction_status.completed_induction?
+      return true if finished_on.blank?
+
+      !induction_status.induction_end_date.after?(finished_on)
     end
   end
 end
