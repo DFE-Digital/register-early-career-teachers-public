@@ -3,7 +3,7 @@ module API
     class UnfundedMentorsController < APIController
       def index
         conditions = { updated_since:, sort: }
-        paginated_unfunded_mentors = unfunded_mentors_query(conditions:).unfunded_mentors { paginate(it) }
+        paginated_unfunded_mentors = paginate(unfunded_mentors_query(conditions:).unfunded_mentors)
 
         render json: to_json(paginated_unfunded_mentors)
       end

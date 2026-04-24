@@ -3,8 +3,7 @@ module API
     class TransfersController < APIController
       def index
         conditions = { updated_since:, sort: }
-        paginated_school_transfers = school_transfers_query(conditions:)
-          .school_transfers { paginate(it) }
+        paginated_school_transfers = paginate(school_transfers_query(conditions:).school_transfers)
 
         render json: to_json(paginated_school_transfers)
       end

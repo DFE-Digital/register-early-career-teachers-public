@@ -10,7 +10,7 @@ module API
           delivery_partner_api_ids: extract_conditions(delivery_partner_api_ids, type: :uuid),
           updated_since:,
         }
-        paginated_declarations = declarations_query(conditions:).declarations { paginate(it) }
+        paginated_declarations = paginate(declarations_query(conditions:).declarations)
 
         render json: to_json(paginated_declarations)
       end
