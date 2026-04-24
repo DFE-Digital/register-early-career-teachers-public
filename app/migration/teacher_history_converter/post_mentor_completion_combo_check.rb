@@ -148,6 +148,7 @@ private
       ["fa0bd797-f14d-41b7-985a-13f2c8a3e4ad", Migration::LeadProvider::AMBITION, 2022],
       ["fafff34a-b37b-4920-960e-e03c1b48b481", Migration::LeadProvider::TEACHFIRST, 2021],
       ["ffc3261c-f5ad-453e-8091-9e601495f86f", Migration::LeadProvider::BPN, 2021],
+      ["0cc7c817-4870-465c-8151-5df88fc41808", Migration::LeadProvider::AMBITION, 2022],
     ].map do |row|
       keys.zip(row).to_h
     end
