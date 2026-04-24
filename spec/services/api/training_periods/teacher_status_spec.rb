@@ -66,15 +66,37 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
 
         it { is_expected.to eq(:left) }
 
-        context "when teacher becomes ineligible after period has finished" do
+        context "when teacher becomes ineligible before period has finished" do
           before do
             teacher.update!(
-              mentor_became_ineligible_for_funding_on: training_period.finished_on + 1.week,
+              mentor_became_ineligible_for_funding_on: training_period.finished_on - 1.week,
               mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
             )
           end
 
           it { is_expected.to eq(:active) }
+        end
+
+        context "when teacher becomes ineligible when period has finished" do
+          before do
+            teacher.update!(
+              mentor_became_ineligible_for_funding_on: training_period.finished_on,
+              mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
+            )
+          end
+
+          it { is_expected.to eq(:active) }
+        end
+
+        context "when teacher becomes ineligible after period has finished" do
+          before do
+            teacher.update!(
+              mentor_became_ineligible_for_funding_on: training_period.finished_on + 1.day,
+              mentor_became_ineligible_for_funding_reason: "completed_declaration_received"
+            )
+          end
+
+          it { is_expected.to eq(:left) }
         end
       end
     end
