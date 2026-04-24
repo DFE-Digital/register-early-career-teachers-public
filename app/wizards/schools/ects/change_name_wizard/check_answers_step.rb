@@ -22,7 +22,7 @@ module Schools
       private
 
         def record_event(old_name, new_name)
-          ::Events::Record.teacher_name_changed_in_trs_event!(
+          ::Events::Record.teacher_name_updated_by_user_event!(
             old_name:,
             new_name:,
             author:,

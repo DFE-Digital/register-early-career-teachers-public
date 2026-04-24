@@ -381,6 +381,24 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".teacher_name_updated_by_user_event!" do
+    let(:old_name) { "Wilfred Bramble" }
+    let(:new_name) { "Willy Brambs" }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.teacher_name_updated_by_user_event!(author:, teacher:, old_name:, new_name:)
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          teacher:,
+          heading: "Name changed from 'Wilfred Bramble' to 'Willy Brambs'",
+          event_type: :teacher_name_updated_by_user,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe ".teacher_induction_status_changed_in_trs_event!" do
     let(:old_induction_status) { "InProgress" }
     let(:new_induction_status) { "Exempt" }
