@@ -5,7 +5,7 @@ module API
 
       def index
         conditions = { updated_since:, urn:, sort: }
-        paginated_schools = schools_query(conditions:).schools { paginate(it) }
+        paginated_schools = paginate(schools_query(conditions:).schools)
 
         render json: to_json(paginated_schools)
       end
