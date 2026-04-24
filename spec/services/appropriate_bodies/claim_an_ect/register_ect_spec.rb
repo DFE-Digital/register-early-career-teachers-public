@@ -96,7 +96,6 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
           teacher_trs_attributes_updated
           induction_period_opened
           teacher_trs_induction_status_updated
-          teacher_funding_eligibility_set
         ])
       end
     end
@@ -236,7 +235,6 @@ RSpec.describe AppropriateBodies::ClaimAnECT::RegisterECT do
             induction_period_opened
             teacher_trs_attributes_updated
             teacher_trs_induction_status_updated
-            teacher_funding_eligibility_set
           ])
         end
 

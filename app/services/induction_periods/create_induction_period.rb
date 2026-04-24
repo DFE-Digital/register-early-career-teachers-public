@@ -60,7 +60,7 @@ module InductionPeriods
     end
 
     def set_eligibility_for_funding!
-      Teachers::SetFundingEligibility.new(
+      Teachers::SetECTFundingEligibility.new(
         teacher:,
         author:
       ).set!
