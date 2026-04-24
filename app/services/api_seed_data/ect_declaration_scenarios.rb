@@ -28,7 +28,9 @@ module APISeedData
         training_time_period = { started_on: school_time_period[:started_on], finished_on: nil }
         training_period = create_training_period(ect_at_school_period:, school_partnership:, training_time_period:)
         create_ongoing_induction_period(teacher:, school_time_period:)
-        create_declaration(state: :paid, declaration_type: :"retained-1", training_period:, declaration_date: Date.new(2026, 1, 1))
+
+        milestone = training_period.schedule.milestones.where(declaration_type: :"retained-1").sample
+        create_declaration(state: :paid, declaration_type: :"retained-1", training_period:, declaration_date: milestone.start_date + 2.months)
 
         log_plant_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with retained-1 declaration and no started declaration")
       end
@@ -44,8 +46,12 @@ module APISeedData
         training_time_period = { started_on: school_time_period[:started_on], finished_on: nil }
         training_period = create_training_period(ect_at_school_period:, school_partnership:, training_time_period:)
         create_ongoing_induction_period(teacher:, school_time_period:)
-        create_declaration(state: :paid, declaration_type: :started, training_period:, declaration_date: Date.new(2025, 9, 1))
-        create_declaration(state: :no_payment, declaration_type: :"retained-2", training_period:, declaration_date: Date.new(2025, 9, 2))
+
+        milestone = training_period.schedule.milestones.where(declaration_type: :started).sample
+        create_declaration(state: :paid, declaration_type: :started, training_period:, declaration_date: milestone.start_date + 1.month)
+
+        milestone = training_period.schedule.milestones.where(declaration_type: :"retained-2").sample
+        create_declaration(state: :no_payment, declaration_type: :"retained-2", training_period:, declaration_date: milestone.start_date + 3.months)
 
         log_plant_info("Created participant for #{school_partnership.active_lead_provider.lead_provider.name} with paid started declaration and submitted retained-2 declaration")
       end
