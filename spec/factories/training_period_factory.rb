@@ -38,8 +38,8 @@ FactoryBot.define do
     end
 
     trait :finished do
-      started_on  { ect_at_school_period&.started_on || 1.year.ago }
-      finished_on { ect_at_school_period&.started_on&.+(1.month) || 2.weeks.ago }
+      started_on  { ect_at_school_period&.started_on || mentor_at_school_period&.started_on || 1.year.ago }
+      finished_on { ect_at_school_period&.started_on&.+(1.month) || mentor_at_school_period&.started_on&.+(1.month) || 2.weeks.ago }
     end
 
     trait(:school_led) do
