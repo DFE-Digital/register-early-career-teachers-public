@@ -573,13 +573,13 @@ erDiagram
   Metadata_SchoolLeadProviderContractPeriod }o--|| ContractPeriod : belongs_to
   Metadata_SchoolContractPeriod {
     integer id
+    datetime api_updated_at
     integer contract_period_year
     datetime created_at
     boolean in_partnership
     enum induction_programme_choice
     integer school_id
     datetime updated_at
-    datetime api_updated_at
   }
   Metadata_SchoolContractPeriod }o--|| School : belongs_to
   Metadata_SchoolContractPeriod }o--|| ContractPeriod : belongs_to
