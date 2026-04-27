@@ -183,6 +183,26 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(ect_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.ect_payments_frozen_year.present?)
           end
 
+          describe "`working pattern`" do
+            context "when latest `working_pattern` is `full_time`" do
+              before { ect_at_school_period.update!(working_pattern: :full_time) }
+
+              it { expect(ect_enrolment["working_pattern"]).to eq("full_time") }
+            end
+
+            context "when latest `working_pattern` is `part_time`" do
+              before { ect_at_school_period.update!(working_pattern: :part_time) }
+
+              it { expect(ect_enrolment["working_pattern"]).to eq("part_time") }
+            end
+
+            context "when latest `working_pattern` is nil" do
+              before { ect_at_school_period.update!(working_pattern: nil) }
+
+              it { expect(ect_enrolment["working_pattern"]).to be_nil }
+            end
+          end
+
           context "when `uplift_fees_enabled` is `false` for the contract period" do
             before { ect_training_period.school_partnership.contract_period.update!(uplift_fees_enabled: false) }
 
@@ -385,6 +405,8 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
             expect(mentor_enrolment["mentor_ineligible_for_funding_reason"]).to eq(teacher.mentor_became_ineligible_for_funding_reason)
 
             expect(mentor_enrolment["cohort_changed_after_payments_frozen"]).to eq(teacher.mentor_payments_frozen_year.present?)
+
+            expect(mentor_enrolment["working_pattern"]).to be_nil
           end
 
           context "when `uplift_fees_enabled` is `false` for the contract period" do

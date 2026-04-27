@@ -21,6 +21,14 @@
 #
 #     **bold** and _italic_ text
 
+# - title: WIP
+#   date: 2026-05-xx
+#   tags:
+#     - sandbox-release
+#     - production-release
+#   body: |
+#     WIP (Added working pattern)
+
 - title: Register early career teachers service launched
   date: 2026-04-28
   tags:
