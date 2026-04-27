@@ -6,7 +6,7 @@ module API
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           updated_since:,
         }
-        paginated_statements = statements_query(conditions:).statements { paginate(it) }
+        paginated_statements = paginate(statements_query(conditions:).statements)
 
         render json: to_json(paginated_statements)
       end

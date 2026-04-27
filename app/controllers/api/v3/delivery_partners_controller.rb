@@ -6,7 +6,7 @@ module API
           contract_period_years: extract_conditions(contract_period_years, type: :integer),
           sort:
         }
-        paginated_delivery_partners = delivery_partners_query(conditions:).delivery_partners { paginate(it) }
+        paginated_delivery_partners = paginate(delivery_partners_query(conditions:).delivery_partners)
 
         render json: to_json(paginated_delivery_partners)
       end

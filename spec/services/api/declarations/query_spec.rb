@@ -78,6 +78,16 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       expect(declarations).to include(result.first)
     end
 
+    it "orders declarations by created_at in ascending order" do
+      declaration1 = travel_to(2.days.ago) { FactoryBot.create(:declaration) }
+      declaration2 = travel_to(1.day.ago) { FactoryBot.create(:declaration) }
+      declaration3 = FactoryBot.create(:declaration)
+
+      query = described_class.new
+
+      expect(query.declarations).to eq([declaration1, declaration2, declaration3])
+    end
+
     describe "filtering" do
       describe "by `lead_provider_id`" do
         let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
@@ -370,7 +380,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
 
       describe "by `updated_since`" do
         it "filters by `updated_since`" do
-          FactoryBot.create(:declaration).tap { it.update(updated_at: 2.days.ago) }
+          FactoryBot.create(:declaration).tap { it.update(api_updated_at: 2.days.ago) }
           declaration2 = FactoryBot.create(:declaration)
 
           query = described_class.new(updated_since: 1.day.ago)
@@ -379,15 +389,15 @@ RSpec.describe API::Declarations::Query, :with_metadata do
         end
 
         it "does not filter by `updated_since` if omitted" do
-          declaration1 = FactoryBot.create(:declaration).tap { it.update(updated_at: 1.week.ago) }
-          declaration2 = FactoryBot.create(:declaration).tap { it.update(updated_at: 2.weeks.ago) }
+          declaration1 = FactoryBot.create(:declaration).tap { it.update(api_updated_at: 1.week.ago) }
+          declaration2 = FactoryBot.create(:declaration).tap { it.update(api_updated_at: 2.weeks.ago) }
 
           expect(instance.declarations).to contain_exactly(declaration1, declaration2)
         end
 
         it "does not filter by `updated_since` if blank" do
-          declaration1 = FactoryBot.create(:declaration).tap { it.update(updated_at: 1.week.ago) }
-          declaration2 = FactoryBot.create(:declaration).tap { it.update(updated_at: 2.weeks.ago) }
+          declaration1 = FactoryBot.create(:declaration).tap { it.update(api_updated_at: 1.week.ago) }
+          declaration2 = FactoryBot.create(:declaration).tap { it.update(api_updated_at: 2.weeks.ago) }
 
           query = described_class.new(updated_since: " ")
 
