@@ -22,4 +22,12 @@ class ApplicationController < ActionController::Base
   def set_sentry_user
     Sentry.set_user(email: current_user&.email)
   end
+
+private
+
+  def append_info_to_payload(payload)
+    super
+    payload[:current_user_class] = current_user&.class&.name
+    payload[:current_user_id] = current_user&.id
+  end
 end

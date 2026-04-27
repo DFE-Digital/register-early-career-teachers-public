@@ -58,10 +58,14 @@ Rails.application.configure do
     },
   }
 
-  # Log to STDOUT by default
-  config.logger = ActiveSupport::Logger.new($stdout)
-    .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
-    .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  # Log to STDOUT with the = request id as a default log tag.
+  config.log_tags = [:request_id]
+  config.logger = ActiveSupport::Logger.new(STDOUT)
+                                      .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
+                                      .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  config.log_format = :json # Logit expects JSON-formatted logs
+  config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
+  config.active_record.logger = nil # Don't log SQL
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]

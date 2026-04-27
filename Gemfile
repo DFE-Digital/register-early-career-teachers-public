@@ -66,6 +66,10 @@ gem "diffy"
 
 gem "zendesk_api", "~> 3.1", ">= 3.1.1"
 
+group :development, :production do
+  gem "rails_semantic_logger", group: %w[development production]
+end
+
 group :development do
   gem "better_errors"
   gem "binding_of_caller"
