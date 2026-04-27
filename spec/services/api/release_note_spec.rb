@@ -23,5 +23,25 @@ describe API::ReleaseNote do
         expect(release_note.body).to eql(expected_body_with_markdown)
       end
     end
+
+    context "when body is missing" do
+      let(:body) { nil }
+
+      it do
+        expect {
+          release_note
+        }.to raise_error(API::ReleaseNote::InvalidNoteError, "Invalid release note")
+      end
+    end
+
+    context "when date format is invalid" do
+      let(:date) { nil }
+
+      it do
+        expect {
+          release_note
+        }.to raise_error(API::ReleaseNote::InvalidNoteError, "Invalid release note")
+      end
+    end
   end
 end
