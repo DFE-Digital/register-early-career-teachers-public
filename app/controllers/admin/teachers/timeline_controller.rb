@@ -4,7 +4,7 @@ module Admin
       layout "full"
 
       def show
-        teacher = Teacher.find_by(id: params[:teacher_id])
+        teacher = Teacher.find(params[:teacher_id])
         @teacher = TeacherPresenter.new(teacher)
         @events = Events::List.new.for_teacher(@teacher)
         @navigation_items = helpers.admin_teacher_navigation_items(@teacher, :timeline)
