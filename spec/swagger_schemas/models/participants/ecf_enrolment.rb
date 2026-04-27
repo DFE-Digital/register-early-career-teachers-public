@@ -6,6 +6,7 @@ PARTICIPANT_ECF_ENROLMENT = {
     email
     school_urn
     participant_type
+    working_pattern
     cohort
     training_status
     participant_status
@@ -45,6 +46,12 @@ PARTICIPANT_ECF_ENROLMENT = {
       type: :string,
       enum: %w[ect mentor],
       example: "ect"
+    },
+    working_pattern: {
+      description: "The current working pattern of an ECT. Reported as full or part-time by the school.",
+      type: :string,
+      enum: %w[full_time part_time],
+      example: "full_time"
     },
     cohort: {
       description: "Indicates which call-off contract funds this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.",
