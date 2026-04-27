@@ -50,6 +50,7 @@ module API::Teachers
           :finished_induction_period,
           :earliest_ect_at_school_period,
           :earliest_mentor_at_school_period,
+          :latest_ect_at_school_period,
           lead_provider_metadata: {
             latest_ect_training_period: {
               school_partnership: [
