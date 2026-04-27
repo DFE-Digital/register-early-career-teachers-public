@@ -11,7 +11,7 @@ module API
           api_from_teacher_id:,
           sort:
         }
-        paginated_teachers = teachers_query(conditions:).teachers { paginate(it) }
+        paginated_teachers = paginate(teachers_query(conditions:).teachers)
 
         render json: to_json(paginated_teachers)
       end
