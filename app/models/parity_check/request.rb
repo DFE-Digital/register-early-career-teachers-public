@@ -2,7 +2,7 @@ module ParityCheck
   class Request < ApplicationRecord
     self.table_name = "parity_check_requests"
 
-    MAX_RESPONSES_TO_DIFF = 15
+    MAX_RESPONSES_TO_DIFF = 5
 
     belongs_to :run
     belongs_to :lead_provider

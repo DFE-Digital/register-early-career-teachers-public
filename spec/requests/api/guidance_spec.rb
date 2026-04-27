@@ -23,8 +23,8 @@ RSpec.describe "API Guidance pages" do
     end
   end
 
-  describe "GET /api/sandbox" do
-    before { get(api_guidance_page_path("sandbox")) }
+  describe "GET /api/guidance-for-lead-providers/sandbox" do
+    before { get(api_guidance_page_path("guidance-for-lead-providers/sandbox")) }
 
     it "returns http success" do
       expect(response).to be_successful
