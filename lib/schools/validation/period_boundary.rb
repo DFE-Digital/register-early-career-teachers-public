@@ -19,6 +19,9 @@ module Schools
     private
 
       def validate_periods
+        return if date.blank?
+        return unless ect_at_school_period
+
         period = ect_at_school_period
         return period if date_before_period_starts?(period)
 
@@ -27,8 +30,7 @@ module Schools
       end
 
       def date_before_period_starts?(period)
-        return false if date.blank?
-        return false unless valid_period?(period)
+        return false if period&.started_on.blank?
 
         date <= earliest_possible_end_date(period)
       end
@@ -37,18 +39,13 @@ module Schools
         period.started_on.next_day
       end
 
-      def valid_period?(period)
-        period&.started_on.present?
-      end
-
       # Unstarted training periods (ie starting in the future) will be deleted and should not prevent a start date at a new school from being valid
-      # TODO - changing this to started_before makes the feature test work.  Do we now delete/amend that feature test?
       def latest_started_training_period
         ect_at_school_period
-          &.training_periods
-          &.started_on_or_before(Time.zone.today)
-          &.latest_first
-          &.first
+          .training_periods
+          .started_on_or_before(Time.zone.today)
+          .latest_first
+          .first
       end
     end
   end

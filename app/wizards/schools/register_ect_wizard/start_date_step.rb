@@ -35,7 +35,6 @@ module Schools
 
       def start_date_after_previous_school_or_training_period_start
         return if skip_start_date_validation?
-        # binding.break unless start_date == {3 => 1, 2 => 4, 1 => 2025}
         return if start_date_boundary_validator.valid?
 
         errors.add(:start_date, invalid_period_error_message)
