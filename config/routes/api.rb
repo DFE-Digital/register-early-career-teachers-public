@@ -1,10 +1,10 @@
-constraints -> { Rails.application.config.enable_api } do
-  namespace :api do
-    get "guidance", to: "guidance#show"
-    resources :release_notes, path: "guidance/release-notes", only: %i[index show], param: :slug, as: :guidance_release_notes
-    get "guidance/*page", to: "guidance#page", as: :guidance_page
-    get "docs/:version", to: "documentation#index", as: :documentation
+namespace :api do
+  get "guidance", to: "guidance#show"
+  resources :release_notes, path: "guidance/release-notes", only: %i[index show], param: :slug, as: :guidance_release_notes
+  get "guidance/*page", to: "guidance#page", as: :guidance_page
+  get "docs/:version", to: "documentation#index", as: :documentation
 
+  constraints -> { Rails.application.config.enable_api } do
     namespace :v3 do
       resources :participants, only: %i[index show], param: :api_id do
         member do
