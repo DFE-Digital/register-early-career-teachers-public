@@ -22,7 +22,7 @@ class API::DeclarationSerializer < Blueprinter::Base
       status == "no_payment" ? "submitted" : status.dasherize
     end
 
-    field(:updated_at)
+    field(:api_updated_at, name: :updated_at)
     field(:created_at)
     field(:delivery_partner_id) { |declaration| declaration.delivery_partner_when_created.api_id }
     field(:statement_id) { |declaration| declaration.payment_statement&.api_id unless declaration.payment_status_voided? }

@@ -29,7 +29,7 @@ describe API::DeclarationSerializer, type: :serializer do
       expect(attributes["declaration_type"]).to eq(declaration.declaration_type)
       expect(attributes["declaration_date"]).to eq(declaration.declaration_date.utc.rfc3339)
 
-      expect(attributes["updated_at"]).to eq(declaration.updated_at.utc.rfc3339)
+      expect(attributes["updated_at"]).to eq(declaration.api_updated_at.utc.rfc3339)
       expect(attributes["created_at"]).to eq(declaration.created_at.utc.rfc3339)
       expect(attributes["delivery_partner_id"]).to eq(delivery_partner.api_id)
       expect(attributes["ineligible_for_funding_reason"]).to be_nil
