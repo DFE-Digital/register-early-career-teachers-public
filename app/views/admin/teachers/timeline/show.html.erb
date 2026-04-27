@@ -4,9 +4,13 @@
     caption: teacher_trn(@teacher),
     caption_size: 'm',
     error: false,
-    backlink_href: admin_teacher_induction_path(@teacher)
+    breadcrumbs: @breadcrumbs
   )
 %>
+
+<%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
+
+<h2 class="govuk-heading-m">Timeline</h2>
 
 <% if @events.any? %>
   <%= render(TimelineComponent.new(@events)) %>
