@@ -264,6 +264,7 @@ paths:
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           school_urn: '123456'
                           participant_type: ect
+                          working_pattern: full_time
                           cohort: '2021'
                           training_status: active
                           participant_status: active
@@ -326,6 +327,7 @@ paths:
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           school_urn: '123456'
                           participant_type: ect
+                          working_pattern: full_time
                           cohort: '2021'
                           training_status: active
                           participant_status: active
@@ -394,6 +396,7 @@ paths:
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           school_urn: '123456'
                           participant_type: ect
+                          working_pattern: full_time
                           cohort: '2021'
                           training_status: withdrawn
                           participant_status: active
@@ -481,6 +484,7 @@ paths:
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           school_urn: '123456'
                           participant_type: ect
+                          working_pattern: full_time
                           cohort: '2021'
                           training_status: deferred
                           participant_status: active
@@ -568,6 +572,7 @@ paths:
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           school_urn: '123456'
                           participant_type: ect
+                          working_pattern: full_time
                           cohort: '2021'
                           training_status: active
                           participant_status: active
@@ -653,6 +658,7 @@ paths:
                           mentor_id: 42a9ef2f-9059-400a-92ff-4830a629d0c5
                           school_urn: '123456'
                           participant_type: ect
+                          working_pattern: full_time
                           cohort: '2021'
                           training_status: active
                           participant_status: active
@@ -2821,6 +2827,7 @@ components:
       - email
       - school_urn
       - participant_type
+      - working_pattern
       - cohort
       - training_status
       - participant_status
@@ -2859,6 +2866,14 @@ components:
           - ect
           - mentor
           example: ect
+        working_pattern:
+          description: The current working pattern of an ECT. Reported as full or
+            part-time by the school.
+          type: string
+          enum:
+          - full_time
+          - part_time
+          example: full_time
         cohort:
           description: Indicates which call-off contract funds this participant's
             training. 2021 indicates a participant that has started, or will start,
