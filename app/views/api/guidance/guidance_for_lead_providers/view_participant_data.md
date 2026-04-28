@@ -63,14 +63,14 @@ The following table shows the filters providers can use within this endpoint.
  
 Providers can use the `GET /participants/{id}` endpoint to view individual records. 
 
-### Participant induction 
+### Participant funding and induction 
 
-The API uses the following fields to describe a participant’s induction in the participant endpoints: 
+The API uses fields to describe funding eligibility for ECTS and mentors, and induction start and end dates for ECTs. 
 
-* `eligible_for_funding`, shows if a participant is eligible for funding. Can be `true`, `false`, or `null`. 
+* `eligible_for_funding`, shows if an ECT or mentor is eligible for funding. Can be `true`, `false`, or `null`. 
 * `overall_induction_start_date`, the date an ECT officially began statutory induction as submitted by their appropriate body.
 * `induction_end_date`, the date an ECT completed (passed or failed) their induction.
-* `teacher_reference_number`, the participant’s teacher reference number. If a TRN is missing, it means the participant’s registration predates validation, and we have no matching TRN in our records.
+* `teacher_reference_number`, the ECT or mentor's teacher reference number. If a TRN is missing, it means the participant’s registration predates validation, and we have no matching TRN in our records.
 
 The following table explains what the `eligible_for_funding` values mean. 
 
