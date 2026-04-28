@@ -71,16 +71,6 @@ namespace :product_review do
           training_period_type = :for_ect
         end
 
-        InductionPeriod.create!(
-          teacher:,
-          started_on:,
-          finished_on: Date.new(2026, 1, 1),
-          appropriate_body_period: south_yorkshire_studio_hub,
-          induction_programme: "fip",
-          training_programme: "provider_led",
-          number_of_terms: 3
-        )
-
         traing_periods = teacher_attrs.fetch(:training_periods, [])
 
         traing_periods.each do |training_period_attrs|
@@ -147,14 +137,14 @@ namespace :product_review do
 end
 
 CANDIDATE_TEACHERS = [
-  { trn: "3002585", first_name: "Delilah",  last_name: "Frost",   type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 9, 1) }] },
-  { trn: "3002584", first_name: "Theo",     last_name: "Willis",  type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1) }] },
-  { trn: "3002583", first_name: "Marvin",   last_name: "Fuller",  type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31) }, { training_programme: :provider_led, started_on: Date.new(2025, 11, 1),  school_partnership: :ambition }] },
-  { trn: "3002576", first_name: "Daisy",    last_name: "Dudley",  type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :school_led,   started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31)  }, { training_programme: :provider_led, started_on: Date.new(2025, 11, 1), school_partnership: :ambition }] },
-  { trn: "3002577", first_name: "Jonas",    last_name: "Bloggs",  type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31)  }, { training_programme: :school_led,   started_on: Date.new(2025, 11, 1), finished_on: Date.new(2025, 11, 30) }, { training_programme: :provider_led, started_on: Date.new(2025, 12, 1) }] },
-  { trn: "3002578", first_name: "Cynthia",  last_name: "Parks",   type: :mentor_at_school_period, started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 9, 1) }] },
-  { trn: "3002579", first_name: "Taylor",   last_name: "Hawkins", type: :mentor_at_school_period, started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1) }] },
-  { trn: "3002580", first_name: "Muhammed", last_name: "Ali", type: :mentor_at_school_period, started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31) }, { training_programme: :provider_led, started_on: Date.new(2025, 11, 1), school_partnership: :ambition }] },
+  { trn: "3002577", first_name: "Jonas",    last_name: "Bloggs",  type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 9, 1) }] },
+  { trn: "3002578", first_name: "Cynthia",  last_name: "Parks",   type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1) }] },
+  { trn: "3002579", first_name: "Taylor",   last_name: "Hawkins", type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31) }, { training_programme: :provider_led, started_on: Date.new(2025, 11, 1),  school_partnership: :ambition }] },
+  { trn: "3002580", first_name: "Muhammed", last_name: "Ali",     type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :school_led,   started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31)  }, { training_programme: :provider_led, started_on: Date.new(2025, 11, 1), school_partnership: :ambition }] },
+  { trn: "3002582", first_name: "Robson",   last_name: "Scottie", type: :ect_at_school_period,    started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31)  }, { training_programme: :school_led,   started_on: Date.new(2025, 11, 1), finished_on: Date.new(2025, 11, 30) }, { training_programme: :provider_led, started_on: Date.new(2025, 12, 1) }] },
+  { trn: "3012858", first_name: "Dave",     last_name: "Teacher", type: :mentor_at_school_period, started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 9, 1) }] },
+  { trn: "3003943", first_name: "Donna",    last_name: "Msa",     type: :mentor_at_school_period, started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1) }] },
+  { trn: "3012235", first_name: "Claire",   last_name: "Cool",    type: :mentor_at_school_period, started_on: Date.new(2025, 9, 1), training_periods: [{ training_programme: :provider_led, started_on: Date.new(2025, 10, 1), finished_on: Date.new(2025, 10, 31) }, { training_programme: :provider_led, started_on: Date.new(2025, 11, 1), school_partnership: :ambition }] },
 ].freeze
 
 AUTHOR_ATTRIBUTES = {
