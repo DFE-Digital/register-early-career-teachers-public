@@ -61,6 +61,7 @@ Rails.application.configure do
   # Log to STDOUT in JSON for logit ingestion. rails_semantic_logger replaces
   # the Rails logger and honours config.log_tags + config.filter_parameters.
   config.log_tags = [:request_id]
+  config.semantic_logger.application = "" # No need to send the application name as logstash reads it from Cloud Foundry log tags
   config.rails_semantic_logger.format = :json # Logit expects JSON-formatted logs
   config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
   config.active_record.logger = nil # Don't log SQL
