@@ -44,15 +44,19 @@ module Schools
         "Our records show that #{wizard.ect.full_name} started " \
         "#{invalid_period_type} at #{previous_period&.school&.name} on " \
         "#{invalid_period_formatted_date}." \
-        " Enter a later start date."
+        " Enter a start date after #{invalid_period_earliest_end_date_formatted}."
       end
 
       def invalid_period_formatted_date
-        start_date_boundary_validator.invalid_period.started_on.to_formatted_s(:govuk)
+        invalid_period.started_on.to_formatted_s(:govuk)
+      end
+
+      def invalid_period_earliest_end_date_formatted
+        invalid_period.started_on.next_day.to_formatted_s(:govuk)
       end
 
       def invalid_period_type
-        case start_date_boundary_validator.invalid_period
+        case invalid_period
         when ECTAtSchoolPeriod then "teaching"
         when TrainingPeriod    then "their latest training"
         end
@@ -108,6 +112,10 @@ module Schools
 
       def start_date_obj
         @start_date_obj ||= Schools::Validation::ECTStartDate.new(date_as_hash: start_date)
+      end
+
+      def invalid_period
+        @invalid_period ||= start_date_boundary_validator.invalid_period
       end
 
       def start_date_boundary_validator

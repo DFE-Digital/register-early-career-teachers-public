@@ -176,7 +176,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         )
       end
 
-      it { is_expected.to have_error(:start_date, "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a later start date.") }
+      it { is_expected.to have_error(:start_date, "Our records show that Johnnie Walker started teaching at Springfield Primary on 1 September 2024. Enter a start date after 2 September 2024.") }
     end
 
     context "when the date clashes with the latest training period" do
@@ -211,7 +211,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
         )
       end
 
-      it { is_expected.to have_error(:start_date, "Our records show that Johnnie Walker started their latest training at Springfield Primary on 31 December 2024. Enter a later start date.") }
+      it { is_expected.to have_error(:start_date, "Our records show that Johnnie Walker started their latest training at Springfield Primary on 31 December 2024. Enter a start date after 1 January 2025.") }
     end
 
     context "when the date does not clash with any periods" do

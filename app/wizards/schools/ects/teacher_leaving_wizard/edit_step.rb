@@ -55,22 +55,30 @@ module Schools
           "Our records show that #{name_for(ect_at_school_period.teacher)} started " \
           "#{invalid_period_type} at your school on " \
           "#{invalid_period_formatted_date}." \
-          " Enter a later date."
+          " Enter a date after #{invalid_period_earliest_end_date_formatted}."
         end
 
         def invalid_period_type
-          case leaving_on_boundary_validator.invalid_period
+          case invalid_period
           when ECTAtSchoolPeriod then "teaching"
           when TrainingPeriod    then "their latest training"
           end
         end
 
         def invalid_period_formatted_date
-          leaving_on_boundary_validator.invalid_period.started_on.to_formatted_s(:govuk)
+          invalid_period.started_on.to_formatted_s(:govuk)
+        end
+
+        def invalid_period_earliest_end_date_formatted
+          invalid_period.started_on.next_day.to_formatted_s(:govuk)
         end
 
         def leaving_on_input
           @leaving_on_input ||= Schools::Validation::LeavingDate.new(date_as_hash: leaving_on)
+        end
+
+        def invalid_period
+          @invalid_period ||= leaving_on_boundary_validator.invalid_period
         end
 
         def leaving_on_boundary_validator
