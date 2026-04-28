@@ -58,13 +58,13 @@ Rails.application.configure do
     },
   }
 
-  # Log to STDOUT by default
-  config.logger = ActiveSupport::Logger.new($stdout)
-    .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
-    .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
-
-  # Prepend all log lines with the following tags.
+  # Log to STDOUT in JSON for logit ingestion. rails_semantic_logger replaces
+  # the Rails logger and honours config.log_tags + config.filter_parameters.
   config.log_tags = [:request_id]
+  config.rails_semantic_logger.format = :json # Logit expects JSON-formatted logs
+  config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
+  config.active_record.logger = nil # Don't log SQL
+  config.semantic_logger.add_appender(io: $stdout, formatter: :json) # Log to STDOUT
 
   # "info" includes generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you

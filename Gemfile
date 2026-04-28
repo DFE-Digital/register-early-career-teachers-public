@@ -72,6 +72,10 @@ group :development do
   gem "pg_query"
 end
 
+group :production, :review, :staging, :sandbox do
+  gem "rails_semantic_logger"
+end
+
 group :test do
   gem "capybara"
   gem "playwright-ruby-client"
