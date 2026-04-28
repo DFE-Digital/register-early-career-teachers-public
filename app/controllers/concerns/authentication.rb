@@ -25,7 +25,10 @@ private
     Current.session = session["user_session"]
     Current.user = current_user
 
-    return if authenticated?
+    if authenticated?
+      Rails.logger.warn("authenticate: already authenticated!")
+      return
+    end
 
     session_manager.requested_path = request.fullpath
 
@@ -57,12 +60,22 @@ private
   # @raise [UnredirectableError]
   def post_login_redirect_path
     requested_path = session_manager.requested_path
+    Rails.logger.warn("post_login_redirect_path: current_user = #{current_user.email}")
+    Rails.logger.warn("post_login_redirect_path: requested_path = #{requested_path}")
 
     case
-    when requested_path.present? then requested_path
-    when current_user.dfe_user? then admin_path
-    when current_user.school_user? then schools_ects_home_path
-    when current_user.appropriate_body_user? then ab_teachers_path
+    when requested_path.present?
+      Rails.logger.warn("post_login_redirect_path: returning requested path")
+      requested_path
+    when current_user.dfe_user?
+      Rails.logger.warn("post_login_redirect_path: returning admin path")
+      admin_path
+    when current_user.school_user?
+      Rails.logger.warn("post_login_redirect_path: returning schools path")
+      schools_ects_home_path
+    when current_user.appropriate_body_user?
+      Rails.logger.warn("post_login_redirect_path: returning ABs path")
+      ab_teachers_path
     else
       fail(UnredirectableError)
     end
