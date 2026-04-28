@@ -57,7 +57,7 @@ To use the service, you’ll need a [DfE Sign-in](https://services.signin.educat
 - your school (organisation)    
 - the register early career teachers service
 
-You can get help with [DfE Sign-in](https://edd-help.signin.education.gov.uk/contact).
+You can get help with [DfE Sign-in](https://help.signin.education.gov.uk/contact-us).
 
 ## Help and information
 
