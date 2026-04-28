@@ -10,4 +10,5 @@ module "domains" {
   host_name           = each.value.origin_hostname
   cached_paths        = try(each.value.cached_paths, [])
   rate_limit_max      = try(var.rate_limit_max, null)
+  redirect_rules      = try(each.value.redirect_rules, null)
 }
