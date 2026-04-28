@@ -77,7 +77,7 @@ The following table explains what the `eligible_for_funding` values mean.
 | `eligible_for_funding` | Definition | 
 | ------------ | ------------- | 
 | `true` | Set for ECTs and mentors who become eligible at any point. For example, when an ECT’s induction is recorded or a mentor is eligible to start training. A `true` status will remain once set. Other fields are used to indicate that training has stopped or to block participants from being registered including `induction_completion_date`, `mentor_funding_end_date`, or `reason`. | 
-| `false` | Set for new ECTs who are exempt from induction. `false` will never be set for mentor records. |  
+| `false` | Set for new ECTs who are exempt from induction. `false` will never be set for new mentor records. |  
 | `null` | Set when ECT eligibility is not known. For example, before an induction is recorded by an appropriate body. `null` will never be set for new mentor records. |  
 
 ### Participant statuses 
