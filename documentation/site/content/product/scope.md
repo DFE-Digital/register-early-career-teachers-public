@@ -7,7 +7,7 @@ We want to improve and rebuild the digital services that facilitate the early ca
 
 However, we can't do all of that at once.
 
-We've detailled what's in scope for our initial minimum viable product release (MVP). This is what functionality or features the service will include when we first make the new services to facilitate ECF go live.
+We've detailed what's in scope for our initial minimum viable product release (MVP). This is what functionality or features the service will include when we first make the new services to facilitate ECF go live.
 
 I've also explained what we want to do later, and what is currently entirely out of scope for us.
 
