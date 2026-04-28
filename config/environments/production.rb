@@ -80,7 +80,8 @@ Rails.application.configure do
       expire_after: ENV.fetch("MAX_SESSION_IDLE_TIME", 7200.seconds).to_i,
       key_prefix: "_ecf2_session:",
       url: ENV.fetch("REDIS_CACHE_URL")
-    }
+    },
+    same_site: :lax
   )
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
