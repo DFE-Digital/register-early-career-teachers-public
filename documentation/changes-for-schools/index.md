@@ -18,9 +18,9 @@ Schools will need to use DfE Sign-in to approve and manage access to the service
 
 All users of the service will need a DfE sign-in account and approved access.
 
-<!-- You can access [DfE Sign in](https://services.signin.education.gov.uk/). -->
+<!-- You can access [DfE Sign in](https://services.signin.education.gov.uk/).
 
-<!-- You can read [guidance on using DfE Sign in](https://edd-help.signin.education.gov.uk/contact). -->
+You can read [guidance on using DfE Sign in](https://help.signin.education.gov.uk/contact-us). -->
 
 <a href="images/landing-page.png" target="blank"><img alt="The guidance page for register early career teachers" src="images/landing-page.png" width="300"/></a>
 
