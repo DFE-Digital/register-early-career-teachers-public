@@ -19,7 +19,11 @@
           lead_provider_names(partnerships)
         end
         row.with_cell do
-          govuk_link_to("Change", change_link_path(contract_period))
+          if partnerships.empty?
+            govuk_link_to("Add", change_link_path(contract_period))
+          else
+            govuk_link_to("Change", change_link_path(contract_period))
+          end
         end
       end
     end
