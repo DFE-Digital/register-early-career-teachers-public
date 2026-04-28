@@ -39,12 +39,14 @@ namespace :product_review do
       CANDIDATE_TEACHERS.each do |teacher_attrs|
         teacher = Teacher.find_or_initialize_by(trn: teacher_attrs[:trn])
 
+        started_on = teacher_attrs[:started_on] || Date.new(2025, 9, 1)
+
         teacher.trs_first_name = teacher_attrs[:first_name]
         teacher.trs_last_name = teacher_attrs[:last_name]
+        teacher.trs_induction_status = "RequiredToComplete"
+        teacher.trs_qts_awarded_on = Date.new(2025, 1, 1)
 
         teacher.save!
-
-        started_on = teacher_attrs[:started_on] || Date.new(2025, 9, 1)
 
         if teacher_attrs[:type] == :mentor_at_school_period
           mentor_at_school_period = FactoryBot.create(:mentor_at_school_period,
@@ -68,6 +70,16 @@ namespace :product_review do
           mentor_at_school_period = nil
           training_period_type = :for_ect
         end
+
+        InductionPeriod.create!(
+          teacher:,
+          started_on:,
+          finished_on: Date.new(2026, 1, 1),
+          appropriate_body_period: south_yorkshire_studio_hub,
+          induction_programme: "fip",
+          training_programme: "provider_led",
+          number_of_terms: 3
+        )
 
         traing_periods = teacher_attrs.fetch(:training_periods, [])
 
