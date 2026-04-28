@@ -2,7 +2,7 @@
 #
 def close_teacher_periods(trns:, author_email:, finished_on: Date.current)
   ActiveRecord::Base.transaction do
-    author = User.find_by!(email: author_email)
+    author = Sessions::Users::DfEUser.new(email: author_email)
 
     trns.each do |trn|
       teacher = Teacher.find_by!(trn:)
