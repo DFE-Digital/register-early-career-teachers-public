@@ -2,67 +2,122 @@ default: &default
   dispatchers:
     - polling_interval: 1
       batch_size: 500
+
   workers:
-    - queues: [mailers, process_batch, events, metadata, parity_check_requests, trs_sync, dfe_analytics, api_seeds, "*"]
-      threads: 3
-      processes: 3
+    # Dedicated critical queues
+    - queues: [mailers]
+      threads: 2
+      processes: 2
       polling_interval: 0.1
 
-migration:
-  <<: *default
-  workers:
-    - queues: [mailers, events, metadata, parity_check_requests, trs_sync, dfe_analytics]
-      threads: 3
-      processes: 3
+    - queues: [default]
+      threads: 2
+      processes: 2
       polling_interval: 0.1
-    - queues: [parity_check_requests]
-      threads: 3
-      processes: 3
-      polling_interval: 0.1
-    - queues: [migration]
+
+    # Metadata workers (2 jobs max, will be 2 jobs with 2 workers)
+    # The jobs to refresh school metadata have DB-heavy and can
+    # lock up the database if we run too many at once.
+    - queues: [metadata]
       threads: 1
       processes: 1
+      polling_interval: 0.1
+
+    # Everything else
+    - queues: [process_batch, trs_sync, events, dfe_analytics]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
+migration: &migration
+  workers:
+    # Dedicated critical queues
+    - queues: [mailers]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
+    - queues: [default]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
+    # Metadata workers (2 jobs max, will be 2 jobs with 2 workers)
+    # The jobs to refresh school metadata have DB-heavy and can
+    # lock up the database if we run too many at once.
+    - queues: [metadata]
+      threads: 1
+      processes: 1
+      polling_interval: 0.1
+
+    # Everything else
+    - queues: [process_batch, trs_sync, events, dfe_analytics]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
+    # Parity check
+    - queues: [parity_check_requests]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
+    # Migration
+    - queues: [migration]
+      threads: 2
+      processes: 2
       polling_interval: 0.1
 
 paritycheck:
-  <<: *default
+  <<: *migration
+
+non_production: &non_production
   workers:
-    - queues: [mailers, events, metadata, parity_check_requests, trs_sync, dfe_analytics]
-      threads: 3
-      processes: 3
+    # Dedicated critical queues
+    - queues: [mailers]
+      threads: 2
+      processes: 2
       polling_interval: 0.1
-    - queues: [parity_check_requests]
-      threads: 3
-      processes: 3
+
+    - queues: [default]
+      threads: 2
+      processes: 2
       polling_interval: 0.1
-    - queues: [migration]
+
+    # Metadata workers (2 jobs max, will be 2 jobs with 2 workers)
+    # The jobs to refresh school metadata have DB-heavy and can
+    # lock up the database if we run too many at once.
+    - queues: [metadata]
       threads: 1
       processes: 1
       polling_interval: 0.1
 
+    # Everything else
+    - queues: [process_batch, trs_sync, events, dfe_analytics]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
+    # API seeds
+    - queues: [api_seeds]
+      threads: 2
+      processes: 2
+      polling_interval: 0.1
+
 review:
-  <<: *default
+  <<: *non_production
 
 staging:
-  <<: *default
+  <<: *non_production
 
 sandbox:
-  <<: *default
+  <<: *non_production
 
 development:
-  <<: *default
-  workers:
-    - queues: [mailers, process_batch, events, metadata, parity_check_requests, trs_sync, dfe_analytics, api_seeds]
-      threads: 3
-      processes: 3
-      polling_interval: 0.1
-    - queues: [migration]
-      threads: 1
-      processes: <%= ENV.fetch('MIGRATION_QUEUE_PROCESSES', 3) %>
-      polling_interval: 0.1
+  <<: *non_production
 
 test:
-  <<: *default
+  <<: *non_production
 
 production:
   <<: *default
