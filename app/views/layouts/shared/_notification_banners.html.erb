@@ -1,8 +1,7 @@
 <% if Rails.application.config.enable_incident_banner %>
-  <%= govuk_notification_banner(
-        title_text: "There are intermittent issues accessing the service") do %>
-    This is due to an issue with our service provider. We apologise for the
-    inconvenience and will let you know as soon as this is resolved.
+  <%= govuk_notification_banner(title_text: "There are intermittent issues accessing the service") do %>
+    You might be experiencing issues signing in. We are working on resolving
+    the issue. Please try again later.
   <% end %>
 <% end %>
 
