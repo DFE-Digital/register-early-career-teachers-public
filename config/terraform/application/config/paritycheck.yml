@@ -30,3 +30,4 @@ PARITY_CHECK_ECF_URL: "https://cpd-ecf-paritycheck-web.teacherservices.cloud"
 PARITY_CHECK_RECT_URL: "https://cpd-ec2-paritycheck-web.teacherservices.cloud"
 ENABLE_TIME_TRAVEL: true
 MAX_SESSION_IDLE_TIME: 7200
+SOLID_QUEUE_SUPERVISOR_MODE: async
