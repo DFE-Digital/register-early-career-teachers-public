@@ -46,7 +46,7 @@ If you do not have a DfE Sign-in account, [you can create one](https://services.
 1. Schools need to appoint a DfE Sign-in approver. This person verifies the identity of users before giving access to services. The approver is often the headteacher or administrator.   
 2. Users who want access to DfE services need to create a DfE Sign-in account. They use their account to select their school and request access to services.
 
-You can get help with [DfE Sign-in](https://edd-help.signin.education.gov.uk/contact).
+You can get help with [DfE Sign-in](https://help.signin.education.gov.uk/contact-us).
 
 ## What you need to do now
 
