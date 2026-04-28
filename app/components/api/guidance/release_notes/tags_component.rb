@@ -43,7 +43,13 @@ module API
         end
 
         def render_tag(tag)
-          colour = TAG_MAPPINGS[tag] or raise UnknownTagError, "Tag not recognised: #{tag}"
+          colour = TAG_MAPPINGS[tag]
+
+          unless colour
+            valid_tags = TAG_MAPPINGS.keys.sort.join(", ")
+            raise UnknownTagError, "Tag not recognised: '#{tag}'. Valid tags are: #{valid_tags}"
+          end
+
           text = tag.tr("-", " ").capitalize
 
           govuk_tag(text:, colour:)
