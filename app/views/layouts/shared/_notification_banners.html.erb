@@ -1,7 +1,8 @@
 <% if Rails.application.config.enable_incident_banner %>
   <%= govuk_notification_banner(title_text: "There are intermittent issues accessing the service") do %>
-    You might be experiencing issues signing in. We are working on resolving
-    the issue. Please try again later.
+    You might be experiencing issues signing in. We are working on resolving the
+    issue. You should be able to sign in if you access the service directly
+    through <%= govuk_link_to("https://www.register-early-career-teachers.education.gov.uk/", "https://www.register-early-career-teachers.education.gov.uk/") %>
   <% end %>
 <% end %>
 
