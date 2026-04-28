@@ -21,6 +21,18 @@ RSpec.describe GIAS::Importer, type: :service do
 
         importer.fetch
       end
+
+      it "does not call any metadata refresh handlers during the process" do
+        expect(Metadata::Resolver).not_to receive(:resolve_handler)
+
+        importer.fetch
+      end
+
+      it "calls an async refresh of all the metadata" do
+        expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async: true)
+
+        importer.fetch
+      end
     end
 
     context "when schools already exist in the database" do
@@ -31,18 +43,18 @@ RSpec.describe GIAS::Importer, type: :service do
 
         importer.fetch
       end
-    end
 
-    it "does not call any metadata refresh handlers during the process" do
-      expect(Metadata::Resolver).not_to receive(:resolve_handler)
+      it "does not call any metadata refresh handlers during the process" do
+        expect(Metadata::Resolver).not_to receive(:resolve_handler)
 
-      importer.fetch
-    end
+        importer.fetch
+      end
 
-    it "calls an async refresh of the metadata" do
-      expect(Metadata::Handlers::School).to receive(:refresh_all_metadata!).with(async: true)
+      it "does not call a refresh of all the metadata" do
+        expect(Metadata::Handlers::School).not_to receive(:refresh_all_metadata!)
 
-      importer.fetch
+        importer.fetch
+      end
     end
   end
 

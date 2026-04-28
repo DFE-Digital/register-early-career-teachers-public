@@ -15,10 +15,7 @@ module GIAS
     end
 
     def fetch
-      DeclarativeUpdates.skip(:metadata) do
-        import_only? ? fetch_and_import_only : fetch_and_update
-      end
-      Metadata::Handlers::School.refresh_all_metadata!(async: true)
+      import_only? ? fetch_and_import_only : fetch_and_update
     end
 
     def foreach_school_row(&block)
@@ -73,8 +70,14 @@ module GIAS
     # import only doesn't try to work out what has changed and does not include "closed" schools
     # we need to import schools first in an empty DB
     def fetch_and_import_only
-      import_schools
-      import_school_links
+      # It's more efficient to skip metadata during import and refresh it
+      # all in background jobs at the end when creating a lot of schools.
+      DeclarativeUpdates.skip(:metadata) do
+        import_schools
+        import_school_links
+      end
+
+      Metadata::Handlers::School.refresh_all_metadata!(async: true)
     end
 
     def fetch_and_update
