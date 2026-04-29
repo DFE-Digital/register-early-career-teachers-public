@@ -1,4 +1,4 @@
-describe "School user can change ECT's lead provider", :enable_schools_interface do
+describe "School user can change ECT's lead provider" do
   include_context "safe_schedules"
 
   it "changes the lead provider" do

@@ -1,4 +1,4 @@
-describe "Schools::RegisterECTWizardController", :enable_schools_interface do
+describe "Schools::RegisterECTWizardController" do
   let(:school) { FactoryBot.create(:school) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
   let(:ect_at_school_period_id) { ect_at_school_period.id }

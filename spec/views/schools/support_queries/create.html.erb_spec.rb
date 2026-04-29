@@ -1,4 +1,4 @@
-RSpec.describe "schools/support_queries/create.html.erb", :enable_schools_interface do
+RSpec.describe "schools/support_queries/create.html.erb" do
   subject { rendered }
 
   before { render }

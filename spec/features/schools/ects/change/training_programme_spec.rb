@@ -1,4 +1,4 @@
-describe "School user can change ECTs training programme", :enable_schools_interface do
+describe "School user can change ECTs training programme" do
   include_context "safe_schedules"
 
   it "changes the training programme from provider-led to school-led" do

@@ -1,4 +1,4 @@
-RSpec.describe "Registering an ECT - reuse not available", :enable_schools_interface do
+RSpec.describe "Registering an ECT - reuse not available" do
   include_context "test TRS API returns a teacher"
   include ReusablePartnershipHelpers
 

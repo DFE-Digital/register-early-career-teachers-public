@@ -1,4 +1,4 @@
-RSpec.describe "Induction Tutor", :enable_schools_interface do
+RSpec.describe "Induction Tutor" do
   let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
 
   describe "GET #show" do

@@ -1,4 +1,4 @@
-describe "Schools::ECTs::ChangeMentorWizardController", :enable_schools_interface do
+describe "Schools::ECTs::ChangeMentorWizardController" do
   include_context "safe_schedules"
 
   let(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }

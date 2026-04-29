@@ -1,4 +1,4 @@
-describe "School user can change early career teachers mentor", :enable_schools_interface do
+describe "School user can change early career teachers mentor" do
   include_context "safe_schedules"
 
   before do

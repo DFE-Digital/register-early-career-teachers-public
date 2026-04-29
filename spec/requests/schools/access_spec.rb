@@ -1,4 +1,4 @@
-describe "Schools access guard", :enable_schools_interface do
+describe "Schools access guard" do
   describe "GET /school/home/ects" do
     subject(:perform_request) { get schools_ects_home_path }
 

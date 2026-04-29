@@ -1,4 +1,4 @@
-RSpec.describe "Viewing a mentor", :enable_schools_interface do
+RSpec.describe "Viewing a mentor" do
   scenario "Happy path" do
     given_that_i_have_an_active_mentor_with_an_ect
     and_i_sign_in_as_a_school

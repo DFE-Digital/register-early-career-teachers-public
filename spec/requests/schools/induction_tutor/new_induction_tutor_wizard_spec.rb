@@ -1,4 +1,4 @@
-describe "Schools::InductionTutor::NewInductionTutorWizardController", :enable_schools_interface do
+describe "Schools::InductionTutor::NewInductionTutorWizardController" do
   let(:school) { FactoryBot.create(:school, :without_induction_tutor) }
   let(:params) { {} }
   let(:induction_tutor_name) { "Old Induction Tutor Name" }

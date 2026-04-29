@@ -1,4 +1,4 @@
-RSpec.describe "Assigning a new induction tutor", :enable_schools_interface do
+RSpec.describe "Assigning a new induction tutor" do
   include Features::InductionTutorHelpers
 
   scenario "changing the existing details" do

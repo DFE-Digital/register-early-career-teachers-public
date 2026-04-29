@@ -1,4 +1,4 @@
-describe "Schools::SupportQueriesController", :enable_schools_interface do
+describe "Schools::SupportQueriesController" do
   let(:current_user) { FactoryBot.create(:school_user, :at_random_school) }
 
   before do

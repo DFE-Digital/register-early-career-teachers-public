@@ -1,4 +1,4 @@
-RSpec.describe "Changing an ECT's name", :enable_schools_interface do
+RSpec.describe "Changing an ECT's name" do
   let!(:ect_at_school_period) do
     FactoryBot.create(:ect_at_school_period, :not_started_yet, school:, teacher:)
   end
