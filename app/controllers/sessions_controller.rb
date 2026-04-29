@@ -38,6 +38,11 @@ class SessionsController < ApplicationController
     redirect_to post_login_redirect_path
   end
 
+  def failure
+    Sentry.capture_message("[Authentication failure] #{params[:message]}")
+    session_manager.end_session!
+  end
+
 private
 
   delegate :id_token, to: :user_builder

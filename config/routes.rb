@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   # omniauth sign-in
   get "/auth/:provider/callback", to: "sessions#create"
   post "/auth/:provider/callback", to: "sessions#create"
+  get "/auth/failure", to: "sessions#failure"
   get "/sign-in", to: "sessions#new"
   get "/sign-out", to: "sessions#destroy"
 
