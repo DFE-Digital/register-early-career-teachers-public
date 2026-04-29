@@ -25,7 +25,7 @@ Unauthenticated requests will receive an UnauthorizedResponse with a 401 error c
 
 Provider development teams can also access the OpenAPI spec in YAML format:
 
-`https://cpd-ec2-sandbox-web.teacherservices.cloud/api/docs/v3/swagger.yaml`
+`https://www.register-early-career-teachers.education.gov.uk/api/docs/v3/swagger.yaml`
 
 Providers can use API testing tools such as [Postman](https://www.postman.com) to make test API calls. Providers can import the API as a collection by using Postman's import feature and copying in the YAML URL of the API spec.
 
@@ -39,7 +39,7 @@ The production environment is the live environment which processes real data.
 
 Do not perform testing in the production environment as real participant and payment data may be affected.
 
-`https://register-early-career-teachers.education.gov.uk/api/v3`
+`https://www.register-early-career-teachers.education.gov.uk/api/v3`
 
 ### Sandbox environment
 
