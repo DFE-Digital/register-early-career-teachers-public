@@ -2,7 +2,7 @@ module ContractPeriods
   class ForECTRegistration
     class NoContractPeriodFoundForStartedOnDate < StandardError; end
 
-    def initialize(started_on:, previous_training_period: nil, reassignment: nil, preserve: false)
+    def initialize(started_on:, previous_training_period: nil, reassignment: nil, preserve: true)
       @started_on = started_on
       @previous_training_period = previous_training_period
       @reassignment = reassignment
