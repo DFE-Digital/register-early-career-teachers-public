@@ -98,7 +98,7 @@ module Schools
             started_on: training_period_started_on,
             school_partnership:,
             expression_of_interest:,
-            schedule: preserved_schedule,
+            contract_period: preserved_contract_period,
             author:
           ).call
         end
@@ -218,14 +218,10 @@ module Schools
       store&.previous_training_period
     end
 
-    def preserved_schedule
-      return nil unless preserving_previous_contract_period?
+    def preserved_contract_period
+      return nil unless contract_period == previous_training_period&.contract_period
 
-      previous_training_period&.schedule
-    end
-
-    def preserving_previous_contract_period?
-      contract_period == previous_training_period&.contract_period
+      contract_period
     end
   end
 end

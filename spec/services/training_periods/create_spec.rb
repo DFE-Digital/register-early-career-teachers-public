@@ -208,7 +208,8 @@ RSpec.describe TrainingPeriods::Create do
         finished_on:,
         schedule:,
         mentee:,
-        author:
+        author:,
+        contract_period: nil
       )
     end
   end
