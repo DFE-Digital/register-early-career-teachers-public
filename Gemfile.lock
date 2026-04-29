@@ -552,7 +552,7 @@ GEM
     pg (1.6.3-x86_64-linux-musl)
     pg_query (6.2.2)
       google-protobuf (>= 3.25.3)
-    playwright-ruby-client (1.59.0)
+    playwright-ruby-client (1.59.1)
       base64
       concurrent-ruby (>= 1.1.6)
       mime-types (>= 3.0)
