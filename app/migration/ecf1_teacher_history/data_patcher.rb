@@ -1,7 +1,9 @@
 class ECF1TeacherHistory::DataPatcher
   attr_reader :data_patches
 
-  def initialize(data_patches: DATA_PATCHES)
+  PATCHES_PATH = "app/migration/ecf1_teacher_history/data_patches.csv"
+
+  def initialize(data_patches: CSV.table(PATCHES_PATH))
     @data_patches = data_patches
   end
 
