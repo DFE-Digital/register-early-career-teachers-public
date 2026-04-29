@@ -393,7 +393,7 @@ RSpec.describe Schools::RegisterECT do
         let(:previous_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
         let(:started_on) { Date.new(2025, 9, 1) }
 
-        let(:previous_active_lead_provider) do
+        let!(:previous_active_lead_provider) do
           FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
         end
 

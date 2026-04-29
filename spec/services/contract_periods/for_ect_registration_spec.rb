@@ -75,7 +75,8 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024
+          contract_period: contract_2024,
+          provider_led_training_programme?: true
         )
       end
 
@@ -113,7 +114,8 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       let(:previous_training_period) do
         instance_double(
           TrainingPeriod,
-          contract_period: contract_2024
+          contract_period: contract_2024,
+          provider_led_training_programme?: true
         )
       end
 

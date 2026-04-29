@@ -67,7 +67,7 @@ module Schedules
     def contract_period_year
       return successor_contract_period if extended_schedule?
 
-      contract_period&.year || raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
+      ContractPeriod.containing_date(latest_start_date)&.year || raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
     end
 
     def identifier
