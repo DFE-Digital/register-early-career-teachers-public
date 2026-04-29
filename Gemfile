@@ -72,7 +72,7 @@ group :development do
   gem "pg_query"
 end
 
-group :production do
+group :production, :review, :staging, :sandbox, :paritycheck, :migration do
   gem "rails_semantic_logger"
 end
 
