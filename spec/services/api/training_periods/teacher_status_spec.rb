@@ -15,6 +15,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
       let(:training_period) { FactoryBot.create(:training_period, :ongoing) }
 
       it { is_expected.to eq(:active) }
+      it { expect(service).to be_active }
+      it { expect(service).not_to be_joining }
+      it { expect(service).not_to be_leaving }
+      it { expect(service).not_to be_left }
     end
 
     context "when training period is to finish in the future" do
@@ -37,6 +41,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
         let(:training_period) { FactoryBot.create(:training_period, :for_ect, :finished) }
 
         it { is_expected.to eq(:left) }
+        it { expect(service).not_to be_active }
+        it { expect(service).not_to be_joining }
+        it { expect(service).not_to be_leaving }
+        it { expect(service).to be_left }
 
         context "when completed induction (pass or fail are treated the same)" do
           before do
@@ -47,6 +55,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
           end
 
           it { is_expected.to eq(:active) }
+          it { expect(service).to be_active }
+          it { expect(service).not_to be_joining }
+          it { expect(service).not_to be_leaving }
+          it { expect(service).not_to be_left }
         end
 
         context "when completed induction after training period" do
@@ -60,6 +72,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
           end
 
           it { is_expected.to eq(:left) }
+          it { expect(service).not_to be_active }
+          it { expect(service).not_to be_joining }
+          it { expect(service).not_to be_leaving }
+          it { expect(service).to be_left }
         end
       end
 
@@ -67,6 +83,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
         let(:training_period) { FactoryBot.create(:training_period, :for_mentor, :finished) }
 
         it { is_expected.to eq(:left) }
+        it { expect(service).not_to be_active }
+        it { expect(service).not_to be_joining }
+        it { expect(service).not_to be_leaving }
+        it { expect(service).to be_left }
 
         context "when teacher becomes ineligible before period has finished" do
           before do
@@ -77,6 +97,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
           end
 
           it { is_expected.to eq(:active) }
+          it { expect(service).to be_active }
+          it { expect(service).not_to be_joining }
+          it { expect(service).not_to be_leaving }
+          it { expect(service).not_to be_left }
         end
 
         context "when teacher becomes ineligible when period has finished" do
@@ -88,6 +112,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
           end
 
           it { is_expected.to eq(:active) }
+          it { expect(service).to be_active }
+          it { expect(service).not_to be_joining }
+          it { expect(service).not_to be_leaving }
+          it { expect(service).not_to be_left }
         end
 
         context "when teacher becomes ineligible after period has finished" do
@@ -99,6 +127,10 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
           end
 
           it { is_expected.to eq(:left) }
+          it { expect(service).not_to be_active }
+          it { expect(service).not_to be_joining }
+          it { expect(service).not_to be_leaving }
+          it { expect(service).to be_left }
         end
       end
     end
