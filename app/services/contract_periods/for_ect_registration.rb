@@ -10,6 +10,7 @@ module ContractPeriods
 
     def call
       return contract_period_reassignment.successor_contract_period if contract_period_reassignment.required?
+      return @previous_training_period.contract_period if @previous_training_period.present?
 
       ContractPeriod.for_registration_start_date(@started_on) ||
         raise(
