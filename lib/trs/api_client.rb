@@ -39,6 +39,12 @@ module TRS
       RoutesToProfessionalStatuses
     ].freeze
 
+    # GET /v3/persons/{trn}
+    # @param trn [String] NB: some teachers are trnless
+    # @param date_of_birth [Date]
+    # @param national_insurance_number [String]
+    # @param include [Array<String>]
+    # @return [TRS::Teacher]
     def find_teacher(trn:, date_of_birth: nil, national_insurance_number: nil, include: QUERY_PARAMS)
       params = { dateOfBirth: date_of_birth, nationalInsuranceNumber: national_insurance_number, include: include.join(",") }.compact
       response = @connection.get(persons_path(trn), params)
