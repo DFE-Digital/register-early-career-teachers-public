@@ -5,7 +5,8 @@ module Teachers
     BATCH_SIZE = 50
 
     def perform
-      teachers = Teacher.found_in_trs
+      teachers = Teacher.not_trnless
+                        .found_in_trs
                         .active_in_trs
                         .ordered_by_trs_data_last_refreshed_at_nulls_first
                         .limit(BATCH_SIZE)
