@@ -206,7 +206,8 @@ module Schools
     def registration_contract_period
       @registration_contract_period ||= ContractPeriods::ForECTRegistration.new(
         started_on:,
-        previous_training_period:
+        previous_training_period:,
+        preserve: false
       ).call
     end
 
