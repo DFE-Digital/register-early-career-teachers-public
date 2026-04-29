@@ -8,6 +8,10 @@ if ENV["RAILS_ENV"] == "production"
   workers worker_count if worker_count > 1
 end
 
+on_worker_boot do
+  SemanticLogger.reopen if defined?(SemanticLogger)
+end
+
 worker_timeout 3600 if ENV.fetch("RAILS_ENV", "development") == "development"
 port ENV.fetch("PORT", 3000)
 environment ENV.fetch("RAILS_ENV", "development")
