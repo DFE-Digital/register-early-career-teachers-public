@@ -69,7 +69,7 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
     end
 
-    context "when there is a previous training period in an earlier contract period" do
+    context "when there is a previous provider-led training period and no reassignment is required" do
       let(:started_on) { Date.new(2025, 9, 1) }
 
       let(:previous_training_period) do
@@ -81,10 +81,7 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
 
       let(:reassignment) do
-        instance_double(
-          ContractPeriods::Reassignment,
-          required?: false
-        )
+        instance_double(ContractPeriods::Reassignment, required?: false)
       end
 
       it "returns the previous training period's contract period" do
@@ -92,9 +89,10 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
     end
 
-    context "when the training period should be reassigned" do
+    context "when reassignment is required" do
       let(:started_on) { Date.new(2025, 9, 1) }
       let(:previous_training_period) { instance_double(TrainingPeriod) }
+
       let(:reassignment) do
         instance_double(
           ContractPeriods::Reassignment,
@@ -104,29 +102,6 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
 
       it "returns the successor contract period" do
-        expect(resolver.call).to eq(contract_2024)
-      end
-    end
-
-    context "when the training period should not be reassigned" do
-      let(:started_on) { Date.new(2025, 9, 1) }
-
-      let(:previous_training_period) do
-        instance_double(
-          TrainingPeriod,
-          contract_period: contract_2024,
-          provider_led_training_programme?: true
-        )
-      end
-
-      let(:reassignment) do
-        instance_double(
-          ContractPeriods::Reassignment,
-          required?: false
-        )
-      end
-
-      it "returns the previous training period's contract period" do
         expect(resolver.call).to eq(contract_2024)
       end
     end
