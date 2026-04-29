@@ -62,6 +62,7 @@ Rails.application.configure do
   # the Rails logger and honours config.log_tags + config.filter_parameters.
   config.log_tags = [:request_id]
   config.semantic_logger.application = "" # No need to send the application name as logstash reads it from Cloud Foundry log tags
+  config.semantic_logger.backtrace_level = :fatal # Only attach backtraces at :fatal so error/warn lines stay small enough for Logit ingestion
   config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
   config.rails_semantic_logger.filter = proc do |log|
     # Ignore DfE Analytic events to reduce log output
