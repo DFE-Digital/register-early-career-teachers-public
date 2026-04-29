@@ -63,6 +63,10 @@ Rails.application.configure do
   config.log_tags = [:request_id]
   config.semantic_logger.application = "" # No need to send the application name as logstash reads it from Cloud Foundry log tags
   config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
+  config.rails_semantic_logger.filter = proc do |log|
+    # Ignore DfE Analytic events to reduce log output
+    !(log.name == "DfE::Analytics::SendEvents" || log.message&.include?("DfE::Analytics::SendEvents"))
+  end
   config.active_record.logger = nil # Don't log SQL
   config.semantic_logger.add_appender(io: $stdout, formatter: :json) # Log to STDOUT JSON-formatted logs
 
