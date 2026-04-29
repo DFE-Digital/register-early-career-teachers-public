@@ -11,7 +11,6 @@ unless Rails.application.config.bypass_filter_parameter_logging
     author_email
     author_name
     certificate
-    code
     commit
     corrected_name
     crypt
