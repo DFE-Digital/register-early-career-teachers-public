@@ -20,7 +20,7 @@ Lead providers are responsible for delivering high-quality early career teacher 
 
 ## Where to manage participant training data 
 
-Lead providers must use the register early career teachers API, `https://register-early-career-teachers.education.gov.uk/api/v3`, to submit and update data about:
+Lead providers must use the register early career teachers API, `https://www.register-early-career-teachers.education.gov.uk/api/v3`, to submit and update data about:
 
 * early career teachers
 * mentors
