@@ -124,6 +124,8 @@ class Teacher < ApplicationRecord
   scope :active_in_trs, -> { where(trs_deactivated: false) }
   scope :not_found_in_trs, -> { where(trs_not_found: true) } # TRS returned either 404 or 308
   scope :found_in_trs, -> { where(trs_not_found: false) }
+  scope :trnless, -> { where(trnless: true) }
+  scope :not_trnless, -> { where(trnless: false) }
   scope :without_qts_award, -> { where(trs_qts_awarded_on: nil) }
   scope :induction_status_missing, -> { where(trs_induction_status: nil) }
   scope :induction_status_passed, -> { where(trs_induction_status: "Passed") }

@@ -445,6 +445,22 @@ describe Teacher do
       end
     end
 
+    describe ".not_trnless" do
+      it "only includes records where trnless = FALSE" do
+        expected_clause = %("teachers"."trnless" = FALSE)
+
+        expect(Teacher.not_trnless.to_sql).to end_with(expected_clause)
+      end
+    end
+
+    describe ".trnless" do
+      it "only includes records where trnless = TRUE" do
+        expected_clause = %("teachers"."trnless" = TRUE)
+
+        expect(Teacher.trnless.to_sql).to end_with(expected_clause)
+      end
+    end
+
     context "induction status scopes" do
       let!(:teacher_without_induction_status) { FactoryBot.create(:teacher) }
       let!(:in_progress_teacher) { FactoryBot.create(:teacher, :induction_in_progress) }
