@@ -65,8 +65,7 @@ module Schools
 
     def create_training_period!
       return if training_programme == "school_led"
-
-      ensure_mentor_is_eligible!
+      return if mentor_ineligible_for_funding?
 
       @training_period = ::TrainingPeriods::Create.provider_led(period: mentor_at_school_period,
                                                                 started_on: mentor_at_school_period.started_on,
@@ -76,11 +75,8 @@ module Schools
                                                                 author: @author).call
     end
 
-    def ensure_mentor_is_eligible!
-      if Teachers::MentorFundingEligibility.new(trn: teacher.trn).ineligible?
-        raise MentorIneligibleForTraining,
-              "Mentor #{teacher.id} is not eligible for funded training"
-      end
+    def mentor_ineligible_for_funding?
+      Teachers::MentorFundingEligibility.new(trn: teacher.trn).ineligible?
     end
 
     def school_partnership
