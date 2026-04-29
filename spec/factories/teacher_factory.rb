@@ -92,5 +92,10 @@ FactoryBot.define do
     trait :induction_exempt do
       trs_induction_status { "Exempt" }
     end
+
+    trait :trnless do
+      trn { nil }
+      trnless { true }
+    end
   end
 end
