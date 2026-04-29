@@ -421,6 +421,26 @@ describe Teacher do
       end
     end
 
+    describe ".trnless" do
+      let(:trnless_teacher) { FactoryBot.create(:teacher, :trnless) }
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it "includes trnless teachers" do
+        expect(Teacher.trnless).to include(trnless_teacher)
+        expect(Teacher.trnless).not_to include(teacher)
+      end
+    end
+
+    describe ".with_trn" do
+      let(:trnless_teacher) { FactoryBot.create(:teacher, :trnless) }
+      let(:teacher) { FactoryBot.create(:teacher) }
+
+      it "includes teachers with a TRN" do
+        expect(Teacher.with_trn).to include(teacher)
+        expect(Teacher.with_trn).not_to include(trnless_teacher)
+      end
+    end
+
     describe ".active_in_trs" do
       it "only includes records where trs_deactivated = FALSE" do
         expected_clause = %("teachers"."trs_deactivated" = FALSE)
