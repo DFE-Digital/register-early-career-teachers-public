@@ -463,8 +463,7 @@ RSpec.describe Schools::RegisterECT do
           expect(new_training_period.schedule.identifier)
             .to eq(previous_training_period.schedule.identifier)
 
-          expect(new_training_period.schedule.contract_period)
-  .not_to eq(contract_period)
+          expect(new_training_period.schedule.contract_period.year).to eq(2024)
         end
 
         context "when the new school has a matching partnership in the previous contract period" do

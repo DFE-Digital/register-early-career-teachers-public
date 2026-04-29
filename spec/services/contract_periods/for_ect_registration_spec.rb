@@ -89,6 +89,50 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
     end
 
+    context "when there is a previous school-led training period" do
+      let(:started_on) { Date.new(2025, 9, 1) }
+
+      let(:previous_training_period) do
+        instance_double(
+          TrainingPeriod,
+          contract_period: contract_2024,
+          provider_led_training_programme?: false
+        )
+      end
+
+      let(:reassignment) do
+        instance_double(ContractPeriods::Reassignment, required?: false)
+      end
+
+      it "returns the registration contract period" do
+        expect(resolver.call).to eq(contract_2025)
+      end
+    end
+
+    context "when the previous provider-led contract period is payments frozen" do
+      let(:started_on) { Date.new(2025, 9, 1) }
+
+      let(:previous_training_period) do
+        instance_double(
+          TrainingPeriod,
+          contract_period: contract_2024,
+          provider_led_training_programme?: true
+        )
+      end
+
+      let(:reassignment) do
+        instance_double(ContractPeriods::Reassignment, required?: false)
+      end
+
+      before do
+        allow(contract_2024).to receive(:payments_frozen?).and_return(true)
+      end
+
+      it "returns the registration contract period" do
+        expect(resolver.call).to eq(contract_2025)
+      end
+    end
+
     context "when reassignment is required" do
       let(:started_on) { Date.new(2025, 9, 1) }
       let(:previous_training_period) { instance_double(TrainingPeriod) }
