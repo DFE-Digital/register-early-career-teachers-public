@@ -54,4 +54,27 @@ RSpec.describe "Errors", type: :request do
       expect(response.body).to include("Retry later")
     end
   end
+
+  context "when the request format is not HTML" do
+    it "renders the 404 HTML page for /404.pdf" do
+      get "/404.pdf"
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.body).to include("Page not found")
+    end
+
+    it "renders the 422 HTML page for /422.pdf" do
+      get "/422.pdf"
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Sorry, there’s a problem with the service")
+    end
+
+    it "renders the 500 HTML page for /500.pdf" do
+      get "/500.pdf"
+
+      expect(response).to have_http_status(:internal_server_error)
+      expect(response.body).to include("Sorry, there’s a problem with the service")
+    end
+  end
 end
