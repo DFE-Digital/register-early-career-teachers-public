@@ -26,7 +26,7 @@ Hello ((sit_name)),
 
 We’re sending you this email as our records show that you’re the induction tutor for ((school_name)).
 
-You can now register early career teachers (ECTs) and mentors for the 2026-2027 academic year with [register early career teachers](https://register-early-career-teachers.education.gov.uk/).
+You can now register early career teachers (ECTs) and mentors for the 2026-2027 academic year with [register early career teachers](https://www.register-early-career-teachers.education.gov.uk/).
 
 To use the service you’ll need:
 
@@ -46,7 +46,7 @@ If you do not have access to the service, you can request it from your school or
 We’ll ask you to confirm your school’s induction tutor when you use the service to register ECTs and mentors for the first time.
 
 ## Sign in
-Sign in to [register early career teachers](https://register-early-career-teachers.education.gov.uk/).
+Sign in to [register early career teachers](https://www.register-early-career-teachers.education.gov.uk/).
 
 Regards,
 

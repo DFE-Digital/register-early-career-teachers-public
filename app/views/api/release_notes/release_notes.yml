@@ -34,13 +34,13 @@
 
     The base URL for the API is:
 
-    - https://register-early-career-teachers.education.gov.uk/api/v3
+    - https://www.register-early-career-teachers.education.gov.uk/api/v3
 
     Providers can add the required API version and endpoint depending on what they want to do. For example, they’d add `/participants/` to the base URL if they wanted to retrieve data for multiple participants.
 
     ## API documentation
 
-    Swagger API documentation for the [lead provider API v3](https://register-early-career-teachers.education.gov.uk/api/docs/v3).
+    Swagger API documentation for the [lead provider API v3](https://www.register-early-career-teachers.education.gov.uk/api/docs/v3).
 
     ## What providers need to do
 
