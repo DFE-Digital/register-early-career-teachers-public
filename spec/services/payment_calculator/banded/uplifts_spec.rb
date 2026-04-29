@@ -1,22 +1,25 @@
 RSpec.describe PaymentCalculator::Banded::Uplifts do
+  let(:contract_period) { FactoryBot.create(:contract_period, year: 2024, uplift_fees_enabled: true).tap { it.update!(uplift_fees_enabled: true) } }
+  let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:) }
+
   let(:instance) do
     described_class.new(billable_declarations:, refundable_declarations:, uplift_fee_per_declaration:)
   end
 
   # Billable declarations
   let!(:billable_eligible_declaration) do
-    FactoryBot.create(:declaration, :eligible, :started, sparsity_uplift: true)
+    FactoryBot.create(:declaration, :eligible, :started, sparsity_uplift: true, active_lead_provider:)
   end
   let!(:billable_payable_declaration) do
-    FactoryBot.create(:declaration, :payable, :started, pupil_premium_uplift: true)
+    FactoryBot.create(:declaration, :payable, :started, pupil_premium_uplift: true, active_lead_provider:)
   end
   let!(:billable_paid_declaration) do
-    FactoryBot.create(:declaration, :paid, :started, sparsity_uplift: true)
+    FactoryBot.create(:declaration, :paid, :started, sparsity_uplift: true, active_lead_provider:)
   end
 
   # Refundable declarations
   let!(:refundable_awaiting_clawback_declaration) do
-    FactoryBot.create(:declaration, :awaiting_clawback, :started, sparsity_uplift: true)
+    FactoryBot.create(:declaration, :awaiting_clawback, :started, sparsity_uplift: true, active_lead_provider:)
   end
 
   # Out-of-scope declarations
@@ -26,7 +29,8 @@ RSpec.describe PaymentCalculator::Banded::Uplifts do
       :eligible,
       :started,
       sparsity_uplift: false,
-      pupil_premium_uplift: false
+      pupil_premium_uplift: false,
+      active_lead_provider:
     )
   end
   let(:clawed_back_declaration_without_uplift) do
@@ -35,11 +39,12 @@ RSpec.describe PaymentCalculator::Banded::Uplifts do
       :clawed_back,
       :started,
       sparsity_uplift: false,
-      pupil_premium_uplift: false
+      pupil_premium_uplift: false,
+      active_lead_provider:
     )
   end
   let!(:no_payment_declaration) do
-    FactoryBot.create(:declaration, :no_payment, :started, sparsity_uplift: true)
+    FactoryBot.create(:declaration, :no_payment, :started, sparsity_uplift: true, active_lead_provider:)
   end
 
   let(:billable_declarations) { Declaration.billable }
