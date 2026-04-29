@@ -1,4 +1,4 @@
-RSpec.describe "Searching for a mentor", :enable_schools_interface do
+RSpec.describe "Searching for a mentor" do
   include_context "test TRS API returns a teacher"
 
   before do

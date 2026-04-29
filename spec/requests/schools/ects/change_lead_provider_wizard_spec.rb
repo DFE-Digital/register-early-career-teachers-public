@@ -1,4 +1,4 @@
-describe "Schools::ECTs::ChangeLeadProviderWizardController", :enable_schools_interface do
+describe "Schools::ECTs::ChangeLeadProviderWizardController" do
   let(:contract_period) { FactoryBot.create(:contract_period, :current, :with_schedules) }
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }

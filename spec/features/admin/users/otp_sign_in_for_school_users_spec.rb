@@ -1,4 +1,4 @@
-RSpec.describe "OTP sign in for school users", :enable_schools_interface do
+RSpec.describe "OTP sign in for school users" do
   scenario "create a user with a school URN and sign in via OTP" do
     given_otp_school_sign_in_is_enabled
     and_a_matching_school_exists

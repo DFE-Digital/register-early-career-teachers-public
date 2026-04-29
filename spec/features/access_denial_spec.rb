@@ -1,4 +1,4 @@
-RSpec.describe "Access denial", :enable_schools_interface do
+RSpec.describe "Access denial" do
   context "when the user has not completed onboarding with DfE Sign In" do
     # DSI response includes neither UUID and URN
     before do

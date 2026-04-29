@@ -1,4 +1,4 @@
-RSpec.describe "Create mentorship of an ECT to a mentor", :enable_schools_interface do
+RSpec.describe "Create mentorship of an ECT to a mentor" do
   include ActionView::Helpers::SanitizeHelper
 
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }

@@ -84,7 +84,7 @@ RSpec.describe "Sessions", type: :request do
       end
     end
 
-    context "when using a school user", :enable_schools_interface do
+    context "when using a school user" do
       let(:params) do
         {
           email:,
@@ -128,7 +128,7 @@ RSpec.describe "Sessions", type: :request do
       end
     end
 
-    context "when using a multi-role user", :enable_schools_interface do
+    context "when using a multi-role user" do
       let(:params) do
         {
           email:,

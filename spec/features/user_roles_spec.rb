@@ -1,4 +1,4 @@
-RSpec.describe "User roles", :enable_schools_interface do
+RSpec.describe "User roles" do
   let(:school) { FactoryBot.create(:school, :state_funded) }
   let(:appropriate_body) { FactoryBot.create(:appropriate_body_period, name: school.name) }
 

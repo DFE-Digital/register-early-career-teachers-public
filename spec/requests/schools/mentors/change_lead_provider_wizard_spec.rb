@@ -1,4 +1,4 @@
-describe "Schools::Mentors::ChangeLeadProviderWizard Requests", :enable_schools_interface do
+describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
   let(:started_on) { contract_period.started_on + 2.months }
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }

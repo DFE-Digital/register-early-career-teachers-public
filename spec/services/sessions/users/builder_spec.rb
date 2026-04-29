@@ -54,7 +54,7 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
-      context "when the School exists and the user has the SchoolUser role", :enable_schools_interface do
+      context "when the School exists and the user has the SchoolUser role" do
         let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { school.urn }
         let(:dfe_sign_in_roles) { %w[SchoolUser] }
@@ -64,7 +64,7 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
-      context "when the school has not been linked but the gias school exists and the user has the SchoolUser role", :enable_schools_interface do
+      context "when the school has not been linked but the gias school exists and the user has the SchoolUser role" do
         let(:gias_school) { FactoryBot.create(:gias_school, :open) }
         let(:organisation_id) { Faker::Internet.uuid }
         let(:organisation_urn) { gias_school.urn }
@@ -77,7 +77,7 @@ RSpec.describe Sessions::Users::Builder do
         end
       end
 
-      context "when both the AppropriateBodyPeriod and School exist and the user has both roles", :enable_schools_interface do
+      context "when both the AppropriateBodyPeriod and School exist and the user has both roles" do
         let(:organisation_id) { appropriate_body_period.dfe_sign_in_organisation_id }
         let(:organisation_urn) { school.urn }
         let(:dfe_sign_in_roles) { %w[SchoolUser AppropriateBodyUser] }

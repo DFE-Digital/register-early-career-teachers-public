@@ -187,8 +187,6 @@ module Sessions
 
       # @return [Boolean]
       def school_user?
-        return false unless Rails.application.config.enable_schools_interface
-
         organisation.urn.present? &&
           (School.exists?(urn: organisation.urn) || GIAS::School.exists?(urn: organisation.urn)) &&
           dfe_sign_in_roles.include?("SchoolUser")

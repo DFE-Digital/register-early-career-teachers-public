@@ -1,4 +1,4 @@
-describe "School user can change a mentor's lead provider", :enable_schools_interface do
+describe "School user can change a mentor's lead provider" do
   around do |example|
     travel_to(Date.new(2025, 9, 1)) { example.run }
   end

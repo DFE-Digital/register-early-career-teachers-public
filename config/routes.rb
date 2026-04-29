@@ -32,9 +32,7 @@ Rails.application.routes.draw do
   get "/sign-in", to: "sessions#new"
   get "/sign-out", to: "sessions#destroy"
 
-  constraints -> { Rails.application.config.enable_schools_interface } do
-    get "/switch-role", to: "sessions#update", as: "switch_role"
-  end
+  get "/switch-role", to: "sessions#update", as: "switch_role"
 
   # one time password
   get "/otp-sign-in", to: "otp_sessions#new"

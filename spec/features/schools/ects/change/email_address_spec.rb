@@ -1,4 +1,4 @@
-describe "School user can change ECTs email address", :enable_schools_interface do
+describe "School user can change ECTs email address" do
   it "changes the email address" do
     given_there_is_a_school
     and_there_is_an_ect

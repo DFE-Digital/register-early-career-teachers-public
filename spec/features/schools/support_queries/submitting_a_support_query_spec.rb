@@ -1,4 +1,4 @@
-RSpec.describe "Submitting a support query", :enable_schools_interface do
+RSpec.describe "Submitting a support query" do
   let(:school) { FactoryBot.create(:school) }
 
   scenario "happy path" do

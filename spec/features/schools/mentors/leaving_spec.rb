@@ -1,4 +1,4 @@
-describe "School user reports a mentor leaving", :enable_schools_interface do
+describe "School user reports a mentor leaving" do
   around do |example|
     travel_to(Date.new(2025, 1, 1)) { example.run }
   end

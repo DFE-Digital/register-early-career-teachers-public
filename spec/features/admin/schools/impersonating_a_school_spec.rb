@@ -1,4 +1,4 @@
-RSpec.describe "Impersonating a school user", :enable_schools_interface do
+RSpec.describe "Impersonating a school user" do
   scenario "successfully impersonating a school user" do
     given_i_am_signed_in_as_an_admin_user
     and_i_am_on_the_admin_show_page_for_a_school

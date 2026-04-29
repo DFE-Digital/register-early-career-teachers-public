@@ -1,4 +1,4 @@
-RSpec.describe "Registering a mentor", :enable_schools_interface do
+RSpec.describe "Registering a mentor" do
   include_context "test TRS API returns nothing"
 
   scenario "Teacher with TRN is not found" do

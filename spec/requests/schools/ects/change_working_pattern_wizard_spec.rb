@@ -1,4 +1,4 @@
-describe "Schools::ECTs::ChangeWorkingPatternWizardController", :enable_schools_interface do
+describe "Schools::ECTs::ChangeWorkingPatternWizardController" do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:ect_at_school_period) do
