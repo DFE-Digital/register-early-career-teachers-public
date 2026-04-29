@@ -239,7 +239,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
           started_on: mentee.started_on
         )
       end
-      let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2025, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 12, 31)) }
+      let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
       let!(:lead_provider) { mentee_training_period.lead_provider }
       let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period:, lead_provider:) }
       let!(:previous_mentorship_period) { FactoryBot.create(:mentorship_period, started_on: 2.weeks.ago, finished_on: 1.day.ago, mentee:, mentor: previous_mentor) }
