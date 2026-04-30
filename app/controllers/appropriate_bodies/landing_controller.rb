@@ -4,6 +4,7 @@ module AppropriateBodies
                        :authenticate,
                        :set_appropriate_body,
                        only: :show
+    after_action :allow_search_engine_indexing, only: :show
 
     def show = nil
   end
