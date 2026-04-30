@@ -4,7 +4,7 @@ module Teachers
 
     queue_as :trs_sync
 
-    # param teacher [Teacher]
+    # @param teacher [Teacher]
     def perform(teacher:)
       return if teacher.trnless? || teacher.trs_deactivated? || teacher.trs_not_found?
 
