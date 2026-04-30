@@ -3,6 +3,7 @@
 RSpec.describe "Legacy ECF1 redirects", type: :request do
   %w[
     /users/sign_in
+    /users/confirm_sign_in
     /check-account
     /nominations/resend-email
   ].each do |path|
