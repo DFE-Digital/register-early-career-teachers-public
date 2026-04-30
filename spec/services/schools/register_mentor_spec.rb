@@ -259,10 +259,12 @@ RSpec.describe Schools::RegisterMentor do
       context "when the mentor is ineligible for funding" do
         let!(:teacher) { FactoryBot.create(:teacher, :ineligible_for_mentor_funding, trn:) }
 
-        it "raises a MentorIneligibleForTraining error" do
-          expect { service.register! }
-            .to raise_error(Schools::RegisterMentor::MentorIneligibleForTraining,
-                            /Mentor #{teacher.id} is not eligible for funded training/)
+        it "creates an associated MentorAtSchoolPeriod record" do
+          expect { service.register! }.to change(MentorAtSchoolPeriod, :count).from(0).to(1)
+        end
+
+        it "does not create a TrainingPeriod" do
+          expect { service.register! }.not_to change(TrainingPeriod, :count)
         end
       end
 
