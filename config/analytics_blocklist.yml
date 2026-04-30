@@ -499,6 +499,7 @@
   - range
   :lead_providers:
   - ecf_id
+  - short_name
   :statement_adjustments:
   - ecf_id
   :lead_provider_delivery_partnerships:

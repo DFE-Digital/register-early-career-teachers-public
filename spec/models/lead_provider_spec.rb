@@ -51,4 +51,12 @@ describe LeadProvider do
       expect(subject.name).to eql("Some lead provider")
     end
   end
+
+  context "when setting the name" do
+    let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Some lead provider") }
+
+    it "sets the short name to the initials of the name" do
+      expect(lead_provider.short_name).to eq("Slp")
+    end
+  end
 end
