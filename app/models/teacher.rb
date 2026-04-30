@@ -46,9 +46,6 @@ class Teacher < ApplicationRecord
   has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
   has_one :latest_ect_at_school_period, -> { latest_first }, class_name: "ECTAtSchoolPeriod"
 
-  # TODO: remove after migration complete
-  has_many :teacher_migration_failures
-
   touch -> { self },
         on_event: :update,
         timestamp_attribute: :api_updated_at,

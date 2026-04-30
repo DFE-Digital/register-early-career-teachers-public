@@ -1,6 +1,0 @@
-<% if response.bodies_different? %>
-  <span class="body-diff"><%= sanitize_diff(response.body_diff.to_s(:html)) %></span>
-<% else %>
-  <p class="no-differences govuk-!-font-size-27">No differences found 🙌</p>
-<% end %>
-
