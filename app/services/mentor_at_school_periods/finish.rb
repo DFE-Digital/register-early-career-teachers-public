@@ -8,7 +8,7 @@ class MentorAtSchoolPeriods::Finish
     @reported_by_school_id = reported_by_school_id
   end
 
-  def finish_existing_at_school_periods!
+  def finish_periods_at_all_schools!
     ActiveRecord::Base.transaction do
       ongoing_mentor_at_school_periods.each do |period|
         finish!(period)

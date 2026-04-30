@@ -13,7 +13,7 @@ def close_teacher_periods(trns:, author_email:, finished_on: Date.current)
       end
 
       # mentor_at_school_periods + associated periods
-      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on:, author:).finish_existing_at_school_periods!
+      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on:, author:).finish_periods_at_all_schools!
     end
   end
 end
