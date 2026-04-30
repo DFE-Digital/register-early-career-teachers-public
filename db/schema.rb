@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_103643) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_105743) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -993,9 +993,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_103643) do
   end
 
   create_table "teachers", force: :cascade do |t|
-    t.uuid "api_ect_training_record_id", default: -> { "gen_random_uuid()" }
+    t.uuid "api_ect_training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
-    t.uuid "api_mentor_training_record_id", default: -> { "gen_random_uuid()" }
+    t.uuid "api_mentor_training_record_id", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "api_unfunded_mentor_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.datetime "api_updated_at", default: -> { "CURRENT_TIMESTAMP" }
     t.string "corrected_name"
