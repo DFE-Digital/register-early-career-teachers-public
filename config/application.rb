@@ -62,6 +62,7 @@ module RegisterEarlyCareerTeachers
     config.enable_sentry = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_SENTRY", false))
     config.enable_blazer = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_BLAZER", false))
     config.enable_api = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_API", false))
+    config.enable_time_travel = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TIME_TRAVEL", false))
     config.bypass_filter_parameter_logging = false
     config.sentry_dsn = ENV["SENTRY_DSN"]
     config.enable_request_specs_timeout = ActiveModel::Type::Boolean.new.cast(ENV.fetch("CI", false))
@@ -114,7 +115,7 @@ module RegisterEarlyCareerTeachers
 
     config.middleware.use API::RequestMiddleware
 
-    if ActiveModel::Type::Boolean.new.cast(ENV.fetch("ENABLE_TIME_TRAVEL", false))
+    if config.enable_time_travel
       config.middleware.use API::TimeTravelerMiddleware
     end
   end

@@ -45,6 +45,10 @@ Rails.application.routes.draw do
     resources :personas, only: %i[index]
   end
 
+  constraints -> { Rails.application.config.enable_time_travel } do
+    resource :time_traveller, only: %i[new create destroy]
+  end
+
   draw :admin
   draw :appropriate_body
   draw :school
