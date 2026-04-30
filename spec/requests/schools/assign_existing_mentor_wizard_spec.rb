@@ -1,4 +1,4 @@
-RSpec.describe "Assign existing mentor wizard", :enable_schools_interface do
+RSpec.describe "Assign existing mentor wizard" do
   include_context "safe_schedules"
 
   let(:school) { FactoryBot.create(:school) }

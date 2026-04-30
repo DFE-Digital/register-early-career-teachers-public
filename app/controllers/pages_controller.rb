@@ -1,8 +1,6 @@
 class PagesController < ApplicationController
   def home
     redirect_to(post_login_redirect_path) and return if authenticated?
-
-    redirect_to(ab_landing_path) unless Rails.application.config.enable_schools_interface
   end
 
   # Unrecognised DfE Sign In user (org/role)

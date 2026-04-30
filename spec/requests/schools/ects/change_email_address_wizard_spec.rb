@@ -1,4 +1,4 @@
-describe "Schools::ECTs::ChangeEmailAddressWizardController", :enable_schools_interface do
+describe "Schools::ECTs::ChangeEmailAddressWizardController" do
   let(:school) { FactoryBot.create(:school) }
   let(:teacher) { FactoryBot.create(:teacher) }
   let(:ect_at_school_period) do

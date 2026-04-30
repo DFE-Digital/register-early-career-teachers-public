@@ -1,4 +1,4 @@
-RSpec.describe "Registering an ECT with provider-led training", :enable_schools_interface do
+RSpec.describe "Registering an ECT with provider-led training" do
   include_context "test TRS API returns a teacher"
   include ReusablePartnershipHelpers
 

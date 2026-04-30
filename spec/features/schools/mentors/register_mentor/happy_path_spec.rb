@@ -1,4 +1,4 @@
-RSpec.describe "Registering a mentor", :enable_schools_interface, :js do
+RSpec.describe "Registering a mentor", :js do
   include_context "test TRS API returns a teacher"
   include SchoolPartnershipHelpers
 

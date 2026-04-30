@@ -1,4 +1,4 @@
-describe "School user can change mentor's email address", :enable_schools_interface do
+describe "School user can change mentor's email address" do
   it "changes the email address" do
     given_there_is_a_school
     and_there_is_a_mentor

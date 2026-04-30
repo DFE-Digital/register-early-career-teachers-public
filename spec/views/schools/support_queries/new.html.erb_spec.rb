@@ -1,4 +1,4 @@
-RSpec.describe "schools/support_queries/new.html.erb", :enable_schools_interface do
+RSpec.describe "schools/support_queries/new.html.erb" do
   subject { rendered }
 
   let(:current_user) { FactoryBot.create(:school_user, :at_random_school) }

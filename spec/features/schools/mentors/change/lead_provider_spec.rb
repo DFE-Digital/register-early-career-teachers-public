@@ -1,4 +1,4 @@
-describe "School user can change a mentor's lead provider", :enable_schools_interface do
+describe "School user can change a mentor's lead provider" do
   before do
     given_there_is_a_school
     and_there_is_a_mentor

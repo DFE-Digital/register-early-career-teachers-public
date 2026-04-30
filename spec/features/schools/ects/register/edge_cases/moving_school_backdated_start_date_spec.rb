@@ -1,4 +1,4 @@
-RSpec.describe "Moving School - backdated start spec", :enable_schools_interface do
+RSpec.describe "Moving School - backdated start spec" do
   include_context "test TRS API returns a teacher"
 
   before do
