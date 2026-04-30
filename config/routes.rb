@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   # Redirect old ECF1 URLs that appear in early Google results.
   # Remove these once the old URLs are no longer indexed.
   get "/users/sign_in", to: redirect("/")
+  get "/users/confirm_sign_in", to: redirect("/")
   get "/check-account", to: redirect("/")
   get "/nominations/resend-email", to: redirect("/")
 
