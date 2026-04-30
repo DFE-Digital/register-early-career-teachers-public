@@ -56,6 +56,14 @@ RSpec.describe Admin::Finance::VoidDeclarationForm, type: :model do
     context "when voiding a paid declaration" do
       let(:declaration) { FactoryBot.create(:declaration, :paid) }
 
+      before do
+        FactoryBot.create(:statement,
+                          :open,
+                          :output_fee,
+                          active_lead_provider: declaration.training_period.active_lead_provider,
+                          deadline_date: 1.month.from_now)
+      end
+
       it { is_expected.to be_truthy }
 
       include_examples "does not call the void service"
