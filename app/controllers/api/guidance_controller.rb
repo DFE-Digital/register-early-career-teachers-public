@@ -4,6 +4,8 @@ module API
 
     layout "api_guidance"
 
+    after_action :allow_search_engine_indexing, only: :show
+
     def show
       @latest_release_note = release_notes.first
     end
