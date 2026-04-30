@@ -201,5 +201,127 @@ describe MentorAtSchoolPeriods::Finish do
         subject.finish_existing_at_school_periods!
       end
     end
+
+    context "when there are ongoing mentor at school periods at other schools" do
+      let(:other_school) { FactoryBot.create(:school) }
+      let(:other_mentor_at_school_period) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school, started_on:)
+      end
+
+      let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: other_school) }
+      let!(:other_mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:) }
+
+      it "finishes the periods at other schools" do
+        subject.finish_existing_at_school_periods!
+
+        expect(mentor_at_school_period.reload.finished_on).not_to be_nil
+        expect(other_mentor_at_school_period.reload.finished_on).not_to be_nil
+        expect(training_period.reload.finished_on).not_to be_nil
+        expect(mentorship_period.reload.finished_on).not_to be_nil
+        expect(other_mentorship_period.reload.finished_on).not_to be_nil
+      end
+
+      it "records events for each school" do
+        expect(Events::Record).to receive(:record_teacher_left_school_as_mentor!).with(
+          author:,
+          mentor_at_school_period:,
+          teacher:,
+          school: mentor_at_school_period.school,
+          happened_at: finished_on
+        ).once
+
+        expect(Events::Record).to receive(:record_teacher_left_school_as_mentor!).with(
+          author:,
+          mentor_at_school_period: other_mentor_at_school_period,
+          teacher:,
+          school: other_school,
+          happened_at: finished_on
+        ).once
+
+        subject.finish_existing_at_school_periods!
+      end
+
+      context "when the mentor has already finished at the other school" do
+        let(:other_mentor_at_school_period) do
+          FactoryBot.create(:mentor_at_school_period, teacher:, school: other_school, started_on:, finished_on: started_on + 1.month)
+        end
+
+        let!(:other_mentorship_period) do
+          FactoryBot.create(:mentorship_period, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:, finished_on: started_on + 1.month)
+        end
+
+        it "does not update the finished_on for the already finished period" do
+          subject.finish_existing_at_school_periods!
+
+          expect(other_mentor_at_school_period.reload.finished_on).to eq(started_on + 1.month)
+          expect(other_mentorship_period.reload.finished_on).to eq(started_on + 1.month)
+        end
+
+        it "finishes the unfinished periods" do
+          subject.finish_existing_at_school_periods!
+
+          expect(mentor_at_school_period.reload.finished_on).not_to be_nil
+          expect(training_period.reload.finished_on).not_to be_nil
+          expect(mentorship_period.reload.finished_on).not_to be_nil
+        end
+      end
+    end
+  end
+
+  describe "finish_periods_at_reported_school!" do
+    context "when there are ongoing mentor at school periods at other schools" do
+      let(:other_school) { FactoryBot.create(:school) }
+      let(:other_mentor_at_school_period) do
+        FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, school: other_school, started_on:)
+      end
+
+      let(:other_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: other_school) }
+      let!(:other_mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:) }
+
+      let(:reported_by_school_id) { mentor_at_school_period.school_id }
+
+      it "only finishes the periods at the reported school" do
+        subject.finish_periods_at_reported_school!
+
+        expect(mentor_at_school_period.reload.reported_leaving_by_school_id).to eq(reported_by_school_id)
+        expect(mentor_at_school_period.finished_on).not_to be_nil
+        expect(training_period.reload.finished_on).not_to be_nil
+        expect(mentorship_period.reload.finished_on).not_to be_nil
+
+        expect(other_mentor_at_school_period.reload.reported_leaving_by_school_id).to be_nil
+        expect(other_mentor_at_school_period.finished_on).to be_nil
+        expect(other_mentorship_period.reload.finished_on).to be_nil
+      end
+
+      it "only records an event at the reported school" do
+        expect(Events::Record).to receive(:record_teacher_left_school_as_mentor!).with(
+          author:,
+          mentor_at_school_period:,
+          teacher:,
+          school: mentor_at_school_period.school,
+          happened_at: finished_on
+        ).once
+
+        subject.finish_periods_at_reported_school!
+      end
+
+      context "when the mentor is training at another school" do
+        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: other_mentor_at_school_period, started_on:) }
+
+        it "does not finish the training period at the other school" do
+          subject.finish_periods_at_reported_school!
+
+          expect(training_period.reload.finished_on).to be_nil
+        end
+      end
+
+      context "when reported_by_school_id is not provided" do
+        let(:reported_by_school_id) { nil }
+
+        it "raises an error" do
+          expect { subject.finish_periods_at_reported_school! }.to raise_error(ArgumentError, "reported_by_school_id is required to finish periods at reported school")
+        end
+      end
+    end
   end
 end
