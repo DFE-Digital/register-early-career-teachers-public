@@ -1,11 +1,9 @@
 class DeclarationDateWithinMilestoneValidator < ActiveModel::Validator
   def validate(record)
-    declaration_within_milestone(record) unless being_migrated?(record)
+    declaration_within_milestone(record)
   end
 
 private
-
-  def being_migrated?(record) = validation_context(record) == :being_migrated
 
   def declaration_within_milestone(record)
     return if record.errors[:declaration_date].any?
