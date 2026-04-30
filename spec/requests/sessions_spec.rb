@@ -223,4 +223,53 @@ RSpec.describe "Sessions", type: :request do
       end
     end
   end
+
+  describe "GET /auth/failure" do
+    subject(:failure) do
+      get("/auth/failure", params: { message: "csrf_detected" })
+      response
+    end
+
+    let(:school) { FactoryBot.create(:school) }
+    let(:user) do
+      Sessions::Users::SchoolUser.new(
+        email: "test@example.com",
+        name: "Test User",
+        school_urn: school.urn,
+        dfe_sign_in_organisation_id: school.id,
+        dfe_sign_in_user_id: SecureRandom.uuid,
+        dfe_sign_in_roles: %w[SchoolUser]
+      )
+    end
+
+    it { is_expected.to have_http_status(:ok) }
+
+    it "prompts users to try again" do
+      expect(failure.body).to include("Please try again")
+    end
+
+    it "clears the session" do
+      session_manager = instance_double(
+        Sessions::Manager,
+        current_user: user,
+        requested_path: nil,
+        end_session!: true
+      )
+      allow(Sessions::Manager).to receive(:new).and_return(session_manager)
+
+      failure
+
+      expect(session_manager).to have_received(:end_session!).once
+    end
+
+    it "logs a message in Sentry" do
+      allow(Sentry).to receive(:capture_message)
+
+      failure
+
+      expect(Sentry)
+        .to have_received(:capture_message).once
+        .with("[Authentication failure] csrf_detected")
+    end
+  end
 end
