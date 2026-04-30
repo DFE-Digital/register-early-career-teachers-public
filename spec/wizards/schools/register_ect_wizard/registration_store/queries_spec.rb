@@ -173,7 +173,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     end
 
     context "when the previous training period is provider-led in a non-frozen contract period" do
-      let!(:contract_period_2021) { create_contract_period(year: 2021) }
+      let!(:contract_period_2023) { create_contract_period(year: 2023) }
       let!(:contract_period_2025) { create_contract_period(year: 2025) }
 
       let(:start_date) { contract_period_2025.started_on.to_s }
@@ -181,14 +181,14 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       let(:previous_training_period) do
         build_previous_training_period_double(
           provider_led: true,
-          contract_period: contract_period_2021
+          contract_period: contract_period_2023
         )
       end
 
       before { stub_previous_training(previous_training_period, previous_ect_period:) }
 
       it "returns the previous training period's contract period" do
-        expect(queries.registration_contract_period).to eq(contract_period_2021)
+        expect(queries.registration_contract_period).to eq(contract_period_2023)
       end
     end
 
