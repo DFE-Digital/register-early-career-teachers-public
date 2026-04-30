@@ -91,7 +91,7 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::CheckAnswersStep do
     end
 
     context "when leaving_on is present" do
-      let(:finish_service) { instance_double(MentorAtSchoolPeriods::Finish, finish_existing_at_school_periods!: true) }
+      let(:finish_service) { instance_double(MentorAtSchoolPeriods::Finish, finish_periods_at_reported_school!: true) }
 
       before do
         allow(MentorAtSchoolPeriods::Finish).to receive(:new).and_return(finish_service)
@@ -100,7 +100,7 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::CheckAnswersStep do
       it "finishes the mentor at school period" do
         expect(step.save!).to be_truthy
         expect(MentorAtSchoolPeriods::Finish).to have_received(:new)
-        expect(finish_service).to have_received(:finish_existing_at_school_periods!)
+        expect(finish_service).to have_received(:finish_periods_at_reported_school!)
       end
     end
   end
