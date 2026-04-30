@@ -91,16 +91,14 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
         expect(page).to have_content("2025")
         expect(page).to have_content("Lead Provider One, Lead Provider Two")
 
-        # Find the row for 2025 and check it has an empty lead providers cell
         rows = page.all("tbody tr")
         expect(rows.size).to eq(2)
 
-        # The second row should be for 2025 with empty partnerships
         row_2025 = rows.last
         cells = row_2025.all("td")
-        expect(cells[0]).to have_content("2025") # Year column
-        expect(cells[1].text.strip).to be_empty # Lead providers column should be empty
-        expect(cells[2]).to have_link("Change") # Action column
+        expect(cells[0]).to have_content("2025")
+        expect(cells[1]).to have_content("Not reported")
+        expect(cells[2]).to have_link("Add")
       end
     end
 
@@ -151,9 +149,9 @@ RSpec.describe Admin::LeadProviderPartnershipsTableComponent, type: :component d
         expect(names).to eq("Lead Provider One, Lead Provider Two")
       end
 
-      it "returns empty string when no partnerships exist" do
+      it "returns 'Not reported' when no partnerships exist" do
         names = component.send(:lead_provider_names, [])
-        expect(names).to eq("")
+        expect(names).to eq("Not reported")
       end
     end
 
