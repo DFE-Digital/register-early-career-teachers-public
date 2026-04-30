@@ -120,6 +120,8 @@ class Teacher < ApplicationRecord
     order(arel_table[:trs_data_last_refreshed_at].asc.nulls_first)
   }
 
+  scope :with_trn, -> { where.not(trn: nil) }
+  scope :without_trn, -> { where(trnless: true) }
   scope :deactivated_in_trs, -> { where(trs_deactivated: true) }
   scope :active_in_trs, -> { where(trs_deactivated: false) }
   scope :not_found_in_trs, -> { where(trs_not_found: true) } # TRS returned either 404 or 308

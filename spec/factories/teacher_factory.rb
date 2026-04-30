@@ -9,6 +9,11 @@ FactoryBot.define do
       Teacher.find_or_initialize_by(trn:)
     end
 
+    trait :trnless do
+      trn { nil }
+      trnless { true }
+    end
+
     trait :with_realistic_name do
       trs_first_name { Faker::Name.first_name }
       trs_last_name { Faker::Name.last_name }
