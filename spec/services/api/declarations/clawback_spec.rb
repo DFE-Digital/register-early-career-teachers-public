@@ -12,7 +12,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
     let(:declaration) { FactoryBot.create(:declaration, :paid) }
     let(:lead_provider_id) { nil }
 
-    it { is_expected.to have_one_error_per_attribute }
+    it { is_expected.to have_one_error_only }
     it { is_expected.to have_error(:lead_provider_id, "Enter a '#/lead_provider_id'.") }
   end
 
@@ -20,21 +20,21 @@ RSpec.describe API::Declarations::Clawback, type: :model do
     let(:declaration) { FactoryBot.create(:declaration, :paid) }
     let(:lead_provider_id) { 123_456_789 }
 
-    it { is_expected.to have_one_error_per_attribute }
+    it { is_expected.to have_one_error_only }
     it { is_expected.to have_error(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.") }
   end
 
   context "when declaration is awaiting clawback" do
     let(:declaration) { FactoryBot.create(:declaration, :awaiting_clawback) }
 
-    it { is_expected.to have_one_error_per_attribute }
+    it { is_expected.to have_one_error_only }
     it { is_expected.to have_error(:declaration_api_id, "The declaration will or has been refunded") }
   end
 
   context "when declaration has been clawed back" do
     let(:declaration) { FactoryBot.create(:declaration, :clawed_back) }
 
-    it { is_expected.to have_one_error_per_attribute }
+    it { is_expected.to have_one_error_only }
     it { is_expected.to have_error(:declaration_api_id, "The declaration will or has been refunded") }
   end
 
@@ -47,7 +47,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
       Statement.where("deadline_date > ?", payment_statement.deadline_date).destroy_all
     end
 
-    it { is_expected.to have_one_error_per_attribute }
+    it { is_expected.to have_one_error_only }
 
     it { is_expected.not_to be_valid }
 
@@ -66,7 +66,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
 
     before { declaration.payment_statement.update!(fee_type: :service) }
 
-    it { is_expected.to have_one_error_per_attribute }
+    it { is_expected.to have_one_error_only }
 
     it "has the correct error message" do
       error_message = <<~TXT.squish
@@ -83,7 +83,7 @@ RSpec.describe API::Declarations::Clawback, type: :model do
 
     before { declaration.payment_statement.update!(deadline_date: Date.yesterday) }
 
-    it { is_expected.to have_one_error_per_attribute }
+    it { is_expected.to have_one_error_only }
 
     it "has the correct error message" do
       error_message = <<~TXT.squish

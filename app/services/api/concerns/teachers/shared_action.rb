@@ -12,12 +12,10 @@ module API::Concerns::Teachers
       attribute :teacher_api_id
       attribute :teacher_type
 
-      validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
-      validate :lead_provider_exists
-
       validates :teacher_api_id, presence: { message: "Enter a '#/teacher_api_id'." }
       validate :teacher_exists
-
+      validates :lead_provider_id, presence: { message: "Enter a '#/lead_provider_id'." }
+      validate :lead_provider_exists
       validates :teacher_type, presence: { message: "Enter a '#/teacher_type'." }
       validates :teacher_type,
                 inclusion: {
@@ -40,6 +38,7 @@ module API::Concerns::Teachers
 
     def lead_provider_exists
       return if errors[:lead_provider_id].any?
+      return if errors[:teacher_api_id].any?
       return if lead_provider
 
       errors.add(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.")
@@ -54,6 +53,8 @@ module API::Concerns::Teachers
 
     def teacher_type_exists
       return if errors[:teacher_type].any?
+      return if errors[:teacher_api_id].any?
+      return if errors[:lead_provider_id].any?
       return if training_period
 
       errors.add(:teacher_type, "The entered '#/teacher_type' is not recognised for the given participant. Check details and try again.")
