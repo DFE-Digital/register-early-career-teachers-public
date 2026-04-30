@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_23_150346) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_125913) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -200,80 +200,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_23_150346) do
     t.index ["active_lead_provider_id"], name: "index_contracts_on_active_lead_provider_id"
     t.index ["banded_fee_structure_id"], name: "index_contracts_on_banded_fee_structure_id", unique: true, where: "(banded_fee_structure_id IS NOT NULL)"
     t.index ["flat_rate_fee_structure_id"], name: "index_contracts_on_flat_rate_fee_structure_id", unique: true, where: "(flat_rate_fee_structure_id IS NOT NULL)"
-  end
-
-  create_table "data_migration_failed_combinations", force: :cascade do |t|
-    t.integer "cohort_year"
-    t.datetime "created_at", null: false
-    t.string "delivery_partner_name"
-    t.datetime "end_date"
-    t.text "failure_message"
-    t.uuid "induction_record_id"
-    t.string "induction_status"
-    t.string "lead_provider_name"
-    t.uuid "mentor_profile_id"
-    t.string "migration_mode"
-    t.string "preferred_identity_email"
-    t.uuid "profile_id"
-    t.string "profile_type"
-    t.integer "schedule_cohort_year"
-    t.uuid "schedule_id"
-    t.string "schedule_identifier"
-    t.string "schedule_name"
-    t.string "school_urn"
-    t.datetime "start_date"
-    t.string "training_programme"
-    t.string "training_status"
-    t.string "trn"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "data_migration_failed_mentorships", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.uuid "ecf_end_induction_record_id"
-    t.uuid "ecf_start_induction_record_id"
-    t.uuid "ect_participant_profile_id"
-    t.text "failure_message"
-    t.date "finished_on"
-    t.uuid "mentor_participant_profile_id"
-    t.string "migration_mode"
-    t.date "started_on"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "data_migration_teacher_combinations", force: :cascade do |t|
-    t.uuid "api_id"
-    t.datetime "created_at", null: false
-    t.jsonb "ecf1_ect_combinations", default: [], null: false
-    t.virtual "ecf1_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_ect_combinations)", stored: true
-    t.uuid "ecf1_ect_profile_id"
-    t.jsonb "ecf1_mentor_combinations", default: [], null: false
-    t.virtual "ecf1_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf1_mentor_combinations)", stored: true
-    t.uuid "ecf1_mentor_profile_id"
-    t.jsonb "ecf1_mentorships", default: [], null: false
-    t.virtual "ecf1_mentorships_count", type: :integer, as: "jsonb_array_length(ecf1_mentorships)", stored: true
-    t.jsonb "ecf2_ect_combinations", default: [], null: false
-    t.virtual "ecf2_ect_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_ect_combinations)", stored: true
-    t.jsonb "ecf2_mentor_combinations", default: [], null: false
-    t.virtual "ecf2_mentor_combinations_count", type: :integer, as: "jsonb_array_length(ecf2_mentor_combinations)", stored: true
-    t.jsonb "ecf2_mentorships", default: [], null: false
-    t.virtual "ecf2_mentorships_count", type: :integer, as: "jsonb_array_length(ecf2_mentorships)", stored: true
-    t.string "migration_mode"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "data_migrations", force: :cascade do |t|
-    t.json "cache_stats"
-    t.datetime "completed_at"
-    t.datetime "created_at", null: false
-    t.integer "failure_count", default: 0, null: false
-    t.string "model", null: false
-    t.integer "processed_count", default: 0, null: false
-    t.datetime "queued_at"
-    t.datetime "started_at"
-    t.integer "total_count"
-    t.datetime "updated_at", null: false
-    t.integer "worker"
   end
 
   create_table "declarations", force: :cascade do |t|
@@ -611,19 +537,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_23_150346) do
     t.index ["lead_provider_id"], name: "index_metadata_teachers_lead_providers_on_lead_provider_id"
     t.index ["teacher_id", "lead_provider_id"], name: "idx_on_teacher_id_lead_provider_id_23bbab847a", unique: true
     t.index ["teacher_id"], name: "index_metadata_teachers_lead_providers_on_teacher_id"
-  end
-
-  create_table "migration_failures", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "data_migration_id", null: false
-    t.string "failure_message"
-    t.json "item", null: false
-    t.string "migration_mode"
-    t.integer "parent_id"
-    t.string "parent_type"
-    t.datetime "updated_at", null: false
-    t.index ["data_migration_id"], name: "index_migration_failures_on_data_migration_id"
-    t.index ["parent_id"], name: "index_migration_failures_on_parent_id"
   end
 
   create_table "milestones", force: :cascade do |t|
@@ -979,19 +892,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_23_150346) do
     t.index ["teacher_id"], name: "index_teacher_id_changes_on_teacher_id"
   end
 
-  create_table "teacher_migration_failures", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "message", null: false
-    t.uuid "migration_item_id"
-    t.string "migration_item_type"
-    t.string "migration_mode"
-    t.string "model", default: "teacher", null: false
-    t.bigint "teacher_id"
-    t.datetime "updated_at", null: false
-    t.index ["model"], name: "index_teacher_migration_failures_on_model"
-    t.index ["teacher_id"], name: "index_teacher_migration_failures_on_teacher_id"
-  end
-
   create_table "teachers", force: :cascade do |t|
     t.uuid "api_ect_training_record_id"
     t.uuid "api_id", default: -> { "gen_random_uuid()" }, null: false
@@ -1167,7 +1067,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_23_150346) do
   add_foreign_key "teacher_id_changes", "teachers"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_from_teacher_id", primary_key: "api_id"
   add_foreign_key "teacher_id_changes", "teachers", column: "api_to_teacher_id", primary_key: "api_id"
-  add_foreign_key "teacher_migration_failures", "teachers"
   add_foreign_key "teachers", "contract_periods", column: "ect_payments_frozen_year", primary_key: "year"
   add_foreign_key "teachers", "contract_periods", column: "mentor_payments_frozen_year", primary_key: "year"
   add_foreign_key "training_periods", "active_lead_providers", column: "expression_of_interest_id"

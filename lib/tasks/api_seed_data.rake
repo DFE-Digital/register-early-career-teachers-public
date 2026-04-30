@@ -34,8 +34,7 @@ namespace :api_seed_data do
 
     if Rails.env.development? || Rails.env.review? || Rails.env.staging?
       seeds += [
-        APISeedData::APITokens,
-        APISeedData::ParityChecks,
+        APISeedData::APITokens
       ]
     end
 

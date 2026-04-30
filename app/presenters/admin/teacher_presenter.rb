@@ -38,11 +38,6 @@ module Admin
       teacher.mentor_at_school_periods.order(started_on: :desc)
     end
 
-    def has_migration_failures?
-      MigrationFailure.where(parent_id: teacher.id, parent_type: "Teacher").any? ||
-        teacher.teacher_migration_failures.any?
-    end
-
     def most_recent_email
       period = [latest_ect_period, latest_mentor_period].compact.max_by(&:started_on)
       period&.email || "No email recorded"

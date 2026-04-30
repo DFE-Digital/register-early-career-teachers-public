@@ -25,9 +25,5 @@
 @forward "admin";
 @forward "api_guidance";
 
-// Migration classes
-@forward "migration/migration";
-@forward "migration/parity_check";
-
 // Test guidance styles
 @forward "personas";
