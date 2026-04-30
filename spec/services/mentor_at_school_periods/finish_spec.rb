@@ -12,7 +12,7 @@ describe MentorAtSchoolPeriods::Finish do
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:, school: mentor_at_school_period.school) }
   let!(:mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: mentor_at_school_period, mentee: ect_at_school_period, started_on:) }
 
-  describe "#finish_existing_at_school_periods!" do
+  describe "#finish_periods_at_all_schools!" do
     context "when finished_on is already set" do
       let(:training_period) { nil }
       let(:mentorship_period) { nil }
@@ -28,7 +28,7 @@ describe MentorAtSchoolPeriods::Finish do
         end
 
         it "does not overwrite the existing finished_on" do
-          expect { subject.finish_existing_at_school_periods! }.not_to(change { mentor_at_school_period.reload.finished_on })
+          expect { subject.finish_periods_at_all_schools! }.not_to(change { mentor_at_school_period.reload.finished_on })
         end
       end
 
@@ -43,7 +43,7 @@ describe MentorAtSchoolPeriods::Finish do
         end
 
         it "does not rewrite the finished_on date" do
-          expect { subject.finish_existing_at_school_periods! }.not_to(change { mentor_at_school_period.reload.finished_on })
+          expect { subject.finish_periods_at_all_schools! }.not_to(change { mentor_at_school_period.reload.finished_on })
         end
       end
     end
@@ -60,7 +60,7 @@ describe MentorAtSchoolPeriods::Finish do
       end
 
       it "deletes the mentorship period" do
-        expect { subject.finish_existing_at_school_periods! }.to change(MentorshipPeriod, :count).by(-1)
+        expect { subject.finish_periods_at_all_schools! }.to change(MentorshipPeriod, :count).by(-1)
       end
 
       it "deletes any events associated with the mentorship period" do
@@ -70,7 +70,7 @@ describe MentorAtSchoolPeriods::Finish do
 
         expect(Event.where(mentorship_period:).count).to eq(2)
 
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
 
         expect(Event.where(mentorship_period:)).to be_empty
         expect(Event.exists?(other_event.id)).to be true
@@ -91,7 +91,7 @@ describe MentorAtSchoolPeriods::Finish do
       end
 
       it "sets the mentorship period finished_on to the mentor's earlier leaving date" do
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
 
         expect(mentorship_period.reload.finished_on).to eq(mentor_finished_on)
       end
@@ -111,11 +111,11 @@ describe MentorAtSchoolPeriods::Finish do
       end
 
       it "does not raise an error" do
-        expect { subject.finish_existing_at_school_periods! }.not_to raise_error
+        expect { subject.finish_periods_at_all_schools! }.not_to raise_error
       end
 
       it "sets the mentorship period finished_on to the ECT's leaving date, not the mentor's" do
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
 
         expect(mentorship_period.reload.finished_on).to eq(ect_finished_on)
       end
@@ -126,7 +126,7 @@ describe MentorAtSchoolPeriods::Finish do
       expect(mentorship_period.finished_on).to be_nil
       expect(mentor_at_school_period.finished_on).to be_nil
 
-      subject.finish_existing_at_school_periods!
+      subject.finish_periods_at_all_schools!
 
       expect(training_period.reload.finished_on).not_to be_nil
       expect(mentorship_period.reload.finished_on).not_to be_nil
@@ -142,14 +142,14 @@ describe MentorAtSchoolPeriods::Finish do
         happened_at: finished_on
       )
 
-      subject.finish_existing_at_school_periods!
+      subject.finish_periods_at_all_schools!
     end
 
     context "when reported_by_school_id is provided" do
       let(:reported_by_school_id) { mentor_at_school_period.school_id }
 
       it "stores the reporting school id" do
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
         expect(mentor_at_school_period.reload.reported_leaving_by_school_id).to eq(reported_by_school_id)
       end
     end
@@ -162,7 +162,7 @@ describe MentorAtSchoolPeriods::Finish do
         author:
       ).and_return(mentorships_finish)
 
-      subject.finish_existing_at_school_periods!
+      subject.finish_periods_at_all_schools!
 
       expect(mentorships_finish).to have_received(:finish!).once
     end
@@ -176,7 +176,7 @@ describe MentorAtSchoolPeriods::Finish do
         author:
       ).and_return(training_periods_finish)
 
-      subject.finish_existing_at_school_periods!
+      subject.finish_periods_at_all_schools!
 
       expect(training_periods_finish).to have_received(:finish!).once
     end
@@ -191,14 +191,14 @@ describe MentorAtSchoolPeriods::Finish do
       it "does not record any events when there are no ongoing periods to finish" do
         expect(Events::Record).not_to receive(:record_teacher_left_school_as_mentor!)
 
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
       end
 
       it "does not call any finishing services when there are no ongoing periods" do
         expect(MentorshipPeriods::Finish).not_to receive(:new)
         expect(TrainingPeriods::Finish).not_to receive(:mentor_training)
 
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
       end
     end
 
@@ -212,7 +212,7 @@ describe MentorAtSchoolPeriods::Finish do
       let!(:other_mentorship_period) { FactoryBot.create(:mentorship_period, :ongoing, mentor: other_mentor_at_school_period, mentee: other_ect_at_school_period, started_on:) }
 
       it "finishes the periods at other schools" do
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
 
         expect(mentor_at_school_period.reload.finished_on).not_to be_nil
         expect(other_mentor_at_school_period.reload.finished_on).not_to be_nil
@@ -238,7 +238,7 @@ describe MentorAtSchoolPeriods::Finish do
           happened_at: finished_on
         ).once
 
-        subject.finish_existing_at_school_periods!
+        subject.finish_periods_at_all_schools!
       end
 
       context "when the mentor has already finished at the other school" do
@@ -251,14 +251,14 @@ describe MentorAtSchoolPeriods::Finish do
         end
 
         it "does not update the finished_on for the already finished period" do
-          subject.finish_existing_at_school_periods!
+          subject.finish_periods_at_all_schools!
 
           expect(other_mentor_at_school_period.reload.finished_on).to eq(started_on + 1.month)
           expect(other_mentorship_period.reload.finished_on).to eq(started_on + 1.month)
         end
 
         it "finishes the unfinished periods" do
-          subject.finish_existing_at_school_periods!
+          subject.finish_periods_at_all_schools!
 
           expect(mentor_at_school_period.reload.finished_on).not_to be_nil
           expect(training_period.reload.finished_on).not_to be_nil

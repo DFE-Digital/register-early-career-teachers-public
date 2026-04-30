@@ -45,7 +45,7 @@ module Schools
     def register!
       ActiveRecord::Base.transaction do
         create_teacher!
-        finish_existing_at_school_periods! if finish_existing_at_school_periods
+        finish_periods_at_all_schools! if finish_existing_at_school_periods
         start_at_school!
         create_training_period! unless mentoring_at_several_schools?
         set_eligibility_for_funding!
@@ -95,8 +95,8 @@ module Schools
       @school ||= School.find_by(urn: school_urn)
     end
 
-    def finish_existing_at_school_periods!
-      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on, author:).finish_existing_at_school_periods!
+    def finish_periods_at_all_schools!
+      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on, author:).finish_periods_at_all_schools!
     end
 
     def mentoring_at_several_schools?
