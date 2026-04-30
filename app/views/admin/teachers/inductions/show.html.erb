@@ -1,27 +1,12 @@
-<% if Rails.application.config.enable_schools_interface %>
-
-  <%
-    page_data(
-      title: teacher_full_name(@teacher),
-      caption: teacher_trn(@teacher),
-      caption_size: 'm',
-      error: false,
-      breadcrumbs: @breadcrumbs
-    )
-  %>
-<% else %>
-
-  <%
-    page_data(
-      title: teacher_full_name(@teacher),
-      caption: teacher_trn(@teacher),
-      caption_size: 'm',
-      error: false,
-      backlink_href: admin_teachers_path(page: @page)
-    )
-  %>
-
-<% end%>
+<%
+  page_data(
+    title: teacher_full_name(@teacher),
+    caption: teacher_trn(@teacher),
+    caption_size: 'm',
+    error: false,
+    breadcrumbs: @breadcrumbs
+  )
+%>
 
 <%= render 'admin/teachers/navigation', navigation_items: @navigation_items %>
 
@@ -36,7 +21,7 @@
   component.with_past_induction_periods(enable_edit: true)
 end %>
 
-<p class='govuk-body'>
+<p class="govuk-body">
   <%= govuk_link_to('View change history', admin_teacher_timeline_path(@teacher)) %>
 </p>
 

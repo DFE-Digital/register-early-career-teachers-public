@@ -1,4 +1,4 @@
-describe "School user can change ECTs working pattern", :enable_schools_interface do
+describe "School user can change ECTs working pattern" do
   it "changes the working pattern" do
     given_there_is_a_school
     and_there_is_an_ect

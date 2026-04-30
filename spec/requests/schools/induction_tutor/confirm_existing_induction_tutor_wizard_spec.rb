@@ -1,4 +1,4 @@
-describe "Schools::InductionTutor::ConfirmExistingInductionTutorWizardController", :enable_schools_interface do
+describe "Schools::InductionTutor::ConfirmExistingInductionTutorWizardController" do
   let(:school) { FactoryBot.create(:school, :with_unconfirmed_induction_tutor, induction_tutor_name:, induction_tutor_email:) }
   let(:params) { {} }
   let(:induction_tutor_name) { "Old Induction Tutor Name" }

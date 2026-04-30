@@ -1,4 +1,4 @@
-RSpec.describe "Mentor summary", :enable_schools_interface do
+RSpec.describe "Mentor summary" do
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, school:) }
   let(:school) { FactoryBot.create(:school) }
 

@@ -1,4 +1,4 @@
-describe "Schools::Mentors::ChangeNameWizardController", :enable_schools_interface do
+describe "Schools::Mentors::ChangeNameWizardController" do
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
   let(:mentor_at_school_period_id) { mentor_at_school_period.id }

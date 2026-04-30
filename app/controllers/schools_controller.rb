@@ -17,8 +17,6 @@ private
   end
 
   def authorised?
-    return false unless Rails.application.config.enable_schools_interface
-
     current_user&.school_user?
   end
 

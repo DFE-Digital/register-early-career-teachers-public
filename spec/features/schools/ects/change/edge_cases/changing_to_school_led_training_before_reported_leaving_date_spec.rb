@@ -1,4 +1,4 @@
-RSpec.describe "Changing to school-led training before the ECTs reported leaving date", :enable_schools_interface do
+RSpec.describe "Changing to school-led training before the ECTs reported leaving date" do
   include ChangesBeforeReportedLeavingDateHelpers
 
   include_context "test TRS API returns a teacher"

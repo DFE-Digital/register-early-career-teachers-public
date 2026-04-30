@@ -1,4 +1,4 @@
-RSpec.describe "Registering an ECT", :enable_schools_interface do
+RSpec.describe "Registering an ECT" do
   include_context "test TRS API returns a teacher and then a teacher that has passed their induction"
 
   scenario "User enters national insurance number but teacher has completed their induction" do

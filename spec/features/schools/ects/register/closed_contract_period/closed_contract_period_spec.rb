@@ -1,4 +1,4 @@
-RSpec.describe "Registering an ECT - closed contract period", :enable_schools_interface do
+RSpec.describe "Registering an ECT - closed contract period" do
   include_context "test TRS API returns a teacher"
 
   before { travel_to Date.new(2024, 9, 1) }

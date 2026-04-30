@@ -1,4 +1,4 @@
-RSpec.describe "ECT summary", :enable_schools_interface do
+RSpec.describe "ECT summary" do
   let(:ect) { FactoryBot.create(:ect_at_school_period, school:) }
   let(:school) { FactoryBot.create(:school) }
 

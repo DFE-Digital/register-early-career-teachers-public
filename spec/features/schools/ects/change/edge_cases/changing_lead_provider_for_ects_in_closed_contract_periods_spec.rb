@@ -1,4 +1,4 @@
-describe "Changing lead provider when the ECT started training in a closed contract period", :enable_schools_interface do
+describe "Changing lead provider when the ECT started training in a closed contract period" do
   before do
     given_there_is_a_school
     and_there_is_a_closed_contract_period
