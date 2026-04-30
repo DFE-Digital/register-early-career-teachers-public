@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_105743) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_160220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -523,7 +523,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_105743) do
     t.uuid "ecf_start_induction_record_id"
     t.citext "email"
     t.date "finished_on"
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.bigint "reported_leaving_by_school_id"
     t.bigint "school_id", null: false
     t.date "started_on", null: false
