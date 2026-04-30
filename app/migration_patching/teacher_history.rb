@@ -42,20 +42,44 @@ private
 
   def self.ect_periods(ect_at_school_periods:)
     ect_at_school_periods.map do |school_period|
+      training_periods = school_period.training_periods.map do |training_period|
+        training_data(training_period:)
+      end
+
+      mentorship_periods = school_period.mentorship_periods.map do |mentorship_period|
+        {
+          id: mentorship_period.id,
+          started_on: mentorship_period.started_on,
+          finished_on: mentorship_period.finished_on,
+          mentor: { name: Teachers::Name.new(mentorship_period.mentor.teacher).full_name },
+        }
+      end
+
       school_period.attributes.symbolize_keys.merge(
-        training_periods: school_period.training_periods.map do |training_period|
-          training_data(training_period:)
-        end
+        training_periods:,
+        mentorship_periods:,
       )
     end
   end
 
   def self.mentor_periods(mentor_at_school_periods:)
     mentor_at_school_periods.map do |school_period|
+      training_periods = school_period.training_periods.map do |training_period|
+        training_data(training_period:)
+      end
+
+      mentorship_periods = school_period.mentorship_periods.map do |mentorship_period|
+        {
+          id: mentorship_period.id,
+          started_on: mentorship_period.started_on,
+          finished_on: mentorship_period.finished_on,
+          mentee: { name: Teachers::Name.new(mentorship_period.mentee.teacher).full_name },
+        }
+      end
+
       school_period.attributes.symbolize_keys.merge(
-        training_periods: school_period.training_periods.map do |training_period|
-          training_data(training_period:)
-        end
+        training_periods:,
+        mentorship_periods:,
       )
     end
   end
