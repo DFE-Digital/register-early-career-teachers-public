@@ -4,7 +4,7 @@ module Schools
       attr_accessor :start_date
 
       validates :start_date, ect_start_date: true
-      validate :start_date_not_before_previous_school
+      validate :start_date_after_previous_school_or_training_period_start
       validate :start_date_within_4_months, if: :currently_ect_at_another_school?
 
       def self.permitted_params
@@ -25,19 +25,41 @@ module Schools
 
     private
 
-      def start_date_not_before_previous_school
-        return if skip_start_date_validation?
-
-        previous_period = ect.previous_ect_at_school_period
-        return unless previous_start_date_invalid?(previous_period)
-
-        if start_date_as_date <= previous_period.started_on
-          add_start_date_too_early_error(previous_period)
-        end
+      def currently_ect_at_another_school?
+        ect.previously_registered? && previous_period.ongoing?
       end
 
-      def currently_ect_at_another_school?
-        ect.previously_registered? && ect.previous_ect_at_school_period.ongoing?
+      def previous_period
+        ect.previous_ect_at_school_period
+      end
+
+      def start_date_after_previous_school_or_training_period_start
+        return if skip_start_date_validation?
+        return if start_date_boundary_validator.valid?
+
+        errors.add(:start_date, invalid_period_error_message)
+      end
+
+      def invalid_period_error_message
+        "Our records show that #{wizard.ect.full_name} started " \
+        "#{invalid_period_type} at #{previous_period&.school&.name} on " \
+        "#{invalid_period_formatted_date}." \
+        " Enter a start date after #{invalid_period_earliest_end_date_formatted}."
+      end
+
+      def invalid_period_formatted_date
+        invalid_period.started_on.to_formatted_s(:govuk)
+      end
+
+      def invalid_period_earliest_end_date_formatted
+        invalid_period.started_on.next_day.to_formatted_s(:govuk)
+      end
+
+      def invalid_period_type
+        case invalid_period
+        when ECTAtSchoolPeriod then "teaching"
+        when TrainingPeriod    then "their latest training"
+        end
       end
 
       def start_date_within_4_months
@@ -56,17 +78,6 @@ module Schools
 
       def registrations_closed_for_contract_period?
         start_date_as_date.future? && !start_date_contract_period&.enabled?
-      end
-
-      def previous_start_date_invalid?(period)
-        period&.started_on.present?
-      end
-
-      def add_start_date_too_early_error(period)
-        errors.add(
-          :start_date,
-          "Our records show that #{wizard.ect.full_name} started teaching at #{period.school&.name} on #{period.started_on.to_formatted_s(:govuk)}. Enter a later start date."
-        )
       end
 
       def skip_start_date_validation?
@@ -101,6 +112,17 @@ module Schools
 
       def start_date_obj
         @start_date_obj ||= Schools::Validation::ECTStartDate.new(date_as_hash: start_date)
+      end
+
+      def invalid_period
+        @invalid_period ||= start_date_boundary_validator.invalid_period
+      end
+
+      def start_date_boundary_validator
+        @start_date_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
+          ect_at_school_period: previous_period,
+          date: start_date_as_date
+        )
       end
     end
   end

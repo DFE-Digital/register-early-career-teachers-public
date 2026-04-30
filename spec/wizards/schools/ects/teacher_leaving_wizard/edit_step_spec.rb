@@ -2,7 +2,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
   subject(:step) { described_class.new(wizard:, leaving_on:) }
 
   let(:wizard) { instance_double(Schools::ECTs::TeacherLeavingWizard::Wizard, store:, ect_at_school_period:) }
-  let(:ect_at_school_period) { FactoryBot.build_stubbed(:ect_at_school_period, started_on: Date.new(2025, 1, 1)) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1)) }
   let(:teacher_name) { Teachers::Name.new(ect_at_school_period.teacher).full_name }
   let(:store) { FactoryBot.build(:session_repository, form_key: :teacher_leaving_wizard) }
   let(:leaving_on) { { "day" => "1", "month" => "3", "year" => "2025" } }
@@ -33,6 +33,10 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
   end
 
   describe "validations" do
+    let(:boundary) { instance_double(Schools::Validation::PeriodBoundary) }
+    let(:leaving_date_before_start_message) { "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a later date." }
+    let(:leaving_date_before_training_period_message) { "Our records show that #{teacher_name} started their latest training at your school on 31 December 2024. Enter a later date." }
+
     around do |example|
       travel_to(Date.new(2025, 1, 1)) { example.run }
     end
@@ -52,25 +56,55 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
       it { is_expected.to be_valid }
     end
 
-    context "when leaving date is before the start date" do
-      let(:leaving_on) { { 1 => 2024, 2 => 12, 3 => 31 } }
+    context "when the date clashes with the ect at school period" do
+      before do
+        allow(Schools::Validation::PeriodBoundary)
+          .to receive(:new)
+          .and_return(boundary)
+
+        allow(boundary).to receive_messages(
+          valid?: false,
+          invalid_period: ect_at_school_period
+        )
+      end
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:leaving_on].map(&:squish)).to include(
-          "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a later date."
-        )
+        expect(step.errors[:leaving_on]).to include("Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a date after 2 January 2025.")
       end
     end
 
-    context "when leaving date is the same as the start date" do
-      let(:leaving_on) { { 1 => 2025, 2 => 1, 3 => 1 } }
+    context "when the date clashes with the latest training period" do
+      let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2024, 12, 31)) }
+
+      before do
+        allow(Schools::Validation::PeriodBoundary)
+          .to receive(:new)
+          .and_return(boundary)
+
+        allow(boundary).to receive_messages(
+          valid?: false,
+          invalid_period: training_period
+        )
+      end
 
       it "is invalid with the correct error message" do
         expect(step).not_to be_valid
-        expect(step.errors[:leaving_on].map(&:squish)).to include(
-          "Our records show that #{teacher_name} started teaching at your school on 1 January 2025. Enter a later date."
-        )
+        expect(step.errors[:leaving_on]).to include("Our records show that #{teacher_name} started their latest training at your school on 31 December 2024. Enter a date after 1 January 2025.")
+      end
+    end
+
+    context "when the date does not clash with any periods" do
+      before do
+        allow(Schools::Validation::PeriodBoundary)
+          .to receive(:new)
+          .and_return(boundary)
+
+        allow(boundary).to receive(:valid?).and_return(true)
+      end
+
+      it "is valid" do
+        expect(step).to be_valid
       end
     end
 
