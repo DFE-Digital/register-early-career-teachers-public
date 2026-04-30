@@ -33,7 +33,7 @@ RSpec.describe "admin/delivery_partners/show.html.erb" do
   it "shows the delivery partner API ID" do
     render
 
-    expect(rendered).to have_css("span.app-mono", text: delivery_partner.api_id)
+    expect(rendered).to have_css("code", text: delivery_partner.api_id)
   end
 
   it "includes backlink with preserved page and query parameters" do

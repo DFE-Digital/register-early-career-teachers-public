@@ -27,7 +27,7 @@
 
           <% list.with_row do |row| %>
             <% row.with_key(text: "Partnership API ID") %>
-            <% row.with_value { school_partnership.api_id } %>
+            <% row.with_value { format_uuid(school_partnership.api_id) } %>
           <% end %>
         <% end %>
       <% end %>
