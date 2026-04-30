@@ -16,6 +16,12 @@ describe "Search engine indexing", type: :request do
       expect(response.headers["X-Robots-Tag"]).to eq("all")
     end
 
+    it "allows the API guidance page to be indexed" do
+      get("/api/guidance")
+
+      expect(response.headers["X-Robots-Tag"]).to eq("all")
+    end
+
     it "prevents other pages from being indexed" do
       get("/sign-in")
 
@@ -36,6 +42,12 @@ describe "Search engine indexing", type: :request do
 
     it "prevents the appropriate body landing page from being indexed" do
       get("/appropriate-body")
+
+      expect(response.headers["X-Robots-Tag"]).to eq("none")
+    end
+
+    it "prevents the API guidance page from being indexed" do
+      get("/api/guidance")
 
       expect(response.headers["X-Robots-Tag"]).to eq("none")
     end
