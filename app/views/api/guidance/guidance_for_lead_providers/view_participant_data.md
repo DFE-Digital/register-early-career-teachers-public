@@ -63,21 +63,41 @@ The following table shows the filters providers can use within this endpoint.
  
 Providers can use the `GET /participants/{id}` endpoint to view individual records. 
 
-The following table explains the key participant fields. 
+### Participant funding and induction 
 
-| Field | Description |  
-| ------------ | ------------- |  
-| `eligible_for_funding` | For ECTs, becomes `true` once the participant’s induction is confirmed by an appropriate body. It will never revert to `false` | 
-| `overall_induction_start_date` | The date an ECT officially began statutory induction as submitted by their appropriate body | 
-| `induction_end_date` | The date an ECT completed (passed or failed) their induction | 
-| `trn` | The participant’s teacher reference number. If a TRN is missing, it means the participant’s registration predates validation, and we have no matching TRN in our records | 
+The API uses fields to describe funding eligibility for ECTS and mentors, and induction start and end dates for ECTs. 
 
-## Participant statuses 
+* `eligible_for_funding`, shows if an ECT or mentor is eligible for funding. Can be `true`, `false`, or `null`. 
+* `overall_induction_start_date`, the date an ECT officially began statutory induction as submitted by their appropriate body.
+* `induction_end_date`, the date an ECT completed (passed or failed) their induction.
+* `teacher_reference_number`, the ECT or mentor's teacher reference number. If a TRN is missing, it means the participant’s registration predates validation, and we have no matching TRN in our records.
+
+The following table explains what the `eligible_for_funding` values mean. 
+
+| `eligible_for_funding` | Definition | 
+| ------------ | ------------- | 
+| `true` | Set for ECTs and mentors who become eligible at any point. For example, when an ECT’s induction is recorded or a mentor is eligible to start training. A `true` status will remain once set. | 
+| `false` | Set for new ECTs who are exempt from induction. `false` will never be set for new mentor records. |  
+| `null` | Set when ECT eligibility is not known. For example, before an induction is recorded by an appropriate body. `null` will never be set for new mentor records. |  
+
+Other fields are used to indicate that ECTs and mentors have stopped training or are not eligible for further funding. 
+
+For ECTs:
+
+* `induction_completion_date`
+
+For mentors:
+
+* `mentor_funding_end_date`
+* `mentor_ineligible_for_funding_reason`
+
+
+### Participant statuses 
 
 The API uses two different status fields to describe a participant’s journey in the participant endpoints: 
 
-* `training_status`, set by providers through the API. It determines what actions providers can take, such as updating data or submitting declarations
-* `participant_status`, shows if a participant is still engaging with training at their school. It moves to `left` whenever the school or lead provider indicates the participant is no longer training with the current lead provider, even if they remain at the school 
+* `training_status`, set by providers through the API. It determines what actions providers can take, such as updating data or submitting declarations.
+* `participant_status`, shows if a participant is still engaging with training at their school. It moves to `left` whenever the school or lead provider indicates the participant is no longer training with the current lead provider, even if they remain at the school.
 
 Together, these statuses give both providers and schools a shared view of a participant’s training progress. 
 
@@ -85,18 +105,18 @@ The following table explains what the training status fields mean.
 
 | `training_status` | Definition | Notes | 
 | ------------ | ------------- | ------------- | 
-| `active` | Participant is currently in training | Update participant data and submit declarations | 
-| `deferred` | Participant has paused training | Cannot update participant data. Can submit declarations. Providers must notify us when the participant resumes | 
-| `withdrawn` | Participant has left training | Cannot update participant data. Can only submit backdated declarations if `declaration_date` is before `withdrawal_date` | 
+| `active` | Participant is currently in training. | Update participant data and submit declarations. | 
+| `deferred` | Participant has paused training. | Cannot update participant data. Can submit declarations. Providers must notify us when the participant resumes. | 
+| `withdrawn` | Participant has left training. | Cannot update participant data. Can only submit backdated declarations if `declaration_date` is before `withdrawal_date`. | 
 
 The following table explains what the participant status fields mean. 
 
 | `participant_status` | Definition | 
 | ------------ | ------------- | 
-| `joining` | ECT is due to join the school. Will update to `active` on the same day as the school’s reported start date for the ECT. Also applies to mentors in transfer cases where a joining date exists | 
-| `active` | Participant is currently at the school | 
-| `leaving` | Participant is due to leave the school. Will update to left after the leaving date passes | 
-| `left` | Participant has left a school, been reassigned to a different lead provider, had their programme type changed to `school-led`, or been withdrawn or deferred by a lead provider | 
+| `joining` | ECT is due to join the school. Will update to `active` on the same day as the school’s reported start date for the ECT. Also applies to mentors in transfer cases where a joining date exists. | 
+| `active` | Participant is currently at the school. | 
+| `leaving` | Participant is due to leave the school. Will update to left after the leaving date passes. | 
+| `left` | Participant has left a school, been reassigned to a different lead provider, had their programme type changed to `school-led`, or been withdrawn or deferred by a lead provider. | 
  
 ### Example of how statuses for participants can differ 
 
