@@ -56,7 +56,26 @@ runs:
       id: apply-terraform
       shell: bash
       run: |
-        make ci ${{ inputs.environment }} terraform-apply
+        max_attempts=3
+        attempt=1
+        while [ "$attempt" -le "$max_attempts" ]; do
+          echo "Running terraform apply (attempt ${attempt}/${max_attempts})"
+          if make ci ${{ inputs.environment }} terraform-apply; then
+            break
+          fi
+
+          exit_code=$?
+          if [ "$attempt" -eq "$max_attempts" ]; then
+            echo "Terraform apply failed after ${max_attempts} attempts"
+            exit "$exit_code"
+          fi
+
+          sleep_seconds=$((attempt * 30))
+          echo "Terraform apply failed with exit code ${exit_code}. Retrying in ${sleep_seconds}s..."
+          sleep "$sleep_seconds"
+          attempt=$((attempt + 1))
+        done
+
         cd config/terraform/application && echo "url=$(terraform output -raw url)" >> $GITHUB_OUTPUT
       env:
         TF_VAR_statuscake_api_token: ${{ inputs.statuscake-api-token }}
