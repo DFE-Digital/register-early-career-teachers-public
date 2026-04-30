@@ -1,5 +1,0 @@
-<% if failures.present? %>
-  <%= govuk_warning_text(text: "Some of this teacher's records could not be migrated") %>
-
-  <%= render Migration::TeacherMigrationFailureComponent.with_collection(failures) %>
-<% end %>
