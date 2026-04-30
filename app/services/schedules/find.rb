@@ -4,12 +4,13 @@ module Schedules
 
     include Schedules::Reuse
 
-    def initialize(period:, training_programme:, started_on:, period_type_key:, mentee:)
+    def initialize(period:, training_programme:, started_on:, period_type_key:, mentee:, contract_period: nil)
       @period = period
       @training_programme = training_programme
       @started_on = started_on
       @period_type_key = period_type_key
       @mentee = mentee
+      @contract_period = contract_period
     end
 
     def call
@@ -67,7 +68,9 @@ module Schedules
     def contract_period_year
       return successor_contract_period if extended_schedule?
 
-      ContractPeriod.containing_date(latest_start_date)&.year || raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
+      @contract_period&.year ||
+        ContractPeriod.containing_date(latest_start_date)&.year ||
+        raise(ActiveRecord::RecordNotFound, "No contract period for #{latest_start_date}")
     end
 
     def identifier

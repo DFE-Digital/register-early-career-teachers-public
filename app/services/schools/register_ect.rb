@@ -98,6 +98,7 @@ module Schools
             started_on: training_period_started_on,
             school_partnership:,
             expression_of_interest:,
+            contract_period: preserved_contract_period,
             author:
           ).call
         end
@@ -186,24 +187,20 @@ module Schools
           previous_school_partnership_id: previous_id,
           school:,
           author:,
-          current_contract_period_year: registration_contract_period.year
+          current_contract_period_year: contract_period.year
         )
     end
 
     def training_period_started_on
       if ContractPeriods::Reassignment.new(training_period: previous_training_period).required?
-        [ect_at_school_period.started_on, registration_contract_period.started_on].max
+        [ect_at_school_period.started_on, contract_period.started_on].max
       else
         [ect_at_school_period.started_on, Date.current].max
       end
     end
 
     def contract_period
-      @contract_period ||= registration_contract_period
-    end
-
-    def registration_contract_period
-      @registration_contract_period ||= ContractPeriods::ForECTRegistration.new(
+      @contract_period ||= ContractPeriods::ForECTRegistration.new(
         started_on:,
         previous_training_period:
       ).call
@@ -211,6 +208,12 @@ module Schools
 
     def previous_training_period
       store&.previous_training_period
+    end
+
+    def preserved_contract_period
+      return nil unless contract_period == previous_training_period&.contract_period
+
+      contract_period
     end
   end
 end

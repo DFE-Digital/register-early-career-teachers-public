@@ -185,8 +185,8 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
       before { stub_previous_training(previous_training_period, previous_ect_period:) }
 
-      it "returns the normal registration contract period" do
-        expect(queries.registration_contract_period).to eq(contract_period_2025)
+      it "returns the previous training period's contract period" do
+        expect(queries.registration_contract_period).to eq(contract_period_2021)
       end
     end
 
@@ -317,6 +317,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       let!(:contract_period_2025) { create_contract_period(year: 2025) }
 
       let(:start_date) { contract_period_2025.started_on.to_s }
+      let!(:lead_provider_2021) { FactoryBot.create(:lead_provider, name: "LP 2021") }
       let!(:lead_provider_2025) { FactoryBot.create(:lead_provider, name: "LP 2025") }
 
       let(:previous_training_period) do
@@ -327,12 +328,13 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
       end
 
       before do
+        create_active_lead_provider(contract_period: contract_period_2021, lead_provider: lead_provider_2021)
         create_active_lead_provider(contract_period: contract_period_2025, lead_provider: lead_provider_2025)
         stub_previous_training(previous_training_period, previous_ect_period:)
       end
 
-      it "returns lead providers for the normal contract period" do
-        expect(queries.lead_providers_within_contract_period.map(&:name)).to contain_exactly("LP 2025")
+      it "returns lead providers for the previous contract period" do
+        expect(queries.lead_providers_within_contract_period.map(&:name)).to contain_exactly("LP 2021")
       end
     end
 
@@ -471,7 +473,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
         )
       end
 
-      let!(:school_partnership_2024) { create_school_partnership(year: 2024, school:, lead_provider:) }
+      let!(:school_partnership_2021) { create_school_partnership(year: 2021, school:, lead_provider:) }
       let!(:school_partnership_2025) { create_school_partnership(year: 2025, school:, lead_provider:) }
       let!(:other_school_partnership_2025) { create_school_partnership(year: 2025, school:, lead_provider: other_lead_provider) }
 
@@ -482,7 +484,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
 
       it "returns partnerships for the normal contract period" do
         expect(queries.lead_provider_partnerships_for_contract_period(school:))
-          .to contain_exactly(school_partnership_2025)
+          .to contain_exactly(school_partnership_2021)
       end
     end
 
