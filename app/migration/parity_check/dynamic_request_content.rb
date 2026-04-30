@@ -280,7 +280,7 @@ module ParityCheck
     end
 
     def course_identifier_for(participant)
-      if participant.api_ect_training_record_id.present?
+      if participant.ect_training_periods.any?
         "ecf-induction"
       else
         "ecf-mentor"
@@ -387,7 +387,7 @@ module ParityCheck
       training_period = latest_training_period(participant)
       return unless training_period
 
-      course_identifier = participant.api_ect_training_record_id.present? ? "ecf-mentor" : "ecf-induction"
+      course_identifier = participant.mentor_training_periods.any? ? "ecf-mentor" : "ecf-induction"
 
       participant_change_schedule_payload(
         course_identifier:,
@@ -547,7 +547,7 @@ module ParityCheck
       metadata = participant.lead_provider_metadata.find_by(lead_provider_id: lead_provider.id)
       return unless metadata
 
-      if participant.api_ect_training_record_id.present?
+      if metadata.latest_ect_training_period_id.present?
         metadata.latest_ect_training_period
       else
         metadata.latest_mentor_training_period
