@@ -24,7 +24,7 @@ default: &default
       polling_interval: 0.1
 
     # Everything else
-    - queues: [process_batch, trs_sync, events, dfe_analytics]
+    - queues: [process_batch, trs_sync, events, dfe_analytics, solid_queue_recurring]
       threads: 2
       processes: 2
       polling_interval: 0.1
@@ -51,7 +51,7 @@ migration: &migration
       polling_interval: 0.1
 
     # Everything else
-    - queues: [process_batch, trs_sync, events, dfe_analytics]
+    - queues: [process_batch, trs_sync, events, dfe_analytics, solid_queue_recurring]
       threads: 2
       processes: 2
       polling_interval: 0.1
@@ -93,7 +93,7 @@ non_production: &non_production
       polling_interval: 0.1
 
     # Everything else
-    - queues: [process_batch, trs_sync, events, dfe_analytics]
+    - queues: [process_batch, trs_sync, events, dfe_analytics, solid_queue_recurring]
       threads: 2
       processes: 2
       polling_interval: 0.1
