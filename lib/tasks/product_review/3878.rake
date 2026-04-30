@@ -1,5 +1,5 @@
 namespace :product_review do
-  desc "Set up teachers who are ineligable for mentor funding (#3878)"
+  desc "Set up teachers who are ineligible for mentor funding (#3878)"
   task "3878" => :environment do
     Rails.logger.info "Setting up teachers who are ineligible for mentor funding"
 
