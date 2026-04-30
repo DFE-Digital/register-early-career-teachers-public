@@ -174,6 +174,11 @@ module Schools
 
     def record_event!
       Events::Record.record_teacher_registered_as_ect_event!(author:, ect_at_school_period:, teacher:, school:, training_period:)
+
+      if corrected_name.present?
+        old_name = Teachers::Name.new(teacher).full_name_in_trs
+        Events::Record.teacher_name_updated_by_user_event!(old_name:, new_name: corrected_name, author:, teacher:)
+      end
     end
 
     def reuse_old_partnership
