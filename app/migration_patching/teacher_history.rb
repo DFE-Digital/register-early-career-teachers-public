@@ -34,8 +34,6 @@ class TeacherHistory
     }
   end
 
-private
-
   def self.teacher_data(teacher:)
     teacher.attributes.symbolize_keys
   end
@@ -57,7 +55,7 @@ private
 
       school_period.attributes.symbolize_keys.merge(
         training_periods:,
-        mentorship_periods:,
+        mentorship_periods:
       )
     end
   end
@@ -79,7 +77,7 @@ private
 
       school_period.attributes.symbolize_keys.merge(
         training_periods:,
-        mentorship_periods:,
+        mentorship_periods:
       )
     end
   end
@@ -92,8 +90,7 @@ private
                                                             :deferred_at,
                                                             :deferral_reason,
                                                             :withdrawn_at,
-                                                            :withdrawal_reason
-                                                           )
+                                                            :withdrawal_reason)
 
     attrs[:school_partnership] = school_partnership_data(school_partnership: training_period.school_partnership)
     attrs[:expression_of_interest] = eoi_data(active_lead_provider: training_period.expression_of_interest)
@@ -108,7 +105,7 @@ private
 
   def self.school_partnership_data(school_partnership:)
     return nil if school_partnership.blank?
-    
+
     school = school_partnership.school
     lead_provider = school_partnership.lead_provider
     delivery_partner = school_partnership.delivery_partner
