@@ -66,7 +66,11 @@ Rails.application.configure do
   config.rails_semantic_logger.add_file_appender = false # Don't log to file, only STDOUT
   config.rails_semantic_logger.filter = proc do |log|
     # Ignore DfE Analytic events to reduce log output
-    !(log.name == "DfE::Analytics::SendEvents" || log.message&.include?("DfE::Analytics::SendEvents"))
+    analytics_event = !(log.name == "DfE::Analytics::SendEvents" || log.message&.include?("DfE::Analytics::SendEvents"))
+    # Job arguments often contain PII
+    solid_queue_job = log.message&.include?("SolidQueue")
+
+    analytics_event || solid_queue_job
   end
   config.active_record.logger = nil # Don't log SQL
   config.semantic_logger.add_appender(io: $stdout, formatter: :json) # Log to STDOUT JSON-formatted logs
