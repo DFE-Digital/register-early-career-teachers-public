@@ -421,13 +421,13 @@ describe Teacher do
       end
     end
 
-    describe ".trnless" do
+    describe ".without_trn" do
       let(:trnless_teacher) { FactoryBot.create(:teacher, :trnless) }
       let(:teacher) { FactoryBot.create(:teacher) }
 
       it "includes trnless teachers" do
-        expect(Teacher.trnless).to include(trnless_teacher)
-        expect(Teacher.trnless).not_to include(teacher)
+        expect(Teacher.without_trn).to include(trnless_teacher)
+        expect(Teacher.without_trn).not_to include(teacher)
       end
     end
 
