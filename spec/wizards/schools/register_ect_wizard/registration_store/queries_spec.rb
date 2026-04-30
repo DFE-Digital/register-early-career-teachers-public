@@ -57,9 +57,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
     FactoryBot.create(
       :contract_period,
       *traits,
-      year:,
-      started_on: Date.new(year, 9, 1),
-      finished_on: Date.new(year + 1, 8, 31)
+      year:
     )
   end
 
