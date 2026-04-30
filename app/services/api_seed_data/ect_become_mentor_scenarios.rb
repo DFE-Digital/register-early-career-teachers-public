@@ -36,9 +36,7 @@ module APISeedData
           teacher = FactoryBot.create(
             :teacher,
             :with_realistic_name,
-            trn: Helpers::TRNGenerator.next,
-            api_ect_training_record_id: SecureRandom.uuid,
-            api_mentor_training_record_id: SecureRandom.uuid
+            trn: Helpers::TRNGenerator.next
           )
 
           create_completed_ect(
