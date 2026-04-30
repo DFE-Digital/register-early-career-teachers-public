@@ -3,8 +3,6 @@
 # 2. Sessions::Manager#current_user -> Sessions::User.from_session
 #
 class SessionsController < ApplicationController
-  after_action :prevent_search_engine_indexing, only: :new
-
   def new
     render :new
   end
@@ -48,10 +46,6 @@ class SessionsController < ApplicationController
 private
 
   delegate :id_token, to: :user_builder
-
-  def prevent_search_engine_indexing
-    response.headers["X-Robots-Tag"] = "none"
-  end
 
   def record_school_user_signs_in_event
     return unless session_user.is_a?(Sessions::Users::SchoolUser)

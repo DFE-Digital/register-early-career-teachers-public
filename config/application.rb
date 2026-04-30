@@ -77,8 +77,8 @@ module RegisterEarlyCareerTeachers
     config.gias_supplemental_schools_path = Rails.root.join("config/gias/schools.csv")
     config.gias_supplemental_links_path = Rails.root.join("config/gias/links.csv")
 
-    allow_indexing = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ALLOW_INDEXING", true))
-    (config.action_dispatch.default_headers["X-Robots-Tag"] = "none") unless allow_indexing
+    config.search_engine_indexing_enabled = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ALLOW_INDEXING", true))
+    config.action_dispatch.default_headers["X-Robots-Tag"] = "none"
 
     requested_timeout = ENV.fetch("MAX_SESSION_IDLE_TIME", 7200).to_i
     requested_timeout = 7200 if requested_timeout <= 0
