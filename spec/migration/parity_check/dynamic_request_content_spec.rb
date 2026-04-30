@@ -730,7 +730,7 @@ RSpec.describe ParityCheck::DynamicRequestContent, :with_metadata do
             data: {
               type: "participant-change-schedule",
               attributes: {
-                course_identifier: "ecf-mentor",
+                course_identifier: "ecf-induction",
                 schedule_identifier: training_period.schedule.identifier,
                 cohort: training_period.contract_period.year,
               }

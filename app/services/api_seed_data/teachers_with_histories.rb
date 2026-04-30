@@ -300,10 +300,6 @@ module APISeedData
     end
 
     def set_ect_attributes(teacher:)
-      teacher.update!(
-        api_ect_training_record_id: SecureRandom.uuid
-      )
-
       return unless rand_boolean(ECT_ELIGIBLE_FOR_TRAINING_RATIO)
 
       teacher.update!(
@@ -312,10 +308,6 @@ module APISeedData
     end
 
     def set_mentor_attributes(teacher:)
-      teacher.update!(
-        api_mentor_training_record_id: SecureRandom.uuid
-      )
-
       return unless rand_boolean(MENTOR_ELIGIBLE_FOR_TRAINING_RATIO)
 
       teacher.update!(mentor_first_became_eligible_for_training_at: teacher.created_at + 2.months)
