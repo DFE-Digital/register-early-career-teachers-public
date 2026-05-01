@@ -18,7 +18,7 @@ RSpec.describe School do
 
       before { Metadata::Handlers::School.new(instance).refresh_metadata! }
 
-      it_behaves_like "a declarative touch model", when_changing: %i[urn], timestamp_attribute: :api_updated_at
+      it_behaves_like "a declarative touch model", when_changing: %i[urn induction_tutor_name induction_tutor_email], timestamp_attribute: :api_updated_at
     end
 
     context "target school_partnerships" do
