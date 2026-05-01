@@ -94,6 +94,20 @@ RSpec.describe Teachers::Manage do
         end
       end
     end
+
+    context "when only whitespace differs" do
+      before { allow(RecordEventJob).to receive(:perform_later).and_return(true) }
+
+      it "does not record a name change event and does not bump api_updated_at", :with_touches do
+        original_api_updated_at = teacher.api_updated_at
+
+        service.update_name!(trs_first_name: "Barry", trs_last_name: "Allen ")
+
+        expect(RecordEventJob).not_to have_received(:perform_later)
+        expect(teacher.reload.api_updated_at).to eq(original_api_updated_at)
+        expect(teacher.trs_last_name).to eq("Allen")
+      end
+    end
   end
 
   describe "#update_trs_attributes!" do
