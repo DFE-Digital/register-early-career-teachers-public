@@ -109,6 +109,39 @@ RSpec.describe ContractPeriods::ForECTRegistration do
       end
     end
 
+    context "when the previous provider-led training period used an EOI" do
+      let(:started_on) { Date.new(2026, 5, 1) }
+
+      let(:active_lead_provider) do
+        instance_double(
+          ActiveLeadProvider,
+          contract_period: contract_2024
+        )
+      end
+
+      let(:previous_training_period) do
+        instance_double(
+          TrainingPeriod,
+          contract_period: nil,
+          expression_of_interest: active_lead_provider,
+          school_partnership: nil,
+          schedule: nil,
+          provider_led_training_programme?: true
+        )
+      end
+
+      let(:reassignment) do
+        instance_double(
+          ContractPeriods::Reassignment,
+          required?: false
+        )
+      end
+
+      it "returns the expression of interest contract period" do
+        expect(resolver.call).to eq(contract_2024)
+      end
+    end
+
     context "when the previous provider-led contract period is payments frozen" do
       let(:started_on) { Date.new(2025, 9, 1) }
 
