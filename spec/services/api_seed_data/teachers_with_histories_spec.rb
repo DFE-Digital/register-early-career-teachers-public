@@ -62,6 +62,21 @@ RSpec.describe APISeedData::TeachersWithHistories do
       end
     end
 
+    context "when creating teachers with `first_became_eligible_for_training_at`" do
+      before do
+        stub_const("#{described_class}::ECT_MENTOR_RATIO", 1.0)
+        stub_const("#{described_class}::ECT_ELIGIBLE_FOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::MENTOR_ELIGIBLE_FOR_TRAINING_RATIO", 1.0)
+        stub_const("#{described_class}::TEACHER_ID_CHANGE_RATIO", 0.0)
+      end
+
+      it "creates correct data" do
+        plant
+
+        expect(Teacher.where(ect_first_became_eligible_for_training_at: nil, mentor_first_became_eligible_for_training_at: nil)).to be_empty
+      end
+    end
+
     context "when creating teachers with `cohort_changed_after_payments_frozen`" do
       before do
         stub_const("#{described_class}::ECT_MENTOR_RATIO", 0.0)
