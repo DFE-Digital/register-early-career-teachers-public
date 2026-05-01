@@ -110,7 +110,7 @@ RSpec.describe Schools::AssignExistingMentorWizard::ReviewMentorEligibilityStep 
                           mentee: ect_at_school_period,
                           mentor: previous_mentor)
 
-        FactoryBot.create(:declaration, training_period: previous_mentor_training_period)
+        FactoryBot.create(:declaration, :within_mentorship_period, training_period: previous_mentor_training_period)
       end
 
       it "assigns a replacement schedule to the mentor training period" do
