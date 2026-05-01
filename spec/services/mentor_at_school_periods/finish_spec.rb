@@ -306,12 +306,13 @@ describe MentorAtSchoolPeriods::Finish do
       end
 
       context "when the mentor is training at another school" do
-        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: other_mentor_at_school_period, started_on:) }
+        let(:training_period) { nil }
+        let!(:other_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: other_mentor_at_school_period, started_on:) }
 
         it "does not finish the training period at the other school" do
           subject.finish_periods_at_reported_school!
 
-          expect(training_period.reload.finished_on).to be_nil
+          expect(other_training_period.reload.finished_on).to be_nil
         end
       end
 
