@@ -38,6 +38,30 @@ describe Teacher do
                     timestamp_attribute: :api_unfunded_mentor_updated_at
   end
 
+  describe "name normalisation" do
+    it "squishes whitespace in trs_first_name and trs_last_name on assignment" do
+      teacher = Teacher.new(trs_first_name: "  Charlotte  ", trs_last_name: "Dunn ")
+
+      expect(teacher.trs_first_name).to eq("Charlotte")
+      expect(teacher.trs_last_name).to eq("Dunn")
+    end
+
+    it "treats a whitespace-only difference as no change" do
+      teacher = FactoryBot.create(:teacher, trs_first_name: "Charlotte", trs_last_name: "Dunn")
+
+      teacher.trs_last_name = "Dunn "
+
+      expect(teacher.changed?).to be(false)
+    end
+
+    it "leaves nil values untouched" do
+      teacher = Teacher.new(trs_first_name: nil, trs_last_name: nil)
+
+      expect(teacher.trs_first_name).to be_nil
+      expect(teacher.trs_last_name).to be_nil
+    end
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
