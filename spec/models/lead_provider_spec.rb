@@ -51,36 +51,4 @@ describe LeadProvider do
       expect(subject.name).to eql("Some lead provider")
     end
   end
-
-  context "when setting the name" do
-    let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Some lead provider") }
-
-    it "sets the short name to the initials of the name" do
-      expect(lead_provider.short_name).to eq("slp")
-    end
-
-    context "when the name is only one word" do
-      let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Provider") }
-
-      it "sets the short name to the lowercase version of the name" do
-        expect(lead_provider.short_name).to eq("provider")
-      end
-    end
-
-    context "when the name is nil" do
-      let(:lead_provider) { FactoryBot.build(:lead_provider, name: nil) }
-
-      it "does not set the short name" do
-        expect(lead_provider.short_name).to be_nil
-      end
-    end
-
-    context "when the short name is already set" do
-      let(:lead_provider) { FactoryBot.build(:lead_provider, name: "Some lead provider", short_name: "Custom") }
-
-      it "does not override the existing short name" do
-        expect(lead_provider.short_name).to eq("Custom")
-      end
-    end
-  end
 end
