@@ -300,20 +300,6 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
     end
   end
 
-  describe "#finish_existing_at_school_periods" do
-    context "when mentoring_at_new_school_only set to yes" do
-      before { store.mentoring_at_new_school_only = "yes" }
-
-      it { expect(registration_store.finish_existing_at_school_periods).to be(true) }
-    end
-
-    context "when mentoring_at_new_school_only set to no" do
-      before { store.mentoring_at_new_school_only = "no" }
-
-      it { expect(registration_store.finish_existing_at_school_periods).to be(false) }
-    end
-  end
-
   describe "#lead_providers_within_contract_period" do
     let!(:contract_period) do
       FactoryBot.create(
