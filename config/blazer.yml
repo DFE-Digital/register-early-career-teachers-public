@@ -11,12 +11,14 @@ data_sources:
       teacher_id: "SELECT id, CONCAT(trs_first_name, ' ', trs_last_name) AS full_name FROM teachers ORDER BY full_name ASC"
       batch_status: ['pending', 'processing', 'processed', 'completing', 'completed', 'failed']
       batch_type: ['action', 'claim']
+      urn: "SELECT urn, CONCAT(name, ' (', urn, ')') FROM gias_schools ORDER BY name ASC"
 
     # https://blazer.dokkuapp.com/queries/2-smart-column
     smart_columns:
       author_id: "SELECT id, name FROM users WHERE id IN {value}"
       appropriate_body_period_id: "SELECT id, name FROM appropriate_body_periods WHERE id IN {value}"
       teacher_id: "SELECT id, CONCAT(trs_first_name, ' ', trs_last_name) AS full_name FROM teachers WHERE id IN {value}"
+      urn: "SELECT urn, CONCAT(name, ' (', urn, ')') FROM gias_schools WHERE urn IN {value}"
 
     # https://blazer.dokkuapp.com/queries/3-linked-column
     linked_columns:
@@ -25,6 +27,7 @@ data_sources:
       pending_induction_submission_batch_id: "/admin/bulk/batches/{value}"
       induction_period_id: "/admin/teachers/N/induction-periods/{value}/edit"
       zendesk_ticket_id: "https://becomingateacher.zendesk.com/agent/tickets/{value}"
+      urn: "/admin/schools/{value}/overview"
 
 # statement timeout, in seconds
 # none by default
