@@ -87,13 +87,9 @@ module Schedules
 
     def previous_mentor_started_training?
       MentorshipPeriod
-        .joins(:mentee)
-        .joins("INNER JOIN training_periods AS prev_tp
-                  ON prev_tp.mentor_at_school_period_id = mentorship_periods.mentor_at_school_period_id")
-        .joins("INNER JOIN declarations
-                  ON declarations.training_period_id = prev_tp.id")
+        .joins(:mentee, mentor: { training_periods: :declarations })
         .where(ect_at_school_periods: { teacher_id: mentee.teacher_id })
-        .where.not(mentorship_periods: { mentor_at_school_period_id: period.id })
+        .where.not(mentor_at_school_period_id: period.id)
         .where.not(declarations: { payment_status: :voided })
         .where("declarations.declaration_date >= mentorship_periods.started_on")
         .where("declarations.declaration_date <= COALESCE(mentorship_periods.finished_on, CURRENT_DATE)")
