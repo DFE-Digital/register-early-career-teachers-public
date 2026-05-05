@@ -18,11 +18,12 @@ class MigrationFixes::DeferTrainingPeriod
       training_period.assign_attributes(deferred_at: training_period.finished_on,
                                         deferral_reason:)
     else
-      puts "Not modifying #{training_period.id}"
       return
     end
 
-    # we do not want to modify timestamps
-    training_period.save!(touch: false)
+    # we do not want to modify the api_update_at on the parent records
+    DeclarativeUpdates.skip(:touch) do
+      training_period.save!(touch: false)
+    end
   end
 end
