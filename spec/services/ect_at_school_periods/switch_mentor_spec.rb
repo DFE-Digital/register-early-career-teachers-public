@@ -52,9 +52,9 @@ module ECTAtSchoolPeriods
           expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
 
           ect_at_school_period.reload
-          expect(ect_at_school_period.mentorship_periods.last.mentor)
+          expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
             .to eq(selected_mentor_at_school_period)
-          expect(ect_at_school_period.mentorship_periods.last.started_on).to eq(Date.tomorrow)
+          expect(ect_at_school_period.current_or_next_mentorship_period.started_on).to eq(Time.zone.today)
         end
 
         it "finishes the current mentorship period" do
@@ -63,7 +63,7 @@ module ECTAtSchoolPeriods
 
           expect(Schools::AssignMentor).to have_received(:new).with(ect: ect_at_school_period, mentor: selected_mentor_at_school_period, author:)
           expect(ect_at_school_period.mentorship_periods.count).to eq(2)
-          expect(current_mentorship.reload.finished_on).to eq(Date.current)
+          expect(current_mentorship.reload.finished_on).to eq(Date.yesterday)
           expect(ect_at_school_period.mentorship_periods.where(finished_on: nil).count).to eq(1)
         end
 
@@ -103,9 +103,9 @@ module ECTAtSchoolPeriods
           expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
 
           ect_at_school_period.reload
-          expect(ect_at_school_period.mentorship_periods.last.mentor)
+          expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
             .to eq(selected_mentor_at_school_period)
-          expect(ect_at_school_period.mentorship_periods.last.started_on).to eq(Date.tomorrow)
+          expect(ect_at_school_period.current_or_next_mentorship_period.started_on).to eq(Time.zone.today)
         end
 
         it "finishes the current mentorship period" do
@@ -114,7 +114,7 @@ module ECTAtSchoolPeriods
 
           expect(Schools::AssignMentor).to have_received(:new).with(ect: ect_at_school_period, mentor: selected_mentor_at_school_period, author:)
           expect(ect_at_school_period.mentorship_periods.count).to eq(2)
-          expect(current_mentorship.reload.finished_on).to eq(Date.current)
+          expect(current_mentorship.reload.finished_on).to eq(Date.yesterday)
           expect(ect_at_school_period.mentorship_periods.where(finished_on: nil).count).to eq(1)
         end
 
