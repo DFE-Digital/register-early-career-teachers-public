@@ -6,6 +6,7 @@ module DfESignIn
   #
   class APIClient
     class DfESignInDisabled < StandardError; end
+    class AccessLevelNotFound < StandardError; end
 
     attr_reader :connection
 
@@ -43,7 +44,7 @@ module DfESignIn
       if response.success?
         AccessLevel.from_response_body(response.body)
       else
-        raise "API request failed: #{response.status} #{response.body}"
+        raise AccessLevelNotFound, "API request failed: #{response.status} #{response.body}"
       end
     end
 
