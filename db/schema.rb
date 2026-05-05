@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_160220) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_05_103015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -470,7 +470,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_160220) do
     t.bigint "ect_at_school_period_id", null: false
     t.date "finished_on"
     t.bigint "mentor_at_school_period_id", null: false
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.date "started_on", null: false
     t.datetime "updated_at", null: false
     t.index "ect_at_school_period_id, ((finished_on IS NULL))", name: "idx_on_ect_at_school_period_id_finished_on_IS_NULL_afd5cf131d", unique: true, where: "(finished_on IS NULL)"
