@@ -1,0 +1,4 @@
+"API Release Note":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "app/views/api/release_notes/release_notes.yml"
