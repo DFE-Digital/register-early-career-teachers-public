@@ -7,6 +7,7 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :local_authority_ab, teacher:, school:, started_on:, finished_on: nil) }
   let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period:, started_on:) }
   let(:mentor) { FactoryBot.create(:mentor_at_school_period, school:, started_on:, finished_on: nil) }
+  let(:mentor_name) { Teachers::Name.new(mentor.teacher).full_name }
   let(:valid_withdrawal_reason) { TrainingPeriod.withdrawal_reasons.keys.first }
   let(:valid_deferral_reason) { TrainingPeriod.deferral_reasons.keys.first }
 
@@ -20,6 +21,12 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Status")
       expect(rendered_content).to have_text("Registered")
     end
+
+    it "renders the mentor name without a link" do
+      expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Mentor")
+      expect(rendered_content).to have_text(mentor_name)
+      expect(rendered_content).not_to have_link(mentor_name)
+    end
   end
 
   context "when the ECT has no mentor assigned" do
@@ -29,6 +36,10 @@ RSpec.describe Schools::ECTs::ListingCardComponent, type: :component do
       expect(rendered_content).to have_selector(".govuk-summary-list__row", text: "Status")
       expect(rendered_content).to have_text("Action required")
       expect(rendered_content).to have_text("A mentor needs to be assigned to Naruto Uzumaki.")
+    end
+
+    it "renders the assign mentor link" do
+      expect(rendered_content).to have_link("Assign a mentor for this ECT")
     end
   end
 
