@@ -52,8 +52,9 @@ module ECTAtSchoolPeriods
           expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
 
           ect_at_school_period.reload
-          expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
+          expect(ect_at_school_period.mentorship_periods.last.mentor)
             .to eq(selected_mentor_at_school_period)
+          expect(ect_at_school_period.mentorship_periods.last.started_on).to eq(Date.tomorrow)
         end
 
         it "finishes the current mentorship period" do
@@ -102,8 +103,9 @@ module ECTAtSchoolPeriods
           expect { switch_mentor }.to change(MentorshipPeriod, :count).by(1)
 
           ect_at_school_period.reload
-          expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
+          expect(ect_at_school_period.mentorship_periods.last.mentor)
             .to eq(selected_mentor_at_school_period)
+          expect(ect_at_school_period.mentorship_periods.last.started_on).to eq(Date.tomorrow)
         end
 
         it "finishes the current mentorship period" do
