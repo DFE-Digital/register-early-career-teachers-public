@@ -142,7 +142,11 @@ FactoryBot.define do
       started_on { period_start_date }
       finished_on { period_end_date  }
       withdrawn_at { Faker::Date.between(from: started_on, to: (period_end_date)) }
-      withdrawal_reason { TrainingPeriod.withdrawal_reasons.values.sample }
+      withdrawal_reason do
+        reasons = TrainingPeriod.withdrawal_reasons.values
+        reasons -= %w[mentor_no_longer_being_mentor] if ect_at_school_period.present?
+        reasons.sample
+      end
     end
 
     trait :deferred do

@@ -78,6 +78,7 @@ class TrainingPeriod < ApplicationRecord
   validate :only_provider_led_mentor_training
   validates :withdrawn_at, presence: true, if: -> { withdrawal_reason.present? }
   validates :withdrawal_reason, presence: true, if: -> { withdrawn_at.present? }
+  validate :withdrawal_reason_valid_for_trainee_type
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
   validates :schedule, presence: { message: "Schedule is required for provider-led training periods" }, if: :provider_led_training_programme?
@@ -253,6 +254,13 @@ private
     return unless for_ect?
 
     errors.add(:schedule, "Only mentors can be assigned to replacement schedules") if schedule.replacement_schedule?
+  end
+
+  def withdrawal_reason_valid_for_trainee_type
+    return unless for_ect?
+    return unless mentor_no_longer_being_mentor_withdrawal_reason?
+
+    errors.add(:withdrawal_reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
   end
 
   def school_consistency

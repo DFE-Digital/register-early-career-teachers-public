@@ -728,6 +728,64 @@ describe TrainingPeriod do
       end
     end
 
+    describe "withdrawal reason valid for trainee type" do
+      context "when training period is for an ECT" do
+        subject do
+          FactoryBot.build(
+            :training_period,
+            :for_ect,
+            ect_at_school_period:,
+            started_on: 3.months.ago,
+            finished_on: 1.month.ago,
+            withdrawn_at: 1.month.ago,
+            withdrawal_reason:
+          )
+        end
+
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 6.months.ago, finished_on: nil) }
+
+        context "when withdrawal_reason is mentor_no_longer_being_mentor" do
+          let(:withdrawal_reason) { :mentor_no_longer_being_mentor }
+
+          it "is invalid with the appropriate error" do
+            subject.valid?
+            expect(subject.errors[:withdrawal_reason]).to include("You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
+          end
+        end
+
+        context "when withdrawal_reason is something other than mentor_no_longer_being_mentor" do
+          let(:withdrawal_reason) { :left_teaching_profession }
+
+          it "does not add the trainee-type error" do
+            subject.valid?
+            expect(subject.errors[:withdrawal_reason]).to be_empty
+          end
+        end
+      end
+
+      context "when training period is for a mentor" do
+        subject do
+          FactoryBot.build(
+            :training_period,
+            :for_mentor,
+            mentor_at_school_period:,
+            started_on: 3.months.ago,
+            finished_on: 1.month.ago,
+            withdrawn_at: 1.month.ago,
+            withdrawal_reason:
+          )
+        end
+
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 6.months.ago, finished_on: nil) }
+        let(:withdrawal_reason) { :mentor_no_longer_being_mentor }
+
+        it "does not add the trainee-type error" do
+          subject.valid?
+          expect(subject.errors[:withdrawal_reason]).to be_empty
+        end
+      end
+    end
+
     describe "school consistency" do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
       let(:training_period) { FactoryBot.build(:training_period, ect_at_school_period:, school_partnership:, expression_of_interest:) }
