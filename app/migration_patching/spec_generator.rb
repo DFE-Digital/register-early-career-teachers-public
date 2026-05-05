@@ -6,77 +6,83 @@ class SpecGenerator
   end
 
   def save!
-    filename = "spec/migration_patching/real_examples/#{teacher_id.tr('-', '_')}_spec.rb"
+    filename = "spec/migration_patching/real_examples/teacher_#{teacher_id}_spec.rb"
 
     File.write(filename, spec)
   end
 
-  def spec
-    induction_records = ecf1_teacher_history.ect&.induction_records || []
-    induction_blocks = induction_records.map do |induction_record|
-      <<~IR.chomp
-        hash_including(
-          started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
-          finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'},
-          training_periods: array_including(
-            hash_including(
-              started_on: Date.new(#{induction_record.start_date.year}, #{induction_record.start_date.month}, #{induction_record.start_date.day}),
-              finished_on: #{induction_record.end_date ? "Date.new(#{induction_record.end_date.year}, #{induction_record.end_date.month}, #{induction_record.end_date.day})" : 'nil'}
-            )
-          )
+  def school_history(school_period)
+    <<~PERIOD.chomp
+      hash_including(
+        started_on: Date.parse(#{school_period[:started_on]}),
+        finished_on: #{school_period[:finished_on].present? ? "Date.parse(#{school_period[:finished_on]})" : 'nil'},
+        training_periods: array_including(
+          #{training_history_at_school(school_period[:training_periods])}
+        ),
+        mentorship_periods: array_including(
+          #{mentorship_history_at_school(school_period[:mentorship_periods])}
         )
-      IR
+      ),
+    PERIOD
+  end
+
+  def training_history_at_school(training_periods)
+    training_periods.map do |training_period|
+      <<~PERIOD.chomp
+          hash_including(
+            started_on: Date.parse("#{training_period[:started_on]}"),
+            finished_on: #{training_period[:finished_on].present? ? "Date.parse(\"#{training_period[:finished_on]}\")" : 'nil'},
+            training_programme: #{training_period[:training_programme]},
+            school_partnership: hash_including(
+            )
+          ),
+        ),
+      PERIOD
+    end
+  end
+
+  def mentorship_history_at_school(mentorship_periods)
+    mentorship_periods.map do |mentorship_period|
+    end
+  end
+
+  def spec
+    ect_periods = teacher_history.ect_at_school_periods.map do |school_period|
+      school_history(school_period)
     end
 
-    input_source = SpecObjectFormatter.new(ecf1_teacher_history_hash, 0).formatted_object
+    mentor_periods = teacher_history.mentor_at_school_periods.map do |school_period|
+      school_history(school_period)
+    end
+
+    # input_source = SpecObjectFormatter.new(teacher_history_hash, 0).formatted_object
 
     <<~SPEC
-      describe "Real data check for user #{user_id}" do
-        subject(:actual_output) { ecf2_teacher_history.to_h }
+      describe "Real data check for teacher #{teacher_id}" do
+        subject(:actual_output) { "insert-your-converter-call-here-and-result-as-a-hash" }
 
         let(:input) do
-      #{input_source.indent(4)}
+      {input_source.indent(4)}
         end
 
-        let(:ecf1_teacher_history) { ECF1TeacherHistory.from_hash(input) }
-        let(:ecf2_teacher_history) { TeacherHistoryConverter.new(ecf1_teacher_history:, migration_mode:).convert_to_ecf2! }
+        let(:teacher_history) { TeacherHistory.new(teacher_hash: input) }
 
-        context "when using the economy migrator" do
-          let(:migration_mode) { :latest_induction_records }
-
-          let(:expected_output) do
-            {
-              teacher: hash_including(
-                trn: "1111111",
-                ect_at_school_periods: array_including(
-      #{induction_blocks.join(",\n").indent(12)}
-                )
+        let(:expected_output) do
+          {
+            teacher: hash_including(
+              trn: "1111111",
+              ect_at_school_periods: array_including(
+                #{ect_periods}
+              ),
+              mentor_at_school_periods: array_including(
+                #{mentor_periods}
               )
-            }
-          end
-
-          it "matches the expected output" do
-            expect(actual_output).to include(expected_output)
-          end
+            )
+          }
         end
 
-        context "when using the premium migrator" do
-          let(:migration_mode) { :all_induction_records }
-
-          let(:expected_output) do
-            {
-              teacher: hash_including(
-                trn: "1111111",
-                ect_at_school_periods: array_including(
-      #{induction_blocks.join(",\n").indent(12)}
-                )
-              )
-            }
-          end
-
-          it "matches the expected output" do
-            expect(actual_output).to include(expected_output)
-          end
+        it "matches the expected output" do
+          expect(actual_output).to include(expected_output)
         end
       end
     SPEC
@@ -175,17 +181,8 @@ class SpecGenerator
     #     ]
     #   }
     # }
-    {
-      **ecf1_teacher_data,
-      **ecf1_ect_data,
-      **ecf1_mentor_data
-    }
+    teacher_history.to_h
   end
 
-private
-
-  def teacher_id
-    teacher_history[:id]
-  end
-
+  delegate :teacher_id, to: :teacher_history
 end

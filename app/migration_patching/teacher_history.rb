@@ -1,16 +1,20 @@
 class TeacherHistory
-  attr_reader :teacher,
-              :ect_at_school_periods,
-              :mentor_at_school_periods,
-              :ecf2_ect_combination_summaries,
-              :ecf2_mentor_combination_summaries,
-              :ecf2_mentorship_summaries,
-              :training_periods,
-              :mentorship_periods,
-              :migration_mode
+  attr_reader :teacher
 
   def initialize(teacher_hash:)
     @teacher = teacher_hash.deep_symbolize_keys
+  end
+
+  def teacher_id
+    teacher[:id]
+  end
+
+  def ect_at_school_periods
+    teacher[:ect_at_school_periods]
+  end
+
+  def mentor_at_school_periods
+    teacher[:mentor_at_school_periods]
   end
 
   def self.build(teacher:)
