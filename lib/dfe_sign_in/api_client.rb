@@ -6,7 +6,10 @@ module DfESignIn
   #
   class APIClient
     class DfESignInDisabled < StandardError; end
+    class OrganisationNotFound < StandardError; end
     class AccessLevelNotFound < StandardError; end
+    class RoleNotFound < StandardError; end
+    class UserNotFound < StandardError; end
 
     attr_reader :connection
 
@@ -31,7 +34,7 @@ module DfESignIn
       if response.success?
         Organisation.from_response_body(response.body)
       else
-        raise "API request failed: #{response.status} #{response.body}"
+        raise OrganisationNotFound, "Could not retrieve organisations: #{response.status} #{response.body}"
       end
     end
 
@@ -44,7 +47,7 @@ module DfESignIn
       if response.success?
         AccessLevel.from_response_body(response.body)
       else
-        raise AccessLevelNotFound, "API request failed: #{response.status} #{response.body}"
+        raise AccessLevelNotFound, "Could not retrieve access level: #{response.status} #{response.body}"
       end
     end
 
@@ -58,7 +61,7 @@ module DfESignIn
       if response.success?
         response.body
       else
-        raise "API request failed: #{response.status} #{response.body}"
+        raise UserNotFound, "Could not retrieve user: #{response.status} #{response.body}"
       end
     end
 
@@ -72,7 +75,7 @@ module DfESignIn
       if response.success?
         response.body
       else
-        raise "API request failed: #{response.status} #{response.body}"
+        raise RoleNotFound, "Could not retrieve role: #{response.status} #{response.body}"
       end
     end
 
