@@ -1,6 +1,7 @@
 namespace :api do
   get "guidance", to: "guidance#show"
   resources :release_notes, path: "guidance/release-notes", only: %i[index show], param: :slug, as: :guidance_release_notes
+  get "guidance/swagger-api-documentation", to: redirect("/api/docs/v3")
   get "guidance/*page", to: "guidance#page", as: :guidance_page
   get "docs/:version", to: "documentation#index", as: :documentation
 
