@@ -1,12 +1,14 @@
 describe MigrationFixes::DeferTrainingPeriod do
   subject(:service) { described_class.new(training_period:, deferred_at:, deferral_reason:) }
 
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on:) }
-  let(:training_period) { FactoryBot.create(:training_period, :for_ect, started_on:, finished_on:, ect_at_school_period:, updated_at:) }
+  let(:teacher) { FactoryBot.create(:teacher, api_updated_at:) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on:) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_ect, started_on:, finished_on:, ect_at_school_period:, updated_at:) }
   let(:deferred_at) { 1.week.ago }
   let(:deferral_reason) { "career_break" }
   let(:started_on) { 1.year.ago }
   let(:finished_on) { nil }
+  let(:api_updated_at) { 1.day.ago }
   let(:updated_at) { 1.month.ago }
 
   describe "#defer!" do
@@ -28,6 +30,10 @@ describe MigrationFixes::DeferTrainingPeriod do
 
     it "does not change the updated_at" do
       expect(training_period.updated_at).to eq(updated_at)
+    end
+
+    it "does not change the teacher api_updated_at" do
+      expect(teacher.reload.api_updated_at).to eq(api_updated_at)
     end
 
     context "when the period is already closed" do
