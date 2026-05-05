@@ -80,7 +80,7 @@ The following table explains what the `eligible_for_funding` values mean.
 | `false` | Set for new ECTs who are exempt from induction. `false` will never be set for new mentor records. |  
 | `null` | Set when ECT eligibility is not known. For example, before an induction is recorded by an appropriate body. `null` will never be set for new mentor records. |  
 
-Other fields are used to indicate that ECTs and mentors have stopped training or are not eligible for further funding. 
+Other fields are used to indicate that ECTs and mentors have completed induction or are not eligible for further funding. 
 
 For ECTs:
 
