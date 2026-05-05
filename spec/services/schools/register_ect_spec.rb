@@ -386,6 +386,148 @@ RSpec.describe Schools::RegisterECT do
           expect(training_period.started_on).not_to eq(Date.current)
         end
       end
+
+      context "when the ECT is continuing provider-led training from a previous school" do
+        let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+        let(:previous_school) { FactoryBot.create(:school) }
+        let(:previous_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
+        let(:started_on) { Date.new(2025, 9, 1) }
+
+        let!(:previous_active_lead_provider) do
+          FactoryBot.create(:active_lead_provider, lead_provider:, contract_period: previous_contract_period)
+        end
+
+        let(:previous_lead_provider_delivery_partnership) do
+          FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider: previous_active_lead_provider)
+        end
+
+        let(:previous_school_partnership) do
+          FactoryBot.create(
+            :school_partnership,
+            school: previous_school,
+            lead_provider_delivery_partnership: previous_lead_provider_delivery_partnership
+          )
+        end
+
+        let(:previous_ect_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            teacher:,
+            school: previous_school,
+            started_on: Date.new(2024, 9, 1),
+            finished_on: Date.new(2025, 8, 31)
+          )
+        end
+
+        let(:previous_schedule) do
+          FactoryBot.create(
+            :schedule,
+            contract_period: previous_contract_period,
+            identifier: "ecf-standard-september"
+          )
+        end
+
+        let!(:previous_training_period) do
+          FactoryBot.create(
+            :training_period,
+            ect_at_school_period: previous_ect_period,
+            training_programme: "provider_led",
+            school_partnership: previous_school_partnership,
+            schedule: previous_schedule,
+            started_on: Date.new(2024, 9, 1),
+            finished_on: Date.new(2025, 8, 31)
+          )
+        end
+
+        let(:store) do
+          double(
+            "store",
+            previous_training_period:,
+            school_partnership_to_reuse_id: nil
+          )
+        end
+
+        it "keeps the previous contract period for the new EOI training period" do
+          service.register!
+
+          new_training_period = service.ect_at_school_period.training_periods.order(:created_at).last
+
+          expect(new_training_period.expression_of_interest.contract_period)
+            .to eq(previous_contract_period)
+
+          expect(new_training_period.school_partnership).to be_nil
+
+          expect(new_training_period.schedule.contract_period)
+            .to eq(previous_contract_period)
+
+          expect(new_training_period.schedule.identifier)
+            .to eq(previous_training_period.schedule.identifier)
+
+          expect(new_training_period.schedule.contract_period.year).to eq(2024)
+        end
+
+        context "when the new school has a matching partnership in the previous contract period" do
+          let!(:new_school_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              school:,
+              lead_provider_delivery_partnership: FactoryBot.create(
+                :lead_provider_delivery_partnership,
+                active_lead_provider: previous_active_lead_provider
+              )
+            )
+          end
+
+          it "keeps the previous contract period and uses the matching school partnership" do
+            service.register!
+
+            new_training_period = service.ect_at_school_period.training_periods.order(:created_at).last
+
+            expect(new_training_period.school_partnership).to eq(new_school_partnership)
+            expect(new_training_period.expression_of_interest).to be_nil
+
+            expect(new_training_period.school_partnership.active_lead_provider.contract_period)
+              .to eq(previous_contract_period)
+
+            expect(new_training_period.schedule.contract_period)
+              .to eq(previous_contract_period)
+
+            expect(new_training_period.schedule.identifier)
+              .to eq(previous_training_period.schedule.identifier)
+          end
+        end
+
+        context "when the new school has a partnership but in a different contract period" do
+          let!(:different_active_lead_provider) do
+            FactoryBot.create(
+              :active_lead_provider,
+              lead_provider:,
+              contract_period:
+            )
+          end
+
+          let!(:new_school_partnership) do
+            FactoryBot.create(
+              :school_partnership,
+              school:,
+              lead_provider_delivery_partnership: FactoryBot.create(
+                :lead_provider_delivery_partnership,
+                active_lead_provider: different_active_lead_provider
+              )
+            )
+          end
+
+          it "falls back to EOI in the previous contract period" do
+            service.register!
+
+            new_training_period = service.ect_at_school_period.training_periods.last
+
+            expect(new_training_period.school_partnership).to be_nil
+            expect(new_training_period.expression_of_interest.contract_period)
+              .to eq(previous_contract_period)
+          end
+        end
+      end
     end
 
     context "when school-led" do
