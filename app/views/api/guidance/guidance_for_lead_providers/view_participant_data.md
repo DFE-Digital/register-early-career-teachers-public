@@ -63,7 +63,7 @@ The following table shows the filters providers can use within this endpoint.
  
 Providers can use the `GET /participants/{id}` endpoint to view individual records. 
 
-### Participant funding and induction 
+### Participant funding eligibility and induction 
 
 The API uses fields to describe funding eligibility for ECTS and mentors, and induction start and end dates for ECTs. 
 
