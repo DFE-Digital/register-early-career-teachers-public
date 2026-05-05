@@ -4,12 +4,12 @@ describe MigrationFixes::DeferTrainingPeriod do
   let(:teacher) { FactoryBot.create(:teacher, api_updated_at:) }
   let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on:) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_ect, started_on:, finished_on:, ect_at_school_period:, updated_at:) }
-  let(:deferred_at) { 1.week.ago }
+  let(:deferred_at) { 1.week.ago.round }
   let(:deferral_reason) { "career_break" }
-  let(:started_on) { 1.year.ago }
+  let(:started_on) { 1.year.ago.to_date }
   let(:finished_on) { nil }
-  let(:api_updated_at) { 1.day.ago }
-  let(:updated_at) { 1.month.ago }
+  let(:api_updated_at) { 1.day.ago.round }
+  let(:updated_at) { 1.month.ago.round }
 
   describe "#defer!" do
     before do
