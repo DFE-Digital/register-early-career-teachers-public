@@ -22,6 +22,22 @@ module API::TrainingPeriods
       end
     end
 
+    def joining?
+      status == :joining
+    end
+
+    def active?
+      status == :active
+    end
+
+    def leaving?
+      status == :leaving
+    end
+
+    def left?
+      status == :left
+    end
+
   private
 
     def teacher_is_ect_and_completed_induction?
