@@ -71,7 +71,7 @@ module API::Teachers::SchoolTransfers
     def where_updated_since(updated_since, lead_provider_id)
       return if ignore?(filter: updated_since)
 
-      # This includes a teacher’s first and last training periods, even if they aren't true transfers.
+      # This includes a teacher's first and last training periods, even if they aren't true transfers.
       # Excluding them is complex, and this is still an improvement over ECF. As a result, some teachers
       # may appear even if their transfer periods weren't necessarily updated — it's a best-effort approach.
       @scope = scope

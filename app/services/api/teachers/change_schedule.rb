@@ -11,12 +11,12 @@ module API::Teachers
       message: "Enter a valid schedule identifier."
     }, allow_blank: true
     validate :schedule_exists
-    validate :training_period_not_withdrawn
     validate :change_to_different_schedule
     validate :schedule_applicable_for_trainee
     validate :school_partnership_exists_if_changing_contract_period
     validate :trainee_not_completed
     validate :lead_provider_is_currently_training_teacher
+    validate :training_period_not_withdrawn
     validate :no_future_training_periods_exist
     validate :can_move_to_frozen_contract_period
     validate :schedule_does_not_invalidate_declarations
@@ -57,6 +57,7 @@ module API::Teachers
 
     def training_period_not_withdrawn
       return if errors[:teacher_api_id].any?
+      return unless training_period
       return unless training_status&.withdrawn?
 
       errors.add(:teacher_api_id, "Cannot perform actions on a withdrawn participant")
@@ -97,11 +98,19 @@ module API::Teachers
         )
     end
 
+    def participant_status
+      @participant_status ||= API::TrainingPeriods::TeacherStatus.new(
+        latest_training_period: training_period,
+        teacher:
+      )
+    end
+
     def lead_provider_is_currently_training_teacher
       return if errors[:teacher_api_id].any?
       return unless training_period
+      return unless participant_status.left?
 
-      errors.add(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") unless training_period.ongoing_today?
+      errors.add(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.")
     end
 
     def no_future_training_periods_exist
@@ -109,7 +118,7 @@ module API::Teachers
       return unless training_period
 
       if future_training_periods.exists?
-        errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.")
+        errors.add(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.")
       end
     end
 
@@ -141,7 +150,7 @@ module API::Teachers
       return if errors[:teacher_api_id].any?
       return unless training_period&.teacher_completed_training?
 
-      errors.add(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training or induction.")
+      errors.add(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
     end
 
     def schedule_does_not_invalidate_declarations

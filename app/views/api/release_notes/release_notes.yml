@@ -21,6 +21,32 @@
 #
 #     **bold** and _italic_ text
 
+- title: Updates to schedule and cohort changes for deferred and withdrawn participants
+  date: 2026-05-05
+  tags:
+    - sandbox-release
+    - production-release
+  body: |
+    In Register ECTs, you cannot change the schedule or cohort for a participant who has a participant_status of 'left'.  This is because making changes while a participant is not actively training would lead to inaccurate data. It also reflects changes in our data model, which separates active training from paused or ended training.
+
+    We have also updated the validation messages shown to make this clearer when it is attempted.
+
+    ## What's changed
+
+    You cannot change the schedule or cohort for a participant whose participant status is 'left'.
+
+    If their participant status is 'left' only because you have deferred or withdrawn them, you can resume them then change the schedule or cohort.
+
+    Lead providers should not change the schedule for a participant before it is confirmed they will definitely be moving to that schedule. For example, if a participant is deferred, they should not be changed to an extended schedule until it is confirmed they are returning to training and you have resumed them over the API. This is so we have accurate data for which schedule a participant is currently on.
+
+    ## What you need to do
+
+    Make sure to keep schedules and cohorts up to date for participants, so you don't need to update them later when they may have already left their school or training with you.
+
+    If you need to change the schedule or cohort for a deferred or withdrawn participant, resume them first and then submit the update. Don't update schedules or cohorts until you're certain they have returned to training.
+
+    If this becomes an issue, contact DfE by Teams or email.
+
 - title: Register early career teachers service launched
   date: 2026-04-28
   tags:
@@ -30,7 +56,7 @@
   body: |
     We've launched the Register early career teachers (RECT) service.
 
-    This service replaces the Manage training for early career teachers service (ECF1). 
+    This service replaces the Manage training for early career teachers service (ECF1).
 
     The base URL for the API is:
 
@@ -44,16 +70,16 @@
 
     ## What providers need to do
 
-    On 28 April, providers must point their integrations to the RECT base URL and use the RECT API bearer token that was shared before launch by Galaxkey.  
+    On 28 April, providers must point their integrations to the RECT base URL and use the RECT API bearer token that was shared before launch by Galaxkey.
 
-    We recommend that providers perform full syncs with the new RECT API for all endpoints, and that they do this within the time window agreed with DfE. This will ensure all the data is up to date after the migration. 
+    We recommend that providers perform full syncs with the new RECT API for all endpoints, and that they do this within the time window agreed with DfE. This will ensure all the data is up to date after the migration.
 
     Providers should also:
 
     - update their systems to ensure they're no longer calling data from the old ECF1 service - This will include changing base URLs and making use of the new RECT API tokens
     - check downstream processes to make sure none are broken or have been impacted by the migration or changes to the service
     - ensure that all data flows and integrations continue to work as expected
-    - test their internal processes to ensure that data is being handled appropriately    
+    - test their internal processes to ensure that data is being handled appropriately
 
 - title: Schedule and cohort changes now allowed for ECTs and mentors transferring to you from another provider
   date: 2026-04-15
@@ -243,7 +269,7 @@
 
     **Participant is due to start with another lead provider**
     ```
-    You cannot change this participant’s schedule as they are due to start with another lead provider in the future.
+    You cannot change this participant's schedule as they are due to start with another lead provider in the future.
     ```
 
     **Moving a participant to a payments frozen cohort they were not previously part of**
@@ -258,7 +284,7 @@
 
     **Participant has completed training or induction**
     ```
-    You cannot change this participant’s schedule as they have completed their training or induction.
+    You cannot change this participant's schedule as they have completed their training or induction.
     ```
 
 - title: Unfunded mentors endpoint now available in the Register ECTs sandbox

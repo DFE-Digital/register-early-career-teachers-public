@@ -41,10 +41,23 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           end
 
           context "when training_period is withdrawn" do
-            let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :withdrawn, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: 1.week.from_now) }
+            let!(:training_period) do
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", :withdrawn,
+                                "#{trainee_type}_at_school_period": at_school_period,
+                                started_on: at_school_period.started_on,
+                                finished_on: 1.week.from_now)
+            end
 
             it { is_expected.to have_one_error_per_attribute }
             it { is_expected.to have_error(:teacher_api_id, "Cannot perform actions on a withdrawn participant") }
+
+            context "and participant_status is left" do
+              before { training_period.update!(finished_on: 1.day.ago) }
+
+              it { is_expected.to have_one_error_per_attribute }
+
+              it { expect(subject).to have_error(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") }
+            end
           end
 
           context "when changing to the same schedule" do
@@ -77,11 +90,17 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             it { is_expected.to have_error(:contract_period_year, "You cannot change a participant to this contract_period as you do not have a partnership with the school for the contract_period. Contact the DfE for assistance.") }
           end
 
-          context "when the training period is not ongoing today" do
+          context "when the participant is leaving" do
+            before { training_period.update!(finished_on: 1.day.from_now) }
+
+            it { is_expected.to be_valid }
+          end
+
+          context "when the participant has left" do
             before { training_period.update!(finished_on: 1.day.ago) }
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. Only the lead provider currently training this participant can update their schedule.") }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule. This is because the participant has a 'left' participant_status, so they are not training with you currently.") }
           end
 
           context "when there are future training periods (for the same teacher)" do
@@ -90,7 +109,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             it { is_expected.to have_one_error_per_attribute }
-            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they are due to start with another lead provider in the future.") }
+            it { is_expected.to have_error(:teacher_api_id, "You cannot change this participant's schedule as they are due to start with another lead provider in the future.") }
           end
 
           context "when there are future training periods (for a different teacher)" do
@@ -122,7 +141,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
             it "returns error" do
               expect(subject).to have_one_error_per_attribute
-              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant’s schedule as they have completed their training or induction.")
+              expect(subject).to have_error(:teacher_api_id, "You cannot change this participant's schedule as they have completed their training or induction.")
             end
           end
 
