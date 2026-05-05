@@ -1081,7 +1081,7 @@ create_same_school_mentorship!(
 create_same_school_mentorship!(
   mentor: hugh_laurie_mentoring_at_abbey_grove,
   mentee: hugh_grant_ect_at_abbey_grove,
-  started_on: Date.new(2024, 9, 1),
+  started_on: Date.new(2024, 9, 2),
   finished_on: nil
 )
 
