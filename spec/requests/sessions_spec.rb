@@ -85,46 +85,50 @@ RSpec.describe "Sessions", type: :request do
       end
     end
 
-    context "when the DfE SignIn API returns no access level" do
-      let(:params) do
-        {
-          email:,
-          name:,
-          dfe_sign_in_organisation_id:,
-          dfe_sign_in_user_id:,
-          dfe_sign_in_roles: %w[AppropriateBodyUser],
-        }
-      end
+    [
+      DfESignIn::APIClient::OrganisationNotFound,
+      DfESignIn::APIClient::AccessLevelNotFound,
+      DfESignIn::APIClient::UserNotFound,
+      DfESignIn::APIClient::RoleNotFound
+    ].each do |error_class|
+      context "when the DfE SignIn API returns no access level" do
+        let(:params) do
+          {
+            email:,
+            name:,
+            dfe_sign_in_organisation_id:,
+            dfe_sign_in_user_id:,
+            dfe_sign_in_roles: %w[SchoolUser],
+          }
+        end
 
-      let(:user_builder) { instance_double(Sessions::Users::Builder) }
+        let(:user_builder) { instance_double(Sessions::Users::Builder) }
 
-      before do
-        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:)
+        before do
+          FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:)
 
-        allow(Sessions::Users::Builder).to receive(:new).and_return(user_builder)
-        allow(user_builder).to receive(:organisation_name).and_return(nil)
-        allow(user_builder).to receive(:session_user).and_raise(Sessions::Users::Builder::UnknownOrganisation, dfe_sign_in_organisation_id)
+          allow(Sessions::Users::Builder).to receive(:new).and_return(user_builder)
+          allow(user_builder).to receive(:organisation_name).and_return(nil)
+          allow(user_builder).to receive(:session_user).and_raise(Sessions::Users::Builder::UnknownOrganisation, dfe_sign_in_organisation_id)
 
-        allow(client).to receive(:access_levels).and_raise(
-          DfESignIn::APIClient::AccessLevelNotFound,
-          "API request failed: 404 RuntimeError"
-        )
+          allow(client).to receive(:access_levels).and_raise(error_class, "Error message")
 
-        mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
-                                   email:,
-                                   first_name:,
-                                   last_name:,
-                                   organisation_id: dfe_sign_in_organisation_id,
-                                   organisation_name: nil)
-      end
+          mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
+                                     email:,
+                                     first_name:,
+                                     last_name:,
+                                     organisation_id: dfe_sign_in_organisation_id,
+                                     organisation_name: nil)
+        end
 
-      after do
-        stop_mocking_dfe_sign_in_provider!
-      end
+        after do
+          stop_mocking_dfe_sign_in_provider!
+        end
 
-      it "redirects to the access denied page" do
-        post("/auth/dfe/callback")
-        expect(response).to redirect_to(access_denied_path)
+        it "redirects to the access denied page" do
+          post("/auth/dfe/callback")
+          expect(response).to redirect_to(access_denied_path)
+        end
       end
     end
 

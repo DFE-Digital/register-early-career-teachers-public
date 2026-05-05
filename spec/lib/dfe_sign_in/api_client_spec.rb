@@ -127,6 +127,16 @@ describe DfESignIn::APIClient do
 
       expect(output).to all(be_a(DfESignIn::Organisation))
     end
+
+    context "when the response is unsuccessful" do
+      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
+
+      it "raises an OrganisationNotFound error" do
+        expect {
+          client.organisations(user_id:)
+        }.to raise_error(DfESignIn::APIClient::OrganisationNotFound, "Could not retrieve organisations: 500 Internal Server Error")
+      end
+    end
   end
 
   describe "#access_levels" do
@@ -187,6 +197,160 @@ describe DfESignIn::APIClient do
       expect(access_level.organisation_id).to eql(organisation_id)
       expect(access_level.service_id).to eql(service_id)
       expect(access_level.roles.map(&:name)).to include("Register ECTs")
+    end
+
+    context "when the response is unsuccessful" do
+      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
+
+      it "raises an AccessLevelNotFound error" do
+        expect {
+          client.access_levels(service_id:, organisation_id:, user_id:)
+        }.to raise_error(DfESignIn::APIClient::AccessLevelNotFound, "Could not retrieve access level: 500 Internal Server Error")
+      end
+    end
+  end
+
+  describe "#users" do
+    let(:response_body) do
+      {
+        "users": [
+          {
+            "approvedAt" => "2019-06-19T15:09:58.683Z",
+            "updatedAt" => "2019-06-19T15:09:58.683Z",
+            "organisation": {
+              "id" => "13F20E54-79EA-4146-8E39-18197576F023",
+              "name" => "Department for Education",
+              "Category" => "002",
+              "Type": nil,
+              "URN": nil,
+              "UID": nil,
+              "UKPRN": nil,
+              "EstablishmentNumber" => "001",
+              "Status": 1,
+              "ClosedOn": nil,
+              "Address": nil,
+              "phaseOfEducation": nil,
+              "statutoryLowAge": nil,
+              "statutoryHighAge": nil,
+              "telephone": nil,
+              "regionCode": nil,
+              "legacyId" => "1031237",
+              "companyRegistrationNumber" => "1234567",
+              "ProviderProfileID" => "",
+              "UPIN" => "",
+              "PIMSProviderType" => "Central Government Department",
+              "PIMSStatus" => "",
+              "DistrictAdministrativeName" => "",
+              "OpenedOn" => "2007-09-01T00:00:00.0000000Z",
+              "SourceSystem" => "",
+              "ProviderTypeName" => "Government Body",
+              "GIASProviderType" => "",
+              "PIMSProviderTypeCode" => "",
+              "createdAt" => "2019-02-20T14:27:59.020Z",
+              "updatedAt" => "2019-02-20T14:28:38.223Z"
+            },
+            "roles": [
+              {
+                "id" => "FA3DDF63-6D48-41BB-8706-1048B24D4744",
+                "name" => "Test Service - Example role",
+                "code" => "TEST",
+                "numericId" => "12345",
+                "status": 1
+              }
+            ],
+            "roleName" => "Approver",
+            "roleId": 10_000,
+            "userId" => "21D62132-6570-4E63-9DCB-137CC35E7543",
+            "userStatus": 1,
+            "email" => "foo@example.com",
+            "familyName" => "Johnson",
+            "givenName" => "Roger"
+          }
+        ],
+        "numberOfRecords": 1,
+        "page": 1,
+        "numberOfPages": 1
+      }
+    end
+
+    let(:client) { DfESignIn::APIClient.new }
+    let(:connection) { client.instance_variable_get(:@connection) }
+    let(:expected_path) { %(/users) }
+    let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
+
+    before do
+      allow(connection).to receive(:get).with(expected_path).and_return(response)
+    end
+
+    it "calls the users endpoint" do
+      client.users
+
+      expect(connection).to have_received(:get).with(expected_path)
+    end
+
+    it "returns the response body" do
+      output = client.users
+
+      expect(output).to eql(response_body)
+    end
+
+    context "when the response is unsuccessful" do
+      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
+
+      it "raises a UserNotFound error" do
+        expect {
+          client.users
+        }.to raise_error(DfESignIn::APIClient::UserNotFound, "Could not retrieve user: 500 Internal Server Error")
+      end
+    end
+  end
+
+  describe "#roles" do
+    let(:response_body) do
+      [
+        {
+          "name" => "Role 1 Name",
+          "code" => "Role1Code",
+          "status" => "Active"
+        },
+        {
+          "name" => "Role 2 Name",
+          "code" => "Role2Code",
+          "status" => "Inactive"
+        }
+      ]
+    end
+
+    let(:client) { DfESignIn::APIClient.new }
+    let(:connection) { client.instance_variable_get(:@connection) }
+    let(:service_id) { "55555555-4444-3333-9999-888888888888" }
+    let(:expected_path) { %(/services/#{service_id}/roles) }
+    let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
+
+    before do
+      allow(connection).to receive(:get).with(expected_path).and_return(response)
+    end
+
+    it "calls the roles endpoint" do
+      client.roles(service_id:)
+
+      expect(connection).to have_received(:get).with(expected_path)
+    end
+
+    it "returns an array of roles" do
+      output = client.roles(service_id:)
+
+      expect(output).to all(include("name", "code", "status"))
+    end
+
+    context "when the response is unsuccessful" do
+      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
+
+      it "raises a RoleNotFound error" do
+        expect {
+          client.roles(service_id:)
+        }.to raise_error(DfESignIn::APIClient::RoleNotFound, "Could not retrieve role: 500 Internal Server Error")
+      end
     end
   end
 end
