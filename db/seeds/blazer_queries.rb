@@ -24,6 +24,11 @@ end
     description: "SolidQueue activity",
   },
   {
+    name: "Schools",
+    statement: "SELECT urn::text FROM schools",
+    description: "all schools",
+  },
+  {
     name: "Appropriate bodies",
     statement: "SELECT * FROM appropriate_bodies;",
     description: "new data model migrating from appropriate_body_periods",
