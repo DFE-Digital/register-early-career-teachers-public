@@ -13,7 +13,7 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
 
   context "when the ECT has a mentor assigned" do
     before do
-      FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago)
+      FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago - 1.day)
       FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: 2.years.ago)
 
       render_inline(described_class.new(mentee, current_school: school))
