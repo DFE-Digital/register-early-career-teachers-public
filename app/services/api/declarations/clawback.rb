@@ -37,6 +37,7 @@ module API::Declarations
 
     def output_fee_statement_available
       return if errors[:declaration_api_id].any?
+      return if errors[:lead_provider_id].any?
       return if clawback_service.next_available_output_fee_statement.present?
 
       no_output_fee_statement_error_message = <<~TXT.squish

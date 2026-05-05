@@ -47,7 +47,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
@@ -69,7 +69,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
@@ -79,7 +79,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
@@ -107,7 +107,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
@@ -117,7 +117,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
@@ -139,7 +139,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
@@ -149,7 +149,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
@@ -187,7 +187,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
@@ -209,7 +209,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
@@ -219,7 +219,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
@@ -247,7 +247,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
@@ -257,7 +257,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
@@ -279,7 +279,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter a '#/evidence_type' value for this participant.")
             end
           end
@@ -289,7 +289,7 @@ RSpec.describe EvidenceTypeValidator, type: :model do
 
             it "has a meaningful error", :aggregate_failures do
               expect(subject).to be_invalid
-              expect(subject).to have_one_error_per_attribute
+              expect(subject).to have_one_error_only
               expect(subject).to have_error(:evidence_type, "Enter an available '#/evidence_type' type for this participant.")
             end
           end
