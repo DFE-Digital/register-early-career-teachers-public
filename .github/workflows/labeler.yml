@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   label:
-    name: Triage labels
+    name: Apply labels
     runs-on: ubuntu-latest
     steps:
       - uses: actions/labeler@v6
