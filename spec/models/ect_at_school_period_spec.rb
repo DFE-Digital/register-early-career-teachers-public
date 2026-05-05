@@ -132,7 +132,7 @@ describe ECTAtSchoolPeriod do
             :ongoing,
             mentee: ect_at_school_period,
             mentor: mentor_at_school_period,
-            started_on: mentorship_finished_on,
+            started_on: mentorship_finished_on + 1.day,
             finished_on: nil
           )
         end

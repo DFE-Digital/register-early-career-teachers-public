@@ -33,7 +33,7 @@ RSpec.describe Schools::Home do
     FactoryBot.create(:mentorship_period, :ongoing,
                       mentor: mentor_period,
                       mentee: ect_period,
-                      started_on: 1.year.ago)
+                      started_on: 1.year.ago + 1.day)
   end
 
   describe "#ects_with_mentors" do
