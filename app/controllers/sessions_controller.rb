@@ -19,9 +19,10 @@ class SessionsController < ApplicationController
     end
   rescue Sessions::Users::Builder::UnknownOrganisation,
          Sessions::Users::Builder::UnknownPersonaType,
-         Sessions::Users::Builder::UnknownProvider
+         Sessions::Users::Builder::UnknownProvider,
+         DfESignIn::APIClient::AccessLevelNotFound
 
-    session[:invalid_user_organisation_name] = user_builder.organisation_name
+    session[:invalid_user_organisation_name] = user_builder.organisation_name if user_builder&.organisation_name
     redirect_to access_denied_path
   end
 
