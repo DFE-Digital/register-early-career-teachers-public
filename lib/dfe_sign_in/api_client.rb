@@ -8,8 +8,8 @@ module DfESignIn
     class DfESignInDisabled < StandardError; end
     class OrganisationNotFound < StandardError; end
     class AccessLevelNotFound < StandardError; end
-    class RoleNotFound < StandardError; end
-    class UserNotFound < StandardError; end
+    class RolesNotFound < StandardError; end
+    class UsersNotFound < StandardError; end
 
     attr_reader :connection
 
@@ -61,7 +61,7 @@ module DfESignIn
       if response.success?
         response.body
       else
-        raise UserNotFound, "Could not retrieve user: #{response.status} #{response.body}"
+        raise UsersNotFound, "Could not retrieve users: #{response.status} #{response.body}"
       end
     end
 
@@ -75,7 +75,7 @@ module DfESignIn
       if response.success?
         response.body
       else
-        raise RoleNotFound, "Could not retrieve role: #{response.status} #{response.body}"
+        raise RolesNotFound, "Could not retrieve roles: #{response.status} #{response.body}"
       end
     end
 
