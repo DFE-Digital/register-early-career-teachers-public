@@ -33,7 +33,7 @@ module API::Declarations
     validate :validate_only_started_or_completed_if_mentor
     validates :evidence_type, evidence_type: true, if: -> { errors.empty? }
     validate :teacher_not_withdrawn_before_declaration_date
-    validate :not_eligible_in_frozen_contract_period
+    validate :frozen_contract_period_for_ongoing_training_period
     validate :payment_statement_available
     validate :validate_milestone_exists
     validate :declaration_in_sequence
@@ -202,12 +202,12 @@ module API::Declarations
       errors.add(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.")
     end
 
-    def not_eligible_in_frozen_contract_period
+    def frozen_contract_period_for_ongoing_training_period
       return if errors[:contract_period_year].any?
       return unless teacher
 
       training_period_ongoing_today = training_periods.ongoing_today.first
-      return unless training_period_ongoing_today&.eligible_for_funding?
+      return unless training_period_ongoing_today
 
       current_contract_period = training_period_ongoing_today.contract_period
       return unless current_contract_period&.payments_frozen?
