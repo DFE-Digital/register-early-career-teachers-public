@@ -257,7 +257,7 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
 
             ect_at_school_period.reload
             expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
-            .to eq(other_mentor_at_school_period)
+              .to eq(other_mentor_at_school_period)
             expect(other_mentor_at_school_period.training_periods)
               .to contain_exactly(other_mentor_training_period)
             expect(mentorship_period.reload.finished_on).to eq(Date.yesterday)
