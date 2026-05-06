@@ -297,10 +297,10 @@ describe DfESignIn::APIClient do
     context "when the response is unsuccessful" do
       let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
 
-      it "raises a UserNotFound error" do
+      it "raises a UsersNotFound error" do
         expect {
           client.users
-        }.to raise_error(DfESignIn::APIClient::UserNotFound, "Could not retrieve user: 500 Internal Server Error")
+        }.to raise_error(DfESignIn::APIClient::UsersNotFound, "Could not retrieve users: 500 Internal Server Error")
       end
     end
   end
@@ -346,10 +346,10 @@ describe DfESignIn::APIClient do
     context "when the response is unsuccessful" do
       let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
 
-      it "raises a RoleNotFound error" do
+      it "raises a RolesNotFound error" do
         expect {
           client.roles(service_id:)
-        }.to raise_error(DfESignIn::APIClient::RoleNotFound, "Could not retrieve role: 500 Internal Server Error")
+        }.to raise_error(DfESignIn::APIClient::RolesNotFound, "Could not retrieve roles: 500 Internal Server Error")
       end
     end
   end

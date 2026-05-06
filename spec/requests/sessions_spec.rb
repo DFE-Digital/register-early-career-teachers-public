@@ -88,8 +88,8 @@ RSpec.describe "Sessions", type: :request do
     [
       DfESignIn::APIClient::OrganisationNotFound,
       DfESignIn::APIClient::AccessLevelNotFound,
-      DfESignIn::APIClient::UserNotFound,
-      DfESignIn::APIClient::RoleNotFound
+      DfESignIn::APIClient::UsersNotFound,
+      DfESignIn::APIClient::RolesNotFound
     ].each do |error_class|
       context "when the DfE SignIn API returns no access level" do
         let(:params) do
