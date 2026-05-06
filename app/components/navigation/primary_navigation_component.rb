@@ -34,7 +34,7 @@ module Navigation
     end
 
     def navigation_area
-      if current_path.start_with?("/api/guidance")
+      if current_path.start_with?("/api/guidance", "/api/docs")
         :api_guidance
       elsif current_user_type == :dfe_user_impersonating_school_user
         :school_user
@@ -67,7 +67,7 @@ module Navigation
         ],
         api_guidance: [
           { text: "Home", href: "/api/guidance" },
-          { text: "Swagger API documentation", href: "/api/guidance/swagger-api-documentation" },
+          { text: "Swagger API documentation", href: "/api/docs/v3", active_when: "/api/docs" },
           { text: "Release notes", href: "/api/guidance/release-notes", active_when: "/api/guidance/release-notes" },
           { text: "Guidance", href: "/api/guidance/guidance-for-lead-providers", active_when: "/api/guidance/guidance-for-lead-providers" },
         ]
