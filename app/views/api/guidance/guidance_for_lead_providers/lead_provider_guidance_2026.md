@@ -39,17 +39,15 @@ Lead providers must make sure any mentors that they continue to train are:
 * compliant with the fully trained mentor guidance
 * compliant with any contract management guidance you’ve been given
 
-Check with contract managers if they’re uncertain.
+Lead providers should check with contract managers if they’re uncertain.
 
 ### Mentor completion dates and additional training
 
 There are some circumstances where a mentor’s eligibility for additional training will be determined if they have a completion date or not.
 
-Leads providers can read more about mentor completion dates and additional training (content here or link out)
-
 #### Some mentors with completion dates are available for additional training
 
-Some mentor data might be returned with a populated mentor funding end date (mentor_funding_end_date) and reason (mentor_ineligible_for_funding_reason) in GET participant responses. These mentors could still be eligible for additional funded training. 
+Some mentor data might be returned with a populated mentor funding end date (`mentor_funding_end_date`) and reason (`mentor_ineligible_for_funding_reason`) in GET participant responses. These mentors could still be eligible for additional funded training. 
 
 This is because as part of closing the 2021 and 2022 cohorts in the digital service, all mentors without a completion reason had to be marked with the started-not-completed reason.
 
@@ -62,13 +60,13 @@ A 2021 or 2022 cohort mentor is considered fully trained and not eligible for fu
 
 If a mentor has had fewer than 2 years access to funded training before they were last withdrawn, they may be eligible for additional training. This is dependent on the number of paid declarations.
 
-#### Mentors with more than one declaration paid out against them
+##### Mentors with more than one declaration paid out against them
 
 These mentors are eligible for a maximum of 2 additional declarations, if this will not exceed 6 paid declarations in total. 
 
 This training will be paid from their ECF cohort. Further declarations cannot be submitted over the API and must be submitted manually to contract managers.
 
-#### Mentors with just one declaration paid out against them
+##### Mentors with just one declaration paid out against them
 
 These mentors are eligible to restart training under the ECTPM contract. These mentors will need moving to the relevant ECTPM cohort. 
 
@@ -90,7 +88,7 @@ To ensure that participants are not put onto the wrong schedule or cohort, we’
 
 Lead providers can self-serve using the API to change a registered participant’s cohort to 2025 if needed. 
 
-The 2026 opening will be like previous openings (link: current page, How cohort closures and changes work), but with some differences. 
+The 2026 opening will be like previous openings (see [How cohort closures and changes work](/api/guidance/guidance-for-lead-providers/how-cohort-closures-and-changes-work)), but with some differences. 
 
 ## Partnerships
 
@@ -114,4 +112,4 @@ We encourage lead providers to make sure their systems and processes will work w
 
 Lead providers can use [resources for release](https://register-ects-service-manual.education.gov.uk/resources-for-release/).
 
-Lead providers can direct schools who have problems with the service to continuing-professional-development@digital.education.gov.uk.
+Lead providers can direct schools to email continuing-professional-development@digital.education.gov.uk if they have problems with the service.
