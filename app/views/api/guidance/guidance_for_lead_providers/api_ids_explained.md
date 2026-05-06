@@ -1,6 +1,6 @@
 ---
 title: API IDs explained
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 We use various unique identifiers (IDs) in the endpoint requests and responses to help make the API reliable, efficient, and unambiguous.

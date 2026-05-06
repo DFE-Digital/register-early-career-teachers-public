@@ -1,6 +1,6 @@
 ---
 title: How to test the API effectively
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 ## Before starting 
