@@ -33,13 +33,6 @@ test:
   primary:
     <<: *default
     database: ecf2_test
-  ecf:
-    <<: *default_ecf
-    database: ecf_test
-
-legacy:
-  <<: *shared_settings
-  url: "<%= ENV['MIGRATION_DATABASE_URL'] || 'postgres://localhost:5432' %>"
 
 review:
   <<: *default
