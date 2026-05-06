@@ -1,5 +1,5 @@
 ## Why we're sharing our roadmap publicly 
-This document explains what we're working on to improve and rebuild the digital services that facilitate the early career framework (ECF) policy reforms. These digital services are named Register early career teachers.
+This document explains what we're working on to improve the register early career teachers service.
 
 It sets out what we're working on now, what will come next, and what we might pursue later. 
 
@@ -28,27 +28,9 @@ We decided to combine Record inductions and the rest of the services for trainin
 
 ## What we've done
 
-So far, we have:
+To read in more detail what we've done so far, we recommend [looking at our design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/).
 
-* built a way for schools to register ECTs and mentors to save school's time and improve data accuracy
-* set up DfE Sign in for appropriate bodies and schools, so we can improve how all users access the service
-* improved how mentors are assigned to ECTs, so we can reduce having to chase schools to tell us mentor information
-* built a service for appropriate bodies to record data about inductions individually, so we can start to consolidate services and reduce workload for all users
-* released a way for appropriate bodies to record and submit outcomes and claims for inductions in bulk
-* set up how we want to migrate data from ECF1 to the new Register early career teachers service
-* designed and built how ECTs and mentors are registered when they are moving schools
-* built how ECT and mentor records are viewed by schools so school users can understand their status
-* designed how schools tell us ECTs and mentors are no longer at a school, so we get more accurate information on if they are still training to share with appropriate bodies and lead providers
-* built multiple endpoints on the API, including improvements so we speed up the onboarding of ECTs and mentors to training
-* released the draft API specification and started acting on feedback so we can iterate the rest of our API build to meet lead provider needs
-* released our API guidance, so we can give information to lead providers as we build the API and they can test it and feedback as it's being developed
-* built a lot of the admin tooling we'll require, including admin tooling, in one centralised admin tool for all of our DfE users
-* built our 'parity check' for the API, to ensure we migrate data correctly and can inform lead providers of data changes
-* improved how schools can make changes to ECT and mentor records, so we can get more accurate information for them
-* designed how to gather a singular school induction tutor for schools so we make sure lead providers have the information they need
-
-
-  
+We launched the new register early career teachers service for schools and lead providers on the 28 April 2026. You can read more [about the changes for schools from the service we replaced here.](https://register-ects-service-manual.education.gov.uk/changes-for-schools/)
 													
 # The roadmap
 
