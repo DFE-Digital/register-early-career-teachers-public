@@ -1,5 +1,5 @@
 ---
-title: Lead provider 2026 opening guidance
+title: 2026 opening
 sidebar_position: 1
 ---
 
