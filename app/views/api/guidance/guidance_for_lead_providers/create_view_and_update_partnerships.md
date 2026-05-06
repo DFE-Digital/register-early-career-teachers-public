@@ -1,6 +1,6 @@
 ---
 title: Create, view and update partnerships
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 ## What are partnerships? 
