@@ -1,9 +1,7 @@
 ---
-title: 2026 opening
+title: How to prepare for the 2026 to 2027 academic year
 sidebar_position: 1
 ---
-
-# How to prepare for the 2026 to 2027 academic year
 
 Guidance on what we plan to do for current and existing cohorts, and what this means for lead providers.
 
