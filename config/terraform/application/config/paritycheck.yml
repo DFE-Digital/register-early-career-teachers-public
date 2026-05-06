@@ -3,8 +3,6 @@ ALLOW_INDEXING: false
 ENVIRONMENT_COLOUR: orange
 ENVIRONMENT_PHASE_BANNER_TAG: Parity check 🔍
 ENVIRONMENT_PHASE_BANNER_CONTENT: This is the parity check environment.
-ENABLE_MIGRATION_TESTING: true
-ENABLE_MIGRATION_INTERFACE: true
 ENABLE_INCIDENT_BANNER: false
 ENABLE_MAINTENANCE_BANNER: false
 ENABLE_HUBS: false
@@ -15,7 +13,6 @@ SENTRY_ENVIRONMENT: paritycheck
 ENABLE_PERSONAS: false
 ENABLE_BULK_UPLOAD: true
 ENABLE_BULK_CLAIM: true
-ENABLE_PARITY_CHECK: true
 ENABLE_API: true
 SERVICE_URL: "https://cpd-ec2-parity-check-web.teacherservices.cloud"
 DFE_ANALYTICS_ENABLED: false
@@ -25,7 +22,5 @@ ENCRYPTION_PRIMARY_KEY: parity_check_primary_key
 ENCRYPTION_DETERMINISTIC_KEY: paritycheck_deterministic_key
 ENCRYPTION_DERIVATION_SALT: paritycheck_derivation_salt
 RAILS_ENV: paritycheck
-PARITY_CHECK_ECF_URL: "https://cpd-ecf-paritycheck-web.teacherservices.cloud"
-PARITY_CHECK_RECT_URL: "https://cpd-ec2-paritycheck-web.teacherservices.cloud"
 ENABLE_TIME_TRAVEL: true
 MAX_SESSION_IDLE_TIME: 7200
