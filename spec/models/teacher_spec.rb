@@ -38,6 +38,22 @@ describe Teacher do
                     timestamp_attribute: :api_unfunded_mentor_updated_at
   end
 
+  describe "touch rollback", :with_touches do
+    it "rolls back the api_updated_at touch when the surrounding transaction rolls back" do
+      teacher = FactoryBot.create(:teacher, trs_first_name: "Charlotte", trs_last_name: "Dunn")
+      original_api_updated_at = 1.week.ago.round
+      teacher.update_columns(api_updated_at: original_api_updated_at)
+
+      Teacher.transaction do
+        teacher.update!(trs_first_name: "Charlie")
+        raise ActiveRecord::Rollback
+      end
+
+      expect(teacher.reload.api_updated_at).to eq(original_api_updated_at)
+      expect(teacher.trs_first_name).to eq("Charlotte")
+    end
+  end
+
   describe "name normalisation" do
     it "squishes whitespace in trs_first_name and trs_last_name on assignment" do
       teacher = Teacher.new(trs_first_name: "  Charlotte  ", trs_last_name: "Dunn ")

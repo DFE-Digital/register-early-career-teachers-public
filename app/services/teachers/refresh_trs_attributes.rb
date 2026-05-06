@@ -47,11 +47,13 @@ module Teachers
 
     # @return [Symbol]
     def update!
-      update_name!
-      update_trs_induction_status!
-      update_trs_attributes!
+      Teacher.transaction do
+        update_name!
+        update_trs_induction_status!
+        update_trs_attributes!
 
-      :teacher_updated
+        :teacher_updated
+      end
     end
 
     # @return [Symbol]

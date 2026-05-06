@@ -21,30 +21,34 @@ module DeclarativeUpdates
 
     def touch(target, when_changing: [], on_event: %i[update], timestamp_attribute: :updated_at, if: nil)
       condition = binding.local_variable_get(:if)
+      events = Array(on_event)
+      options = { target:, when_changing:, condition:, timestamp_attribute: }
 
-      after_commit(on: on_event) do
-        next if DeclarativeUpdates.skip?(:touch)
+      after_create { DeclarativeUpdates.perform_touch(self, **options) } if events.include?(:create)
+      after_update { DeclarativeUpdates.perform_touch(self, **options) } if events.include?(:update)
+      after_destroy { DeclarativeUpdates.perform_touch(self, **options) } if events.include?(:destroy)
+    end
+  end
 
-        should_touch_based_on_changes = destroyed? || when_changing.blank? || when_changing.any? do |attr|
-          saved_change_to_attribute?(attr)
-        end
+  def self.perform_touch(record, target:, when_changing:, condition:, timestamp_attribute:)
+    return if skip?(:touch)
 
-        should_touch_based_on_condition = condition.nil? || evaluate_condition(condition)
+    should_touch_based_on_changes = record.destroyed? || when_changing.blank? || when_changing.any? do |attr|
+      record.saved_change_to_attribute?(attr)
+    end
 
-        should_touch = should_touch_based_on_changes && should_touch_based_on_condition
+    should_touch_based_on_condition = condition.nil? || record.send(:evaluate_condition, condition)
 
-        next unless should_touch
+    return unless should_touch_based_on_changes && should_touch_based_on_condition
 
-        evaluated_target = instance_exec(&target)
+    evaluated_target = record.instance_exec(&target)
 
-        next unless evaluated_target
+    return unless evaluated_target
 
-        if evaluated_target.respond_to?(:update_all)
-          evaluated_target.update_all(timestamp_attribute => Time.zone.now)
-        else
-          evaluated_target.update_column(timestamp_attribute, Time.zone.now)
-        end
-      end
+    if evaluated_target.respond_to?(:update_all)
+      evaluated_target.update_all(timestamp_attribute => Time.zone.now)
+    else
+      evaluated_target.update_column(timestamp_attribute, Time.zone.now)
     end
   end
 
