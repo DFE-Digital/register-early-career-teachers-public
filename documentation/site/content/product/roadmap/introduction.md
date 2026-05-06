@@ -1,5 +1,5 @@
 ## Why we're sharing our roadmap publicly 
-This document explains what we're working on to improve the digital services that facilitate the early career framework (ECF) policy reforms. These digital services are named Register early career teachers.
+This document explains what we're working on to improve the register early career teachers service.
 
 It sets out what we're working on now, what will come next, and what we might pursue later. 
 
@@ -30,7 +30,7 @@ We decided to combine Record inductions and the rest of the services for trainin
 
 To read in more detail what we've done so far, we recommend [looking at our design history](https://teacher-cpd.design-history.education.gov.uk/ecf-v2/).
 
-We launched the new register early career teachers service for schools and lead providers on the 28th April 2026. You can read more [about the changes for schools from the service we replaced here.](https://register-ects-service-manual.education.gov.uk/changes-for-schools/)
+We launched the new register early career teachers service for schools and lead providers on the 28 April 2026. You can read more [about the changes for schools from the service we replaced here.](https://register-ects-service-manual.education.gov.uk/changes-for-schools/)
 													
 # The roadmap
 
