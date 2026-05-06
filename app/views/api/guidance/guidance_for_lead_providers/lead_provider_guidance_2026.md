@@ -88,9 +88,9 @@ To ensure that participants are not put onto the wrong schedule or cohort, we’
 
 Lead providers can self-serve using the API to change a registered participant’s cohort to 2025 if needed. 
 
-The 2026 opening will be like previous openings (see [How cohort closures and changes work](/api/guidance/guidance-for-lead-providers/how-cohort-closures-and-changes-work)), but with some differences. 
+The 2026 opening will be like previous openings but with some differences. 
 
-## Partnerships
+### Partnerships
 
 In the new service, schools can select a lead provider if they do not have one or where there’s been a change to the provider. If they do this, an ‘expression of interest’ (EOI) will be generated and set to ‘true’, and school induction tutor details populated.
 
@@ -100,11 +100,11 @@ Lead providers will be able to create partnerships as soon as the cohort opens, 
 
 Schools can also reuse partnerships from previous cohorts, so lead providers don’t need to create new ones. 
 
-## Sharing data with delivery partners
+### Sharing data with delivery partners
 
 Delivery partners no longer have access to Check data. Lead providers will now be responsible for sharing data with delivery partners for all cohorts.
 
-## Prepare systems for 2026
+### Prepare systems for 2026
 
 We encourage lead providers to make sure their systems and processes will work with the 2026 cohort. This will mean that they’ll be able to receive and submit data for these cohorts, for example on GET participants and GET declarations.
 
