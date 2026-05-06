@@ -24,7 +24,7 @@ RSpec.describe Schools::AssignMentor do
         let!(:current_mentorship) { FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: mentorship_period_started_on) }
 
         context "current mentorship starts in the future" do
-          let(:mentorship_period_started_on) { new_mentor_started_on + 1.day }
+          let(:mentorship_period_started_on) { Date.tomorrow }
 
           it "deletes any events associated with the old mentorship period" do
             FactoryBot.create(:event, mentorship_period: current_mentorship)
@@ -55,7 +55,7 @@ RSpec.describe Schools::AssignMentor do
         end
 
         context "current mentorship starts today" do
-          let(:mentorship_period_started_on) { new_mentor_started_on }
+          let(:mentorship_period_started_on) { Time.zone.today }
 
           it "deletes any events associated with the old mentorship period" do
             FactoryBot.create(:event, mentorship_period: current_mentorship)
@@ -159,18 +159,42 @@ RSpec.describe Schools::AssignMentor do
           end
         end
 
-        context "current mentorship starts today" do
-          let(:mentorship_period_started_on) { new_mentor_started_on }
+        context "current mentorship start today" do
+          let(:mentorship_period_started_on) { Time.zone.today }
+
+          it "deletes the old mentorship period and its events" do
+            FactoryBot.create(:event, mentorship_period: current_mentorship)
+            other_event = FactoryBot.create(:event)
+
+            expect { service.assign! }.not_to change(MentorshipPeriod, :count)
+            expect { current_mentorship.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            expect(Event.where(mentorship_period: current_mentorship)).to be_empty
+            expect(Event.exists?(other_event.id)).to be true
+            expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
+          end
+
+          it "creates a new mentorship for the ect with the new mentor starting on the mentor start date" do
+            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_mentor).to eq(current_mentor)
+
+            expect { service.assign! }.not_to change(MentorshipPeriod, :count)
+            expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
+            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_or_next_mentorship_period.started_on).to eq(Time.zone.today)
+          end
+        end
+
+        context "current mentorship starts yesterday" do
+          let(:mentorship_period_started_on) { Date.yesterday }
 
           it "ends current mentorship of the ect" do
-            expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Date.current)
+            expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Time.zone.today)
           end
 
           it "adds a new mentorship for the ect with the new mentor starting tomorrow" do
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_mentor).to eq(current_mentor)
             expect { service.assign! }.to change(MentorshipPeriod, :count).from(1).to(2)
-            expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
-            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_or_next_mentorship_period.started_on).to eq(Date.tomorrow)
+
+            expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).latest_mentor).to eq(new_mentor)
+            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).latest_mentorship_period.started_on).to eq(Date.tomorrow)
           end
         end
 
@@ -180,14 +204,14 @@ RSpec.describe Schools::AssignMentor do
           let(:mentorship_period_started_on) { mentor_started_on }
 
           it "finishes the current mentorship period" do
-            expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Date.current)
+            expect { service.assign! }.to change { current_mentorship.reload.finished_on }.from(nil).to(Date.yesterday)
           end
 
           it "adds a new mentorship for the ect with the new mentor starting tomorrow" do
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_mentor).to eq(current_mentor)
             expect { service.assign! }.to change(MentorshipPeriod, :count).from(1).to(2)
             expect(ECTAtSchoolPeriods::Mentorship.new(mentee.reload).current_mentor).to eq(new_mentor)
-            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_or_next_mentorship_period.started_on).to eq(Date.tomorrow)
+            expect(ECTAtSchoolPeriods::Mentorship.new(mentee).current_or_next_mentorship_period.started_on).to eq(Time.zone.today)
           end
         end
       end
