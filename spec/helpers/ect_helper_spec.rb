@@ -6,8 +6,8 @@ RSpec.describe ECTHelper, type: :helper do
   let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: ect_teacher, school:, started_on:) }
   let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on:) }
 
-  describe "#ect_mentor_details" do
-    subject(:mentor_details) { helper.ect_mentor_details(ect_at_school_period) }
+  describe "#ect_mentor_name_or_assign_mentor_link" do
+    subject(:mentor_details) { helper.ect_mentor_name_or_assign_mentor_link(ect_at_school_period) }
 
     let(:default_link_text) { "Assign a mentor for this ECT" }
 
