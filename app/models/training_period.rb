@@ -2,6 +2,8 @@ class TrainingPeriod < ApplicationRecord
   include Interval
   include DeclarativeUpdates
 
+  MENTOR_ONLY_WITHDRAWAL_REASONS = %w[mentor_no_longer_being_mentor].freeze
+
   # Enums
   enum :training_programme,
        { provider_led: "provider_led",
@@ -258,7 +260,7 @@ private
 
   def withdrawal_reason_valid_for_trainee_type
     return unless for_ect?
-    return unless mentor_no_longer_being_mentor_withdrawal_reason?
+    return unless MENTOR_ONLY_WITHDRAWAL_REASONS.include?(withdrawal_reason)
 
     errors.add(:withdrawal_reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
   end
