@@ -108,7 +108,7 @@ module Schools
       def mentor_row
         {
           key: { text: "Mentor", classes: %w[mentor-key] },
-          value: { text: ect_mentor_details(ect_at_school_period) }
+          value: { text: ect_mentor_name_or_assign_mentor_link(ect_at_school_period) }
         }
       end
 
