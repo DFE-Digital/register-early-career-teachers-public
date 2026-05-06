@@ -67,9 +67,3 @@ review:
     queue: default
     schedule: Every hour
 
-migration:
-  build_induction_record_export_csv:
-    class: BuildInductionRecordExportJob
-    queue: migration
-    schedule: every day at 5am
-

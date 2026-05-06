@@ -54,6 +54,5 @@ Rails.application.routes.draw do
   draw :admin
   draw :appropriate_body
   draw :school
-  draw :migration
   draw :api
 end
