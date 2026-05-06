@@ -196,9 +196,27 @@ RSpec.describe Navigation::PrimaryNavigationComponent, type: :component do
       it "lists the other pages" do
         render_inline(subject)
 
-        ["Swagger API documentation", "Release notes", "Guidance"].each do |other_page|
-          expect(rendered_content).to have_css(".govuk-service-navigation__link", text: other_page)
+        expected_items = [
+          { text: "Swagger API documentation", href: "/api/docs/v3" },
+          { text: "Release notes", href: "/api/guidance/release-notes" },
+          { text: "Guidance", href: "/api/guidance/guidance-for-lead-providers" },
+        ]
+
+        expected_items.each do |item|
+          expect(rendered_content).to have_link(item[:text], href: item[:href])
         end
+      end
+    end
+
+    context "when on the Swagger API docs page" do
+      let(:current_path) { "/api/docs/v3" }
+      let(:current_user_type) { nil }
+
+      it "renders the api guidance navigation with Swagger marked active" do
+        render_inline(subject)
+
+        expect(rendered_content).to have_link("Home", href: "/api/guidance")
+        expect(rendered_content).to have_css("a[aria-current='page']", text: "Swagger API documentation")
       end
     end
 
