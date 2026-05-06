@@ -3,7 +3,7 @@ module API::Teachers
     include API::Concerns::Teachers::SharedAction
 
     WITHDRAWAL_REASONS = TrainingPeriod.withdrawal_reasons.values.map(&:dasherize).freeze
-    MENTOR_ONLY_WITHDRAWAL_REASONS = %w[mentor-no-longer-being-mentor].freeze
+    MENTOR_ONLY_WITHDRAWAL_REASONS = TrainingPeriod::MENTOR_ONLY_WITHDRAWAL_REASONS.map(&:dasherize).freeze
 
     attribute :reason
 
