@@ -64,7 +64,7 @@ module Schools
                                     email:,
                                     author:,
                                     started_on:,
-                                    finish_existing_at_school_periods:,
+                                    mentoring_at_new_school_only: mentoring_at_new_school_only?,
                                     lead_provider:,
                                     mentee: ect)
                 .register!
@@ -73,11 +73,6 @@ module Schools
 
       def active_at_school?
         active_record_at_school.present?
-      end
-
-      # The form submits a symbol (:yes or :no), but Rails stores it as a string ('yes'/'no').
-      def finish_existing_at_school_periods
-        mentoring_at_new_school_only?
       end
 
       def ect_lead_provider

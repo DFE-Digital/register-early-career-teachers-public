@@ -8,18 +8,40 @@ class MentorAtSchoolPeriods::Finish
     @reported_by_school_id = reported_by_school_id
   end
 
-  def finish_existing_at_school_periods!
+  def finish_periods_at_all_schools!
     ActiveRecord::Base.transaction do
-      teacher.mentor_at_school_periods.ongoing_on(finished_on).each do |period|
-        finish_mentorship_periods!(period)
-        finish_training_periods!(period)
-        finish_mentor_at_school_period!(period)
-        record_mentor_left_school_event!(period)
+      ongoing_mentor_at_school_periods.each do |period|
+        finish!(period)
+      end
+    end
+  end
+
+  def finish_periods_at_reported_school!
+    raise ArgumentError, "reported_by_school_id is required to finish periods at reported school" unless reported_by_school_id
+
+    ActiveRecord::Base.transaction do
+      ongoing_mentor_at_school_periods_at_reported_school.each do |period|
+        finish!(period)
       end
     end
   end
 
 private
+
+  def finish!(period)
+    finish_mentorship_periods!(period)
+    finish_training_periods!(period)
+    finish_mentor_at_school_period!(period)
+    record_mentor_left_school_event!(period)
+  end
+
+  def ongoing_mentor_at_school_periods
+    teacher.mentor_at_school_periods.ongoing_on(finished_on)
+  end
+
+  def ongoing_mentor_at_school_periods_at_reported_school
+    ongoing_mentor_at_school_periods.for_school(reported_by_school_id)
+  end
 
   def finish_mentorship_periods!(period)
     destroy_unstarted_mentorship_periods!(period)
