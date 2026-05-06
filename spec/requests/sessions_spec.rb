@@ -13,6 +13,10 @@ RSpec.describe "Sessions", type: :request do
         expect(response).to be_successful
         expect(sanitize(response.body)).to include("Select a sign in method")
       end
+
+      it "prevents search engine indexing" do
+        expect(response.headers["X-Robots-Tag"]).to eq("none")
+      end
     end
 
     context "when signed in" do

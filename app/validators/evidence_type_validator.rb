@@ -7,6 +7,7 @@ class EvidenceTypeValidator < ActiveModel::Validator
 
   def validate(record)
     return if record.errors[:evidence_type].any?
+    return if record.errors[:declaration_date].any?
     return if record.training_period.blank?
 
     evidence_type_is_present(record) if self.class.evidence_type_required?(record)

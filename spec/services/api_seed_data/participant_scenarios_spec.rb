@@ -366,7 +366,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
           training_statuses = training_periods.map do
             API::TrainingPeriods::TrainingStatus.new(training_period: it)
           end
-          expect(participant_statuses).to(be_all { |s| s.status == :left })
+          expect(participant_statuses).to be_all(&:left?)
           expect(training_statuses).to be_all(&:withdrawn?)
         end
       end
@@ -417,7 +417,7 @@ RSpec.describe APISeedData::ParticipantScenarios do
           training_statuses = training_periods.map do
             API::TrainingPeriods::TrainingStatus.new(training_period: it)
           end
-          expect(participant_statuses).to(be_all { |s| s.status == :left })
+          expect(participant_statuses).to be_all(&:left?)
           expect(training_statuses).to be_all(&:active?)
         end
       end

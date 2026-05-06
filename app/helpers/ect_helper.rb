@@ -95,14 +95,13 @@ module ECTHelper
   end
 
   # @param ect [ECTAtSchoolPeriod]
-  def ect_mentor_details(ect)
+  def ect_mentor_details(ect, link_to_mentor: true)
     mentorship = ECTAtSchoolPeriods::Mentorship.new(ect)
 
-    if mentorship && mentorship.current_mentor.present?
-      govuk_link_to(mentorship.current_mentor_name, schools_mentor_path(mentorship.current_mentor))
-    else
-      link_to_assign_mentor(ect)
-    end
+    return link_to_assign_mentor(ect) if mentorship.current_mentor.blank?
+    return mentorship.current_mentor_name unless link_to_mentor
+
+    govuk_link_to(mentorship.current_mentor_name, schools_mentor_path(mentorship.current_mentor))
   end
 
   # @param ect [ECTAtSchoolPeriod]

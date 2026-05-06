@@ -2,7 +2,4 @@
 // Run that command whenever you add a new controller or create them with
 // ./bin/rails generate stimulus controllerName
 
-import { application } from "./application"
-
-import ResponseBodyFilterController from "./parity_check/response_body_filter_controller"
-application.register("parity-check-response-body-filter", ResponseBodyFilterController)
+// import { application } from "./application"

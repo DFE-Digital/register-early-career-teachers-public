@@ -10,8 +10,6 @@ describe API::TeacherSerializer, :with_metadata, type: :serializer do
     FactoryBot.create(
       :teacher,
       :ineligible_for_mentor_funding,
-      api_ect_training_record_id: SecureRandom.uuid,
-      api_mentor_training_record_id: SecureRandom.uuid,
       api_updated_at:
     )
   end

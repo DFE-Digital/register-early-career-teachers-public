@@ -25,6 +25,13 @@ class ApplicationController < ActionController::Base
 
 private
 
+  def allow_search_engine_indexing
+    return unless Rails.application.config.search_engine_indexing_enabled
+    return unless response.status == 200
+
+    response.headers["X-Robots-Tag"] = "all"
+  end
+
   def append_info_to_payload(payload)
     super
     payload[:current_user_class] = current_user&.class&.name

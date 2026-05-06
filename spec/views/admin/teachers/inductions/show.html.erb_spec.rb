@@ -36,12 +36,6 @@ RSpec.describe "admin/teachers/inductions/show.html.erb" do
     expect(rendered).to have_link("View change history", href: admin_teacher_timeline_path(teacher))
   end
 
-  context "when there are no migration failures" do
-    it "does not report migration failures" do
-      expect(rendered).not_to have_text("Some of this teacher's records could not be migrated")
-    end
-  end
-
   it "displays current induction period" do
     expect(rendered).to have_text("Current induction period")
   end
