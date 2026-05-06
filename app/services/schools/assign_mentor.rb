@@ -44,7 +44,15 @@ module Schools
       if current_mentorship_period.started_on >= earliest_possible_start
         destroy_unstarted_current_mentorship_period!
       else
-        current_mentorship_period.finish!(earliest_possible_start)
+        current_mentorship_period.finish!(current_mentorship_period_end_date)
+      end
+    end
+
+    def current_mentorship_period_end_date
+      if current_mentorship_period.started_on == earliest_possible_start.prev_day
+        earliest_possible_start
+      else
+        earliest_possible_start.prev_day
       end
     end
 
