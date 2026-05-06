@@ -1,6 +1,0 @@
-<div id="run_states">
-  <%= render partial: "completed_runs", locals: { completed_runs: } if completed_runs.any? %>
-  <%= render partial: "failed_runs", locals: { failed_runs: } if failed_runs.any? %>
-  <%= render partial: "in_progress_run", locals: { in_progress_run: } if in_progress_run %>
-  <%= render partial: "pending_runs", locals: { pending_runs:, in_progress_run: } if pending_runs.any? %>
-</div>

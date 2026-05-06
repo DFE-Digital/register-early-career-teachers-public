@@ -46,9 +46,6 @@ class Teacher < ApplicationRecord
   has_one :latest_mentor_at_school_period, -> { latest_first }, class_name: "MentorAtSchoolPeriod"
   has_one :latest_ect_at_school_period, -> { latest_first }, class_name: "ECTAtSchoolPeriod"
 
-  # TODO: remove after migration complete
-  has_many :teacher_migration_failures
-
   touch -> { self },
         on_event: :update,
         timestamp_attribute: :api_updated_at,
@@ -103,8 +100,8 @@ class Teacher < ApplicationRecord
             presence: { message: "Choose the reason why the mentor became ineligible for funding" },
             if: -> { mentor_became_ineligible_for_funding_on.present? }
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another teacher" }
-  validates :api_ect_training_record_id, uniqueness: { case_sensitive: false, message: "API ect training record id already exists for another teacher" }, allow_nil: true
-  validates :api_mentor_training_record_id, uniqueness: { case_sensitive: false, message: "API mentor training record id already exists for another teacher" }, allow_nil: true
+  validates :api_ect_training_record_id, uniqueness: { case_sensitive: false, message: "API ect training record id already exists for another teacher" }
+  validates :api_mentor_training_record_id, uniqueness: { case_sensitive: false, message: "API mentor training record id already exists for another teacher" }
   validates :ect_first_became_eligible_for_training_at, immutable_once_set: true
   validates :mentor_first_became_eligible_for_training_at, immutable_once_set: true
 

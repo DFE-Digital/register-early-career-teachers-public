@@ -10,7 +10,7 @@ RSpec.describe API::Declarations::Void, type: :model do
       let(:declaration) { FactoryBot.create(:declaration, :payable) }
       let(:lead_provider_id) { nil }
 
-      it { is_expected.to have_one_error_per_attribute }
+      it { is_expected.to have_one_error_only }
       it { is_expected.to have_error(:lead_provider_id, "Enter a '#/lead_provider_id'.") }
     end
 
@@ -18,21 +18,21 @@ RSpec.describe API::Declarations::Void, type: :model do
       let(:declaration) { FactoryBot.create(:declaration, :payable) }
       let(:lead_provider_id) { 123_456_789 }
 
-      it { is_expected.to have_one_error_per_attribute }
+      it { is_expected.to have_one_error_only }
       it { is_expected.to have_error(:lead_provider_id, "The '#/lead_provider_id' you have entered is invalid.") }
     end
 
     context "when declaration is voided" do
       let(:declaration) { FactoryBot.create(:declaration, :voided) }
 
-      it { is_expected.to have_one_error_per_attribute }
+      it { is_expected.to have_one_error_only }
       it { is_expected.to have_error(:declaration_api_id, "The declaration has already been voided.") }
     end
 
     context "when declaration is paid" do
       let(:declaration) { FactoryBot.create(:declaration, :paid) }
 
-      it { is_expected.to have_one_error_per_attribute }
+      it { is_expected.to have_one_error_only }
       it { is_expected.to have_error(:declaration_api_id, "This declaration has been clawed-back, so you can only view it.") }
     end
 

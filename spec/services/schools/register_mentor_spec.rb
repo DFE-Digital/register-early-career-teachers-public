@@ -110,7 +110,7 @@ RSpec.describe Schools::RegisterMentor do
             end
 
             context "when the existing mentor_at_school_period has finished" do
-              let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.years.ago, finished_on: Time.zone.today) }
+              let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: 2.years.ago, finished_on: Time.zone.yesterday) }
 
               it "creates a new training period and finishes the old period" do
                 expect { service.register! }.to change(TrainingPeriod, :count).by(1)

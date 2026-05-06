@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  after_action :allow_search_engine_indexing, only: :home
+
   def home
     redirect_to(post_login_redirect_path) and return if authenticated?
   end

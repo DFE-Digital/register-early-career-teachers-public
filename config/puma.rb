@@ -5,11 +5,14 @@ threads min_threads_count, max_threads_count
 if ENV["RAILS_ENV"] == "production"
   require "concurrent-ruby"
   worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { Concurrent.physical_processor_count })
-  workers worker_count if worker_count > 1
-end
-
-on_worker_boot do
-  SemanticLogger.reopen if defined?(SemanticLogger)
+  if worker_count > 1
+    workers worker_count
+    # before_worker_boot only fires in cluster mode; registering it in single mode
+    # (dev/test) emits a Puma warning that the block will never execute.
+    before_worker_boot do
+      SemanticLogger.reopen if defined?(SemanticLogger)
+    end
+  end
 end
 
 worker_timeout 3600 if ENV.fetch("RAILS_ENV", "development") == "development"
