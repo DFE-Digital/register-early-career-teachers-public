@@ -6,12 +6,15 @@ class MentorAtSchoolPeriod < ApplicationRecord
   belongs_to :school, inverse_of: :mentor_at_school_periods
   belongs_to :teacher, inverse_of: :mentor_at_school_periods
   has_many :mentorship_periods, inverse_of: :mentor, dependent: :destroy
+  has_many :current_or_future_mentorship_periods,
+           -> { current_or_future },
+           class_name: "MentorshipPeriod"
   has_many :training_periods, inverse_of: :mentor_at_school_period, dependent: :destroy
   has_many :declarations, through: :training_periods
   has_many :events
   has_many :current_or_future_ects,
            -> { current_or_future.induction_not_completed.includes(:teacher) },
-           through: :mentorship_periods,
+           through: :current_or_future_mentorship_periods,
            source: :mentee
   has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"
   has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"

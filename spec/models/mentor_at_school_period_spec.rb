@@ -22,7 +22,7 @@ describe MentorAtSchoolPeriod do
     it { is_expected.to have_many(:training_periods) }
     it { is_expected.to have_many(:declarations).through(:training_periods) }
     it { is_expected.to have_many(:events) }
-    it { is_expected.to have_many(:current_or_future_ects).through(:mentorship_periods).source(:mentee) }
+    it { is_expected.to have_many(:current_or_future_ects).through(:current_or_future_mentorship_periods).source(:mentee) }
   end
 
   describe "#current_or_future_ects" do
@@ -37,13 +37,24 @@ describe MentorAtSchoolPeriod do
     let(:finishing) { FactoryBot.create(:ect_at_school_period, school:, finished_on: 1.week.from_now) }
     let(:current)   { FactoryBot.create(:ect_at_school_period, school:, finished_on: nil) }
     let(:upcoming)  { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.week.from_now) }
-    let(:passed)    { FactoryBot.create(:ect_at_school_period, school:, teacher: passed_teacher) }
-    let(:failed)    { FactoryBot.create(:ect_at_school_period, school:, teacher: failed_teacher) }
+    let(:passed)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: passed_teacher) }
+    let(:failed)    { FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: failed_teacher) }
+    let(:previously_mentored) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: 1.year.ago) }
 
     before do
       [finished, finishing, current, upcoming, passed, failed].each do |mentee|
-        FactoryBot.create(:mentorship_period, mentor:, mentee:)
+        FactoryBot.create(:mentorship_period,
+                          mentor:,
+                          mentee:,
+                          started_on: mentee.started_on,
+                          finished_on: mentee.finished_on)
       end
+
+      FactoryBot.create(:mentorship_period,
+                        mentor:,
+                        mentee: previously_mentored,
+                        started_on: previously_mentored.started_on,
+                        finished_on: 1.month.ago)
     end
 
     it { is_expected.to match_array [current, upcoming, finishing] }
