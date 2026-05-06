@@ -1,2 +1,0 @@
-class DataMigrationFailedCombination < ApplicationRecord
-end

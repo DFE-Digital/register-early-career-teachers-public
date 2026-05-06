@@ -17,7 +17,6 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
       mentor_declarations
       mentor_training_periods
       teacher_id_changes
-      teacher_migration_failures
     ])
   end
 
