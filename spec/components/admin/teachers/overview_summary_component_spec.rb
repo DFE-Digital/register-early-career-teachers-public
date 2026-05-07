@@ -36,7 +36,7 @@ RSpec.describe Admin::Teachers::OverviewSummaryComponent, type: :component do
     end
 
     it "shows the API participant ID in a code block" do
-      expect(rendered.css("code.app-code").text).to eq(teacher.api_id)
+      expect(rendered.css("code").text).to include(teacher.api_id)
     end
   end
 

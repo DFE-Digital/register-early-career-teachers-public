@@ -5,7 +5,7 @@
 </p>
 
 <p class='govuk-body'>
-  API ID: <span class="govuk-body app-mono"><%= @delivery_partner.api_id %></span>
+  API ID: <%= format_uuid(@delivery_partner.api_id) %>
 </p>
 
 <%= render(Admin::LeadProviderPartnershipsTableComponent.new(
