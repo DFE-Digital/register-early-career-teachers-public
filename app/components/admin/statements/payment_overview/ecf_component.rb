@@ -19,7 +19,11 @@ module Admin
           raise ArgumentError, "Expected exactly 1 calculator for ECF contract type" unless calculators.one?
           raise ArgumentError, "Expected Banded calculator for ECF contract type" unless banded
 
-          @uplifts ||= banded.uplifts.total_net_amount
+          @uplifts ||= banded.uplifts.total_billable_amount
+        end
+
+        def clawbacks
+          @clawbacks ||= -(banded.outputs.total_refundable_amount + banded.uplifts.total_refundable_amount)
         end
       end
     end
