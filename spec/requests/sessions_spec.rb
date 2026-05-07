@@ -96,8 +96,6 @@ RSpec.describe "Sessions", type: :request do
         }
       end
 
-      let(:user_builder) { instance_double(Sessions::Users::Builder) }
-
       before do
         FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:)
 
