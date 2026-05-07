@@ -1,3 +1,54 @@
+RSpec.shared_examples "DfE Sign In endpoint with error handling" do
+  context "when the API returns a successful response" do
+    let(:status) { 200 }
+    let(:success) { true }
+
+    it "does not raise an error" do
+      expect { subject }.not_to raise_error
+    end
+  end
+
+  context "when the API returns a 403" do
+    let(:status) { 403 }
+    let(:success) { false }
+    let(:response_body) { "Forbidden" }
+
+    it "raises a ForbiddenError" do
+      expect { subject }.to raise_error(DfESignIn::APIClient::ForbiddenError)
+    end
+  end
+
+  context "when the API returns a 404" do
+    let(:status) { 404 }
+    let(:success) { false }
+    let(:response_body) { "Not Found" }
+
+    it "raises a NotFoundError" do
+      expect { subject }.to raise_error(DfESignIn::APIClient::NotFoundError)
+    end
+  end
+
+  context "when the API returns a 500" do
+    let(:status) { 500 }
+    let(:success) { false }
+    let(:response_body) { "Server Error" }
+
+    it "raises an InternalServerError" do
+      expect { subject }.to raise_error(DfESignIn::APIClient::InternalServerError)
+    end
+  end
+
+  context "when the API returns an unexpected error code" do
+    let(:status) { 418 }
+    let(:success) { false }
+    let(:response_body) { "I'm a teapot" }
+
+    it "raises a generic ResponseError" do
+      expect { subject }.to raise_error(DfESignIn::APIClient::ResponseError)
+    end
+  end
+end
+
 describe DfESignIn::APIClient do
   let(:fake_base_url) { "https://api.very-nice-website.org/" }
   let(:test_client_id) { "SomeService" }
@@ -5,7 +56,10 @@ describe DfESignIn::APIClient do
   let(:fake_api_secret) { "ABC123" }
 
   let(:connection) { client.instance_variable_get(:@connection) }
-  let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
+
+  let(:success) { true }
+  let(:status) { 200 }
+  let(:response) { instance_double(Faraday::Response, success?: success, status:, body: response_body) }
 
   before do
     stub_const("ENV", {
@@ -64,6 +118,8 @@ describe DfESignIn::APIClient do
   end
 
   describe "#organisations" do
+    subject { client.organisations(user_id:) }
+
     let(:response_body) do
       [
         {
@@ -109,37 +165,28 @@ describe DfESignIn::APIClient do
     let(:connection) { client.instance_variable_get(:@connection) }
     let(:user_id) { "b41b3462-62f8-4b43-8d4b-407f7f115056" }
     let(:expected_path) { %(/users/#{user_id}/organisations) }
-    let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
 
     before do
       allow(connection).to receive(:get).with(expected_path).and_return(response)
     end
 
+    include_examples "DfE Sign In endpoint with error handling"
+
     # GET https://environment-url/users/{user-id}/organisations
     it "calls the organisations endpoint" do
-      client.organisations(user_id:)
+      subject
 
       expect(connection).to have_received(:get).with(expected_path)
     end
 
     it "returns an array of DfESignIn::Organisation" do
-      output = client.organisations(user_id:)
-
-      expect(output).to all(be_a(DfESignIn::Organisation))
-    end
-
-    context "when the response is unsuccessful" do
-      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
-
-      it "raises an OrganisationNotFound error" do
-        expect {
-          client.organisations(user_id:)
-        }.to raise_error(DfESignIn::APIClient::OrganisationNotFound, "Could not retrieve organisations: 500 Internal Server Error")
-      end
+      expect(subject).to all(be_a(DfESignIn::Organisation))
     end
   end
 
   describe "#access_levels" do
+    subject { client.access_levels(organisation_id:, user_id:, service_id:) }
+
     let(:user_id) { "55555555-9999-8888-7777-111111111111" }
     let(:organisation_id) { "55555555-4444-3333-2222-111111111111" }
     let(:service_id) { "55555555-4444-3333-9999-888888888888" }
@@ -170,47 +217,40 @@ describe DfESignIn::APIClient do
     let(:client) { DfESignIn::APIClient.new }
     let(:connection) { client.instance_variable_get(:@connection) }
     let(:expected_path) { %(services/#{service_id}/organisations/#{organisation_id}/users/#{user_id}) }
-    let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
 
     before do
       allow(connection).to receive(:get).with(expected_path).and_return(response)
     end
 
+    include_examples "DfE Sign In endpoint with error handling"
+
     # GET https://environment-url/users/{user-id}/organisations
     it "calls the access levels endpoint" do
-      client.access_levels(service_id:, organisation_id:, user_id:)
+      subject
 
       expect(connection).to have_received(:get).with(expected_path)
     end
 
     it "returns a DfESignIn::AccessLevel" do
-      access_level = client.access_levels(service_id:, organisation_id:, user_id:)
+      access_level = subject
 
       expect(access_level).to be_a(DfESignIn::AccessLevel)
       expect(access_level.roles).to all(be_a(DfESignIn::AccessLevel::Role))
     end
 
     it "correctly sets the access level values" do
-      access_level = client.access_levels(service_id:, organisation_id:, user_id:)
+      access_level = subject
 
       expect(access_level.user_id).to eql(user_id)
       expect(access_level.organisation_id).to eql(organisation_id)
       expect(access_level.service_id).to eql(service_id)
       expect(access_level.roles.map(&:name)).to include("Register ECTs")
     end
-
-    context "when the response is unsuccessful" do
-      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
-
-      it "raises an AccessLevelNotFound error" do
-        expect {
-          client.access_levels(service_id:, organisation_id:, user_id:)
-        }.to raise_error(DfESignIn::APIClient::AccessLevelNotFound, "Could not retrieve access level: 500 Internal Server Error")
-      end
-    end
   end
 
   describe "#users" do
+    subject { client.users }
+
     let(:response_body) do
       {
         "users": [
@@ -276,36 +316,27 @@ describe DfESignIn::APIClient do
     let(:client) { DfESignIn::APIClient.new }
     let(:connection) { client.instance_variable_get(:@connection) }
     let(:expected_path) { %(/users) }
-    let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
 
     before do
       allow(connection).to receive(:get).with(expected_path).and_return(response)
     end
 
+    include_examples "DfE Sign In endpoint with error handling"
+
     it "calls the users endpoint" do
-      client.users
+      subject
 
       expect(connection).to have_received(:get).with(expected_path)
     end
 
     it "returns the response body" do
-      output = client.users
-
-      expect(output).to eql(response_body)
-    end
-
-    context "when the response is unsuccessful" do
-      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
-
-      it "raises a UsersNotFound error" do
-        expect {
-          client.users
-        }.to raise_error(DfESignIn::APIClient::UsersNotFound, "Could not retrieve users: 500 Internal Server Error")
-      end
+      expect(subject).to eql(response_body)
     end
   end
 
   describe "#roles" do
+    subject { client.roles(service_id:) }
+
     let(:response_body) do
       [
         {
@@ -325,32 +356,21 @@ describe DfESignIn::APIClient do
     let(:connection) { client.instance_variable_get(:@connection) }
     let(:service_id) { "55555555-4444-3333-9999-888888888888" }
     let(:expected_path) { %(/services/#{service_id}/roles) }
-    let(:response) { instance_double(Faraday::Response, success?: true, body: response_body) }
 
     before do
       allow(connection).to receive(:get).with(expected_path).and_return(response)
     end
 
+    include_examples "DfE Sign In endpoint with error handling"
+
     it "calls the roles endpoint" do
-      client.roles(service_id:)
+      subject
 
       expect(connection).to have_received(:get).with(expected_path)
     end
 
     it "returns an array of roles" do
-      output = client.roles(service_id:)
-
-      expect(output).to all(include("name", "code", "status"))
-    end
-
-    context "when the response is unsuccessful" do
-      let(:response) { instance_double(Faraday::Response, success?: false, status: 500, body: "Internal Server Error") }
-
-      it "raises a RolesNotFound error" do
-        expect {
-          client.roles(service_id:)
-        }.to raise_error(DfESignIn::APIClient::RolesNotFound, "Could not retrieve roles: 500 Internal Server Error")
-      end
+      expect(subject).to all(include("name", "code", "status"))
     end
   end
 end
