@@ -5,7 +5,11 @@ module Statements
     attr_reader :statement
 
     def self.mark_all_eligible!
-      deadline_past_statements = Statement.where(status: :open).where(deadline_date: ...Date.current)
+      deadline_past_statements = Statements::Search.new(
+        status: "open",
+        deadline_date: ...Date.current,
+        order: :deadline_date
+      ).statements
 
       deadline_past_statements.find_each do |statement|
         new(statement).mark!

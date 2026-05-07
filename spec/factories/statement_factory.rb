@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory(:statement) do
     transient do
-      contract_period { FactoryBot.create(:contract_period) }
+      contract_period { FactoryBot.create(:contract_period, :current) }
       active_lead_provider { association(:active_lead_provider, contract_period:) }
 
       month_year_pair do
@@ -49,10 +49,12 @@ FactoryBot.define do
 
     trait :payable do
       status { :payable }
+      deadline_date { [Date.new(year, month, 1).prev_day, Date.yesterday].min }
     end
 
     trait :paid do
       status { :paid }
+      deadline_date { [Date.new(year, month, 1).prev_day, Date.yesterday].min }
     end
 
     trait :output_fee do
@@ -66,16 +68,10 @@ FactoryBot.define do
     trait :adjustable do
       open
       output_fee
-
-      deadline_date { Date.new(year, month, 1) }
-      payment_date { Date.new(year, month, 25) }
     end
 
     trait :paid_in_month do
       paid
-
-      deadline_date { Date.new(year, month, 1).prev_day }
-      payment_date  { Date.new(year, month, 25) }
 
       marked_as_paid_at do
         next_month = Date.new(year, month, 1).next_month
