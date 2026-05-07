@@ -10,9 +10,9 @@
     end
     table.with_body do |body|
       body.with_row do |row|
-        row.with_cell(text: net_count)
+        row.with_cell(text: billable_count)
         row.with_cell(text: number_to_pounds(uplift_fee_per_declaration), numeric: true)
-        row.with_cell(text: number_to_pounds(total_net_amount), numeric: true)
+        row.with_cell(text: number_to_pounds(total_billable_amount), numeric: true)
       end
     end
   end %>
@@ -20,6 +20,6 @@
     Total
   </div>
   <div class="govuk-!-text-align-right govuk-heading-s">
-    <%= number_to_pounds(total_net_amount) %>
+    <%= number_to_pounds(total_billable_amount) %>
   </div>
 </div>
