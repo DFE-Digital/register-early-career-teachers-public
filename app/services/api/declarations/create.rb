@@ -118,6 +118,7 @@ module API::Declarations
         lead_provider_id:,
         contract_period_years: contract_period.year,
         fee_type: "output",
+        status: "open",
         deadline_date: Time.zone.today..,
         order: :deadline_date
       ).statements.first
