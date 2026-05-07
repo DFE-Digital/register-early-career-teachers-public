@@ -92,4 +92,11 @@ module ApplicationHelper
   def govuk_html_element(&block)
     tag.html(lang: "en", class: %w[govuk-template govuk-template--rebranded], &block)
   end
+
+  def format_uuid(uuid)
+    visually_hidden_span = govuk_visually_hidden("Identifier starting with #{uuid.first(6)}")
+    aria_hidden_span = tag.span(uuid, aria: { hidden: true })
+
+    tag.code(safe_join([visually_hidden_span, aria_hidden_span]))
+  end
 end
