@@ -21,6 +21,46 @@
 #
 #     **bold** and _italic_ text
 
+- title: Add working_pattern field for early career teachers
+  date: 2026-05-07
+  tags:
+    - sandbox-release
+    - production-release
+  body: |
+    We’ve added a new optional field, `working_pattern`, to the GET participants endpoint for early career teachers (ECTs).
+
+    This change has been released ahead of the 2026 cohort opening so lead providers can access more accurate information when onboarding new ECTs to training.
+
+    ## What’s changed
+    The `working_pattern` field indicates whether an ECT is working:
+
+    - `full_time`
+    - `part_time`
+    - `null` (if no working pattern has been provided)
+
+    The value shown in the API always reflects the most recent working pattern selected by a school for that ECT. If a school updates an ECT’s working pattern, the updated value will be returned automatically.
+
+    ## Who this applies to
+
+    The field is only available for early career teachers. It does not apply to mentors. The field is populated for newly registered ECTs, or ECTs who have been re‑registered by a new school due to a transfer.
+
+    For example, an ECT who started in 2023 may have a working pattern if they move to a new school. Most populated values are expected for 2025 and 2026 ECTs.
+
+    ## Why we’ve made this change
+
+    By exposing this data through the API, lead providers can:
+    
+    - better understand whether an ECT is working part‑time or full‑time
+    - tailor training and support more effectively
+    - reduce manual follow‑up with schools
+    - improve data accuracy, the assignment of extended schedules and speed up onboarding to training
+
+    ## What you need to do
+
+    No action is required. This is a non‑breaking, optional field.
+
+    If your integration supports additional fields, you can start using `working_pattern` now.
+
 - title: Updates to schedule and cohort changes for deferred and withdrawn participants
   date: 2026-05-05
   tags:

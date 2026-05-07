@@ -95,6 +95,12 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:mentor_ineligible_for_funding_reason) { |(training_period, teacher, _)| teacher.mentor_became_ineligible_for_funding_reason if training_period.for_mentor? }
 
+      field(:working_pattern) do |(training_period, teacher, _)|
+        if training_period.for_ect?
+          teacher.latest_ect_at_school_period&.working_pattern
+        end
+      end
+
       class << self
         def uplift_value(training_period, metadata, uplift_type)
           contract_period = if training_period.for_ect?
