@@ -19,13 +19,13 @@ class SessionsController < ApplicationController
     end
   rescue Sessions::Users::Builder::UnknownOrganisation,
          Sessions::Users::Builder::UnknownPersonaType,
-         Sessions::Users::Builder::UnknownProvider,
-         DfESignIn::APIClient::AccessLevelNotFound,
-         DfESignIn::APIClient::UsersNotFound,
-         DfESignIn::APIClient::OrganisationNotFound,
-         DfESignIn::APIClient::RolesNotFound
+         Sessions::Users::Builder::UnknownProvider
 
-    session[:invalid_user_organisation_name] = user_builder.organisation_name if user_builder&.organisation_name
+    session[:invalid_user_organisation_name] = user_builder.organisation_name if user_builder.organisation_name
+    redirect_to access_denied_path
+  rescue DfESignIn::APIClient::NotFoundError => e
+    Sentry.capture_exception(e)
+
     redirect_to access_denied_path
   end
 
