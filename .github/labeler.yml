@@ -3,13 +3,6 @@
     - any-glob-to-any-file:
       - "app/views/api/release_notes/release_notes.yml"
 
-Dependencies:
-  - changed-files:
-    - any-glob-to-any-file:
-      - ".github/dependabot.yml"
-      - "Gemfile"
-      - "package.json"
-
 Devops:
   - changed-files:
     - any-glob-to-any-file:
