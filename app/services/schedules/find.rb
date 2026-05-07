@@ -85,7 +85,9 @@ module Schedules
       end
     end
 
-    def previous_mentor_started_training?
+    # A non-voided declaration dated within the mentorship period signals that the
+    # previous mentor started training (i.e. they weren't only assigned)
+    def mentee_has_declared_training_with_previous_mentor?
       MentorshipPeriod
         .joins(:mentee, mentor: { training_periods: :declarations })
         .where(ect_at_school_periods: { teacher_id: mentee.teacher_id })
@@ -101,7 +103,7 @@ module Schedules
       return false unless mentee && mentee.provider_led_training_programme?
       return false if teacher.mentor_became_ineligible_for_funding_on.present?
 
-      previous_mentor_started_training?
+      mentee_has_declared_training_with_previous_mentor?
     end
 
     alias_method :extended_schedule?, :contract_period_reassignment_required?
