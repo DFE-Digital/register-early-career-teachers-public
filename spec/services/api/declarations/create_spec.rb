@@ -194,6 +194,17 @@ RSpec.describe API::Declarations::Create, type: :model do
               it { is_expected.to have_error(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
             end
           end
+
+          context "when payment statement is not open" do
+            let!(:payment_statement) { FactoryBot.create(:statement, :payable, active_lead_provider:) }
+
+            before do
+              teacher.update!("#{trainee_type}_first_became_eligible_for_training_at": 3.years.ago)
+            end
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_error(:contract_period_year, "You cannot submit or void declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
+          end
         end
 
         describe "frozen contract period validations" do
@@ -629,7 +640,7 @@ RSpec.describe API::Declarations::Create, type: :model do
           let(:at_school_period) { FactoryBot.create(:"#{trainee_type}_at_school_period", started_on: 6.months.ago, finished_on: 2.weeks.from_now) }
           let!(:training_period) { FactoryBot.create(:training_period, :"for_#{trainee_type}", :active, "#{trainee_type}_at_school_period": at_school_period, started_on: at_school_period.started_on, finished_on: at_school_period.finished_on) }
           let(:service) { instance_double(Declarations::Create) }
-          let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:) }
+          let!(:payment_statement) { FactoryBot.create(:statement, :open, active_lead_provider:, deadline_date: 1.month.from_now) }
           let!(:mentorship_period) do
             if trainee_type == :ect
               mentor = FactoryBot.create(
