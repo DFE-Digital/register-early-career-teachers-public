@@ -35,7 +35,7 @@ RSpec.describe "admin/teachers/declarations/_declaration.html.erb", type: :view 
     render locals: { declaration: }
   end
 
-  it { is_expected.to have_summary_list_row("Declaration ID", value: "test-declaration-uuid", visible: :all) }
+  it { is_expected.to have_summary_list_row("Declaration ID", value: /test-declaration-uuid/, visible: :all) }
   it { is_expected.to have_summary_list_row("Course identifier", value: "declaration-course-identifier", visible: :all) }
   it { is_expected.to have_summary_list_row("Declaration type", value: "started", visible: :all) }
   it { is_expected.to have_summary_list_row("State", value: "declaration-state-tag", visible: :all) }

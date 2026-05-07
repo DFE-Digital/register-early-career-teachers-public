@@ -10,12 +10,15 @@ module HaveSummaryListRow
       @page = page
       @rows = @page.find_all("dl.govuk-summary-list dt.govuk-summary-list__key", visible: @visible)
       @matching_row = @rows.find { |it| it.text == @key }
+      @sibling = @matching_row&.sibling("dd.govuk-summary-list__value", visible: @visible)
 
-      if @value.blank?
+      case
+      when @value.blank?
         @matching_row && @matching_row.text == @key
+      when @value.is_a?(Regexp)
+        @sibling.text.match?(@value)
       else
-        @sibling = @matching_row&.sibling("dd.govuk-summary-list__value", visible: @visible)
-        @sibling && @sibling.text == @value
+        @sibling.text == @value
       end
     end
 

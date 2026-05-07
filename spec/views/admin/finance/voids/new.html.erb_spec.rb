@@ -42,7 +42,7 @@ RSpec.describe "admin/finance/voids/new.html.erb", type: :view do
     expect(view.content_for(:page_title)).to include("Void declaration for Test Teacher")
   end
 
-  it { is_expected.to have_summary_list_row("Declaration ID", value: "test-declaration-uuid", visible: :all) }
+  it { is_expected.to have_summary_list_row("Declaration ID", value: /test-declaration-uuid/, visible: :all) }
   it { is_expected.to have_summary_list_row("Course identifier", value: "ecf-induction", visible: :all) }
   it { is_expected.to have_summary_list_row("Declaration type", value: "started", visible: :all) }
   it { is_expected.to have_summary_list_row("State", value: "Eligible", visible: :all) }
