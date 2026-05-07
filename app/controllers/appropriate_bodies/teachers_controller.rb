@@ -23,7 +23,8 @@ module AppropriateBodies
       .includes(
         :induction_periods,
         :first_induction_period,
-        :last_induction_period
+        :last_induction_period,
+        :ongoing_induction_period
       )
     end
   end
