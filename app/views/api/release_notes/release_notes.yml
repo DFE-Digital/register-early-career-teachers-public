@@ -49,6 +49,7 @@
     ## Why we’ve made this change
 
     By exposing this data through the API, lead providers can:
+    
     - better understand whether an ECT is working part‑time or full‑time
     - tailor training and support more effectively
     - reduce manual follow‑up with schools
