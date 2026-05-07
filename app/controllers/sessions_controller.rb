@@ -21,7 +21,7 @@ class SessionsController < ApplicationController
          Sessions::Users::Builder::UnknownPersonaType,
          Sessions::Users::Builder::UnknownProvider
 
-    session[:invalid_user_organisation_name] = user_builder.organisation_name if user_builder.organisation_name
+    session[:invalid_user_organisation_name] = user_builder.organisation_name
     redirect_to access_denied_path
   rescue DfESignIn::APIClient::NotFoundError => e
     Sentry.capture_exception(e)
