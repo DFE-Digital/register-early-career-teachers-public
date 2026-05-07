@@ -77,7 +77,11 @@ module Admin
       end
 
       def appropriate_body_text
-        school_period.school_reported_appropriate_body_name.presence || "No appropriate body recorded"
+        induction.current_induction_period.appropriate_body_period.name.presence || "No appropriate body recorded"
+      end
+
+      def induction
+        ::Teachers::Induction.new(school_period.teacher)
       end
 
       def mentorship_periods_for_ect
