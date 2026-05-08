@@ -53,6 +53,26 @@ RSpec.describe "Admin: Managing delivery partner lead providers", type: :feature
     and_i_should_see_both_partnerships
   end
 
+  scenario "Contract period with no lead provider shows 'Not reported' and 'Add' link" do
+    given_i_am_logged_in_as_an_admin
+    and_delivery_partner_and_lead_providers_exist
+
+    when_i_visit_the_delivery_partner_page
+    then_i_should_see_not_reported_for_the_contract_period
+    and_i_should_see_an_add_link_not_a_change_link
+  end
+
+  scenario "Contract period with a lead provider shows the name and 'Change' link" do
+    given_i_am_logged_in_as_an_admin
+    and_delivery_partner_and_lead_providers_exist
+    and_an_existing_partnership_exists
+
+    when_i_visit_the_delivery_partner_page
+    then_i_should_see_existing_partnership
+    and_i_should_see_change_link
+    and_i_should_not_see_an_add_link
+  end
+
 private
 
   def given_i_am_logged_in_as_an_admin
@@ -175,5 +195,21 @@ private
   def and_the_partnership_should_exist_in_database
     expect(@delivery_partner.lead_provider_delivery_partnerships.count).to eq(1)
     expect(@delivery_partner.lead_provider_delivery_partnerships.first.lead_provider).to eq(@lead_provider_1)
+  end
+
+  def then_i_should_see_not_reported_for_the_contract_period
+    row = page.locator("table.govuk-table tbody tr").filter(hasText: "2025")
+    expect(row.get_by_text("Not reported")).to be_visible
+  end
+
+  def and_i_should_see_an_add_link_not_a_change_link
+    row = page.locator("table.govuk-table tbody tr").filter(hasText: "2025")
+    expect(row.get_by_role("link", name: "Add")).to be_visible
+    expect(row.get_by_role("link", name: "Change")).not_to be_visible
+  end
+
+  def and_i_should_not_see_an_add_link
+    row = page.locator("table.govuk-table tbody tr").filter(hasText: "2025")
+    expect(row.get_by_role("link", name: "Add")).not_to be_visible
   end
 end
