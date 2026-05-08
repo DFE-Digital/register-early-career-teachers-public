@@ -125,13 +125,13 @@ RSpec.describe "Sessions", type: :request do
       end
 
       it "logs an exception in Sentry" do
-        allow(Sentry).to receive(:capture_exception)
+        allow(Sentry).to receive(:capture_message)
 
         post("/auth/dfe/callback")
 
         expect(Sentry)
-          .to have_received(:capture_exception).once
-          .with(an_instance_of(DfESignIn::APIClient::NotFoundError))
+          .to have_received(:capture_message).once
+          .with("DfE Sign In API request failed with status 404: DfE Sign In API request failed", { level: :info })
       end
     end
 
