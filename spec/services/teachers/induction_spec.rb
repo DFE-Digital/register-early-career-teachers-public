@@ -34,6 +34,41 @@ RSpec.describe Teachers::Induction do
     end
   end
 
+  describe "#latest_induction_period" do
+    context "with one ongoing period" do
+      before do
+        induction_period_unfinished
+      end
+
+      it "returns the current induction period" do
+        expect(service.latest_induction_period).to eq(induction_period_unfinished)
+      end
+    end
+
+    context "with one finished induction period" do
+      before { induction_period_finished_one_year_ago }
+
+      it "returns the finished induction period" do
+        expect(service.latest_induction_period).to eq(induction_period_finished_one_year_ago)
+      end
+    end
+
+    context "with multiple induction periods" do
+      before do
+        induction_period_unfinished
+        induction_period_finished_one_year_ago
+      end
+
+      it "returns the most recent induction period" do
+        expect(service.latest_induction_period).to eq(induction_period_unfinished)
+      end
+    end
+
+    context "without any induction periods" do
+      it { expect(service.latest_induction_period).to be_nil }
+    end
+  end
+
   describe "#past_induction_periods" do
     before do
       induction_period_unfinished

@@ -11,6 +11,10 @@ module Teachers
       teacher.ongoing_induction_period
     end
 
+    def latest_induction_period
+      induction_periods.latest_first&.first
+    end
+
     def past_induction_periods
       @past_induction_periods ||= induction_periods.finished.latest_first
     end

@@ -77,12 +77,14 @@ module Admin
       end
 
       def appropriate_body_text
-        if current_induction_period
-          current_induction_period.appropriate_body_period.name
-        elsif school_period.school_reported_appropriate_body_name.present?
-          school_period.school_reported_appropriate_body_name
+        appropriate_body_name.presence || "No appropriate body recorded"
+      end
+
+      def appropriate_body_name
+        if induction.has_induction_periods?
+          induction.latest_induction_period&.appropriate_body_name
         else
-          "No appropriate body recorded"
+          school_period.school_reported_appropriate_body_name
         end
       end
 
