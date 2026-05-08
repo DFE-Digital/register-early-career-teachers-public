@@ -2,11 +2,11 @@ module Admin
   module Teachers
     class TrainingSummaryComponent < ApplicationComponent
       class UnexpectedTrainingProgrammeError < StandardError; end
-      attr_reader :training_period, :index
+      attr_reader :training_period, :show_api_row
 
-      def initialize(training_period:, index: 0)
+      def initialize(training_period:, show_api_row: false)
         @training_period = training_period
-        @index = index
+        @show_api_row = show_api_row
       end
 
       def call
@@ -133,7 +133,7 @@ module Admin
       end
 
       def api_response_row
-        return unless show_api_row?
+        return unless show_api_row
 
         summary_row("API response", api_response_text)
       end
@@ -176,13 +176,9 @@ module Admin
       end
 
       def show_move_partnership_link?
-        @show_move_partnership_link ||= index.zero? &&
+        @show_move_partnership_link ||= show_api_row &&
           training_period.provider_led_training_programme? &&
           training_period.finished_on.nil?
-      end
-
-      def show_api_row?
-        index.zero?
       end
 
       def summary_row(label, value)
