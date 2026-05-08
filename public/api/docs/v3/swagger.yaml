@@ -3129,6 +3129,7 @@ components:
               example: '2021-05-31'
         joining:
           type: object
+          nullable: true
           required:
           - school_urn
           properties:

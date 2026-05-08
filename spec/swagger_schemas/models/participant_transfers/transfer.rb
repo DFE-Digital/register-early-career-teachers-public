@@ -65,6 +65,7 @@ PARTICIPANT_TRANSFERS_TRANSFER = {
     },
     joining: {
       type: :object,
+      nullable: true,
       required: %i[
         school_urn
       ],
