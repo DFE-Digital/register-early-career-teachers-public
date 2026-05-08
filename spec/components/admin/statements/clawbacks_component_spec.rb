@@ -54,6 +54,17 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
     )
   end
 
+  let(:uplift_refundable_count) { 0 }
+  let(:uplift_fee_per_declaration) { 100 }
+  let(:banded_uplifts) do
+    instance_double(
+      PaymentCalculator::Banded::Uplifts,
+      refundable_count: uplift_refundable_count,
+      uplift_fee_per_declaration:,
+      total_refundable_amount: uplift_refundable_count * uplift_fee_per_declaration
+    )
+  end
+
   let(:flat_rate_declaration_type_outputs) do
     [
       instance_double(
@@ -82,6 +93,7 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
 
   before do
     allow(PaymentCalculator::Banded::Outputs).to receive(:new).and_return(banded_outputs)
+    allow(PaymentCalculator::Banded::Uplifts).to receive(:new).and_return(banded_uplifts)
     allow(PaymentCalculator::FlatRate::Outputs).to receive(:new).and_return(flat_rate_outputs)
     render_inline(component)
   end
@@ -109,6 +121,29 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
         ],
         total: "-£400.00"
       )
+    end
+
+    context "when there are refundable uplift fees" do
+      let(:uplift_refundable_count) { 2 }
+
+      it "appends an uplift row and includes it in the total" do
+        expect(page).to have_statement_table(
+          caption: "Clawbacks",
+          headings: [
+            "Payment type",
+            "Number of participants",
+            "Fee per participant",
+            "Payments"
+          ],
+          rows: [
+            ["Started (Band A)", "10", "-£15.00", "-£150.00"],
+            ["Started (Band B)", "10", "-£15.00", "-£150.00"],
+            ["Completed (Band A)", "5", "-£20.00", "-£100.00"],
+            ["Uplift", "2", "-£100.00", "-£200.00"]
+          ],
+          total: "-£600.00"
+        )
+      end
     end
   end
 
@@ -155,6 +190,28 @@ RSpec.describe Admin::Statements::ClawbacksComponent, type: :component do
         ],
         total: "-£230.00"
       )
+    end
+
+    context "when there are refundable uplift fees" do
+      let(:uplift_refundable_count) { 2 }
+
+      it "does not show an uplift row in ECT clawbacks" do
+        expect(page).to have_statement_table(
+          caption: "ECT clawbacks",
+          headings: [
+            "Payment type",
+            "Number of participants",
+            "Fee per participant",
+            "Payments"
+          ],
+          rows: [
+            ["Started (Band A)", "10", "-£15.00", "-£150.00"],
+            ["Started (Band B)", "10", "-£15.00", "-£150.00"],
+            ["Completed (Band A)", "5", "-£20.00", "-£100.00"]
+          ],
+          total: "-£400.00"
+        )
+      end
     end
   end
 
