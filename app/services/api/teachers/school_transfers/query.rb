@@ -75,24 +75,24 @@ module API::Teachers::SchoolTransfers
         )
     end
 
-    def participant_ids
-      @participant_ids ||= scope.ids
+    def teacher_ids
+      @teacher_ids ||= scope.ids
     end
 
-    def scoped_ect_at_school_periods
+    def boundary_ect_at_school_periods
       ECTAtSchoolPeriod
-        .where(teacher_id: participant_ids)
+        .where(teacher_id: teacher_ids)
         .includes(:earliest_training_period, :latest_training_period)
     end
 
-    def scoped_mentor_at_school_periods
+    def boundary_mentor_at_school_periods
       MentorAtSchoolPeriod
-        .where(teacher_id: participant_ids)
+        .where(teacher_id: teacher_ids)
         .includes(:earliest_training_period, :latest_training_period)
     end
 
     def boundary_training_period_ids
-      [*scoped_ect_at_school_periods, *scoped_mentor_at_school_periods].flat_map { |at_school_period|
+      [*boundary_ect_at_school_periods, *boundary_mentor_at_school_periods].flat_map { |at_school_period|
         [
           at_school_period.earliest_training_period&.id,
           at_school_period.latest_training_period&.id
@@ -100,8 +100,8 @@ module API::Teachers::SchoolTransfers
       }.compact.uniq
     end
 
-    def recent_boundary_periods
-      @recent_boundary_periods ||=
+    def boundary_training_periods_updated_since
+      @boundary_training_periods_updated_since ||=
         TrainingPeriod
           .joins(school_partnership: { lead_provider_delivery_partnership: :active_lead_provider })
           .where(active_lead_providers: { lead_provider_id: })
@@ -110,13 +110,13 @@ module API::Teachers::SchoolTransfers
     end
 
     def ect_ids
-      recent_boundary_periods
+      boundary_training_periods_updated_since
         .joins(:ect_at_school_period)
         .pluck("ect_at_school_periods.teacher_id")
     end
 
     def mentor_ids
-      recent_boundary_periods
+      boundary_training_periods_updated_since
         .joins(:mentor_at_school_period)
         .pluck("mentor_at_school_periods.teacher_id")
     end
