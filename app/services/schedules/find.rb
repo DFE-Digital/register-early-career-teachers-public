@@ -90,7 +90,7 @@ module Schedules
     def mentee_has_declared_training_with_previous_mentor?
       MentorshipPeriod
         .joins(:mentee, mentor: { training_periods: :declarations })
-        .where(ect_at_school_periods: { teacher_id: mentee.teacher_id })
+        .where(ect_at_school_periods: { teacher_id: mentee.teacher_id }) # all periods at _any_ school
         .where.not(mentor_at_school_period_id: period.id)
         .where.not(declarations: { payment_status: :voided })
         .where("declarations.declaration_date >= mentorship_periods.started_on")
