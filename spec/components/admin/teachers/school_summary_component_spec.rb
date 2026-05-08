@@ -71,17 +71,41 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     end
 
     context "Appropriate body row" do
-      it "shows the school reported appropriate body" do
-        expect(rendered).to have_css("dt", text: "Appropriate body")
-        expect(rendered).to have_css("dd", text: "Appropriate Body Name")
+      context "when the ECT has no induction periods" do
+        it "shows the appropriate body from the school period" do
+          expect(rendered).to have_css("dt", text: "Appropriate body")
+          expect(rendered).to have_css("dd", text: "Appropriate Body Name")
+        end
+
+        context "when no appropriate body is recorded" do
+          let(:appropriate_body_period) { nil }
+
+          it "falls back to the placeholder text" do
+            expect(rendered).to have_css("dt", text: "Appropriate body")
+            expect(rendered).to have_css("dd", text: "No appropriate body recorded")
+          end
+        end
       end
 
-      context "when no appropriate body is recorded" do
-        let(:appropriate_body_period) { nil }
+      context "when the ECT has one induction period" do
+        let(:current_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current Appropriate Body Name") }
+        let!(:current_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: school_period.teacher, appropriate_body_period: current_appropriate_body_period) }
 
-        it "falls back to the placeholder text" do
+        it "shows the appropriate body from the induction period" do
           expect(rendered).to have_css("dt", text: "Appropriate body")
-          expect(rendered).to have_css("dd", text: "No appropriate body recorded")
+          expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
+        end
+      end
+
+      context "when the ECT has more than one induction period" do
+        let(:current_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current Appropriate Body Name") }
+        let(:past_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Past Appropriate Body Name") }
+        let!(:past_induction_period) { FactoryBot.create(:induction_period, teacher: school_period.teacher, appropriate_body_period: past_appropriate_body_period) }
+        let!(:current_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: school_period.teacher, appropriate_body_period: current_appropriate_body_period, started_on: 7.days.ago) }
+
+        it "shows the appropriate body from the current induction period" do
+          expect(rendered).to have_css("dt", text: "Appropriate body")
+          expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
         end
       end
     end
