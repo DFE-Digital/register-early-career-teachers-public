@@ -1,0 +1,83 @@
+module AtSchoolPeriod
+  extend ActiveSupport::Concern
+
+  included do
+    # Associations
+    has_many :events
+
+    has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"
+    has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
+    has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
+
+    # Callbacks
+    touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
+    refresh_metadata -> { school }, on_event: %i[create destroy update]
+    refresh_metadata -> { teacher }, on_event: %i[create destroy update]
+
+    # Validations
+    validates :email,
+              notify_email: true,
+              allow_nil: true
+
+    validates :school_id,
+              presence: true
+
+    validates :started_on,
+              presence: true
+
+    validates :teacher_id,
+              presence: true
+
+    validate :covering_inner_periods
+
+    # Scopes
+    scope :for_school, ->(school_id) { where(school_id:) }
+    scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
+    scope :with_school, -> { includes(school: :gias_school) }
+    scope :with_teacher, -> { includes(:teacher) }
+
+    scope :with_partnerships_for_contract_period, ->(year) {
+      joins(training_periods: {
+        active_lead_provider: :contract_period
+      }).where(contract_periods: { year: })
+    }
+
+    scope :with_expressions_of_interest_for_contract_period, ->(year) {
+      joins(training_periods: {
+        expression_of_interest: :contract_period
+      })
+        .where(contract_periods: { year: })
+    }
+
+    scope :with_expressions_of_interest_for_lead_provider_and_contract_period, ->(year, lead_provider_id) {
+      with_expressions_of_interest_for_contract_period(year)
+        .where(expression_of_interest: { lead_provider_id: })
+    }
+  end
+
+  # Validations
+  def covering_inner_periods
+    inner_periods = mentorship_periods + training_periods
+    return if inner_periods.empty?
+
+    starts = inner_periods.map(&:started_on)
+    ends = inner_periods.map(&:finished_on)
+    earliest_started_on = starts.min unless starts.any?(&:nil?)
+    latest_finished_on = ends.max unless ends.any?(&:nil?)
+    return if (started_on..finished_on).cover?(earliest_started_on..latest_finished_on)
+
+    errors.add(:base, "Date range does not cover all the inner periods")
+  end
+
+  # Methods
+  def leaving_reported_for_school?(school)
+    leaving_today_or_in_future? && reported_leaving_by?(school)
+  end
+
+  def reported_leaving_by?(school)
+    reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id
+  end
+
+  delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
+  delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
+end
