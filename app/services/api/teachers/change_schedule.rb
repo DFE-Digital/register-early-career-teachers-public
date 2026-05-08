@@ -12,7 +12,8 @@ module API::Teachers
     }, allow_blank: true
     validate :schedule_exists
     validate :change_to_different_schedule
-    validate :schedule_applicable_for_trainee
+    validate :schedule_applicable_for_ect
+    validate :schedule_applicable_for_mentor
     validate :school_partnership_exists_if_changing_contract_period
     validate :trainee_not_completed
     validate :lead_provider_is_currently_training_teacher
@@ -71,11 +72,18 @@ module API::Teachers
       errors.add(:schedule_identifier, "Selected schedule is already on the profile")
     end
 
-    def schedule_applicable_for_trainee
+    def schedule_applicable_for_ect
       return if errors[:schedule_identifier].any?
       return unless training_period&.for_ect?
 
       errors.add(:schedule_identifier, "Selected schedule is not valid for the teacher_type") if schedule.replacement_schedule?
+    end
+
+    def schedule_applicable_for_mentor
+      return if errors[:schedule_identifier].any?
+      return unless training_period&.for_mentor?
+
+      errors.add(:schedule_identifier, "Mentors cannot be placed on a reduced schedule. Assign them to a different schedule.") if schedule.reduced_schedule?
     end
 
     def school_partnership_exists_if_changing_contract_period

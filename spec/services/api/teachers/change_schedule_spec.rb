@@ -76,6 +76,14 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               it { is_expected.to have_one_error_per_attribute }
               it { is_expected.to have_error(:schedule_identifier, "Selected schedule is not valid for the teacher_type") }
             end
+          else
+            context "when a mentor attempts to change to a reduced schedule" do
+              let(:schedule_identifier) { "ecf-reduced-september" }
+              let!(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period:) }
+
+              it { is_expected.to have_one_error_per_attribute }
+              it { is_expected.to have_error(:schedule_identifier, "Mentors cannot be placed on a reduced schedule. Assign them to a different schedule.") }
+            end
           end
 
           context "when changing contract_period_year without a school partnership" do

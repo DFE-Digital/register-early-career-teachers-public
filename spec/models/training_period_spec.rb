@@ -705,7 +705,7 @@ describe TrainingPeriod do
       end
     end
 
-    describe "schedule applicable for trainee" do
+    describe "schedule applicable for ECTs" do
       it "adds an error when an ECT is assigned to a replacement schedule" do
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule, :replacement_schedule))
@@ -723,6 +723,29 @@ describe TrainingPeriod do
       it "does not add an error when an ECT is assigned to a non-replacement schedule" do
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
         training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule))
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to be_empty
+      end
+    end
+
+    describe "schedule applicable for mentors" do
+      it "adds an error when a mentor is assigned to a reduced schedule" do
+        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        training_period = FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:, schedule: FactoryBot.create(:schedule, :reduced_schedule))
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to include("Only ECTs can be assigned to reduced schedules")
+      end
+
+      it "does not add an error when an ECT is assigned to a reduced schedule" do
+        ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, schedule: FactoryBot.create(:schedule, :reduced_schedule))
+        training_period.valid?
+        expect(training_period.errors[:schedule]).to be_empty
+      end
+
+      it "does not add an error when a mentor is assigned to a non-reduced schedule" do
+        mentor_at_school_period = FactoryBot.create(:mentor_at_school_period, started_on: Date.new(2024, 12, 25), finished_on: nil)
+        training_period = FactoryBot.build(:training_period, :for_mentor, mentor_at_school_period:, schedule: FactoryBot.create(:schedule))
         training_period.valid?
         expect(training_period.errors[:schedule]).to be_empty
       end
