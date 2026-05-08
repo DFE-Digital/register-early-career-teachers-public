@@ -21,6 +21,45 @@
 #
 #     **bold** and _italic_ text
 
+- title: Prevent invalid withdrawal reason for early career teachers
+  date: 2026-05-08
+  tags:
+    - breaking-change
+  body: |
+    We’ve introduced a new validation on the `/api/v3/participants/{id}/withdraw` endpoint to prevent early career teachers (ECTs) from being withdrawn using an invalid withdrawal reason.
+
+    ## What’s changed
+
+    Lead providers can no longer withdraw an ECT using the withdrawal reason:
+
+    `mentor-no-longer-being-mentor`
+
+    This reason is only valid for mentors and does not apply to ECTs.
+
+    If you attempt to withdraw an ECT using this reason via `/api/v3/participants/{id}/withdraw`, the API will return the following validation error:
+
+    > You cannot withdraw an ECT for this reason. The ECT is not a mentor.
+
+    ## Why we’ve made this change
+
+    Previously, this withdrawal reason was available for ECTs despite not being applicable. This could lead to incorrect or confusing data being recorded.
+
+    This change improves data quality by:
+
+    - preventing invalid withdrawal reasons being used for ECTs
+    - making the API behaviour clearer and more consistent
+    - reducing follow‑up and correction work for lead providers
+
+    ## Who this applies to
+
+    This change only affects ECTs. Withdrawal behaviour for mentors is unchanged.
+
+    ## What you need to do
+
+    If your systems allow withdrawal reasons to be selected automatically or from a predefined list, ensure `mentor-no-longer-being-mentor` is not used when withdrawing ECTs.
+
+    You may also want to update any internal validation or user guidance that references ECT withdrawals.
+
 - title: Add working_pattern field for early career teachers
   date: 2026-05-07
   tags:
@@ -60,47 +99,6 @@
     No action is required. This is a non‑breaking, optional field.
 
     If your integration supports additional fields, you can start using `working_pattern` now.
-
-- title: Prevent invalid withdrawal reason for early career teachers
-  date: 2026-05-06
-  tags:
-    - sandbox-release
-    - production-release
-    - breaking-change
-  body: |
-    We’ve introduced a new validation on the `/api/v3/participants/{id}/withdraw` endpoint to prevent early career teachers (ECTs) from being withdrawn using an invalid withdrawal reason.
-
-    ## What’s changed
-
-    Lead providers can no longer withdraw an ECT using the withdrawal reason:
-
-    `mentor_no_longer_being_mentor`
-
-    This reason is only valid for mentors and does not apply to ECTs.
-
-    If you attempt to withdraw an ECT using this reason via `/api/v3/participants/{id}/withdraw`, the API will return the following validation error:
-
-    > You cannot withdraw an ECT for this reason. The ECT is not a mentor.
-
-    ## Why we’ve made this change
-
-    Previously, this withdrawal reason was available for ECTs despite not being applicable. This could lead to incorrect or confusing data being recorded.
-
-    This change improves data quality by:
-
-    - preventing invalid withdrawal reasons being used for ECTs
-    - making the API behaviour clearer and more consistent
-    - reducing follow‑up and correction work for lead providers
-
-    ## Who this applies to
-
-    This change only affects ECTs. Withdrawal behaviour for mentors is unchanged.
-
-    ## What you need to do
-
-    If your systems allow withdrawal reasons to be selected automatically or from a predefined list, ensure `mentor_no_longer_being_mentor` is not used when withdrawing ECTs.
-
-    You may also want to update any internal validation or user guidance that references ECT withdrawals.
 
 - title: Updates to schedule and cohort changes for deferred and withdrawn participants
   date: 2026-05-05
