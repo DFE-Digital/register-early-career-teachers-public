@@ -4,16 +4,16 @@ RSpec.describe Admin::Statements::UpliftFeesComponent, type: :component do
   let(:contract) { FactoryBot.create(:contract, contract_type) }
   let(:statement) { FactoryBot.create(:statement, statement_type, contract:) }
 
-  let(:net_count) { 0 }
+  let(:billable_count) { 0 }
   let(:uplift_fee_per_declaration) { 100 }
-  let(:total_net_amount) { net_count * uplift_fee_per_declaration }
+  let(:total_billable_amount) { billable_count * uplift_fee_per_declaration }
 
   let(:uplifts) do
     instance_double(
       PaymentCalculator::Banded::Uplifts,
-      net_count:,
+      billable_count:,
       uplift_fee_per_declaration:,
-      total_net_amount:
+      total_billable_amount:
     )
   end
 
@@ -59,7 +59,7 @@ RSpec.describe Admin::Statements::UpliftFeesComponent, type: :component do
       end
 
       context "and declarations with uplift fees" do
-        let(:net_count) { 2 }
+        let(:billable_count) { 2 }
 
         it do
           expect(page).to have_statement_table(
