@@ -39,7 +39,7 @@ class SessionsController < ApplicationController
   end
 
   def failure
-    Sentry.capture_message("[Authentication failure] #{params[:message]}")
+    Sentry.capture_message("[Authentication failure] #{params[:message]}", level: :info)
     session_manager.end_session!
   end
 
