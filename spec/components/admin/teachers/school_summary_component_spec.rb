@@ -17,6 +17,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
       }
     end
     let(:school_period) { FactoryBot.create(:ect_at_school_period, **school_period_attributes) }
+    let(:teacher) { school_period.teacher }
 
     context "card title" do
       it "links to the admin school overview" do
@@ -71,7 +72,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     end
 
     context "Appropriate body row" do
-      context "when the ECT has no induction periods" do
+      context "when an ECT has no induction periods" do
         it "shows the appropriate body from the school period" do
           expect(rendered).to have_css("dt", text: "Appropriate body")
           expect(rendered).to have_css("dd", text: "Appropriate Body Name")
@@ -87,25 +88,47 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
         end
       end
 
-      context "when the ECT has one induction period" do
+      context "when an ECT has one induction period" do
         let(:current_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current Appropriate Body Name") }
-        let!(:current_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: school_period.teacher, appropriate_body_period: current_appropriate_body_period) }
+        let!(:current_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: current_appropriate_body_period) }
 
         it "shows the appropriate body from the induction period" do
           expect(rendered).to have_css("dt", text: "Appropriate body")
           expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
         end
+
+        context "when the teacher also has mentor training periods" do
+          let(:mentor_start_date) { school_period.started_on + 1.year }
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date) }
+          let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_start_date) }
+
+          it "shows the appropriate body from the school period, not the induction period" do
+            expect(rendered).to have_css("dt", text: "Appropriate body")
+            expect(rendered).to have_css("dd", text: "Appropriate Body Name")
+          end
+        end
       end
 
-      context "when the ECT has more than one induction period" do
+      context "when an ECT has more than one induction period" do
         let(:current_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current Appropriate Body Name") }
         let(:past_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Past Appropriate Body Name") }
-        let!(:past_induction_period) { FactoryBot.create(:induction_period, teacher: school_period.teacher, appropriate_body_period: past_appropriate_body_period) }
-        let!(:current_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher: school_period.teacher, appropriate_body_period: current_appropriate_body_period, started_on: 7.days.ago) }
+        let!(:past_induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period: past_appropriate_body_period) }
+        let!(:current_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: current_appropriate_body_period, started_on: 7.days.ago) }
 
         it "shows the appropriate body from the current induction period" do
           expect(rendered).to have_css("dt", text: "Appropriate body")
           expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
+        end
+
+        context "when the teacher also has mentor training periods" do
+          let(:mentor_start_date) { school_period.started_on + 1.year }
+          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date) }
+          let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_start_date) }
+
+          it "shows the appropriate body from the school period, not the induction period" do
+            expect(rendered).to have_css("dt", text: "Appropriate body")
+            expect(rendered).to have_css("dd", text: "Appropriate Body Name")
+          end
         end
       end
     end
