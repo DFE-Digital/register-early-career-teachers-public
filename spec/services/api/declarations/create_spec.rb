@@ -270,7 +270,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 :ongoing,
                 "#{trainee_type}_at_school_period": at_school_period,
                 school_partnership: frozen_school_partnership,
-                started_on: training_period.finished_on
+                started_on: training_period.finished_on + 1.day
               )
             end
 
@@ -341,7 +341,7 @@ RSpec.describe API::Declarations::Create, type: :model do
                 :ongoing,
                 "#{trainee_type}_at_school_period": at_school_period,
                 school_partnership: training_period.school_partnership,
-                started_on: 2.months.ago
+                started_on: 2.months.ago + 1.day
               )
             end
 

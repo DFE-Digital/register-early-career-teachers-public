@@ -1156,7 +1156,7 @@ describe TrainingPeriod do
       FactoryBot.create(
         :training_period,
         ect_at_school_period:,
-        started_on: "2022-06-01",
+        started_on: "2022-06-02",
         finished_on: "2023-01-01"
       )
     end

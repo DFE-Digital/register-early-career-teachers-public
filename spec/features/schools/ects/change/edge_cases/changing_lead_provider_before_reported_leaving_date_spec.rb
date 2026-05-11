@@ -53,7 +53,7 @@ RSpec.describe "Changing lead provider before the ECTs reported leaving date" do
           type: "Provider-led",
           lead_provider: @lead_provider,
           start: @ect_at_school_period.started_on,
-          end: Date.current
+          end: Date.yesterday
         }
       )
     end
@@ -107,7 +107,7 @@ RSpec.describe "Changing lead provider before the ECTs reported leaving date" do
           type: "Provider-led",
           lead_provider: @lead_provider,
           start: @ect_at_school_period.started_on,
-          end: Date.current
+          end: Date.yesterday
         }
       )
     end
@@ -165,7 +165,7 @@ RSpec.describe "Changing lead provider before the ECTs reported leaving date" do
           type: "Provider-led",
           lead_provider: @lead_provider,
           start: @ect_at_school_period.started_on,
-          end: Date.current
+          end: Date.yesterday
         }
       )
     end

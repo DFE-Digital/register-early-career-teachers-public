@@ -55,7 +55,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
           school: @school,
           type: "School-led",
           start: @ect_at_school_period.started_on,
-          end: Date.current
+          end: Date.yesterday
         }
       )
     end
@@ -111,7 +111,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
           school: @school,
           type: "School-led",
           start: @ect_at_school_period.started_on,
-          end: Date.current
+          end: Date.yesterday
         }
       )
     end
@@ -171,7 +171,7 @@ RSpec.describe "Changing to provider-led training before the ECTs reported leavi
           school: @school,
           type: "School-led",
           start: @ect_at_school_period.started_on,
-          end: Date.current
+          end: Date.yesterday
         }
       )
     end

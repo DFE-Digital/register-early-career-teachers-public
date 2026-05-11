@@ -43,7 +43,7 @@ RSpec.describe API::Teachers::Resume, type: :model do
             it { is_expected.to have_error(:teacher_api_id, "This participant cannot be resumed because they are already active with another provider.") }
 
             context "when resuming after the other active/ongoing training period has finished" do
-              before { travel_to 3.months.from_now }
+              before { travel_to 4.months.from_now }
 
               it { is_expected.to be_valid }
             end
