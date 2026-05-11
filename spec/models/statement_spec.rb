@@ -14,11 +14,16 @@ describe Statement do
 
     it { is_expected.to validate_presence_of(:contract).with_message("Contract is required") }
     it { is_expected.to validate_presence_of(:fee_type).with_message("Enter a fee type") }
-    it { is_expected.to allow_values("output", "service").for(:fee_type).with_message("Fee type must be output or service") }
+    it { is_expected.to validate_presence_of(:status).with_message("Enter a status") }
+    it { is_expected.to allow_values(*described_class.fee_types.keys).for(:fee_type).with_message("Fee type must be output or service") }
     it { is_expected.not_to allow_value(nil).for(:fee_type).with_message("Fee type must be output or service") }
     it { is_expected.to validate_numericality_of(:month).only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(12).with_message("Month must be a number between 1 and 12") }
     it { is_expected.to validate_numericality_of(:year).only_integer.is_greater_than_or_equal_to(2020).with_message("Year must be on or after 2020 and on or before #{described_class.maximum_year}") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another statement") }
+    it { is_expected.to allow_values(*described_class.statuses.keys).for(:status) }
+    it { is_expected.not_to allow_value(nil).for(:status).with_message("Choose a valid status") }
+    it { is_expected.to validate_inclusion_of(:fee_type).in_array(described_class.fee_types.keys).with_message("Fee type must be output or service") }
+    it { is_expected.to validate_inclusion_of(:status).in_array(described_class.statuses.keys).with_message("Choose a valid status") }
 
     describe "uniqueness of month and year for the same active lead provider" do
       let(:active_lead_provider) { contract.active_lead_provider }
@@ -35,8 +40,45 @@ describe Statement do
       it "is valid to create another statement with the same month and year for a different active lead provider" do
         other_active_lead_provider = FactoryBot.create(:active_lead_provider)
         other_contract = FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider)
-        statement = described_class.new(contract: other_contract, month: 5, year: 2024)
+        statement = described_class.new(contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day)
+
         expect(statement).to be_valid
+      end
+    end
+
+    describe "deadline date in the past validation" do
+      subject { FactoryBot.build(:statement, deadline_date:) }
+
+      context "when statement is `open` status" do
+        let(:deadline_date) { 1.day.from_now.to_date }
+
+        it { is_expected.to be_valid }
+      end
+
+      Statement.statuses.except(:open).each_key do |status|
+        context "when statement is `#{status}` status" do
+          subject { FactoryBot.build(:statement, status.to_sym, deadline_date:) }
+
+          context "when `deadline_date` is in the future" do
+            let(:deadline_date) { 1.day.from_now.to_date }
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_error(:deadline_date, "Deadline date must be in the past") }
+          end
+
+          context "when `deadline_date` is in the past" do
+            let(:deadline_date) { 1.day.ago.to_date }
+
+            it { is_expected.to be_valid }
+          end
+
+          context "when `deadline_date` is today" do
+            let(:deadline_date) { Date.current }
+
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_error(:deadline_date, "Deadline date must be in the past") }
+          end
+        end
       end
     end
   end
@@ -99,6 +141,31 @@ describe Statement do
     subject { described_class.maximum_year }
 
     it { is_expected.to eq(Date.current.year + 5) }
+  end
+
+  describe "enums" do
+    it "has a `status` enum" do
+      expect(subject).to define_enum_for(:status)
+        .with_values({
+          open: "open",
+          payable: "payable",
+          paid: "paid",
+        })
+        .validating(allowing_nil: false)
+        .backed_by_column_of_type(:enum)
+        .with_prefix
+    end
+
+    it "has a `fee_type` enum" do
+      expect(subject).to define_enum_for(:fee_type)
+        .with_values({
+          output: "output",
+          service: "service"
+        })
+        .validating(allowing_nil: false)
+        .with_suffix("fee")
+        .backed_by_column_of_type(:enum)
+    end
   end
 
   describe "state transitions" do

@@ -3,6 +3,7 @@ class Statement < ApplicationRecord
 
   VALID_FEE_TYPES = %w[output service].freeze
 
+  # Associations
   belongs_to :contract
   has_many :adjustments
   has_many :payment_declarations, inverse_of: :payment_statement, class_name: "Declaration"
@@ -11,24 +12,35 @@ class Statement < ApplicationRecord
   has_one :lead_provider, through: :active_lead_provider
   has_one :contract_period, through: :active_lead_provider
 
-  touch -> { self }, timestamp_attribute: :api_updated_at
+  # Enums
+  enum :status,
+       %w[open payable paid].index_by(&:itself),
+       validate: { message: "Choose a valid status" },
+       prefix: true
+  enum :fee_type,
+       %w[output service].index_by(&:itself),
+       validate: { message: "Fee type must be output or service" },
+       suffix: "fee"
 
   def self.maximum_year = Date.current.year + 5
 
+  # Validations
   validates :contract, presence: { message: "Contract is required" }
-  validates :fee_type,
-            presence: { message: "Enter a fee type" },
-            inclusion: { in: VALID_FEE_TYPES, message: "Fee type must be output or service" }
+  validates :fee_type, presence: { message: "Enter a fee type" }
+  validates :status, presence: { message: "Enter a status" }
   validates :month, numericality: { in: 1..12, only_integer: true, message: "Month must be a number between 1 and 12" }
   validates :year, numericality: { greater_than_or_equal_to: 2020, is_less_than_or_equal_to: :maximum_year, only_integer: true, message: "Year must be on or after 2020 and on or before #{maximum_year}" }
   validates :api_id, uniqueness: { case_sensitive: false, message: "API id already exists for another statement" }
   validate :unique_lead_provider_month_year
+  validates :deadline_date, presence: { message: "Deadline date must be specified" }
+  validate :deadline_date_in_the_past
 
+  # Scopes
   scope :with_fee_type, ->(fee_type) { where(fee_type:) }
   scope :with_status, ->(*status) { where(status:) }
   scope :with_statement_date, ->(year:, month:) { where(year:, month:) }
 
-  enum :fee_type, { service: "service", output: "output" }, suffix: "fee"
+  touch -> { self }, timestamp_attribute: :api_updated_at
 
   state_machine :status, initial: :open do
     state :open
@@ -80,5 +92,12 @@ private
     return unless existing
 
     errors.add(:base, "Statement with the same month and year already exists for this active lead provider")
+  end
+
+  def deadline_date_in_the_past
+    return unless payable? || paid?
+    return if deadline_date < Date.current
+
+    errors.add(:deadline_date, "Deadline date must be in the past")
   end
 end
