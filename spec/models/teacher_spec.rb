@@ -38,6 +38,61 @@ describe Teacher do
                     timestamp_attribute: :api_unfunded_mentor_updated_at
   end
 
+  describe "touch rollback", :with_touches do
+    it "rolls back the api_updated_at touch when the surrounding transaction rolls back" do
+      teacher = FactoryBot.create(:teacher, trs_first_name: "Charlotte", trs_last_name: "Dunn")
+      original_api_updated_at = 1.week.ago.round
+      teacher.update_columns(api_updated_at: original_api_updated_at)
+
+      Teacher.transaction do
+        teacher.update!(trs_first_name: "Charlie")
+        raise ActiveRecord::Rollback
+      end
+
+      expect(teacher.reload.api_updated_at).to eq(original_api_updated_at)
+      expect(teacher.trs_first_name).to eq("Charlotte")
+    end
+  end
+
+  describe "touch across multiple saves in one transaction", :with_touches do
+    it "bumps api_updated_at when a touched attribute changes in any save inside the transaction" do
+      teacher = FactoryBot.create(:teacher, trs_first_name: "Charlotte", trs_last_name: "Dunn")
+      teacher.update_columns(api_updated_at: 1.week.ago.round)
+      original_api_updated_at = teacher.reload.api_updated_at
+
+      Teacher.transaction do
+        teacher.update!(trs_first_name: "Charlie")
+        teacher.update!(trs_induction_status: "Passed")
+      end
+
+      expect(teacher.reload.api_updated_at).to be > original_api_updated_at
+    end
+  end
+
+  describe "name normalisation" do
+    it "squishes whitespace in trs_first_name and trs_last_name on assignment" do
+      teacher = Teacher.new(trs_first_name: "  Charlotte  ", trs_last_name: "Dunn ")
+
+      expect(teacher.trs_first_name).to eq("Charlotte")
+      expect(teacher.trs_last_name).to eq("Dunn")
+    end
+
+    it "treats a whitespace-only difference as no change" do
+      teacher = FactoryBot.create(:teacher, trs_first_name: "Charlotte", trs_last_name: "Dunn")
+
+      teacher.trs_last_name = "Dunn "
+
+      expect(teacher.changed?).to be(false)
+    end
+
+    it "leaves nil values untouched" do
+      teacher = Teacher.new(trs_first_name: nil, trs_last_name: nil)
+
+      expect(teacher.trs_first_name).to be_nil
+      expect(teacher.trs_last_name).to be_nil
+    end
+  end
+
   describe "associations" do
     it { is_expected.to have_many(:ect_at_school_periods) }
     it { is_expected.to have_many(:mentor_at_school_periods) }
