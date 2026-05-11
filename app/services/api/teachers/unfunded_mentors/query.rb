@@ -38,7 +38,10 @@ module API::Teachers::UnfundedMentors
       results
         .strict_loading
         .includes(
-          :latest_mentor_at_school_period
+          :latest_mentor_at_school_period,
+          mentor_at_school_periods: {
+            mentorship_periods: { mentee: { training_periods: :active_lead_provider } }
+          }
         )
     end
 

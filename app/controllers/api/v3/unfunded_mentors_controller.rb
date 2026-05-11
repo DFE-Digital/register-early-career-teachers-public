@@ -36,8 +36,12 @@ module API
         sort_order(sort: unfunded_mentor_params[:sort], model: Teacher, default: { created_at: :asc })
       end
 
+      def serializer_options
+        @serializer_options ||= { lead_provider_id: current_lead_provider.id }
+      end
+
       def to_json(obj)
-        API::Teachers::UnfundedMentorSerializer.render(obj, root: "data")
+        API::Teachers::UnfundedMentorSerializer.render(obj, root: "data", **serializer_options)
       end
 
       def updated_at_attribute
