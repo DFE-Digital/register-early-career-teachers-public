@@ -65,18 +65,6 @@ erDiagram
   TrainingPeriod }o--|| SchoolPartnership : belongs_to
   TrainingPeriod }o--|| Schedule : belongs_to
   TrainingPeriod }o--|| ActiveLeadProvider : belongs_to
-  TeacherMigrationFailure {
-    integer id
-    datetime created_at
-    string message
-    uuid migration_item_id
-    string migration_item_type
-    string migration_mode
-    string model
-    integer teacher_id
-    datetime updated_at
-  }
-  TeacherMigrationFailure }o--|| Teacher : belongs_to
   TeacherIdChange {
     integer id
     uuid api_from_teacher_id
@@ -411,66 +399,6 @@ erDiagram
   Declaration }o--|| DeliveryPartner : belongs_to
   Declaration }o--|| Statement : belongs_to
   Declaration }o--|| Statement : belongs_to
-  DataMigrationTeacherCombination {
-    integer id
-    uuid api_id
-    datetime created_at
-    jsonb ecf1_ect_combinations
-    integer ecf1_ect_combinations_count
-    uuid ecf1_ect_profile_id
-    jsonb ecf1_mentor_combinations
-    integer ecf1_mentor_combinations_count
-    uuid ecf1_mentor_profile_id
-    jsonb ecf1_mentorships
-    integer ecf1_mentorships_count
-    jsonb ecf2_ect_combinations
-    integer ecf2_ect_combinations_count
-    jsonb ecf2_mentor_combinations
-    integer ecf2_mentor_combinations_count
-    jsonb ecf2_mentorships
-    integer ecf2_mentorships_count
-    string migration_mode
-    datetime updated_at
-  }
-  DataMigrationFailedMentorship {
-    integer id
-    datetime created_at
-    uuid ecf_end_induction_record_id
-    uuid ecf_start_induction_record_id
-    uuid ect_participant_profile_id
-    text failure_message
-    date finished_on
-    uuid mentor_participant_profile_id
-    string migration_mode
-    date started_on
-    datetime updated_at
-  }
-  DataMigrationFailedCombination {
-    integer id
-    integer cohort_year
-    datetime created_at
-    string delivery_partner_name
-    datetime end_date
-    text failure_message
-    uuid induction_record_id
-    string induction_status
-    string lead_provider_name
-    uuid mentor_profile_id
-    string migration_mode
-    string preferred_identity_email
-    uuid profile_id
-    string profile_type
-    integer schedule_cohort_year
-    uuid schedule_id
-    string schedule_identifier
-    string schedule_name
-    string school_urn
-    datetime start_date
-    string training_programme
-    string training_status
-    string trn
-    datetime updated_at
-  }
   ContractPeriod {
     integer year
     datetime created_at
