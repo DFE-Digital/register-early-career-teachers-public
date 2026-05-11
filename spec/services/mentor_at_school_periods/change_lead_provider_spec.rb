@@ -75,7 +75,7 @@ RSpec.describe MentorAtSchoolPeriods::ChangeLeadProvider, type: :service do
           it "closes existing training periods and opens a new training period" do
             subject
 
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+            expect(training_period.reload.finished_on).to eq(Date.yesterday)
           end
         end
 

@@ -31,7 +31,7 @@ RSpec.describe Teachers::ChangeSchedule do
         it "ends the current training period and creates a new training period starting today with the new schedule/partnership/contract period" do
           expect { service.change_schedule }.to change(TrainingPeriod, :count).from(1).to(2)
 
-          expect(training_period.reload.finished_on).to eq(Time.zone.today)
+          expect(training_period.reload.finished_on).to eq(Date.yesterday)
 
           new_training_period = TrainingPeriod.except(training_period).last
 
@@ -54,7 +54,7 @@ RSpec.describe Teachers::ChangeSchedule do
           it "sets the newly created training period finished_on to nil" do
             expect { service.change_schedule }.to change(TrainingPeriod, :count).from(1).to(2)
 
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+            expect(training_period.reload.finished_on).to eq(Date.yesterday)
 
             new_training_period = TrainingPeriod.except(training_period).last
             expect(new_training_period.finished_on).to be_nil
@@ -68,7 +68,7 @@ RSpec.describe Teachers::ChangeSchedule do
           it "retains the original finished_on for the newly created training period" do
             expect { service.change_schedule }.to change(TrainingPeriod, :count).from(1).to(2)
 
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+            expect(training_period.reload.finished_on).to eq(Date.yesterday)
 
             new_training_period = TrainingPeriod.except(training_period).last
             expect(new_training_period.finished_on).to eq(training_period_finished_on)
@@ -82,7 +82,7 @@ RSpec.describe Teachers::ChangeSchedule do
           it "retains the original finished_on for the newly created training period" do
             expect { service.change_schedule }.to change(TrainingPeriod, :count).from(1).to(2)
 
-            expect(training_period.reload.finished_on).to eq(Time.zone.today)
+            expect(training_period.reload.finished_on).to eq(Date.yesterday)
 
             new_training_period = TrainingPeriod.except(training_period).last
             expect(new_training_period.finished_on).to eq(school_period_finished_on)

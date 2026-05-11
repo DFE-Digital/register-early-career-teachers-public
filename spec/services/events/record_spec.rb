@@ -1364,7 +1364,7 @@ RSpec.describe Events::Record do
       let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
       let(:original_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:original_schedule) { original_training_period.schedule }
-      let(:new_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
+      let(:new_training_period) { FactoryBot.create(:training_period, :for_ect, ect_at_school_period:, started_on: Date.new(2025, 7, 21), finished_on: Date.new(2025, 7, 25)) }
       let(:course_identifier) { "ecf-induction" }
 
       it "queues a RecordEventJob with the correct values" do
@@ -1390,7 +1390,7 @@ RSpec.describe Events::Record do
       let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 25)) }
       let(:original_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 9, 10), finished_on: Date.new(2025, 7, 20)) }
       let(:original_schedule) { original_training_period.schedule }
-      let(:new_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 7, 20), finished_on: Date.new(2025, 7, 25)) }
+      let(:new_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 7, 21), finished_on: Date.new(2025, 7, 25)) }
       let(:course_identifier) { "ecf-mentor" }
 
       it "queues a RecordEventJob with the correct values" do

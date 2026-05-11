@@ -191,7 +191,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
 
           post(path_for_step("check-answers"))
 
-          expect(training_period.reload.finished_on).to eq(Date.current)
+          expect(training_period.reload.finished_on).to eq(Date.yesterday)
           new_training_period = mentor_at_school_period.training_periods.ongoing.first
           expect(new_training_period.expression_of_interest.lead_provider).to eq(lead_provider)
 

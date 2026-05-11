@@ -9,7 +9,7 @@ RSpec.describe API::Declarations::Query, :with_metadata do
       following_on_from_training_period.update!(finished_on: previous_finished_on)
       school_period = following_on_from_training_period.at_school_period
 
-      FactoryBot.create(:training_period, trait, :ongoing, school_partnership:, started_on: previous_finished_on, "#{trainee}_at_school_period": school_period)
+      FactoryBot.create(:training_period, trait, :ongoing, school_partnership:, started_on: previous_finished_on + 1.day, "#{trainee}_at_school_period": school_period)
     else
       teacher ||= FactoryBot.create(:teacher)
       school_period = FactoryBot.create(:"#{trainee}_at_school_period", :ongoing, teacher:)

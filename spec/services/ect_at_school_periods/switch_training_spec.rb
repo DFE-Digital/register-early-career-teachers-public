@@ -46,7 +46,7 @@ module ECTAtSchoolPeriods
             SwitchTraining.to_school_led(ect_at_school_period, author:)
 
             expect { training_period.reload }.not_to raise_error
-            expect(training_period.finished_on).to eq(Date.current)
+            expect(training_period.finished_on).to eq(Date.yesterday)
           end
 
           it "creates a new school-led training period" do
@@ -269,7 +269,7 @@ module ECTAtSchoolPeriods
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
             expect { training_period.reload }.not_to raise_error
-            expect(training_period.finished_on).to eq(Date.current)
+            expect(training_period.finished_on).to eq(Date.yesterday)
           end
 
           it "creates a new provider-led training period with that partnership" do
@@ -304,7 +304,7 @@ module ECTAtSchoolPeriods
             SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
             expect { training_period.reload }.not_to raise_error
-            expect(training_period.finished_on).to eq(Date.current)
+            expect(training_period.finished_on).to eq(Date.yesterday)
           end
 
           it "creates a new provider-led training period with an expression of interest" do
@@ -504,7 +504,7 @@ module ECTAtSchoolPeriods
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
                 expect { training_period.reload }.not_to raise_error
-                expect(training_period.finished_on).to eq(Date.current)
+                expect(training_period.finished_on).to eq(Date.yesterday)
               end
 
               it "retains the previous schedule and contract period" do
@@ -536,7 +536,7 @@ module ECTAtSchoolPeriods
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
                 expect { training_period.reload }.not_to raise_error
-                expect(training_period.finished_on).to eq(Date.current)
+                expect(training_period.finished_on).to eq(Date.yesterday)
               end
 
               it "moves to the successor contract period with an extended schedule" do
@@ -596,7 +596,7 @@ module ECTAtSchoolPeriods
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
               expect { training_period.reload }.not_to raise_error
-              expect(training_period.finished_on).to eq(Date.current)
+              expect(training_period.finished_on).to eq(Date.yesterday)
             end
 
             it "retains the schedule from the open contract period" do
@@ -651,7 +651,7 @@ module ECTAtSchoolPeriods
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
                 expect { training_period.reload }.not_to raise_error
-                expect(training_period.finished_on).to eq(Date.current)
+                expect(training_period.finished_on).to eq(Date.yesterday)
               end
 
               it "retains the previous schedule and contract period" do
@@ -683,7 +683,7 @@ module ECTAtSchoolPeriods
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
                 expect { training_period.reload }.not_to raise_error
-                expect(training_period.finished_on).to eq(Date.current)
+                expect(training_period.finished_on).to eq(Date.yesterday)
               end
 
               it "moves to the successor contract period with an extended schedule" do
@@ -739,7 +739,7 @@ module ECTAtSchoolPeriods
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
               expect { training_period.reload }.not_to raise_error
-              expect(training_period.finished_on).to eq(Date.current)
+              expect(training_period.finished_on).to eq(Date.yesterday)
             end
 
             it "retains the schedule from the open contract period" do

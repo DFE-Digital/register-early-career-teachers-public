@@ -113,7 +113,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
 
           context "when there are future training periods (for the same teacher)" do
             before do
-              FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period)
+              FactoryBot.create(:training_period, :"for_#{trainee_type}", started_on: training_period.finished_on + 1.day, finished_on: at_school_period.finished_on, "#{trainee_type}_at_school_period": at_school_period)
             end
 
             it { is_expected.to have_one_error_per_attribute }
