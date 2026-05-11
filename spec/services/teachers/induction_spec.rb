@@ -35,6 +35,10 @@ RSpec.describe Teachers::Induction do
   end
 
   describe "#latest_induction_period" do
+    context "with no induction periods" do
+      it { expect(service.latest_induction_period).to be_nil }
+    end
+
     context "with one ongoing period" do
       before do
         induction_period_unfinished
@@ -62,10 +66,6 @@ RSpec.describe Teachers::Induction do
       it "returns the most recent induction period" do
         expect(service.latest_induction_period).to eq(induction_period_unfinished)
       end
-    end
-
-    context "without any induction periods" do
-      it { expect(service.latest_induction_period).to be_nil }
     end
   end
 

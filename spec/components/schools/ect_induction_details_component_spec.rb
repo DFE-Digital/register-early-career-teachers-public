@@ -8,12 +8,12 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
                       started_on: Date.new(2023, 9, 1))
   end
 
-  let(:current_induction_period) { nil }
+  let(:latest_induction_period) { nil }
   let(:past_induction_period) { nil }
 
   before do
     past_induction_period
-    current_induction_period
+    latest_induction_period
     render_inline(described_class.new(ect))
   end
 
@@ -80,9 +80,9 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
   end
 
   context "when the ECT has one induction period" do
-    let(:current_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current AB") }
-    let!(:current_induction_period) do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: current_appropriate_body_period, started_on: 1.week.ago)
+    let(:latest_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current AB") }
+    let!(:latest_induction_period) do
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: latest_appropriate_body_period, started_on: Date.new(2023, 9, 1))
     end
 
     it "renders the appropriate body from the induction period" do
@@ -91,16 +91,22 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       expect(page).not_to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
       expect(page).not_to have_selector(".govuk-summary-list__value", text: "Not reported")
     end
+
+    it "renders the induction start date from the induction period, with a hint" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "1 September 2023This has been reported by an appropriate body")
+      expect(page).not_to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
+    end
   end
 
   context "when the ECT has multiple induction periods" do
     let(:past_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Past AB") }
     let!(:past_induction_period) do
-      FactoryBot.create(:induction_period, teacher:, appropriate_body_period: past_appropriate_body_period)
+      FactoryBot.create(:induction_period, teacher:, appropriate_body_period: past_appropriate_body_period, started_on: Date.new(2023, 9, 1), finished_on: Date.new(2024, 7, 1))
     end
-    let(:current_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current AB") }
-    let!(:current_induction_period) do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: current_appropriate_body_period, started_on: 1.week.ago)
+    let(:latest_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current AB") }
+    let!(:latest_induction_period) do
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: latest_appropriate_body_period, started_on: Date.new(2024, 9, 1))
     end
 
     it "renders the appropriate body from the latest induction period" do
@@ -109,6 +115,12 @@ RSpec.describe Schools::ECTInductionDetailsComponent, type: :component do
       expect(page).not_to have_selector(".govuk-summary-list__value", text: "Past AB")
       expect(page).not_to have_selector(".govuk-summary-list__value", text: "Alpha Teaching School Hub")
       expect(page).not_to have_selector(".govuk-summary-list__value", text: "Not reported")
+    end
+
+    it "renders the induction start date from the first induction period, with a hint" do
+      expect(page).to have_selector(".govuk-summary-list__key", text: "Induction start date")
+      expect(page).to have_selector(".govuk-summary-list__value", text: "1 September 2023This has been reported by an appropriate body")
+      expect(page).not_to have_selector(".govuk-summary-list__value", text: "Yet to be reported by the appropriate body")
     end
   end
 end

@@ -54,7 +54,7 @@ module Schools
 
     def appropriate_body_name
       if induction.has_induction_periods?
-        induction.latest_induction_period&.appropriate_body_name
+        induction.latest_induction_period.appropriate_body_name
       else
         @ect.school_reported_appropriate_body_name
       end
