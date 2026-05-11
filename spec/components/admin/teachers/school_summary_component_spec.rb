@@ -96,17 +96,6 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
           expect(rendered).to have_css("dt", text: "Appropriate body")
           expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
         end
-
-        context "when the teacher also has mentor training periods" do
-          let(:mentor_start_date) { school_period.started_on + 1.year }
-          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date) }
-          let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_start_date) }
-
-          it "shows the appropriate body from the school period, not the induction period" do
-            expect(rendered).to have_css("dt", text: "Appropriate body")
-            expect(rendered).to have_css("dd", text: "Appropriate Body Name")
-          end
-        end
       end
 
       context "when an ECT has more than one induction period" do
@@ -118,17 +107,6 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
         it "shows the appropriate body from the current induction period" do
           expect(rendered).to have_css("dt", text: "Appropriate body")
           expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
-        end
-
-        context "when the teacher also has mentor training periods" do
-          let(:mentor_start_date) { school_period.started_on + 1.year }
-          let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: mentor_start_date) }
-          let!(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period:, started_on: mentor_start_date) }
-
-          it "shows the appropriate body from the school period, not the induction period" do
-            expect(rendered).to have_css("dt", text: "Appropriate body")
-            expect(rendered).to have_css("dd", text: "Appropriate Body Name")
-          end
         end
       end
     end

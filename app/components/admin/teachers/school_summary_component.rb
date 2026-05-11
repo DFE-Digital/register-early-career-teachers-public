@@ -81,15 +81,11 @@ module Admin
       end
 
       def appropriate_body_name
-        if has_induction_periods_and_no_mentor_training_periods?
+        if induction.has_induction_periods?
           induction.latest_induction_period&.appropriate_body_name
         else
           school_period.school_reported_appropriate_body_name
         end
-      end
-
-      def has_induction_periods_and_no_mentor_training_periods?
-        school_period.teacher.mentor_training_periods.none? && induction.has_induction_periods?
       end
 
       def induction
