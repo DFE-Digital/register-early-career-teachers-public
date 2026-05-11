@@ -1,0 +1,5 @@
+object_type,object_id,action,attributes
+TrainingPeriod,135514,update,"withdrawn_at,2026-03-06 15:45:06 +0000,withdrawal_reason,moved_school"
+TrainingPeriod,16275,delete,
+ECTAtSchoolPeriod,10412,delete,
+TrainingPeriod,136520,update,"finished_on,"
