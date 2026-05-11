@@ -29,7 +29,7 @@ namespace :admin do
       end
 
       resources :lead_providers, only: %i[index], path: "lead-providers"
-      resources :delivery_partners, only: %i[index show edit update], path: "delivery-partners" do
+      resources :delivery_partners, only: %i[index show new create edit update], path: "delivery-partners" do
         resource :delivery_partnerships, only: %i[new create], path: ":year", as: :delivery_partnership, controller: "delivery_partners/delivery_partnerships"
       end
     end

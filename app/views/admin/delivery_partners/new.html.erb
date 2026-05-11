@@ -1,0 +1,18 @@
+<% page_data(
+     title: "Add a new delivery partner",
+     breadcrumbs: @breadcrumbs,
+     backlink_href: admin_delivery_partners_path(page: @page, q: @q)
+   ) %>
+
+<%= form_with model: @delivery_partner,
+              url: admin_delivery_partners_path(page: @page, q: @q),
+              method: :post do |f| %>
+
+  <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+  <%= f.govuk_text_field :name,
+        label: { text: "Delivery partner name" } %>
+
+  <%= f.govuk_submit "Confirm" %>
+
+<% end %>
