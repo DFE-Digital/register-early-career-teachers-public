@@ -43,6 +43,17 @@ FactoryBot.define do
       end
     end
 
+    # Use when the declaration should count toward `replacement_schedule?`,
+    # which expects a declaration within the mentor's mentorship of the ECT.
+    trait :within_mentorship_period do
+      declaration_date do
+        mp = training_period&.mentor_at_school_period&.mentorship_periods&.order(:started_on)&.first
+        raise ArgumentError, "Cannot derive declaration_date: training_period must belong to a mentor with a mentorship_period" unless mp
+
+        mp.started_on + 1.day
+      end
+    end
+
     trait :voided_by_user do
       payment_status { :voided }
       voided_by_user { FactoryBot.create(:user) }

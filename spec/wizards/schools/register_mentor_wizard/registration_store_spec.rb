@@ -251,7 +251,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
 
-        FactoryBot.create(:declaration, training_period: previous_mentor_training_period)
+        FactoryBot.create(:declaration, :within_mentorship_period, training_period: previous_mentor_training_period)
 
         store.ect_id = mentee.id
         store.lead_provider_id = lead_provider.id

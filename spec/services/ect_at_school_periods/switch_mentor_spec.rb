@@ -202,7 +202,7 @@ module ECTAtSchoolPeriods
             end
 
             context "when the previous mentor has started training" do
-              let!(:declaration) { FactoryBot.create(:declaration, training_period: mentor_training_period) }
+              let!(:declaration) { FactoryBot.create(:declaration, :within_mentorship_period, training_period: mentor_training_period) }
 
               it "assigns the mentor on a replacement schedule" do
                 switch_mentor
