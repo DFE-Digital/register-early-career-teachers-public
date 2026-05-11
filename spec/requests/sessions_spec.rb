@@ -41,11 +41,98 @@ RSpec.describe "Sessions", type: :request do
     let(:dfe_sign_in_organisation_id) { Faker::Internet.uuid }
     let(:dfe_sign_in_user_id) { Faker::Internet.uuid }
     let(:school_urn) { "123456" }
+    let(:client) { DfESignIn::FakeAPIClient.new(role_codes: params[:dfe_sign_in_roles]) }
 
     before do
-      allow(DfESignIn::APIClient).to receive(:new).and_return(
-        DfESignIn::FakeAPIClient.new(role_codes: params[:dfe_sign_in_roles])
-      )
+      allow(DfESignIn::APIClient).to receive(:new).and_return(client)
+    end
+
+    context "when the organisation is not recognised" do
+      let(:params) do
+        {
+          email:,
+          name:,
+          dfe_sign_in_organisation_id:,
+          dfe_sign_in_user_id:,
+          dfe_sign_in_roles: %w[AppropriateBodyUser],
+        }
+      end
+
+      let(:user_builder) { instance_double(Sessions::Users::Builder) }
+
+      before do
+        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:)
+
+        allow(Sessions::Users::Builder).to receive(:new).and_return(user_builder)
+        allow(user_builder).to receive(:organisation_name).and_return(dfe_sign_in_organisation_name)
+        allow(user_builder).to receive(:session_user).and_raise(Sessions::Users::Builder::UnknownOrganisation, dfe_sign_in_organisation_id)
+
+        mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
+                                   email:,
+                                   first_name:,
+                                   last_name:,
+                                   organisation_id: dfe_sign_in_organisation_id,
+                                   organisation_name: dfe_sign_in_organisation_name)
+      end
+
+      after do
+        stop_mocking_dfe_sign_in_provider!
+      end
+
+      it "redirects to the access denied page" do
+        post("/auth/dfe/callback")
+        expect(response).to redirect_to(access_denied_path)
+      end
+    end
+
+    context "when the DfE SignIn API cannot find any Access Levels" do
+      let(:params) do
+        {
+          email:,
+          name:,
+          dfe_sign_in_organisation_id:,
+          dfe_sign_in_user_id:,
+          dfe_sign_in_roles: %w[SchoolUser],
+        }
+      end
+
+      before do
+        FactoryBot.create(:appropriate_body_period, dfe_sign_in_organisation_id:)
+
+        response = instance_double(
+          Faraday::Response,
+          status: 404,
+          body: "DfE Sign In API request failed"
+        )
+
+        allow(client).to receive(:access_levels).and_raise(DfESignIn::APIClient::NotFoundError.new(response:))
+
+        mock_dfe_sign_in_provider!(uid: dfe_sign_in_user_id,
+                                   email:,
+                                   first_name:,
+                                   last_name:,
+                                   organisation_id: dfe_sign_in_organisation_id,
+                                   organisation_name: nil)
+      end
+
+      after do
+        stop_mocking_dfe_sign_in_provider!
+      end
+
+      it "redirects to the access denied page" do
+        post("/auth/dfe/callback")
+        expect(response).to redirect_to(access_denied_path)
+      end
+
+      it "logs an exception in Sentry" do
+        allow(Sentry).to receive(:capture_message)
+
+        post("/auth/dfe/callback")
+
+        expect(Sentry)
+          .to have_received(:capture_message).once
+          .with("DfE Sign In API request failed with status 404: DfE Sign In API request failed", { level: :info })
+      end
     end
 
     context "when using an appropriate body user" do
