@@ -5,7 +5,21 @@ module DfESignIn
   # - roles: service's roles
   #
   class APIClient
+    class ResponseError < StandardError
+      attr_reader :response
+
+      delegate :status, :body, to: :response
+
+      def initialize(response:)
+        @response = response
+        super("DfE Sign In API request failed with status #{response.status}: #{response.body}")
+      end
+    end
+
     class DfESignInDisabled < StandardError; end
+    class ForbiddenError < ResponseError; end
+    class NotFoundError < ResponseError; end
+    class InternalServerError < ResponseError; end
 
     attr_reader :connection
 
@@ -27,11 +41,9 @@ module DfESignIn
 
       response = @connection.get(path)
 
-      if response.success?
-        Organisation.from_response_body(response.body)
-      else
-        raise "API request failed: #{response.status} #{response.body}"
-      end
+      raise_error_for_response!(response)
+
+      Organisation.from_response_body(response.body)
     end
 
     # @see https://github.com/DFE-Digital/login.dfe.public-api#get-user-access-to-service
@@ -40,11 +52,9 @@ module DfESignIn
 
       response = @connection.get(path)
 
-      if response.success?
-        AccessLevel.from_response_body(response.body)
-      else
-        raise "API request failed: #{response.status} #{response.body}"
-      end
+      raise_error_for_response!(response)
+
+      AccessLevel.from_response_body(response.body)
     end
 
     # TODO: wrap with Data object
@@ -54,11 +64,9 @@ module DfESignIn
 
       response = @connection.get(path)
 
-      if response.success?
-        response.body
-      else
-        raise "API request failed: #{response.status} #{response.body}"
-      end
+      raise_error_for_response!(response)
+
+      response.body
     end
 
     # TODO: integrate with DfESignIn::AccessLevel::Role
@@ -68,14 +76,29 @@ module DfESignIn
 
       response = @connection.get(path)
 
-      if response.success?
-        response.body
-      else
-        raise "API request failed: #{response.status} #{response.body}"
-      end
+      raise_error_for_response!(response)
+
+      response.body
     end
 
   private
+
+    def raise_error_for_response!(response)
+      return if response.success?
+
+      klass = error_class(response.status)
+
+      raise klass.new(response:)
+    end
+
+    def error_class(status)
+      case status
+      when 403 then ForbiddenError
+      when 404 then NotFoundError
+      when 500 then InternalServerError
+      else ResponseError
+      end
+    end
 
     def jwt
       @jwt ||= JWT.encode({ iss: client_id, aud: audience }, secret, "HS256")
