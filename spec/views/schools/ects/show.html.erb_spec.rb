@@ -114,7 +114,8 @@ RSpec.describe "schools/ects/show.html.erb" do
 
   describe "Induction details" do
     before do
-      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:)
+      appropriate_body_period = FactoryBot.create(:appropriate_body_period, name: "Latest AB")
+      FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period:, started_on: 1.week.ago.to_date)
       teacher.reload # Reload to pick up the new induction period
     end
 
@@ -124,12 +125,12 @@ RSpec.describe "schools/ects/show.html.erb" do
 
     it "shows appropriate body" do
       expect(subject).to have_css("dt.govuk-summary-list__key", text: "Appropriate body")
-      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Requested AB")
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: "Latest AB")
     end
 
     it "shows induction start date" do
       expect(subject).to have_css("dt.govuk-summary-list__key", text: "Induction start date")
-      expect(subject).to have_css("dd.govuk-summary-list__value", text: 1.year.ago.to_date.to_fs(:govuk))
+      expect(subject).to have_css("dd.govuk-summary-list__value", text: 1.week.ago.to_date.to_fs(:govuk))
     end
 
     context "when no induction start date is available" do
