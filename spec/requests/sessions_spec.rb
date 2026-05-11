@@ -273,7 +273,7 @@ RSpec.describe "Sessions", type: :request do
 
       expect(Sentry)
         .to have_received(:capture_message).once
-        .with("[Authentication failure] csrf_detected")
+        .with("[Authentication failure] csrf_detected", level: :info)
     end
   end
 end
