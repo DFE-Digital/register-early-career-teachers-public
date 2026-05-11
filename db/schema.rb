@@ -899,7 +899,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_105345) do
     t.bigint "expression_of_interest_id"
     t.date "finished_on"
     t.bigint "mentor_at_school_period_id"
-    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on)", stored: true
+    t.virtual "range", type: :daterange, as: "daterange(started_on, finished_on, '[]'::text)", stored: true
     t.bigint "schedule_id"
     t.bigint "school_partnership_id"
     t.date "started_on", null: false
