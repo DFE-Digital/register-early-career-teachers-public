@@ -1,0 +1,25 @@
+<% page_data(title: "Contract periods", breadcrumbs: @breadcrumbs) %>
+
+<% if @contract_periods.none? %>
+  <p class='govuk-body'>No contract periods found</p>
+<% else %>
+  <%=
+    govuk_table(
+      head: ["Year", "Started on", "Finished on"],
+      rows: @contract_periods.map { |cp| [
+        cp.year.to_s,
+        cp.started_on.to_fs(:govuk),
+        cp.finished_on.to_fs(:govuk),
+      ] }
+    )
+  %>
+<% end %>
+
+<%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "contract periods") %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <%= govuk_button_to "Add Contract period", admin_finance_path, method: :get %>
+  </div>
+</div>
+
