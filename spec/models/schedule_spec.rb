@@ -37,6 +37,17 @@ describe Schedule do
         expect(subject).to contain_exactly(standard_schedule)
       end
     end
+
+    describe ".excluding_reduced_schedules" do
+      subject { Schedule.excluding_reduced_schedules }
+
+      let!(:reduced_schedule) { FactoryBot.create(:schedule, identifier: "ecf-reduced-april") }
+      let!(:standard_schedule) { FactoryBot.create(:schedule, identifier: "ecf-standard-april") }
+
+      it "returns only standard schedules" do
+        expect(subject).to contain_exactly(standard_schedule)
+      end
+    end
   end
 
   describe "#replacement_schedule?" do
@@ -48,6 +59,18 @@ describe Schedule do
     it "returns false for non-replacement schedules" do
       schedule = Schedule.new(identifier: "ecf-standard-april")
       expect(schedule).not_to be_replacement_schedule
+    end
+  end
+
+  describe "#reduced_schedule?" do
+    it "returns true for reduced schedules" do
+      schedule = Schedule.new(identifier: "ecf-reduced-april")
+      expect(schedule).to be_reduced_schedule
+    end
+
+    it "returns false for non-reduced schedules" do
+      schedule = Schedule.new(identifier: "ecf-standard-april")
+      expect(schedule).not_to be_reduced_schedule
     end
   end
 
