@@ -80,7 +80,7 @@ module APISeedData
               started_on: start_date
             )
 
-            schedule = find_schedule(contract_period)
+            schedule = find_schedule(contract_period, type)
 
             FactoryBot.create(
               :training_period,
@@ -136,7 +136,7 @@ module APISeedData
               started_on: start_date
             )
 
-            schedule = find_schedule(contract_period)
+            schedule = find_schedule(contract_period, type)
 
             FactoryBot.create(
               :training_period,
@@ -183,7 +183,7 @@ module APISeedData
               started_on: start_date
             )
 
-            schedule = find_schedule(contract_period)
+            schedule = find_schedule(contract_period, :ect)
 
             FactoryBot.create(
               :training_period,
@@ -236,7 +236,7 @@ module APISeedData
               started_on: start_date
             )
 
-            schedule = find_schedule(contract_period)
+            schedule = find_schedule(contract_period, :ect)
 
             FactoryBot.create(
               :training_period,
@@ -303,7 +303,7 @@ module APISeedData
               school = school_partnership.school
               start_date = Date.new(contract_period_year, 9, 1)
               school_period = FactoryBot.create(:"#{type}_at_school_period", :ongoing, school:, started_on: start_date)
-              schedule = find_schedule(contract_period)
+              schedule = find_schedule(contract_period, type)
               teacher = school_period.teacher
 
               training_period = FactoryBot.create(
@@ -392,7 +392,7 @@ module APISeedData
 
               school_period = FactoryBot.create(:"#{type}_at_school_period", :ongoing, school:, started_on: start_date, finished_on: finished_date)
 
-              schedule = find_schedule(contract_period)
+              schedule = find_schedule(contract_period, type)
 
               FactoryBot.create(
                 :training_period,
@@ -459,7 +459,7 @@ module APISeedData
                 finished_on: finished_date
               )
 
-              schedule = find_schedule(contract_period)
+              schedule = find_schedule(contract_period, type)
 
               FactoryBot.create(
                 :training_period,
@@ -527,7 +527,7 @@ module APISeedData
                 finished_on: finished_date
               )
 
-              schedule = find_schedule(contract_period)
+              schedule = find_schedule(contract_period, type)
 
               FactoryBot.create(
                 :training_period,
@@ -597,7 +597,7 @@ module APISeedData
                 finished_on: finished_date
               )
 
-              schedule = find_schedule(contract_period)
+              schedule = find_schedule(contract_period, type)
 
               FactoryBot.create(
                 :training_period,
@@ -667,7 +667,7 @@ module APISeedData
                 finished_on: finished_date
               )
 
-              schedule = find_schedule(contract_period)
+              schedule = find_schedule(contract_period, type)
 
               FactoryBot.create(
                 :training_period,
@@ -702,7 +702,7 @@ module APISeedData
         .first
     end
 
-    def find_schedule(contract_period)
+    def find_schedule(contract_period, trainee_type)
       if Faker::Boolean.boolean(true_ratio: 0.8)
         return Schedule.find_by(
           contract_period:,
@@ -710,11 +710,19 @@ module APISeedData
         )
       end
 
-      Schedule
-        .excluding_replacement_schedules
-        .where(contract_period:)
-        .order(Arel.sql("RANDOM()"))
-        .first
+      if trainee_type == :mentor
+        Schedule
+          .excluding_reduced_schedules
+          .where(contract_period:)
+          .order(Arel.sql("RANDOM()"))
+          .first
+      else
+        Schedule
+          .excluding_replacement_schedules
+          .where(contract_period:)
+          .order(Arel.sql("RANDOM()"))
+          .first
+      end
     end
 
     def find_contract_period(year)

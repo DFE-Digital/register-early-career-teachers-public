@@ -87,7 +87,8 @@ class TrainingPeriod < ApplicationRecord
   validates :finished_on, presence: true, if: -> { withdrawn_at.present? || deferred_at.present? }
   validate :contract_period_consistent_across_associations, if: :provider_led_training_programme?
   validate :schedule_absent_for_school_led, if: :school_led_training_programme?
-  validate :schedule_applicable_for_trainee
+  validate :schedule_applicable_for_ect
+  validate :schedule_applicable_for_mentor
   with_options if: -> { started_on&.future? } do
     validates :withdrawn_at, absence: true
     validates :withdrawal_reason, absence: true
@@ -251,11 +252,18 @@ private
     errors.add(:schedule, "Schedule must be absent for school-led training programmes")
   end
 
-  def schedule_applicable_for_trainee
+  def schedule_applicable_for_ect
     return if schedule.blank?
     return unless for_ect?
 
     errors.add(:schedule, "Only mentors can be assigned to replacement schedules") if schedule.replacement_schedule?
+  end
+
+  def schedule_applicable_for_mentor
+    return if schedule.blank?
+    return unless for_mentor?
+
+    errors.add(:schedule, "Only ECTs can be assigned to reduced schedules") if schedule.reduced_schedule?
   end
 
   def withdrawal_reason_valid_for_trainee_type
