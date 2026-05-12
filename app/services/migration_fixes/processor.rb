@@ -1,4 +1,10 @@
 class MigrationFixes::Processor
+  attr_reader :batch_refs
+
+  def initialize
+    @batch_refs = {}
+  end
+
   def process!(data_change: {})
     return if data_change.blank? || data_change.empty?
 
@@ -11,6 +17,10 @@ class MigrationFixes::Processor
     case action
     when "create"
       target_object = create!(object_type, extract_attributes(data_change[:attributes]))
+      if object_id.present?
+        # treat as a batch reference ID to be used be a subsequent change
+        batch_refs[object_id] = target_object.id
+      end
     when "update"
       update!(target_object, extract_attributes(data_change[:attributes]))
     when "delete"
@@ -45,7 +55,12 @@ private
 
     attrs = {}
 
-    attributes_list.split(",").each_slice(2) { |k, v| attrs[k.to_sym] = v }
+    attributes_list.split(",").each_slice(2) do |k, v|
+      if batch_refs.key?(v)
+        v = batch_refs[v]
+      end
+      attrs[k.to_sym] = v
+    end
 
     attrs
   end
