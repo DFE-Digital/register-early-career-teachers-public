@@ -7,7 +7,7 @@ RSpec.describe Schools::RegisterMentor do
                         school_urn: school.urn,
                         email:,
                         lead_provider:,
-                        finish_existing_at_school_periods:,
+                        mentoring_at_new_school_only:,
                         started_on:,
                         author:)
   end
@@ -26,7 +26,7 @@ RSpec.describe Schools::RegisterMentor do
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
   let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
   let(:mentor_at_school_period) { teacher.mentor_at_school_periods.first }
-  let(:finish_existing_at_school_periods) { false }
+  let(:mentoring_at_new_school_only) { false }
 
   describe "#register!" do
     context "when the mentor is not registered" do
@@ -68,6 +68,25 @@ RSpec.describe Schools::RegisterMentor do
           expect { service.register! }
             .to have_enqueued_mail(Schools::MentorRegistrationMailer, :confirmation)
         end
+
+        it "records a teacher_name_updated_by_user event when a corrected name is provided" do
+          expect(Events::Record).to receive(:teacher_name_updated_by_user_event!).with(
+            old_name: "#{trs_first_name} #{trs_last_name}",
+            new_name: "Randy Marsh",
+            author:,
+            teacher: anything
+          )
+          service.register!
+        end
+
+        context "when no corrected name is provided" do
+          let(:corrected_name) { nil }
+
+          it "does not record a teacher_name_updated_by_user event" do
+            expect(Events::Record).not_to receive(:teacher_name_updated_by_user_event!)
+            service.register!
+          end
+        end
       end
 
       context "when a Teacher record with the same trn exists" do
@@ -82,8 +101,8 @@ RSpec.describe Schools::RegisterMentor do
           let!(:existing_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, mentor_at_school_period: existing_mentor_at_school_period, started_on: existing_mentor_at_school_period.started_on) }
           let(:mentor_at_school_period) { teacher.mentor_at_school_periods.excluding(existing_mentor_at_school_period).first }
 
-          context "with :finish_existing_at_school_periods set to false" do
-            let(:finish_existing_at_school_periods) { false }
+          context "with :mentoring_at_new_school_only set to false" do
+            let(:mentoring_at_new_school_only) { false }
 
             it "creates a new MentorATSchoolPeriod without finishing existing MentorAtSchoolPeriod" do
               expect { service.register! }.to change(MentorAtSchoolPeriod, :count).from(1).to(2)
@@ -124,8 +143,8 @@ RSpec.describe Schools::RegisterMentor do
             end
           end
 
-          context "with :finish_existing_at_school_periods set to true" do
-            let(:finish_existing_at_school_periods) { true }
+          context "with :mentoring_at_new_school_only set to true" do
+            let(:mentoring_at_new_school_only) { true }
 
             it "creates a new MentorATSchoolPeriod and finishes existing MentorAtSchoolPeriod" do
               expect { service.register! }.to change(MentorAtSchoolPeriod, :count).from(1).to(2)

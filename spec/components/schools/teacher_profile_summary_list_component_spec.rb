@@ -1,4 +1,6 @@
 RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
+  include Rails.application.routes.url_helpers
+
   subject { page }
 
   let(:school) { FactoryBot.create(:school) }
@@ -6,14 +8,17 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
   let(:mentor_teacher) { FactoryBot.create(:teacher, trn: "987654", trs_first_name: "Naruto", trs_last_name: "Ninetails") }
   let(:previous_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, started_on: 3.years.ago) }
   let(:current_mentor) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:, teacher: mentor_teacher, started_on: 3.years.ago) }
+  let(:current_mentor_name) { Teachers::Name.new(current_mentor.teacher).full_name }
   let(:mentee) do
     FactoryBot.create(:ect_at_school_period, :ongoing, school:, teacher: mentee_teacher, started_on: Date.new(2021, 9, 1),
                                                        email: "foobarect@madeup.com", working_pattern: "full_time")
   end
 
   context "when the ECT has a mentor assigned" do
+    let(:mentor_row) { page.find(".govuk-summary-list__row", text: "Mentor") }
+
     before do
-      FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago)
+      FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: previous_mentor, started_on: 3.years.ago, finished_on: 2.years.ago - 1.day)
       FactoryBot.create(:mentorship_period, :ongoing, mentee:, mentor: current_mentor, started_on: 2.years.ago)
 
       render_inline(described_class.new(mentee, current_school: school))
@@ -30,6 +35,15 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
     it { is_expected.to have_summary_list_row("School start date", value: "1 September 2021") }
     it { is_expected.to have_summary_list_row("Working pattern", value: "Full time") }
     it { is_expected.to have_summary_list_row("Status") }
+
+    it "renders the mentor name without a link" do
+      expect(mentor_row).to have_css(".govuk-summary-list__value", text: current_mentor_name)
+      expect(mentor_row).not_to have_link(current_mentor_name)
+    end
+
+    it "renders the change mentor link" do
+      expect(mentor_row).to have_link("Change", href: schools_ects_change_mentor_wizard_edit_path(mentee))
+    end
   end
 
   context "when latest started training is deferred" do
@@ -245,6 +259,10 @@ RSpec.describe Schools::TeacherProfileSummaryListComponent, type: :component do
       expect(page).to have_text("Action required")
       expect(page).to have_text("A mentor needs to be assigned to Kakarot SSJ.")
       expect(page).not_to have_text("Mentor required")
+    end
+
+    it "renders the assign mentor link" do
+      expect(page).to have_link("Assign a mentor for this ECT")
     end
   end
 

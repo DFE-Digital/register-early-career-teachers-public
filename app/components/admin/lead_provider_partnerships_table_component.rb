@@ -25,6 +25,8 @@ module Admin
     end
 
     def lead_provider_names(partnerships)
+      return "Not reported" if partnerships.empty?
+
       partnerships.map(&:lead_provider).map(&:name).join(", ")
     end
   end

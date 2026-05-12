@@ -22,14 +22,21 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
   end
 
   let(:banded_outputs_double) { double(total_net_amount:, total_refundable_amount:, total_billable_amount:) }
-  let(:uplifts_double) { double(total_net_amount: total_uplifts_amount) }
+  let(:uplifts_double) do
+    double(
+      total_net_amount: total_billable_uplifts_amount - total_refundable_uplifts_amount,
+      total_billable_amount: total_billable_uplifts_amount,
+      total_refundable_amount: total_refundable_uplifts_amount
+    )
+  end
 
   let(:total_billable_amount) { 550 }
   let(:total_net_amount) { total_billable_amount - total_refundable_amount }
   let(:total_refundable_amount) { 150 }
   let(:total_manual_adjustments_amount) { 375 }
   let(:monthly_service_fee) { 1_000 }
-  let(:total_uplifts_amount) { 50 }
+  let(:total_billable_uplifts_amount) { 50 }
+  let(:total_refundable_uplifts_amount) { 0 }
 
   let(:contract) do
     FactoryBot.create(:contract, :for_ecf, active_lead_provider:, vat_rate: 0.20, banded_fee_structure:)
@@ -93,6 +100,29 @@ RSpec.describe Admin::Statements::PaymentOverview::ECFComponent, type: :componen
       it "VAT is zero and therefore not included in the total" do
         expect(page).to have_css("h2.govuk-heading-l", text: "£1,825.00")
         expect(page).to have_css("tr", text: /VAT£0\.00/)
+      end
+    end
+
+    context "when there are refundable uplift fees" do
+      let(:total_billable_uplifts_amount) { 200 }
+      let(:total_refundable_uplifts_amount) { 30 }
+
+      it "shows billable uplift fees in the Uplift fees row and adds refundable uplift fees to the Clawbacks row" do
+        expect(page).to have_statement_table(
+          selector: ".finance-panel__summary__total-payment-breakdown",
+          headings: [
+            "Payment type",
+            "Payment"
+          ],
+          rows: [
+            ["Output payment", "£550.00"],
+            ["Service fee", "£1,000.00"],
+            ["Uplift fees", "£200.00"],
+            ["Clawbacks", "-£180.00"],
+            ["Additional adjustments", "£375.00"],
+            ["VAT", "£389.00"],
+          ]
+        )
       end
     end
   end

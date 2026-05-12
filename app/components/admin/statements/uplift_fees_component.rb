@@ -3,9 +3,9 @@ module Admin
     class UpliftFeesComponent < ApplicationComponent
       delegate :number_to_pounds, to: :helpers
 
-      delegate :net_count,
+      delegate :billable_count,
                :uplift_fee_per_declaration,
-               :total_net_amount,
+               :total_billable_amount,
                to: :uplifts
 
       attr_accessor :statement

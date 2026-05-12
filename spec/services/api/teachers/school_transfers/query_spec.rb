@@ -170,6 +170,31 @@ RSpec.describe API::Teachers::SchoolTransfers::Query do
           it { expect(subject).to contain_exactly(teacher3) }
         end
 
+        context "when an interim training period was updated but the earliest and latest were not" do
+          let(:transfer_dates) do
+            { teacher1 => { joining: 1.year.ago, leaving: 1.year.ago } }
+          end
+
+          let(:updated_since) { 11.days.ago }
+
+          before do
+            school_period = teacher1.latest_ect_at_school_period
+
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              :provider_led,
+              started_on: 1.day.after(school_period.earliest_training_period.finished_on),
+              finished_on: school_period.latest_training_period.started_on,
+              ect_at_school_period: school_period,
+              school_partnership: school_period.earliest_training_period.school_partnership,
+              api_transfer_updated_at: 1.day.after(updated_since)
+            )
+          end
+
+          it { is_expected.not_to include(teacher1) }
+        end
+
         context "when `updated_since` is blank" do
           let(:updated_since) { "" }
 

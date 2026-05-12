@@ -15,7 +15,7 @@ module Schools
                 :mentor_at_school_period,
                 :lead_provider,
                 :training_period,
-                :finish_existing_at_school_periods,
+                :mentoring_at_new_school_only,
                 :mentee
 
     def initialize(trs_first_name:,
@@ -25,7 +25,7 @@ module Schools
                    school_urn:,
                    email:,
                    author:,
-                   finish_existing_at_school_periods: false,
+                   mentoring_at_new_school_only: false,
                    started_on: nil,
                    lead_provider: nil,
                    mentee: nil)
@@ -38,14 +38,14 @@ module Schools
       @started_on = started_on&.to_date || Date.current
       @trn = trn
       @lead_provider = lead_provider
-      @finish_existing_at_school_periods = finish_existing_at_school_periods
+      @mentoring_at_new_school_only = mentoring_at_new_school_only
       @mentee = mentee
     end
 
     def register!
       ActiveRecord::Base.transaction do
         create_teacher!
-        finish_existing_at_school_periods! if finish_existing_at_school_periods
+        finish_periods_at_all_schools! if mentoring_at_new_school_only?
         start_at_school!
         create_training_period! unless mentoring_at_several_schools?
         set_eligibility_for_funding!
@@ -95,12 +95,12 @@ module Schools
       @school ||= School.find_by(urn: school_urn)
     end
 
-    def finish_existing_at_school_periods!
-      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on, author:).finish_existing_at_school_periods!
+    def finish_periods_at_all_schools!
+      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on, author:).finish_periods_at_all_schools!
     end
 
     def mentoring_at_several_schools?
-      return false if finish_existing_at_school_periods
+      return false if mentoring_at_new_school_only?
 
       teacher
         .mentor_at_school_periods
@@ -128,6 +128,13 @@ module Schools
 
     def record_event!
       Events::Record.record_teacher_registered_as_mentor_event!(author:, mentor_at_school_period:, teacher:, school:, training_period:, lead_provider:)
+
+      if corrected_name.present?
+        old_name = Teachers::Name.new(teacher).full_name_in_trs
+        Events::Record.teacher_name_updated_by_user_event!(old_name:, new_name: corrected_name, author:, teacher:)
+      end
     end
+
+    alias_method :mentoring_at_new_school_only?, :mentoring_at_new_school_only
   end
 end

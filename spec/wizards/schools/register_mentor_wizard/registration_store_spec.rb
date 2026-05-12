@@ -251,7 +251,7 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-april")
         FactoryBot.create(:schedule, contract_period:, identifier: "ecf-replacement-september")
 
-        FactoryBot.create(:declaration, training_period: previous_mentor_training_period)
+        FactoryBot.create(:declaration, :within_mentorship_period, training_period: previous_mentor_training_period)
 
         store.ect_id = mentee.id
         store.lead_provider_id = lead_provider.id
@@ -297,20 +297,6 @@ describe Schools::RegisterMentorWizard::RegistrationStore do
   describe "#trn" do
     it "returns the trn" do
       expect(registration_store.trn).to eq("3002586")
-    end
-  end
-
-  describe "#finish_existing_at_school_periods" do
-    context "when mentoring_at_new_school_only set to yes" do
-      before { store.mentoring_at_new_school_only = "yes" }
-
-      it { expect(registration_store.finish_existing_at_school_periods).to be(true) }
-    end
-
-    context "when mentoring_at_new_school_only set to no" do
-      before { store.mentoring_at_new_school_only = "no" }
-
-      it { expect(registration_store.finish_existing_at_school_periods).to be(false) }
     end
   end
 
