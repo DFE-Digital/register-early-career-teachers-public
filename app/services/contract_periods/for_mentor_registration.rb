@@ -34,9 +34,7 @@ module ContractPeriods
     def previous_contract_period
       @previous_contract_period ||=
         @previous_training_period.contract_period ||
-        @previous_training_period.expression_of_interest&.contract_period ||
-        @previous_training_period.school_partnership&.active_lead_provider&.contract_period ||
-        @previous_training_period.schedule&.contract_period
+        @previous_training_period.expression_of_interest&.contract_period
     end
   end
 end
