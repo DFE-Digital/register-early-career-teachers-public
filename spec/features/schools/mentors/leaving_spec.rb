@@ -3,9 +3,10 @@ describe "School user reports a mentor leaving" do
     travel_to(Date.new(2025, 1, 1)) { example.run }
   end
 
-  it "completes the leaving flow" do
+  it "completes the leaving flow for this school" do
     given_there_is_a_school
     and_there_is_an_ongoing_mentor
+    and_the_mentor_is_also_a_mentor_at_another_school
     and_i_am_logged_in_as_a_school_user
 
     when_i_visit_the_mentor_page
@@ -19,6 +20,10 @@ describe "School user reports a mentor leaving" do
 
     when_i_return_to_the_mentor_details
     then_i_see_the_leaving_message_and_no_cta
+
+    when_the_other_school_logs_in
+    and_visits_the_mentor_page
+    then_they_do_not_see_the_leaving_message
   end
 
 private
@@ -42,12 +47,31 @@ private
     )
   end
 
+  def and_the_mentor_is_also_a_mentor_at_another_school
+    @other_school = FactoryBot.create(:school)
+    @other_mentor_at_school_period = FactoryBot.create(
+      :mentor_at_school_period,
+      :ongoing,
+      teacher: @teacher,
+      school: @other_school,
+      started_on: Date.new(2024, 10, 1)
+    )
+  end
+
   def and_i_am_logged_in_as_a_school_user
     sign_in_as_school_user(school: @school)
   end
 
+  def when_the_other_school_logs_in
+    sign_in_as_school_user(school: @other_school)
+  end
+
   def when_i_visit_the_mentor_page
     page.goto(schools_mentor_path(@mentor_at_school_period))
+  end
+
+  def and_visits_the_mentor_page
+    page.goto(schools_mentor_path(@other_mentor_at_school_period))
   end
 
   def then_i_can_start_the_mentor_leaving_flow
@@ -83,5 +107,10 @@ private
   def then_i_see_the_leaving_message_and_no_cta
     expect(page.locator("h2", hasText: "Batman is leaving your school")).to be_visible
     expect(page.get_by_role("link", name: "Tell us if Batman is leaving permanently")).not_to be_visible
+  end
+
+  def then_they_do_not_see_the_leaving_message
+    expect(page.locator("h2", hasText: "Batman is leaving your school")).not_to be_visible
+    expect(page.get_by_role("link", name: "Tell us if Batman is leaving permanently")).to be_visible
   end
 end

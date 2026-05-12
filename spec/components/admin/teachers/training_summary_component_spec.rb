@@ -1,5 +1,5 @@
 RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
-  subject(:rendered) { render_inline(described_class.new(training_period:)) }
+  subject(:rendered) { render_inline(described_class.new(training_period:, show_api_row: true)) }
 
   describe "provider-led training periods" do
     let(:teacher) { metadata.teacher }
@@ -194,7 +194,7 @@ RSpec.describe Admin::Teachers::TrainingSummaryComponent, type: :component do
     end
 
     context "when the component is rendering a subsequent row" do
-      subject(:rendered) { render_inline(described_class.new(training_period:, index: 1)) }
+      subject(:rendered) { render_inline(described_class.new(training_period:, show_api_row: false)) }
 
       it "does not show the API data row" do
         expect(rendered_content).not_to have_css("dt", text: "API response")

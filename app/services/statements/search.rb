@@ -1,6 +1,7 @@
 module Statements
   class Search
     class InvalidFeeTypeError < StandardError; end
+    class InvalidStatusError < StandardError; end
 
     include Queries::FilterIgnorable
 
@@ -11,6 +12,7 @@ module Statements
                    fee_type: "output",
                    statement_date: :ignore,
                    deadline_date: :ignore,
+                   status: :ignore,
                    order: :payment_date)
       @scope = Statement.distinct.includes(active_lead_provider: %i[lead_provider contract_period])
 
@@ -19,6 +21,7 @@ module Statements
       where_fee_type_is(fee_type)
       where_statement_date(statement_date)
       where_deadline_date(deadline_date)
+      where_status_is(status)
       set_order(order)
     end
 
@@ -61,6 +64,14 @@ module Statements
       return if deadline_date.blank?
 
       @scope = scope.where(deadline_date:)
+    end
+
+    def where_status_is(status)
+      return if ignore?(filter: status)
+
+      fail InvalidStatusError unless status.in?(Statement.statuses.keys)
+
+      @scope = scope.with_status(status)
     end
 
     def set_order(order)

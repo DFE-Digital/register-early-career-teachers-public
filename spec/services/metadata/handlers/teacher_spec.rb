@@ -330,6 +330,114 @@ RSpec.describe Metadata::Handlers::Teacher do
         end
       end
 
+      context "when the latest ECT training period has a finished mentorship period" do
+        let!(:ect_at_school_period) do
+          FactoryBot.create(
+            :ect_at_school_period,
+            school: school1,
+            teacher: teacher1,
+            started_on: 1.year.ago,
+            finished_on: nil
+          )
+        end
+        let!(:mentor_at_school_period) do
+          FactoryBot.create(
+            :mentor_at_school_period,
+            school: school1,
+            started_on: 1.year.ago,
+            finished_on: nil
+          )
+        end
+        let!(:ect_training_period) do
+          FactoryBot.create(
+            :training_period,
+            :for_ect,
+            started_on: ect_at_school_period.started_on + 1.month,
+            finished_on: nil,
+            ect_at_school_period:,
+            school_partnership: school_partnership1
+          )
+        end
+        let!(:latest_mentorship_period) do
+          FactoryBot.create(
+            :mentorship_period,
+            mentee: ect_at_school_period,
+            mentor: mentor_at_school_period,
+            started_on: ect_training_period.started_on + 1.month,
+            finished_on: ect_training_period.started_on + 7.months
+          )
+        end
+
+        it "creates metadata with nil `api_mentor_id`" do
+          refresh_metadata
+
+          metadata = Metadata::TeacherLeadProvider.where(teacher: teacher1, lead_provider: lead_provider1).sole
+          expect(metadata).to have_attributes(
+            teacher: teacher1,
+            lead_provider: lead_provider1,
+            latest_ect_training_period: ect_training_period,
+            latest_ect_contract_period: ect_training_period.contract_period,
+            latest_mentor_training_period: nil,
+            latest_mentor_contract_period: nil,
+            api_mentor_id: nil
+          )
+        end
+
+        context "when the latest ECT training period has a mentorship period finishing in the future" do
+          let!(:ect_at_school_period) do
+            FactoryBot.create(
+              :ect_at_school_period,
+              school: school1,
+              teacher: teacher1,
+              started_on: 1.year.ago,
+              finished_on: nil
+            )
+          end
+          let!(:mentor_at_school_period) do
+            FactoryBot.create(
+              :mentor_at_school_period,
+              school: school1,
+              started_on: 1.year.ago,
+              finished_on: nil
+            )
+          end
+          let!(:ect_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :for_ect,
+              started_on: ect_at_school_period.started_on + 1.month,
+              finished_on: nil,
+              ect_at_school_period:,
+              school_partnership: school_partnership1
+            )
+          end
+          let!(:latest_mentorship_period) do
+            FactoryBot.create(
+              :mentorship_period,
+              mentee: ect_at_school_period,
+              mentor: mentor_at_school_period,
+              started_on: ect_training_period.started_on + 1.month,
+              finished_on: 1.year.from_now
+            )
+          end
+
+          it "creates metadata with the correct/latest api_mentor_id" do
+            refresh_metadata
+
+            metadata = Metadata::TeacherLeadProvider.where(teacher: teacher1, lead_provider: lead_provider1).sole
+            expect(metadata).to have_attributes(
+              teacher: teacher1,
+              lead_provider: lead_provider1,
+              latest_ect_training_period: ect_training_period,
+              latest_ect_contract_period: ect_training_period.contract_period,
+              latest_mentor_training_period: nil,
+              latest_mentor_contract_period: nil,
+              api_mentor_id: latest_mentorship_period.mentor.teacher.api_id
+            )
+          end
+        end
+      end
+
       describe "#involved_in_school_transfer" do
         subject(:metadata) do
           Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole

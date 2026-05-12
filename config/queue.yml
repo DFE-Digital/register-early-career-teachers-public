@@ -56,12 +56,6 @@ migration: &migration
       processes: 2
       polling_interval: 0.1
 
-    # Parity check
-    - queues: [parity_check_requests]
-      threads: 2
-      processes: 2
-      polling_interval: 0.1
-
     # Migration
     - queues: [migration]
       threads: 2

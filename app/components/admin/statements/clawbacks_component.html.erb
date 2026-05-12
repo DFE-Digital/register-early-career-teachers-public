@@ -13,12 +13,12 @@
         end
 
         table.with_body do |body|
-          declaration_type_outputs_with_clawbacks(calculator).each do |declaration_type_output|
+          rows(calculator).each do |clawback|
             body.with_row do |row|
-              row.with_cell { payment_type(calculator, declaration_type_output) }
-              row.with_cell { declaration_type_output.refundable_count.to_s }
-              row.with_cell(numeric: true) { number_to_pounds(-declaration_type_output.type_adjusted_fee_per_declaration) }
-              row.with_cell(numeric: true) { number_to_pounds(-declaration_type_output.total_refundable_amount) }
+              row.with_cell { clawback.payment_type }
+              row.with_cell { clawback.refundable_count.to_s }
+              row.with_cell(numeric: true) { number_to_pounds(-clawback.fee_per_declaration) }
+              row.with_cell(numeric: true) { number_to_pounds(-clawback.total_refundable_amount) }
             end
           end
         end
@@ -29,7 +29,7 @@
       Total
     </div>
     <div class="govuk-!-text-align-right govuk-heading-s">
-      <%= number_to_pounds(-calculator.outputs.total_refundable_amount) %>
+      <%= number_to_pounds(-total(calculator)) %>
     </div>
   </div>
 <% end %>

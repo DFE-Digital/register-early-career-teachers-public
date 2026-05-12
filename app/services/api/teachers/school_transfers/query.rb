@@ -2,7 +2,7 @@ module API::Teachers::SchoolTransfers
   class Query
     include Queries::FilterIgnorable
 
-    attr_reader :scope
+    attr_reader :scope, :lead_provider_id, :updated_since, :sort
 
     def initialize(
       lead_provider_id:,
@@ -10,10 +10,13 @@ module API::Teachers::SchoolTransfers
       sort: { created_at: :asc }
     )
       @scope = Teacher.distinct
+      @lead_provider_id = lead_provider_id
+      @updated_since = updated_since
+      @sort = sort
 
-      where_lead_provider_is(lead_provider_id)
-      where_updated_since(updated_since, lead_provider_id)
-      set_sort_by(sort)
+      where_lead_provider
+      where_updated_since
+      set_sort_by
     end
 
     def school_transfers
@@ -57,7 +60,11 @@ module API::Teachers::SchoolTransfers
         )
     end
 
-    def where_lead_provider_is(lead_provider_id)
+    def set_sort_by
+      @scope = scope.order(sort)
+    end
+
+    def where_lead_provider
       @scope = scope
         .joins(:lead_provider_metadata)
         .where(
@@ -68,36 +75,63 @@ module API::Teachers::SchoolTransfers
         )
     end
 
-    def where_updated_since(updated_since, lead_provider_id)
-      return if ignore?(filter: updated_since)
-
-      # This includes a teacher's first and last training periods, even if they aren't true transfers.
-      # Excluding them is complex, and this is still an improvement over ECF. As a result, some teachers
-      # may appear even if their transfer periods weren't necessarily updated — it's a best-effort approach.
-      @scope = scope
-          .left_joins(
-            ect_at_school_periods: {
-              earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-              latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-            },
-            mentor_at_school_periods: {
-              earliest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-              latest_training_period: { school_partnership: { lead_provider_delivery_partnership: :active_lead_provider } },
-            }
-          )
-          # On the joins below training_periods is the earliest ECT training periods it is not
-          # aliased like the others because it is the first join onto the training_periods table.
-          .where(
-            "(training_periods.id IS NOT NULL AND training_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers.lead_provider_id = :lead_provider_id) OR
-            (latest_training_periods_ect_at_school_periods.id IS NOT NULL AND latest_training_periods_ect_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships.lead_provider_id = :lead_provider_id) OR
-            (earliest_training_periods_mentor_at_school_periods.id IS NOT NULL AND earliest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_2.lead_provider_id = :lead_provider_id) OR
-            (latest_training_periods_mentor_at_school_periods.id IS NOT NULL AND latest_training_periods_mentor_at_school_periods.api_transfer_updated_at >= :updated_since AND active_lead_providers_lead_provider_delivery_partnerships_3.lead_provider_id = :lead_provider_id)",
-            updated_since:, lead_provider_id:
-          )
+    def teacher_ids
+      @teacher_ids ||= scope.ids
     end
 
-    def set_sort_by(sort)
-      @scope = scope.order(sort)
+    def boundary_ect_at_school_periods
+      ECTAtSchoolPeriod
+        .where(teacher_id: teacher_ids)
+        .includes(:earliest_training_period, :latest_training_period)
+    end
+
+    def boundary_mentor_at_school_periods
+      MentorAtSchoolPeriod
+        .where(teacher_id: teacher_ids)
+        .includes(:earliest_training_period, :latest_training_period)
+    end
+
+    def boundary_training_period_ids
+      [*boundary_ect_at_school_periods, *boundary_mentor_at_school_periods].flat_map { |at_school_period|
+        [
+          at_school_period.earliest_training_period&.id,
+          at_school_period.latest_training_period&.id
+        ]
+      }.compact.uniq
+    end
+
+    def boundary_training_periods_updated_since
+      @boundary_training_periods_updated_since ||=
+        TrainingPeriod
+          .joins(school_partnership: { lead_provider_delivery_partnership: :active_lead_provider })
+          .where(active_lead_providers: { lead_provider_id: })
+          .where(api_transfer_updated_at: updated_since..)
+          .where(id: boundary_training_period_ids)
+    end
+
+    def ect_ids
+      boundary_training_periods_updated_since
+        .joins(:ect_at_school_period)
+        .pluck("ect_at_school_periods.teacher_id")
+    end
+
+    def mentor_ids
+      boundary_training_periods_updated_since
+        .joins(:mentor_at_school_period)
+        .pluck("mentor_at_school_periods.teacher_id")
+    end
+
+    # Filters scope to teachers with transfer-boundary training periods that were
+    # updated since +updated_since+ for the given lead provider.
+    #
+    # A transfer boundary is defined as the FIRST or LAST training period in a
+    # school period. Any interim period is never part of a transfer and must be
+    # excluded.
+    #
+    def where_updated_since
+      return if ignore?(filter: updated_since)
+
+      @scope = scope.where(id: ect_ids + mentor_ids)
     end
   end
 end

@@ -230,6 +230,54 @@ RSpec.describe Statements::Search do
           end
         end
       end
+
+      describe "by `status`" do
+        let!(:statement1) { FactoryBot.create(:statement, :open, year: 2025, month: 8) }
+        let!(:statement2) { FactoryBot.create(:statement, :payable, year: 2025, month: 4) }
+        let!(:statement3) { FactoryBot.create(:statement, :paid, year: 2025, month: 1) }
+
+        context "when `status`: 'open'" do
+          it "return only statements with status of open" do
+            search = described_class.new(status: "open")
+
+            expect(search.statements).to eq([statement1])
+          end
+        end
+
+        context "when `status`: 'payable'" do
+          it "return only statements with status of payable" do
+            search = described_class.new(status: "payable")
+
+            expect(search.statements).to eq([statement2])
+          end
+        end
+
+        context "when `status`: 'paid'" do
+          it "return only statements with status of paid" do
+            search = described_class.new(status: "paid")
+
+            expect(search.statements).to eq([statement3])
+          end
+        end
+
+        context "when `status`: :ignore" do
+          it "returns all statements" do
+            search = described_class.new(status: :ignore)
+
+            expect(search.statements).to contain_exactly(statement1, statement2, statement3)
+          end
+        end
+
+        it "does not filter by `status` if blank" do
+          search = described_class.new(status: " ")
+
+          expect(search.statements).to contain_exactly(statement1, statement2, statement3)
+        end
+
+        it "raises an error when searching by an invalid status" do
+          expect { described_class.new(status: "something_else") }.to raise_error(Statements::Search::InvalidStatusError)
+        end
+      end
     end
 
     describe "ordering" do

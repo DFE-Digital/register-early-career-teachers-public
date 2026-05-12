@@ -59,7 +59,7 @@ module Schools
             finished_on:,
             author:,
             reported_by_school_id: mentor_at_school_period.school_id
-          ).finish_existing_at_school_periods!
+          ).finish_periods_at_reported_school!
         end
       end
     end

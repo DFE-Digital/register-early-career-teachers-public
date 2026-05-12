@@ -23,6 +23,10 @@ class SessionsController < ApplicationController
 
     session[:invalid_user_organisation_name] = user_builder.organisation_name
     redirect_to access_denied_path
+  rescue DfESignIn::APIClient::NotFoundError => e
+    Sentry.capture_message(e.message, level: :info)
+
+    redirect_to access_denied_path
   end
 
   def destroy
@@ -39,7 +43,7 @@ class SessionsController < ApplicationController
   end
 
   def failure
-    Sentry.capture_message("[Authentication failure] #{params[:message]}")
+    Sentry.capture_message("[Authentication failure] #{params[:message]}", level: :info)
     session_manager.end_session!
   end
 
