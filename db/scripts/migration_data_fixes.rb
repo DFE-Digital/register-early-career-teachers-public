@@ -9,21 +9,19 @@
 #               Ensure the list is enclosed in quotes so the CSV sees just a single data field
 #
 # $ kubectl exec -it <pod-name> -- bin/rails runner db/scripts/migration_data_fixes.rb
+csv_log = nil
+
 begin
   csv_file = Rails.root.join("db/scripts/migration_data_fixes.csv")
   csv_log = CSV.open(Rails.root.join("tmp/migration_data_fixes_log-#{Time.zone.now.to_fs(:iso8601)}.csv"), "w")
   csv_log << %w[object_type,object_id,action,attributes,errors]
-
-  row = {}
   processor = MigrationFixes::Processor.new
 
   CSV.foreach(csv_file, headers: true, header_converters: :symbol) do |row|
-
     object = processor.process!(data_change: row.to_h)
     errors = object.presence&.errors&.to_json
 
     csv_log << [row[:object_type], row[:object_id], row[:action], row[:attributes], errors]
-
   rescue StandardError => e
     Rails.logger.warn("ERROR: TrainingPeriod ID: #{tp_id} - #{e.message}")
     csv_log << [row[:object_type], row[:object_id], row[:action], row[:attributes], e.message]

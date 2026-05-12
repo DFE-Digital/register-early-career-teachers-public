@@ -83,13 +83,13 @@ private
 
   def school_partnership_dependencies(school_partnership, list)
     school_partnership_list = list[:school_partnerships] ||= {}
-    return list if school_partnership_list.has_key?(school_partnership.id.to_s)
+    return list if school_partnership_list.key?(school_partnership.id.to_s)
 
     school_partnership_list[school_partnership.id.to_s] = { label: "school_partnership_#{school_partnership_list.count + 1}", data: school_partnership }
 
     list = school_dependencies(school_partnership.school, list)
 
-    list = provider_partnership_dependencies(school_partnership.lead_provider_delivery_partnership, list)
+    provider_partnership_dependencies(school_partnership.lead_provider_delivery_partnership, list)
   end
 
   def provider_partnership_dependencies(partnership, list)
@@ -118,7 +118,7 @@ private
     lp_list = list[:lead_providers] ||= {}
     lead_provider = alp.lead_provider
     lp_list[lead_provider.id.to_s] = { label: "lead_provider_#{lp_list.count + 1}", data: lead_provider }
-    
+
     contract_period_dependencies(alp.contract_period, list)
   end
 
@@ -126,7 +126,7 @@ private
     cp_list = list[:contract_periods] ||= {}
     return list if cp_list[contract_period.year.to_s].present?
 
-    cp_list[contract_period.year.to_s] = { label: "contract_period_#{contract_period.year}", data:  contract_period }
+    cp_list[contract_period.year.to_s] = { label: "contract_period_#{contract_period.year}", data: contract_period }
     list
   end
 end
