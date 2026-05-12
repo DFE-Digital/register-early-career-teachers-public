@@ -98,6 +98,52 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
         end
       end
 
+      context "with multiple mentor training periods" do
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let(:older_started_on) { Date.new(2023, 6, 1) }
+        let(:middle_started_on) { Date.new(2024, 6, 1) }
+        let(:newer_started_on) { Date.new(2025, 6, 1) }
+        let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: older_started_on, finished_on: nil) }
+
+        before do
+          lead_provider = FactoryBot.create(:lead_provider)
+          latest_lead_provider = FactoryBot.create(:lead_provider)
+          older_active_lp = FactoryBot.create(:active_lead_provider, lead_provider:)
+          newer_active_lp = FactoryBot.create(:active_lead_provider, lead_provider:)
+          latest_active_lp = FactoryBot.create(:active_lead_provider, lead_provider: latest_lead_provider)
+
+          FactoryBot.create(:training_period,
+                            :for_mentor,
+                            :with_active_lead_provider,
+                            active_lead_provider: older_active_lp,
+                            mentor_at_school_period:,
+                            started_on: older_started_on,
+                            finished_on: middle_started_on - 1.day)
+
+          FactoryBot.create(:training_period,
+                            :for_mentor,
+                            :with_active_lead_provider,
+                            active_lead_provider: newer_active_lp,
+                            mentor_at_school_period:,
+                            started_on: middle_started_on,
+                            finished_on: newer_started_on - 1.day)
+
+          FactoryBot.create(:training_period,
+                            :for_mentor,
+                            :with_active_lead_provider,
+                            active_lead_provider: latest_active_lp,
+                            mentor_at_school_period:,
+                            started_on: newer_started_on,
+                            finished_on: nil)
+        end
+
+        it "shows an API response for the latest mentor period under each lead provider" do
+          get admin_teacher_training_path(teacher)
+
+          expect(response.body).to include("API response").twice
+        end
+      end
+
       context "when the teacher has no training periods" do
         let(:teacher) { FactoryBot.create(:teacher) }
 
@@ -128,10 +174,9 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
           expect(response.body.index(newer_started_on.to_fs(:govuk))).to be < body.index(older_started_on.to_fs(:govuk))
         end
 
-        it "shows an API response for each period with a different partnership" do
+        it "shows an API response for each period with a different lead provider" do
           get admin_teacher_training_path(teacher)
 
-          expect(SchoolPartnership.count).to eq(2)
           expect(response.body).to include("API response").twice
         end
 
@@ -157,6 +202,39 @@ RSpec.describe "Admin::Teachers::Training", type: :request do
             expect(response.body).to include("API response").once
             expect(response.body.index("API response")).to be < response.body.index(older_started_on.to_fs(:govuk))
           end
+        end
+      end
+
+      context "with multiple ECT training periods under the same lead provider" do
+        let(:teacher) { FactoryBot.create(:teacher) }
+        let(:older_started_on) { 2.years.ago.to_date }
+        let(:newer_started_on) { 1.year.ago.to_date }
+        let(:ect_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: older_started_on, finished_on: nil) }
+
+        before do
+          lead_provider = FactoryBot.create(:lead_provider)
+          older_active_lp = FactoryBot.create(:active_lead_provider, lead_provider:)
+          newer_active_lp = FactoryBot.create(:active_lead_provider, lead_provider:)
+
+          FactoryBot.create(:training_period,
+                            :with_active_lead_provider,
+                            active_lead_provider: older_active_lp,
+                            ect_at_school_period: ect_period,
+                            started_on: older_started_on,
+                            finished_on: newer_started_on - 1.day)
+
+          FactoryBot.create(:training_period,
+                            :with_active_lead_provider,
+                            active_lead_provider: newer_active_lp,
+                            ect_at_school_period: ect_period,
+                            started_on: newer_started_on,
+                            finished_on: nil)
+        end
+
+        it "only shows an API response for the latest period under that lead provider" do
+          get admin_teacher_training_path(teacher)
+
+          expect(response.body).to include("API response").once
         end
       end
     end
