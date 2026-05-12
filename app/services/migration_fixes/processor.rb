@@ -44,7 +44,7 @@ private
     return {} if attributes_list.blank?
 
     attrs = {}
-    
+
     attributes_list.split(",").each_slice(2) { |k, v| attrs[k.to_sym] = v }
 
     attrs

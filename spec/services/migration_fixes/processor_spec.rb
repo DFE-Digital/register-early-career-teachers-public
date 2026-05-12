@@ -23,7 +23,7 @@ describe MigrationFixes::Processor do
       let(:email) { "mungo@example.com" }
 
       let(:action) { "create" }
-      let(:attributes) { }
+      let(:attributes) {}
 
       let(:data_change) do
         {
