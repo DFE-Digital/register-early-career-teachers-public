@@ -76,7 +76,7 @@ Rails.application.configure do
   config.dfe_sign_in_enabled = true
   config.enable_api = true
   config.enable_test_guidance = false
-
+  config.enable_finance_contract_periods = true
   config.active_job.queue_adapter = :test
 
   # Custom config
