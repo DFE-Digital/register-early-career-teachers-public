@@ -9,15 +9,15 @@ Guidance on what we plan to do for current and existing cohorts, and what this m
 
 We are not closing the 2023 cohort until all cohorts related to ECF close. This is different to how we closed 2021 and 2022 cohorts.
 
-We expect to close the 2023 cohort sometime in 2027.  We’ll let lead providers know when we’ve confirmed the date.
+We expect to close the 2023 cohort in 2027. We’ll let lead providers know when we’ve confirmed the date.
 
 ### What this means for lead providers
 
 Lead providers should continue to do what they’ve been doing for the 2023 cohort. They need to make sure that they can manage 4 open cohorts at one time.
 
-If lead providers continue to train and make declarations for partially trained ECTs or mentors, they need to make sure participants are on an extended schedule.
+If lead providers continue to train and make declarations for partially trained ECTs or mentors, they need to make sure participants are on an extended schedule. Lead provers will need to move participants onto an extended schedule if they are not already. 
 
-If lead providers are assigned 2023 participants, they’ll need to partner with the school to be able to train and declare against them.
+If lead providers are assigned 2023 participants, they’ll need to partner with the school for the 2023 cohort to be able to train and declare against them.
 
 ## We are not archiving participants in the 2023 cohort
 
@@ -25,7 +25,7 @@ We are not archiving any participants, even if they have no declarations.
 
 ### What this means for lead providers
 
-If ECTs or mentors get re-registered, lead providers will need to move their cohort and schedule if participants started training legitimately before.
+If ECTs or mentors get re-registered, lead providers will need to move their cohort and schedule if participants had not started training legitimately before. 
 
 ## We are not closing off partially trained mentors in the 2023 cohort
 
@@ -36,14 +36,14 @@ Partially trained mentors, if they continue to be trained, can be declared again
 Lead providers must make sure any mentors that they continue to train are:
 
 * put on an extended schedule
-* compliant with the fully trained mentor guidance
+* compliant with the fully trained mentor guidance and any additional contract management guidance they’ve been given 
 * compliant with any contract management guidance you’ve been given
 
 Lead providers should check with contract managers if they’re uncertain.
 
 ### Mentor completion dates and additional training
 
-There are some circumstances where a mentor’s eligibility for additional training will be determined if they have a completion date or not.
+Usually, a mentor’s eligibility for additional training will be determined if they have a completion date or not.
 
 #### Some mentors with completion dates are available for additional training
 
@@ -66,13 +66,13 @@ These mentors are eligible for a maximum of 2 additional declarations, if this w
 
 This training will be paid from their ECF cohort. Further declarations cannot be submitted over the API and must be submitted manually to contract managers.
 
-##### Mentors with just one declaration paid out against them
+##### Mentors with no or just one declaration paid out against them
 
-These mentors are eligible to restart training under the ECTPM contract. These mentors will need moving to the relevant ECTPM cohort. 
+These mentors are eligible to restart training under the early career teacher training programme (ECTPM) contract. These mentors will need moving to the relevant ECTPM cohort. 
 
 ECTPM declarations must be submitted manually to contract managers if there is a 2021 or 2022 started or completed declaration in existence.
 
-#### Some mentors without completion dates are not available for additional training
+#### Some mentors without completion dates are not eligible for additional training
 
 Some mentor data might be returned with an unpopulated mentor funding end date (`mentor_funding_end_date`) and reason (`mentor_ineligible_for_funding_reason`) in GET participant responses. However, they could still be ineligible for additional funded training.
 
@@ -80,9 +80,11 @@ This is because it’s possible 2023 and 2024 cohort mentors without a completio
 
 If a lead provider can confirm that a mentor has had more than 2 years access to funded training without having been withdrawn, they are considered fully trained and not eligible for further training.
 
+Lead providers should check with contract managers if they’re uncertain.  
+
 ## 2026 cohort opening
 
-We’ll email lead providers by the end of June to let them know registration is open. We expect it to open on 15 June. Any participants starting their training from 1 June 2026 will be included in the cohort.
+We’ll email lead providers by the end of June to let them know registration is open. We expect it to open on 15 June. Any participants starting their training from 1 June 2026 will be assigned to the cohort.
 
 To ensure that participants are not put onto the wrong schedule or cohort, we’ll block participant registrations, including transfers, between 1 June and 14 June. 
 
@@ -100,9 +102,11 @@ Lead providers will be able to create partnerships as soon as the cohort opens, 
 
 Schools can also reuse partnerships from previous cohorts, so lead providers don’t need to create new ones. 
 
+Lead providers can find out more about partnerships in our [create view and update partnership guidance](https://www.register-early-career-teachers.education.gov.uk/api/guidance/guidance-for-lead-providers/create-view-and-update-partnerships) 
+
 ### Sharing data with delivery partners
 
-Delivery partners no longer have access to Check data. Lead providers will now be responsible for sharing data with delivery partners for all cohorts.
+Delivery partners no longer have direct access to DfE ECT and mentors data. Lead providers will now be responsible for sharing data with delivery partners for all cohorts.
 
 ### Prepare systems for 2026
 
