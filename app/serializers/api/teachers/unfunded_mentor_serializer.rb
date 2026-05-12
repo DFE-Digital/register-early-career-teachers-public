@@ -12,7 +12,7 @@ class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
         end
       end
 
-      (matching_periods.max_by(&:started_on) || teacher.latest_mentor_at_school_period).email
+      matching_periods.max_by(&:started_on).email
     end
     field(:trn, name: :teacher_reference_number)
     field :created_at

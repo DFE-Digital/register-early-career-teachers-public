@@ -16,11 +16,20 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
       api_unfunded_mentor_updated_at:
     )
   end
+  let!(:school_partnership_for_lead_provider) do
+    FactoryBot.create(:school_partnership, :for_year, lead_provider:)
+  end
 
   before do
-    # Create mentor at school periods for the unfunded mentor teacher
-    FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: unfunded_mentor_teacher, started_on: 6.months.ago, email: "test1@test.com")
-    FactoryBot.create(:mentor_at_school_period, teacher: unfunded_mentor_teacher, started_on: 1.year.ago, finished_on: 6.months.ago, email: "test2@test.com")
+    create_mentorship_period_for(
+      mentee_school_partnership: school_partnership_for_lead_provider,
+      mentor: unfunded_mentor_teacher,
+      create_mentor_training_period: false
+    )
+    unfunded_mentor_teacher
+      .mentor_at_school_periods
+      .find_by(school: school_partnership_for_lead_provider.school)
+      .update!(email: "lead-provider-school@example.com")
   end
 
   describe "core attributes" do
@@ -34,9 +43,7 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
     subject(:attributes) { response["attributes"] }
 
     it "serializes correctly" do
-      expect(attributes["email"]).to be_present
-      expect(attributes["email"]).to eq(unfunded_mentor_teacher.latest_mentor_at_school_period.email)
-      expect(attributes["email"]).to eq("test1@test.com")
+      expect(attributes["email"]).to eq("lead-provider-school@example.com")
       expect(attributes["teacher_reference_number"]).to be_present
       expect(attributes["teacher_reference_number"]).to eq(unfunded_mentor_teacher.trn)
       expect(attributes["created_at"]).to be_present
@@ -67,9 +74,6 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
 
   describe "`email` per lead provider" do
     let!(:other_lead_provider) { FactoryBot.create(:lead_provider) }
-    let!(:school_partnership_for_lead_provider) do
-      FactoryBot.create(:school_partnership, :for_year, lead_provider:)
-    end
     let!(:school_partnership_for_other_lead_provider) do
       FactoryBot.create(
         :school_partnership,
@@ -80,18 +84,6 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
     end
 
     before do
-      # Mentor at school A, mentoring an ECT trained by `lead_provider`
-      create_mentorship_period_for(
-        mentee_school_partnership: school_partnership_for_lead_provider,
-        mentor: unfunded_mentor_teacher,
-        create_mentor_training_period: false
-      )
-      unfunded_mentor_teacher
-        .mentor_at_school_periods
-        .find_by(school: school_partnership_for_lead_provider.school)
-        .update!(email: "lead-provider-school@example.com")
-
-      # Mentor at school B, mentoring an ECT trained by `other_lead_provider`
       create_mentorship_period_for(
         mentee_school_partnership: school_partnership_for_other_lead_provider,
         mentor: unfunded_mentor_teacher,
