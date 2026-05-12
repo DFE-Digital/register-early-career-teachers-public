@@ -8,7 +8,7 @@ RSpec.describe "Registering a mentor" do
     given_there_is_a_school_in_the_service
     and_the_school_is_in_a_partnership_with_a_lead_provider
     and_there_is_an_ect_with_no_mentor_registered_at_the_school
-    and_there_is_a_mentor_previously_registered_in_an_older_contract_period
+    and_there_is_a_mentor_previously_registered_at_another_school_in_an_older_contract_period
     and_i_sign_in_as_that_school_user
     and_i_am_on_the_schools_landing_page
 
@@ -65,7 +65,7 @@ private
     @ect_name = Teachers::Name.new(@ect.teacher).full_name
   end
 
-  def and_there_is_a_mentor_previously_registered_in_an_older_contract_period
+  def and_there_is_a_mentor_previously_registered_at_another_school_in_an_older_contract_period
     @contract_period_2024 = FactoryBot.create(:contract_period, :with_schedules, :previous)
     @another_school = FactoryBot.create(:school, urn: "7654321")
     @teacher = FactoryBot.create(:teacher, trn:, trs_first_name: "Kirk", trs_last_name: "Van Houten", corrected_name: nil)
