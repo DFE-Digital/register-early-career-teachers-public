@@ -8,12 +8,32 @@ module Admin
         @navigation_items = helpers.admin_teacher_navigation_items(@teacher, :training)
         @breadcrumbs = teacher_breadcrumbs
         @ect_at_school_periods = @teacher.ect_at_school_periods
-        @ect_training_periods = @teacher.ect_training_periods.includes(ect_at_school_period: :teacher).latest_first
-        @period_ids_to_show_api_row = @ect_training_periods.group_by(&:lead_provider_delivery_partnership).values.map { it.first.id }
-        @mentor_training_periods = @teacher.mentor_training_periods.includes(mentor_at_school_period: :teacher).latest_first
+        @ect_training_periods = @teacher.ect_training_periods
+          .includes(:active_lead_provider, :expression_of_interest, ect_at_school_period: :teacher)
+          .latest_first
+        @mentor_training_periods = @teacher.mentor_training_periods
+          .includes(:active_lead_provider, :expression_of_interest, mentor_at_school_period: :teacher)
+          .latest_first
+        @training_period_ids_with_api_response = training_period_ids_with_api_response
       end
 
     private
+
+      def training_period_ids_with_api_response
+        [@ect_training_periods, @mentor_training_periods].flat_map do |training_periods|
+          training_periods
+            .select(&:provider_led_training_programme?)
+            .group_by { |training_period| lead_provider_id_for(training_period) }
+            .except(nil)
+            .values
+            .map { it.first.id }
+        end
+      end
+
+      def lead_provider_id_for(training_period)
+        training_period.active_lead_provider&.lead_provider_id ||
+          training_period.expression_of_interest&.lead_provider_id
+      end
 
       def teacher_breadcrumbs
         {
