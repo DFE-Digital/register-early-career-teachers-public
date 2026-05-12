@@ -773,13 +773,13 @@ RSpec.describe Schools::RegisterECT do
       end
     end
 
-    context "when ECT is transferring from another school on the same date as the previously reported leaving date" do
+    context "when ECT is transferring from another school on the same date " \
+            "as the previously reported leaving date" do
       let(:training_programme) { "school_led" }
       let(:lead_provider) { nil }
       let(:other_school) { FactoryBot.create(:school) }
       let!(:teacher) { FactoryBot.create(:teacher, trn:) }
       let(:started_on) { Date.new(2026, 3, 18) }
-      let(:expected_finished_on) { started_on.yesterday }
 
       let!(:existing_period) do
         FactoryBot.create(
@@ -793,12 +793,73 @@ RSpec.describe Schools::RegisterECT do
       end
 
       it "updates the previous period to end the day before the new start date" do
-        service.register!
-
-        expect(existing_period.reload.finished_on).to eq(expected_finished_on)
+        expect { service.register! }
+          .to change { existing_period.reload.finished_on }
+          .from(started_on)
+          .to(started_on.yesterday)
 
         new_period = teacher.ect_at_school_periods.find_by!(school:)
         expect(new_period.started_on).to eq(started_on)
+      end
+    end
+
+    context "when ECT is transferring from another school on the same date " \
+            "as the previously reported leaving date when the previous period " \
+            "finishes the day after it started" do
+      let(:training_programme) { "school_led" }
+      let(:lead_provider) { nil }
+      let(:other_school) { FactoryBot.create(:school) }
+      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:started_on) { Date.new(2025, 8, 1) }
+
+      let!(:existing_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: other_school,
+          started_on: started_on.yesterday,
+          finished_on: started_on,
+          reported_leaving_by_school_id: other_school.id
+        )
+      end
+
+      it "updates the previous period to end the day before the new start date" do
+        expect { service.register! }
+          .to change { existing_period.reload.finished_on }
+          .from(started_on)
+          .to(started_on.yesterday)
+
+        new_period = teacher.ect_at_school_periods.find_by!(school:)
+        expect(new_period.started_on).to eq(started_on)
+      end
+    end
+
+    context "when ECT is transferring from another school on the same date " \
+            "as the previously reported leaving date when the previous period " \
+            "finishes the same day it started" do
+      let(:training_programme) { "school_led" }
+      let(:lead_provider) { nil }
+      let(:other_school) { FactoryBot.create(:school) }
+      let!(:teacher) { FactoryBot.create(:teacher, trn:) }
+      let(:started_on) { Date.new(2025, 8, 1) }
+
+      let!(:existing_period) do
+        FactoryBot.create(
+          :ect_at_school_period,
+          teacher:,
+          school: other_school,
+          started_on:,
+          finished_on: started_on,
+          reported_leaving_by_school_id: other_school.id
+        )
+      end
+
+      # TODO: we want to handle this more gracefully (i.e communicate to Users)
+      # that they need to choose a different start date
+      it "raises an error" do
+        expect { service.register! }
+          .to raise_error(ActiveRecord::RecordInvalid)
+          .with_message(/The end date must be later than the start date/)
       end
     end
 
