@@ -43,8 +43,6 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
           TrainingPeriod,
           contract_period: contract_2024,
           expression_of_interest: nil,
-          school_partnership: nil,
-          schedule: nil,
           provider_led_training_programme?: true
         )
       end
@@ -63,8 +61,6 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
           TrainingPeriod,
           contract_period: contract_2023,
           expression_of_interest: nil,
-          school_partnership: nil,
-          schedule: nil,
           provider_led_training_programme?: true
         )
       end
@@ -83,13 +79,11 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
           TrainingPeriod,
           contract_period: frozen_contract,
           expression_of_interest: nil,
-          school_partnership: nil,
-          schedule: nil,
           provider_led_training_programme?: true
         )
       end
 
-      it "falls back to the registration contract period if the previous period is frozen" do
+      it "falls back to the registration contract period" do
         expect(resolver.call).to eq(contract_2025)
       end
     end
@@ -122,63 +116,11 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
           TrainingPeriod,
           contract_period: nil,
           expression_of_interest: active_lead_provider,
-          school_partnership: nil,
-          schedule: nil,
           provider_led_training_programme?: true
         )
       end
 
       it "returns the expression of interest contract period" do
-        expect(resolver.call).to eq(contract_2024)
-      end
-    end
-
-    context "when the previous provider-led training period used a school partnership" do
-      let(:started_on) { Date.new(2025, 9, 1) }
-
-      let(:active_lead_provider) do
-        instance_double(ActiveLeadProvider, contract_period: contract_2024)
-      end
-
-      let(:school_partnership) do
-        instance_double(SchoolPartnership, active_lead_provider:)
-      end
-
-      let(:previous_training_period) do
-        instance_double(
-          TrainingPeriod,
-          contract_period: nil,
-          expression_of_interest: nil,
-          school_partnership:,
-          schedule: nil,
-          provider_led_training_programme?: true
-        )
-      end
-
-      it "returns the school partnership contract period" do
-        expect(resolver.call).to eq(contract_2024)
-      end
-    end
-
-    context "when the previous provider-led training period when the contract period can only be derived from the schedule" do
-      let(:started_on) { Date.new(2025, 9, 1) }
-
-      let(:schedule) do
-        instance_double(Schedule, contract_period: contract_2024)
-      end
-
-      let(:previous_training_period) do
-        instance_double(
-          TrainingPeriod,
-          contract_period: nil,
-          expression_of_interest: nil,
-          school_partnership: nil,
-          schedule:,
-          provider_led_training_programme?: true
-        )
-      end
-
-      it "returns the schedule contract period" do
         expect(resolver.call).to eq(contract_2024)
       end
     end
@@ -191,8 +133,6 @@ RSpec.describe ContractPeriods::ForMentorRegistration do
           TrainingPeriod,
           contract_period: contract_2024,
           expression_of_interest: nil,
-          school_partnership: nil,
-          schedule: nil,
           provider_led_training_programme?: true
         )
       end

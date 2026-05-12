@@ -84,6 +84,7 @@ module Schools
       earliest_matching_school_partnership if lead_provider.present?
     end
 
+    # Override TrainingPeriodSources default of ContractPeriod.current
     def contract_period
       resolved_contract_period
     end
@@ -91,15 +92,15 @@ module Schools
     def resolved_contract_period
       @resolved_contract_period ||= ContractPeriods::ForMentorRegistration.new(
         started_on: mentor_at_school_period.started_on,
-        previous_training_period:
+        previous_training_period: latest_mentor_training_period
       ).call
     end
 
-    def previous_training_period
-      @previous_training_period ||= TrainingPeriod
-                                      .for_mentor_trn(teacher.trn)
-                                      .order(started_on: :desc)
-                                      .first
+    def latest_mentor_training_period
+      @latest_mentor_training_period ||= TrainingPeriod
+                                           .for_mentor_trn(teacher.trn)
+                                           .order(started_on: :desc)
+                                           .first
     end
 
     def create_teacher!
