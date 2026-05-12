@@ -1,10 +1,10 @@
 module Schools
   module Validation
     class PeriodBoundary
-      attr_reader :ect_at_school_period, :input_date
+      attr_reader :input_period, :input_date
 
-      def initialize(ect_at_school_period:, input_date:)
-        @ect_at_school_period = ect_at_school_period
+      def initialize(input_period:, input_date:)
+        @input_period = input_period
         @input_date = input_date
       end
 
@@ -19,7 +19,8 @@ module Schools
       def type
         case invalid_period
         when ECTAtSchoolPeriod then "teaching"
-        when TrainingPeriod    then "their latest training"
+        when MentorAtSchoolPeriod then "teaching"
+        when TrainingPeriod then "their latest training"
         end
       end
 
@@ -39,10 +40,11 @@ module Schools
 
       def validate_periods
         return if input_date.blank?
-        return unless ect_at_school_period
+        return unless input_period
+        return unless input_period_is_at_school_period?
 
-        if input_date_present_and_before_period_starts?(ect_at_school_period)
-          ect_at_school_period
+        if input_date_present_and_before_period_starts?(input_period)
+          input_period
         elsif input_date_present_and_before_period_starts?(latest_started_training_period)
           latest_started_training_period
         end
@@ -54,13 +56,17 @@ module Schools
         input_date <= earliest_valid_input_date(period)
       end
 
+      def input_period_is_at_school_period?
+        input_period.is_a?(ECTAtSchoolPeriod) || input_period.is_a?(MentorAtSchoolPeriod)
+      end
+
       def earliest_valid_input_date(period)
         period.started_on.next_day
       end
 
       # Unstarted training periods (ie starting in the future) will be deleted and should not prevent a start date at a new school from being valid
       def latest_started_training_period
-        @latest_started_training_period ||= ect_at_school_period
+        @latest_started_training_period ||= input_period
           .training_periods
           .started_on_or_before(Time.zone.today)
           .latest_first

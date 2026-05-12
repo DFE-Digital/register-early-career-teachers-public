@@ -5,7 +5,7 @@ module Schools
         attr_accessor :leaving_on
 
         validate :leaving_on_valid
-        validate :leaving_after_start_date
+        validate :leaving_on_after_school_or_training_period_start
 
         def self.permitted_params
           %i[
@@ -40,20 +40,40 @@ module Schools
           errors.add(:leaving_on, leaving_on_input.error_message)
         end
 
-        def leaving_after_start_date
-          return unless leaving_on_input.valid?
-          return if leaving_on_input.value_as_date > mentor_at_school_period.started_on
+        def skip_leaving_on_validation?
+          errors[:leaving_on].any?
+        end
 
-          errors.add(
-            :leaving_on,
-            "Our records show that #{name_for(mentor_at_school_period.teacher)} started teaching at your school on
-            #{mentor_at_school_period.started_on.to_formatted_s(:govuk)}. Enter a later date."
-          )
+        def leaving_on_after_school_or_training_period_start
+          return if skip_leaving_on_validation?
+          return if leaving_on_boundary_validator.valid?
+
+          errors.add(:leaving_on, invalid_period_error_message)
+        end
+
+        def invalid_period_error_message
+          "Our records show that #{name_for(mentor_at_school_period.teacher)} started " \
+          "#{invalid_period_type} at your school on " \
+          "#{invalid_period_started_on_formatted}." \
+          " Enter a date after #{earliest_valid_input_date_formatted}."
         end
 
         def leaving_on_input
           @leaving_on_input ||= Schools::Validation::LeavingDate.new(date_as_hash: leaving_on)
         end
+
+        def leaving_on_boundary_validator
+          @leaving_on_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
+            input_period: mentor_at_school_period,
+            input_date: leaving_on_input.value_as_date
+          )
+        end
+
+        delegate  :type,
+                  :started_on_formatted,
+                  to: :leaving_on_boundary_validator,
+                  prefix: :invalid_period
+        delegate :earliest_valid_input_date_formatted, to: :leaving_on_boundary_validator
       end
     end
   end
