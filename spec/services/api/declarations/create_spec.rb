@@ -227,7 +227,8 @@ RSpec.describe API::Declarations::Create, type: :model do
               contract_period.update!(payments_frozen_at: Time.zone.now)
             end
 
-            it { is_expected.to be_valid }
+            it { is_expected.to have_one_error_only }
+            it { is_expected.to have_error(:contract_period_year, "You cannot submit declarations for the #{contract_period.year} contract period. The funding contract for this contract period has ended. Get in touch if you need to discuss this with us.") }
           end
 
           context "when teacher's latest ongoing training period is in a non-frozen contract period and participant is eligible for funding" do
