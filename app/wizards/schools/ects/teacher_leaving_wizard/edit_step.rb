@@ -5,7 +5,7 @@ module Schools
         attr_accessor :leaving_on
 
         validate :leaving_on_valid
-        validate :leaving_on_after_previous_school_or_training_period_start
+        validate :leaving_on_after_school_or_training_period_start
 
         def self.permitted_params
           %i[
@@ -44,7 +44,7 @@ module Schools
           errors[:leaving_on].any?
         end
 
-        def leaving_on_after_previous_school_or_training_period_start
+        def leaving_on_after_school_or_training_period_start
           return if skip_leaving_on_validation?
           return if leaving_on_boundary_validator.valid?
 
@@ -64,7 +64,7 @@ module Schools
 
         def leaving_on_boundary_validator
           @leaving_on_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
-            ect_at_school_period:,
+            input_period: ect_at_school_period,
             input_date: leaving_on_input.value_as_date
           )
         end
