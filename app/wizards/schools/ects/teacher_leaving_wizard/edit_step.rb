@@ -64,7 +64,7 @@ module Schools
 
         def leaving_on_boundary_validator
           @leaving_on_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
-            ect_at_school_period:,
+            input_period: ect_at_school_period,
             input_date: leaving_on_input.value_as_date
           )
         end

@@ -33,6 +33,13 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
     let(:validator) { instance_double(Schools::Validation::PeriodBoundary) }
 
+    let(:teacher) { FactoryBot.create(:teacher) }
+    let(:previous_school) do
+      FactoryBot.create(:school, :independent).tap do |school|
+        school.gias_school.update!(name: "Springfield Primary")
+      end
+    end
+
     context "when the start_date is not present" do
       let(:start_date) { nil }
 
@@ -69,8 +76,6 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
       it { is_expected.to be_valid }
 
       context "and the ECT has a previous registration" do
-        let(:teacher) { FactoryBot.create(:teacher) }
-
         before do
           store.trn = teacher.trn
           FactoryBot.create(:ect_at_school_period, previous_period, teacher:, school: FactoryBot.create(:school))
@@ -112,14 +117,6 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     context "when the date clashes with the ect at school period" do
-      let(:previous_school) do
-        FactoryBot.create(:school, :independent).tap do |school|
-          school.gias_school.update!(name: "Springfield Primary")
-        end
-      end
-
-      let(:teacher) { FactoryBot.create(:teacher) }
-
       let(:previous_period) do
         FactoryBot.create(:ect_at_school_period,
                           teacher:,
@@ -149,14 +146,6 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
 
     context "when the date clashes with the latest training period" do
       let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period: previous_period, started_on: Date.new(2024, 12, 31)) }
-
-      let(:previous_school) do
-        FactoryBot.create(:school, :independent).tap do |school|
-          school.gias_school.update!(name: "Springfield Primary")
-        end
-      end
-
-      let(:teacher) { FactoryBot.create(:teacher) }
 
       let(:previous_period) do
         FactoryBot.create(:ect_at_school_period,

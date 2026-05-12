@@ -101,7 +101,7 @@ module Schools
 
       def start_date_boundary_validator
         @start_date_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
-          ect_at_school_period: previous_period,
+          input_period: previous_period,
           input_date: start_date_as_date
         )
       end
