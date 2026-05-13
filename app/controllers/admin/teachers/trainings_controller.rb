@@ -24,8 +24,7 @@ module Admin
           training_periods
             .select(&:provider_led_training_programme?)
             .group_by { |training_period| lead_provider_id_for(training_period) }
-            .values
-            .map { it.first.id }
+            .map { |_lead_provider_id, training_periods| training_periods.first.id }
         end
       end
 
