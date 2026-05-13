@@ -14,12 +14,12 @@ module Admin
         @mentor_training_periods = @teacher.mentor_training_periods
           .includes(:active_lead_provider, :expression_of_interest, mentor_at_school_period: :teacher)
           .latest_first
-        @training_period_ids_with_api_response = training_period_ids_with_api_response
+        @latest_training_period_ids_with_api_response = latest_training_period_ids_with_api_response
       end
 
     private
 
-      def training_period_ids_with_api_response
+      def latest_training_period_ids_with_api_response
         [@ect_training_periods, @mentor_training_periods].flat_map do |training_periods|
           training_periods
             .select(&:provider_led_training_programme?)
