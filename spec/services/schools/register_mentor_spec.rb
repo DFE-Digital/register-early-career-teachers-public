@@ -98,7 +98,17 @@ RSpec.describe Schools::RegisterMentor do
 
         context "with MentorATSchoolPeriod records" do
           let!(:existing_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: 2.years.ago) }
-          let!(:existing_training_period) { FactoryBot.create(:training_period, :provider_led, :for_mentor, mentor_at_school_period: existing_mentor_at_school_period, started_on: existing_mentor_at_school_period.started_on) }
+          let!(:existing_training_period) do
+            FactoryBot.create(
+              :training_period,
+              :provider_led,
+              :for_mentor,
+              :with_only_expression_of_interest,
+              mentor_at_school_period: existing_mentor_at_school_period,
+              started_on: existing_mentor_at_school_period.started_on,
+              expression_of_interest: active_lead_provider
+            )
+          end
           let(:mentor_at_school_period) { teacher.mentor_at_school_periods.excluding(existing_mentor_at_school_period).first }
 
           context "with :mentoring_at_new_school_only set to false" do
