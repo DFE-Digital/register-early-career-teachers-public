@@ -1,0 +1,69 @@
+<% page_data(title: "Contract period #{@contract_period.year}", breadcrumbs: @breadcrumbs) %>
+
+<%=
+  govuk_summary_list do |sl|
+    sl.with_row do |row|
+      row.with_key(text: "Year")
+      row.with_value(text: @contract_period.year)
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Started on")
+      row.with_value(text: @contract_period.started_on.to_fs(:govuk))
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Finished on")
+      row.with_value(text: @contract_period.finished_on.to_fs(:govuk))
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Enabled")
+      row.with_value(text: @contract_period.enabled? ? "Yes" : "No")
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Mentor funding enabled")
+      row.with_value(text: @contract_period.mentor_funding_enabled? ? "Yes" : "No")
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Detailed evidence types enabled")
+      row.with_value(text: @contract_period.detailed_evidence_types_enabled? ? "Yes" : "No")
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Uplift fees enabled")
+      row.with_value(text: @contract_period.uplift_fees_enabled? ? "Yes" : "No")
+    end
+
+    sl.with_row do |row|
+      row.with_key(text: "Payments frozen")
+      row.with_value(text: @contract_period.payments_frozen? ? @contract_period.payments_frozen_at.to_fs(:govuk) : "No")
+    end
+  end
+%>
+
+<%= govuk_button_link_to("Edit contract period", "#", disabled: !@editable) %>
+
+<h2 class="govuk-heading-m">Set up</h2>
+
+<%= govuk_task_list do |list| %>
+  <% list.with_item(title: "Lead providers", href: (@editable ? "#" : nil)) do |item| %>
+    <% if @has_lead_providers %>
+      <% item.with_status(text: "Completed") %>
+    <% else %>
+      <% item.with_status do %>
+        <%= govuk_tag(text: "Incomplete", colour: "blue") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% list.with_item(title: "Schedules", href: (@has_schedules ? "#" : nil)) do |item| %>
+    <% if @has_schedules %>
+      <% item.with_status(text: "Completed") %>
+    <% else %>
+      <% item.with_status(text: "Cannot start yet", cannot_start_yet: true) %>
+    <% end %>
+  <% end %>
+<% end %>
