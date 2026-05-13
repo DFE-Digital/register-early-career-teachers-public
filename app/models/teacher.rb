@@ -27,6 +27,11 @@ class Teacher < ApplicationRecord
   has_many :induction_extensions, inverse_of: :teacher
   has_many :teacher_id_changes, inverse_of: :teacher, dependent: :destroy
   has_many :lead_provider_metadata, class_name: "Metadata::TeacherLeadProvider", dependent: :destroy
+  has_many :mentor_lead_provider_metadata,
+           class_name: "Metadata::TeacherLeadProvider",
+           foreign_key: :api_mentor_id,
+           primary_key: :api_id,
+           inverse_of: false
   has_many :induction_periods
   has_many :appropriate_body_periods, through: :induction_periods
   has_many :events
