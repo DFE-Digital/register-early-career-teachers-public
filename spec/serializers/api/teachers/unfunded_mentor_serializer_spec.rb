@@ -24,7 +24,8 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
     create_mentorship_period_for(
       mentee_school_partnership: school_partnership_for_lead_provider,
       mentor: unfunded_mentor_teacher,
-      create_mentor_training_period: false
+      create_mentor_training_period: false,
+      refresh_metadata: true
     )
     unfunded_mentor_teacher
       .mentor_at_school_periods
@@ -87,7 +88,8 @@ describe API::Teachers::UnfundedMentorSerializer, type: :serializer do
       create_mentorship_period_for(
         mentee_school_partnership: school_partnership_for_other_lead_provider,
         mentor: unfunded_mentor_teacher,
-        create_mentor_training_period: false
+        create_mentor_training_period: false,
+        refresh_metadata: true
       )
       unfunded_mentor_teacher
         .mentor_at_school_periods

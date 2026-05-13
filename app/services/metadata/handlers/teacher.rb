@@ -27,9 +27,10 @@ module Metadata::Handlers
         latest_mentor_training_period = latest_mentor_training_period_by_lead_provider(teacher:)[lead_provider_id]
         latest_ect_contract_period = latest_ect_training_period&.contract_period
         latest_mentor_contract_period = latest_mentor_training_period&.contract_period
-        api_mentor_id = if latest_ect_training_period&.at_school_period&.latest_mentorship_period&.ongoing_today?
-                          latest_ect_training_period.at_school_period.latest_mentorship_period.mentor&.teacher&.api_id
-                        end
+        ongoing_latest_mentorship_period = latest_ect_training_period&.at_school_period&.latest_mentorship_period
+        ongoing_latest_mentorship_period = nil unless ongoing_latest_mentorship_period&.ongoing_today?
+        latest_mentor_at_school_period = ongoing_latest_mentorship_period&.mentor
+        api_mentor_id = latest_mentor_at_school_period&.teacher&.api_id
         involved_in_school_transfer = school_transfers_exist_for(teacher.ect_at_school_periods, lead_provider_id) ||
           school_transfers_exist_for(teacher.mentor_at_school_periods, lead_provider_id)
 
@@ -40,6 +41,7 @@ module Metadata::Handlers
           latest_mentor_training_period_id: latest_mentor_training_period&.id,
           latest_ect_contract_period_year: latest_ect_contract_period&.year,
           latest_mentor_contract_period_year: latest_mentor_contract_period&.year,
+          latest_mentor_at_school_period_id: latest_mentor_at_school_period&.id,
           api_mentor_id:,
           involved_in_school_transfer:
         }

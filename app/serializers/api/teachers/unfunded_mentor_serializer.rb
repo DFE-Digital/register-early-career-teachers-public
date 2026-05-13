@@ -6,13 +6,11 @@ class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
     field(:email) do |teacher, options|
       lead_provider_id = options[:lead_provider_id]
 
-      matching_periods = teacher.mentor_at_school_periods.select do |masp|
-        masp.mentorship_periods.any? do |msp|
-          msp.mentee.training_periods.any? { |tp| tp.active_lead_provider&.lead_provider_id == lead_provider_id }
-        end
-      end
-
-      matching_periods.max_by(&:started_on).email
+      teacher.mentored_lead_provider_metadata
+        .select { |m| m.lead_provider_id == lead_provider_id }
+        .max_by { |m| m.latest_mentor_at_school_period.started_on }
+        .latest_mentor_at_school_period
+        .email
     end
     field(:trn, name: :teacher_reference_number)
     field :created_at
