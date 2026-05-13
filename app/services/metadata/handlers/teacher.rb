@@ -58,7 +58,10 @@ module Metadata::Handlers
 
     def latest_ect_training_period_by_lead_provider(teacher:)
       @latest_ect_training_period_by_lead_provider ||= TrainingPeriod
-        .includes(:ect_at_school_period, lead_provider_delivery_partnership: { active_lead_provider: :lead_provider })
+        .includes(
+          { ect_at_school_period: { latest_mentorship_period: { mentor: :teacher } } },
+          lead_provider_delivery_partnership: { active_lead_provider: :lead_provider }
+        )
         .where(ect_at_school_period: { teacher: })
         .select("DISTINCT ON (lead_provider_id) training_periods.*")
         .order("lead_provider_id, training_periods.started_on DESC")

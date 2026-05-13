@@ -8,6 +8,7 @@ describe Metadata::TeacherLeadProvider do
     it { is_expected.to belong_to(:latest_mentor_training_period).class_name("TrainingPeriod").optional }
     it { is_expected.to belong_to(:latest_mentor_contract_period).class_name("ContractPeriod").with_foreign_key(:latest_mentor_contract_period_year).optional }
     it { is_expected.to belong_to(:latest_ect_contract_period).class_name("ContractPeriod").with_foreign_key(:latest_ect_contract_period_year).optional }
+    it { is_expected.to belong_to(:latest_mentor_at_school_period).class_name("MentorAtSchoolPeriod").optional }
   end
 
   describe "validations" do
