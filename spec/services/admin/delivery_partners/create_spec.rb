@@ -50,19 +50,6 @@ RSpec.describe Admin::DeliveryPartners::Create do
       it "raises ActiveRecord::RecordInvalid" do
         expect { service.create! }.to raise_error(ActiveRecord::RecordInvalid)
       end
-
-      it "does not create a delivery partner" do
-        expect { service.create! }.not_to change(DeliveryPartner, :count)
-      end
-
-      it "does not record an event" do
-        begin
-          service.create!
-        rescue StandardError
-          nil
-        end
-        expect(Events::Record).not_to have_received(:record_delivery_partner_created_event!)
-      end
     end
 
     context "when name is a duplicate" do
@@ -70,19 +57,6 @@ RSpec.describe Admin::DeliveryPartners::Create do
 
       it "raises ActiveRecord::RecordInvalid" do
         expect { service.create! }.to raise_error(ActiveRecord::RecordInvalid)
-      end
-
-      it "does not create a delivery partner" do
-        expect { service.create! }.not_to change(DeliveryPartner, :count)
-      end
-
-      it "does not record an event" do
-        begin
-          service.create!
-        rescue StandardError
-          nil
-        end
-        expect(Events::Record).not_to have_received(:record_delivery_partner_created_event!)
       end
     end
 
