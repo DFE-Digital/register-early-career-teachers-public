@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_111109) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_145353) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -525,12 +525,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_111109) do
     t.boolean "involved_in_school_transfer"
     t.integer "latest_ect_contract_period_year"
     t.bigint "latest_ect_training_period_id"
+    t.bigint "latest_mentor_at_school_period_id"
     t.integer "latest_mentor_contract_period_year"
     t.bigint "latest_mentor_training_period_id"
     t.bigint "lead_provider_id"
     t.bigint "teacher_id"
     t.datetime "updated_at", null: false
     t.index ["latest_ect_training_period_id"], name: "idx_on_latest_ect_training_period_id_2d0632b258"
+    t.index ["latest_mentor_at_school_period_id"], name: "idx_on_latest_mentor_at_school_period_id_e55ee40685"
     t.index ["latest_mentor_training_period_id"], name: "idx_on_latest_mentor_training_period_id_862127afaf"
     t.index ["lead_provider_id", "teacher_id"], name: "idx_metadata_lead_provider_ect_active", where: "(latest_ect_training_period_id IS NOT NULL)"
     t.index ["lead_provider_id", "teacher_id"], name: "idx_metadata_lead_provider_mentor_active", where: "(latest_mentor_training_period_id IS NOT NULL)"

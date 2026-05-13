@@ -30,7 +30,7 @@ RSpec.describe API::Teachers::UnfundedMentors::Query, :with_metadata do
 
   describe "preloading relationships" do
     shared_examples "preloaded associations" do
-      it { expect(result.association(:mentor_at_school_periods)).to be_loaded }
+      it { expect(result.association(:mentored_lead_provider_metadata)).to be_loaded }
     end
 
     describe "#unfunded_mentors" do
