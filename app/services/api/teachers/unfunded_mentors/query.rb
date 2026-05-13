@@ -37,7 +37,9 @@ module API::Teachers::UnfundedMentors
     def preload_associations(results)
       results
         .strict_loading
-        .includes(mentored_lead_provider_metadata: :latest_mentor_at_school_period)
+        .includes(
+          :latest_mentor_at_school_period
+        )
     end
 
     def where_lead_provider_is(lead_provider_id)
