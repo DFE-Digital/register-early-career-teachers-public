@@ -60,7 +60,6 @@ module GIAS
     NOT_ELIGIBLE_TYPES = [
       "Other independent special school",
       "Other independent school",
-      "Secure units",
       "Offshore schools",
       "Service children's education",
       "Miscellaneous",

@@ -134,7 +134,8 @@ class Teacher < ApplicationRecord
   scope :not_failed, -> { where.not(trs_induction_status: %w[Failed FailedInWales]).or(induction_status_missing) }
   scope :not_passed, -> { where.not(trs_induction_status: "Passed").or(induction_status_missing) }
 
-  normalizes :corrected_name, with: -> { it.squish }
+  normalizes :trs_first_name, :trs_last_name, with: -> { it&.squish }
+  normalizes :corrected_name, with: -> { it&.squish }
 
   # Methods
   def eligible_for_funding?

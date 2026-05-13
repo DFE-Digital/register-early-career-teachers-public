@@ -2,6 +2,8 @@ class TrainingPeriod < ApplicationRecord
   include Interval
   include DeclarativeUpdates
 
+  MENTOR_ONLY_WITHDRAWAL_REASONS = %w[mentor_no_longer_being_mentor].freeze
+
   # Enums
   enum :training_programme,
        { provider_led: "provider_led",
@@ -78,13 +80,15 @@ class TrainingPeriod < ApplicationRecord
   validate :only_provider_led_mentor_training
   validates :withdrawn_at, presence: true, if: -> { withdrawal_reason.present? }
   validates :withdrawal_reason, presence: true, if: -> { withdrawn_at.present? }
+  validate :withdrawal_reason_valid_for_trainee_type
   validates :deferred_at, presence: true, if: -> { deferral_reason.present? }
   validates :deferral_reason, presence: true, if: -> { deferred_at.present? }
   validates :schedule, presence: { message: "Schedule is required for provider-led training periods" }, if: :provider_led_training_programme?
   validates :finished_on, presence: true, if: -> { withdrawn_at.present? || deferred_at.present? }
   validate :contract_period_consistent_across_associations, if: :provider_led_training_programme?
   validate :schedule_absent_for_school_led, if: :school_led_training_programme?
-  validate :schedule_applicable_for_trainee
+  validate :schedule_applicable_for_ect
+  validate :schedule_applicable_for_mentor
   with_options if: -> { started_on&.future? } do
     validates :withdrawn_at, absence: true
     validates :withdrawal_reason, absence: true
@@ -248,11 +252,25 @@ private
     errors.add(:schedule, "Schedule must be absent for school-led training programmes")
   end
 
-  def schedule_applicable_for_trainee
+  def schedule_applicable_for_ect
     return if schedule.blank?
     return unless for_ect?
 
     errors.add(:schedule, "Only mentors can be assigned to replacement schedules") if schedule.replacement_schedule?
+  end
+
+  def schedule_applicable_for_mentor
+    return if schedule.blank?
+    return unless for_mentor?
+
+    errors.add(:schedule, "Only ECTs can be assigned to reduced schedules") if schedule.reduced_schedule?
+  end
+
+  def withdrawal_reason_valid_for_trainee_type
+    return unless for_ect?
+    return unless MENTOR_ONLY_WITHDRAWAL_REASONS.include?(withdrawal_reason)
+
+    errors.add(:withdrawal_reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.")
   end
 
   def school_consistency

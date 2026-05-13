@@ -51,7 +51,8 @@ PARTICIPANT_ECF_ENROLMENT = {
       description: "The current working pattern of an ECT. Reported as full or part-time by the school.",
       type: :string,
       enum: %w[full_time part_time],
-      example: "full_time"
+      example: "full_time",
+      nullable: true
     },
     cohort: {
       description: "Indicates which call-off contract funds this participant's training. 2021 indicates a participant that has started, or will start, their training in the 2021/22 academic year.",

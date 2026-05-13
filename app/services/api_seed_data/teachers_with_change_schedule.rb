@@ -143,6 +143,7 @@ module APISeedData
     def random_schedule(contract_period:, trainee_type:, excluding_schedule_identifier: nil)
       if trainee_type == :mentor
         Schedule
+          .excluding_reduced_schedules
           .where(contract_period:)
           .where.not(identifier: excluding_schedule_identifier)
           .order("RANDOM()")

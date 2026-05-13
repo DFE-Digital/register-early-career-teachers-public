@@ -2874,6 +2874,7 @@ components:
           - full_time
           - part_time
           example: full_time
+          nullable: true
         cohort:
           description: Indicates which call-off contract funds this participant's
             training. 2021 indicates a participant that has started, or will start,

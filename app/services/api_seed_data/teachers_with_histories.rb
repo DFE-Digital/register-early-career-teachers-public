@@ -82,14 +82,12 @@ module APISeedData
                                end
       ect_mentor_traits = generate_ect_mentor_school_period_traits
       ect_specific_traits = generate_ect_specific_traits
-      schedule = find_schedule(school_partnership.contract_period)
 
       if rand_boolean(ECT_MENTOR_RATIO)
         create_ect_and_optional_mentor_training(
           teacher,
           school,
           school_period,
-          schedule,
           school_partnership,
           training_period_data,
           training_status_traits,
@@ -103,7 +101,6 @@ module APISeedData
           teacher,
           school,
           school_period,
-          schedule,
           school_partnership,
           training_period_data,
           training_status_traits,
@@ -121,7 +118,7 @@ module APISeedData
         .first
     end
 
-    def find_schedule(contract_period)
+    def find_schedule(contract_period, trainee_type)
       if rand_boolean(SCHEDULE_RATIO)
         return Schedule.find_by(
           contract_period:,
@@ -129,10 +126,17 @@ module APISeedData
         )
       end
 
-      schedules = Schedule
-        .excluding_replacement_schedules
-        .where(contract_period:)
-        .order(:id)
+      schedules = if trainee_type == :mentor
+                    Schedule
+                      .excluding_reduced_schedules
+                      .where(contract_period:)
+                      .order(:id)
+                  else
+                    Schedule
+                      .excluding_replacement_schedules
+                      .where(contract_period:)
+                      .order(:id)
+                  end
 
       # We cycle the schedules to avoid flaky tests that happen
       # with random schedules.
@@ -165,7 +169,6 @@ module APISeedData
       teacher,
       school,
       school_period,
-      schedule,
       school_partnership,
       training_period_data,
       training_period_traits,
@@ -178,6 +181,8 @@ module APISeedData
         school_period:,
         traits: ect_mentor_traits + ect_specific_traits
       )
+
+      schedule = find_schedule(school_partnership.contract_period, :ect)
 
       FactoryBot.create(
         :training_period,
@@ -201,6 +206,8 @@ module APISeedData
           traits: ect_mentor_traits
         )
 
+        schedule = find_schedule(school_partnership.contract_period, :mentor)
+
         FactoryBot.create(
           :training_period,
           *training_period_traits.compact,
@@ -218,7 +225,6 @@ module APISeedData
       teacher,
       school,
       school_period,
-      schedule,
       school_partnership,
       training_period_data,
       training_period_traits,
@@ -231,6 +237,8 @@ module APISeedData
         school_period:,
         traits: ect_mentor_traits
       )
+
+      schedule = find_schedule(school_partnership.contract_period, :mentor)
 
       FactoryBot.create(
         :training_period,
@@ -253,6 +261,8 @@ module APISeedData
           school_period:,
           traits: ect_mentor_traits + ect_specific_traits
         )
+
+        schedule = find_schedule(school_partnership.contract_period, :ect)
 
         FactoryBot.create(
           :training_period,

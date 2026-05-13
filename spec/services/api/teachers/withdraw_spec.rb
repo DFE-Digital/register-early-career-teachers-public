@@ -8,7 +8,7 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
     )
   end
 
-  let(:reason) { described_class::WITHDRAWAL_REASONS.sample }
+  let(:reason) { (described_class::WITHDRAWAL_REASONS - described_class::MENTOR_ONLY_WITHDRAWAL_REASONS).sample }
 
   it_behaves_like "an API teacher shared action" do
     describe "validations" do
@@ -78,6 +78,25 @@ RSpec.describe API::Teachers::Withdraw, type: :model do
             it { is_expected.to have_one_error_per_attribute }
           end
         end
+      end
+
+      context "for ect with mentor-no-longer-being-mentor reason" do
+        let(:at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 2.months.ago) }
+        let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: at_school_period, started_on: at_school_period.started_on) }
+        let(:teacher_type) { :ect }
+        let(:reason) { described_class::MENTOR_ONLY_WITHDRAWAL_REASONS.sample }
+
+        it { is_expected.to have_one_error_per_attribute }
+        it { is_expected.to have_error(:reason, "You cannot withdraw an ECT for this reason. The ECT is not a mentor.") }
+      end
+
+      context "for mentor with mentor-no-longer-being-mentor reason" do
+        let(:at_school_period) { FactoryBot.create(:mentor_at_school_period, started_on: 2.months.ago) }
+        let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: at_school_period, started_on: at_school_period.started_on) }
+        let(:teacher_type) { :mentor }
+        let(:reason) { described_class::MENTOR_ONLY_WITHDRAWAL_REASONS.sample }
+
+        it { is_expected.to be_valid }
       end
     end
 
