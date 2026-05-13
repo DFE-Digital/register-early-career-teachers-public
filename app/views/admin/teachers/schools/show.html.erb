@@ -13,7 +13,7 @@
 <% if @ect_at_school_periods.any? %>
   <h3 class="govuk-heading-s">ECT history</h3>
   <% @ect_at_school_periods.each do |school_period| %>
-    <%= render Admin::Teachers::SchoolSummaryComponent.new(school_period:) %>
+    <%= render Admin::Teachers::SchoolSummaryComponent.new(school_period:, teacher_latest_induction_period: @teacher.latest_induction_period) %>
   <% end %>
 <% end %>
 

@@ -5,10 +5,11 @@ module Admin
 
       class UnexpectedSchoolPeriodError < StandardError; end
 
-      attr_reader :school_period
+      attr_reader :school_period, :teacher_latest_induction_period
 
-      def initialize(school_period:)
+      def initialize(school_period:, teacher_latest_induction_period: nil)
         @school_period = school_period
+        @teacher_latest_induction_period = teacher_latest_induction_period
       end
 
       def call
@@ -81,15 +82,11 @@ module Admin
       end
 
       def appropriate_body_name
-        if induction.has_induction_periods?
-          induction.latest_induction_period.appropriate_body_name
+        if teacher_latest_induction_period.present?
+          teacher_latest_induction_period.appropriate_body_name
         else
           school_period.school_reported_appropriate_body_name
         end
-      end
-
-      def induction
-        ::Teachers::Induction.new(school_period.teacher)
       end
 
       def mentorship_periods_for_ect

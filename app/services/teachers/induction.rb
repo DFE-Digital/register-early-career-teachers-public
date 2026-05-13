@@ -12,7 +12,7 @@ module Teachers
     end
 
     def latest_induction_period
-      induction_periods.latest_first&.first
+      @latest_induction_period ||= induction_periods.latest_first&.first
     end
 
     def past_induction_periods

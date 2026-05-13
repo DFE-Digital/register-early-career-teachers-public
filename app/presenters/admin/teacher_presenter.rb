@@ -51,6 +51,8 @@ module Admin
       end
     end
 
+    delegate :latest_induction_period, to: :induction
+
     def induction_status
       return unless ect?
 
@@ -65,6 +67,10 @@ module Admin
 
     def teacher
       __getobj__
+    end
+
+    def induction
+      ::Teachers::Induction.new(teacher)
     end
 
     def latest_ect_period

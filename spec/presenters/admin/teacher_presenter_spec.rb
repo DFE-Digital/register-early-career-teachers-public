@@ -60,6 +60,20 @@ RSpec.describe Admin::TeacherPresenter do
     end
   end
 
+  describe "#latest_induction_period" do
+    let(:induction) { instance_double(Teachers::Induction) }
+    let(:latest_induction_period) { instance_double(InductionPeriod) }
+
+    before do
+      allow(Teachers::Induction).to receive(:new).with(teacher).and_return(induction)
+      allow(induction).to receive(:latest_induction_period).and_return(latest_induction_period)
+    end
+
+    it "delegates to Teachers::Induction" do
+      expect(presenter.latest_induction_period).to eq(latest_induction_period)
+    end
+  end
+
   describe "#api_participant_id" do
     it "returns the teachers api id when present" do
       expect(presenter.api_participant_id).to eq(teacher.api_id)

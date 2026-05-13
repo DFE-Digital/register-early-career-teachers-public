@@ -1,5 +1,5 @@
 RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
-  subject(:rendered) { render_inline(described_class.new(school_period:)) }
+  subject(:rendered) { render_inline(described_class.new(school_period:, teacher_latest_induction_period:)) }
 
   include Rails.application.routes.url_helpers
 
@@ -18,6 +18,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     end
     let(:school_period) { FactoryBot.create(:ect_at_school_period, **school_period_attributes) }
     let(:teacher) { school_period.teacher }
+    let(:teacher_latest_induction_period) { nil }
 
     context "card title" do
       it "links to the admin school overview" do
@@ -72,7 +73,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     end
 
     context "Appropriate body row" do
-      context "when an ECT has no induction periods" do
+      context "when the teacher has no induction periods" do
         it "shows the appropriate body from the school period" do
           expect(rendered).to have_css("dt", text: "Appropriate body")
           expect(rendered).to have_css("dd", text: "Appropriate Body Name")
@@ -88,23 +89,11 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
         end
       end
 
-      context "when an ECT has one induction period" do
+      context "when a teacher has a latest induction period" do
         let(:current_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current Appropriate Body Name") }
-        let!(:current_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: current_appropriate_body_period) }
+        let(:teacher_latest_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: current_appropriate_body_period) }
 
         it "shows the appropriate body from the induction period" do
-          expect(rendered).to have_css("dt", text: "Appropriate body")
-          expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
-        end
-      end
-
-      context "when an ECT has more than one induction period" do
-        let(:latest_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Current Appropriate Body Name") }
-        let(:past_appropriate_body_period) { FactoryBot.create(:appropriate_body_period, name: "Past Appropriate Body Name") }
-        let!(:past_induction_period) { FactoryBot.create(:induction_period, teacher:, appropriate_body_period: past_appropriate_body_period) }
-        let!(:latest_induction_period) { FactoryBot.create(:induction_period, :ongoing, teacher:, appropriate_body_period: latest_appropriate_body_period, started_on: 7.days.ago) }
-
-        it "shows the appropriate body from the latest induction period" do
           expect(rendered).to have_css("dt", text: "Appropriate body")
           expect(rendered).to have_css("dd", text: "Current Appropriate Body Name")
         end
@@ -209,6 +198,7 @@ RSpec.describe Admin::Teachers::SchoolSummaryComponent, type: :component do
     let(:school_period) { FactoryBot.create(:mentor_at_school_period, **school_period_attributes) }
     let(:older_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: school_period.started_on, finished_on: school_period.started_on + 6.months) }
     let(:newer_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: school_period.started_on + 1.month, finished_on: nil) }
+    let(:teacher_latest_induction_period) { nil }
 
     context "card title" do
       it "links to the admin school overview" do
