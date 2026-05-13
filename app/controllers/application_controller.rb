@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include Authentication
   include DfE::Analytics::Requests
+  include TimeTravellable
 
   before_action :set_sentry_user
 

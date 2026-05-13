@@ -1,0 +1,30 @@
+<% page_data(
+    title: "What date do you want to travel to?",
+    error: @time_traveller.errors.any?,
+    backlink_href: backlink_with_fallback(fallback: root_path)
+  ) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with(model: @time_traveller, url: time_traveller_path) do |form| %>
+    <%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+    <%= form.govuk_date_field(
+          :travel_to,
+          width: "two-thirds",
+          legend: { text: "Travel to date", size: "m", tag: "h3", hidden: true },
+          hint: { text: "For example, 17 9 #{Date.current.year.next}" }
+        ) %>
+
+    <%= govuk_inset_text do %>
+      Time travel is not thread-safe. If you’re travelling through time, it’s
+      possible you might run into other time-travellers. If you do, you might see
+      some unexpected behaviour. If that happens, reset and try again later.
+    <% end %>
+
+    <%= form.govuk_submit "Back to the future!" %>
+  <% end %>
+
+  <%= govuk_button_to "Reset", time_traveller_path, method: :delete, warning: true %>
+  </div>
+</div>

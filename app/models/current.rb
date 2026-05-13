@@ -2,7 +2,9 @@ class Current < ActiveSupport::CurrentAttributes
   attribute :session, default: {}
   attribute :user,
             :administrator,
-            :role
+            :role,
+            :date_after_time_travel,
+            :date_before_time_travel
 
   def user=(user)
     super
