@@ -35,6 +35,18 @@ describe Teachers::RefreshTRSAttributes do
       end
     end
 
+    it "bumps api_updated_at and api_unfunded_mentor_updated_at when the TRS name changes", :with_touches do
+      teacher.update_columns(api_updated_at: 1.week.ago, api_unfunded_mentor_updated_at: 1.week.ago)
+      original_api_updated_at = teacher.reload.api_updated_at
+      original_api_unfunded_mentor_updated_at = teacher.api_unfunded_mentor_updated_at
+
+      service.refresh!
+      teacher.reload
+
+      expect(teacher.api_updated_at).to be > original_api_updated_at
+      expect(teacher.api_unfunded_mentor_updated_at).to be > original_api_unfunded_mentor_updated_at
+    end
+
     it "adds a teacher_name_updated_by_trs event" do
       expect(teacher.events).to be_empty
 
