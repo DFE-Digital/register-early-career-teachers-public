@@ -37,7 +37,7 @@ module Schools
     end
 
     def induction_start_date
-      Teachers::Induction.new(@ect.teacher).induction_start_date&.to_fs(:govuk)
+      induction.induction_start_date&.to_fs(:govuk)
     end
 
     def induction_start_date_with_suffix(date)
@@ -49,7 +49,19 @@ module Schools
     end
 
     def appropriate_body_text
-      @ect.school_reported_appropriate_body_name.presence || "Not reported"
+      appropriate_body_name.presence || "Not reported"
+    end
+
+    def appropriate_body_name
+      if induction.has_induction_periods?
+        induction.latest_induction_period.appropriate_body_name
+      else
+        @ect.school_reported_appropriate_body_name
+      end
+    end
+
+    def induction
+      @induction ||= Teachers::Induction.new(@ect.teacher)
     end
 
     def induction_start_date_not_reported_row
