@@ -24,7 +24,6 @@ module Admin
           training_periods
             .select(&:provider_led_training_programme?)
             .group_by { |training_period| lead_provider_id_for(training_period) }
-            .except(nil)
             .values
             .map { it.first.id }
         end
