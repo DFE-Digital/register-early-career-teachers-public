@@ -41,10 +41,8 @@ RSpec.describe Teachers::Manage do
   end
 
   describe ".new" do
-    subject(:service) { described_class.new(author:, teacher:, appropriate_body_period:) }
-
     it "is private" do
-      expect { service }.to raise_error(NoMethodError, /private method 'new' called/)
+      expect(described_class.private_methods).to include(:new)
     end
   end
 
