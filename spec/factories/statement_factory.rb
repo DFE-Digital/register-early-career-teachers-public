@@ -1,24 +1,23 @@
 FactoryBot.define do
   factory(:statement) do
     transient do
-      contract_period { FactoryBot.create(:contract_period, :current) }
+      contract_period { create(:contract_period, :current) }
       active_lead_provider { association(:active_lead_provider, contract_period:) }
 
       month_year_pair do
-        # Statements start in November of the contract year and run to August 3 years ahead
-        # e.g. for 2021 cohort: November 2021 through to August 2024
-        contract_year = contract.active_lead_provider.contract_period.year
-        start_date = Date.new(contract_year, 11, 1)
+        contract_year = active_lead_provider.contract_period.year
+        last_year, last_month =
+          Statement
+            .joins(contract: :active_lead_provider)
+            .where(contract: { active_lead_provider: })
+            .order(year: :desc, month: :desc)
+            .pick(:year, :month)
 
-        # Offset by the number of existing statements for this active_lead_provider
-        # so each factory call produces a unique month/year pair
-        existing_count = Statement
-          .joins(:contract)
-          .where(contracts: { active_lead_provider_id: active_lead_provider.id })
-          .count
+        # Advance 1 month from any existing statement, or default to November
+        # of the contract year if there are no statements yet.
+        date = Date.new(last_year || contract_year, last_month || 10, 1) >> 1
 
-        month = start_date >> existing_count
-        { year: month.year, month: month.month }
+        { year: date.year, month: date.month }
       end
     end
 
@@ -30,18 +29,6 @@ FactoryBot.define do
     deadline_date { Date.new(year, month, 1).prev_day }
     payment_date { Date.new(year, month, 25) }
     output_fee
-
-    initialize_with do
-      Statement
-        .joins(:contract)
-        .where(contracts: { active_lead_provider_id: active_lead_provider.id })
-        .find_or_initialize_by(
-          month:,
-          year:
-        ) do |statement|
-          statement.contract = contract
-        end
-    end
 
     trait :open do
       status { :open }
