@@ -37,7 +37,6 @@ Lead providers must make sure any mentors that they continue to train are:
 
 * put on an extended schedule
 * compliant with the fully trained mentor guidance and any additional contract management guidance they’ve been given 
-* compliant with any contract management guidance you’ve been given
 
 Lead providers should check with contract managers if they’re uncertain.
 
@@ -106,7 +105,7 @@ Lead providers can find out more about partnerships in our [create view and upda
 
 ### Sharing data with delivery partners
 
-Delivery partners no longer have direct access to DfE ECT and mentors data. Lead providers will now be responsible for sharing data with delivery partners for all cohorts.
+Delivery partners no longer have direct access to DfE ECT and mentor data. Lead providers will now be responsible for sharing data with delivery partners for all cohorts.
 
 ### Prepare systems for 2026
 
