@@ -1,14 +1,14 @@
 describe "Real data check for teacher 210915 (missing training period and declarations)" do
-  let!(:teacher) { FactoryBot.create(:teacher, id: 210915) }
+  let!(:teacher) { FactoryBot.create(:teacher, id: 210_915) }
   let!(:school_1) { FactoryBot.create(:school) }
-  let!(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, id: 115121, teacher:, school: school_1, started_on: Date.new(2025, 5, 29), finished_on: nil) }
+  let!(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, id: 115_121, teacher:, school: school_1, started_on: Date.new(2025, 5, 29), finished_on: nil) }
 
   # dependencies referenced in migration_fixes
   let!(:lead_provider) { FactoryBot.create(:lead_provider, id: 6, name: "Ambition Institute") }
   let!(:delivery_partner) { FactoryBot.create(:delivery_partner, id: 221, name: "The Three Rivers Teaching School Hub") }
   let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
   let!(:lpdp) { FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:, delivery_partner:) }
-  let!(:school_partnership) { FactoryBot.create(:school_partnership, id: 47614, school: school_1, lead_provider_delivery_partnership: lpdp) }
+  let!(:school_partnership) { FactoryBot.create(:school_partnership, id: 47_614, school: school_1, lead_provider_delivery_partnership: lpdp) }
   let(:contract_period) { FactoryBot.create(:contract_period, year: 2023, mentor_funding_enabled: false) }
   let!(:schedule) { FactoryBot.create(:schedule, id: 54, identifier: "ecf-standard-september", contract_period:) }
   let!(:statement_1) { FactoryBot.create(:statement, id: 628, contract_period:) }
@@ -29,11 +29,11 @@ describe "Real data check for teacher 210915 (missing training period and declar
         object_id: "TP1",
         action: "create",
         attributes: {
-          mentor_at_school_period_id: 115121,
+          mentor_at_school_period_id: 115_121,
           started_on: "2023-09-01",
           finished_on: "2025-05-29",
           training_programme: "provider_led",
-          school_partnership_id: 47614,
+          school_partnership_id: 47_614,
           schedule_id: 54,
         }
       },
@@ -41,7 +41,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         object_type: "Declaration",
         object_id: nil,
         action: "create",
-        attributes: { 
+        attributes: {
           declaration_type: "started",
           declaration_date: "2023-09-22",
           training_period_id: "TP1",
@@ -57,7 +57,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         object_type: "Declaration",
         object_id: nil,
         action: "create",
-        attributes: { 
+        attributes: {
           declaration_type: "retained-1",
           declaration_date: "2024-02-01",
           training_period_id: "TP1",
@@ -74,7 +74,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         object_type: "Declaration",
         object_id: nil,
         action: "create",
-        attributes: { 
+        attributes: {
           declaration_type: "retained-2",
           declaration_date: "2024-07-02",
           training_period_id: "TP1",
@@ -91,7 +91,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         object_type: "Declaration",
         object_id: nil,
         action: "create",
-        attributes: { 
+        attributes: {
           declaration_type: "retained-3",
           declaration_date: "2024-11-21",
           training_period_id: "TP1",
@@ -108,7 +108,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         object_type: "Declaration",
         object_id: nil,
         action: "create",
-        attributes: { 
+        attributes: {
           declaration_type: "retained-4",
           declaration_date: "2025-01-24",
           training_period_id: "TP1",
@@ -125,7 +125,7 @@ describe "Real data check for teacher 210915 (missing training period and declar
         object_type: "Declaration",
         object_id: nil,
         action: "create",
-        attributes: { 
+        attributes: {
           declaration_type: "completed",
           declaration_date: "2025-05-29",
           training_period_id: "TP1",
