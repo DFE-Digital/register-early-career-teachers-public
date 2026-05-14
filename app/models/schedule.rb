@@ -16,7 +16,6 @@ class Schedule < ApplicationRecord
        ].index_by(&:itself),
        validate: { message: "Choose an identifier from the list" }
 
-  STANDARD_SCHEDULE_IDENTIFIERS = identifiers.keys.grep(/standard/).freeze
   REPLACEMENT_SCHEDULE_IDENTIFIERS = identifiers.keys.grep(/replacement/).freeze
   REDUCED_SCHEDULE_IDENTIFIERS = identifiers.keys.grep(/reduced/).freeze
 

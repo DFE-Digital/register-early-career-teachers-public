@@ -1,4 +1,4 @@
-RSpec.describe ContractPeriods::SeedFromPrevious, type: :model do
+RSpec.describe ContractPeriods::SeedFromPrevious do
   subject(:service) { described_class.new(contract_period:) }
 
   let(:current_year) { Time.zone.today.year }
@@ -22,8 +22,11 @@ RSpec.describe ContractPeriods::SeedFromPrevious, type: :model do
     end
 
     context "without a previous contract period" do
-      it "returns :no_previous_contract_period" do
-        expect(service.schedule!).to eq(:no_previous_contract_period)
+      it do
+        expect { service.schedule! }.to raise_error(
+          ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError,
+          "No previous contract period found"
+        )
       end
     end
 
@@ -64,7 +67,7 @@ RSpec.describe ContractPeriods::SeedFromPrevious, type: :model do
         end
 
         it "clones from the previous contract period" do
-          expect { service.schedule! }.to change(Schedule, :count).by(1) and change(Milestone, :count).by(2)
+          expect { service.schedule! }.to change(Schedule, :count).by(1).and change(Milestone, :count).by(2)
         end
 
         it "raises an error if called repeatedly" do
