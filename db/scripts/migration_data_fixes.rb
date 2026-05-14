@@ -14,7 +14,7 @@ csv_log = nil
 begin
   csv_file = Rails.root.join("db/scripts/migration_data_fixes.csv")
   csv_log = CSV.open(Rails.root.join("tmp/migration_data_fixes_log-#{Time.zone.now.to_fs(:iso8601)}.csv"), "w")
-  csv_log << %w[object_type,object_id,action,attributes,errors]
+  csv_log << %w[object_type object_id action attributes errors]
   processor = MigrationFixes::Processor.new
 
   CSV.foreach(csv_file, headers: true, header_converters: :symbol) do |row|
@@ -23,7 +23,7 @@ begin
 
     csv_log << [row[:object_type], row[:object_id], row[:action], row[:attributes], errors]
   rescue StandardError => e
-    Rails.logger.warn("ERROR: TrainingPeriod ID: #{tp_id} - #{e.message}")
+    Rails.logger.warn("ERROR processing #{row[:object_type]} ID #{row[:object_id]}: #{e.class} - #{e.message}")
     csv_log << [row[:object_type], row[:object_id], row[:action], row[:attributes], e.message]
   end
 ensure

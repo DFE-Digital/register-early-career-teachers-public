@@ -16,7 +16,7 @@ class MigrationFixes::Processor
     when "delete"
       delete!(target_object)
     else
-      raise "Unknown action '#{action}'"
+      raise ArgumentError, "Unknown action '#{action}'"
     end
 
     target_object
