@@ -8,13 +8,6 @@
   font-size: 0.8em;
 }
 
-.govuk-summary-list__value .app-code--full-width {
-  display: block;
-  width: 100%;
-  padding: 1em;
-  box-sizing: border-box;
-}
-
 .app-teachers-filters {
   @include govuk-media-query($from: tablet) {
     align-items: flex-end;
