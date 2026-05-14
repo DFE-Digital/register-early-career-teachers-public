@@ -1,0 +1,77 @@
+module Schools
+  module Validation
+    class PeriodBoundary
+      attr_reader :input_period, :input_date
+
+      def initialize(input_period:, input_date:)
+        @input_period = input_period
+        @input_date = input_date
+      end
+
+      def valid?
+        invalid_period.nil?
+      end
+
+      def invalid_period
+        @invalid_period ||= validate_periods
+      end
+
+      def type
+        case invalid_period
+        when ECTAtSchoolPeriod then "teaching"
+        when MentorAtSchoolPeriod then "teaching"
+        when TrainingPeriod then "their latest training"
+        end
+      end
+
+      def started_on_formatted
+        return unless invalid_period
+
+        invalid_period.started_on.to_formatted_s(:govuk)
+      end
+
+      def earliest_valid_input_date_formatted
+        return unless invalid_period
+
+        invalid_period.started_on.next_day.to_formatted_s(:govuk)
+      end
+
+    private
+
+      def validate_periods
+        return if input_date.blank?
+        return unless input_period
+        return unless input_period_is_at_school_period?
+
+        if input_date_present_and_before_period_starts?(input_period)
+          input_period
+        elsif input_date_present_and_before_period_starts?(latest_started_training_period)
+          latest_started_training_period
+        end
+      end
+
+      def input_date_present_and_before_period_starts?(period)
+        return false if period&.started_on.blank?
+
+        input_date <= earliest_valid_input_date(period)
+      end
+
+      def input_period_is_at_school_period?
+        input_period.is_a?(ECTAtSchoolPeriod) || input_period.is_a?(MentorAtSchoolPeriod)
+      end
+
+      def earliest_valid_input_date(period)
+        period.started_on.next_day
+      end
+
+      # Unstarted training periods (ie starting in the future) will be deleted and should not prevent a start date at a new school from being valid
+      def latest_started_training_period
+        @latest_started_training_period ||= input_period
+          .training_periods
+          .started_on_or_before(Time.zone.today)
+          .latest_first
+          .first
+      end
+    end
+  end
+end
