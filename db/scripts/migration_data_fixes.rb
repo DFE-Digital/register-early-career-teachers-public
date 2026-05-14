@@ -18,10 +18,9 @@ begin
   processor = MigrationFixes::Processor.new
 
   CSV.foreach(csv_file, headers: true, header_converters: :symbol) do |row|
-    object = processor.process!(data_change: row.to_h)
-    errors = object.presence&.errors&.to_json
+    processor.process!(data_change: row.to_h)
 
-    csv_log << [row[:object_type], row[:object_id], row[:action], row[:attributes], errors]
+    csv_log << [row[:object_type], row[:object_id], row[:action], row[:attributes], nil]
   rescue StandardError => e
     Rails.logger.warn("ERROR processing #{row[:object_type]} ID #{row[:object_id]}: #{e.class} - #{e.message}")
     csv_log << [row[:object_type], row[:object_id], row[:action], row[:attributes], e.message]
