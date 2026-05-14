@@ -8,8 +8,8 @@ class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
 
       teacher.mentor_lead_provider_metadata
         .select { |m| m.lead_provider_id == lead_provider_id }
-        .max_by { |m| m.latest_mentor_at_school_period.started_on }
-        .latest_mentor_at_school_period
+        .max_by { |m| m.ect_assigned_mentor_latest_school_period.started_on }
+        .ect_assigned_mentor_latest_school_period
         .email
     end
     field(:trn, name: :teacher_reference_number)
