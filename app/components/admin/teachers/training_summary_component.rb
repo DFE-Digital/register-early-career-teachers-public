@@ -14,7 +14,7 @@ module Admin
           if show_move_partnership_link?
             card.with_action { helpers.govuk_link_to("Move to a different partnership", move_partnership_path) }
           end
-          card.with_summary_list do |list|
+          card.with_summary_list(actions: false) do |list|
             rows.each do |row|
               list.with_row do |r|
                 r.with_key(text: row[:key][:text]) if row[:key].present?
