@@ -235,8 +235,8 @@ private
   end
 
   def and_all_the_dates_are_correct
-    expect(@existing_mentor_at_school_period.reload.finished_on).to eq @new_mentor_start_date
-    expect(@existing_mentorship.reload.finished_on).to eq @new_mentor_start_date
+    expect(@existing_mentor_at_school_period.reload.finished_on).to eq @new_mentor_start_date.yesterday
+    expect(@existing_mentorship.reload.finished_on).to eq @new_mentor_start_date.yesterday
     expect(@new_mentor_at_school_period.started_on).to eq @new_mentor_start_date
     expect(@new_mentorship.started_on).to eq @new_mentor_start_date
   end
