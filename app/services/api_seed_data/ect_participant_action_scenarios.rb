@@ -66,7 +66,7 @@ module APISeedData
 
         # Active training period at the same school but with a different lead provider
         school_partnership = school_partnerships(excluding_active_lead_provider: active_lead_provider, year: contract_period.year, school:).sample
-        training_time_period = { started_on: training_period_at_first_school.finished_on, finished_on: nil }
+        training_time_period = { started_on: training_period_at_first_school.finished_on.next_day, finished_on: nil }
         create_training_period(ect_at_school_period:, school_partnership:, training_time_period:)
 
         log_plant_info("Created participant started with another lead provider for #{school_partnership.active_lead_provider.lead_provider.name}")
