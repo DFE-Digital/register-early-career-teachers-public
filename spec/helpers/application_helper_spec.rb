@@ -318,25 +318,16 @@ RSpec.describe ApplicationHelper, type: :helper do
   describe "#format_uuid" do
     subject { format_uuid(uuid) }
 
-    let(:uuid) { "12345678-9999-4444-aaaa-888888888888" }
+    let(:uuid) { SecureRandom.uuid }
 
     it "renders a visually hidden span for screenreader users" do
-      expect(subject).to have_css("code", text: Regexp.new(uuid))
+      expect(subject).to have_css("code", text: uuid)
     end
 
-    describe "for screenreader users" do
-      it "renders a visually hidden span element that contains the first 6 letters of the UUID" do
-        expect(subject).to have_css("code > span.govuk-visually-hidden", text: "Identifier starting with 123456")
+    context "when there is no uuid" do
+      let(:uuid) { nil }
 
-        # only has the first 6 chars of the UUID
-        expect(subject).not_to have_css("code > span.govuk-visually-hidden", text: "Identifier starting with 1234567")
-      end
-    end
-
-    describe "for regular users" do
-      it "renders a aria-hidden span element that contains the whole UUID" do
-        expect(subject).to have_css(%(code > span[aria-hidden="true"]), text: uuid)
-      end
+      it { is_expected.to be_nil }
     end
   end
 end

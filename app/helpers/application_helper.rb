@@ -94,9 +94,8 @@ module ApplicationHelper
   end
 
   def format_uuid(uuid)
-    visually_hidden_span = govuk_visually_hidden("Identifier starting with #{uuid.first(6)}")
-    aria_hidden_span = tag.span(uuid, aria: { hidden: true })
+    return if uuid.blank?
 
-    tag.code(safe_join([visually_hidden_span, aria_hidden_span]))
+    tag.code(uuid)
   end
 end
