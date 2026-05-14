@@ -140,9 +140,7 @@ module Admin
 
       def api_response_text
         govuk_details(summary_text: "See this participant as they appear over the API for #{lead_provider&.name}") do
-          content_tag(:pre, class: "app-code app-code--full-width") do
-            content_tag(:code, formatted_teacher)
-          end
+          tag.pre(tag.code(formatted_teacher))
         end
       end
 
