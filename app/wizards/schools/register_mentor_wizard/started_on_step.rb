@@ -4,7 +4,7 @@ module Schools
       attr_accessor :started_on
 
       validates :started_on, mentor_start_date: true
-      validate :started_on_after_all_previous_period_started_on_dates
+      validate :started_on_after_previous_school_or_training_period_start
       validate :started_on_within_4_months, if: :currently_mentor_at_another_school?
 
       def self.permitted_params = %i[started_on]
@@ -41,22 +41,22 @@ module Schools
         self.started_on = Schools::Validation::MentorStartDate.new(date_as_hash: mentor.started_on).date_as_hash unless started_on
       end
 
-      def started_on_after_all_previous_period_started_on_dates
+      def previous_period
+        mentor.previous_school_mentor_at_school_periods&.last
+      end
+
+      def started_on_after_previous_school_or_training_period_start
         return if errors.any?
+        return if start_date_boundary_validator.valid?
 
-        latest_started_on_at_previous_school = mentor
-          .previous_school_mentor_at_school_periods
-          .maximum(:started_on)
-        return unless latest_started_on_at_previous_school
+        errors.add(:started_on, invalid_period_error_message)
+      end
 
-        unless started_on_as_date.after?(latest_started_on_at_previous_school)
-          error_message = <<~TXT.squish
-            #{mentor.full_name} was registered as a mentor at their last school
-            starting on the #{latest_started_on_at_previous_school.to_fs(:govuk)}.
-            Enter a later date.
-          TXT
-          errors.add(:started_on, error_message)
-        end
+      def invalid_period_error_message
+        "Our records show that #{wizard.mentor.full_name} started " \
+        "#{invalid_period_type} at #{previous_period&.school&.name} on " \
+        "#{invalid_period_started_on_formatted}." \
+        " Enter a start date after #{earliest_valid_input_date_formatted}."
       end
 
       def started_on_within_4_months
@@ -92,6 +92,19 @@ module Schools
       def contract_period
         @contract_period ||= ContractPeriod.containing_date(started_on_as_date)
       end
+
+      def start_date_boundary_validator
+        @start_date_boundary_validator ||= Schools::Validation::PeriodBoundary.new(
+          input_period: previous_period,
+          input_date: started_on_as_date
+        )
+      end
+
+      delegate :type,
+               :started_on_formatted,
+               to: :start_date_boundary_validator,
+               prefix: :invalid_period
+      delegate :earliest_valid_input_date_formatted, to: :start_date_boundary_validator
     end
   end
 end
