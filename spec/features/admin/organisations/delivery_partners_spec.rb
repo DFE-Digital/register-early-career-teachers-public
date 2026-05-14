@@ -84,9 +84,7 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def and_i_should_see_the_add_a_new_delivery_partner_button
-    expect(
-      page.locator("main.govuk-main-wrapper").get_by_role("link", name: "Add a new delivery partner")
-    ).to be_visible
+    expect(page.get_by_role("link", name: "Add a new delivery partner")).to be_visible
   end
 
   def when_i_search_for_delivery_partner
@@ -103,7 +101,7 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def when_i_click_add_a_new_delivery_partner
-    page.locator("main.govuk-main-wrapper").get_by_role("link", name: "Add a new delivery partner").click
+    page.get_by_role("link", name: "Add a new delivery partner").click
   end
 
   def then_i_should_see_the_add_delivery_partner_form
@@ -126,15 +124,11 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def and_i_should_see_a_success_banner(text)
-    expect(
-      page.locator("main.govuk-main-wrapper").get_by_text(text, exact: false)
-    ).to be_visible
+    expect(page.get_by_text(text, exact: false)).to be_visible
   end
 
   def and_i_should_see_the_api_id
-    expect(
-      page.locator("main.govuk-main-wrapper").get_by_text("API ID:", exact: false)
-    ).to be_visible
+    expect(page.get_by_text("API ID:", exact: false)).to be_visible
   end
 
   def then_i_should_see_a_form_error

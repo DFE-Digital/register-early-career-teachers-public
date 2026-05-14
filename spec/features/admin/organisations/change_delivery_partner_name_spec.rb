@@ -97,9 +97,7 @@ RSpec.describe "Admin: Change delivery partner name" do
   end
 
   def when_i_click_change_delivery_partner_name_link
-    page.locator("main.govuk-main-wrapper")
-        .get_by_role("link", name: "Change delivery partner name")
-        .click
+    page.get_by_role("link", name: "Change delivery partner name").click
   end
 
   def then_i_should_see_the_change_name_form
@@ -113,9 +111,7 @@ RSpec.describe "Admin: Change delivery partner name" do
   end
 
   def then_i_should_see_a_success_banner
-    expect(
-      page.locator("main.govuk-main-wrapper").get_by_text("Delivery partner name changed", exact: false)
-    ).to be_visible
+    expect(page.get_by_text("Delivery partner name changed", exact: false)).to be_visible
   end
 
   def and_the_show_page_heading_is(text)

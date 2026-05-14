@@ -4,7 +4,7 @@ module Admin
 
     layout "full"
     before_action :set_delivery_partner, only: %i[show edit update]
-    before_action :assign_backlink_params, only: %i[index show edit update new create]
+    before_action :assign_backlink_params
 
     def index
       @breadcrumbs = {
