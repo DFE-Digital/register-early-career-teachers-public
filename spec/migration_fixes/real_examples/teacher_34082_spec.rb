@@ -1,5 +1,5 @@
 describe "Real data check for teacher 34082" do
-  let!(:teacher) { FactoryBot.create(:teacher, id: 34082) }
+  let!(:teacher) { FactoryBot.create(:teacher, id: 34_082) }
   let!(:lead_provider_3) { FactoryBot.create(:lead_provider, id: 1, name: "UCL Institute of Education") }
   let!(:lead_provider_2) { FactoryBot.create(:lead_provider, id: 3, name: "National Institute of Teaching") }
   let!(:delivery_partner_1) { FactoryBot.create(:delivery_partner, id: 171, name: "East Manchester Teaching School Hub") }
@@ -16,16 +16,16 @@ describe "Real data check for teacher 34082" do
   let!(:lpdp_1) { FactoryBot.create(:lead_provider_delivery_partnership, id: 577, active_lead_provider: active_lead_provider_1, delivery_partner: delivery_partner_1) }
   let!(:lpdp_2) { FactoryBot.create(:lead_provider_delivery_partnership, id: 154, active_lead_provider: active_lead_provider_2, delivery_partner: delivery_partner_2) }
   let!(:lpdp_3) { FactoryBot.create(:lead_provider_delivery_partnership, id: 401, active_lead_provider: active_lead_provider_3, delivery_partner: delivery_partner_1) }
-  let!(:school_partnership_1) { FactoryBot.create(:school_partnership, id: 70197, school: school_1, lead_provider_delivery_partnership: lpdp_1) }
-  let!(:school_partnership_2) { FactoryBot.create(:school_partnership, id: 38127, school: school_2, lead_provider_delivery_partnership: lpdp_2) }
-  let!(:school_partnership_3) { FactoryBot.create(:school_partnership, id: 16275, school: school_1, lead_provider_delivery_partnership: lpdp_3) }
-  let!(:ect_at_school_period_1) { FactoryBot.create(:ect_at_school_period, id: 10400, teacher:, school: school_1, started_on: Date.new(2022, 9, 1), finished_on: Date.new(2024, 1, 2)) }
-  let!(:ect_at_school_period_2) { FactoryBot.create(:ect_at_school_period, id: 10404, teacher:, school: school_2, started_on: Date.new(2026, 2, 25), finished_on: Date.new(2026, 2, 26)) }
-  let!(:ect_at_school_period_3) { FactoryBot.create(:ect_at_school_period, id: 10412, teacher:, school: school_1, started_on: Date.new(2026, 2, 27), finished_on: Date.new(2026, 3, 6)) }
-  
-  let!(:training_period_1) { FactoryBot.create(:training_period, id: 136514, school_partnership: school_partnership_1, ect_at_school_period: ect_at_school_period_1, mentor_at_school_period: nil, started_on: Date.new(2022, 9, 1), finished_on: Date.new(2024, 1, 2), training_programme: "provider_led", withdrawn_at: nil, withdrawal_reason: nil, deferred_at: nil, deferral_reason: nil) }
-  let!(:training_period_2) { FactoryBot.create(:training_period, id: 136520, school_partnership: school_partnership_2, ect_at_school_period: ect_at_school_period_2, mentor_at_school_period: nil, started_on: Date.new(2026, 2, 25), finished_on: Date.new(2026, 2, 26), training_programme: "provider_led", withdrawn_at: nil, withdrawal_reason: nil, deferred_at: nil, deferral_reason: nil) }
-  let!(:training_period_3) { FactoryBot.create(:training_period, id: 136525, school_partnership: school_partnership_3, ect_at_school_period: ect_at_school_period_3, mentor_at_school_period: nil, started_on: Date.new(2026, 2, 27), finished_on: Date.new(2026, 3, 6), training_programme: "provider_led", withdrawn_at: Time.zone.parse("2026-03-06T15:45:06+00:00"), withdrawal_reason: "moved_school", deferred_at: nil, deferral_reason: nil) }
+  let!(:school_partnership_1) { FactoryBot.create(:school_partnership, id: 70_197, school: school_1, lead_provider_delivery_partnership: lpdp_1) }
+  let!(:school_partnership_2) { FactoryBot.create(:school_partnership, id: 38_127, school: school_2, lead_provider_delivery_partnership: lpdp_2) }
+  let!(:school_partnership_3) { FactoryBot.create(:school_partnership, id: 16_275, school: school_1, lead_provider_delivery_partnership: lpdp_3) }
+  let!(:ect_at_school_period_1) { FactoryBot.create(:ect_at_school_period, id: 10_400, teacher:, school: school_1, started_on: Date.new(2022, 9, 1), finished_on: Date.new(2024, 1, 2)) }
+  let!(:ect_at_school_period_2) { FactoryBot.create(:ect_at_school_period, id: 10_404, teacher:, school: school_2, started_on: Date.new(2026, 2, 25), finished_on: Date.new(2026, 2, 26)) }
+  let!(:ect_at_school_period_3) { FactoryBot.create(:ect_at_school_period, id: 10_412, teacher:, school: school_1, started_on: Date.new(2026, 2, 27), finished_on: Date.new(2026, 3, 6)) }
+
+  let!(:training_period_1) { FactoryBot.create(:training_period, id: 136_514, school_partnership: school_partnership_1, ect_at_school_period: ect_at_school_period_1, mentor_at_school_period: nil, started_on: Date.new(2022, 9, 1), finished_on: Date.new(2024, 1, 2), training_programme: "provider_led", withdrawn_at: nil, withdrawal_reason: nil, deferred_at: nil, deferral_reason: nil) }
+  let!(:training_period_2) { FactoryBot.create(:training_period, id: 136_520, school_partnership: school_partnership_2, ect_at_school_period: ect_at_school_period_2, mentor_at_school_period: nil, started_on: Date.new(2026, 2, 25), finished_on: Date.new(2026, 2, 26), training_programme: "provider_led", withdrawn_at: nil, withdrawal_reason: nil, deferred_at: nil, deferral_reason: nil) }
+  let!(:training_period_3) { FactoryBot.create(:training_period, id: 136_525, school_partnership: school_partnership_3, ect_at_school_period: ect_at_school_period_3, mentor_at_school_period: nil, started_on: Date.new(2026, 2, 27), finished_on: Date.new(2026, 3, 6), training_programme: "provider_led", withdrawn_at: Time.zone.parse("2026-03-06T15:45:06+00:00"), withdrawal_reason: "moved_school", deferred_at: nil, deferral_reason: nil) }
 
   let(:migration_fixes) do
     [
@@ -60,7 +60,7 @@ describe "Real data check for teacher 34082" do
       },
       {
         object_type: "ECTAtSchoolPeriod",
-        object_id: 10404,
+        object_id: 10_404,
         action: "update",
         attributes: {
           finished_on: nil,
