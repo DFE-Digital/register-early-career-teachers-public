@@ -188,6 +188,7 @@
   - latest_mentor_contract_period_year
   - involved_in_school_transfer
   - api_mentor_id
+  - ect_assigned_mentor_latest_school_period_id
   - created_at
   - updated_at
   :pending_induction_submissions:
