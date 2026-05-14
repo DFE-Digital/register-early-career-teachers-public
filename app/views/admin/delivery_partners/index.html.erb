@@ -5,9 +5,8 @@
   hint_text: "Search by name",
 ) %>
 
-<%= govuk_link_to "Add a new delivery partner",
-      new_admin_delivery_partner_path,
-      class: "govuk-button" %>
+<%= govuk_button_link_to "Add a new delivery partner",
+      new_admin_delivery_partner_path %>
 
 <% if @delivery_partners.any? %>
   <%=
