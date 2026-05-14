@@ -67,9 +67,12 @@ module Schools
     end
 
     def previous_school_mentor_at_school_periods
-      finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(mentor.started_on)
-      scope = ::MentorAtSchoolPeriod.ongoing.or(finishes_in_the_future_scope)
-      mentor.teacher.mentor_at_school_periods.where.not(school: ect.school).merge(scope)
+      finishes_in_the_future_scope = ::MentorAtSchoolPeriod.finished_on_or_after(mentor.started_on.yesterday)
+      ongoing_or_finished_in_future_scope = ::MentorAtSchoolPeriod.ongoing.or(finishes_in_the_future_scope)
+      ::MentorAtSchoolPeriod
+        .where(teacher: mentor.teacher)
+        .where.not(school: ect.school)
+        .merge(ongoing_or_finished_in_future_scope)
     end
 
     def current_mentorship_period
