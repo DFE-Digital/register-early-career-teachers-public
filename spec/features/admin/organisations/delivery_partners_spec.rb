@@ -28,6 +28,7 @@ RSpec.describe "Admin organisations delivery partners" do
 
     when_i_submit_the_form_with_blank_name
     then_i_should_see_a_form_error
+    and_i_should_see_the_error_message("Enter a delivery partner name")
 
     when_i_enter_a_name("Ambition Institute New")
     then_i_should_be_on_the_show_page_for("Ambition Institute New")
@@ -84,7 +85,7 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def and_i_should_see_the_add_a_new_delivery_partner_button
-    expect(page.get_by_role("link", name: "Add a new delivery partner")).to be_visible
+    expect(page.get_by_text("Add a new delivery partner")).to be_visible
   end
 
   def when_i_search_for_delivery_partner
@@ -101,11 +102,11 @@ RSpec.describe "Admin organisations delivery partners" do
   end
 
   def when_i_click_add_a_new_delivery_partner
-    page.get_by_role("link", name: "Add a new delivery partner").click
+    page.get_by_text("Add a new delivery partner").click
   end
 
   def then_i_should_see_the_add_delivery_partner_form
-    expect(page.get_by_role("heading", name: "Add a new delivery partner")).to be_visible
+    expect(page.get_by_role("heading", name: "Delivery partner name")).to be_visible
     expect(page.get_by_label("Delivery partner name")).to be_visible
   end
 
@@ -117,6 +118,10 @@ RSpec.describe "Admin organisations delivery partners" do
   def when_i_enter_a_name(name)
     page.get_by_label("Delivery partner name").fill(name)
     page.get_by_role("button", name: "Confirm").click
+  end
+
+  def and_i_should_see_the_error_message(message)
+    expect(page.locator(".govuk-error-summary").get_by_text(message, exact: false)).to be_visible
   end
 
   def then_i_should_be_on_the_show_page_for(name)

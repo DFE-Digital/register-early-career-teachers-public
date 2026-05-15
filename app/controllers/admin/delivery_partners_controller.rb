@@ -48,7 +48,7 @@ module Admin
       if @delivery_partner.valid?
         delivery_partner = Admin::DeliveryPartners::Create.new(name: @delivery_partner.name, author: current_user).create!
         redirect_to admin_delivery_partner_path(delivery_partner, page: @page, q: @q),
-                    alert: "Delivery partner added"
+                    alert: { heading: "Delivery partner added", body: "You can now add lead providers working with them." }
       else
         @breadcrumbs = new_delivery_partner_breadcrumbs
         render :new, status: :unprocessable_content
