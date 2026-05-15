@@ -6,7 +6,7 @@ class API::Teachers::UnfundedMentorSerializer < Blueprinter::Base
     field(:email) do |teacher, options|
       lead_provider_id = options[:lead_provider_id]
 
-      teacher.mentor_lead_provider_metadata
+      teacher.lead_provider_metadata_for_mentees
         .select { |m| m.lead_provider_id == lead_provider_id }
         .max_by { |m| m.ect_assigned_mentor_latest_school_period.started_on }
         .ect_assigned_mentor_latest_school_period
