@@ -11,7 +11,7 @@ module Admin
         @contract_period = ContractPeriod.find_by(year: @year)
 
         if @contract_period.blank?
-          redirect_to admin_delivery_partner_path(@delivery_partner, page: params[:page], q: params[:q]),
+          redirect_to admin_delivery_partner_path(@delivery_partner, backlink_params),
                       alert: "Contract period for year #{@year} not found"
           return
         end
@@ -35,14 +35,26 @@ module Admin
           author: current_user
         ).call
 
-        redirect_to admin_delivery_partner_path(params[:delivery_partner_id], page: params[:page], q: params[:q]),
-                    alert: "Lead provider partners updated"
+        redirect_to admin_delivery_partner_path(
+          params[:delivery_partner_id],
+          backlink_params
+        ), alert: "Lead provider partners updated"
       rescue Admin::DeliveryPartners::AddLeadProviders::NoLeadProvidersSelectedError => e
-        redirect_to new_admin_delivery_partner_delivery_partnership_path(params[:delivery_partner_id], params[:year], page: params[:page], q: params[:q]),
-                    notice: e.message
+        redirect_to new_admin_delivery_partner_delivery_partnership_path(
+          params[:delivery_partner_id],
+          backlink_params.merge(year: params[:year])
+        ), notice: e.message
       rescue Admin::DeliveryPartners::AddLeadProviders::ValidationError => e
-        redirect_to admin_delivery_partner_path(params[:delivery_partner_id], page: params[:page], q: params[:q]),
-                    notice: e.message
+        redirect_to admin_delivery_partner_path(
+          params[:delivery_partner_id],
+          backlink_params
+        ), notice: e.message
+      end
+
+    private
+
+      def backlink_params
+        params.permit(:page, :q).compact_blank
       end
     end
   end
