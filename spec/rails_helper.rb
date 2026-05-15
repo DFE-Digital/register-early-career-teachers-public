@@ -34,6 +34,11 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
 
+  # Opening registration contract periods
+  config.before(:each, :enable_finance_contract_periods) do
+    allow(Rails.application.config).to receive(:enable_finance_contract_periods).and_return(true)
+  end
+
   config.before do
     # RIAB: new data model
     allow(Rails.application.config).to receive(:enable_teaching_school_hubs).and_return(true)
