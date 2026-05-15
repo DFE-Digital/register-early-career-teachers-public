@@ -23,6 +23,7 @@ describe MentorAtSchoolPeriod do
     it { is_expected.to have_many(:declarations).through(:training_periods) }
     it { is_expected.to have_many(:events) }
     it { is_expected.to have_many(:current_or_future_ects).through(:current_or_future_mentorship_periods).source(:mentee) }
+    it { is_expected.to have_many(:mentor_lead_provider_metadata).class_name("Metadata::TeacherLeadProvider").with_foreign_key(:ect_assigned_mentor_latest_school_period_id).dependent(:nullify).inverse_of(:ect_assigned_mentor_latest_school_period) }
   end
 
   describe "#current_or_future_ects" do
