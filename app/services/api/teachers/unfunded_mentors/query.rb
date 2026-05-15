@@ -41,10 +41,10 @@ module API::Teachers::UnfundedMentors
     end
 
     def where_lead_provider_is(lead_provider_id)
-      mentor_ids_associated_with_teachers_for_the_lead_provider = Metadata::TeacherLeadProvider
+      mentor_teacher_ids_for_the_lead_provider = Metadata::TeacherLeadProvider
+        .joins(ect_assigned_mentor_latest_school_period: :teacher)
         .where(lead_provider_id:)
-        .where.not(api_mentor_id: nil)
-        .select(:api_mentor_id)
+        .select(MentorAtSchoolPeriod.arel_table[:teacher_id])
 
       teacher_ids_trained_by_the_lead_provider = Metadata::TeacherLeadProvider
         .where(lead_provider_id:)
@@ -55,7 +55,7 @@ module API::Teachers::UnfundedMentors
         .select(:teacher_id)
 
       @scope = scope
-        .where(api_id: mentor_ids_associated_with_teachers_for_the_lead_provider)
+        .where(id: mentor_teacher_ids_for_the_lead_provider)
         .where.not(id: teacher_ids_trained_by_the_lead_provider)
     end
 

@@ -59,6 +59,6 @@ describe Metadata::TeacherLeadProvider do
       Metadata::TeacherLeadProvider.bypass_update_restrictions { example.run }
     end
 
-    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[api_mentor_id], timestamp_attribute: :api_updated_at
+    it_behaves_like "a declarative touch model", on_event: %i[update], when_changing: %i[ect_assigned_mentor_latest_school_period_id], timestamp_attribute: :api_updated_at
   end
 end
