@@ -7,7 +7,6 @@ module ContractPeriods
     class AlreadyScheduledError < StandardError; end
     class ContractPeriodStartedError < StandardError; end
     class NoPreviousContractPeriodError < StandardError; end
-    class UnknownIdentifierError < StandardError; end
 
     attr_reader :contract_period
 
