@@ -15,6 +15,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
       lead_provider_metadata
       mentor_at_school_periods
       mentor_declarations
+      mentor_lead_provider_metadata
       mentor_training_periods
       teacher_id_changes
     ])

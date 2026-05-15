@@ -25,9 +25,7 @@ class RemoveTeacher
 
   # @return [Array<Symbol>]
   def has_many_associations
-    Teacher.reflect_on_all_associations(:has_many)
-      .reject { |r| r.options[:primary_key].present? }
-      .map(&:name).sort
+    Teacher.reflect_on_all_associations(:has_many).map(&:name).sort
   end
 
 private
