@@ -1,5 +1,6 @@
 module Schools
   class RegisterECTWizardController < SchoolsController
+    include Schools::RegistrationWindowRedirectable
     include Schools::InductionRedirectable
     include WizardStoreRescuable
 
