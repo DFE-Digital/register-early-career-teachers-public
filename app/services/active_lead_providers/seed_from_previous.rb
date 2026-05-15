@@ -37,6 +37,8 @@ class ActiveLeadProviders::SeedFromPrevious
     end
   end
 
+private
+
   def previous_activation
     @previous_activation ||= previous_contract_period&.active_lead_providers&.find_by(lead_provider:)
   end
@@ -50,8 +52,6 @@ class ActiveLeadProviders::SeedFromPrevious
   def previous_latest_contract
     @previous_latest_contract ||= previous_statements.order(year: :desc, month: :desc).first.contract
   end
-
-private
 
   def previous_activation_empty?
     previous_lead_provider_delivery_partnerships.empty? ||

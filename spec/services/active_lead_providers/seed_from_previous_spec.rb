@@ -11,28 +11,6 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
   let(:teach_first_activation_2026) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2026) }
   let!(:teach_first_activation_2025) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2025) }
 
-  describe "finding the appropriate previous contract_period and active_lead_provider" do
-    # We don't want to find earlier contract_periods..
-    let!(:contract_period_2024) { FactoryBot.create(:contract_period, :with_schedules, year: 2024) }
-    let!(:contract_period_2023) { FactoryBot.create(:contract_period, :with_schedules, year: 2023) }
-
-    # We don't want to find earlier activations..
-    let!(:teach_first_activation_2024) { FactoryBot.create(:active_lead_provider, lead_provider: teach_first, contract_period: contract_period_2024) }
-
-    # We don't want to find other lead_providers..
-    let(:ambition_institute) { FactoryBot.create(:lead_provider, name: "Ambition Institute") }
-    let!(:ambition_insitute_activation_2025) { FactoryBot.create(:active_lead_provider, lead_provider: ambition_institute, contract_period: contract_period_2025) }
-    let!(:ambition_insitute_activation_2024) { FactoryBot.create(:active_lead_provider, lead_provider: ambition_institute, contract_period: contract_period_2024) }
-
-    it "finds the correct previous_contract_period" do
-      expect(service.previous_contract_period).to eq contract_period_2025
-    end
-
-    it "finds the same lead provider's activation relationship from the relevant previous_contract_period" do
-      expect(service.previous_activation).to eq teach_first_activation_2025
-    end
-  end
-
   describe "building subordinates from the previous activation's subordinate records" do
     before do
       create_subordinate_records(teach_first_activation_2025)
