@@ -1,6 +1,10 @@
 namespace :schools, path: :school do
   get "/access-denied", to: "access#show", as: :access_denied
 
+  get "/registration-window-closed",
+      to: "registration_window_closed#show",
+      as: :registration_window_closed
+
   get "/home/ects", to: "ects#index", as: :ects_home
   resources :ects, only: %i[index show] do
     resource :mentorship, only: %i[new create] do
