@@ -14,7 +14,7 @@ module Admin
           if show_move_partnership_link?
             card.with_action { helpers.govuk_link_to("Move to a different partnership", move_partnership_path) }
           end
-          card.with_summary_list do |list|
+          card.with_summary_list(actions: false) do |list|
             rows.each do |row|
               list.with_row do |r|
                 r.with_key(text: row[:key][:text]) if row[:key].present?
@@ -140,7 +140,7 @@ module Admin
 
       def api_response_text
         govuk_details(summary_text: "See this participant as they appear over the API for #{lead_provider&.name}") do
-          content_tag(:pre, class: "app-code app-code--full-width") do
+          content_tag(:pre, class: "app-code") do
             content_tag(:code, formatted_teacher)
           end
         end
