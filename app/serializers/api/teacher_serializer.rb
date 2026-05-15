@@ -25,7 +25,7 @@ class API::TeacherSerializer < Blueprinter::Base
       end
       field(:email) { |(training_period, _, _)| training_period.email }
       field(:mentor_id) do |(training_period, _, metadata)|
-        metadata.api_mentor_id if training_period.for_ect?
+        metadata.ect_assigned_mentor_latest_school_period&.teacher&.api_id if training_period.for_ect?
       end
       field(:school_urn) { |(training_period, _, _)| training_period.school_partnership.school.urn.to_s }
       field(:participant_type) { |(training_period, _, _)| training_period.for_ect? ? "ect" : "mentor" }

@@ -114,7 +114,6 @@ RSpec.describe Metadata::Handlers::Teacher do
             latest_ect_contract_period: ect_training_period1.contract_period,
             latest_mentor_training_period: mentor_training_period1,
             latest_mentor_contract_period: mentor_training_period1.contract_period,
-            api_mentor_id: nil,
             ect_assigned_mentor_latest_school_period: nil
           )
 
@@ -126,7 +125,6 @@ RSpec.describe Metadata::Handlers::Teacher do
             latest_ect_contract_period: ect_training_period2.contract_period,
             latest_mentor_training_period: mentor_training_period2,
             latest_mentor_contract_period: mentor_training_period2.contract_period,
-            api_mentor_id: nil,
             ect_assigned_mentor_latest_school_period: nil
           )
         end
@@ -204,7 +202,6 @@ RSpec.describe Metadata::Handlers::Teacher do
             latest_ect_contract_period: ect_training_period2.contract_period,
             latest_mentor_training_period: mentor_training_period2,
             latest_mentor_contract_period: mentor_training_period2.contract_period,
-            api_mentor_id: nil,
             ect_assigned_mentor_latest_school_period: nil
           )
         end
@@ -240,14 +237,13 @@ RSpec.describe Metadata::Handlers::Teacher do
             latest_ect_contract_period: ect_training_period1.contract_period,
             latest_mentor_training_period: nil,
             latest_mentor_contract_period: nil,
-            api_mentor_id: nil,
             ect_assigned_mentor_latest_school_period: nil
           )
         end
       end
 
       context "teacher without any training periods" do
-        it "creates metadata with nil latest training periods and api_mentor_id" do
+        it "creates metadata with nil latest training periods and ect_assigned_mentor_latest_school_period" do
           refresh_metadata
 
           metadata = Metadata::TeacherLeadProvider.where(lead_provider: lead_provider1).sole
@@ -258,7 +254,6 @@ RSpec.describe Metadata::Handlers::Teacher do
             latest_ect_contract_period: nil,
             latest_mentor_training_period: nil,
             latest_mentor_contract_period: nil,
-            api_mentor_id: nil,
             ect_assigned_mentor_latest_school_period: nil
           )
         end
@@ -323,14 +318,13 @@ RSpec.describe Metadata::Handlers::Teacher do
           )
         end
 
-        it "creates metadata with the correct/latest api_mentor_id and ect_assigned_mentor_latest_school_period" do
+        it "creates metadata with the correct/latest ect_assigned_mentor_latest_school_period" do
           refresh_metadata
 
           metadata = Metadata::TeacherLeadProvider.where(teacher: teacher1, lead_provider: lead_provider1).sole
           expect(metadata).to have_attributes(
             teacher: teacher1,
             lead_provider: lead_provider1,
-            api_mentor_id: latest_mentorship_period.mentor.teacher.api_id,
             ect_assigned_mentor_latest_school_period: latest_mentorship_period.mentor
           )
         end
@@ -374,7 +368,7 @@ RSpec.describe Metadata::Handlers::Teacher do
           )
         end
 
-        it "creates metadata with nil `api_mentor_id`" do
+        it "creates metadata with nil `ect_assigned_mentor_latest_school_period`" do
           refresh_metadata
 
           metadata = Metadata::TeacherLeadProvider.where(teacher: teacher1, lead_provider: lead_provider1).sole
@@ -385,7 +379,7 @@ RSpec.describe Metadata::Handlers::Teacher do
             latest_ect_contract_period: ect_training_period.contract_period,
             latest_mentor_training_period: nil,
             latest_mentor_contract_period: nil,
-            api_mentor_id: nil
+            ect_assigned_mentor_latest_school_period: nil
           )
         end
 
@@ -427,7 +421,7 @@ RSpec.describe Metadata::Handlers::Teacher do
             )
           end
 
-          it "creates metadata with the correct/latest api_mentor_id" do
+          it "creates metadata with the correct/latest ect_assigned_mentor_latest_school_period" do
             refresh_metadata
 
             metadata = Metadata::TeacherLeadProvider.where(teacher: teacher1, lead_provider: lead_provider1).sole
@@ -438,7 +432,7 @@ RSpec.describe Metadata::Handlers::Teacher do
               latest_ect_contract_period: ect_training_period.contract_period,
               latest_mentor_training_period: nil,
               latest_mentor_contract_period: nil,
-              api_mentor_id: latest_mentorship_period.mentor.teacher.api_id
+              ect_assigned_mentor_latest_school_period: latest_mentorship_period.mentor
             )
           end
         end
@@ -485,7 +479,6 @@ RSpec.describe Metadata::Handlers::Teacher do
           latest_mentor_training_period_id: nil,
           latest_ect_contract_period_year: nil,
           latest_mentor_contract_period_year: nil,
-          api_mentor_id: nil,
           involved_in_school_transfer: false
         )
       end

@@ -69,7 +69,8 @@ module API::Teachers
               mentor_at_school_period: [],
               schedule: [],
             },
-            latest_mentor_contract_period: []
+            latest_mentor_contract_period: [],
+            ect_assigned_mentor_latest_school_period: :teacher
           }
         )
     end
