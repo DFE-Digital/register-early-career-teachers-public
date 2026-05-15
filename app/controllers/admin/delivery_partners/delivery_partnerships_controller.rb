@@ -42,7 +42,8 @@ module Admin
       rescue Admin::DeliveryPartners::AddLeadProviders::NoLeadProvidersSelectedError => e
         redirect_to new_admin_delivery_partner_delivery_partnership_path(
           params[:delivery_partner_id],
-          backlink_params.merge(year: params[:year])
+          params[:year],
+          backlink_params
         ), notice: e.message
       rescue Admin::DeliveryPartners::AddLeadProviders::ValidationError => e
         redirect_to admin_delivery_partner_path(
