@@ -12,7 +12,7 @@ class MentorAtSchoolPeriod < ApplicationRecord
   has_many :training_periods, inverse_of: :mentor_at_school_period, dependent: :destroy
   has_many :declarations, through: :training_periods
   has_many :events
-  has_many :mentor_lead_provider_metadata,
+  has_many :lead_provider_metadata_for_mentees,
            class_name: "Metadata::TeacherLeadProvider",
            foreign_key: :ect_assigned_mentor_latest_school_period_id,
            dependent: :nullify,
