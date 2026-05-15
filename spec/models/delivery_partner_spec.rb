@@ -16,9 +16,14 @@ describe DeliveryPartner do
   describe "validations" do
     subject { FactoryBot.build(:delivery_partner) }
 
-    it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name).case_insensitive.with_message("A delivery partner with this name already exists") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another delivery partner") }
+
+    it "has the correct blank name error message" do
+      subject.name = ""
+      subject.valid?
+      expect(subject.errors[:name]).to include("Enter a delivery partner name")
+    end
   end
 
   describe "normalizing" do
