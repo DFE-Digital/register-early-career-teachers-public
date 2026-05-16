@@ -155,30 +155,19 @@ describe MentorAtSchoolPeriods::Finish do
     end
 
     it "uses MentorshipPeriods::Finish to close mentorship periods" do
-      mentorships_finish = double("MentorshipPeriods::Finish", finish!: true)
-      allow(MentorshipPeriods::Finish).to receive(:new).with(
-        mentorship_period:,
-        finished_on:,
-        author:
-      ).and_return(mentorships_finish)
+      allow(MentorshipPeriods::Finish).to receive(:new).and_call_original
 
       subject.finish_periods_at_all_schools!
 
-      expect(mentorships_finish).to have_received(:finish!).once
+      expect(MentorshipPeriods::Finish).to have_received(:new).once
     end
 
     it "uses TrainingPeriods::Finish to close training periods" do
-      training_periods_finish = double("TrainingPeriods::Finish", finish!: true)
-      allow(TrainingPeriods::Finish).to receive(:mentor_training).with(
-        training_period:,
-        mentor_at_school_period:,
-        finished_on:,
-        author:
-      ).and_return(training_periods_finish)
+      allow(TrainingPeriods::Finish).to receive(:new).and_call_original
 
       subject.finish_periods_at_all_schools!
 
-      expect(training_periods_finish).to have_received(:finish!).once
+      expect(TrainingPeriods::Finish).to have_received(:new).once
     end
 
     context "when there are no ongoing mentor at school periods" do

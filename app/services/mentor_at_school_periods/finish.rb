@@ -31,7 +31,7 @@ private
   def finish!(period)
     finish_mentorship_periods!(period)
     finish_training_periods!(period)
-    finish_mentor_at_school_period!(period)
+    finish_mentor_at_school_period!(period.reload)
     record_mentor_left_school_event!(period)
   end
 

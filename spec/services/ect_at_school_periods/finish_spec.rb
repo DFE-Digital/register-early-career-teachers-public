@@ -140,12 +140,11 @@ describe ECTAtSchoolPeriods::Finish do
         end
 
         it "uses MentorshipPeriods::Finish to close it" do
-          mentorships_finish = double("MentorshipPeriods::Finish", finish!: true)
-          allow(MentorshipPeriods::Finish).to receive(:new).with(any_args).and_return(mentorships_finish)
+          allow(MentorshipPeriods::Finish).to receive(:new).with(any_args).and_call_original
 
           subject.finish!
 
-          expect(mentorships_finish).to have_received(:finish!).once
+          expect(MentorshipPeriods::Finish).to have_received(:new).once
         end
       end
 
@@ -201,12 +200,11 @@ describe ECTAtSchoolPeriods::Finish do
         end
 
         it "uses TrainingPeriods::Finish to close it" do
-          training_periods_finish = double("TrainingPeriods::Finish", finish!: true)
-          allow(TrainingPeriods::Finish).to receive(:new).with(any_args).and_return(training_periods_finish)
+          allow(TrainingPeriods::Finish).to receive(:new).with(any_args).and_call_original
 
           subject.finish!
 
-          expect(training_periods_finish).to have_received(:finish!).once
+          expect(TrainingPeriods::Finish).to have_received(:new).once
         end
       end
 

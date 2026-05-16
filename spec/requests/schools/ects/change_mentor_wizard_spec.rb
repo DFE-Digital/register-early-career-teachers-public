@@ -342,6 +342,7 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
                 .to change(TrainingPeriod, :count).by(1)
 
               ect_at_school_period.reload
+              other_mentor_at_school_period.reload
               new_training_period = TrainingPeriod.last
               expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
                 .to eq(other_mentor_at_school_period)
@@ -401,6 +402,7 @@ describe "Schools::ECTs::ChangeMentorWizardController" do
                 .to change(TrainingPeriod, :count).by(1)
 
               ect_at_school_period.reload
+              other_mentor_at_school_period.reload
               new_training_period = TrainingPeriod.last
               expect(ect_at_school_period.current_or_next_mentorship_period.mentor)
                 .to eq(other_mentor_at_school_period)

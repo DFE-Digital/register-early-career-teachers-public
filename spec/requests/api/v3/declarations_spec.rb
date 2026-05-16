@@ -168,8 +168,8 @@ RSpec.describe "Declarations API", :with_metadata, :with_touches, type: :request
 
       before do
         # Close training periods for other lead providers.
-        resource.teacher.ect_at_school_periods.update!(finished_on: 1.month.from_now)
         resource.teacher.ect_training_periods.update!(finished_on: 1.month.from_now)
+        resource.teacher.ect_at_school_periods.reload.update!(finished_on: 1.month.from_now)
 
         # Create a training period with the new lead provider in the future.
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, started_on: 2.months.from_now, finished_on: nil, teacher: resource.teacher)
