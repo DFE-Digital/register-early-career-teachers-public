@@ -12,15 +12,17 @@ module ECTAtSchoolPeriods
 
     def finish!
       ActiveRecord::Base.transaction do
-        finish_ect_at_school_period!
         finish_mentorship_periods!
         finish_training_period!
+        finish_ect_at_school_period!
       end
     end
 
   private
 
     def finish_ect_at_school_period!
+      ect_at_school_period.reload
+
       if ect_at_school_period.finished_on.present? && ect_at_school_period.finished_on <= finished_on
         update_reporting_school!
         return
