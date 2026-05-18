@@ -5,7 +5,7 @@
         :q,
         value: params[:q],
         label: { text: "Search for teacher", size: "s" },
-        hint: { text: "Name, TRN or API participant ID" },
+        hint: { text: "Name, TRN, API participant ID, or API training record ID" },
         form_group: { class: "app-teachers-filters__search" }
       ) %>
 
@@ -65,4 +65,3 @@
 <%= govuk_button_link_to("Import a record from TRS", new_admin_import_ect_find_path, secondary: true) %>
 
 <%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "teachers") %>
-
