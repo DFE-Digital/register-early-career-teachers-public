@@ -114,8 +114,8 @@ private
         year: new_year,
         # Statements run on a fixed monthly cycle: the deadline is the last day
         # of the preceding month, and payment is made on the 25th of the month.
-        deadline_date: Date.new(new_year, previous_statement.month, 1).prev_day,
-        payment_date: Date.new(new_year, previous_statement.month, 25),
+        deadline_date: previous_statement.deadline_date.years_since(year_offset),
+        payment_date: previous_statement.payment_date.years_since(year_offset),
         fee_type: previous_statement.fee_type,
         status: :open
       )
