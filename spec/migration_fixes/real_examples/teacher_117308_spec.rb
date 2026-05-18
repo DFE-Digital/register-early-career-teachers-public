@@ -1,9 +1,8 @@
 describe "Real data check for teacher 117308" do
-  let!(:teacher) { FactoryBot.create(:teacher, id: 117308) }
-  let!(:school_1) { FactoryBot.create(:school, id: 31580) }
-  
-  let!(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, id: 14939, teacher:, school: school_1, started_on: Date.new(2023, 9, 14), finished_on: nil) }
-  
+  let!(:teacher) { FactoryBot.create(:teacher, id: 117_308) }
+  let!(:school_1) { FactoryBot.create(:school, id: 31_580) }
+
+  let!(:mentor_at_school_period_1) { FactoryBot.create(:mentor_at_school_period, id: 14_939, teacher:, school: school_1, started_on: Date.new(2023, 9, 14), finished_on: nil) }
 
   let(:migration_fixes) do
     [
