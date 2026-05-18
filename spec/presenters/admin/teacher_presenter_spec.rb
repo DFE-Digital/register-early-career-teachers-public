@@ -48,6 +48,22 @@ RSpec.describe Admin::TeacherPresenter do
       end
     end
 
+    context "when the teacher has an ECT period finishing today" do
+      before { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.month.ago, finished_on: Time.zone.today) }
+
+      it "includes the school" do
+        expect(presenter.current_schools).to include(school)
+      end
+    end
+
+    context "when the teacher has an ECT period that finished yesterday" do
+      before { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.month.ago, finished_on: 1.day.ago) }
+
+      it "does not include the school" do
+        expect(presenter.current_schools).not_to include(school)
+      end
+    end
+
     context "when there are no ongoing periods" do
       it "is empty" do
         expect(presenter.current_schools).to be_empty
