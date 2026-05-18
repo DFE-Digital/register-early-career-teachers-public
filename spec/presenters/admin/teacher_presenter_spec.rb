@@ -32,6 +32,22 @@ RSpec.describe Admin::TeacherPresenter do
       end
     end
 
+    context "when the teacher has an ECT period with a future leaving date" do
+      before { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.month.ago, finished_on: 1.week.from_now) }
+
+      it "includes the school until the leaving date has passed" do
+        expect(presenter.current_schools).to include(school)
+      end
+    end
+
+    context "when the teacher has a mentor period with a future leaving date" do
+      before { FactoryBot.create(:mentor_at_school_period, teacher:, school:, started_on: 1.month.ago, finished_on: 1.week.from_now) }
+
+      it "includes the school until the leaving date has passed" do
+        expect(presenter.current_schools).to include(school)
+      end
+    end
+
     context "when there are no ongoing periods" do
       it "is empty" do
         expect(presenter.current_schools).to be_empty
