@@ -19,7 +19,7 @@ class DeliveryPartner < ApplicationRecord
                           message: "A delivery partner with this name already exists" }
 
   validates :name,
-            presence: true,
+            presence: { message: "Enter a delivery partner name" },
             unless: -> { validation_context == :rename }
 
   validates :name,

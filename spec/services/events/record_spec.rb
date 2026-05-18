@@ -2346,4 +2346,47 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_delivery_partner_created_event!" do
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_delivery_partner_created_event!(author:, delivery_partner:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          delivery_partner:,
+          heading: "Delivery partner #{delivery_partner.name} created",
+          event_type: :delivery_partner_created,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_delivery_partner_name_changed_event!" do
+    let(:delivery_partner) { FactoryBot.create(:delivery_partner, name: "Alpha") }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_delivery_partner_name_changed_event!(
+          author:,
+          delivery_partner:,
+          from: "Alpha",
+          to: "Beta"
+        )
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          delivery_partner:,
+          heading: "Delivery partner name changed",
+          event_type: :delivery_partner_name_changed,
+          happened_at: Time.zone.now,
+          modifications: ["Name changed from 'Alpha' to 'Beta'"],
+          metadata: { "name" => %w[Alpha Beta] },
+          **author_params
+        )
+      end
+    end
+  end
 end
