@@ -378,19 +378,27 @@ module ECTAtSchoolPeriods
             )
           end
 
-          it "removes the existing training period" do
-            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+          context "when the ECT starts in the current contract period" do
+            around do |example|
+              travel_to(Date.new(2025, 11, 15)) do
+                example.run
+              end
+            end
 
-            expect { training_period.reload }
-              .to raise_error(ActiveRecord::RecordNotFound)
-          end
+            it "removes the existing training period" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-          it "creates a new provider-led training period that starts on the ECT start date" do
-            SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+              expect { training_period.reload }
+                .to raise_error(ActiveRecord::RecordNotFound)
+            end
 
-            expect(ect_at_school_period.reload).to be_provider_led_training_programme
-            new_training_period = TrainingPeriod.last
-            expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
+            it "creates a new provider-led training period that starts on the ECT start date" do
+              SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
+
+              expect(ect_at_school_period.reload).to be_provider_led_training_programme
+              new_training_period = TrainingPeriod.last
+              expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
+            end
           end
 
           context "when the ect starts in the next contract period" do
