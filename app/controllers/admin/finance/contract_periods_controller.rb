@@ -28,15 +28,16 @@ module Admin::Finance
     end
 
     def create
-      @contract_period = ContractPeriod.new(contract_period_params)
+      @service = ContractPeriods::Create.new(
+        author: current_user,
+        params: contract_period_params
+      )
 
-      @contract_period.transaction do
-        if @contract_period.save
-          Events::Record.record_contract_period_added_event!(author: current_user, contract_period: @contract_period)
-          redirect_to admin_contract_periods_path, alert: "#{@contract_period.year} Contract period added"
-        else
-          render :new, status: :unprocessable_content
-        end
+      if @service.create!
+        redirect_to admin_contract_periods_path, alert: "#{@service.contract_period.year} Contract period added"
+      else
+        @contract_period = @service.contract_period
+        render :new, status: :unprocessable_content
       end
     end
 
@@ -44,13 +45,17 @@ module Admin::Finance
     end
 
     def update
-      @contract_period.transaction do
-        if @contract_period.update(contract_period_params)
-          Events::Record.record_contract_period_updated_event!(author: current_user, contract_period: @contract_period, modifications: @contract_period.saved_changes)
-          redirect_to admin_contract_periods_path, alert: "#{@contract_period.year} Contract period updated"
-        else
-          render :edit, status: :unprocessable_content
-        end
+      @service = ContractPeriods::Update.new(
+        author: current_user,
+        contract_period: @contract_period,
+        params: contract_period_params
+      )
+
+      if @service.update!
+        redirect_to admin_contract_periods_path, alert: "#{@service.contract_period.year} Contract period updated"
+      else
+        @contract_period = @service.contract_period
+        render :edit, status: :unprocessable_content
       end
     end
 
