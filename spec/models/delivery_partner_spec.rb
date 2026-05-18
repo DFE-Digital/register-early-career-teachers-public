@@ -18,12 +18,7 @@ describe DeliveryPartner do
 
     it { is_expected.to validate_uniqueness_of(:name).case_insensitive.with_message("A delivery partner with this name already exists") }
     it { is_expected.to validate_uniqueness_of(:api_id).case_insensitive.with_message("API id already exists for another delivery partner") }
-
-    it "has the correct blank name error message" do
-      subject.name = ""
-      subject.valid?
-      expect(subject.errors[:name]).to include("Enter a delivery partner name")
-    end
+    it { is_expected.to validate_presence_of(:name).with_message("Enter a delivery partner name") }
   end
 
   describe "normalizing" do
