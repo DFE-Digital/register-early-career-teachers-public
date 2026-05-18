@@ -366,6 +366,14 @@ module ECTAtSchoolPeriods
           let(:ect_at_school_period) do
             FactoryBot.create(:ect_at_school_period, :not_started_yet)
           end
+          let!(:contract_period) do
+            FactoryBot.create(
+              :contract_period,
+              :with_schedules,
+              :current,
+              finished_on: ect_at_school_period.started_on.advance(months: 1)
+            )
+          end
 
           let!(:training_period) do
             FactoryBot.create(
@@ -394,23 +402,24 @@ module ECTAtSchoolPeriods
           end
 
           context "when the ect starts in the next contract period" do
-            around do |example|
-              travel_to(Date.new(2026, 5, 31)) do
-                example.run
-              end
+            let!(:contract_period) do
+              FactoryBot.create(:contract_period, :with_schedules, :current)
             end
-
+            let!(:next_contract_period) do
+              FactoryBot.create(:contract_period, :with_schedules, :next)
+            end
             let(:ect_at_school_period) do
-              FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 2.weeks.from_now)
+              FactoryBot.create(
+                :ect_at_school_period,
+                :ongoing,
+                started_on: next_contract_period.started_on
+              )
             end
-
-            let(:future_contract_period) { FactoryBot.create(:contract_period, :with_schedules, year: 2026) }
-
-            let!(:future_active_lead_provider) do
+            let!(:next_active_lead_provider) do
               FactoryBot.create(
                 :active_lead_provider,
                 lead_provider:,
-                contract_period: future_contract_period
+                contract_period: next_contract_period
               )
             end
 
@@ -420,7 +429,7 @@ module ECTAtSchoolPeriods
               expect(ect_at_school_period.reload).to be_provider_led_training_programme
               new_training_period = TrainingPeriod.last
               expect(new_training_period.started_on).to eq(ect_at_school_period.started_on)
-              expect(new_training_period.expression_of_interest).to eq(future_active_lead_provider)
+              expect(new_training_period.expression_of_interest).to eq(next_active_lead_provider)
             end
           end
         end
