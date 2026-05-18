@@ -4,7 +4,7 @@ module Admin
 
     layout "full"
     before_action :set_delivery_partner, only: %i[show edit update]
-    before_action :assign_backlink_params, only: %i[index show edit update]
+    before_action :assign_backlink_params
 
     def index
       @breadcrumbs = {
@@ -22,12 +22,10 @@ module Admin
         @delivery_partner.name => nil
       }
 
-      # Get existing partnerships
       existing_partnerships = @delivery_partner
         .lead_provider_delivery_partnerships
         .includes(active_lead_provider: %i[lead_provider contract_period])
 
-      # Get all contract periods that have available lead providers (including those with existing partnerships)
       contract_periods_with_providers = ContractPeriod
         .joins(:active_lead_providers)
         .distinct
@@ -36,6 +34,24 @@ module Admin
       @contract_period_partnerships = contract_periods_with_providers.map do |contract_period|
         partnerships = existing_partnerships.select { |p| p.contract_period.year == contract_period.year }
         { contract_period:, partnerships: }
+      end
+    end
+
+    def new
+      @breadcrumbs = new_delivery_partner_breadcrumbs
+      @delivery_partner = DeliveryPartner.new
+    end
+
+    def create
+      @delivery_partner = DeliveryPartner.new(name: params.dig(:delivery_partner, :name))
+
+      if @delivery_partner.valid?
+        delivery_partner = Admin::DeliveryPartners::Create.new(name: @delivery_partner.name, author: current_user).create!
+        redirect_to admin_delivery_partner_path(delivery_partner, page: @page, q: @q),
+                    alert: { heading: "Delivery partner added", body: "You can now add lead providers working with them." }
+      else
+        @breadcrumbs = new_delivery_partner_breadcrumbs
+        render :new, status: :unprocessable_content
       end
     end
 
@@ -66,6 +82,14 @@ module Admin
     def assign_backlink_params
       @page = params[:page]
       @q    = params[:q]
+    end
+
+    def new_delivery_partner_breadcrumbs
+      {
+        "Organisations" => admin_organisations_path,
+        "Delivery partners" => admin_delivery_partners_path(page: @page, q: @q),
+        "Add a new delivery partner" => nil,
+      }
     end
 
     def change_name_service

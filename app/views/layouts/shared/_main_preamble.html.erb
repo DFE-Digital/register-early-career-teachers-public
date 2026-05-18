@@ -7,7 +7,12 @@
 <% end %>
 
 <% if flash[:alert] %>
-  <%= govuk_notification_banner(title_text: "Success", text: flash[:alert], success: true, classes: 'govuk-notification-banner__heading') %>
+  <%= govuk_notification_banner(title_text: "Success", success: true) do |banner| %>
+    <% banner.with_heading(text: flash_alert_heading, classes: 'govuk-notification-banner__heading') %>
+    <% if flash_alert_body %>
+      <p class="govuk-body"><%= flash_alert_body %></p>
+    <% end %>
+  <% end %>
 <% end %>
 
 <% if flash[:error] %>
