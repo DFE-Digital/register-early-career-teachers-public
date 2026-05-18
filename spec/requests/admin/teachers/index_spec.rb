@@ -91,7 +91,33 @@ RSpec.describe "Admin teachers index", type: :request do
           let!(:other_teacher_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher: other_teacher, contract_period: other_teacher_contract_period) }
 
           it "filters teachers by API participant ID" do
-            get "/admin/teachers", params: { q: "4266141740" }
+            get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-426614174000" }
+
+            expect(response.status).to eq(200)
+            expect(response.body).to include(teacher.trn)
+            expect(response.body).not_to include(other_teacher.trn)
+          end
+        end
+
+        context "when searching by API ECT training record ID" do
+          let!(:teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: "123e4567-e89b-12d3-a456-576614174000") }
+          let!(:other_teacher) { FactoryBot.create(:teacher, api_ect_training_record_id: "999e4567-e89b-12d3-a456-426614174999") }
+
+          it "filters teachers by API ECT training record ID" do
+            get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-576614174000" }
+
+            expect(response.status).to eq(200)
+            expect(response.body).to include(teacher.trn)
+            expect(response.body).not_to include(other_teacher.trn)
+          end
+        end
+
+        context "when searching by API mentor training record ID" do
+          let!(:teacher) { FactoryBot.create(:teacher, api_mentor_training_record_id: "123e4567-e89b-12d3-a456-576614174000") }
+          let!(:other_teacher) { FactoryBot.create(:teacher, api_mentor_training_record_id: "999e4567-e89b-12d3-a456-426614174999") }
+
+          it "filters teachers by API mentor training record ID" do
+            get "/admin/teachers", params: { q: "123e4567-e89b-12d3-a456-576614174000" }
 
             expect(response.status).to eq(200)
             expect(response.body).to include(teacher.trn)
