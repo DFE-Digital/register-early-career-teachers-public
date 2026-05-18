@@ -76,6 +76,6 @@ private
   end
 
   def no_overlaps
-    errors.add(:base, "Contract period overlaps with another contract period") if has_overlap_with_siblings?
+    overlap_validation(name: "Contract")
   end
 end

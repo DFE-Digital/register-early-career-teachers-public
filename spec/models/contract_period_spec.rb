@@ -32,7 +32,7 @@ describe ContractPeriod do
       it "does not allow overlapping records" do
         overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 3, 3))
         expect(overlapping).not_to be_valid
-        expect(overlapping.errors.messages[:base]).to include(/Contract period overlaps/)
+        expect(overlapping.errors.messages[:started_on]).to include(/Start date cannot overlap another Contract period/)
       end
     end
   end
