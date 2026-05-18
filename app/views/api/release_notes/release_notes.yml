@@ -25,6 +25,9 @@
   date: 2026-05-08
   tags:
     - breaking-change
+    - sandbox-release
+    - production-release
+
   body: |
     We’ve introduced a new validation on the `/api/v3/participants/{id}/withdraw` endpoint to prevent early career teachers (ECTs) from being withdrawn using an invalid withdrawal reason.
 
