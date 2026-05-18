@@ -70,6 +70,8 @@ class Event < ApplicationRecord
     statement_authorised_for_payment
     statement_marked_payable
     teacher_declaration_payable
+    contract_period_added
+    contract_period_updated
   ].freeze
 
   belongs_to :author, class_name: "User"
@@ -95,6 +97,7 @@ class Event < ApplicationRecord
   belongs_to :mentor_at_school_period
   belongs_to :mentorship_period
   belongs_to :training_period
+  belongs_to :contract_period
 
   # statements
   belongs_to :statement

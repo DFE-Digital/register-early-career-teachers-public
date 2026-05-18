@@ -31,7 +31,8 @@ module Events
                 :user,
                 :modifications,
                 :metadata,
-                :zendesk_ticket_id
+                :zendesk_ticket_id,
+                :contract_period
 
     def initialize(
       author:,
@@ -61,7 +62,8 @@ module Events
       user: nil,
       modifications: nil,
       metadata: nil,
-      zendesk_ticket_id: nil
+      zendesk_ticket_id: nil,
+      contract_period: nil
     )
       @author = author
       @event_type = event_type
@@ -91,6 +93,7 @@ module Events
       @modifications = DescribeModifications.new(modifications).describe
       @metadata = metadata || modifications
       @zendesk_ticket_id = zendesk_ticket_id
+      @contract_period = contract_period
     end
 
     def record_event!
@@ -993,6 +996,44 @@ module Events
       new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
     end
 
+    # Contract periods Events
+
+    def self.record_contract_period_added_event!(author:, contract_period:)
+      event_type = :contract_period_added
+      heading = "Contract period added: #{contract_period.year}"
+      metadata = {
+        year: contract_period.year,
+        started_on: contract_period.started_on,
+        finished_on: contract_period.finished_on,
+        detailed_evidence_types_enabled: contract_period.detailed_evidence_types_enabled,
+        mentor_funding_enabled: contract_period.mentor_funding_enabled,
+        uplift_fees_enabled: contract_period.uplift_fees_enabled
+      }
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        contract_period:,
+        happened_at: Time.zone.now,
+        metadata:
+      ).record_event!
+    end
+
+    def self.record_contract_period_updated_event!(author:, contract_period:, modifications:)
+      event_type = :contract_period_updated
+      heading = "Contract period updated: #{contract_period.year}"
+
+      new(
+        event_type:,
+        author:,
+        heading:,
+        contract_period:,
+        happened_at: Time.zone.now,
+        modifications:
+      ).record_event!
+    end
+
   private
 
     def attributes
@@ -1047,6 +1088,7 @@ module Events
         declaration:,
         user:,
         pending_induction_submission_batch:,
+        contract_period:
       }.compact
     end
 

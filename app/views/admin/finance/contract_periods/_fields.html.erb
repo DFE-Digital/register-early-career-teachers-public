@@ -1,0 +1,30 @@
+<%= content_for(:error_summary) { form.govuk_error_summary } %>
+
+ <%= form.govuk_text_field :year,
+    label: { text: "Year", size: "m" },
+    width: 4,
+    inputmode: "numeric" %>
+
+<%= form.govuk_date_field :started_on,
+    legend: { text: "Start date", size: "m" } %>
+
+<%= form.govuk_date_field :finished_on,
+    legend: { text: "End date", size: "m" } %>
+
+<%= form.govuk_check_boxes_fieldset :detailed_evidence_types_enabled, multiple: false, legend: { text: "Detailed evidence types enabled", hidden: true } do %>
+  <%= form.govuk_check_box :detailed_evidence_types_enabled, 1, 0, multiple: false, link_errors: true, label: { text: "Detailed evidence types enabled", size: "m" } %>
+<% end %>
+
+<%= govuk_section_break(visible:false, size: "m") %>
+
+<%= form.govuk_check_boxes_fieldset :mentor_funding_enabled, multiple: false, legend: { text: "Mentor funding enabled", hidden: true } do %>
+  <%= form.govuk_check_box :mentor_funding_enabled, 1, 0, multiple: false, link_errors: true, label: { text: "Mentor funding enabled", size: "m" } %>
+<% end %>
+
+<%= govuk_section_break(visible:false, size: "m") %>
+
+<%= form.govuk_check_boxes_fieldset :uplift_fees_enabled, multiple: false, legend: { text: "Uplift fees enabled", hidden: true } do %>
+  <%= form.govuk_check_box :uplift_fees_enabled, 1, 0, multiple: false, link_errors: true, label: { text: "Uplift fees enabled", size: "m" } %>
+<% end %>
+
+<%= govuk_section_break(visible:false, size: "m") %>
