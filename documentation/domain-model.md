@@ -472,6 +472,7 @@ erDiagram
     integer id
     uuid api_mentor_id
     datetime created_at
+    integer ect_assigned_mentor_latest_school_period_id
     boolean involved_in_school_transfer
     integer latest_ect_contract_period_year
     integer latest_ect_training_period_id
@@ -487,6 +488,7 @@ erDiagram
   Metadata_TeacherLeadProvider }o--|| TrainingPeriod : belongs_to
   Metadata_TeacherLeadProvider }o--|| ContractPeriod : belongs_to
   Metadata_TeacherLeadProvider }o--|| ContractPeriod : belongs_to
+  Metadata_TeacherLeadProvider }o--|| MentorAtSchoolPeriod : belongs_to
   Metadata_SchoolLeadProviderContractPeriod {
     integer id
     integer contract_period_year
