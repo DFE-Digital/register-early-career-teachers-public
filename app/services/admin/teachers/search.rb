@@ -40,10 +40,16 @@ module Admin
         trns = query_string.scan(/\b\d{7}\b/)
         return scope.where(trn: trns) if trns.any?
 
-        full_text_scope = full_text_matches(scope)
-        return full_text_scope unless api_participant_id_query?
+        api_ids = query_string.scan(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i)
+        return api_id_matches(scope, api_ids) if api_ids.any?
 
-        full_text_scope.or(api_participant_id_matches(scope))
+        full_text_matches(scope)
+      end
+
+      def api_id_matches(scope, ids)
+        scope.where(api_id: ids)
+          .or(scope.where(api_ect_training_record_id: ids))
+          .or(scope.where(api_mentor_training_record_id: ids))
       end
 
       def full_text_matches(scope)
@@ -57,16 +63,6 @@ module Admin
 
       def normalized_full_text_query
         @normalized_full_text_query ||= query_string.scan(/[[:alnum:]]+/).join(" ")
-      end
-
-      def api_participant_id_query?
-        query_string.match?(/\A(?=.*[\d-])[a-f0-9-]{8,}\z/i)
-      end
-
-      def api_participant_id_matches(scope)
-        escaped_query = ActiveRecord::Base.sanitize_sql_like(query_string)
-
-        scope.where("CAST(teachers.api_id AS text) ILIKE ?", "%#{escaped_query}%")
       end
 
       def filter_teachers_by_role(scope)
