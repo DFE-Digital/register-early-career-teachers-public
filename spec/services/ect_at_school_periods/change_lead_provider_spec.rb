@@ -81,7 +81,7 @@ module ECTAtSchoolPeriods
           change_lead_provider
 
           expect { training_period.reload }.not_to raise_error
-          expect(training_period.finished_on).to eq(Date.current)
+          expect(training_period.finished_on).to eq(Date.yesterday)
         end
 
         it "creates a new training period with the new lead provider" do

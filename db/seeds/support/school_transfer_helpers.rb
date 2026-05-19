@@ -3,26 +3,26 @@ private
 
   def build_ignored_transfer_for_finished_school_period(teacher:, lead_provider:, type: :ect)
     school_period1 = create_school_period(teacher, from: 1.year.ago, to: 1.week.ago, type:)
-    add_training_period(school_period1, programme_type: :provider_led, from: 1.year.ago.tomorrow, to: 9.months.ago, with: lead_provider)
-    add_training_period(school_period1, programme_type: :provider_led, from: 9.months.ago.tomorrow, to: 3.months.ago, with: lead_provider)
-    add_training_period(school_period1, programme_type: :school_led, from: 3.months.ago.tomorrow, to: 1.week.ago)
+    add_training_period(school_period1, programme_type: :provider_led, from: school_period1.started_on, to: 9.months.ago, with: lead_provider)
+    add_training_period(school_period1, programme_type: :provider_led, from: 9.months.ago.next_day, to: 3.months.ago, with: lead_provider)
+    add_training_period(school_period1, programme_type: :school_led, from: 3.months.ago.next_day, to: school_period1.finished_on)
   end
 
   def build_unknown_transfer_for_finished_school_period(teacher:, lead_provider:, type: :ect)
     school_period1 = create_school_period(teacher, from: 1.year.ago, to: 1.week.ago, type:)
     original_lead_provider = FactoryBot.create(:lead_provider)
-    add_training_period(school_period1, programme_type: :provider_led, from: 1.year.ago.tomorrow, to: 9.months.ago, with: original_lead_provider)
-    add_training_period(school_period1, programme_type: :provider_led, from: 9.months.ago.tomorrow, to: 3.months.ago, with: original_lead_provider, transfer: true)
-    add_training_period(school_period1, programme_type: :provider_led, from: 3.months.ago.tomorrow, to: 1.week.ago, with: lead_provider, transfer: true)
+    training_period1 = add_training_period(school_period1, programme_type: :provider_led, from: school_period1.started_on, to: 9.months.ago, with: original_lead_provider)
+    training_period2 = add_training_period(school_period1, programme_type: :provider_led, from: training_period1.finished_on.next_day, to: 3.months.ago, with: original_lead_provider, transfer: true)
+    add_training_period(school_period1, programme_type: :provider_led, from: training_period2.finished_on.next_day, to: school_period1.finished_on, with: lead_provider, transfer: true)
   end
 
   def build_new_school_transfer(teacher:, lead_provider:, type: :ect)
     school_period1 = create_school_period(teacher, from: 1.year.ago, to: 6.months.ago, type:)
-    add_training_period(school_period1, programme_type: :provider_led, from: 1.year.ago, to: 6.months.ago, with: lead_provider)
-    school_period2 = create_school_period(teacher, from: 6.months.ago.tomorrow, type:, transfer: true)
-    add_training_period(school_period2, programme_type: :provider_led, from: 6.months.ago.tomorrow, to: 3.months.ago, with: lead_provider, transfer: true)
+    add_training_period(school_period1, programme_type: :provider_led, from: school_period1.started_on, to: school_period1.finished_on, with: lead_provider)
+    school_period2 = create_school_period(teacher, from: school_period1.finished_on.next_day, type:, transfer: true)
+    training_period1 = add_training_period(school_period2, programme_type: :provider_led, from: school_period2.started_on, to: 3.months.ago, with: lead_provider, transfer: true)
     latest_lead_provider = FactoryBot.create(:lead_provider)
-    add_training_period(school_period2, programme_type: :provider_led, from: 3.months.ago.tomorrow, with: latest_lead_provider, transfer: true)
+    add_training_period(school_period2, programme_type: :provider_led, from: training_period1.finished_on.next_day, with: latest_lead_provider, transfer: true)
   end
 
   def build_new_provider_transfer(teacher:, leaving_lead_provider: nil, joining_lead_provider: nil, type: :ect)
@@ -30,34 +30,41 @@ private
       raise ArgumentError, "Need either leaving_lead_provider or joining_lead_provider"
     end
 
-    school_period1 = create_school_period(teacher, from: 1.year.ago, to: 6.months.ago, type:)
-    school_period2 = create_school_period(teacher, from: 6.months.ago, type:, transfer: true)
+    school_period1_leave_date = 6.months.ago
+    school_period2_join_date = school_period1_leave_date.next_day
+
+    school_period1 = create_school_period(teacher, from: 1.year.ago, to: school_period1_leave_date.prev_day, type:)
+    school_period2 = create_school_period(teacher, from: school_period2_join_date, type:, transfer: true)
 
     if leaving_lead_provider && joining_lead_provider
-      add_training_period(school_period1, programme_type: :provider_led, from: 1.year.ago, to: 6.months.ago, with: leaving_lead_provider)
-      add_training_period(school_period2, programme_type: :provider_led, from: 6.months.ago, to: 3.months.ago, with: joining_lead_provider, transfer: true)
+      add_training_period(school_period1, programme_type: :provider_led, from: 1.year.ago, to: school_period1_leave_date.prev_day, with: leaving_lead_provider)
+
+      leaving_lead_provider_finish_date = 3.months.ago
+      joining_lead_provider_start_date = leaving_lead_provider_finish_date.next_day
+
+      add_training_period(school_period2, programme_type: :provider_led, from: school_period2_join_date, to: leaving_lead_provider_finish_date, with: joining_lead_provider, transfer: true)
       latest_lead_provider = FactoryBot.create(:lead_provider)
-      add_training_period(school_period2, programme_type: :provider_led, from: 3.months.ago, with: latest_lead_provider)
+      add_training_period(school_period2, programme_type: :provider_led, from: joining_lead_provider_start_date, with: latest_lead_provider)
     elsif leaving_lead_provider
-      add_training_period(school_period1, programme_type: :provider_led, from: 1.year.ago, to: 6.months.ago, with: leaving_lead_provider)
-      add_training_period(school_period2, programme_type: :school_led, from: 6.months.ago, to: 3.months.ago, transfer: true)
+      add_training_period(school_period1, programme_type: :provider_led, from: 1.year.ago, to: school_period1_leave_date.prev_day, with: leaving_lead_provider)
+      add_training_period(school_period2, programme_type: :school_led, from: school_period2_join_date, to: 3.months.ago, transfer: true)
     elsif joining_lead_provider
-      add_training_period(school_period1, programme_type: :school_led, from: 1.year.ago, to: 6.months.ago)
-      add_training_period(school_period2, programme_type: :provider_led, from: 6.months.ago, to: 3.months.ago, with: joining_lead_provider, transfer: true)
+      add_training_period(school_period1, programme_type: :school_led, from: 1.year.ago, to: school_period1_leave_date)
+      add_training_period(school_period2, programme_type: :provider_led, from: school_period2_join_date, to: 3.months.ago, with: joining_lead_provider, transfer: true)
     end
   end
 
   def build_ignored_transfer(teacher:, lead_provider:, type: :ect)
     school_period1 = create_school_period(teacher, from: 1.year.ago, to: 6.months.ago, type:)
-    add_training_period(school_period1, programme_type: :school_led, from: 1.year.ago, to: 6.months.ago)
-    school_period2 = create_school_period(teacher, from: 6.months.ago, type:, transfer: true)
-    add_training_period(school_period2, programme_type: :school_led, from: 6.months.ago, to: 1.week.ago, transfer: true)
-    add_training_period(school_period2, programme_type: :provider_led, from: 1.week.ago, with: lead_provider, transfer: true)
+    add_training_period(school_period1, programme_type: :school_led, from: school_period1.started_on, to: school_period1.finished_on)
+    school_period2 = create_school_period(teacher, from: school_period1.finished_on.next_day, type:, transfer: true)
+    training_period1 = add_training_period(school_period2, programme_type: :school_led, from: school_period2.started_on, to: 1.week.ago, transfer: true)
+    add_training_period(school_period2, programme_type: :provider_led, from: training_period1.finished_on.next_day, with: lead_provider, transfer: true)
   end
 
   def create_school_period(teacher, from:, to: nil, type: :ect, transfer: false)
     if transfer
-      from = from.tomorrow
+      from = from.next_day
     end
 
     FactoryBot.create(
@@ -76,7 +83,7 @@ private
            end
 
     if transfer
-      from = from.tomorrow
+      from = from.next_day
     end
 
     case programme_type

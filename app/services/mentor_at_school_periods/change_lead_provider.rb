@@ -14,7 +14,7 @@ module MentorAtSchoolPeriods
       TrainingPeriods::Finish.mentor_training(
         training_period:,
         mentor_at_school_period:,
-        finished_on: Date.current,
+        finished_on: Date.yesterday,
         author:
       ).finish!
     end

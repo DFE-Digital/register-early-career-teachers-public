@@ -28,7 +28,7 @@ RSpec.describe TrainingPeriods::ChangePartnership do
           .to change(TrainingPeriod, :count).by(1)
           .and change { Event.where(event_type: "teacher_finishes_training_period").count }.by(1)
           .and change { Event.where(event_type: "training_period_assigned_to_school_partnership").count }.by(1)
-        expect(training_period.reload.finished_on).to eq(today)
+        expect(training_period.reload.finished_on).to eq(today.prev_day)
         replacement = TrainingPeriod.where(ect_at_school_period: ect_period).where.not(id: training_period.id).order(created_at: :desc).first
         expect(replacement.school_partnership).to eq(other_school_partnership)
         expect(replacement.expression_of_interest).to be_nil

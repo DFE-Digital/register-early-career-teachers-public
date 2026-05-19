@@ -85,7 +85,7 @@ private
     @ect = FactoryBot.create(
       :ect_at_school_period,
       :ongoing,
-      started_on: 1.day.ago,
+      started_on: 2.months.ago,
       teacher: @teacher,
       school: @school,
       email: "ect@example.com"

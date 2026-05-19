@@ -89,7 +89,7 @@ RSpec.describe "Admin::Teachers::TrainingPartnerships", type: :request do
       expect(flash[:alert]).to eq("Partnership updated")
 
       training_period.reload
-      expect(training_period.finished_on).to eq(Date.current)
+      expect(training_period.finished_on).to eq(Date.yesterday)
 
       replacement = TrainingPeriod.order(:created_at).last
       expect(replacement.school_partnership).to eq(other_school_partnership)

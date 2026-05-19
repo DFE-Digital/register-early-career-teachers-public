@@ -20,7 +20,7 @@ module ECTAtSchoolPeriods
       TrainingPeriods::Finish.ect_training(
         training_period:,
         ect_at_school_period:,
-        finished_on: Date.current,
+        finished_on: Date.yesterday,
         author:
       ).finish!
     end

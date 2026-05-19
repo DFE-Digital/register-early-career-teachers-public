@@ -40,7 +40,7 @@ RSpec.describe "Changing to school-led training before the ECTs reported leaving
       when_i_visit_the_admin_teacher_training_page
       then_i_see_the_correct_training_periods(
         { school: @school, type: "School-led", start: Date.current, end: @leaving_date },
-        { school: @school, type: "Provider-led", lead_provider: @lead_provider, start: @ect_at_school_period.started_on, end: Date.current }
+        { school: @school, type: "Provider-led", lead_provider: @lead_provider, start: @ect_at_school_period.started_on, end: Date.yesterday }
       )
     end
   end
@@ -76,7 +76,7 @@ RSpec.describe "Changing to school-led training before the ECTs reported leaving
       then_i_see_the_correct_training_periods(
         { school: @another_school, type: "School-led", start: @joining_date, end: nil },
         { school: @school, type: "School-led", start: Date.current, end: @joining_date.yesterday },
-        { school: @school, type: "Provider-led", lead_provider: @lead_provider, start: @ect_at_school_period.started_on, end: Date.current }
+        { school: @school, type: "Provider-led", lead_provider: @lead_provider, start: @ect_at_school_period.started_on, end: Date.yesterday }
       )
     end
   end
@@ -116,7 +116,7 @@ RSpec.describe "Changing to school-led training before the ECTs reported leaving
       then_i_see_the_correct_training_periods(
         { school: @another_school, type: "School-led", start: @joining_date, end: nil },
         { school: @school, type: "School-led", start: Date.current, end: @joining_date.yesterday },
-        { school: @school, type: "Provider-led", lead_provider: @lead_provider, start: @ect_at_school_period.started_on, end: Date.current }
+        { school: @school, type: "Provider-led", lead_provider: @lead_provider, start: @ect_at_school_period.started_on, end: Date.yesterday }
       )
     end
   end

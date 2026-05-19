@@ -96,7 +96,7 @@ module APISeedData
       create_training_period(
         trainee_type:,
         at_school_period:,
-        started_on: finished_on,
+        started_on: finished_on.next_day,
         finished_on: at_school_period.finished_on,
         schedule:,
         school_partnership:
