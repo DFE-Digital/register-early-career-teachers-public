@@ -211,13 +211,13 @@ describe AtSchoolPeriod do
       let!(:teacher_2_period) { FactoryBot.create(:ect_at_school_period, :teaching_school_hub_ab, school:, started_on: "2023-02-01", finished_on: "2023-07-01") }
 
       it "returns only ect periods for the specified school" do
-        expect(ECTAtSchoolPeriod.for_school(period_1.school_id)).to match_array([period_1, period_3, teacher_2_period])
+        expect(ECTAtSchoolPeriod.for_school(period_1.school_id)).to contain_exactly(period_1, period_3, teacher_2_period)
       end
     end
 
     describe ".for_teacher" do
       it "returns ect periods only for the specified teacher" do
-        expect(ECTAtSchoolPeriod.for_teacher(teacher.id)).to match_array([period_1, period_2, period_3])
+        expect(ECTAtSchoolPeriod.for_teacher(teacher.id)).to contain_exactly(period_1, period_2, period_3)
       end
     end
 
@@ -229,7 +229,7 @@ describe AtSchoolPeriod do
       end
 
       it "returns ect in training periods only for the specified contract period" do
-        expect(ECTAtSchoolPeriod.with_partnerships_for_contract_period(training_period.school_partnership.contract_period.id)).to match_array([period_2])
+        expect(ECTAtSchoolPeriod.with_partnerships_for_contract_period(training_period.school_partnership.contract_period.id)).to contain_exactly(period_2)
       end
     end
 
@@ -244,7 +244,7 @@ describe AtSchoolPeriod do
       end
 
       it "returns ect in training periods only for the specified contract period" do
-        expect(ECTAtSchoolPeriod.with_expressions_of_interest_for_contract_period(training_period.expression_of_interest.contract_period.id)).to match_array([period_2])
+        expect(ECTAtSchoolPeriod.with_expressions_of_interest_for_contract_period(training_period.expression_of_interest.contract_period.id)).to contain_exactly(period_2)
       end
     end
 
@@ -259,7 +259,7 @@ describe AtSchoolPeriod do
       end
 
       it "returns ect in training periods only for the specified contract period and lead provider" do
-        expect(ECTAtSchoolPeriod.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
+        expect(ECTAtSchoolPeriod.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to contain_exactly(period_2)
       end
     end
 
