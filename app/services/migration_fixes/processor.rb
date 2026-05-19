@@ -45,7 +45,17 @@ private
   end
 
   def delete!(target_object)
-    target_object.destroy
+    ActiveRecord::Base.transaction do
+      remove_references_to!(target_object)
+      target_object.destroy
+    end
+  end
+
+  def remove_references_to!(target_object)
+    if target_object.is_a? School
+      Metadata::SchoolLeadProviderContractPeriod.where(school: target_object).delete_all
+      Metadata::SchoolContractPeriod.where(school: target_object).delete_all
+    end
   end
 
   def extract_attributes(attributes_list)
