@@ -112,8 +112,6 @@ private
       Statement.new(
         month: previous_statement.month,
         year: new_year,
-        # Statements run on a fixed monthly cycle: the deadline is the last day
-        # of the preceding month, and payment is made on the 25th of the month.
         deadline_date: previous_statement.deadline_date.years_since(year_offset),
         payment_date: previous_statement.payment_date.years_since(year_offset),
         fee_type: previous_statement.fee_type,
