@@ -62,14 +62,14 @@ module AtSchoolPeriod
   # Validations
   def covering_training_periods
     current_range = (started_on..finished_on)
-    return if training_periods.all? { current_range.cover?(it.range) }
+    return if training_periods.all? { current_range.cover?(it.started_on..it.finished_on) }
 
     errors.add(:base, "Date range does not cover all the training periods")
   end
 
   def covering_mentorship_periods
     current_range = (started_on..finished_on)
-    return if mentorship_periods.all? { current_range.cover?(it.range) }
+    return if mentorship_periods.all? { current_range.cover?(it.started_on..it.finished_on) }
 
     errors.add(:base, "Date range does not cover all the mentorship periods")
   end
