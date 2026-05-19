@@ -114,7 +114,7 @@ end
 
 august_statement_2024 = FactoryBot.create(:statement,
                                           :adjustable,
-                                          :payable,
+                                          :paid,
                                           month: 8,
                                           year: 2024,
                                           deadline_date: Date.new(2024, 7, 31),
@@ -126,7 +126,7 @@ end
 
 october_statement_2024 = FactoryBot.create(:statement,
                                            :adjustable,
-                                           :payable,
+                                           :paid,
                                            month: 10,
                                            year: 2024,
                                            deadline_date: Date.new(2024, 9, 30),
@@ -138,7 +138,7 @@ end
 
 august_statement_2025 = FactoryBot.create(:statement,
                                           :adjustable,
-                                          :payable,
+                                          :paid,
                                           month: 8,
                                           year: 2025,
                                           deadline_date: Date.new(2025, 7, 31),
@@ -150,7 +150,7 @@ end
 
 october_statement_2025 = FactoryBot.create(:statement,
                                            :adjustable,
-                                           :payable,
+                                           :paid,
                                            month: 10,
                                            year: 2025,
                                            deadline_date: Date.new(2025, 9, 30),
@@ -199,9 +199,7 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
 
     # Create refunded declarations
     n = Random.rand(25)
-    FactoryBot.create_list(:declaration, n, :with_ect,
-                           payment_status: "payable",
-                           clawback_status: "awaiting_clawback",
+    FactoryBot.create_list(:declaration, n, :with_ect, :clawed_back,
                            declaration_type:,
                            school_partnership:,
                            payment_statement: august_statement,
@@ -222,9 +220,7 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
     add_to_results(results, year, declaration_type, :mentors, 1)
 
     # Create refunded declarations for mentors
-    FactoryBot.create(:declaration, :with_mentor,
-                      payment_status: "payable",
-                      clawback_status: "awaiting_clawback",
+    FactoryBot.create(:declaration, :with_mentor, :clawed_back,
                       declaration_type:,
                       school_partnership:,
                       payment_statement: august_statement,
