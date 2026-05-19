@@ -148,10 +148,10 @@ describe ContractPeriod do
   end
 
   describe "check constraints" do
-    subject { FactoryBot.build(:contract_period, started_on: Date.current, finished_on: Date.current) }
+    subject { FactoryBot.build(:contract_period, started_on: Date.current, finished_on: Date.yesterday) }
 
-    it "prevents 0 day periods from being written to the database" do
-      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    it "prevents periods with a duration less than 1 day from being written to the database" do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::DataException/)
     end
   end
 
