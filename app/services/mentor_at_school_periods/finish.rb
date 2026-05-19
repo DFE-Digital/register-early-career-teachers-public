@@ -31,6 +31,11 @@ private
   def finish!(period)
     finish_mentorship_periods!(period)
     finish_training_periods!(period)
+
+    # period validation depends on inner periods.
+    # We need it to get updated with the latest inner period changes happening above.
+    period.reload
+
     finish_mentor_at_school_period!(period.reload)
     record_mentor_left_school_event!(period)
   end
