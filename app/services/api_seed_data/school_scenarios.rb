@@ -219,7 +219,7 @@ module APISeedData
           )
 
           # Training with original lead provider (finished)
-          add_training_period(
+          finished_training_period = add_training_period(
             school_period,
             programme_type: :provider_led,
             from: school_period.started_on,
@@ -231,7 +231,7 @@ module APISeedData
           add_training_period(
             school_period,
             programme_type: :provider_led,
-            from: school_period.started_on + 3.months,
+            from: finished_training_period.finished_on.next_day,
             with: other_lead_provider
           )
 
@@ -457,7 +457,7 @@ module APISeedData
             ect_at_school_period: school_period,
             school_partnership: school_partnership_other,
             schedule: schedule_2025,
-            started_on: first_training_end,
+            started_on: first_training_end.next_day,
             finished_on: second_training_end
           )
 

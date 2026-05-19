@@ -116,7 +116,11 @@ module Schools
     end
 
     def finish_periods_at_all_schools!
-      MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: started_on, author:).finish_periods_at_all_schools!
+      MentorAtSchoolPeriods::Finish.new(
+        teacher:,
+        finished_on: started_on.yesterday,
+        author:
+      ).finish_periods_at_all_schools!
     end
 
     def mentoring_at_several_schools?

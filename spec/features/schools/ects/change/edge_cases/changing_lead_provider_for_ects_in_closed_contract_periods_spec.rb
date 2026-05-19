@@ -212,7 +212,7 @@ private
 
   def and_the_old_training_period_has_been_finished_but_left_in_the_original_contract_period
     @provider_led_training_period.reload
-    expect(@provider_led_training_period.finished_on).to eq(Date.current)
+    expect(@provider_led_training_period.finished_on).to eq(Date.yesterday)
     expect(@provider_led_training_period.contract_period.year).to eq(2021)
   end
 

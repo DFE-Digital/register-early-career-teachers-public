@@ -220,7 +220,7 @@ private
 
   def and_the_school_led_training_period_has_been_finished
     @school_led_training_period.reload
-    expect(@school_led_training_period.finished_on).to eq(Date.current)
+    expect(@school_led_training_period.finished_on).to eq(Date.yesterday)
   end
 
   def and_the_provider_led_training_period_has_been_left_in_the_original_contract_period

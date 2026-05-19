@@ -131,12 +131,12 @@ RSpec.describe Declarations::MentorCompletion, :with_metadata do
         context "when there is no training period ongoing today for the lead provider" do
           before { training_period.update!(finished_on: 1.day.ago) }
 
-          it "creates a new training period, starting the day the previous one finished" do
+          it "creates a new training period, starting the day after the previous one finished" do
             expect { service.perform }.to change(TrainingPeriod, :count).by(1)
 
             new_training_period = TrainingPeriod.last
             expect(new_training_period.mentor_at_school_period).to eq(mentor_at_school_period)
-            expect(new_training_period.started_on).to eq(training_period.finished_on)
+            expect(new_training_period.started_on).to eq(training_period.finished_on + 1.day)
             expect(new_training_period.school_partnership).to eq(training_period.school_partnership)
             expect(new_training_period.schedule).to eq(training_period.schedule)
             expect(new_training_period.expression_of_interest).to be_nil

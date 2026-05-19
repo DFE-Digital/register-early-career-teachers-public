@@ -163,7 +163,7 @@ RSpec.describe Schools::RegisterMentor do
               expect(mentor_at_school_period.started_on).to eq(started_on)
 
               expect(existing_mentor_at_school_period.reload.teacher_id).to eq(teacher.id)
-              expect(existing_mentor_at_school_period.finished_on).to eq(mentor_at_school_period.started_on)
+              expect(existing_mentor_at_school_period.finished_on).to eq(mentor_at_school_period.started_on.prev_day)
             end
 
             it "creates a new training period and finishes the old period" do

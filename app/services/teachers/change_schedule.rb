@@ -61,7 +61,7 @@ module Teachers
     end
 
     def finish_training_period!
-      finished_on = [training_period.finished_on, Time.zone.today].compact.min
+      finished_on = [training_period.finished_on, Date.yesterday].compact.min
 
       if training_period.for_ect?
         TrainingPeriods::Finish.ect_training(

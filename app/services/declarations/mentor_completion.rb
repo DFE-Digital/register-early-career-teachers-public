@@ -37,7 +37,7 @@ module Declarations
 
       TrainingPeriods::Create.provider_led(
         period:,
-        started_on: latest_training_period.finished_on,
+        started_on: latest_training_period.finished_on + 1.day,
         finished_on: period.finished_on,
         school_partnership: latest_training_period.school_partnership,
         expression_of_interest: nil,
