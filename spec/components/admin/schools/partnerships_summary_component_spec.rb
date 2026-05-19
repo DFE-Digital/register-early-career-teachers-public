@@ -90,6 +90,8 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     let!(:ect_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
     let!(:mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
     let!(:finished_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 2.years.ago, finished_on: 1.year.ago) }
+    let!(:finished_mentor_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 2.years.ago, finished_on: 1.year.ago) }
+    let!(:future_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil) }
     let!(:future_mentor_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil) }
 
     let!(:ect_training_period) do
@@ -112,6 +114,20 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
       FactoryBot.create(:training_period,
                         :for_ect,
                         ect_at_school_period: finished_ect_period,
+                        school_partnership: partnership_with_teachers)
+    end
+
+    let!(:finished_mentor_training_period) do
+      FactoryBot.create(:training_period,
+                        :for_mentor,
+                        mentor_at_school_period: finished_mentor_period,
+                        school_partnership: partnership_with_teachers)
+    end
+
+    let!(:future_ect_training_period) do
+      FactoryBot.create(:training_period,
+                        :for_ect,
+                        ect_at_school_period: future_ect_period,
                         school_partnership: partnership_with_teachers)
     end
 
@@ -150,12 +166,42 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
         expect(a_index).to be < z_index
       end
 
-      it "only shows current ECTs and mentors" do
+      it "does not show finished ECTs" do
         finished_name = Teachers::Name.new(finished_ect_period.teacher).full_name
-        future_name = Teachers::Name.new(future_mentor_period.teacher).full_name
-
         expect(rendered).not_to have_link(finished_name, href: admin_teacher_path(finished_ect_period.teacher))
-        expect(rendered).not_to have_link(future_name, href: admin_teacher_path(future_mentor_period.teacher))
+      end
+
+      it "does not show finished mentors" do
+        finished_name = Teachers::Name.new(finished_mentor_period.teacher).full_name
+        expect(rendered).not_to have_link(finished_name, href: admin_teacher_path(finished_mentor_period.teacher))
+      end
+
+      it "shows ongoing ECTs" do
+        ongoing_name = Teachers::Name.new(ect_period.teacher).full_name
+        expect(rendered).to have_link(ongoing_name, href: admin_teacher_path(ect_period.teacher))
+      end
+
+      it "shows ongoing mentors" do
+        ongoing_name = Teachers::Name.new(mentor_period.teacher).full_name
+        expect(rendered).to have_link(ongoing_name, href: admin_teacher_path(mentor_period.teacher))
+      end
+
+      it "shows ECTs with a future start date" do
+        future_ect_name = Teachers::Name.new(future_ect_period.teacher).full_name
+        expect(rendered).to have_link(future_ect_name, href: admin_teacher_path(future_ect_period.teacher))
+      end
+
+      it "shows mentors with a future start date" do
+        future_mentor_name = Teachers::Name.new(future_mentor_period.teacher).full_name
+        expect(rendered).to have_link(future_mentor_name, href: admin_teacher_path(future_mentor_period.teacher))
+      end
+
+      it "does not show ECTs with a future start date whose training period is unconfirmed" do
+        unconfirmed_ect_period = FactoryBot.create(:ect_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil)
+        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: unconfirmed_ect_period, school_partnership: nil)
+
+        unconfirmed_name = Teachers::Name.new(unconfirmed_ect_period.teacher).full_name
+        expect(rendered).not_to have_link(unconfirmed_name, href: admin_teacher_path(unconfirmed_ect_period.teacher))
       end
 
       it "shows fallbacks when no teachers are linked" do
