@@ -13,7 +13,7 @@ module Metadata
     belongs_to :latest_mentor_contract_period, optional: true, class_name: "ContractPeriod", foreign_key: :latest_mentor_contract_period_year
     belongs_to :ect_assigned_mentor_latest_school_period, optional: true, class_name: "MentorAtSchoolPeriod"
 
-    touch -> { teacher }, on_event: :update, timestamp_attribute: :api_updated_at, when_changing: %i[api_mentor_id]
+    touch -> { teacher }, on_event: :update, timestamp_attribute: :api_updated_at, when_changing: %i[ect_assigned_mentor_latest_school_period_id]
 
     validates :teacher, presence: true
     validates :lead_provider, presence: true

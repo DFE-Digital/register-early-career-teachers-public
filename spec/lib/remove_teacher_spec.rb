@@ -13,6 +13,7 @@ RSpec.describe RemoveTeacher, :aggregate_failures do
       induction_extensions
       induction_periods
       lead_provider_metadata
+      lead_provider_metadata_for_mentees
       mentor_at_school_periods
       mentor_declarations
       mentor_training_periods
