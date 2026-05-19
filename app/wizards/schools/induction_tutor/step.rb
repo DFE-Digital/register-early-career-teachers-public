@@ -1,7 +1,7 @@
 module Schools
   module InductionTutor
     class Step < ApplicationWizardStep
-      delegate :school, :author, :valid_step?, :current_contract_period, to: :wizard
+      delegate :school, :author, :valid_step?, :closest_contract_period, to: :wizard
 
       def self.permitted_params = []
 

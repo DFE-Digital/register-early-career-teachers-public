@@ -1,7 +1,9 @@
 RSpec.shared_examples "an induction redirectable route" do
   context "induction redirection" do
-    let(:current_contract_period) { FactoryBot.create(:contract_period, :current) }
-    let(:year) { current_contract_period.year }
+    let!(:current_contract_period) do
+      FactoryBot.create(:contract_period, :current)
+    end
+    let(:year_induction_tutor_nominated_in) { current_contract_period.year }
 
     let!(:school) do
       FactoryBot.create(:school, :without_induction_tutor,
@@ -9,8 +11,9 @@ RSpec.shared_examples "an induction redirectable route" do
                         induction_tutor_name:,
                         induction_tutor_email:)
     end
-
-    let!(:induction_tutor_last_nominated_in) { FactoryBot.create(:contract_period, year:) }
+    let!(:induction_tutor_last_nominated_in) do
+      FactoryBot.create(:contract_period, year: year_induction_tutor_nominated_in)
+    end
     let(:induction_tutor_name) { Faker::Name.name }
     let(:induction_tutor_email) { Faker::Internet.email }
 
@@ -32,11 +35,35 @@ RSpec.shared_examples "an induction redirectable route" do
       end
 
       context "when the school's induction tutor needs to update information" do
-        let(:year) { current_contract_period.year - 1 }
+        let(:year_induction_tutor_nominated_in) do
+          current_contract_period.year - 1
+        end
 
-        before { current_contract_period }
+        context "when we are in the current contract period" do
+          it_behaves_like "redirects to confirmation wizard"
+        end
 
-        it_behaves_like "redirects to confirmation wizard"
+        context "when we are between contract periods" do
+          let!(:current_contract_period) do
+            FactoryBot.create(:contract_period, :current)
+          end
+          let!(:upcoming_contract_period) do
+            FactoryBot.create(
+              :contract_period,
+              :next,
+              started_on: current_contract_period.finished_on + 1.week,
+              finished_on: current_contract_period.finished_on + 1.year
+            )
+          end
+
+          before do
+            travel_to current_contract_period.finished_on + 1.day
+            # We need to sign in again after time travel
+            sign_in_as(:school_user, school:)
+          end
+
+          it_behaves_like "redirects to confirmation wizard"
+        end
       end
 
       context "when the school's induction tutor does not need to update information" do
@@ -64,11 +91,35 @@ RSpec.shared_examples "an induction redirectable route" do
       end
 
       context "when the school's induction tutor needs to update information" do
-        let(:year) { current_contract_period.year - 1 }
+        let(:year_induction_tutor_nominated_in) do
+          current_contract_period.year - 1
+        end
 
-        before { current_contract_period }
+        context "when we are in the current contract period" do
+          it_behaves_like "does not redirect to wizard"
+        end
 
-        it_behaves_like "does not redirect to wizard"
+        context "when we are between contract periods" do
+          let!(:current_contract_period) do
+            FactoryBot.create(:contract_period, :current)
+          end
+          let!(:upcoming_contract_period) do
+            FactoryBot.create(
+              :contract_period,
+              :next,
+              started_on: current_contract_period.finished_on + 1.week,
+              finished_on: current_contract_period.finished_on + 1.year
+            )
+          end
+
+          before do
+            travel_to current_contract_period.finished_on + 1.day
+            # We need to sign in again after time travel
+            sign_in_as(:dfe_user, user:)
+          end
+
+          it_behaves_like "does not redirect to wizard"
+        end
       end
     end
 
@@ -92,11 +143,35 @@ RSpec.shared_examples "an induction redirectable route" do
       end
 
       context "when the school's induction tutor needs to update information" do
-        let(:year) { current_contract_period.year - 1 }
+        let(:year_induction_tutor_nominated_in) do
+          current_contract_period.year - 1
+        end
 
-        before { current_contract_period }
+        context "when we are in the current contract period" do
+          it_behaves_like "does not redirect to wizard"
+        end
 
-        it_behaves_like "does not redirect to wizard"
+        context "when we are between contract periods" do
+          let!(:current_contract_period) do
+            FactoryBot.create(:contract_period, :current)
+          end
+          let!(:upcoming_contract_period) do
+            FactoryBot.create(
+              :contract_period,
+              :next,
+              started_on: current_contract_period.finished_on + 1.week,
+              finished_on: current_contract_period.finished_on + 1.year
+            )
+          end
+
+          before do
+            travel_to current_contract_period.finished_on + 1.day
+            # We need to sign in again after time travel
+            sign_in_as(:appropriate_body_user, appropriate_body:)
+          end
+
+          it_behaves_like "does not redirect to wizard"
+        end
       end
     end
   end

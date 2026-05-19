@@ -34,12 +34,11 @@ class ContractPeriod < ApplicationRecord
   end
 
   def self.current = containing_date(Date.current)
+  def self.upcoming = closest_to(Date.current).starting_tomorrow_or_after.first
+  def self.current_or_upcoming = current.presence || upcoming
 
-  def self.upcoming
-    closest_to(Date.current)
-      .merge(current_or_future)
-      .excluding(current)
-      .first
+  def self.current_or_upcoming!
+    current_or_upcoming || raise(StandardError, "No current or upcoming contract period")
   end
 
   def self.earliest_permitted_start_date
