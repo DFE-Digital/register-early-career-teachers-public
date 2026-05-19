@@ -35,6 +35,13 @@ class ContractPeriod < ApplicationRecord
 
   def self.current = containing_date(Date.current)
 
+  def self.upcoming
+    closest_to(Date.current)
+      .merge(current_or_future)
+      .excluding(current)
+      .first
+  end
+
   def self.earliest_permitted_start_date
     return unless current
 

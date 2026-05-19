@@ -94,6 +94,57 @@ describe ContractPeriod do
     end
   end
 
+  describe ".upcoming" do
+    subject(:upcoming) { described_class.upcoming }
+
+    context "when there are no contract periods" do
+      it { is_expected.to be_nil }
+    end
+
+    context "when there is only an upcoming contract period" do
+      let!(:upcoming_contract_period) do
+        FactoryBot.create(:contract_period, :next)
+      end
+
+      it { is_expected.to eq(upcoming_contract_period) }
+    end
+
+    context "when there is only a current contract period" do
+      let!(:current_contract_period) do
+        FactoryBot.create(:contract_period, :current)
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when there are current and upcoming contract periods" do
+      let!(:current_contract_period) do
+        FactoryBot.create(:contract_period, :current)
+      end
+      let!(:upcoming_contract_period) do
+        FactoryBot.create(:contract_period, :next)
+      end
+
+      it { is_expected.to eq(upcoming_contract_period) }
+    end
+
+    context "when there is a closer previous contract period" do
+      let!(:previous_contract_period) do
+        FactoryBot.create(:contract_period, :previous)
+      end
+      let!(:current_contract_period) do
+        FactoryBot.create(:contract_period, :current)
+      end
+      let!(:upcoming_contract_period) do
+        FactoryBot.create(:contract_period, :next)
+      end
+
+      before { travel_to current_contract_period.started_on }
+
+      it { is_expected.to eq(upcoming_contract_period) }
+    end
+  end
+
   describe ".earliest_permitted_start_date" do
     context "when there are contract periods" do
       let!(:oldest) do
