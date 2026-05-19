@@ -2358,6 +2358,68 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_teacher_declaration_paid" do
+    let(:declaration) do
+      FactoryBot.create(:declaration, :with_ect, payment_status: "paid")
+    end
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      training_period = declaration.training_period
+      teacher = training_period.ect_at_school_period.teacher
+      teacher_full_name = "#{teacher.trs_first_name} #{teacher.trs_last_name}"
+
+      Events::Record.record_teacher_declaration_paid!(
+        author:,
+        teacher:,
+        training_period:,
+        declaration:
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :teacher_declaration_paid,
+        heading: "#{teacher_full_name}'s started declaration was paid",
+        teacher:,
+        training_period:,
+        declaration:,
+        happened_at: Time.current,
+        **author_params
+      )
+    end
+  end
+
+  describe ".record_teacher_declaration_clawed_back" do
+    let(:declaration) do
+      FactoryBot.create(:declaration, :with_ect, payment_status: "paid", clawback_status: "clawed_back")
+    end
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      training_period = declaration.training_period
+      teacher = training_period.ect_at_school_period.teacher
+      teacher_full_name = "#{teacher.trs_first_name} #{teacher.trs_last_name}"
+
+      Events::Record.record_teacher_declaration_clawed_back!(
+        author:,
+        teacher:,
+        training_period:,
+        declaration:
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :teacher_declaration_clawed_back,
+        heading: "#{teacher_full_name}'s started declaration was clawed_back",
+        teacher:,
+        training_period:,
+        declaration:,
+        happened_at: Time.current,
+        **author_params
+      )
+    end
+  end
+
   describe ".record_school_user_signs_in_event!" do
     let(:school) { FactoryBot.create(:school) }
     let(:school_user) do

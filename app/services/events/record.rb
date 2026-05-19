@@ -1016,6 +1016,24 @@ module Events
       new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
     end
 
+    def self.record_teacher_declaration_paid!(author:, teacher:, training_period:, declaration:, happened_at: Time.current)
+      event_type = :teacher_declaration_paid
+      teacher_name = Teachers::Name.new(teacher).full_name
+      declaration_type = declaration.declaration_type
+      heading = "#{teacher_name}'s #{declaration_type} declaration was paid"
+
+      new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
+    end
+
+    def self.record_teacher_declaration_clawed_back!(author:, teacher:, training_period:, declaration:, happened_at: Time.current)
+      event_type = :teacher_declaration_clawed_back
+      teacher_name = Teachers::Name.new(teacher).full_name
+      declaration_type = declaration.declaration_type
+      heading = "#{teacher_name}'s #{declaration_type} declaration was clawed_back"
+
+      new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
+    end
+
     # Contract periods Events
 
     def self.record_contract_period_added_event!(author:, contract_period:)

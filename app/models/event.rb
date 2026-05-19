@@ -65,13 +65,15 @@ class Event < ApplicationRecord
     teacher_declaration_awaiting_clawback
     teacher_declaration_created
     teacher_declaration_eligible
+    teacher_declaration_payable
+    teacher_declaration_paid
+    teacher_declaration_clawed_back
     mentor_completion_status_change
     training_period_assigned_to_school_partnership
     dfe_user_created
     dfe_user_updated
     statement_authorised_for_payment
     statement_marked_payable
-    teacher_declaration_payable
     contract_period_added
     contract_period_updated
   ].freeze
