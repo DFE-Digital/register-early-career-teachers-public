@@ -110,6 +110,7 @@ namespace :admin do
         constraints -> { Rails.application.config.enable_finance_contract_periods } do
           resources :contract_periods, only: %i[index show], path: "contract-periods" do
             resources :schedules, only: %i[index], path: "schedules"
+            resources :active_lead_providers, only: %i[index new create destroy], path: "active-lead-providers"
           end
         end
       end
