@@ -1,6 +1,9 @@
 module AtSchoolPeriod
   extend ActiveSupport::Concern
 
+  include Interval
+  include DeclarativeUpdates
+
   included do
     # Associations
     has_many :events
@@ -57,6 +60,9 @@ module AtSchoolPeriod
 
   # Validations
   def covering_inner_periods
+    return if started_on.blank?
+    return unless persisted?
+
     inner_periods = mentorship_periods + training_periods
     return if inner_periods.empty?
 
