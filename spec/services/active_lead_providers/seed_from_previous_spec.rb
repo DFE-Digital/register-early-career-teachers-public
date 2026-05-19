@@ -107,19 +107,19 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
 
     it "raises an error" do
       expect { service.call }
-        .to raise_error(described_class::PreviousActiveLeadProviderError, /no previous active_lead_provider/)
+        .to raise_error(described_class::PreviousActiveLeadProviderError, /No previous activation found in 2025 for Teach First/)
     end
   end
 
   context "when the previous activation has no subordinate data" do
     it "raises an error" do
       expect { service.call }
-        .to raise_error(described_class::PreviousActiveLeadProviderError, /active_lead_provider for \d+ is missing previous delivery partnerships, contracts or statements/)
+        .to raise_error(described_class::PreviousActiveLeadProviderError, /Key info for Teach First is missing previous delivery partnerships, contracts or statements/)
     end
   end
 
   context "when the previous activation is only partially populated" do
-    let(:missing_data_error_message) { /active_lead_provider for \d+ is missing previous delivery partnerships, contracts or statements/ }
+    let(:missing_data_error_message) { /Key info for Teach First is missing previous delivery partnerships, contracts or statements/ }
 
     context "with delivery partnerships but no contracts or statements" do
       before { FactoryBot.create_list(:lead_provider_delivery_partnership, 3, active_lead_provider: teach_first_activation_2025) }
@@ -168,7 +168,7 @@ RSpec.describe ActiveLeadProviders::SeedFromPrevious do
 
     it "raises an error rather than duplicating data" do
       expect { service.call }
-        .to raise_error(described_class::AlreadyPopulatedError, /active_lead_provider \d+ already has data/)
+        .to raise_error(described_class::AlreadyPopulatedError, /Teach First already has data for 2026/)
     end
   end
 

@@ -121,12 +121,11 @@ RSpec.describe "admin/finance/contract_periods/show.html.erb" do
         FactoryBot.create(:active_lead_provider, contract_period:)
       end
 
-      it "shows the task as completed but not selectable" do
+      it "shows the task as completed and selectable" do
         render
 
-        expect(rendered).not_to have_link("Lead providers")
+        expect(rendered).to have_link("Lead providers")
         within(".govuk-task-list") do
-          expect(rendered).to have_content("Lead providers")
           expect(rendered).to have_content("Completed")
         end
       end

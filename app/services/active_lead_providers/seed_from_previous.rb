@@ -12,6 +12,7 @@ class ActiveLeadProviders::SeedFromPrevious
   attr_reader :active_lead_provider
 
   delegate :lead_provider, to: :active_lead_provider
+  delegate :name, to: :lead_provider, prefix: true
   delegate :contract_period, to: :active_lead_provider, prefix: :current
   delegate :lead_provider_delivery_partnerships, :contracts, :statements,
            to: :previous_activation, prefix: :previous
@@ -23,12 +24,12 @@ class ActiveLeadProviders::SeedFromPrevious
   end
 
   def call
-    raise PreviousActiveLeadProviderError, "no previous active_lead_provider found for #{active_lead_provider.id}" if previous_activation.blank?
+    raise PreviousActiveLeadProviderError, "No previous activation found in #{previous_contract_period.year} for #{lead_provider_name}" if previous_activation.blank?
     if previous_activation_empty?
       raise PreviousActiveLeadProviderError,
-            "active_lead_provider for #{active_lead_provider.id} is missing previous delivery partnerships, contracts or statements"
+            "Key info for #{lead_provider_name} is missing previous delivery partnerships, contracts or statements."
     end
-    raise AlreadyPopulatedError, "active_lead_provider #{active_lead_provider.id} already has data" if active_lead_provider_populated?
+    raise AlreadyPopulatedError, "#{lead_provider_name} already has data for #{current_contract_period.year}" if active_lead_provider_populated?
 
     # This is a large graph, so let's make all or nothing...
     ActiveRecord::Base.transaction do

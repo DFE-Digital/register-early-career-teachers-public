@@ -1,0 +1,21 @@
+<% page_data(
+     title: "Add a lead provider for #{@contract_period.year}",
+     backlink_href: admin_contract_period_active_lead_providers_path(@contract_period),
+   ) %>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <%= form_with(model: @active_lead_provider, url: admin_contract_period_active_lead_providers_path(@contract_period)) do |f| %>
+      <%= content_for(:error_summary) { f.govuk_error_summary } %>
+
+      <%= f.govuk_collection_radio_buttons :lead_provider_id,
+            @available_lead_providers,
+            :id,
+            :name,
+            legend: { text: "Lead provider" },
+            hint: { text: "Only lead providers not active for #{@contract_period.year} are shown." } %>
+
+      <%= f.govuk_submit "Add lead provider" %>
+    <% end %>
+  </div>
+</div>
