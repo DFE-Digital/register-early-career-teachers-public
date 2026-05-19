@@ -1,8 +1,6 @@
 class ECTAtSchoolPeriod < ApplicationRecord
   RECT_GO_LIVE_DATE = Date.new(2026, 4, 28).freeze
 
-  include Interval
-  include DeclarativeUpdates
   include AtSchoolPeriod
 
   # Associations

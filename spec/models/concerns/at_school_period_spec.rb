@@ -262,6 +262,62 @@ describe AtSchoolPeriod do
         expect(ECTAtSchoolPeriod.with_expressions_of_interest_for_lead_provider_and_contract_period(training_period.expression_of_interest.contract_period.id, training_period.expression_of_interest.lead_provider_id)).to match_array([period_2])
       end
     end
+
+    describe ".with_school" do
+      it "eager-loads the school and gias_school associations" do
+        ect = FactoryBot.create(:ect_at_school_period)
+        result = ECTAtSchoolPeriod.with_school.find(ect.id)
+        expect(result.association(:school).loaded?).to be true
+      end
+    end
+
+    describe ".with_teacher" do
+      it "eager-loads the teacher association" do
+        ect = FactoryBot.create(:ect_at_school_period)
+        result = ECTAtSchoolPeriod.with_teacher.find(ect.id)
+        expect(result.association(:teacher).loaded?).to be true
+      end
+    end
+  end
+
+  describe "#provider_led_training_programme?" do
+    context "when there is a current or next training period that is provider-led" do
+      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+
+      before { FactoryBot.create(:training_period, :ongoing, :provider_led, ect_at_school_period: ect, started_on: 6.months.ago) }
+
+      it "returns true" do
+        expect(ect.provider_led_training_programme?).to be true
+      end
+    end
+
+    context "when there is no current or next training period" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      it "returns nil" do
+        expect(subject.provider_led_training_programme?).to be_nil
+      end
+    end
+  end
+
+  describe "#school_led_training_programme?" do
+    context "when there is a current or next training period that is school-led" do
+      let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+
+      before { FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period: ect, started_on: 6.months.ago) }
+
+      it "returns true" do
+        expect(ect.school_led_training_programme?).to be true
+      end
+    end
+
+    context "when there is no current or next training period" do
+      subject { FactoryBot.build(:ect_at_school_period) }
+
+      it "returns nil" do
+        expect(subject.school_led_training_programme?).to be_nil
+      end
+    end
   end
 
   describe "#reported_leaving_by?" do

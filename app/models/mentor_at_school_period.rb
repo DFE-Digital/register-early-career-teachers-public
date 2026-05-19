@@ -1,6 +1,4 @@
 class MentorAtSchoolPeriod < ApplicationRecord
-  include Interval
-  include DeclarativeUpdates
   include AtSchoolPeriod
 
   # Associations
