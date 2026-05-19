@@ -7,7 +7,7 @@
     govuk_table(
       head: ["Year", "Started on", "Finished on"],
       rows: @contract_periods.map { |cp| [
-        cp.year.to_s,
+        govuk_link_to(cp.year.to_s, admin_contract_period_path(cp)),
         cp.started_on.to_fs(:govuk),
         cp.finished_on.to_fs(:govuk),
       ] }
