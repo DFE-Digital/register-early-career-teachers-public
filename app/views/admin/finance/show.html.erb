@@ -16,7 +16,7 @@
       Monthly record of payments made to lead providers.
     </p>
 
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+    <%= govuk_section_break(visible:true, size: "l") %>
 
     <h2 class="govuk-heading-m">
       <%= govuk_link_to(
@@ -30,5 +30,22 @@
     <p class="govuk-body">
       Search for declarations by declaration ID.
     </p>
+
+    <% if Rails.application.config.enable_finance_contract_periods %>
+      <%= govuk_section_break(visible:true, size: "l") %>
+
+      <h2 class="govuk-heading-m">
+        <%= govuk_link_to(
+              "Contract periods",
+              admin_contract_periods_path,
+              no_visited_state: true,
+              no_underline: true
+            ) %>
+      </h2>
+
+      <p class="govuk-body">
+        View and manage contract periods.
+      </p>
+    <% end %>
   </div>
 </div>
