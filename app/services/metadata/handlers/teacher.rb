@@ -27,9 +27,8 @@ module Metadata::Handlers
         latest_mentor_training_period = latest_mentor_training_period_by_lead_provider(teacher:)[lead_provider_id]
         latest_ect_contract_period = latest_ect_training_period&.contract_period
         latest_mentor_contract_period = latest_mentor_training_period&.contract_period
-        latest_mentorship_period = latest_ect_training_period&.at_school_period&.latest_mentorship_period
-        ect_assigned_mentor_latest_school_period = latest_mentorship_period.mentor if latest_mentorship_period&.ongoing_today?
-        api_mentor_id = ect_assigned_mentor_latest_school_period&.teacher&.api_id
+        ect_assigned_mentor_latest_school_period_id =
+          latest_ongoing_mentor_at_school_period_id(latest_ect_training_period&.ect_at_school_period_id)
         involved_in_school_transfer = school_transfers_exist_for(teacher.ect_at_school_periods, lead_provider_id) ||
           school_transfers_exist_for(teacher.mentor_at_school_periods, lead_provider_id)
 
@@ -40,8 +39,7 @@ module Metadata::Handlers
           latest_mentor_training_period_id: latest_mentor_training_period&.id,
           latest_ect_contract_period_year: latest_ect_contract_period&.year,
           latest_mentor_contract_period_year: latest_mentor_contract_period&.year,
-          ect_assigned_mentor_latest_school_period_id: ect_assigned_mentor_latest_school_period&.id,
-          api_mentor_id:,
+          ect_assigned_mentor_latest_school_period_id:,
           involved_in_school_transfer:
         }
 
@@ -62,6 +60,16 @@ module Metadata::Handlers
         .select("DISTINCT ON (lead_provider_id) training_periods.*")
         .order("lead_provider_id, training_periods.started_on DESC")
         .index_by { it.lead_provider&.id }
+    end
+
+    def latest_ongoing_mentor_at_school_period_id(ect_at_school_period_id)
+      return nil if ect_at_school_period_id.nil?
+
+      MentorshipPeriod
+        .where(ect_at_school_period_id:)
+        .ongoing_today
+        .latest_first
+        .pick(:mentor_at_school_period_id)
     end
 
     def latest_mentor_training_period_by_lead_provider(teacher:)
