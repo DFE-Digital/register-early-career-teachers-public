@@ -52,7 +52,9 @@ module Interval
   def period_dates_validation
     return if incomplete?
 
-    errors.add(:finished_on, "The end date must be later than the start date (#{started_on.to_fs(:govuk)})") if invalid_date_order?
+    if invalid_date_order?
+      errors.add(:finished_on, "The end date must be later than the start date (#{started_on.to_fs(:govuk)})")
+    end
   end
 
   def overlap_validation(name:)
@@ -82,7 +84,7 @@ module Interval
   def valid_date_order?
     return true if incomplete?
 
-    started_on < finished_on
+    started_on <= finished_on
   end
 
   def leaving_today_or_in_future?

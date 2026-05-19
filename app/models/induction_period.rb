@@ -80,6 +80,15 @@ class InductionPeriod < ApplicationRecord
 
 private
 
+  # Overriden from `app/models/concerns/interval.rb` since the range has not yet
+  # been migrated to inclusive ends.
+  # TODO: remove this override once the range is migrated.
+  def valid_date_order?
+    return true if incomplete?
+
+    started_on < finished_on
+  end
+
   # Ensure admin users inserting new induction periods include end dates.
   def end_date_admin_only
     return unless inserting_induction_period? && finished_on.blank?
