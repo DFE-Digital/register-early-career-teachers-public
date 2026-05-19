@@ -198,7 +198,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
 
       it "does not show ECTs with a future start date whose training period is unconfirmed" do
         unconfirmed_ect_period = FactoryBot.create(:ect_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil)
-        FactoryBot.create(:training_period, :for_ect, ect_at_school_period: unconfirmed_ect_period, school_partnership: nil)
+        FactoryBot.create(:training_period, :with_only_expression_of_interest, :for_ect, ect_at_school_period: unconfirmed_ect_period)
 
         unconfirmed_name = Teachers::Name.new(unconfirmed_ect_period.teacher).full_name
         expect(rendered).not_to have_link(unconfirmed_name, href: admin_teacher_path(unconfirmed_ect_period.teacher))
