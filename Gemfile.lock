@@ -376,7 +376,7 @@ GEM
       addressable (~> 2.8)
       bigdecimal (~> 3.1)
     json_schema (0.21.0)
-    jwt (2.10.2)
+    jwt (3.2.0)
       base64
     knapsack (4.0.0)
       rake
@@ -505,8 +505,8 @@ GEM
       racc (~> 1.4)
     nori (2.7.1)
       bigdecimal
-    notifications-ruby-client (6.2.0)
-      jwt (>= 1.5, < 3)
+    notifications-ruby-client (6.4.0)
+      jwt (>= 1.5, < 4)
     oj (3.17.1)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
