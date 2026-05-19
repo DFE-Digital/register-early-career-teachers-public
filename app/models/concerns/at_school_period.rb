@@ -31,7 +31,8 @@ module AtSchoolPeriod
     validates :teacher_id,
               presence: true
 
-    validate :covering_inner_periods
+    validate :covering_training_periods, if: -> { persisted? && training_periods.any? }
+    validate :covering_mentorship_periods, if: -> { persisted? && mentorship_periods.any? }
 
     # Scopes
     scope :for_school, ->(school_id) { where(school_id:) }
@@ -59,20 +60,18 @@ module AtSchoolPeriod
   end
 
   # Validations
-  def covering_inner_periods
-    return if started_on.blank?
-    return unless persisted?
+  def covering_training_periods
+    current_range = (started_on..finished_on)
+    return if training_periods.all? { current_range.cover?(it.range) }
 
-    inner_periods = mentorship_periods + training_periods
-    return if inner_periods.empty?
+    errors.add(:base, "Date range does not cover all the training periods")
+  end
 
-    starts = inner_periods.map(&:started_on)
-    ends = inner_periods.map(&:finished_on)
-    earliest_started_on = starts.min unless starts.any?(&:nil?)
-    latest_finished_on = ends.max unless ends.any?(&:nil?)
-    return if (started_on..finished_on).cover?(earliest_started_on..latest_finished_on)
+  def covering_mentorship_periods
+    current_range = (started_on..finished_on)
+    return if mentorship_periods.all? { current_range.cover?(it.range) }
 
-    errors.add(:base, "Date range does not cover all the inner periods")
+    errors.add(:base, "Date range does not cover all the mentorship periods")
   end
 
   # Methods

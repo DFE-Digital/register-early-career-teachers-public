@@ -12,7 +12,7 @@ describe AtSchoolPeriod do
       it { is_expected.not_to allow_value("invalid_email").for(:email) }
     end
 
-    describe "#covering_inner_periods" do
+    describe "covering inner periods" do
       context "for an ECT at school period" do
         let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
 
@@ -50,7 +50,7 @@ describe AtSchoolPeriod do
           it "is invalid" do
             ect.started_on = 3.months.ago
             expect(ect).not_to be_valid
-            expect(ect.errors[:base]).to include("Date range does not cover all the inner periods")
+            expect(ect.errors[:base]).to include("Date range does not cover all the training periods")
           end
         end
 
@@ -64,7 +64,7 @@ describe AtSchoolPeriod do
           it "is invalid" do
             ect.finished_on = 1.year.ago
             expect(ect).not_to be_valid
-            expect(ect.errors[:base]).to include("Date range does not cover all the inner periods")
+            expect(ect.errors[:base]).to include("Date range does not cover all the training periods")
           end
         end
 
@@ -79,7 +79,7 @@ describe AtSchoolPeriod do
             ect.reload
             ect.finished_on = 3.months.ago
             expect(ect).not_to be_valid
-            expect(ect.errors[:base]).to include("Date range does not cover all the inner periods")
+            expect(ect.errors[:base]).to include("Date range does not cover all the training periods")
           end
         end
 
@@ -105,7 +105,7 @@ describe AtSchoolPeriod do
           it "is invalid" do
             ect.started_on = 3.months.ago
             expect(ect).not_to be_valid
-            expect(ect.errors[:base]).to include("Date range does not cover all the inner periods")
+            expect(ect.errors[:base]).to include("Date range does not cover all the mentorship periods")
           end
         end
 
@@ -133,7 +133,7 @@ describe AtSchoolPeriod do
           it "is invalid when the ECT start is moved past the earliest inner period" do
             ect.started_on = 8.months.ago
             expect(ect).not_to be_valid
-            expect(ect.errors[:base]).to include("Date range does not cover all the inner periods")
+            expect(ect.errors[:base]).to include("Date range does not cover all the training periods")
           end
         end
       end
@@ -167,7 +167,7 @@ describe AtSchoolPeriod do
           it "is invalid" do
             mentor.finished_on = 1.year.ago
             expect(mentor).not_to be_valid
-            expect(mentor.errors[:base]).to include("Date range does not cover all the inner periods")
+            expect(mentor.errors[:base]).to include("Date range does not cover all the training periods")
           end
         end
 
@@ -193,7 +193,7 @@ describe AtSchoolPeriod do
           it "is invalid" do
             mentor.started_on = 4.months.ago
             expect(mentor).not_to be_valid
-            expect(mentor.errors[:base]).to include("Date range does not cover all the inner periods")
+            expect(mentor.errors[:base]).to include("Date range does not cover all the mentorship periods")
           end
         end
       end
