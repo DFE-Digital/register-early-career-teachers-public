@@ -473,7 +473,7 @@ GEM
       nanoc-core (~> 4.14, >= 4.14.7)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-imap (0.5.14)
+    net-imap (0.6.4)
       date
       net-protocol
     net-pop (0.1.2)
@@ -748,7 +748,7 @@ GEM
     rubypants (0.7.1)
     rubyzip (3.3.0)
     safely_block (1.0.0)
-    savon (2.15.1)
+    savon (2.16.0)
       akami (~> 1.2)
       builder (>= 2.1.2)
       gyoku (~> 1.2)
@@ -756,7 +756,7 @@ GEM
       mail (~> 2.5)
       nokogiri (>= 1.8.1)
       nori (~> 2.4)
-      wasabi (>= 3.7, < 6)
+      wasabi (>= 5.1.0, < 6)
     securerandom (0.4.1)
     semantic_logger (4.18.0)
       concurrent-ruby (~> 1.0)
@@ -828,7 +828,7 @@ GEM
       actionview (>= 7.1.0)
       activesupport (>= 7.1.0)
       concurrent-ruby (~> 1)
-    wasabi (5.0.3)
+    wasabi (5.1.0)
       addressable
       faraday (>= 1.9, < 3)
       nokogiri (>= 1.13.9)
