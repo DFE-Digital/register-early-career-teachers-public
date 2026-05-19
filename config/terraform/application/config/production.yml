@@ -24,3 +24,4 @@ TRS_API_BASE_URL: "https://teacher-qualifications-api.education.gov.uk"
 TRS_API_VERSION: "20260120"
 RAILS_ENV: production
 MAX_SESSION_IDLE_TIME: 7200
+ENABLE_FINANCE_CONTRACT_PERIODS: false

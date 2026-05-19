@@ -106,6 +106,10 @@ namespace :admin do
         end
 
         resource :search_declarations, only: :show, path: "search-declarations"
+
+        constraints -> { Rails.application.config.enable_finance_contract_periods } do
+          resources :contract_periods, only: %i[index], path: "contract-periods"
+        end
       end
     end
   end
