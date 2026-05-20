@@ -63,17 +63,47 @@ A 2021 or 2022 cohort mentor is considered fully trained and not eligible for fu
 
 If a mentor has had fewer than 2 years access to funded training before they were last withdrawn, they may be eligible for additional training. This is dependent on the number of paid declarations.
 
-#### Mentors with more than one declaration paid out against them
+#### Mentors in the 2021 or 2022 cohorts with no declarations 
+
+These mentors are eligible to restart training under the early career teacher training programme ECTPM contract from 2025 onwards. This training will be paid from their ECF cohort. 
+
+Completion dates for these mentors will need to be removed by DfE Digital Engagement leads and declarations will need to be made with over the API. 
+
+#### Mentors in the 2021 or 2022 cohorts with one declaration
+
+These mentors should continue to train on either programme in the 2021 or 2022 cohort as applicable. Declarations cannot be submitted over the API and must be submitted manually to contract managers.
+
+Training status can be set back to ‘active’ if needed
+
+#### Mentors in the 2021 or 2022 cohorts with more than one declaration
 
 These mentors are eligible for a maximum of 2 additional declarations, if this will not exceed 6 paid declarations in total. 
 
-This training will be paid from their ECF cohort. Further declarations cannot be submitted over the API and must be submitted manually to contract managers.
+This training will be paid from their ECF cohort. Further declarations cannot be submitted over the API and must be submitted manually to contract managers. 
 
-#### Mentors with no or just one declaration paid out against them
+#### Mentors who’ve moved from the 2021 to 2024 cohort with no declarations 
 
-These mentors are eligible to restart training under the early career teacher training programme (ECTPM) contract. These mentors will need moving to the relevant ECTPM cohort. 
+Lead providers can self-serve the mentor cohort transfer and make declarations over the API. 
 
-ECTPM declarations must be submitted manually to contract managers if there is a 2021 or 2022 started or completed declaration in existence. Otherwise, their declarations can be submitted over the API.
+#### Mentors who’ve moved from the 2021 to 2024 cohort with one declaration
+
+Lead providers can self-serve the mentor cohort transfer. Before doing so, declarations made by other lead providers must be voided. Providers should contact DfE Digital Engagement if they need help to void the declaration. 
+
+#### Mentors who’ve moved from the 2021 to 2024 cohort with more than one declaration 
+
+Mentors should continue on the 2024 cohort. 
+
+#### Mentors in the 2023 or 2024 cohort with no declarations
+
+Lead providers can self-serve the mentor cohort transfer and make declarations over the API. 
+
+#### Mentors in the 2023 or 2024 cohort with one declaration 
+
+Lead providers can self-serve the mentor cohort transfer. Before doing so, declarations made by other lead providers must be voided. Providers should contact DfE Digital Engagement if they need help to void the declaration. 
+
+#### Mentors in the 2023 or 2024 cohort with more than one declaration 
+
+Mentors should continue on the 2023 or 2024 cohort as applicable. 
 
 ### Some mentors without completion dates are not eligible for additional training
 
