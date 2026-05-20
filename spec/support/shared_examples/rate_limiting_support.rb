@@ -35,7 +35,7 @@ RSpec.shared_examples "a rate limited endpoint", :rack_attack do |desc|
 
       it "logs a warning" do
         expect(Rails.logger).to have_received(:warn).with(
-          %r{\[rack-attack\] Throttled request [a-zA-Z0-9]{20} from #{Regexp.escape(request.remote_ip)} to '#{request.path}'}
+          %r{\[rack-attack\] Throttled request [a-zA-Z0-9]{20} from #{Regexp.escape(request.remote_ip)} to '#{Regexp.escape(request.fullpath)}'}
         )
       end
 

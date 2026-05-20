@@ -1,0 +1,12 @@
+<% page_data(title: "Stop reminder emails for this term") %>
+
+<p class="govuk-body">
+  Confirm that you want to stop ECT and mentor reminder emails to
+  <strong><%= @school.name %></strong> for this term.
+</p>
+
+<%= form_with(url: schools_reminder_email_opt_out_path, method: :post) do |f| %>
+  <%= f.hidden_field :school_id, value: @school.id %>
+  <%= f.hidden_field :token, value: params[:token] %>
+  <%= f.govuk_submit "Confirm" %>
+<% end %>

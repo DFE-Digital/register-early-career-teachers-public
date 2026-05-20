@@ -23,6 +23,23 @@ RSpec.describe "Rack::Attack" do
     end
   end
 
+  context "when requesting the school reminder-email opt-out path" do
+    let(:school) { FactoryBot.create(:school) }
+    let(:path)   { new_schools_reminder_email_opt_out_path }
+
+    before { allow(Schools::ReminderEmailOptOutToken).to receive(:valid?).and_return(true) }
+
+    it_behaves_like "a rate limited endpoint", "protected routes (OTP)" do
+      def perform_request
+        get path, params: { school_id: school.id, token: "stub" }, headers: { REMOTE_ADDR: request_ip }
+      end
+
+      def change_condition
+        set_request_ip(other_ip)
+      end
+    end
+  end
+
   context "rate limit /api/ endpoints by auth token" do
     before do
       set_api_token(API::TokenManager.create_lead_provider_api_token!(lead_provider:).token)
