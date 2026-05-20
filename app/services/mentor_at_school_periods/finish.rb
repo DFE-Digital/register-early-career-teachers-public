@@ -65,7 +65,16 @@ private
     end
   end
 
+  def destroy_unstarted_training_periods!(period)
+    period.training_periods.started_on_or_after(finished_on).find_each do |training_period|
+      Event.where(training_period:).delete_all
+      training_period.destroy!
+    end
+  end
+
   def finish_training_periods!(period)
+    destroy_unstarted_training_periods!(period)
+
     period.training_periods.ongoing_on(finished_on).each do |training_period|
       TrainingPeriods::Finish.mentor_training(training_period:, mentor_at_school_period: period, finished_on:, author:).finish!
     end
