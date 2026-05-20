@@ -3,6 +3,7 @@ module Schools
     before_action :authenticate_token!
 
     def new
+      # renders new.html.erb (comment needed for sonarqube)
     end
 
     def create
