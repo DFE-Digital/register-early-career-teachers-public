@@ -1,0 +1,23 @@
+<% page_data(
+     title: "You cannot register early career teachers (ECTs) or mentors until #{@reopens_on}"
+   ) %>
+
+<p class="govuk-body">Until <%= @reopens_on %> you cannot:</p>
+<%= govuk_list(
+  [
+    "register new early career teachers (ECTs) and mentors",
+    "change ECT training programmes"
+  ],
+  type: :bullet
+) %>
+
+<p class="govuk-body">If you want to register an ECT who’s already started their induction you should:</p>
+<%= govuk_list(
+  [
+    "Contact the ECT’s lead provider so that they can set up the ECT's training programme.",
+    "Register the ECT in this service when registration opens."
+  ],
+  type: :number
+) %>
+
+<p class="govuk-body"><%= govuk_link_to("Back to ECTs", schools_ects_home_path) %></p>

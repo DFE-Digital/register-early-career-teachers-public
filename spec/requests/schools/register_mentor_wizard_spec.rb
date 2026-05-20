@@ -7,6 +7,7 @@ describe "Schools::RegisterMentorWizardController" do
     subject { get path_for_step("what-you-will-need") }
 
     it_behaves_like "an induction redirectable route"
+    it_behaves_like "a route blocked when the registration window is closed"
   end
 
   describe "POST #create" do
