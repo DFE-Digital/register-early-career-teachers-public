@@ -15,6 +15,8 @@ module Schools
   #
   # `<secret>` is SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET in ENV
   class ReminderEmailOptOutToken
+    class MissingSecretError < StandardError; end
+
     PURPOSE = "school-reminder-email-opt-out"
 
     def self.generate_for(school_id:)   = new(school_id:).generate
@@ -38,7 +40,7 @@ module Schools
 
     def secret
       Rails.application.config.school_reminder_email_opt_out_token_secret.presence ||
-        raise("SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET is not configured")
+        raise(MissingSecretError, "SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET is not configured")
     end
   end
 end

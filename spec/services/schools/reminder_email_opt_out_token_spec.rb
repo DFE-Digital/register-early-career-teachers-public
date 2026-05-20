@@ -37,7 +37,7 @@ RSpec.describe Schools::ReminderEmailOptOutToken do
         .to receive(:school_reminder_email_opt_out_token_secret)
         .and_return(nil)
       expect { described_class.generate_for(school_id: 42) }
-        .to raise_error(/SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET/)
+        .to raise_error(described_class::MissingSecretError, /SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET/)
     end
   end
 
