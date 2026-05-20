@@ -77,6 +77,35 @@ describe MentorAtSchoolPeriods::Finish do
       end
     end
 
+    context "when the training period has not started yet" do
+      let(:training_start_date) { finished_on + 2.weeks }
+      let!(:training_period) do
+        FactoryBot.create(
+          :training_period,
+          :for_mentor,
+          mentor_at_school_period:,
+          started_on: training_start_date
+        )
+      end
+
+      it "deletes the training period" do
+        expect { subject.finish_periods_at_all_schools! }.to change(TrainingPeriod, :count).by(-1)
+      end
+
+      it "deletes any events associated with the training period" do
+        FactoryBot.create(:event, training_period:)
+        FactoryBot.create(:event, training_period:)
+        other_event = FactoryBot.create(:event)
+
+        expect(Event.where(training_period:).count).to eq(2)
+
+        subject.finish_periods_at_all_schools!
+
+        expect(Event.where(training_period:)).to be_empty
+        expect(Event.exists?(other_event.id)).to be true
+      end
+    end
+
     context "when the mentor's leaving date is earlier than the ECT's leaving date" do
       subject { MentorAtSchoolPeriods::Finish.new(teacher:, finished_on: mentor_finished_on, author:, reported_by_school_id:) }
 
