@@ -668,6 +668,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
     t.bigint "last_chosen_lead_provider_id"
     t.enum "last_chosen_training_programme", enum_type: "training_programme"
     t.boolean "marked_as_eligible", default: false, null: false
+    t.date "opted_out_of_reminder_emails_until"
     t.datetime "updated_at", null: false
     t.integer "urn", null: false
     t.index ["api_id"], name: "index_schools_on_api_id", unique: true

@@ -141,6 +141,7 @@ shared:
     - induction_tutor_email
     - api_id
     - marked_as_eligible
+    - opted_out_of_reminder_emails_until
   :school_funding_eligibilities:
     - id
     - school_urn
