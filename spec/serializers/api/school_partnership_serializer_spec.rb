@@ -3,6 +3,8 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
     JSON.parse(described_class.render(partnership))
   end
 
+  let(:gias_school) { FactoryBot.create(:gias_school, primary_contact_email:) }
+  let(:primary_contact_email) { "head@school.example.com" }
   let(:school) { FactoryBot.create(:school, :with_induction_tutor) }
   let!(:partnership) { FactoryBot.create(:school_partnership, created_at:, api_updated_at:, school:) }
   let(:delivery_partner) { partnership.delivery_partner }
@@ -32,6 +34,21 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
       expect(attributes["induction_tutor_email"]).to eq(school.induction_tutor_email)
       expect(attributes["created_at"]).to eq(created_at.utc.rfc3339)
       expect(attributes["updated_at"]).to eq(api_updated_at.utc.rfc3339)
+    end
+
+    context "when the induction tutor is not present on the school" do
+      let(:school) do
+        FactoryBot.create(:school,
+                          gias_school:,
+                          induction_tutor_name: nil,
+                          induction_tutor_email: nil,
+                          induction_tutor_last_nominated_in: nil)
+      end
+
+      it "uses the GIAS contact email" do
+        expect(attributes["induction_tutor_name"]).to be_nil
+        expect(attributes["induction_tutor_email"]).to eq(primary_contact_email)
+      end
     end
 
     describe "participants_currently_training" do
