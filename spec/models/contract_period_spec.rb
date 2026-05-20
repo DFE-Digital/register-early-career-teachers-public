@@ -267,4 +267,30 @@ describe ContractPeriod do
       it { expect(contract_period).not_to be_all_schedules }
     end
   end
+
+  describe "#editable?" do
+    context "when the contract period has not started yet" do
+      let(:contract_period) { FactoryBot.create(:contract_period, started_on: 1.month.from_now, finished_on: 2.months.from_now) }
+
+      it "returns true" do
+        expect(contract_period.editable?).to be true
+      end
+    end
+
+    context "when the contract period starts today" do
+      let(:contract_period) { FactoryBot.create(:contract_period, started_on: Time.zone.today, finished_on: 1.month.from_now) }
+
+      it "returns false" do
+        expect(contract_period.editable?).to be false
+      end
+    end
+
+    context "when the contract period has already started" do
+      let(:contract_period) { FactoryBot.create(:contract_period, started_on: 1.month.ago, finished_on: 1.month.from_now) }
+
+      it "returns false" do
+        expect(contract_period.editable?).to be false
+      end
+    end
+  end
 end

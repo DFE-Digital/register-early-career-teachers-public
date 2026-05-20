@@ -4,12 +4,17 @@ RSpec.describe ContractPeriods::Update do
   subject { described_class.new(author:, contract_period:, params:) }
 
   let(:author) { Events::SystemAuthor.new }
+
+  let(:started_on) { 1.year.from_now.beginning_of_year }
+  let(:finished_on) { 1.year.from_now.end_of_year }
+
   let(:contract_period) do
     FactoryBot.create(
       :contract_period,
-      year: 2025,
-      started_on: "2025-06-01",
-      finished_on: "2025-10-31"
+      year: 1.year.from_now.year,
+      started_on:,
+      finished_on:,
+      detailed_evidence_types_enabled: true
     )
   end
   let(:params) { {} }
@@ -18,14 +23,14 @@ RSpec.describe ContractPeriods::Update do
     context "with valid params" do
       let(:params) do
         {
-          started_on: "2025-01-01",
-          finished_on: "2025-12-31",
+          started_on: started_on + 3.months,
+          finished_on: finished_on - 3.months,
         }
       end
 
       it "updates the record" do
-        expect { subject.update! }.to change { contract_period.reload.started_on }.to(Date.parse("2025-01-01"))
-          .and change { contract_period.reload.finished_on }.to(Date.parse("2025-12-31"))
+        expect { subject.update! }.to change { contract_period.reload.started_on }.to((started_on + 3.months).to_date)
+          .and change { contract_period.reload.finished_on }.to((finished_on - 3.months).to_date)
       end
 
       it "records a `contract_period_updated` event" do
@@ -45,12 +50,12 @@ RSpec.describe ContractPeriods::Update do
 
         last_event = Event.find_by(event_type: "contract_period_updated")
         contract_period = last_event.contract_period
-        expect(contract_period.year).to eq(2025)
-        expect(contract_period.started_on.to_date).to eql(Date.parse("2025-01-01"))
-        expect(contract_period.finished_on.to_date).to eql(Date.parse("2025-12-31"))
+        expect(contract_period.year).to eq(1.year.from_now.year)
+        expect(contract_period.started_on.to_date).to eql((started_on + 3.months).to_date)
+        expect(contract_period.finished_on.to_date).to eql((finished_on - 3.months).to_date)
         expect(last_event.modifications).to contain_exactly(
-          "Started on changed from '1 Jun 2025' to '1 Jan 2025'",
-          "Finished on changed from '31 Oct 2025' to '31 Dec 2025'"
+          "Started on changed from '#{started_on.to_date.to_formatted_s(:govuk_short)}' to '#{(started_on + 3.months).to_date.to_formatted_s(:govuk_short)}'",
+          "Finished on changed from '#{finished_on.to_date.to_formatted_s(:govuk_short)}' to '#{(finished_on - 3.months).to_date.to_formatted_s(:govuk_short)}'"
         )
       end
 
@@ -72,11 +77,8 @@ RSpec.describe ContractPeriods::Update do
       }
     end
 
-    it "raises an error" do
-      expect { subject.update! }.to raise_error(
-        ActiveRecord::RecordInvalid,
-        "Validation failed: Finished on The end date must be later than the start date (31 December #{Date.current.end_of_year.year})"
-      )
+    it "returns false" do
+      expect(subject.update!).to be_falsey
     end
   end
 end

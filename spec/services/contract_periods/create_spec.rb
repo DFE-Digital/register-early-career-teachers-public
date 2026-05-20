@@ -5,15 +5,19 @@ describe ContractPeriods::Create do
 
   let(:params) do
     {
-      year: Date.current.year,
-      started_on: Date.current.beginning_of_year,
-      finished_on: Date.current.end_of_year,
+      year: 1.year.from_now.year,
+      started_on: 1.year.from_now.beginning_of_year,
+      finished_on: 1.year.from_now.end_of_year,
       detailed_evidence_types_enabled: false,
       mentor_funding_enabled: true,
       uplift_fees_enabled: false,
     }
   end
   let(:author) { Events::SystemAuthor.new }
+
+  before do
+    allow(ContractPeriods::SeedFromPrevious).to receive(:new).and_return(instance_double(ContractPeriods::SeedFromPrevious, schedule!: true))
+  end
 
   describe "#initialize" do
     it "accepts and assigns the author and params" do
@@ -48,9 +52,9 @@ describe ContractPeriods::Create do
 
         last_event = Event.find_by(event_type: "contract_period_added")
         contract_period = last_event.contract_period
-        expect(contract_period.year).to eql(Date.current.year)
-        expect(contract_period.started_on.to_date).to eql(Date.current.beginning_of_year)
-        expect(contract_period.finished_on.to_date).to eql(Date.current.end_of_year)
+        expect(contract_period.year).to eql(1.year.from_now.year)
+        expect(contract_period.started_on.to_date).to eql(1.year.from_now.beginning_of_year.to_date)
+        expect(contract_period.finished_on.to_date).to eql(1.year.from_now.end_of_year.to_date)
         expect(contract_period.detailed_evidence_types_enabled).to be false
         expect(contract_period.mentor_funding_enabled).to be true
         expect(contract_period.uplift_fees_enabled).to be false
@@ -67,16 +71,18 @@ describe ContractPeriods::Create do
     context "with invalid params" do
       let(:params) do
         {
-          year: Date.current.year,
+          year: 1.year.from_now.year,
           started_on: Date.current.end_of_year,
           finished_on: Date.current.beginning_of_year,
         }
       end
 
-      it "raises error and does not record an event" do
-        expect { subject.create! }
-          .to raise_error(ActiveRecord::RecordInvalid)
-          .and not_change(ContractPeriod, :count)
+      it "returns false" do
+        expect(subject.create!).to be_falsey
+      end
+
+      it "does not record an event" do
+        subject.create!
 
         perform_enqueued_jobs
 
