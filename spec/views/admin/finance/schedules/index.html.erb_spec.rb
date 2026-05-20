@@ -1,9 +1,25 @@
 RSpec.describe "admin/finance/schedules/index.html.erb" do
   before do
     assign(:contract_period, contract_period)
+
+    assign(:breadcrumbs, {
+      "Finance" => admin_finance_path,
+      "Contract periods" => admin_contract_periods_path,
+      contract_period.year.to_s => admin_contract_period_path(contract_period),
+      "Schedules" => nil
+    })
   end
 
   let(:contract_period) { FactoryBot.create(:contract_period, :previous) }
+
+  it "renders breadcrumbs" do
+    render
+
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Finance", href: admin_finance_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Contract periods", href: admin_contract_periods_path)
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link(contract_period.year.to_s, href: admin_contract_period_path(contract_period))
+    expect(view.content_for(:backlink_or_breadcrumb)).to include("Schedules")
+  end
 
   it "has intro text" do
     render
