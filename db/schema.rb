@@ -520,7 +520,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_161732) do
   end
 
   create_table "metadata_teachers_lead_providers", force: :cascade do |t|
-    t.uuid "api_mentor_id"
     t.datetime "created_at", null: false
     t.bigint "ect_assigned_mentor_latest_school_period_id"
     t.boolean "involved_in_school_transfer"
