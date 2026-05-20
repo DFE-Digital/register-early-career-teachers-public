@@ -45,8 +45,8 @@ module Admin
 
     def current_schools
       @current_schools ||= begin
-        ect_schools = teacher.ect_at_school_periods.ongoing.includes(school: :gias_school).map(&:school)
-        mentor_schools = teacher.mentor_at_school_periods.ongoing.includes(school: :gias_school).map(&:school)
+        ect_schools = teacher.ect_at_school_periods.ongoing_today.includes(school: :gias_school).map(&:school)
+        mentor_schools = teacher.mentor_at_school_periods.ongoing_today.includes(school: :gias_school).map(&:school)
         (ect_schools + mentor_schools).compact.uniq(&:id)
       end
     end
