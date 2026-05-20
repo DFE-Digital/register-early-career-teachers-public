@@ -15,6 +15,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_082643) do
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
+  enable_extension "pgcrypto"
   enable_extension "unaccent"
 
   # Custom types defined in this database.
