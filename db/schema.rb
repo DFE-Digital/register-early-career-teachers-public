@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_14_105345) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_19_161732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -184,7 +184,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_105345) do
     t.datetime "updated_at", null: false
     t.boolean "uplift_fees_enabled", default: true, null: false
     t.index ["year"], name: "index_contract_periods_on_year", unique: true
-    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "contracts", force: :cascade do |t|
@@ -281,7 +281,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_105345) do
     t.index ["school_reported_appropriate_body_id"], name: "idx_on_school_reported_appropriate_body_id_01f5ffc90a"
     t.index ["teacher_id", "started_on"], name: "index_ect_at_school_periods_on_teacher_id_started_on", unique: true
     t.index ["teacher_id"], name: "index_ect_at_school_periods_on_teacher_id"
-    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "events", force: :cascade do |t|
@@ -461,7 +461,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_105345) do
     t.index ["school_id", "teacher_id", "started_on"], name: "idx_on_school_id_teacher_id_started_on_17d46e7783", unique: true
     t.index ["school_id"], name: "index_mentor_at_school_periods_on_school_id"
     t.index ["teacher_id"], name: "index_mentor_at_school_periods_on_teacher_id"
-    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "mentorship_periods", force: :cascade do |t|
@@ -479,7 +479,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_105345) do
     t.index ["ect_at_school_period_id"], name: "index_mentorship_periods_on_ect_at_school_period_id"
     t.index ["mentor_at_school_period_id", "ect_at_school_period_id", "started_on"], name: "idx_on_mentor_at_school_period_id_ect_at_school_per_d69dffeecc", unique: true
     t.index ["mentor_at_school_period_id"], name: "index_mentorship_periods_on_mentor_at_school_period_id"
-    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "metadata_delivery_partners_lead_providers", force: :cascade do |t|
@@ -921,7 +921,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_14_105345) do
     t.index ["schedule_id"], name: "index_training_periods_on_schedule_id"
     t.index ["school_partnership_id", "ect_at_school_period_id", "mentor_at_school_period_id", "started_on"], name: "provider_partnership_trainings", unique: true
     t.index ["school_partnership_id"], name: "index_training_periods_on_school_partnership_id"
-    t.check_constraint "finished_on > started_on", name: "period_length_greater_than_zero"
+    t.check_constraint "finished_on >= started_on", name: "finished_on_not_before_started_on"
   end
 
   create_table "users", force: :cascade do |t|

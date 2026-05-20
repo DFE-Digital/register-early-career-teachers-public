@@ -423,13 +423,13 @@ describe MentorshipPeriod do
   end
 
   describe "check constraints" do
-    subject { FactoryBot.build(:mentorship_period, mentee:, mentor:, started_on: Date.current, finished_on: Date.current) }
+    subject { FactoryBot.build(:mentorship_period, mentee:, mentor:, started_on: Date.current, finished_on: Date.yesterday) }
 
     let(:mentee) { FactoryBot.create(:ect_at_school_period) }
     let(:mentor) { FactoryBot.create(:mentor_at_school_period) }
 
-    it "prevents 0 day periods from being written to the database" do
-      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    it "prevents periods with a duration less than 1 day from being written to the database" do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::DataException/)
     end
   end
 

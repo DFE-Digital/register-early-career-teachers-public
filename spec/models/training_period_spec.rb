@@ -851,12 +851,12 @@ describe TrainingPeriod do
   end
 
   describe "check constraints" do
-    subject { FactoryBot.build(:training_period, ect_at_school_period:, started_on: Date.current, finished_on: Date.current) }
+    subject { FactoryBot.build(:training_period, ect_at_school_period:, started_on: Date.current, finished_on: Date.yesterday) }
 
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period) }
 
-    it "prevents 0 day periods from being written to the database" do
-      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
+    it "prevents periods with a duration less than 1 day from being written to the database" do
+      expect { subject.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /PG::DataException/)
     end
   end
 
