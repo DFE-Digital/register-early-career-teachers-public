@@ -73,7 +73,7 @@ Completion dates for these mentors will need to be removed by DfE Digital Engage
 
 These mentors should continue to train on either programme in the 2021 or 2022 cohort as applicable. Declarations cannot be submitted over the API and must be submitted manually to contract managers.
 
-Training status can be set back to ‘active’ if needed
+Training status can be set back to ‘active’ if needed.
 
 #### Mentors in the 2021 or 2022 cohorts with more than one declaration
 
