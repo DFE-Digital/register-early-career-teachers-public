@@ -7,14 +7,27 @@ describe Interval do
 
   describe "validations" do
     context "period dates" do
+      subject { DummyMentor.new(started_on:, finished_on:) }
+
       context "when finished_on is earlier than started_on" do
-        subject { DummyMentor.new(started_on: Date.yesterday, finished_on: 2.days.ago) }
+        let(:started_on) { Date.current }
+        let(:finished_on) { Date.yesterday }
 
-        before { subject.valid? }
+        it { is_expected.to have_error(:finished_on, "The end date must be later than the start date (#{started_on.to_fs(:govuk)})") }
+      end
 
-        it "adds an error" do
-          expect(subject.errors.messages).to include(finished_on: ["The end date must be later than the start date (#{Date.yesterday.to_fs(:govuk)})"])
-        end
+      context "when finished_on is the same as started_on" do
+        let(:started_on) { Date.current }
+        let(:finished_on) { Date.current }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when finished_on is later than started_on" do
+        let(:started_on) { Date.current }
+        let(:finished_on) { Date.tomorrow }
+
+        it { is_expected.to be_valid }
       end
     end
 
