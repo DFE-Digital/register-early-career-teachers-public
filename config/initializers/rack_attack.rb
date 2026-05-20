@@ -21,6 +21,7 @@ class Rack::Attack
     /sign-in
     /auth
     /healthcheck
+    /school/opt-out-of-reminder-emails
   ].freeze
 
   PUBLIC_API_PATH_PREFIXES = [
