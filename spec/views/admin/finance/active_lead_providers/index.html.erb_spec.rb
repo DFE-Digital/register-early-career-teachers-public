@@ -44,6 +44,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
       expect(rendered).to have_css(
         "form[action='#{admin_contract_period_active_lead_provider_path(contract_period, alp)}']"
       )
+      expect(rendered).to have_button("Remove #{alp.lead_provider.name}")
     end
 
     expect(rendered).to have_link(add_button_text, href: new_admin_contract_period_active_lead_provider_path(contract_period))
@@ -63,9 +64,10 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
       expect(rendered).not_to have_link(add_button_text)
 
       active_lead_providers.each do |alp|
-        expect(rendered).to have_link(pluralize(alp.contracts.count, "contract"))
-        expect(rendered).to have_link(pluralize(alp.statements.count, "statement"))
-        expect(rendered).to have_link(pluralize(alp.delivery_partners.count, "delivery partner"))
+        name = alp.lead_provider.name
+        expect(rendered).to have_link("#{pluralize(alp.contracts.count, 'contract')} for #{name}")
+        expect(rendered).to have_link("#{pluralize(alp.statements.count, 'statement')} for #{name}")
+        expect(rendered).to have_link("#{pluralize(alp.delivery_partners.count, 'delivery partner')} for #{name}")
       end
     end
   end

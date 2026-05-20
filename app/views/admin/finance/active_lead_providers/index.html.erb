@@ -28,15 +28,15 @@
           <% row.with_cell(text: alp.lead_provider.name) %>
           <% row.with_cell do %>
             <%# TODO: link to admin contracts page once it exists %>
-            <%= govuk_link_to(pluralize(alp.contracts.size, "contract"), "#") %>
+            <%= govuk_link_to(pluralize(alp.contracts.size, "contract"), "#", visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
           <% end %>
           <% row.with_cell do %>
             <%# TODO: link to admin statements page once it exists %>
-            <%= govuk_link_to(pluralize(alp.statements.size, "statement"), "#") %>
+            <%= govuk_link_to(pluralize(alp.statements.size, "statement"), "#", visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
           <% end %>
           <% row.with_cell do %>
             <%# TODO: link to admin delivery partners page once it exists %>
-            <%= govuk_link_to(pluralize(alp.delivery_partners.size, "delivery partner"), "#") %>
+            <%= govuk_link_to(pluralize(alp.delivery_partners.size, "delivery partner"), "#", visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
           <% end %>
           <% if @editable %>
             <% row.with_cell do %>
@@ -44,6 +44,7 @@
                     admin_contract_period_active_lead_provider_path(@contract_period, alp),
                     method: :delete,
                     secondary: true,
+                    visually_hidden_suffix: alp.lead_provider.name,
                     class: "govuk-!-margin-bottom-0" %>
             <% end %>
           <% end %>
