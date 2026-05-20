@@ -96,6 +96,8 @@ module RegisterEarlyCareerTeachers
     config.trs_api_key = ENV["TRS_API_KEY"]
     config.trs_api_version = ENV.fetch("TRS_API_VERSION", "20260120")
 
+    config.school_reminder_email_opt_out_token_secret = ENV["SCHOOL_REMINDER_EMAIL_OPT_OUT_TOKEN_SECRET"]
+
     config.after_initialize do
       ActionView::Base.default_form_builder = GOVUKDesignSystemFormBuilder::FormBuilder
     end
