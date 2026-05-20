@@ -146,8 +146,17 @@ RSpec.describe "Admin finance contract periods", type: :request do
       let(:env_var_value) { true }
 
       context "with valid parameters" do
-        let(:started_on) { 6.months.ago }
-        let(:finished_on) { 3.months.ago }
+        # An existing contract period is required by the service
+        # which creates schedules and milestones based on the most recent contract period
+        let!(:existing_period) do
+          FactoryBot.create(:contract_period,
+                            year: 2025,
+                            started_on: 1.year.ago,
+                            finished_on: Date.current)
+        end
+
+        let(:started_on) { 1.month.from_now }
+        let(:finished_on) { 12.months.from_now }
         let(:valid_params) do
           {
             contract_period: {
@@ -208,7 +217,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
 
       context "with invalid parameters" do
         let(:started_on) { nil }
-        let(:finished_on) { 3.months.ago }
+        let(:finished_on) { 3.months.from_now }
         let(:invalid_params) do
           {
             contract_period: {
@@ -250,7 +259,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
           FactoryBot.create(:contract_period,
                             year: 2026,
                             started_on: 6.months.ago,
-                            finished_on: 3.months.ago)
+                            finished_on: 3.months.from_now)
         end
 
         let(:overlapping_params) do
@@ -258,7 +267,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
             contract_period: {
               "year" => 2027,
               started_on: 4.months.ago,
-              finished_on: 1.month.ago,
+              finished_on: 1.month.from_now,
               detailed_evidence_types_enabled: true,
               mentor_funding_enabled: true,
               uplift_fees_enabled: false,
@@ -285,7 +294,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
       end
 
       context "with end date before start date" do
-        let(:started_on) { 6.months.ago }
+        let(:started_on) { 6.months.from_now }
         let(:finished_on) { started_on - 1.day }
         let(:params) do
           {
@@ -324,8 +333,8 @@ RSpec.describe "Admin finance contract periods", type: :request do
     end
 
     context "when disabled" do
-      let(:started_on) { 6.months.ago }
-      let(:finished_on) { 3.months.ago }
+      let(:started_on) { 6.months.from_now }
+      let(:finished_on) { 3.months.from_now }
       let(:params) do
         {
           contract_period: {
@@ -507,7 +516,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
 
       context "with invalid parameters" do
         let(:started_on) { nil }
-        let(:finished_on) { 3.months.ago }
+        let(:finished_on) { 3.months.from_now }
         let(:invalid_params) do
           {
             contract_period: {

@@ -69,6 +69,10 @@ class ContractPeriod < ApplicationRecord
     schedules.count.eql?(Schedule.identifiers.size)
   end
 
+  def editable?
+    !started_on_or_before_today?
+  end
+
 private
 
   def siblings

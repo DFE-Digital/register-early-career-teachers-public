@@ -81,7 +81,7 @@ module Admin::Finance
     end
 
     def set_contract_period_flags
-      @editable = !@contract_period.started_on_or_before_today?
+      @editable = @contract_period.editable?
       @has_lead_providers = @contract_period.active_lead_providers.any?
       @has_schedules = @contract_period.schedules.any?
     end
@@ -89,7 +89,7 @@ module Admin::Finance
     def redirect_if_contract_period_not_editable
       return if @editable
 
-      redirect_to(request.referer || admin_contract_periods_path)
+      redirect_to(request.referer || admin_contract_periods_path, notice: "This contract period cannot be edited")
     end
   end
 end

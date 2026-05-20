@@ -4,15 +4,16 @@ module ContractPeriods
 
     def initialize(author:, params:)
       @author = author
-      @contract_period = ContractPeriod.new(params)
+      @contract_period = ContractPeriod.new(params.merge(enabled: true))
     end
 
     def create!
-      raise ActiveRecord::RecordInvalid, contract_period unless contract_period.valid?
+      return false unless contract_period.valid?
 
       ActiveRecord::Base.transaction do
         contract_period.save!
-        record_event! or raise ActiveRecord::Rollback
+        record_event!
+        add_schedules_and_milestones!
       end
 
       contract_period
@@ -21,11 +22,11 @@ module ContractPeriods
   private
 
     def record_event!
-      return false unless contract_period.persisted?
-
       Events::Record.record_contract_period_added_event!(author:, contract_period:)
+    end
 
-      true
+    def add_schedules_and_milestones!
+      ContractPeriods::SeedFromPrevious.new(contract_period:).schedule!
     end
   end
 end

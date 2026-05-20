@@ -9,10 +9,12 @@ module ContractPeriods
     end
 
     def update!
+      return unless contract_period.editable?
+
       contract_period.assign_attributes(params)
       modifications = contract_period.changes
 
-      raise ActiveRecord::RecordInvalid, contract_period unless contract_period.valid?
+      return unless contract_period.valid?
 
       ActiveRecord::Base.transaction do
         contract_period.update!(params)
