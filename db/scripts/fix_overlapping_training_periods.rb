@@ -8,7 +8,7 @@
 # Note, we're adding the 'type' field so we don't join ECT training periods to
 # mentor training periods
 #
-# For each one of the results we want to push the finshed_on date one day earlier
+# For each one of the results we want to push the finished_on date one day earlier
 
 query = <<~SQL
   with
@@ -20,7 +20,7 @@ query = <<~SQL
     mentor_data as (
       select masp.teacher_id, 'mentor' as type, tp.id, tp.started_on, tp.finished_on
       from training_periods tp
-      inner join mentor_at_school_periods masp on tp.ect_at_school_period_id = masp.id
+      inner join mentor_at_school_periods masp on tp.mentor_at_school_period_id = masp.id
     ),
     all_data as (
       select * from ect_data
