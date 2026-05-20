@@ -36,7 +36,7 @@ private
     # We need it to get updated with the latest inner period changes happening above.
     period.reload
 
-    finish_mentor_at_school_period!(period.reload)
+    finish_mentor_at_school_period!(period)
     record_mentor_left_school_event!(period)
   end
 
