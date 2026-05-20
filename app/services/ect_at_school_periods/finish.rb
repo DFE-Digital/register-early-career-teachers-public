@@ -8,6 +8,7 @@ module ECTAtSchoolPeriods
       @author = author
       @reported_by_school_id = reported_by_school_id
       @record_event = record_event
+      @training_period = ect_at_school_period.current_or_next_training_period if unstarted_training_periods.none?
     end
 
     def finish!
@@ -24,6 +25,8 @@ module ECTAtSchoolPeriods
     end
 
   private
+
+    attr_reader :training_period
 
     def finish_ect_at_school_period!
       if ect_at_school_period.finished_on.present? && ect_at_school_period.finished_on <= finished_on
@@ -77,13 +80,6 @@ module ECTAtSchoolPeriods
       return if training_period.finished_on.present? && training_period.finished_on <= finished_on
 
       TrainingPeriods::Finish.ect_training(author:, training_period:, ect_at_school_period:, finished_on:, record_event: record_event?).finish!
-    end
-
-    # Prevent events being linked to unstarted training_periods (which will be deleted)
-    def training_period
-      return if unstarted_training_periods.present?
-
-      @training_period ||= ect_at_school_period.current_or_next_training_period
     end
 
     def destroy_unstarted_training_periods!
