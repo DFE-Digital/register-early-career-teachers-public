@@ -65,6 +65,10 @@ class ContractPeriod < ApplicationRecord
     payments_frozen_at.present? && payments_frozen_at <= Time.zone.now
   end
 
+  def all_schedules?
+    schedules.count.eql?(Schedule.identifiers.size)
+  end
+
 private
 
   def siblings

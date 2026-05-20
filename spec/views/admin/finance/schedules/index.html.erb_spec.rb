@@ -3,29 +3,36 @@ RSpec.describe "admin/finance/schedules/index.html.erb" do
     assign(:contract_period, contract_period)
   end
 
-  let(:contract_period) do
-    FactoryBot.create(:contract_period, :previous)
-  end
+  let(:contract_period) { FactoryBot.create(:contract_period, :previous) }
 
   it "has intro text" do
     render
     expect(rendered).to have_text(/Manage schedules for the \d{4} contract period./)
   end
 
-  context "when a contract period is closed" do
+  context "when a contract period is closed to amendments" do
     it "has a disabled add schedule button" do
       render
       expect(rendered).to have_button("Add schedule", disabled: true)
+    end
+  end
+
+  context "when a contract period is open to amendments" do
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
+
+    it "has an enabled add a schedule button" do
+      render
+      expect(rendered).to have_button("Add schedule", disabled: false)
     end
   end
 
   context "when the current contract period has all possible schedules" do
-    let(:contract_period) do
-      FactoryBot.create(:contract_period, :current)
-    end
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
 
     before do
-      Schedule.identifiers { |identifier| FactoryBot.create(:schedule, identifier:, contract_period:) }
+      Schedule.identifiers.each_value do |identifier|
+        FactoryBot.create(:schedule, identifier:, contract_period:)
+      end
     end
 
     it "has a disabled add schedule button" do
@@ -34,19 +41,12 @@ RSpec.describe "admin/finance/schedules/index.html.erb" do
     end
   end
 
-  context "when a contract period is opened" do
-    let(:contract_period) do
-      FactoryBot.create(:contract_period, :next)
-    end
+  context "when a new contract period is opened" do
+    let(:contract_period) { FactoryBot.create(:contract_period, :next) }
 
-    it "has no schedules yet" do
+    it "has no schedules" do
       render
       expect(rendered).to have_text("This contract period currently has no schedules.")
-    end
-
-    it "has an active add a schedule button" do
-      render
-      expect(rendered).to have_button("Add schedule", disabled: false)
     end
   end
 

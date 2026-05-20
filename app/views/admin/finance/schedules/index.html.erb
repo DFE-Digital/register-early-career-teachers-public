@@ -25,9 +25,6 @@
 <% end %>
 
 <%=
-  disabled =
-    @contract_period.schedules.count.eql?(Schedule.identifiers.size) ||
-    @contract_period.started_on_or_before_today?
-
-  govuk_button_to("Add schedule", "#", disabled:)
+govuk_button_to("Add schedule", "#",
+  disabled: (@contract_period.all_schedules? || @contract_period.started_on_or_before_today?))
 %>
