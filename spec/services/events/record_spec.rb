@@ -1793,6 +1793,46 @@ RSpec.describe Events::Record do
     end
   end
 
+  describe ".record_active_lead_provider_created_event!" do
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:, contract_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_active_lead_provider_created_event!(author:, active_lead_provider:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          active_lead_provider:,
+          lead_provider:,
+          heading: "#{lead_provider.name} added for #{contract_period.year}",
+          event_type: :active_lead_provider_created,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_active_lead_provider_deleted_event!" do
+    let(:lead_provider) { FactoryBot.create(:lead_provider) }
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_active_lead_provider_deleted_event!(author:, lead_provider:, contract_period:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          lead_provider:,
+          heading: "#{lead_provider.name} removed for #{contract_period.year}",
+          event_type: :active_lead_provider_deleted,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
   describe "#record_teacher_schedule_assigned_to_training_period!" do
     include_context "safe_schedules"
 

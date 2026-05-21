@@ -920,6 +920,26 @@ module Events
       ).record_event!
     end
 
+    # Active Lead Provider Events
+
+    def self.record_active_lead_provider_created_event!(author:, active_lead_provider:, happened_at: Time.zone.now)
+      event_type = :active_lead_provider_created
+      lead_provider = active_lead_provider.lead_provider
+      contract_period = active_lead_provider.contract_period
+      heading = "#{lead_provider.name} added for #{contract_period.year}"
+
+      new(event_type:, author:, heading:, active_lead_provider:, lead_provider:, happened_at:).record_event!
+    end
+
+    # The active lead provider is destroyed before this fires, so we record the
+    # surviving lead provider rather than a relationship to the deleted record.
+    def self.record_active_lead_provider_deleted_event!(author:, lead_provider:, contract_period:, happened_at: Time.zone.now)
+      event_type = :active_lead_provider_deleted
+      heading = "#{lead_provider.name} removed for #{contract_period.year}"
+
+      new(event_type:, author:, heading:, lead_provider:, happened_at:).record_event!
+    end
+
     # Delivery Partner Events
 
     def self.record_delivery_partner_created_event!(author:, delivery_partner:, happened_at: Time.zone.now)
