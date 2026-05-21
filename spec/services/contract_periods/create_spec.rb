@@ -15,8 +15,10 @@ describe ContractPeriods::Create do
   end
   let(:author) { Events::SystemAuthor.new }
 
+  let(:seed_service) { instance_double(ContractPeriods::SeedFromPrevious, schedule!: true) }
+
   before do
-    allow(ContractPeriods::SeedFromPrevious).to receive(:new).and_return(instance_double(ContractPeriods::SeedFromPrevious, schedule!: true))
+    allow(ContractPeriods::SeedFromPrevious).to receive(:new).and_return(seed_service)
   end
 
   describe "#initialize" do
@@ -37,9 +39,8 @@ describe ContractPeriods::Create do
 
       it "records a `contract_period_added` event" do
         subject.create!
-
+        expect(seed_service).to have_received(:schedule!)
         perform_enqueued_jobs
-
         expect(Event.all.map(&:event_type)).to match_array(%w[contract_period_added])
       end
 
@@ -50,14 +51,17 @@ describe ContractPeriods::Create do
 
         perform_enqueued_jobs
 
-        last_event = Event.find_by(event_type: "contract_period_added")
-        contract_period = last_event.contract_period
-        expect(contract_period.year).to eql(1.year.from_now.year)
-        expect(contract_period.started_on.to_date).to eql(1.year.from_now.beginning_of_year.to_date)
-        expect(contract_period.finished_on.to_date).to eql(1.year.from_now.end_of_year.to_date)
-        expect(contract_period.detailed_evidence_types_enabled).to be false
-        expect(contract_period.mentor_funding_enabled).to be true
-        expect(contract_period.uplift_fees_enabled).to be false
+        contract_period = Event.find_by(event_type: "contract_period_added").contract_period
+
+        expect(contract_period).to have_attributes(
+          year: 1.year.from_now.year,
+          started_on: 1.year.from_now.beginning_of_year.to_date,
+          finished_on: 1.year.from_now.end_of_year.to_date,
+          enabled: true,
+          mentor_funding_enabled: true,
+          detailed_evidence_types_enabled: false,
+          uplift_fees_enabled: false
+        )
       end
 
       it "returns the create period and exposes it as a attr" do
@@ -83,9 +87,8 @@ describe ContractPeriods::Create do
 
       it "does not record an event" do
         subject.create!
-
+        expect(seed_service).not_to have_received(:schedule!)
         perform_enqueued_jobs
-
         expect(Event.count).to be_zero
       end
     end
