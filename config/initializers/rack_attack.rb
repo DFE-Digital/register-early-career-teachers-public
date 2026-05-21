@@ -69,7 +69,7 @@ end
 
 ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |_name, _start, _finish, request_id, payload|
   ip = payload.fetch(:request).remote_ip
-  path = payload.fetch(:request).fullpath
+  path = payload.fetch(:request).path
 
   Rails.logger.warn("[rack-attack] Throttled request #{request_id} from #{ip} to '#{path}'")
 
