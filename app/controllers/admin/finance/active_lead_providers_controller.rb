@@ -24,10 +24,12 @@ module Admin::Finance
     end
 
     def create
-      @active_lead_provider = @contract_period.active_lead_providers.build(active_lead_provider_params)
+      @active_lead_provider = ActiveLeadProviders::Create.new(
+        contract_period: @contract_period,
+        lead_provider_id: active_lead_provider_params[:lead_provider_id]
+      ).call
 
-      if @active_lead_provider.save
-        ActiveLeadProviders::SeedFromPrevious.new(active_lead_provider: @active_lead_provider).call
+      if @active_lead_provider.persisted?
         flash[:notice] = "#{@active_lead_provider.lead_provider.name} added"
         redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
       else
