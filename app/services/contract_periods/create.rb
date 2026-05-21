@@ -13,7 +13,7 @@ module ContractPeriods
       ActiveRecord::Base.transaction do
         contract_period.save!
         record_event!
-        add_schedules_and_milestones!
+        seed_from_previous!
       end
 
       contract_period
@@ -25,7 +25,7 @@ module ContractPeriods
       Events::Record.record_contract_period_added_event!(author:, contract_period:)
     end
 
-    def add_schedules_and_milestones!
+    def seed_from_previous!
       ContractPeriods::SeedFromPrevious.new(contract_period:).schedule!
     end
   end
