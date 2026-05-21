@@ -242,4 +242,29 @@ describe ContractPeriod do
       it { is_expected.to be_payments_frozen }
     end
   end
+
+  describe "#all_schedules?" do
+    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
+    let(:schedule_identifiers) { Schedule.identifiers.values }
+
+    context "when all possible schedules have been allocated to the contract period" do
+      before do
+        schedule_identifiers.each do |identifier|
+          FactoryBot.create(:schedule, identifier:, contract_period:)
+        end
+      end
+
+      it { expect(contract_period).to be_all_schedules }
+    end
+
+    context "when only some schedules have been allocated to the contract period" do
+      before do
+        schedule_identifiers.take(2).each do |identifier|
+          FactoryBot.create(:schedule, identifier:, contract_period:)
+        end
+      end
+
+      it { expect(contract_period).not_to be_all_schedules }
+    end
+  end
 end
