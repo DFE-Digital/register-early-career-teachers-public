@@ -33,6 +33,8 @@ services:
     build:
       args:
         - BUNDLE_WITHOUT='review staging sandbox production'
+        - GID=1000
+        - UID=1000
       context: .
     depends_on:
       - db
@@ -52,6 +54,7 @@ services:
     ports:
       - 3000:3000
     tty: true # for bin/dev to work
+    user: "1000:1000"
     volumes:
       - .:/app
 
