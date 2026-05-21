@@ -37,4 +37,27 @@ describe ActiveLeadProviders::CascadeDelete do
     expect(Statement).to exist(statement.id)
     expect(LeadProviderDeliveryPartnership).to exist(lead_provider_delivery_partnership.id)
   end
+
+  describe "raising an exception when usage data is present" do
+    it "raises when a declaration references one of its statements, destroying nothing" do
+      FactoryBot.create(:declaration, active_lead_provider:, payment_statement: statement)
+
+      expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Declarations are present")
+      expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+    end
+
+    it "raises when a training period references one of its school partnerships, destroying nothing" do
+      FactoryBot.create(:training_period, :with_active_lead_provider, active_lead_provider:)
+
+      expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Training periods are present")
+      expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+    end
+
+    it "raises when an expression of interest references it, destroying nothing" do
+      FactoryBot.create(:training_period, :with_only_expression_of_interest, expression_of_interest: active_lead_provider)
+
+      expect { service.call }.to raise_error(described_class::CascadeDeleteError, "Expressions of interest are present")
+      expect(ActiveLeadProvider).to exist(active_lead_provider.id)
+    end
+  end
 end

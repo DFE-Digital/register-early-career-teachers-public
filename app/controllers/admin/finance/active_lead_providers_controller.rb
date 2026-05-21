@@ -46,6 +46,9 @@ module Admin::Finance
       ActiveLeadProviders::CascadeDelete.new(active_lead_provider:).call
       flash[:notice] = "#{lead_provider_name} removed"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
+    rescue ActiveLeadProviders::CascadeDelete::CascadeDeleteError => e
+      flash[:error] = "Cannot remove #{lead_provider_name}: #{e.message}"
+      redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
     end
 
   private

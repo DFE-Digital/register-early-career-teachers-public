@@ -180,6 +180,17 @@ RSpec.describe "Admin active lead providers", type: :request do
           expect(flash[:error]).to eq(started_error)
         end
       end
+
+      context "when the active lead provider has data that cannot be deleted" do
+        before { FactoryBot.create(:training_period, :with_active_lead_provider, active_lead_provider:) }
+
+        it "does not destroy the active lead provider and redirects to the index with an alert" do
+          expect { delete destroy_path }.not_to(change(ActiveLeadProvider, :count))
+
+          expect(response).to redirect_to(index_path)
+          expect(flash[:error]).to eq("Cannot remove #{active_lead_provider.lead_provider.name}: Training periods are present")
+        end
+      end
     end
   end
 end
