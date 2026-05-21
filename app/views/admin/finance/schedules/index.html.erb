@@ -15,7 +15,7 @@
   <%=
     govuk_table(
       head: ["Schedule"],
-      rows: @contract_period.schedules.map do |schedule|
+      rows: @contract_period.schedules.sort_by { |s| Schedule.identifiers.keys.index(s.identifier) }.map do |schedule|
         [
           govuk_link_to(schedule_name(schedule.identifier), "#"),
         ]
