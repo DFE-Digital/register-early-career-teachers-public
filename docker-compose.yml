@@ -22,7 +22,7 @@ services:
 
   playwright:
     image: mcr.microsoft.com/playwright:v1.56.1-noble
-    command: npx playwright run-server --port 3000 --host 0.0.0.0
+    command: sh -c "npx playwright install && npx playwright run-server --port 3000 --host 0.0.0.0"
     volumes:
       - playwright-data:/ms-playwright
 
