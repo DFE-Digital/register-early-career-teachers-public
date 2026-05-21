@@ -36,8 +36,7 @@ module ECTAtSchoolPeriods
     end
 
     def to_provider_led
-      raise IncorrectTrainingProgrammeError if
-        @ect_at_school_period.provider_led_training_programme?
+      raise IncorrectTrainingProgrammeError if @ect_at_school_period.provider_led_training_programme?
 
       raise NoTrainingPeriodError if @lead_provider.blank?
 

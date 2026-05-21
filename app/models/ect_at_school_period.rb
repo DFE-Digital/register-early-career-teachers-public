@@ -1,8 +1,7 @@
 class ECTAtSchoolPeriod < ApplicationRecord
   RECT_GO_LIVE_DATE = Date.new(2026, 4, 28).freeze
 
-  include Interval
-  include DeclarativeUpdates
+  include AtSchoolPeriod
 
   # Associations
   belongs_to :school, inverse_of: :ect_at_school_periods
@@ -13,17 +12,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
   has_many :mentors, through: :mentorship_periods, source: :mentor
   has_many :training_periods, inverse_of: :ect_at_school_period, dependent: :destroy
   has_many :mentor_at_school_periods, through: :teacher
-  has_many :events
-  has_one :current_or_next_training_period, -> { current_or_future.earliest_first }, class_name: "TrainingPeriod"
-  has_one :earliest_training_period, -> { earliest_first }, class_name: "TrainingPeriod"
-  has_one :latest_training_period, -> { latest_first }, class_name: "TrainingPeriod"
+
   has_one :current_or_next_mentorship_period, -> { current_or_future.earliest_first }, class_name: "MentorshipPeriod"
   has_one :latest_mentorship_period, -> { latest_first }, class_name: "MentorshipPeriod"
-
-  touch -> { teacher }, on_event: %i[create destroy update], when_changing: %i[email], timestamp_attribute: :api_updated_at
-
-  refresh_metadata -> { school }, on_event: %i[create destroy update]
-  refresh_metadata -> { teacher }, on_event: %i[create destroy update]
 
   # Validations
   validate :appropriate_body_for_independent_school,
@@ -34,39 +25,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
            if: -> { school&.state_funded? },
            on: :register_ect
 
-  validates :email,
-            notify_email: true,
-            allow_nil: true
-
-  validates :school_id,
-            presence: true
-
-  validates :started_on,
-            presence: true
-
-  validates :teacher_id,
-            presence: true
-
   validate :teacher_distinct_period
 
   # Scopes
-  scope :for_school, ->(school_id) { where(school_id:) }
-  scope :for_teacher, ->(teacher_id) { where(teacher_id:) }
-  scope :with_partnerships_for_contract_period, ->(year) {
-    joins(training_periods: {
-      active_lead_provider: :contract_period
-    }).where(contract_periods: { year: })
-  }
-  scope :with_expressions_of_interest_for_contract_period, ->(year) {
-    joins(training_periods: {
-      expression_of_interest: :contract_period
-    })
-    .where(contract_periods: { year: })
-  }
-  scope :with_expressions_of_interest_for_lead_provider_and_contract_period, ->(year, lead_provider_id) {
-    with_expressions_of_interest_for_contract_period(year)
-    .where(expression_of_interest: { lead_provider_id: })
-  }
   scope :unclaimed_by_school_reported_appropriate_body, -> {
     current_or_future
       .where.not(school_reported_appropriate_body_id: nil)
@@ -124,19 +85,9 @@ class ECTAtSchoolPeriod < ApplicationRecord
     where.not(id: without_qts_award)
       .where.not(id: claimed_by_different_appropriate_body)
   }
-  scope :with_school, -> { includes(school: :gias_school) }
-  scope :with_teacher, -> { includes(:teacher) }
   scope :with_teacher_current_induction_period_appropriate_body, -> {
     includes(teacher: { current_or_next_induction_period: :appropriate_body_period })
   }
-
-  def reported_leaving_by?(school)
-    reported_leaving_by_school_id.present? && reported_leaving_by_school_id == school&.id
-  end
-
-  def leaving_reported_for_school?(school)
-    leaving_today_or_in_future? && reported_leaving_by?(school)
-  end
 
   def school_reported_appropriate_body_name = school_reported_appropriate_body&.name
 
@@ -177,8 +128,6 @@ class ECTAtSchoolPeriod < ApplicationRecord
 
   delegate :trn, :trs_initial_teacher_training_provider_name, to: :teacher
   delegate :name, to: :school, prefix: true
-  delegate :provider_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
-  delegate :school_led_training_programme?, to: :current_or_next_training_period, allow_nil: true
 
 private
 

@@ -42,7 +42,14 @@ describe API::SchoolPartnershipSerializer, type: :serializer do
       end
 
       context "when there are `participants_currently_training`" do
-        before { FactoryBot.create_list(:training_period, 3, :ongoing, school_partnership: partnership) }
+        before do
+          3.times do
+            FactoryBot.create(:training_period,
+                              :ongoing,
+                              school_partnership: partnership,
+                              ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
+          end
+        end
 
         it { is_expected.to eq(3) }
       end
