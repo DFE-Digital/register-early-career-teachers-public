@@ -1,5 +1,5 @@
 describe ActiveLeadProviders::CascadeDelete do
-  subject(:service) { described_class.new(active_lead_provider:) }
+  subject(:service) { described_class.new(active_lead_provider:, author:) }
 
   let(:active_lead_provider) { FactoryBot.create(:active_lead_provider) }
   let!(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:) }
@@ -9,12 +9,18 @@ describe ActiveLeadProviders::CascadeDelete do
   let!(:lead_provider_delivery_partnership) do
     FactoryBot.create(:lead_provider_delivery_partnership, active_lead_provider:)
   end
+  let(:user) { FactoryBot.create(:user, :admin) }
+  let(:author) { Sessions::Users::DfEPersona.new(email: user.email) }
 
-  it "destroys the active lead provider with its contracts, fee structures, bands, statements, and partnerships, leaving delivery partners intact" do
+  before { allow(Events::Record).to receive(:record_active_lead_provider_deleted_event!) }
+
+  it "destroys the active lead provider with its contracts, fee structures, bands, statements, and partnerships, leaving delivery partners intact, and records the deleted event" do
     flat_rate_fee_structure_id = flat_rate_fee_structure.id
     banded_fee_structure_id = banded_fee_structure.id
     band_ids = banded_fee_structure.bands.pluck(:id)
     delivery_partner = lead_provider_delivery_partnership.delivery_partner
+    lead_provider = active_lead_provider.lead_provider
+    contract_period = active_lead_provider.contract_period
 
     service.call
 
@@ -26,6 +32,7 @@ describe ActiveLeadProviders::CascadeDelete do
     expect(Statement).not_to exist(statement.id)
     expect(LeadProviderDeliveryPartnership).not_to exist(lead_provider_delivery_partnership.id)
     expect(DeliveryPartner).to exist(delivery_partner.id)
+    expect(Events::Record).to have_received(:record_active_lead_provider_deleted_event!).with(author:, lead_provider:, contract_period:)
   end
 
   it "wraps the deletions in a transaction" do
@@ -36,6 +43,7 @@ describe ActiveLeadProviders::CascadeDelete do
     expect(Contract).to exist(contract.id)
     expect(Statement).to exist(statement.id)
     expect(LeadProviderDeliveryPartnership).to exist(lead_provider_delivery_partnership.id)
+    expect(Events::Record).not_to have_received(:record_active_lead_provider_deleted_event!)
   end
 
   describe "raising an exception when usage data is present" do

@@ -8,10 +8,13 @@ module ActiveLeadProviders
 
     class CascadeDeleteError < StandardError; end
 
-    attr_reader :active_lead_provider
+    attr_reader :active_lead_provider, :author
 
-    def initialize(active_lead_provider:)
+    delegate :lead_provider, :contract_period, to: :active_lead_provider
+
+    def initialize(active_lead_provider:, author:)
       @active_lead_provider = active_lead_provider
+      @author = author
     end
 
     def call
@@ -23,6 +26,8 @@ module ActiveLeadProviders
         destroy_lead_provider_delivery_partnerships!
         active_lead_provider.destroy!
       end
+
+      Events::Record.record_active_lead_provider_deleted_event!(author:, lead_provider:, contract_period:)
     end
 
   private

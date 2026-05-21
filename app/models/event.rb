@@ -1,6 +1,7 @@
 class Event < ApplicationRecord
   EVENT_TYPES = %w[
     active_lead_provider_created
+    active_lead_provider_deleted
     bulk_upload_completed
     bulk_upload_started
     delivery_partner_created

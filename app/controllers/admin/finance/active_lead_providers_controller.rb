@@ -46,7 +46,7 @@ module Admin::Finance
     def destroy
       active_lead_provider = @contract_period.active_lead_providers.find(params[:id])
       lead_provider_name = active_lead_provider.lead_provider.name
-      ActiveLeadProviders::CascadeDelete.new(active_lead_provider:).call
+      ActiveLeadProviders::CascadeDelete.new(active_lead_provider:, author: current_user).call
       flash[:notice] = "#{lead_provider_name} removed"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
     rescue ActiveLeadProviders::CascadeDelete::CascadeDeleteError => e
