@@ -1,0 +1,30 @@
+<%
+  page_data(
+    title: "Schedules",
+    caption: @contract_period.year,
+    caption_size: "l",
+    breadcrumbs: @breadcrumbs
+  )
+%>
+
+<p class="govuk-body">Manage schedules for the <%= @contract_period.year %> contract period.</p>
+
+<% if @contract_period.schedules.none? %>
+  <p class="govuk-body">This contract period currently has no schedules.</p>
+<% else %>
+  <%=
+    govuk_table(
+      head: ["Schedule"],
+      rows: sort_schedules(@contract_period).map do |schedule|
+        [
+          govuk_link_to(schedule_name(schedule.identifier), "#"),
+        ]
+      end
+    )
+  %>
+<% end %>
+
+<%=
+govuk_button_to("Add schedule", "#",
+  disabled: (@contract_period.all_schedules? || @contract_period.started_on_or_before_today?))
+%>

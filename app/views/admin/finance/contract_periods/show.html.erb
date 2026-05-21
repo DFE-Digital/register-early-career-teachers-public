@@ -59,7 +59,7 @@
     <% end %>
   <% end %>
 
-  <% list.with_item(title: "Schedules", href: (@has_schedules ? "#" : nil)) do |item| %>
+  <% list.with_item(title: "Schedules", href: (@has_schedules ? admin_contract_period_schedules_path(@contract_period) : nil)) do |item| %>
     <% if @has_schedules %>
       <% item.with_status(text: "Completed") %>
     <% else %>
