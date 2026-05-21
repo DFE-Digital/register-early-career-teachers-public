@@ -41,6 +41,23 @@ describe "Schools::InductionTutor::UpdateInductionTutorWizardController" do
           expect(response).to have_http_status(:ok)
         end
       end
+
+      it "prefills from the current school on a fresh journey" do
+        other_school = FactoryBot.create(
+          :school,
+          :with_induction_tutor,
+          induction_tutor_name: "Second School Tutor",
+          induction_tutor_email: "second.school.tutor@example.com"
+        )
+
+        post path_for_step("edit"), params: { edit: { induction_tutor_name: "First School Tutor", induction_tutor_email: } }
+
+        sign_in_as(:school_user, school: other_school)
+        get path_for_step("edit")
+
+        expect(response.body).to include("Second School Tutor")
+        expect(response.body).to include("second.school.tutor@example.com")
+      end
     end
 
     context "when visiting an invalid step" do
