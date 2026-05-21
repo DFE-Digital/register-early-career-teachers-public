@@ -9,7 +9,7 @@ FactoryBot.define do
       end
 
       # default end date to be a realistic end date
-      end_date { (started_on || start_date) + rand(6.months..1.year) }
+      end_date { (started_on || start_date) + rand(6.months...1.year) }
     end
 
     teacher { association :teacher, :with_realistic_name }

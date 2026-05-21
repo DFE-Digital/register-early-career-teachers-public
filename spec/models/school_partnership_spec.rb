@@ -44,7 +44,11 @@ describe SchoolPartnership do
       subject { instance.ongoing_training_periods }
 
       let(:instance) { FactoryBot.create(:school_partnership) }
-      let(:ongoing_training_period) { FactoryBot.create(:training_period, :ongoing, school_partnership: instance) }
+      let(:ongoing_training_period) do
+        FactoryBot.create(:training_period, :ongoing,
+                          school_partnership: instance,
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
+      end
 
       before do
         # Different lead provider
@@ -52,7 +56,10 @@ describe SchoolPartnership do
         # Not on-going today
         ect_at_school_period = FactoryBot.create(:ect_at_school_period, school: instance.school, started_on: 1.year.ago, finished_on: 1.month.ago)
         FactoryBot.create(:training_period, school_partnership: instance, ect_at_school_period:, started_on: 5.months.ago, finished_on: 2.months.ago)
-        FactoryBot.create(:training_period, school_partnership: instance, started_on: 1.week.from_now, finished_on: nil)
+        FactoryBot.create(:training_period, :ongoing,
+                          school_partnership: instance,
+                          started_on: 1.week.from_now,
+                          ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing))
       end
 
       it { is_expected.to contain_exactly(ongoing_training_period) }
@@ -67,16 +74,16 @@ describe SchoolPartnership do
 
     it do
       expect(subject).to validate_uniqueness_of(:school_id)
-        .scoped_to(:lead_provider_delivery_partnership_id)
-        .with_message("School and lead provider delivery partnership combination must be unique")
+                           .scoped_to(:lead_provider_delivery_partnership_id)
+                           .with_message("School and lead provider delivery partnership combination must be unique")
     end
   end
 
   describe "scopes" do
     describe ".earliest_first" do
-      let!(:school_partnership_first)  { FactoryBot.create(:school_partnership, created_at: 3.weeks.ago) }
+      let!(:school_partnership_first) { FactoryBot.create(:school_partnership, created_at: 3.weeks.ago) }
       let!(:school_partnership_second) { FactoryBot.create(:school_partnership, created_at: 2.weeks.ago) }
-      let!(:school_partnership_third)  { FactoryBot.create(:school_partnership, created_at: 1.week.ago) }
+      let!(:school_partnership_third) { FactoryBot.create(:school_partnership, created_at: 1.week.ago) }
 
       it "orders with earliest created records first" do
         expect(SchoolPartnership.earliest_first.to_a).to eq([

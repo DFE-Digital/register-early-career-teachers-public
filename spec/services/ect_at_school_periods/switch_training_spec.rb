@@ -224,9 +224,7 @@ module ECTAtSchoolPeriods
     end
 
     describe ".to_provider_led" do
-      let!(:contract_period) do
-        FactoryBot.create(:contract_period, :with_schedules, :current)
-      end
+      let!(:contract_period) { FactoryBot.create(:contract_period, :with_schedules, :current) }
       let(:lead_provider) { FactoryBot.create(:lead_provider) }
       let!(:active_lead_provider) do
         FactoryBot.create(
@@ -893,7 +891,7 @@ module ECTAtSchoolPeriods
               it "finds the active lead provider with the correct contract period" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-                new_training_period = mentor_at_school_period.training_periods.last
+                new_training_period = mentor_at_school_period.reload.training_periods.last
                 expect(new_training_period.expression_of_interest).to eq(active_lead_provider)
               end
             end
@@ -936,7 +934,7 @@ module ECTAtSchoolPeriods
               it "finds the existing lead provider" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-                new_training_period = mentor_at_school_period.training_periods.last
+                new_training_period = mentor_at_school_period.reload.training_periods.last
                 expect(new_training_period.school_partnership).to eq(school_partnership)
               end
             end
@@ -957,7 +955,7 @@ module ECTAtSchoolPeriods
               it "assigns a January schedule" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-                new_training_period = mentor_at_school_period.training_periods.last
+                new_training_period = mentor_at_school_period.reload.training_periods.last
                 expect(new_training_period.schedule.identifier).to eq("ecf-standard-january")
                 expect(new_training_period.schedule.contract_period.year).to eq(2025)
               end
@@ -973,7 +971,7 @@ module ECTAtSchoolPeriods
               it "assigns a September schedule" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-                new_training_period = mentor_at_school_period.training_periods.last
+                new_training_period = mentor_at_school_period.reload.training_periods.last
                 expect(new_training_period.schedule.identifier).to eq("ecf-standard-september")
                 expect(new_training_period.schedule.contract_period.year).to eq(2025)
               end
@@ -989,7 +987,7 @@ module ECTAtSchoolPeriods
               it "assigns an April schedule" do
                 SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-                new_training_period = mentor_at_school_period.training_periods.last
+                new_training_period = mentor_at_school_period.reload.training_periods.last
                 expect(new_training_period.schedule.identifier).to eq("ecf-standard-april")
                 expect(new_training_period.schedule.contract_period.year).to eq(2025)
               end
@@ -1009,7 +1007,7 @@ module ECTAtSchoolPeriods
             it "assigns a `finished_on` date for the training period" do
               SwitchTraining.to_provider_led(ect_at_school_period, lead_provider:, author:)
 
-              new_training_period = mentor_at_school_period.training_periods.last
+              new_training_period = mentor_at_school_period.reload.training_periods.last
               expect(new_training_period.finished_on).to eq(mentor_at_school_period.finished_on)
             end
           end
