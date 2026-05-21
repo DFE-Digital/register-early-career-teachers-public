@@ -49,7 +49,7 @@
 <h2 class="govuk-heading-m">Set up</h2>
 
 <%= govuk_task_list do |list| %>
-  <% list.with_item(title: "Lead providers", href: (@editable ? "#" : nil)) do |item| %>
+  <% list.with_item(title: "Lead providers", href: admin_contract_period_active_lead_providers_path(@contract_period)) do |item| %>
     <% if @has_lead_providers %>
       <% item.with_status(text: "Completed") %>
     <% else %>
