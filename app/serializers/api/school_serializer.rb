@@ -24,7 +24,7 @@ class API::SchoolSerializer < Blueprinter::Base
       data[:school].induction_tutor_name if data[:expression_of_interest_or_school_partnership]
     end
     field :induction_tutor_email do |data|
-      data[:school].induction_tutor_email if data[:expression_of_interest_or_school_partnership]
+      Schools::InductionTutorEmail.new(school: data[:school]).email_or_gias_contact if data[:expression_of_interest_or_school_partnership]
     end
     field :created_at do |data|
       data[:school].created_at
