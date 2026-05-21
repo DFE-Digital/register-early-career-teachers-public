@@ -40,6 +40,7 @@ services:
     command: "bin/dev"
     env_file: .env
     environment:
+      - BLAZER_DATABASE_URL=postgresql://postgres:postgres@db:5432/ecf2_development
       - DB_HOSTNAME=db
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
