@@ -5,7 +5,8 @@
 class ActiveLeadProviders::Create
   attr_reader :active_lead_provider
 
-  def initialize(contract_period:, lead_provider_id:)
+  def initialize(author:, contract_period:, lead_provider_id:)
+    @author = author
     @contract_period = contract_period
     @lead_provider_id = lead_provider_id
   end
@@ -13,12 +14,15 @@ class ActiveLeadProviders::Create
   def call
     @active_lead_provider = contract_period.active_lead_providers.build(lead_provider_id:)
 
-    ActiveLeadProviders::SeedFromPrevious.new(active_lead_provider:).call if active_lead_provider.save
+    if active_lead_provider.save
+      Events::Record.record_active_lead_provider_created_event!(author:, active_lead_provider:)
+      ActiveLeadProviders::SeedFromPrevious.new(active_lead_provider:).call
+    end
 
     active_lead_provider
   end
 
 private
 
-  attr_reader :contract_period, :lead_provider_id
+  attr_reader :author, :contract_period, :lead_provider_id
 end
