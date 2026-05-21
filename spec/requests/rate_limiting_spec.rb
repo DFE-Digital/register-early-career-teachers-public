@@ -11,7 +11,7 @@ RSpec.describe "Rack::Attack" do
     context "when requesting protected route #{protected_route}" do
       let(:path) { protected_route }
 
-      it_behaves_like "a rate limited endpoint", "protected routes (OTP)" do
+      it_behaves_like "a rate limited endpoint", "protected routes" do
         def perform_request
           get path, headers: { REMOTE_ADDR: request_ip }
         end
@@ -29,7 +29,7 @@ RSpec.describe "Rack::Attack" do
 
     before { allow(Schools::ReminderEmailOptOutToken).to receive(:valid?).and_return(true) }
 
-    it_behaves_like "a rate limited endpoint", "protected routes (OTP)" do
+    it_behaves_like "a rate limited endpoint", "protected routes" do
       def perform_request
         get path, params: { school_id: school.id, token: "stub" }, headers: { REMOTE_ADDR: request_ip }
       end

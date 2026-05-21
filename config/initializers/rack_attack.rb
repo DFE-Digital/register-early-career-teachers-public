@@ -45,7 +45,7 @@ class Rack::Attack
     request.get_header("HTTP_AUTHORIZATION")
   end
 
-  throttle("protected routes (OTP)", limit: 5, period: 20.seconds) do |request|
+  throttle("protected routes", limit: 5, period: 20.seconds) do |request|
     request.remote_ip if protected_path?(request)
   end
 
