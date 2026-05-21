@@ -25,6 +25,7 @@ module Admin::Finance
 
     def create
       @active_lead_provider = ActiveLeadProviders::Create.new(
+        author: current_user,
         contract_period: @contract_period,
         lead_provider_id: active_lead_provider_params[:lead_provider_id]
       ).call
