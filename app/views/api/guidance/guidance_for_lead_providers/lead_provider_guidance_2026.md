@@ -27,9 +27,9 @@ We are not archiving any participants, even if they have no declarations.
 
 ### What this means for lead providers
 
-If ECTs or mentors get re-registered, lead providers will need to move their cohort and schedule if participants had not started training legitimately before. 
+If an ECT first registered in the 2023 cohort but did not engage with training, lead providers will need to update their cohort and schedule to reflect the ECT is starting training in the 2026 cohort.
 
-If an ECT or mentor was first registered in the 2023 cohort, did not engage with training and is subsequently assigned to a new ECT, lead providers will need to update their cohort and schedule to reflect they are starting training in the 2026 cohort.
+If a mentor was first registered in the 2023 cohort, did not engage with training or was subsequently assigned to a new ECT, lead providers will need to update their cohort and schedule to reflect the mentor is starting training in the 2026 cohort. 
 
 ## We are not closing off partially trained mentors in the 2023 cohort
 
