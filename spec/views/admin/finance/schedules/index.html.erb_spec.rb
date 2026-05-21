@@ -68,15 +68,19 @@ RSpec.describe "admin/finance/schedules/index.html.erb" do
 
   context "when the contract period has schedules" do
     before do
-      FactoryBot.create(:schedule, identifier: "ecf-standard-january", contract_period:)
       FactoryBot.create(:schedule, identifier: "ecf-reduced-april", contract_period:)
+      FactoryBot.create(:schedule, identifier: "ecf-standard-april", contract_period:)
+      FactoryBot.create(:schedule, identifier: "ecf-standard-january", contract_period:)
+      FactoryBot.create(:schedule, identifier: "ecf-extended-september", contract_period:)
     end
 
-    it "lists their names" do
+    it "lists their names by type then month chronologically" do
       render
       expect(rendered).not_to have_text("This contract period currently has no schedules.")
       expect(rendered).to have_text("Standard January")
+      expect(rendered).to have_text("Standard April")
       expect(rendered).to have_text("Reduced April")
+      expect(rendered).to have_text("Extended September")
     end
   end
 end

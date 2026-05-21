@@ -1,18 +1,18 @@
 class Schedule < ApplicationRecord
   enum :identifier,
        %w[
-         ecf-extended-april
-         ecf-extended-january
-         ecf-extended-september
-         ecf-reduced-april
-         ecf-reduced-january
-         ecf-reduced-september
-         ecf-replacement-april
-         ecf-replacement-january
-         ecf-replacement-september
-         ecf-standard-april
          ecf-standard-january
+         ecf-standard-april
          ecf-standard-september
+         ecf-extended-january
+         ecf-extended-april
+         ecf-extended-september
+         ecf-reduced-january
+         ecf-reduced-april
+         ecf-reduced-september
+         ecf-replacement-january
+         ecf-replacement-april
+         ecf-replacement-september
        ].index_by(&:itself),
        validate: { message: "Choose an identifier from the list" }
 
