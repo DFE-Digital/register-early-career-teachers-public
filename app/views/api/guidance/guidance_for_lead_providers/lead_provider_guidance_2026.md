@@ -54,7 +54,7 @@ Some mentor data might be returned with a populated mentor funding end date (`me
 
 This is because as part of closing the 2021 and 2022 cohorts in the digital service, all mentors without a completion reason had to be marked with the started-not-completed reason.
 
-Where a mentor has this completion reason, lead providers must check their own records to confirm that the mentor had not previously been assigned to an ECT for 2 or more years in the past before they were last withdrawn. 
+Where a mentor has this completion reason, lead providers should check their own records to confirm that the mentor had not previously been assigned to an ECT for 2 or more years in the past before they were last withdrawn. 
 
 A 2021 or 2022 cohort mentor is considered fully trained and not eligible for further training if either they:
 
@@ -65,7 +65,7 @@ If a mentor has had fewer than 2 years access to funded training before they wer
 
 #### Mentors in the 2021 or 2022 cohorts with no declarations 
 
-These mentors are eligible to restart training under the early career teacher training programme ECTPM contract from 2025 onwards. This training will be paid from their ECF cohort. 
+These mentors are eligible to restart training under the early career teacher training programme ECTPM contract from 2025 onwards.  
 
 Completion dates for these mentors will need to be removed by DfE Digital Engagement leads and declarations will need to be made with over the API. 
 
@@ -87,7 +87,7 @@ Lead providers can self-serve the mentor cohort transfer and make declarations o
 
 #### Mentors who’ve moved from the 2021 to 2024 cohort with one declaration
 
-Lead providers can self-serve the mentor cohort transfer. Before doing so, declarations made by other lead providers must be voided. Providers should contact DfE Digital Engagement if they need help to void the declaration. 
+Lead providers can self-serve the mentor cohort transfer. Before doing so, declarations made by other lead providers should be voided. Providers should contact DfE Digital Engagement if they need help to void the declaration. 
 
 #### Mentors who’ve moved from the 2021 to 2024 cohort with more than one declaration 
 
@@ -99,7 +99,7 @@ Lead providers can self-serve the mentor cohort transfer and make declarations o
 
 #### Mentors in the 2023 or 2024 cohort with one declaration 
 
-Lead providers can self-serve the mentor cohort transfer. Before doing so, declarations made by other lead providers must be voided. Providers should contact DfE Digital Engagement if they need help to void the declaration. 
+Lead providers can self-serve the mentor cohort transfer. Before doing so, declarations made by other lead providers should be voided. Providers should contact DfE Digital Engagement if they need help to void the declaration. 
 
 #### Mentors in the 2023 or 2024 cohort with more than one declaration 
 
