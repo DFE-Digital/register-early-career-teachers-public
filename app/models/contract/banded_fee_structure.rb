@@ -10,6 +10,8 @@ class Contract::BandedFeeStructure < ApplicationRecord
            dependent: :destroy
 
   # Validations
+  validates :contract_id, uniqueness: { message: "Contract with the same banded fee structure already exist" }, allow_nil: true
+
   validates :recruitment_target,
             presence: { message: "Recruitment target is required" },
             numericality: {
