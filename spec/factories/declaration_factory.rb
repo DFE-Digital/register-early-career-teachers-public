@@ -152,7 +152,7 @@ FactoryBot.define do
         declaration.clawback_status = clawback_status
 
         if Declaration::BILLABLE_PAYMENT_STATUSES.include?(payment_status) && !evaluator.payment_statement
-          statement_trait = payment_status == "eligable" ? :open : payment_status.to_sym
+          statement_trait = payment_status == "eligible" ? :open : payment_status.to_sym
           declaration.payment_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
         else
           declaration.payment_statement = evaluator.payment_statement
@@ -219,7 +219,7 @@ FactoryBot.define do
         declaration.clawback_status = clawback_status
 
         if Declaration::BILLABLE_PAYMENT_STATUSES.include?(payment_status) && !evaluator.payment_statement
-          statement_trait = payment_status == "eligable" ? :open : payment_status.to_sym
+          statement_trait = payment_status == "eligible" ? :open : payment_status.to_sym
           declaration.payment_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
         else
           declaration.payment_statement = evaluator.payment_statement

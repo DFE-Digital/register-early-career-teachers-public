@@ -2410,7 +2410,7 @@ RSpec.describe Events::Record do
 
       expect(RecordEventJob).to have_received(:perform_later).with(
         event_type: :teacher_declaration_clawed_back,
-        heading: "#{teacher_full_name}'s started declaration was clawed_back",
+        heading: "#{teacher_full_name}'s started declaration was clawed back",
         teacher:,
         training_period:,
         declaration:,

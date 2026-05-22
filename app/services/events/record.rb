@@ -1029,7 +1029,7 @@ module Events
       event_type = :teacher_declaration_clawed_back
       teacher_name = Teachers::Name.new(teacher).full_name
       declaration_type = declaration.declaration_type
-      heading = "#{teacher_name}'s #{declaration_type} declaration was clawed_back"
+      heading = "#{teacher_name}'s #{declaration_type} declaration was clawed back"
 
       new(event_type:, author:, heading:, teacher:, training_period:, declaration:, happened_at:).record_event!
     end
