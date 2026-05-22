@@ -5,11 +5,13 @@ module Admin::Finance::ActiveLeadProviders
     before_action :set_active_lead_provider
 
     def index
+      contract_period = @active_lead_provider.contract_period
+
       @breadcrumbs = {
         "Finance" => admin_finance_path,
         "Contract periods" => admin_contract_periods_path,
-        @active_lead_provider.contract_period_year.to_s => admin_contract_period_path(@active_lead_provider.contract_period),
-        @active_lead_provider.lead_provider_name => nil,
+        contract_period.year.to_s => admin_contract_period_path(contract_period),
+        @active_lead_provider.lead_provider_name => admin_contract_period_active_lead_providers_path(contract_period),
       }
       @pagy, @statements = pagy(@active_lead_provider.statements.order(year: :asc, month: :asc))
     end

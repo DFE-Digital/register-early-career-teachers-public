@@ -31,8 +31,7 @@
             <%= govuk_link_to(pluralize(alp.contracts.size, "contract"), "#", visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
           <% end %>
           <% row.with_cell do %>
-            <%# TODO: link to admin statements page once it exists %>
-            <%= govuk_link_to(pluralize(alp.statements.size, "statement"), "#", visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
+            <%= govuk_link_to(pluralize(alp.statements.size, "statement"), admin_active_lead_provider_statements_path(alp), visually_hidden_suffix: "for #{alp.lead_provider.name}") %>
           <% end %>
           <% row.with_cell do %>
             <%# TODO: link to admin delivery partners page once it exists %>

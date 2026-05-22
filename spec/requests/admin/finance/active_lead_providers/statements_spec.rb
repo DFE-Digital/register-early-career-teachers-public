@@ -29,6 +29,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
         expect(response.status).to eq(200)
         expect(response.body).to include("Lead Provider 1")
         expect(response.body).to include(Statements::Period.for(statement))
+        expect(response.body).to include(admin_contract_period_active_lead_providers_path(contract_period))
       end
     end
   end

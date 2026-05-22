@@ -35,7 +35,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
     active_lead_providers.each do |alp|
       expect(rendered).to have_css("tr", text: alp.lead_provider.name)
       expect(rendered).to have_css("tr", text: pluralize(alp.contracts.count, "contract"))
-      expect(rendered).to have_css("tr", text: pluralize(alp.statements.count, "statement"))
+      expect(rendered).to have_link(pluralize(alp.statements.count, "statement"), href: admin_active_lead_provider_statements_path(alp))
       expect(rendered).to have_css("tr", text: pluralize(alp.delivery_partners.count, "delivery partner"))
     end
 
@@ -66,7 +66,7 @@ RSpec.describe "admin/finance/active_lead_providers/index.html.erb" do
       active_lead_providers.each do |alp|
         name = alp.lead_provider.name
         expect(rendered).to have_link("#{pluralize(alp.contracts.count, 'contract')} for #{name}")
-        expect(rendered).to have_link("#{pluralize(alp.statements.count, 'statement')} for #{name}")
+        expect(rendered).to have_link("#{pluralize(alp.statements.count, 'statement')} for #{name}", href: admin_active_lead_provider_statements_path(alp))
         expect(rendered).to have_link("#{pluralize(alp.delivery_partners.count, 'delivery partner')} for #{name}")
       end
     end

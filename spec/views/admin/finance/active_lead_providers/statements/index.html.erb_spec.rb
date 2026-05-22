@@ -22,7 +22,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
       "Finance" => admin_finance_path,
       "Contract periods" => admin_contract_periods_path,
       contract_period.year.to_s => admin_contract_period_path(contract_period),
-      lead_provider.name => nil,
+      lead_provider.name => admin_contract_period_active_lead_providers_path(contract_period),
     })
   end
 
@@ -33,7 +33,7 @@ RSpec.describe "admin/finance/active_lead_providers/statements/index.html.erb" d
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Finance", href: admin_finance_path)
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link("Contract periods", href: admin_contract_periods_path)
     expect(view.content_for(:backlink_or_breadcrumb)).to have_link(contract_period.year.to_s, href: admin_contract_period_path(contract_period))
-    expect(view.content_for(:backlink_or_breadcrumb)).to include(lead_provider.name)
+    expect(view.content_for(:backlink_or_breadcrumb)).to have_link(lead_provider.name, href: admin_contract_period_active_lead_providers_path(contract_period))
 
     expect(rendered).to have_content("Statements for #{lead_provider.name} in the #{contract_period.year} contract period.")
 
