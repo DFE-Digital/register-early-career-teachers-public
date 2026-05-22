@@ -47,7 +47,7 @@ class Contract < ApplicationRecord
       errors.add(:banded_fee_structure, "Banded fee structure must be provided for ITTECF_ECTP contracts") if banded_fee_structure.blank?
     elsif ecf_contract_type?
       errors.add(:flat_rate_fee_structure, "Flat rate fee structure must be blank for ECF contracts") if flat_rate_fee_structure.present?
-      errors.add(:banded_fee_structure, "Banded fee structure must be provided for ECF contracts") if banded_fee_structute.blank?
+      errors.add(:banded_fee_structure, "Banded fee structure must be provided for ECF contracts") if banded_fee_structure.blank?
     end
   end
 end
