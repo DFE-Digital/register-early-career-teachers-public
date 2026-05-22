@@ -100,7 +100,7 @@ RSpec.describe Schools::Mentors::TeacherLeavingWizard::EditStep do
     end
 
     context "when the date clashes with the latest training period" do
-      let(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:, started_on: Date.new(2024, 12, 31)) }
+      let(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:, started_on: Date.new(2025, 1, 1)) }
 
       before do
         allow(Schools::Validation::PeriodBoundary)

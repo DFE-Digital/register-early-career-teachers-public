@@ -9,6 +9,7 @@ describe "Schools::Mentors::ChangeLeadProviderWizard Requests" do
       :ongoing,
       teacher:,
       school:,
+      started_on:,
       email: "mentor@example.com"
     )
   end

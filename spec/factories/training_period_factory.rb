@@ -119,6 +119,21 @@ FactoryBot.define do
 
     trait :ongoing do
       finished_on { nil }
+
+      # An ongoing training period is only valid when its parent at-school period
+      # is also ongoing (otherwise the TP extends past the parent). If the parent
+      # was implicitly created with a finished_on date, make it ongoing so the
+      # envelope validation stays satisfied.
+      after(:build) do |tp|
+        asp = tp.at_school_period
+        next if asp.blank? || asp.finished_on.blank?
+
+        if asp.persisted?
+          asp.update_columns(finished_on: nil)
+        else
+          asp.finished_on = nil
+        end
+      end
     end
 
     trait :for_ect do
