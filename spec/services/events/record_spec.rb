@@ -2627,4 +2627,82 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_schedule_added_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_schedule_added_event!(author:, schedule:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Schedule 'Standard September' added to 2025",
+          event_type: :schedule_added,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_schedule_deleted_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_schedule_deleted_event!(author:, schedule:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Schedule 'Standard September' removed from 2025",
+          event_type: :schedule_deleted,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_milestone_added_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+    let!(:milestone) { FactoryBot.create(:milestone, schedule:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_milestone_added_event!(author:, milestone:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Milestone 'Started' added to 'Standard September' 2025",
+          event_type: :milestone_added,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
+
+  describe ".record_milestone_deleted_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
+    let!(:schedule) { FactoryBot.create(:schedule, contract_period:) }
+    let!(:milestone) { FactoryBot.create(:milestone, schedule:) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time do
+        Events::Record.record_milestone_deleted_event!(author:, milestone:)
+
+        expect(RecordEventJob).to have_received(:perform_later).with(
+          contract_period:,
+          heading: "Milestone 'Started' removed from 'Standard September' 2025",
+          event_type: :milestone_deleted,
+          happened_at: Time.zone.now,
+          **author_params
+        )
+      end
+    end
+  end
 end

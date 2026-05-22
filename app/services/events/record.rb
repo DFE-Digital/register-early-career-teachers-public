@@ -1048,28 +1048,50 @@ module Events
         uplift_fees_enabled: contract_period.uplift_fees_enabled
       }
 
-      new(
-        event_type:,
-        author:,
-        heading:,
-        contract_period:,
-        happened_at: Time.zone.now,
-        metadata:
-      ).record_event!
+      new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now, metadata:).record_event!
     end
 
     def self.record_contract_period_updated_event!(author:, contract_period:, modifications:)
       event_type = :contract_period_updated
       heading = "Contract period updated: #{contract_period.year}"
 
-      new(
-        event_type:,
-        author:,
-        heading:,
-        contract_period:,
-        happened_at: Time.zone.now,
-        modifications:
-      ).record_event!
+      new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now, modifications:).record_event!
+    end
+
+    def self.record_schedule_added_event!(author:, schedule:)
+      event_type = :schedule_added
+      contract_period = schedule.contract_period
+      heading = "Schedule '#{schedule.name}' added to #{contract_period.year}"
+
+      new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
+    end
+
+    def self.record_schedule_deleted_event!(author:, schedule:)
+      event_type = :schedule_deleted
+      contract_period = schedule.contract_period
+      heading = "Schedule '#{schedule.name}' removed from #{contract_period.year}"
+
+      new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
+    end
+
+    def self.record_milestone_added_event!(author:, milestone:)
+      event_type = :milestone_added
+      milestone_name = milestone.declaration_type.titleize
+      schedule_name = milestone.schedule.name
+      contract_period = milestone.schedule.contract_period
+      heading = "Milestone '#{milestone_name}' added to '#{schedule_name}' #{contract_period.year}"
+
+      new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
+    end
+
+    def self.record_milestone_deleted_event!(author:, milestone:)
+      event_type = :milestone_deleted
+      milestone_name = milestone.declaration_type.titleize
+      schedule_name = milestone.schedule.name
+      contract_period = milestone.schedule.contract_period
+      heading = "Milestone '#{milestone_name}' removed from '#{schedule_name}' #{contract_period.year}"
+
+      new(event_type:, author:, heading:, contract_period:, happened_at: Time.zone.now).record_event!
     end
 
     # Statement Events

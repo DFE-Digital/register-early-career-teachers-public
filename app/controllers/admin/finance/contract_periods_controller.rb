@@ -4,7 +4,7 @@ module Admin::Finance
 
     before_action :set_contract_period, only: %i[show edit update]
     before_action :set_contract_period_flags, only: %i[show edit update]
-    before_action :redirect_if_contract_period_not_editable, only: %i[edit update]
+    before_action :redirect_if_contract_period_started, only: %i[edit update]
 
     def index
       @breadcrumbs = {
@@ -92,10 +92,11 @@ module Admin::Finance
       @has_schedules = @contract_period.schedules.any?
     end
 
-    def redirect_if_contract_period_not_editable
-      return if @editable
+    def redirect_if_contract_period_started
+      return if @contract_period.editable?
 
-      redirect_to(request.referer || admin_contract_periods_path, notice: "This contract period cannot be edited")
+      flash[:error] = "This contract period has started and cannot be edited"
+      redirect_to admin_contract_periods_path
     end
   end
 end

@@ -79,6 +79,10 @@ class Event < ApplicationRecord
     statement_created
     statement_updated
     statement_deleted
+    schedule_added
+    schedule_deleted
+    milestone_added
+    milestone_deleted
   ].freeze
 
   belongs_to :author, class_name: "User"
