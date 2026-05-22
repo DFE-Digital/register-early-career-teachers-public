@@ -262,6 +262,7 @@
   - modifications
   - zendesk_ticket_id
   - declaration_id
+  - contract_period_id
   :api_tokens:
   - id
   - lead_provider_id

@@ -292,6 +292,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_161732) do
     t.text "author_name"
     t.enum "author_type", null: false, enum_type: "event_author_types"
     t.text "body"
+    t.bigint "contract_period_id"
     t.datetime "created_at", null: false
     t.bigint "declaration_id"
     t.integer "delivery_partner_id"
@@ -322,6 +323,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_161732) do
     t.index ["appropriate_body_period_id"], name: "index_events_on_appropriate_body_period_id"
     t.index ["author_email"], name: "index_events_on_author_email"
     t.index ["author_id"], name: "index_events_on_author_id"
+    t.index ["contract_period_id"], name: "index_events_on_contract_period_id"
     t.index ["declaration_id"], name: "index_events_on_declaration_id"
     t.index ["delivery_partner_id"], name: "index_events_on_delivery_partner_id"
     t.index ["ect_at_school_period_id"], name: "index_events_on_ect_at_school_period_id"
@@ -953,6 +955,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_161732) do
   add_foreign_key "ect_at_school_periods", "teachers"
   add_foreign_key "events", "active_lead_providers", on_delete: :nullify
   add_foreign_key "events", "appropriate_body_periods", on_delete: :nullify
+  add_foreign_key "events", "contract_periods", primary_key: "year", on_delete: :nullify
   add_foreign_key "events", "declarations", on_delete: :nullify
   add_foreign_key "events", "delivery_partners", on_delete: :nullify
   add_foreign_key "events", "ect_at_school_periods", on_delete: :nullify

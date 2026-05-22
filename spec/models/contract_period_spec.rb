@@ -32,7 +32,7 @@ describe ContractPeriod do
       it "does not allow overlapping records" do
         overlapping = FactoryBot.build(:contract_period, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 3, 3))
         expect(overlapping).not_to be_valid
-        expect(overlapping.errors.messages[:base]).to include(/Contract period overlaps/)
+        expect(overlapping.errors.messages[:started_on]).to include(/Start date cannot overlap another Contract period/)
       end
     end
   end
@@ -265,6 +265,28 @@ describe ContractPeriod do
       end
 
       it { expect(contract_period).not_to be_all_schedules }
+    end
+  end
+
+  describe "#editable?" do
+    subject { FactoryBot.create(:contract_period, started_on:) }
+
+    context "when the contract period has not yet started" do
+      let(:started_on) { 1.month.from_now }
+
+      it { is_expected.to be_editable }
+    end
+
+    context "when the contract period starts today" do
+      let(:started_on) { Time.zone.today }
+
+      it { is_expected.not_to be_editable }
+    end
+
+    context "when the contract period has already started" do
+      let(:started_on) { 1.month.ago }
+
+      it { is_expected.not_to be_editable }
     end
   end
 end

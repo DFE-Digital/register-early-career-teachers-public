@@ -481,6 +481,7 @@ erDiagram
     integer lead_provider_id
     integer teacher_id
     datetime updated_at
+    integer ect_assigned_mentor_latest_school_period_id
   }
   Metadata_TeacherLeadProvider }o--|| Teacher : belongs_to
   Metadata_TeacherLeadProvider }o--|| LeadProvider : belongs_to
