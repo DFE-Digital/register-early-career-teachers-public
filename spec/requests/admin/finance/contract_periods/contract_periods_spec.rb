@@ -372,6 +372,41 @@ RSpec.describe "Admin finance contract periods", type: :request do
         end
       end
     end
+
+    context "when seeding from previous" do
+      let(:env_var_value) { true }
+
+      context "with invalid params" do
+        let(:invalid_params) do
+          {
+            contract_period: {
+              "year" => 2027,
+              "started_on(3i)" => "1",
+              "started_on(2i)" => "10",
+              "started_on(1i)" => "2007",
+              "finished_on(3i)" => "1",
+              "finished_on(2i)" => "10",
+              "finished_on(1i)" => "2008",
+              detailed_evidence_types_enabled: true,
+              mentor_funding_enabled: true,
+              uplift_fees_enabled: false,
+            }
+          }
+        end
+
+        it "does not create a new contract period" do
+          expect {
+            post admin_contract_periods_path, params: invalid_params
+          }.not_to change(ContractPeriod, :count)
+        end
+
+        it "renders the new template with unprocessable_content status" do
+          post admin_contract_periods_path, params: invalid_params
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(response.body).to include("Cannot seed contract period")
+        end
+      end
+    end
   end
 
   describe "GET /admin/finance/contract-periods/new" do

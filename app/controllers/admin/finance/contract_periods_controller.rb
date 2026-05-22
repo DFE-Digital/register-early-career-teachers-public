@@ -39,6 +39,12 @@ module Admin::Finance
         @contract_period = @service.contract_period
         render :new, status: :unprocessable_content
       end
+    rescue ContractPeriods::SeedFromPrevious::AlreadyScheduledError,
+           ContractPeriods::SeedFromPrevious::ContractPeriodStartedError,
+           ContractPeriods::SeedFromPrevious::NoPreviousContractPeriodError => e
+      flash[:error] = "Cannot seed contract period: #{e.message}"
+      @contract_period = @service.contract_period
+      render :new, status: :unprocessable_content
     end
 
     def edit
