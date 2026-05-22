@@ -164,6 +164,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_21_133546) do
     t.decimal "setup_fee", precision: 12, scale: 2, null: false
     t.datetime "updated_at", null: false
     t.decimal "uplift_fee_per_declaration", precision: 12, scale: 2, null: false
+    t.index ["contract_id"], name: "index_banded_fee_structures_on_contract_id_unique_not_null", unique: true, where: "(contract_id IS NOT NULL)"
     t.index ["contract_id"], name: "index_contract_banded_fee_structures_on_contract_id"
   end
 
@@ -174,6 +175,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_21_133546) do
     t.integer "recruitment_target", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_id"], name: "index_contract_flat_rate_fee_structures_on_contract_id"
+    t.index ["contract_id"], name: "index_flat_rate_fee_structures_on_contract_id_unique_not_null", unique: true, where: "(contract_id IS NOT NULL)"
   end
 
   create_table "contract_periods", primary_key: "year", id: :serial, force: :cascade do |t|
