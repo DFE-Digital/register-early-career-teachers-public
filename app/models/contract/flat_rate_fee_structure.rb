@@ -5,6 +5,8 @@ class Contract::FlatRateFeeStructure < ApplicationRecord
   belongs_to :contract
 
   # Validations
+  validates :contract_id, uniqueness: { message: "Contract with the same flat rate fee structure already exist" }, allow_nil: true
+
   validates :recruitment_target,
             presence: { message: "Recruitment target is required" },
             numericality: { greater_than: 0, only_integer: true, message: "Value must be greater than 0" }
