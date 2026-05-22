@@ -1,4 +1,9 @@
-<% page_data(title: "Contract period #{@contract_period.year}", breadcrumbs: @breadcrumbs) %>
+<%
+  page_data(
+    title: "#{@contract_period.year} contract period",
+    breadcrumbs: @breadcrumbs
+  )
+%>
 
 <%=
   govuk_summary_list do |sl|

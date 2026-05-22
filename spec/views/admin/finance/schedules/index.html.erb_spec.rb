@@ -27,7 +27,7 @@ RSpec.describe "admin/finance/schedules/index.html.erb" do
   end
 
   context "when a contract period is closed to amendments" do
-    it "has a disabled add schedule button" do
+    it "disables the add schedule button" do
       render
       expect(rendered).to have_button("Add schedule", disabled: true)
     end
@@ -36,9 +36,9 @@ RSpec.describe "admin/finance/schedules/index.html.erb" do
   context "when a contract period is open to amendments" do
     let(:contract_period) { FactoryBot.create(:contract_period, :next) }
 
-    it "has an enabled add a schedule button" do
+    it "has an add schedule button" do
       render
-      expect(rendered).to have_button("Add schedule", disabled: false)
+      expect(rendered).to have_link("Add schedule")
     end
   end
 
@@ -51,7 +51,7 @@ RSpec.describe "admin/finance/schedules/index.html.erb" do
       end
     end
 
-    it "has a disabled add schedule button" do
+    it "disables the add schedule button" do
       render
       expect(rendered).to have_button("Add schedule", disabled: true)
     end

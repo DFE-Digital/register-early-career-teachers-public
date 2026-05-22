@@ -367,28 +367,29 @@ describe ContractPeriod do
     end
   end
 
-  describe "#all_schedules?" do
-    let(:contract_period) { FactoryBot.create(:contract_period, :current) }
-    let(:schedule_identifiers) { Schedule.identifiers.values }
+  describe "#fully_scheduled?" do
+    subject(:contract_period) { FactoryBot.create(:contract_period, :current) }
+
+    let(:possible_schedules) { Schedule.identifiers.values }
 
     context "when all possible schedules have been allocated to the contract period" do
       before do
-        schedule_identifiers.each do |identifier|
+        possible_schedules.each do |identifier|
           FactoryBot.create(:schedule, identifier:, contract_period:)
         end
       end
 
-      it { expect(contract_period).to be_all_schedules }
+      it { is_expected.to be_fully_scheduled }
     end
 
     context "when only some schedules have been allocated to the contract period" do
       before do
-        schedule_identifiers.take(2).each do |identifier|
+        possible_schedules.take(2).each do |identifier|
           FactoryBot.create(:schedule, identifier:, contract_period:)
         end
       end
 
-      it { expect(contract_period).not_to be_all_schedules }
+      it { is_expected.not_to be_fully_scheduled }
     end
   end
 
@@ -411,6 +412,91 @@ describe ContractPeriod do
       let(:started_on) { 1.month.ago }
 
       it { is_expected.not_to be_editable }
+    end
+  end
+
+  describe "#available_schedules" do
+    subject(:contract_period) { FactoryBot.create(:contract_period) }
+
+    context "without associated schedules" do
+      it "lists all possible schedules" do
+        expect(contract_period.available_schedules).to eq(%w[
+          ecf-standard-january
+          ecf-standard-april
+          ecf-standard-september
+          ecf-extended-january
+          ecf-extended-april
+          ecf-extended-september
+          ecf-reduced-january
+          ecf-reduced-april
+          ecf-reduced-september
+          ecf-replacement-january
+          ecf-replacement-april
+          ecf-replacement-september
+        ])
+      end
+    end
+
+    context "with associated schedules" do
+      let(:associated_schedules) do
+        %w[
+          ecf-reduced-april
+          ecf-standard-april
+          ecf-standard-september
+          ecf-reduced-january
+          ecf-standard-january
+          ecf-reduced-september
+        ]
+      end
+
+      before do
+        associated_schedules.each do |identifier|
+          FactoryBot.create(:schedule, identifier:, contract_period:)
+        end
+      end
+
+      it "lists any remaining schedules" do
+        expect(contract_period.available_schedules).to eq(%w[
+          ecf-extended-january
+          ecf-extended-april
+          ecf-extended-september
+          ecf-replacement-january
+          ecf-replacement-april
+          ecf-replacement-september
+        ])
+      end
+    end
+  end
+
+  describe "#sorted_schedules" do
+    subject(:contract_period) { FactoryBot.create(:contract_period) }
+
+    let(:associated_schedules) do
+      %w[
+        ecf-reduced-april
+        ecf-standard-april
+        ecf-standard-september
+        ecf-reduced-january
+        ecf-standard-january
+        ecf-reduced-september
+      ]
+    end
+
+    before do
+      associated_schedules.each do |identifier|
+        FactoryBot.create(:schedule, identifier:, contract_period:)
+      end
+    end
+
+    it "orders schedules by identifier as defined in the enum" do
+      expect(contract_period.sorted_schedules.map(&:identifier)).to eq(%w[
+        ecf-standard-january
+        ecf-standard-april
+        ecf-standard-september
+        ecf-reduced-january
+        ecf-reduced-april
+        ecf-reduced-september
+      ])
     end
   end
 end
