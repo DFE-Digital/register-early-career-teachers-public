@@ -4,7 +4,6 @@ describe Event do
     it { is_expected.to belong_to(:appropriate_body_period).optional }
     it { is_expected.to belong_to(:induction_period).optional }
     it { is_expected.to belong_to(:induction_extension).optional }
-
     it { is_expected.to belong_to(:school).optional }
     it { is_expected.to belong_to(:ect_at_school_period).optional }
     it { is_expected.to belong_to(:mentor_at_school_period).optional }
@@ -21,7 +20,7 @@ describe Event do
     it { is_expected.to belong_to(:statement).optional }
     it { is_expected.to belong_to(:statement_adjustment).optional }
     it { is_expected.to belong_to(:declaration).optional }
-
+    it { is_expected.to belong_to(:contract_period).optional }
     it { is_expected.to belong_to(:author).class_name("User").optional }
   end
 

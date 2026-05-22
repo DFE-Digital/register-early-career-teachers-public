@@ -44,7 +44,7 @@
   end
 %>
 
-<%= govuk_button_link_to("Edit contract period", "#", disabled: !@editable) %>
+<%= govuk_button_link_to("Edit contract period", edit_admin_contract_period_path(@contract_period), disabled: !@editable) %>
 
 <h2 class="govuk-heading-m">Set up</h2>
 

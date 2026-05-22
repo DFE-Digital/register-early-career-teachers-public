@@ -2429,4 +2429,64 @@ RSpec.describe Events::Record do
       end
     end
   end
+
+  describe ".record_contract_period_added_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      Events::Record.record_contract_period_added_event!(
+        author:,
+        contract_period:
+      )
+
+      metadata = {
+        year: contract_period.year,
+        started_on: contract_period.started_on,
+        finished_on: contract_period.finished_on,
+        detailed_evidence_types_enabled: contract_period.detailed_evidence_types_enabled,
+        mentor_funding_enabled: contract_period.mentor_funding_enabled,
+        uplift_fees_enabled: contract_period.uplift_fees_enabled
+      }
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :contract_period_added,
+        heading: "Contract period added: #{contract_period.year}",
+        contract_period:,
+        happened_at: Time.current,
+        metadata:,
+        **author_params
+      )
+    end
+  end
+
+  describe ".record_contract_period_updated_event!" do
+    let!(:contract_period) { FactoryBot.create(:contract_period) }
+
+    it "queues a RecordEventJob with the correct values" do
+      freeze_time
+
+      contract_period.detailed_evidence_types_enabled = false
+      raw_modifications = contract_period.changes
+
+      Events::Record.record_contract_period_updated_event!(
+        author:,
+        contract_period:,
+        modifications: raw_modifications
+      )
+
+      expect(RecordEventJob).to have_received(:perform_later).with(
+        event_type: :contract_period_updated,
+        heading: "Contract period updated: #{contract_period.year}",
+        contract_period:,
+        happened_at: Time.current,
+        modifications: [
+          "Detailed evidence types enabled 'true' removed"
+        ],
+        metadata: raw_modifications,
+        **author_params
+      )
+    end
+  end
 end
