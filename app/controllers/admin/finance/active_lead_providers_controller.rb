@@ -24,7 +24,7 @@ module Admin::Finance
     end
 
     def create
-      @active_lead_provider = ActiveLeadProviders::Create.new(
+      @active_lead_provider = ::ActiveLeadProviders::Create.new(
         author: current_user,
         contract_period: @contract_period,
         lead_provider_id: active_lead_provider_params[:lead_provider_id]
@@ -37,8 +37,8 @@ module Admin::Finance
         @available_lead_providers = available_lead_providers
         render :new, status: :unprocessable_entity
       end
-    rescue ActiveLeadProviders::SeedFromPrevious::PreviousActiveLeadProviderError,
-           ActiveLeadProviders::SeedFromPrevious::AlreadyPopulatedError => e
+    rescue ::ActiveLeadProviders::SeedFromPrevious::PreviousActiveLeadProviderError,
+           ::ActiveLeadProviders::SeedFromPrevious::AlreadyPopulatedError => e
       flash[:error] = "Cannot seed: #{e.message}"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
     end
@@ -46,10 +46,10 @@ module Admin::Finance
     def destroy
       active_lead_provider = @contract_period.active_lead_providers.find(params[:id])
       lead_provider_name = active_lead_provider.lead_provider.name
-      ActiveLeadProviders::CascadeDelete.new(active_lead_provider:, author: current_user).call
+      ::ActiveLeadProviders::CascadeDelete.new(active_lead_provider:, author: current_user).call
       flash[:notice] = "#{lead_provider_name} removed"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
-    rescue ActiveLeadProviders::CascadeDelete::CascadeDeleteError => e
+    rescue ::ActiveLeadProviders::CascadeDelete::CascadeDeleteError => e
       flash[:error] = "Cannot remove #{lead_provider_name}: #{e.message}"
       redirect_to admin_contract_period_active_lead_providers_path(@contract_period)
     end

@@ -29,4 +29,6 @@ class ActiveLeadProvider < ApplicationRecord
       .without_existing_partnership_for(delivery_partner, contract_period)
       .with_lead_provider_ordered_by_name
   }
+
+  delegate :name, to: :lead_provider, prefix: true
 end
