@@ -440,6 +440,7 @@ RSpec.describe Schedules::Find do
       before { travel_to provider_led_start_date }
 
       context "when the ECT started training in the 2021 contract period" do
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, :with_training_period, teacher:, school:, started_on: Date.new(2021, 7, 1)) }
         let(:contract_period_2021) { FactoryBot.create(:contract_period, :with_schedules, :with_payments_frozen, year: 2021) }
         let(:old_active_lead_provider) { FactoryBot.create(:active_lead_provider, contract_period: contract_period_2021) }
         let!(:old_training_period) do

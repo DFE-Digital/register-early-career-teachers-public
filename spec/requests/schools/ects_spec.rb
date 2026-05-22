@@ -1,5 +1,5 @@
 RSpec.describe "ECT summary" do
-  let(:ect) { FactoryBot.create(:ect_at_school_period, school:) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, school:, started_on: 2.years.ago) }
   let(:school) { FactoryBot.create(:school) }
 
   describe "GET #index" do
@@ -105,6 +105,8 @@ RSpec.describe "ECT summary" do
 
       context "when accessing future ECT period at current school" do
         let(:teacher) { ect.teacher }
+        let!(:training_period) { nil }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.year.ago, finished_on: 6.months.from_now) }
         let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school:, started_on: 1.year.from_now) }
 
         before do
@@ -121,6 +123,8 @@ RSpec.describe "ECT summary" do
       context "when accessing future ECT period from different school" do
         let(:other_school) { FactoryBot.create(:school) }
         let(:teacher) { ect.teacher }
+        let!(:training_period) { nil }
+        let(:ect) { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.year.ago, finished_on: 6.months.from_now) }
         let!(:future_period) { FactoryBot.create(:ect_at_school_period, teacher:, school: other_school, started_on: 1.year.from_now) }
 
         before do

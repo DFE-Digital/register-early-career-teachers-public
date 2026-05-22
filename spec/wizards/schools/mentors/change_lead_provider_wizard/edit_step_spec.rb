@@ -15,7 +15,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::EditStep, type: :model do
   let(:school) { FactoryBot.create(:school) }
   let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
   let(:lead_provider) { FactoryBot.create(:lead_provider) }
-  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_school_partnership, mentor_at_school_period:, started_on: Time.zone.today) }
+  let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_school_partnership, mentor_at_school_period:, started_on: mentor_at_school_period.started_on) }
 
   let(:params) { { lead_provider_id: lead_provider.id } }
 

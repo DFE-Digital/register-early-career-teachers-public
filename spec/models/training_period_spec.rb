@@ -52,7 +52,7 @@ describe TrainingPeriod do
   end
 
   describe "declarative touch" do
-    let(:instance) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
+    let(:instance) { FactoryBot.create(:training_period, :for_ect) }
 
     context "target teacher" do
       let(:target) { instance.teacher }
@@ -355,6 +355,36 @@ describe TrainingPeriod do
       end
     end
 
+    describe "enveloped by trainee at school period" do
+      let(:envelope_error) { "Date range is not contained by the period the trainee is at the school" }
+
+      context "ongoing training period inside an ongoing at school period" do
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: 1.year.ago) }
+
+        it "is valid when the training period starts on or after the at school period" do
+          training_period = FactoryBot.build(:training_period, :ongoing, :for_ect, ect_at_school_period:, started_on: 6.months.ago)
+          training_period.valid?
+          expect(training_period.errors[:base]).not_to include(envelope_error)
+        end
+
+        it "is invalid when the training period starts before the at school period" do
+          training_period = FactoryBot.build(:training_period, :ongoing, :for_ect, ect_at_school_period:, started_on: 2.years.ago)
+          training_period.valid?
+          expect(training_period.errors[:base]).to include(envelope_error)
+        end
+      end
+
+      context "ongoing training period inside a finished at school period" do
+        let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: 1.year.ago, finished_on: 1.month.ago) }
+
+        it "is invalid because the training period extends past the at school period" do
+          training_period = FactoryBot.build(:training_period, :for_ect, ect_at_school_period:, started_on: 6.months.ago, finished_on: nil)
+          training_period.valid?
+          expect(training_period.errors[:base]).to include(envelope_error)
+        end
+      end
+    end
+
     describe "concurrent ongoing periods" do
       subject(:save_concurrent_ongoing_period!) do
         concurrent_ongoing_period.save!
@@ -406,11 +436,11 @@ describe TrainingPeriod do
         let(:concurrent_ongoing_period) do
           FactoryBot.build(
             :training_period,
-            :ongoing,
             :for_ect,
             :provider_led,
             ect_at_school_period:,
-            started_on: ect_at_school_period.finished_on
+            started_on: ect_at_school_period.finished_on,
+            finished_on: nil
           )
         end
 
