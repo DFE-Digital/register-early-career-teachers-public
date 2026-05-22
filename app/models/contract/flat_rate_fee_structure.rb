@@ -2,7 +2,7 @@ class Contract::FlatRateFeeStructure < ApplicationRecord
   self.table_name = :contract_flat_rate_fee_structures
 
   # Associations
-  has_one :contract, inverse_of: :flat_rate_fee_structure
+  belongs_to :contract
 
   # Validations
   validates :recruitment_target,
