@@ -21,22 +21,24 @@
 #
 #     **bold** and _italic_ text
 
-- title: Updated the induction_tutor_email attribute on the GET partnerships and GET schools endpoints
+- title: Update to the induction_tutor_email attribute on GET partnerships and GET schools endpoints
   date: 2026-05-26
   tags:
     - sandbox-release
     - production-release
   body: |
-    We’ve updated the `induction_tutor_email` attribute on the GET partnerships endpoint and GET schools endpoint so that it is populated more consistently.
+    We’ve updated the `induction_tutor_email` attribute on the GET partnerships endpoint and GET schools endpoint so that it’s populated more consistently.
 
     ## What’s changed
 
     Where no induction tutor email address is available from register early career teachers (RECT) records, `induction_tutor_email` will now be populated with the school’s main email address held in GIAS.
+    
     Previously, this field could be empty if no induction tutor was recorded.
 
     ## Why we've made this change
 
     Although schools with provider partnerships or expressions of interest are expected to have an induction tutor, there are rare situations where this is not recorded. 
+    
     This change ensures that providers still have a contact email for the school. This will help to reduce the need for manual follow-up and improving continuity of communication.
     
     ## Who this applies to
@@ -47,7 +49,7 @@
 
     No action is required. However, you should:
 
-    - be aware that the induction_tutor_email might contain a general school email address
+    - be aware that the `induction_tutor_email` might contain a general school email address
     - consider how you handle this in your systems if you distinguish between personal and generic contact emails
 
 
