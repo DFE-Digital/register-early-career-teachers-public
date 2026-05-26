@@ -20,7 +20,7 @@ describe Contract do
   end
 
   describe "validations" do
-    subject { FactoryBot.create(:contract) }
+    subject { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
     it { is_expected.to validate_presence_of(:contract_type).with_message("Enter a contract type") }
     it { is_expected.to validate_inclusion_of(:contract_type).in_array(Contract.contract_types.keys).with_message("Choose a valid contract type") }
@@ -28,7 +28,7 @@ describe Contract do
     it { is_expected.to validate_numericality_of(:vat_rate).is_in(0..1).with_message("VAT rate must be between 0 and 1") }
 
     context "when active_lead_provider is nil" do
-      subject(:contract) { FactoryBot.build(:contract, active_lead_provider: nil) }
+      subject(:contract) { FactoryBot.build(:contract, :for_ittecf_ectp, active_lead_provider: nil) }
 
       it "is not valid" do
         expect(contract).not_to be_valid
@@ -50,7 +50,11 @@ describe Contract do
 
       it { is_expected.to validate_presence_of(:ecf_contract_version).with_message("ECF contract version must be provided for ECF contracts") }
       it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ECF contracts") }
-      it { is_expected.to validate_absence_of(:flat_rate_fee_structure).with_message("Flat rate fee structure must be blank for ECF contracts") }
+      it "validates the flat_rate_fee_structure is not present" do
+        subject.flat_rate_fee_structure = FactoryBot.build(:contract_flat_rate_fee_structure)
+        expect(subject).not_to be_valid
+        expect(subject.errors[:flat_rate_fee_structure]).to include("Flat rate fee structure must be blank for ECF contracts")
+      end
 
       it "allows multiple ECF contracts to have a NULL flat_rate_fee_structure" do
         FactoryBot.create(:contract, :for_ecf, flat_rate_fee_structure: nil)
@@ -66,6 +70,7 @@ describe Contract do
       let(:contract) do
         FactoryBot.build(
           :contract,
+          :for_ittecf_ectp,
           active_lead_provider:,
           banded_fee_structure: FactoryBot.create(:contract_banded_fee_structure)
         )
@@ -79,7 +84,7 @@ describe Contract do
 
     context "when updating an existing contract" do
       let(:other_active_lead_provider) { FactoryBot.create(:active_lead_provider) }
-      let(:contract) { FactoryBot.create(:contract, active_lead_provider:) }
+      let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:) }
 
       it "raises an error" do
         expect { contract.update!(active_lead_provider: other_active_lead_provider) }
@@ -94,7 +99,7 @@ describe Contract do
 
     let(:lead_provider) { FactoryBot.create(:lead_provider, vat_registered:) }
     let(:active_lead_provider) { FactoryBot.create(:active_lead_provider, lead_provider:) }
-    let(:contract) { FactoryBot.create(:contract, active_lead_provider:, vat_rate: 0.2) }
+    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, vat_rate: 0.2) }
 
     context "when the lead provider is VAT registered" do
       let(:vat_registered) { true }

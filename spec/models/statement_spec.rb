@@ -27,7 +27,7 @@ describe Statement do
 
     describe "uniqueness of month and year for the same active lead provider" do
       let(:active_lead_provider) { contract.active_lead_provider }
-      let(:contract) { FactoryBot.create(:contract) }
+      let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
       before { FactoryBot.create(:statement, active_lead_provider:, month: 5, year: 2024) }
 
@@ -39,7 +39,7 @@ describe Statement do
 
       it "is valid to create another statement with the same month and year for a different active lead provider" do
         other_active_lead_provider = FactoryBot.create(:active_lead_provider)
-        other_contract = FactoryBot.create(:contract, active_lead_provider: other_active_lead_provider)
+        other_contract = FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider: other_active_lead_provider)
         statement = described_class.new(contract: other_contract, month: 5, year: 2024, deadline_date: Date.new(2024, 5, 1).prev_day)
 
         expect(statement).to be_valid
