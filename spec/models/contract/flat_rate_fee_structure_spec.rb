@@ -13,6 +13,7 @@ describe Contract::FlatRateFeeStructure do
 
     context "uniqueness" do
       subject(:flat_rate_fee_structure) { FactoryBot.create(:contract_flat_rate_fee_structure) }
+
       let!(:existing_contract_1) { FactoryBot.create(:contract, :for_ittecf_ectp, flat_rate_fee_structure:) }
       let!(:existing_contract_2) { FactoryBot.create(:contract, :for_ittecf_ectp) }
 
