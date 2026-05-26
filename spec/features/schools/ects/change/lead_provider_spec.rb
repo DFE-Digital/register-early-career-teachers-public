@@ -52,6 +52,24 @@ describe "School user can change ECT's lead provider" do
     then_i_see_the_confirmation_message
   end
 
+  context "when no lead provider is selected" do
+    it "re-renders the form with an error prefix in the page title" do
+      given_there_is_a_school
+      and_there_is_an_ect(started_on: 1.week.ago)
+      and_there_is_a_contract_period
+      and_there_is_an_active_lead_provider
+      with_provider_led_training
+      and_there_is_another_active_lead_provider
+      and_i_am_logged_in_as_a_school_user
+
+      when_i_visit_the_ect_page
+      then_i_can_change_the_assigned_lead_provider
+
+      when_i_continue_without_selecting_a_lead_provider
+      then_the_page_title_has_an_error_prefix
+    end
+  end
+
 private
 
   def given_there_is_a_school
@@ -204,5 +222,13 @@ private
     expect(success_panel).to have_text(
       "You’ve chosen #{@selected_lead_provider_name} as the new lead provider for John Doe"
     )
+  end
+
+  def when_i_continue_without_selecting_a_lead_provider
+    page.get_by_role("button", name: "Continue").click
+  end
+
+  def then_the_page_title_has_an_error_prefix
+    expect(page.title).to start_with("Error:")
   end
 end
