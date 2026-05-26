@@ -11,8 +11,8 @@ class Contract < ApplicationRecord
   belongs_to :active_lead_provider
   has_one :contract_period, through: :active_lead_provider
   has_one :lead_provider, through: :active_lead_provider
-  has_one :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", inverse_of: :contract
-  has_one :banded_fee_structure, class_name: "Contract::BandedFeeStructure", inverse_of: :contract
+  has_one :flat_rate_fee_structure, class_name: "Contract::FlatRateFeeStructure", inverse_of: :contract, dependent: :destroy
+  has_one :banded_fee_structure, class_name: "Contract::BandedFeeStructure", inverse_of: :contract, dependent: :destroy
   has_many :statements, inverse_of: :contract
 
   # Validations
