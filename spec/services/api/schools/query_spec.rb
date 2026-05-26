@@ -169,7 +169,7 @@ RSpec.describe API::Schools::Query, :with_metadata do
         let!(:school1) { FactoryBot.create(:school, :eligible) }
         let!(:school2) { FactoryBot.create(:school, :eligible) }
 
-        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_ect) }
+        let!(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_ect, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
         let!(:school3) { training_period.school_partnership.school }
 
         let(:updated_since) { 1.day.ago }

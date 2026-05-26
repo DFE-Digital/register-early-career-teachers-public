@@ -30,7 +30,7 @@ RSpec.describe School do
 
     context "target ect_teachers" do
       let(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
-      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school: instance) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: instance) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period:) }
 
       let(:target) { instance.ect_teachers }
@@ -40,7 +40,7 @@ RSpec.describe School do
 
     context "target mentor_teachers" do
       let!(:school_partnership) { FactoryBot.create(:school_partnership, school: instance) }
-      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school: instance) }
+      let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school: instance) }
       let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:) }
 
       let(:target) { instance.mentor_teachers }
@@ -442,7 +442,7 @@ RSpec.describe School do
         end
 
         context "and has an ongoing ect training period" do
-          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
           before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
@@ -450,7 +450,7 @@ RSpec.describe School do
         end
 
         context "and has an ongoing mentor training period" do
-          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
 
           before { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
 
@@ -467,7 +467,7 @@ RSpec.describe School do
 
         context "and training is at another school" do
           let(:other_school) { FactoryBot.create(:school, :state_funded) }
-          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school: other_school) }
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school: other_school) }
 
           before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
@@ -477,7 +477,7 @@ RSpec.describe School do
 
       context "and section 41 is approved" do
         let(:school) { FactoryBot.create(:school, :independent, :section_41) }
-        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+        let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
         before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
@@ -487,7 +487,7 @@ RSpec.describe School do
 
     context "when the school is state-funded" do
       let(:school) { FactoryBot.create(:school, :state_funded) }
-      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+      let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
       before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
@@ -508,7 +508,7 @@ RSpec.describe School do
         end
 
         context "with an ongoing ect training period" do
-          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+          let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
 
           before { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
@@ -516,7 +516,7 @@ RSpec.describe School do
         end
 
         context "with an ongoing mentor training period" do
-          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+          let!(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
 
           before { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period:) }
 

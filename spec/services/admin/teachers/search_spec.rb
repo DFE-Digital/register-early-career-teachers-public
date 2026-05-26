@@ -133,7 +133,7 @@ RSpec.describe Admin::Teachers::Search do
       let!(:non_matching_teacher) { FactoryBot.create(:teacher, trs_first_name: "Sasuke", trs_last_name: "Uchiha") }
       let!(:matching_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: matching_teacher, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 7, 31)) }
       let!(:non_matching_old_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: non_matching_teacher, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 7, 31)) }
-      let!(:non_matching_latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher: non_matching_teacher, started_on: Date.new(2025, 1, 1)) }
+      let!(:non_matching_latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher: non_matching_teacher, started_on: Date.new(2025, 1, 1)) }
 
       before do
         contract_period_2024 = FactoryBot.create(:contract_period, year: 2024)
@@ -199,7 +199,7 @@ RSpec.describe Admin::Teachers::Search do
       let!(:non_matching_teacher) { FactoryBot.create(:teacher, trs_first_name: "Might", trs_last_name: "Guy") }
       let!(:matching_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: matching_teacher, started_on: Date.new(2025, 1, 1), finished_on: Date.new(2025, 7, 31)) }
       let!(:non_matching_old_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: non_matching_teacher, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 7, 31)) }
-      let!(:non_matching_latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher: non_matching_teacher, started_on: Date.new(2025, 1, 1)) }
+      let!(:non_matching_latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher: non_matching_teacher, started_on: Date.new(2025, 1, 1)) }
 
       before do
         contract_period_2024 = FactoryBot.create(:contract_period, year: 2024)

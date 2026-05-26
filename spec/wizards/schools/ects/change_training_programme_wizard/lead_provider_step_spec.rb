@@ -98,7 +98,7 @@ describe Schools::ECTs::ChangeTrainingProgrammeWizard::LeadProviderStep do
   end
 
   describe "#lead_providers_for_select" do
-    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:, started_on:) }
+    let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on:) }
     let!(:active_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year:) }
     let!(:other_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year:) }
     let!(:future_lead_provider) { FactoryBot.create(:active_lead_provider, :for_year, year: year + 1) }

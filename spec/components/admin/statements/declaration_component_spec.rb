@@ -12,9 +12,9 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   let(:statement_trait) { :output_fee }
   let(:statement) { FactoryBot.create(:statement, :payable, statement_trait, active_lead_provider:, contract:) }
 
-  let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :with_active_lead_provider, active_lead_provider:) }
+  let(:ect_training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, :with_active_lead_provider, active_lead_provider:, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
   let!(:ect_declaration) { FactoryBot.create(:declaration, :voided, training_period: ect_training_period, payment_statement: statement) }
-  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_active_lead_provider, active_lead_provider:) }
+  let(:mentor_training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, :with_active_lead_provider, active_lead_provider:, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)) }
   let!(:mentor_declaration) { FactoryBot.create(:declaration, :voided, training_period: mentor_training_period, payment_statement: statement) }
 
   let(:started_flatrate) do
