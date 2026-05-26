@@ -116,7 +116,7 @@ RSpec.describe Admin::Statements::DeclarationComponent, type: :component do
   end
 
   context "when no calculators are returned" do
-    let(:contract) { FactoryBot.create(:contract, active_lead_provider:, contract_period:) }
+    let(:contract) { FactoryBot.create(:contract, :for_ittecf_ectp, active_lead_provider:, contract_period:) }
     let(:resolver) { instance_double(PaymentCalculator::Resolver, calculators: []) }
 
     before do
