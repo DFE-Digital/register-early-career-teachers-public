@@ -2,8 +2,6 @@ FactoryBot.define do
   factory(:contract) do
     association :active_lead_provider
 
-    # for_ittecf_ectp
-
     trait(:for_ecf) do
       contract_type { "ecf" }
       ecf_contract_version { "1" }
