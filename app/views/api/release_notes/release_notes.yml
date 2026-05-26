@@ -39,7 +39,7 @@
     Although schools with provider partnerships or expressions of interest are expected to have an induction tutor, there are rare situations where this is not recorded. 
     This change ensures that providers still have a contact email for the school. This will help to reduce the need for manual follow-up and improving continuity of communication.
     
-    ## Who this change affects
+    ## Who this applies to
 
     This change affects API consumers using the GET partnerships endpoint or GET schools endpoint, particularly training providers who rely on induction tutor contact details.
 
