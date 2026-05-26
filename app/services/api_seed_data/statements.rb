@@ -42,7 +42,7 @@ module APISeedData
               year:,
               deadline_date:,
               payment_date:,
-              status: status(payment_date),
+              status: status(payment_date, deadline_date),
               fee_type: statement_fee_type,
             }
 
@@ -96,10 +96,11 @@ module APISeedData
       Date.new(year, month, 25)
     end
 
-    def status(payment_date)
-      if payment_date.past?
+    def status(payment_date, deadline_date)
+      # Skip a few months to ensure we always get a few payable statements.
+      if (payment_date + 2.months).past?
         :paid
-      elsif payment_date.prev_month.past? # create 1 payable (otherwise if today is 26th - 31st we dont create payable)
+      elsif deadline_date.past?
         :payable
       else
         :open
