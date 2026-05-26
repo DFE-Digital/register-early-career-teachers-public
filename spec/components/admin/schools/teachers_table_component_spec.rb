@@ -29,7 +29,7 @@ RSpec.describe Admin::Schools::TeachersTableComponent, type: :component do
     end
 
     let!(:ect_and_mentor) do
-      ect_at_school_period = FactoryBot.create(:ect_at_school_period, school:, started_on: Date.new(2024, 7, 1))
+      ect_at_school_period = FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: Date.new(2024, 7, 1))
       school_partnership = FactoryBot.create(:school_partnership, :for_year, school:, year: 2024)
       FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, school_partnership:)
 

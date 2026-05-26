@@ -1,5 +1,5 @@
 RSpec.describe "ECT summary" do
-  let(:ect) { FactoryBot.create(:ect_at_school_period, school:, started_on: 2.years.ago) }
+  let(:ect) { FactoryBot.create(:ect_at_school_period, :ongoing, school:, started_on: 2.years.ago) }
   let(:school) { FactoryBot.create(:school) }
 
   describe "GET #index" do

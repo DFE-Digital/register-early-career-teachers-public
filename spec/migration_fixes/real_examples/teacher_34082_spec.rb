@@ -51,16 +51,16 @@ describe "Real data check for teacher 34082" do
         attributes: {}
       },
       {
-        object_type: "TrainingPeriod",
-        object_id: 136_520,
+        object_type: "ECTAtSchoolPeriod",
+        object_id: 10_404,
         action: "update",
         attributes: {
           finished_on: nil,
         }
       },
       {
-        object_type: "ECTAtSchoolPeriod",
-        object_id: 10_404,
+        object_type: "TrainingPeriod",
+        object_id: 136_520,
         action: "update",
         attributes: {
           finished_on: nil,

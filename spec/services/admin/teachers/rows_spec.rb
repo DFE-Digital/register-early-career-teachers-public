@@ -104,7 +104,7 @@ RSpec.describe Admin::Teachers::Rows do
     context "when a teacher has a later ect role period" do
       let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Naruto", trs_last_name: "Uzumaki") }
       let!(:older_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 7, 31)) }
-      let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, teacher:, started_on: Date.new(2025, 1, 1)) }
+      let!(:latest_ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
 
       before do
         contract_period_2024 = FactoryBot.create(:contract_period, year: 2024)
@@ -152,7 +152,7 @@ RSpec.describe Admin::Teachers::Rows do
     context "when a teacher has a later mentor role period" do
       let!(:teacher) { FactoryBot.create(:teacher, trs_first_name: "Kakashi", trs_last_name: "Hatake") }
       let!(:older_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2024, 1, 1), finished_on: Date.new(2024, 7, 31)) }
-      let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, teacher:, started_on: Date.new(2025, 1, 1)) }
+      let!(:latest_mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, teacher:, started_on: Date.new(2025, 1, 1)) }
 
       before do
         contract_period_2024 = FactoryBot.create(:contract_period, year: 2024)

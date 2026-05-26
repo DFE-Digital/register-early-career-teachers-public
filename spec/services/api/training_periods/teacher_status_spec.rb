@@ -13,7 +13,8 @@ RSpec.describe API::TrainingPeriods::TeacherStatus do
     end
 
     context "when training period has started and not finished" do
-      let(:training_period) { FactoryBot.create(:training_period, :ongoing) }
+      let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing) }
+      let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
       it { is_expected.to eq(:active) }
       it { expect(service).to be_active }

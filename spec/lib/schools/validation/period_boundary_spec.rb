@@ -520,13 +520,13 @@ RSpec.describe Schools::Validation::PeriodBoundary do
   end
 
   context "when validating an ECT at school period" do
-    let(:input_period) { FactoryBot.create(:ect_at_school_period, started_on: input_period_started_on) }
+    let(:input_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: input_period_started_on) }
 
     it_behaves_like "period boundary validations"
   end
 
   context "when validating a mentor at school period" do
-    let(:input_period) { FactoryBot.create(:mentor_at_school_period, started_on: input_period_started_on) }
+    let(:input_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, started_on: input_period_started_on) }
 
     it_behaves_like "period boundary validations"
   end

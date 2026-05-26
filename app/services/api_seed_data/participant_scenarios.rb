@@ -76,6 +76,7 @@ module APISeedData
 
             school_period = FactoryBot.create(
               :"#{type}_at_school_period",
+              :ongoing,
               school:,
               started_on: start_date
             )
@@ -132,6 +133,7 @@ module APISeedData
 
             school_period = FactoryBot.create(
               :"#{type}_at_school_period",
+              :ongoing,
               school:,
               started_on: start_date
             )
@@ -450,13 +452,12 @@ module APISeedData
 
               school = school_partnership.school
               start_date = Time.zone.today + rand(1..6).months
-              finished_date = start_date + rand(6..12).months
 
               school_period = FactoryBot.create(
                 :"#{type}_at_school_period",
+                :ongoing,
                 school:,
-                started_on: start_date,
-                finished_on: finished_date
+                started_on: start_date
               )
 
               schedule = find_schedule(contract_period, type)

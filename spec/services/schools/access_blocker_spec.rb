@@ -44,7 +44,7 @@ RSpec.describe Schools::AccessBlocker do
       let(:school_urn) { school.urn }
 
       before do
-        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, school:))
+        FactoryBot.create(:training_period, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing, school:))
       end
 
       it "does not block access" do

@@ -87,7 +87,7 @@ RSpec.describe Schools::SummaryCardComponent, type: :component do
 
   context "when data is reported by the appropriate body" do
     let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school_reported_appropriate_body:) }
-    let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led) }
+    let(:training_period) { FactoryBot.create(:training_period, :ongoing, :school_led, ect_at_school_period:) }
 
     before do
       FactoryBot.create(:induction_period, teacher: ect_at_school_period.teacher, started_on: "2023-01-01")

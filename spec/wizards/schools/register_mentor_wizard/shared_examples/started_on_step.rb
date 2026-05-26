@@ -144,7 +144,7 @@ RSpec.shared_examples "a started on step" do |current_step:|
       end
 
       context "when the date clashes with the latest training period" do
-        let(:training_period) { FactoryBot.create(:training_period, :ongoing, :for_mentor, mentor_at_school_period: previous_period, started_on: Date.new(2024, 12, 31)) }
+        let(:training_period) { FactoryBot.create(:training_period, :for_mentor, mentor_at_school_period: previous_period, started_on: Date.new(2024, 12, 31), finished_on: Date.new(2025, 3, 31)) }
 
         let(:previous_period) do
           FactoryBot.create(:mentor_at_school_period,
