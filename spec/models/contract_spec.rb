@@ -50,6 +50,7 @@ describe Contract do
 
       it { is_expected.to validate_presence_of(:ecf_contract_version).with_message("ECF contract version must be provided for ECF contracts") }
       it { is_expected.to validate_presence_of(:banded_fee_structure).with_message("Banded fee structure must be provided for ECF contracts") }
+
       it "validates the flat_rate_fee_structure is not present" do
         subject.flat_rate_fee_structure = FactoryBot.build(:contract_flat_rate_fee_structure)
         expect(subject).not_to be_valid
