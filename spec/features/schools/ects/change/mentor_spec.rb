@@ -139,6 +139,20 @@ describe "School user can change early career teachers mentor" do
     end
   end
 
+  context "when no mentor is selected" do
+    it "re-renders the form with an error prefix in the page title" do
+      and_the_mentee_is_on_school_led_training
+      and_the_mentee_has_an_assigned_mentor
+      and_there_is_another_registered_mentor
+
+      when_i_visit_the_early_career_teacher_show_page
+      then_i_can_change_the_assigned_mentor
+
+      when_i_continue_without_selecting_a_mentor
+      then_the_page_title_has_an_error_prefix
+    end
+  end
+
 private
 
   def given_there_is_a_school
@@ -334,5 +348,13 @@ private
   def then_i_am_taken_back_to_the_early_career_teacher_show_page
     heading = page.locator("h1")
     expect(heading).to have_text("John Doe")
+  end
+
+  def when_i_continue_without_selecting_a_mentor
+    page.get_by_role("button", name: "Continue").click
+  end
+
+  def then_the_page_title_has_an_error_prefix
+    expect(page.title).to start_with("Error:")
   end
 end
