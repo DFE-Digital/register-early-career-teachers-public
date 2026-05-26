@@ -34,6 +34,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
         body = rendered.to_html
         newer = body.index("#{current_year} partnerships")
         older = body.index("#{previous_year} partnerships")
+
         expect(newer).not_to be_nil
         expect(older).not_to be_nil
         expect(newer).to be < older
@@ -90,6 +91,8 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
     let!(:ect_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
     let!(:mentor_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
     let!(:finished_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 2.years.ago, finished_on: 1.year.ago) }
+    let!(:finished_mentor_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 2.years.ago, finished_on: 1.year.ago) }
+    let!(:future_ect_period) { FactoryBot.create(:ect_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil) }
     let!(:future_mentor_period) { FactoryBot.create(:mentor_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil) }
 
     let!(:ect_training_period) do
@@ -115,6 +118,20 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
                         school_partnership: partnership_with_teachers)
     end
 
+    let!(:finished_mentor_training_period) do
+      FactoryBot.create(:training_period,
+                        :for_mentor,
+                        mentor_at_school_period: finished_mentor_period,
+                        school_partnership: partnership_with_teachers)
+    end
+
+    let!(:future_ect_training_period) do
+      FactoryBot.create(:training_period,
+                        :for_ect,
+                        ect_at_school_period: future_ect_period,
+                        school_partnership: partnership_with_teachers)
+    end
+
     let!(:future_mentor_training_period) do
       FactoryBot.create(:training_period,
                         :for_mentor,
@@ -122,15 +139,25 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
                         school_partnership: partnership_with_teachers)
     end
 
-    describe "teacher rows" do
-      it "lists linked ECTs with links" do
-        expect(rendered).to have_link(Teachers::Name.new(ect_period.teacher).full_name, href: admin_teacher_path(ect_period.teacher))
+    let(:alpha_partnership_card) do
+      rendered.css(".govuk-summary-card").find do |card|
+        card.text.include?("Alpha Provider and Delta Partner")
       end
+    end
 
-      it "lists linked mentors with links" do
-        expect(rendered).to have_link(Teachers::Name.new(mentor_period.teacher).full_name, href: admin_teacher_path(mentor_period.teacher))
+    let(:ect_row) do
+      alpha_partnership_card.css(".govuk-summary-list__row").find do |row|
+        row.css(".govuk-summary-list__key").text.include?("ECTs")
       end
+    end
 
+    let(:mentor_row) do
+      alpha_partnership_card.css(".govuk-summary-list__row").find do |row|
+        row.css(".govuk-summary-list__key").text.include?("Mentors")
+      end
+    end
+
+    describe "alphabetical ordering" do
       it "lists teachers alphabetically" do
         z_teacher = FactoryBot.create(:teacher, corrected_name: "Z Teacher")
         a_teacher = FactoryBot.create(:teacher, corrected_name: "A Teacher")
@@ -141,7 +168,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
         FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: z_period, school_partnership: partnership_with_teachers)
         FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: a_period, school_partnership: partnership_with_teachers)
 
-        body = rendered.to_html
+        body = mentor_row.to_html
         a_index = body.index("A Teacher")
         z_index = body.index("Z Teacher")
 
@@ -149,21 +176,66 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
         expect(z_index).not_to be_nil
         expect(a_index).to be < z_index
       end
+    end
 
-      it "only shows current ECTs and mentors" do
-        finished_name = Teachers::Name.new(finished_ect_period.teacher).full_name
-        future_name = Teachers::Name.new(future_mentor_period.teacher).full_name
-
-        expect(rendered).not_to have_link(finished_name, href: admin_teacher_path(finished_ect_period.teacher))
-        expect(rendered).not_to have_link(future_name, href: admin_teacher_path(future_mentor_period.teacher))
+    context "with ECTs linked to a partnership" do
+      it "shows ongoing ECTs" do
+        ongoing_name = Teachers::Name.new(ect_period.teacher).full_name
+        expect(ect_row).to have_link(ongoing_name, href: admin_teacher_path(ect_period.teacher))
       end
 
+      it "shows ECTs with a future start date" do
+        future_ect_name = Teachers::Name.new(future_ect_period.teacher).full_name
+        expect(ect_row).to have_link(future_ect_name, href: admin_teacher_path(future_ect_period.teacher))
+      end
+
+      it "does not show finished ECTs" do
+        finished_name = Teachers::Name.new(finished_ect_period.teacher).full_name
+        expect(ect_row).not_to have_link(finished_name, href: admin_teacher_path(finished_ect_period.teacher))
+      end
+
+      it "does not show ECTs whose training period is unconfirmed" do
+        unconfirmed_ect_period = FactoryBot.create(:ect_at_school_period, school:, started_on: 1.month.from_now, finished_on: nil)
+
+        FactoryBot.create(:training_period,
+                          :with_only_expression_of_interest,
+                          :for_ect,
+                          ect_at_school_period: unconfirmed_ect_period)
+
+        unconfirmed_name = Teachers::Name.new(unconfirmed_ect_period.teacher).full_name
+
+        expect(ect_row).not_to have_link(
+          unconfirmed_name,
+          href: admin_teacher_path(unconfirmed_ect_period.teacher)
+        )
+      end
+    end
+
+    context "with mentors linked to a partnership" do
+      it "shows ongoing mentors" do
+        ongoing_name = Teachers::Name.new(mentor_period.teacher).full_name
+        expect(mentor_row).to have_link(ongoing_name, href: admin_teacher_path(mentor_period.teacher))
+      end
+
+      it "shows mentors with a future start date" do
+        future_mentor_name = Teachers::Name.new(future_mentor_period.teacher).full_name
+        expect(mentor_row).to have_link(future_mentor_name, href: admin_teacher_path(future_mentor_period.teacher))
+      end
+
+      it "does not show finished mentors" do
+        finished_name = Teachers::Name.new(finished_mentor_period.teacher).full_name
+        expect(mentor_row).not_to have_link(finished_name, href: admin_teacher_path(finished_mentor_period.teacher))
+      end
+    end
+
+    describe "fallback when no teachers are linked" do
       it "shows fallbacks when no teachers are linked" do
-        partnership_card = rendered.css(".govuk-summary-card").find do |card|
+        beta_partnership_card = rendered.css(".govuk-summary-card").find do |card|
           card.text.include?("Beta Provider and Gamma Partner")
         end
-        expect(partnership_card).to have_css(".govuk-summary-list__row", text: /ECTs.*None assigned/)
-        expect(partnership_card).to have_css(".govuk-summary-list__row", text: /Mentors.*None assigned/)
+
+        expect(beta_partnership_card).to have_css(".govuk-summary-list__row", text: /ECTs.*None assigned/)
+        expect(beta_partnership_card).to have_css(".govuk-summary-list__row", text: /Mentors.*None assigned/)
       end
     end
   end
