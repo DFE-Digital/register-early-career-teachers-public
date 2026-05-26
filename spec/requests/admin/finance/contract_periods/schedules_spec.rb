@@ -1,7 +1,16 @@
-RSpec.describe "Admin finance schedules", :enable_finance_contract_periods do
+RSpec.describe "Admin finance schedules", type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period) }
 
-  describe "GET /admin/finance/contract-periods/:id/schedules" do
+  context "when disabled" do
+    include_context "sign in as finance DfE user"
+
+    it "returns 404 not found" do
+      get "/admin/finance/contract-periods/#{contract_period.id}/schedules"
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "GET /admin/finance/contract-periods/:id/schedules", :enable_finance_contract_periods do
     context "when not authenticated" do
       it "redirects to sign in page" do
         get "/admin/finance/contract-periods/#{contract_period.id}/schedules"
