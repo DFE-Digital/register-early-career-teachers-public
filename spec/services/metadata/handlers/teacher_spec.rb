@@ -287,15 +287,6 @@ RSpec.describe Metadata::Handlers::Teacher do
             school_partnership: school_partnership1
           )
         end
-        let!(:latest_mentorship_period) do
-          FactoryBot.create(
-            :mentorship_period,
-            mentee: ect_at_school_period,
-            mentor: mentor_at_school_period,
-            started_on: ect_training_period1.started_on + 1.month,
-            finished_on: nil
-          )
-        end
 
         before do
           # Previous mentorship period.
@@ -303,8 +294,8 @@ RSpec.describe Metadata::Handlers::Teacher do
             :mentorship_period,
             mentee: ect_at_school_period,
             mentor: mentor_at_school_period,
-            started_on: latest_mentorship_period.started_on - 1.month,
-            finished_on: latest_mentorship_period.started_on
+            started_on: ect_at_school_period.started_on + 1.month,
+            finished_on: ect_at_school_period.started_on + 2.months
           )
 
           # Previous ECT training period.
@@ -318,15 +309,42 @@ RSpec.describe Metadata::Handlers::Teacher do
           )
         end
 
-        it "creates metadata with the correct/latest ect_assigned_mentor_latest_school_period" do
-          refresh_metadata
+        context "when there is a mentorship period starting in the future" do
+          let!(:future_mentorship_period) do
+            FactoryBot.create(
+              :mentorship_period,
+              mentee: ect_at_school_period,
+              mentor: mentor_at_school_period,
+              started_on: 1.month.from_now,
+              finished_on: nil
+            )
+          end
 
-          metadata = Metadata::TeacherLeadProvider.where(teacher: teacher1, lead_provider: lead_provider1).sole
-          expect(metadata).to have_attributes(
-            teacher: teacher1,
-            lead_provider: lead_provider1,
-            ect_assigned_mentor_latest_school_period: latest_mentorship_period.mentor
-          )
+          it "assigns the mentor from the future mentorship period to ect_assigned_mentor_latest_school_period" do
+            refresh_metadata
+
+            metadata = Metadata::TeacherLeadProvider.find_by!(teacher: teacher1, lead_provider: lead_provider1)
+            expect(metadata.ect_assigned_mentor_latest_school_period).to eq(future_mentorship_period.mentor)
+          end
+
+          context "when there is also an ongoing mentorship period" do
+            let!(:ongoing_mentorship_period) do
+              FactoryBot.create(
+                :mentorship_period,
+                mentee: ect_at_school_period,
+                mentor: mentor_at_school_period,
+                started_on: 1.month.ago,
+                finished_on: future_mentorship_period.started_on.prev_day
+              )
+            end
+
+            it "assigns the mentor from the ongoing mentorship period to ect_assigned_mentor_latest_school_period" do
+              refresh_metadata
+
+              metadata = Metadata::TeacherLeadProvider.find_by!(teacher: teacher1, lead_provider: lead_provider1)
+              expect(metadata.ect_assigned_mentor_latest_school_period).to eq(ongoing_mentorship_period.mentor)
+            end
+          end
         end
       end
 
