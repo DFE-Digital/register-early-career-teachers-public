@@ -107,14 +107,21 @@ FactoryBot.define do
         active_lead_provider { nil }
         started_on { declaration_date }
         declaration_type { "started" }
+        payment_status { "no_payment" }
+        payment_statement { nil }
+        clawback_status { "no_clawback" }
+        clawback_statement { nil }
       end
 
       after(:build) do |declaration, evaluator|
-        school_partnership = evaluator.school_partnership
+        school_partnership = evaluator.school_partnership || create(:school_partnership)
         declaration.declaration_type = evaluator.declaration_type
+        payment_status = evaluator.payment_status
+        clawback_status = evaluator.clawback_status
 
         teacher = create(:teacher)
         school = school_partnership.school
+        active_lead_provider = school_partnership.active_lead_provider
 
         ect_at_school_period =
           create(
@@ -141,6 +148,22 @@ FactoryBot.define do
         declaration.training_period = training_period
         milestone = training_period.schedule.milestones.find { |m| m.declaration_type == declaration.declaration_type }
         declaration.declaration_date = milestone.start_date + 1.day
+        declaration.payment_status = payment_status
+        declaration.clawback_status = clawback_status
+
+        if Declaration::BILLABLE_PAYMENT_STATUSES.include?(payment_status) && !evaluator.payment_statement
+          statement_trait = payment_status == "eligible" ? :open : payment_status.to_sym
+          declaration.payment_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+        else
+          declaration.payment_statement = evaluator.payment_statement
+        end
+
+        if Declaration::REFUNDABLE_CLAWBACK_STATUSES.include?(clawback_status) && !evaluator.clawback_statement
+          statement_trait = clawback_status == "awaiting_clawback" ? :payable : :paid
+          declaration.clawback_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+        else
+          declaration.clawback_statement = evaluator.clawback_statement
+        end
       end
     end
 
@@ -151,14 +174,22 @@ FactoryBot.define do
         active_lead_provider { nil }
         started_on { declaration_date }
         declaration_type { "started" }
+        payment_status { "no_payment" }
+        payment_statement { nil }
+        clawback_status { "no_clawback" }
+        clawback_statement { nil }
       end
 
       after(:build) do |declaration, evaluator|
         school_partnership = evaluator.school_partnership
         declaration.declaration_type = evaluator.declaration_type
+        evaluator.payment_status
+        payment_status = evaluator.payment_status
+        clawback_status = evaluator.clawback_status
 
         teacher = create(:teacher)
         school = school_partnership.school
+        active_lead_provider = school_partnership.active_lead_provider
 
         mentor_at_school_period = create(
           :mentor_at_school_period,
@@ -184,6 +215,22 @@ FactoryBot.define do
         declaration.training_period = training_period
         milestone = training_period.schedule.milestones.find { |m| m.declaration_type == declaration.declaration_type }
         declaration.declaration_date = milestone.start_date + 1.day
+        declaration.payment_status = payment_status
+        declaration.clawback_status = clawback_status
+
+        if Declaration::BILLABLE_PAYMENT_STATUSES.include?(payment_status) && !evaluator.payment_statement
+          statement_trait = payment_status == "eligible" ? :open : payment_status.to_sym
+          declaration.payment_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+        else
+          declaration.payment_statement = evaluator.payment_statement
+        end
+
+        if Declaration::REFUNDABLE_CLAWBACK_STATUSES.include?(clawback_status) && !evaluator.clawback_statement
+          statement_trait = clawback_status == "awaiting_clawback" ? :payable : :paid
+          declaration.clawback_statement = FactoryBot.create(:statement, statement_trait, active_lead_provider:)
+        else
+          declaration.clawback_statement = evaluator.clawback_statement
+        end
       end
     end
   end

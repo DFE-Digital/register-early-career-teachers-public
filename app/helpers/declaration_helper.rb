@@ -21,10 +21,12 @@ module DeclarationHelper
 
   DECLARATION_EVENT_STATE_NAMES = {
     "teacher_declaration_created" => "Submitted",
+    "teacher_declaration_eligible" => "Eligible",
+    "teacher_declaration_payable" => "Payable",
+    "teacher_declaration_paid" => "Paid",
     "teacher_declaration_voided" => "Voided",
     "teacher_declaration_awaiting_clawback" => "Awaiting clawback",
-    "teacher_declaration_payable" => "Payable",
-    "teacher_declaration_eligible" => "Eligible",
+    "teacher_declaration_clawed_back" => "Clawed back",
   }.freeze
 
   def declaration_state_tag(declaration)
