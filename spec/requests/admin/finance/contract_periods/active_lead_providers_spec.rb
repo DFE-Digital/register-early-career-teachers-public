@@ -1,4 +1,4 @@
-RSpec.describe "Admin active lead providers", type: :request do
+RSpec.describe "Admin active lead providers", :enable_finance_contract_periods, type: :request do
   let(:contract_period) { FactoryBot.create(:contract_period, :next) }
   let(:index_path) { admin_contract_period_active_lead_providers_path(contract_period) }
   let(:started_error) { "Active lead providers cannot be changed once the contract period has started" }
@@ -14,7 +14,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
       it "requires authorisation" do
         get index_path
-        expect(response.status).to eq(401)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
@@ -23,7 +23,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
       it "displays the active lead providers index page" do
         get index_path
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:success)
       end
     end
   end
@@ -41,7 +41,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
       it "requires authorisation" do
         get new_path
-        expect(response.status).to eq(401)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
       it "displays the new active lead provider page" do
         get new_path
-        expect(response.status).to eq(200)
+        expect(response).to have_http_status(:success)
       end
 
       context "when the contract period has started" do
@@ -79,7 +79,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
       it "requires authorisation" do
         post(index_path, params:)
-        expect(response.status).to eq(401)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
@@ -115,8 +115,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
         it "does not create an active lead provider and re-renders new" do
           expect { post index_path, params: }.not_to(change(ActiveLeadProvider, :count))
-
-          expect(response.status).to eq(422)
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
 
@@ -125,8 +124,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
         it "does not create a duplicate and re-renders new" do
           expect { post index_path, params: }.not_to(change(ActiveLeadProvider, :count))
-
-          expect(response.status).to eq(422)
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
 
@@ -157,7 +155,7 @@ RSpec.describe "Admin active lead providers", type: :request do
 
       it "requires authorisation" do
         delete destroy_path
-        expect(response.status).to eq(401)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
