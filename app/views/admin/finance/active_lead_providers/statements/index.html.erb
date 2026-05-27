@@ -1,0 +1,35 @@
+<% page_data(title: "Statements", breadcrumbs: @breadcrumbs) %>
+
+<p class="govuk-body">
+  Statements for <%= @active_lead_provider.lead_provider_name %> in the <%= @active_lead_provider.contract_period_year %> contract period.
+</p>
+
+<% if @statements.none? %>
+  <p class="govuk-body">No statements found</p>
+<% else %>
+  <%=
+    govuk_table(
+      head: ["Month", "Fee type", "Deadline date", "Payment date", "Status"],
+      rows: @statements.map { |statement|
+        status_colour = { "open" => "blue", "payable" => "yellow", "paid" => "green" }.fetch(statement.status)
+        status_text = statement.output_fee? && statement.paid? ? "Authorised for payment" : statement.status.capitalize
+
+        [
+          govuk_link_to(
+            Statements::Period.for(statement),
+            "#",
+            visually_hidden_suffix: "statement for #{@active_lead_provider.lead_provider_name}"
+          ),
+          statement.fee_type.humanize,
+          statement.deadline_date.to_fs(:govuk),
+          statement.payment_date.to_fs(:govuk),
+          govuk_tag(text: status_text, colour: status_colour),
+        ]
+      }
+    )
+  %>
+<% end %>
+
+<%= render Shared::PaginationSummaryComponent.new(pagy: @pagy, record_name: "statements") %>
+
+<%= govuk_button_link_to("Add statement", "#", disabled: @active_lead_provider.contract_period.started_on_or_before_today?) %>
