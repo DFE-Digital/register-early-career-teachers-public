@@ -221,7 +221,7 @@ RSpec.describe "Moving School - backdated start spec" do
   end
 
   def when_i_enter_the_ect_email_address
-    page.get_by_label("What is Kirk Van Houten’s email address?").fill("example@example.com")
+    page.get_by_label("Email address").fill("example@example.com")
   end
 
   def when_i_select_full_time
