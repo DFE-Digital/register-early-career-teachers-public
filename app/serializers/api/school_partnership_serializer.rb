@@ -27,7 +27,7 @@ class API::SchoolPartnershipSerializer < Blueprinter::Base
     end
 
     field :induction_tutor_email do |partnership, _options|
-      partnership.school.induction_tutor_email
+      Schools::InductionTutorEmail.new(school: partnership.school).email_or_gias_contact
     end
 
     field(:participants_currently_training) do |partnership, _options|
