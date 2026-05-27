@@ -11,3 +11,10 @@
     This service will be unavailable from midday on 27 April until 9am on 28 April.
   <% end %>
 <% end %>
+
+<% if Schools::RegistrationWindow.closed? %>
+  <%= govuk_notification_banner(title_text: "Important") do %>
+    <h3 class="govuk-notification-banner__heading">Registration not currently open</h3>
+    <p class="govuk-body">You cannot register ECTs or mentors for the 2025 or 2026 academic years until we open registration on 15 June.</p>
+  <% end %>
+<% end %>
