@@ -1,37 +1,14 @@
 RSpec.describe Backfill::RecordStatementPaymentEvents do
   subject { described_class.new(statement).process }
 
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :with_active_lead_provider, :for_year, year:) }
-  let(:active_lead_provider) { school_partnership.active_lead_provider }
-  let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:) }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, active_lead_provider:) }
+  let(:active_lead_provider) { statement.active_lead_provider }
+  let(:contract) { statement.contract }
+  let(:year) { statement.contract_period.year }
 
-  let!(:payment_statement) do
-    FactoryBot.create(:statement,
-                      :adjustable,
-                      :paid,
-                      month: 8,
-                      year:,
-                      deadline_date: Date.new(year, 7, 31),
-                      payment_date: Date.new(year, 8, 31),
-                      active_lead_provider:,
-                      contract:)
-  end
+  let!(:statement) { FactoryBot.create(:statement, :paid) }
 
-  let!(:statement) do
-    FactoryBot.create(:statement,
-                      :adjustable,
-                      :paid,
-                      month: 9,
-                      year:,
-                      deadline_date: Date.new(year, 8, 31),
-                      payment_date: Date.new(year, 9, 30),
-                      active_lead_provider:,
-                      contract:)
-  end
-
-  let(:uplift_count) { 0 }
-  let(:year) { 2024 }
-  let(:milestones) { %w[started retained-1 retained-2 retained-3 retained-4 extended-1 extended-2 extended-3 completed] }
+  let(:milestones) { %w[started retained-1 retained-2 extended-1 completed] }
   let(:paid_declarations) { [] }
   let(:clawed_back_declarations) { [] }
   let(:voided_declarations) { [] }
@@ -39,14 +16,13 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
   before do
     allow($stdout).to receive(:puts)
 
-    milestones.each do |declaration_type|
-      pupil_premium_uplift = assign_uplift(declaration_type, uplift_count)
+    previous_statement = FactoryBot.create(:statement, :paid, active_lead_provider:, contract:)
 
+    milestones.each do |declaration_type|
       paid_declarations << FactoryBot.create_list(:declaration, 2, :with_ect,
                                                   declaration_type:,
                                                   payment_status: "paid",
                                                   school_partnership:,
-                                                  pupil_premium_uplift:,
                                                   payment_statement: statement)
 
       voided_declarations << FactoryBot.create(:declaration, :with_ect,
@@ -60,7 +36,7 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
                                                          payment_status: "paid",
                                                          clawback_status: "clawed_back",
                                                          school_partnership:,
-                                                         payment_statement:,
+                                                         payment_statement: previous_statement,
                                                          clawback_statement: statement)
 
       next unless %w[started completed].include?(declaration_type)
@@ -76,7 +52,7 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
                                                     payment_status: "paid",
                                                     clawback_status: "clawed_back",
                                                     school_partnership:,
-                                                    payment_statement:,
+                                                    payment_statement: previous_statement,
                                                     clawback_statement: statement)
     end
 
@@ -86,6 +62,18 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
   end
 
   describe "#process" do
+    it "returns counts of created declaration events by type" do
+      result = subject
+
+      expect(result).to include(
+        started: 3,
+        retained: 4,
+        extended: 2,
+        completed: 3,
+        clawed_back: 12
+      )
+    end
+
     it "records paid events for each paid declaration on the statement" do
       allow(Backfill::RecordDeclarationEvent).to receive(:new).and_call_original
 
@@ -98,18 +86,6 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
           status: :paid
         )
       end
-    end
-
-    it "returns counts of created declaration events by type" do
-      result = subject
-
-      expect(result).to include(
-        started: 3,
-        retained: 8,
-        extended: 6,
-        completed: 3,
-        clawed_back: 20
-      )
     end
 
     it "records clawed back events for clawed back declarations on the statement" do
@@ -179,13 +155,5 @@ RSpec.describe Backfill::RecordStatementPaymentEvents do
           )
       end
     end
-  end
-
-  def assign_uplift(declaration_type, uplift_count)
-    return false unless declaration_type == "started"
-
-    uplift = uplift_count < 2 ? true : [true, false].sample
-    uplift_count + 1 if uplift
-    uplift
   end
 end

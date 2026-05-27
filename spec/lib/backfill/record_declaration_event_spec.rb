@@ -12,25 +12,14 @@ RSpec.describe Backfill::RecordDeclarationEvent do
     allow($stdout).to receive(:puts)
   end
 
-  let(:year) { 2024 }
+  let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year:, active_lead_provider:) }
+  let(:active_lead_provider) { statement.active_lead_provider }
+  let(:contract) { statement.contract }
+  let(:year) { statement.contract_period.year }
 
-  let(:school_partnership) { FactoryBot.create(:school_partnership, :with_active_lead_provider, :for_year, year:) }
-  let(:active_lead_provider) { school_partnership.active_lead_provider }
-  let(:contract) { FactoryBot.create(:contract, :for_ecf, active_lead_provider:) }
+  let(:statement) { FactoryBot.create(:statement, :paid) }
 
   let(:status) { :paid }
-
-  let(:statement) do
-    FactoryBot.create(:statement,
-                      :adjustable,
-                      :paid,
-                      month: 9,
-                      year:,
-                      deadline_date: Date.new(year, 8, 31),
-                      payment_date: Date.new(year, 9, 30),
-                      active_lead_provider:,
-                      contract:)
-  end
 
   let!(:declaration) do
     FactoryBot.create(
@@ -81,16 +70,7 @@ RSpec.describe Backfill::RecordDeclarationEvent do
     end
 
     context "when the statement is not paid" do
-      let(:statement) do
-        FactoryBot.create(:statement,
-                          :adjustable,
-                          month: 9,
-                          year:,
-                          deadline_date: Date.new(year, 8, 31),
-                          payment_date: Date.new(year, 9, 30),
-                          active_lead_provider:,
-                          contract:)
-      end
+      let(:statement) { FactoryBot.create(:statement) }
 
       it "does not create the event" do
         expect { process }

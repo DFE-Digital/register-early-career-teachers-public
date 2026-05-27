@@ -176,6 +176,7 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
   milestones.each do |declaration_type|
     # Create billable declarations
     n = Random.rand(25)
+    print_seed_info("Creating #{n} ECT #{declaration_type} declarations", indent: 6)
     pupil_premium_uplift = assign_uplift(declaration_type, uplift_count)
     FactoryBot.create_list(:declaration, n, :with_ect,
                            payment_status: "payable",
@@ -199,6 +200,7 @@ data = { 2024 => { school_partnership: school_partnership_2024, october_statemen
 
     # Create refunded declarations
     n = Random.rand(25)
+    print_seed_info("Creating #{n} mentor #{declaration_type} declarations", indent: 6)
     FactoryBot.create_list(:declaration, n, :with_ect, :clawed_back,
                            declaration_type:,
                            school_partnership:,

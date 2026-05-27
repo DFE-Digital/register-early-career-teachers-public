@@ -19,17 +19,13 @@ module Backfill
 
       ActiveRecord::Base.transaction do
         paid_declarations.find_each do |declaration|
-          created = record_declaration_event(declaration, statement, :paid)
-
-          next unless created
+          next unless declaration_event_created?(declaration, statement, :paid)
 
           counts[declaration_type(declaration)] += 1
         end
 
         clawed_back_declarations.find_each do |declaration|
-          created = record_declaration_event(declaration, declaration.clawback_statement, :clawed_back)
-
-          next unless created
+          next unless declaration_event_created?(declaration, declaration.clawback_statement, :clawed_back)
 
           counts[:clawed_back] += 1
         end
@@ -49,7 +45,7 @@ module Backfill
       declaration.declaration_type.split("-").first.to_sym
     end
 
-    def record_declaration_event(declaration, statement, status)
+    def declaration_event_created?(declaration, statement, status)
       RecordDeclarationEvent.new(
         declaration:,
         status:,
