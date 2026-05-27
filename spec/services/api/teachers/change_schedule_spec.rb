@@ -87,7 +87,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           end
 
           context "when changing contract_period_year without a school partnership" do
-            let(:contract_period_year) { Time.zone.today.year + 3 }
+            let(:contract_period_year) { Time.zone.today.year - 3 }
 
             before do
               contract_period = FactoryBot.create(:contract_period, year: contract_period_year)
@@ -160,7 +160,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
           end
 
           context "when moving to a frozen contract period where the participant has not been before" do
-            let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen, year: training_period.contract_period.year + 1) }
+            let(:contract_period) { FactoryBot.create(:contract_period, :with_payments_frozen, year: training_period.contract_period.year - 1) }
             let!(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period.year, lead_provider:, school: training_period.school_partnership.school) }
 
             it { is_expected.to have_one_error_per_attribute }
@@ -225,7 +225,7 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
             end
 
             context "when the contract period year is changing" do
-              let(:contract_period) { FactoryBot.create(:contract_period, year: training_period.contract_period.year + 1) }
+              let(:contract_period) { FactoryBot.create(:contract_period, year: training_period.contract_period.year - 1) }
               let(:school_partnership) { FactoryBot.create(:school_partnership, :for_year, year: contract_period_year, lead_provider:, school: training_period.school_partnership.school) }
 
               it "changes the schedule via change schedule service" do
@@ -240,6 +240,17 @@ RSpec.describe API::Teachers::ChangeSchedule, type: :model do
               let(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period: training_period.contract_period) }
 
               it "uses to their current contract period year" do
+                instance.change_schedule
+
+                expect(service).to have_received(:change_schedule).once
+              end
+            end
+
+            context "when the contract_period_year has not started yet" do
+              let(:contract_period_year) { FactoryBot.create(:contract_period, :next).year }
+              let(:schedule) { FactoryBot.create(:schedule, identifier: schedule_identifier, contract_period: training_period.contract_period) }
+
+              it "defaults to the current contract period year" do
                 instance.change_schedule
 
                 expect(service).to have_received(:change_schedule).once

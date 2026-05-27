@@ -4,7 +4,7 @@ RSpec.describe Admin::Schools::PartnershipsSummaryComponent, type: :component do
   include Rails.application.routes.url_helpers
 
   let(:school) { FactoryBot.create(:school) }
-  let(:current_year) { Time.zone.today.year }
+  let(:current_year) { Time.zone.today.year - 1 }
   let(:previous_year) { current_year - 1 }
 
   context "with multiple partnerships" do

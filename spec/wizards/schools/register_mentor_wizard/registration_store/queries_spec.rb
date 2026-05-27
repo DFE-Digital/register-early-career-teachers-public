@@ -71,7 +71,7 @@ RSpec.describe Schools::RegisterMentorWizard::RegistrationStore::Queries do
     end
 
     context "when a contract period is found" do
-      let(:contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+      let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
       let(:started_on) { (contract_period.started_on + 1.day) }
       let!(:lead_provider) { FactoryBot.create(:lead_provider) }
       let!(:another_lead_provider) { FactoryBot.create(:lead_provider) }

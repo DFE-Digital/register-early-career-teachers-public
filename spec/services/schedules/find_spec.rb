@@ -27,7 +27,7 @@ end
 RSpec.describe Schedules::Find do
   include ActiveJob::TestHelper
 
-  let(:year) { Date.current.year }
+  let(:year) { Date.current.year - 1 }
 
   let(:contract_period) { FactoryBot.create(:contract_period, year:) }
   let(:previous_contract_period) { FactoryBot.create(:contract_period, year: year - 1) }

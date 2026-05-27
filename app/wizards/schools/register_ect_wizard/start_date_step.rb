@@ -92,7 +92,7 @@ module Schools
       end
 
       def start_date_contract_period
-        @start_date_contract_period ||= ContractPeriod.containing_date(start_date_as_date)
+        @start_date_contract_period ||= ContractPeriod.unscoped.containing_date(start_date_as_date)
       end
 
       def start_date_obj

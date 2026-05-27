@@ -26,7 +26,7 @@ module Admin
       end
 
       def validate_contract_period
-        @contract_period = ContractPeriod.find_by(year:)
+        @contract_period = ContractPeriod.unscoped.find_by(year:)
         raise ValidationError, "Contract period for year #{year} not found" if @contract_period.blank?
       end
 

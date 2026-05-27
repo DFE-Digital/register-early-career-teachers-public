@@ -364,7 +364,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
   end
 
   describe "#lead_provider_partnerships_for_contract_period" do
-    let(:contract_period) { create_contract_period(year: 2026) }
+    let(:contract_period) { create_contract_period(year: 2025) }
     let(:start_date) { (contract_period.started_on + 1.day).to_s }
     let(:school) { FactoryBot.create(:school) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }
@@ -521,7 +521,7 @@ RSpec.describe Schools::RegisterECTWizard::RegistrationStore::Queries do
   end
 
   describe "#confirmed_delivery_partner_for_contract_period" do
-    let(:contract_period) { FactoryBot.create(:contract_period, year: 2026) }
+    let(:contract_period) { FactoryBot.create(:contract_period, year: 2025) }
     let(:start_date) { (contract_period.started_on + 1.day) }
     let(:school) { FactoryBot.create(:school) }
     let(:lead_provider) { FactoryBot.create(:lead_provider) }

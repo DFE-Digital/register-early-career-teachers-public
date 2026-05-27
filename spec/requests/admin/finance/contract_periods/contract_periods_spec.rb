@@ -175,7 +175,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
         end
 
         it "creates a new contract period" do
-          expect { post admin_contract_periods_path, params: valid_params }.to change(ContractPeriod, :count).by(1)
+          expect { post admin_contract_periods_path, params: valid_params }.to change(ContractPeriod.unscoped, :count).by(1)
         end
 
         it "redirects to the contract periods page with success message" do
@@ -205,7 +205,7 @@ RSpec.describe "Admin finance contract periods", type: :request do
         it "creates the contract period with correct attributes" do
           post admin_contract_periods_path, params: valid_params
 
-          contract_period = ContractPeriod.last
+          contract_period = ContractPeriod.unscoped.last
           expect(contract_period.year).to eq(2026)
           expect(contract_period.started_on).to eq(started_on.to_date)
           expect(contract_period.finished_on).to eq(finished_on.to_date)

@@ -8,7 +8,7 @@ module Admin
       def new
         @delivery_partner = DeliveryPartner.find(params[:delivery_partner_id])
         @year = params[:year]
-        @contract_period = ContractPeriod.find_by(year: @year)
+        @contract_period = ContractPeriod.unscoped.find_by(year: @year)
 
         if @contract_period.blank?
           redirect_to admin_delivery_partner_path(@delivery_partner, page: params[:page], q: params[:q]),

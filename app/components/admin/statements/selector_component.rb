@@ -14,7 +14,7 @@ module Admin
       end
 
       def contract_periods
-        ContractPeriod.order(year: :asc)
+        ContractPeriod.unscoped.order(year: :asc)
       end
 
       def contract_period_year

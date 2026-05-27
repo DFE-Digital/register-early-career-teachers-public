@@ -2,7 +2,10 @@ START_MONTH_AND_DAY = [6, 1].freeze
 FINISH_MONTH_AND_DAY = [5, 31].freeze
 
 FactoryBot.define do
-  sequence(:base_contract_period, 2021)
+  sequence(:base_contract_period) do |n|
+    years = (2021...Date.current.year).to_a
+    years[(n - 1) % years.size]
+  end
 
   factory(:contract_period) do
     transient do
@@ -29,7 +32,7 @@ FactoryBot.define do
     uplift_fees_enabled { true }
 
     initialize_with do
-      ContractPeriod.find_or_create_by(year:)
+      ContractPeriod.unscoped.find_or_create_by(year:)
     end
 
     trait :with_schedules do

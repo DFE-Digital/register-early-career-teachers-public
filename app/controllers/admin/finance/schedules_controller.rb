@@ -13,7 +13,7 @@ module Admin::Finance
   private
 
     def set_contract_period
-      @contract_period = ContractPeriod.find(params[:contract_period_id])
+      @contract_period = ContractPeriod.unscoped.find(params[:contract_period_id])
     end
   end
 end

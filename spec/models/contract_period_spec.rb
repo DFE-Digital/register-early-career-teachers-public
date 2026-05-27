@@ -269,7 +269,7 @@ describe ContractPeriod do
   end
 
   describe "#editable?" do
-    subject { FactoryBot.create(:contract_period, started_on:) }
+    subject { FactoryBot.build(:contract_period, started_on:) }
 
     context "when the contract period has not yet started" do
       let(:started_on) { 1.month.from_now }

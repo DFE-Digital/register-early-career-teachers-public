@@ -101,7 +101,7 @@ class Event < ApplicationRecord
   belongs_to :mentor_at_school_period
   belongs_to :mentorship_period
   belongs_to :training_period
-  belongs_to :contract_period
+  belongs_to :contract_period, -> { unscope(where: :started_on) }
 
   # statements
   belongs_to :statement

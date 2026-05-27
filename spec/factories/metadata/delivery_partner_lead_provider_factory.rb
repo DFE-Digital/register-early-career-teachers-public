@@ -12,7 +12,7 @@ FactoryBot.define do
     end
 
     contract_period_years do
-      years = (2021..Time.current.year).to_a
+      years = (2021..Time.current.year - 1).to_a
       random_years = years.shuffle.take(rand(1..years.size))
       random_years.each { FactoryBot.create(:contract_period, year: it) }
       random_years

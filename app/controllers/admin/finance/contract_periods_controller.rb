@@ -12,7 +12,7 @@ module Admin::Finance
         "Contract periods" => nil,
       }
       page = params[:page].presence
-      @pagy, @contract_periods = pagy(ContractPeriod.most_recent_first, page:)
+      @pagy, @contract_periods = pagy(ContractPeriod.unscoped.most_recent_first, page:)
     end
 
     def show
@@ -70,6 +70,7 @@ module Admin::Finance
     def set_contract_period
       @contract_period = ContractPeriod
         .includes(:active_lead_providers, :schedules)
+        .unscoped
         .find(params[:id])
     end
 

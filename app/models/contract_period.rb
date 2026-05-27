@@ -3,6 +3,8 @@ class ContractPeriod < ApplicationRecord
 
   ECF_FIRST_YEAR = 2020
 
+  default_scope { started_on_or_before(Time.zone.now) }
+
   # Associations
   has_many :active_lead_providers, inverse_of: :contract_period
   has_many :schedules, inverse_of: :contract_period
@@ -76,7 +78,7 @@ class ContractPeriod < ApplicationRecord
 private
 
   def siblings
-    ContractPeriod.all.excluding(self)
+    ContractPeriod.unscoped.excluding(self)
   end
 
   def no_overlaps
