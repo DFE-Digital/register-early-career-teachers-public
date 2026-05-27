@@ -2,7 +2,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
   subject(:step) { described_class.new(wizard:, leaving_on:) }
 
   let(:wizard) { instance_double(Schools::ECTs::TeacherLeavingWizard::Wizard, store:, ect_at_school_period:) }
-  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, started_on: Date.new(2025, 1, 1)) }
+  let(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, started_on: Date.new(2025, 1, 1)) }
   let(:teacher_name) { Teachers::Name.new(ect_at_school_period.teacher).full_name }
   let(:store) { FactoryBot.build(:session_repository, form_key: :teacher_leaving_wizard) }
   let(:leaving_on) { { "day" => "1", "month" => "3", "year" => "2025" } }
@@ -98,7 +98,7 @@ RSpec.describe Schools::ECTs::TeacherLeavingWizard::EditStep do
     end
 
     context "when the date clashes with the latest training period" do
-      let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2024, 12, 31)) }
+      let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:, started_on: Date.new(2025, 1, 1)) }
 
       before do
         allow(Schools::Validation::PeriodBoundary)

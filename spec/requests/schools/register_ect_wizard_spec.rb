@@ -21,7 +21,7 @@ describe "Schools::RegisterECTWizardController" do
   describe "section 41 approval lost" do
     let(:gias_school) { FactoryBot.create(:gias_school, :independent_school_type, :not_section_41) }
     let(:school) { FactoryBot.create(:school, urn: gias_school.urn, gias_school:) }
-    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, school:) }
+    let!(:ect_at_school_period) { FactoryBot.create(:ect_at_school_period, :ongoing, school:) }
     let!(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period:) }
 
     before { sign_in_as(:school_user, method: :dfe_sign_in, school:) }

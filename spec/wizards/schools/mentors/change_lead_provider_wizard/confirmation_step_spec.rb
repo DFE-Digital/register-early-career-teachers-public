@@ -12,7 +12,7 @@ describe Schools::Mentors::ChangeLeadProviderWizard::ConfirmationStep, type: :mo
   end
   let(:store) { FactoryBot.build(:session_repository) }
   let(:school) { FactoryBot.create(:school) }
-  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, school:) }
+  let(:mentor_at_school_period) { FactoryBot.create(:mentor_at_school_period, :ongoing, school:) }
   let!(:training_period) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period:, started_on: Time.zone.today) }
 
   let(:author) { FactoryBot.build(:school_user, school_urn: school.urn) }

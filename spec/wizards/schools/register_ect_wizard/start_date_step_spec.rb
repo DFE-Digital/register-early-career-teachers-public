@@ -145,7 +145,7 @@ RSpec.describe Schools::RegisterECTWizard::StartDateStep, type: :model do
     end
 
     context "when the date clashes with the latest training period" do
-      let(:training_period) { FactoryBot.create(:training_period, :ongoing, ect_at_school_period: previous_period, started_on: Date.new(2024, 12, 31)) }
+      let(:training_period) { FactoryBot.create(:training_period, ect_at_school_period: previous_period, started_on: Date.new(2024, 12, 31), finished_on: Date.new(2025, 3, 31)) }
 
       let(:previous_period) do
         FactoryBot.create(:ect_at_school_period,

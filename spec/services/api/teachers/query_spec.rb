@@ -86,10 +86,10 @@ RSpec.describe API::Teachers::Query, :with_metadata do
 
     describe "filtering" do
       describe "by `lead_provider`" do
-        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing) }
+        let(:training_period) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)) }
         let!(:teacher1) { training_period.teacher }
-        let!(:teacher2) { FactoryBot.create(:training_period, :for_ect, :ongoing).teacher }
-        let!(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing).teacher }
+        let!(:teacher2) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+        let!(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
 
         context "when `lead_provider` param is omitted" do
           it "returns all teachers" do
@@ -177,9 +177,9 @@ RSpec.describe API::Teachers::Query, :with_metadata do
       end
 
       describe "by `api_from_teacher_id`" do
-        let(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing).teacher }
-        let(:teacher2) { FactoryBot.create(:training_period, :for_mentor, :ongoing).teacher }
-        let(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing).teacher }
+        let(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+        let(:teacher2) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher }
+        let(:teacher3) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
         let!(:teacher_id_change1) { FactoryBot.create(:teacher_id_change, teacher: teacher1, api_from_teacher_id: teacher2.api_id) }
         let!(:teacher_id_change2) { FactoryBot.create(:teacher_id_change, teacher: teacher2, api_from_teacher_id: teacher3.api_id) }
         let!(:teacher_id_change3) { FactoryBot.create(:teacher_id_change, teacher: teacher3, api_from_teacher_id: teacher1.api_id) }
@@ -313,8 +313,8 @@ RSpec.describe API::Teachers::Query, :with_metadata do
     end
 
     describe "ordering" do
-      let!(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing).teacher }
-      let!(:teacher2) { travel_to(1.day.ago) { FactoryBot.create(:training_period, :for_mentor, :ongoing).teacher } }
+      let!(:teacher1) { FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher }
+      let!(:teacher2) { travel_to(1.day.ago) { FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher } }
 
       describe "default order" do
         it "returns teachers ordered by created_at, in ascending order" do
@@ -363,8 +363,8 @@ RSpec.describe API::Teachers::Query, :with_metadata do
     end
 
     it "raises an error if the teacher is not in the filtered query" do
-      teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing).teacher
-      teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing).teacher
+      teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher
+      teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher
       lead_provider_id = teacher1.lead_provider_metadata.first.lead_provider_id
 
       query = described_class.new(lead_provider_id:)
@@ -392,8 +392,8 @@ RSpec.describe API::Teachers::Query, :with_metadata do
     end
 
     it "raises an error if the teacher is not in the filtered query" do
-      teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing).teacher
-      teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing).teacher
+      teacher1 = FactoryBot.create(:training_period, :for_ect, :ongoing, ect_at_school_period: FactoryBot.create(:ect_at_school_period, :ongoing)).teacher
+      teacher2 = FactoryBot.create(:training_period, :for_mentor, :ongoing, mentor_at_school_period: FactoryBot.create(:mentor_at_school_period, :ongoing)).teacher
       lead_provider_id = teacher1.lead_provider_metadata.first.lead_provider_id
 
       query = described_class.new(lead_provider_id:)
