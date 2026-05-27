@@ -11,7 +11,7 @@ module Admin::Finance
     def create
       if @form.valid?
         authorise_payment!
-        flash[:alert] = "Statement authorisation processing"
+        flash[:alert] = "Statement authorisation processed successfully."
         redirect_to admin_finance_statement_path(@statement)
       else
         render :new, status: :unprocessable_content
@@ -36,8 +36,7 @@ module Admin::Finance
     end
 
     def authorise_payment!
-      # TODO: run in a background job
-      Statements::AuthorisePayment.new(@statement.__getobj__, author: current_user).authorise!
+      Statements::AuthorisePayment.new(statement: @statement.__getobj__, author: current_user).authorise!
     end
   end
 end
