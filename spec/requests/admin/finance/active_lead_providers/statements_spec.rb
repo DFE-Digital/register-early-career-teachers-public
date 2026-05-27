@@ -5,7 +5,7 @@ RSpec.describe "Admin finance active lead provider statements", type: :request d
   let!(:statement) { FactoryBot.create(:statement, :open, :output_fee, active_lead_provider:, month: 11, year: contract_period.year) }
   let(:path) { admin_contract_period_active_lead_provider_statements_path(contract_period, active_lead_provider) }
 
-  describe "GET /admin/finance/active-lead-providers/:active_lead_provider_id/statements" do
+  describe "GET /admin/finance/contract-periods/:contract_period_id/active-lead-providers/:active_lead_provider_id/statements", :enable_finance_contract_periods do
     it "redirects to sign in path when not signed in" do
       get path
       expect(response).to redirect_to(sign_in_path)
