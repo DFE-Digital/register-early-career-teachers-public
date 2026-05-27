@@ -1,6 +1,6 @@
 ---
 title: Connect to the RECT API
-sidebar_position: 14
+sidebar_position: 15
 ---
 A unique API token is needed to connect to the register early career teachers API.
 
